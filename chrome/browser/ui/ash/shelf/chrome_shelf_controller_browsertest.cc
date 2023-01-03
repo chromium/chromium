@@ -2298,13 +2298,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
 
   // Find the browser which holds our app.
   Browser* app_browser = nullptr;
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation() && !app_browser;
-       ++it) {
-    if ((*it)->is_type_app()) {
-      app_browser = *it;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->is_type_app()) {
+      app_browser = browser;
       break;
     }
   }

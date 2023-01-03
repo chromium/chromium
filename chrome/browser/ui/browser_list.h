@@ -37,6 +37,21 @@ class BrowserList {
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
 
+  struct BrowsersOrderedByActivationRange {
+    // Stack allocated only to reduce risk of out of bounds lifetime with
+    // |browser_list|.
+    void* operator new(size_t) = delete;
+    void* operator new(size_t, void*) = delete;
+
+    const BrowserList& browser_list;
+    const_reverse_iterator begin() const {
+      return browser_list.begin_browsers_ordered_by_activation();
+    }
+    const_reverse_iterator end() const {
+      return browser_list.end_browsers_ordered_by_activation();
+    }
+  };
+
   BrowserList(const BrowserList&) = delete;
   BrowserList& operator=(const BrowserList&) = delete;
 
@@ -59,6 +74,13 @@ class BrowserList {
   }
   const_reverse_iterator end_browsers_ordered_by_activation() const {
     return browsers_ordered_by_activation_.rend();
+  }
+
+  // Convenience method for iterating over browsers in activation order.
+  // Example:
+  // for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation())
+  BrowsersOrderedByActivationRange OrderedByActivation() const {
+    return {*this};
   }
 
   // Returns the set of browsers that are currently in the closing state.

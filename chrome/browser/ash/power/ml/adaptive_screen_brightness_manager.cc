@@ -51,15 +51,8 @@ constexpr int kNumUserInputEventsBuckets = kUserInputEventsDuration.InMinutes();
 // Returns nullopt if no suitable browsers are found.
 Browser* GetFocusedOrTopmostVisibleBrowser() {
   Browser* topmost_browser = nullptr;
-  Browser* browser = nullptr;
-  BrowserList* browser_list = BrowserList::GetInstance();
-  DCHECK(browser_list);
 
-  for (auto browser_iterator =
-           browser_list->begin_browsers_ordered_by_activation();
-       browser_iterator != browser_list->end_browsers_ordered_by_activation();
-       ++browser_iterator) {
-    browser = *browser_iterator;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->profile()->IsOffTheRecord() || !browser->window()->IsVisible())
       continue;
 
@@ -67,7 +60,7 @@ Browser* GetFocusedOrTopmostVisibleBrowser() {
       return browser;
 
     if (!topmost_browser)
-      topmost_browser = *browser_iterator;
+      topmost_browser = browser;
   }
   if (topmost_browser)
     return topmost_browser;

@@ -17,12 +17,10 @@ namespace {
 
 // Returns the last active tabbed browser.
 Browser* FindLastActiveTabbedBrowser() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  const auto end = browser_list->end_browsers_ordered_by_activation();
-  for (auto scan = browser_list->begin_browsers_ordered_by_activation();
-       scan != end; ++scan) {
-    if ((*scan)->is_type_normal())
-      return *scan;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (browser->is_type_normal()) {
+      return browser;
+    }
   }
   return nullptr;
 }

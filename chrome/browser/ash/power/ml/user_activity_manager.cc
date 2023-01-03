@@ -568,18 +568,10 @@ void UserActivityManager::ExtractFeatures(
 }
 
 TabProperty UserActivityManager::UpdateOpenTabURL() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  DCHECK(browser_list);
-
   TabProperty property;
 
   // Find the active tab in the visible focused or topmost browser.
-  for (auto browser_iterator =
-           browser_list->begin_browsers_ordered_by_activation();
-       browser_iterator != browser_list->end_browsers_ordered_by_activation();
-       ++browser_iterator) {
-    Browser* browser = *browser_iterator;
-
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (!browser->window()->GetNativeWindow()->IsVisible())
       continue;
 

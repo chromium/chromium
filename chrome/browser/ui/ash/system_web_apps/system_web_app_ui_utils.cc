@@ -264,11 +264,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
 
   // Look through all the windows, find a browser for this app. Prefer the most
   // recently active app window.
-  BrowserList* const browser_list = BrowserList::GetInstance();
-  const auto end = browser_list->end_browsers_ordered_by_activation();
-  for (auto iter = browser_list->begin_browsers_ordered_by_activation();
-       iter != end; ++iter) {
-    Browser* const browser = *iter;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->profile() != profile || browser->type() != browser_type)
       continue;
 

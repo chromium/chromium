@@ -120,14 +120,10 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
                                               const std::u16string& input,
                                               bool match_profile) {
   std::vector<WindowMatch> results;
-  const BrowserList* browser_list = BrowserList::GetInstance();
   double mru_score = .95;
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
-  for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* browser = *it;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser == browser_to_exclude || !browser->is_type_normal())
       continue;
     if (match_profile && browser->profile() != browser_to_exclude->profile())

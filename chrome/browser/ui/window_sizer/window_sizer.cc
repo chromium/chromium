@@ -37,10 +37,8 @@ const int kMinVisibleWidth = 30;
 
 BrowserWindow* FindMostRecentBrowserWindow(
     base::FunctionRef<bool(Browser*)> matcher) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto it = browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* last_active = *it;
+  for (Browser* last_active :
+       BrowserList::GetInstance()->OrderedByActivation()) {
     if (last_active && matcher(last_active)) {
       DCHECK(last_active->window());
       return last_active->window();

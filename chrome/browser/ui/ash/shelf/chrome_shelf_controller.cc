@@ -1458,12 +1458,8 @@ void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(
     const Profile* profile) {
   // This function cannot rely on the controller's enumeration functionality
   // since the extension has already been unloaded.
-  const BrowserList* browser_list = BrowserList::GetInstance();
   std::vector<Browser*> browser_to_close;
-  for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* browser = *it;
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if ((browser->is_type_app() || browser->is_type_app_popup()) &&
         app_id == web_app::GetAppIdFromApplicationName(browser->app_name()) &&
         profile == browser->profile()) {
