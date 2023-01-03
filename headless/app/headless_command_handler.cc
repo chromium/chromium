@@ -54,14 +54,18 @@ const char kHeadlessCommandJs[] = "headless_command.js";
 
 content::WebUIDataSource* CreateHeadlessHostDataSource() {
   base::FilePath resource_dir;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &resource_dir));
+  bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
+  DCHECK(result);
 
+  // Try loading the headless library pak file first. If it doesn't exist (i.e.,
+  // when we're running with the --headless switch), fall back to the browser's
+  // resource pak.
   base::FilePath resource_pack =
       resource_dir.Append(FILE_PATH_LITERAL("headless_command_resources.pak"));
-  CHECK(base::PathExists(resource_pack)) << resource_pack;
-
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      resource_pack, ui::kScaleFactorNone);
+  if (base::PathExists(resource_pack)) {
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        resource_pack, ui::kScaleFactorNone);
+  }
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeHeadlessHost);
