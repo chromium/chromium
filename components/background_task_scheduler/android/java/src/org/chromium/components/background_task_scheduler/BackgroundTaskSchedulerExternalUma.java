@@ -29,8 +29,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION = 13;
     public static final int BACKGROUND_TASK_FEED_REFRESH = 14;
     public static final int BACKGROUND_TASK_COMPONENT_UPDATE = 15;
-    public static final int BACKGROUND_TASK_DEPRECATED_EXPLORE_SITES_REFRESH = 16;
-    public static final int BACKGROUND_TASK_EXPLORE_SITES_REFRESH = 17;
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION = 18;
     public static final int BACKGROUND_TASK_ONE_SHOT_SYNC_WAKE_UP = 19;
     public static final int BACKGROUND_TASK_NOTIFICATION_SCHEDULER = 20;
@@ -121,10 +119,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_FEED_REFRESH;
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_COMPONENT_UPDATE;
-            case TaskIds.DEPRECATED_EXPLORE_SITES_REFRESH_JOB_ID:
-                return BACKGROUND_TASK_DEPRECATED_EXPLORE_SITES_REFRESH;
-            case TaskIds.EXPLORE_SITES_REFRESH_JOB_ID:
-                return BACKGROUND_TASK_EXPLORE_SITES_REFRESH;
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
                 return BACKGROUND_TASK_ONE_SHOT_SYNC_WAKE_UP;
             case TaskIds.NOTIFICATION_SCHEDULER_JOB_ID:
@@ -188,10 +182,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "FeedRefresh";
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
                 return "ComponentUpdate";
-            case TaskIds.DEPRECATED_EXPLORE_SITES_REFRESH_JOB_ID:
-                return "DeprecatedExploreSitesRefresh";
-            case TaskIds.EXPLORE_SITES_REFRESH_JOB_ID:
-                return "ExploreSitesRefresh";
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
                 return "BackgroundSyncOneShot";
             case TaskIds.NOTIFICATION_SCHEDULER_JOB_ID:

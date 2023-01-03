@@ -568,7 +568,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/explore_sites/CategoryCardViewHolderFactory.java",
   "java/src/org/chromium/chrome/browser/explore_sites/CategoryCardViewHolderFactoryDenseTitleBottom.java",
   "java/src/org/chromium/chrome/browser/explore_sites/CategoryCardViewHolderFactoryDenseTitleRight.java",
-  "java/src/org/chromium/chrome/browser/explore_sites/ExploreSitesBackgroundTask.java",
   "java/src/org/chromium/chrome/browser/explore_sites/ExploreSitesBridge.java",
   "java/src/org/chromium/chrome/browser/explore_sites/ExploreSitesCategory.java",
   "java/src/org/chromium/chrome/browser/explore_sites/ExploreSitesCategoryCardView.java",

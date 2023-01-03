@@ -27,11 +27,6 @@ enum class ExploreSitesCatalogUpdateRequestSource {
 // Methods for interacting with the Java side via JNI.
 class ExploreSitesBridge {
  public:
-  // Causes the Android JobScheduler to execute the catalog update daily.
-  // The catalog update task checks that the feature is enabled and if not,
-  // unschedules itself.
-  static void ScheduleDailyTask();
-
   // Gets the device screen scale factor from Android.
   static float GetScaleFactorFromDevice();
 };

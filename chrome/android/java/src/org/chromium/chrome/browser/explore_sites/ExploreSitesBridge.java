@@ -138,11 +138,6 @@ public class ExploreSitesBridge {
         return variation != DenseVariation.ORIGINAL;
     }
 
-    @CalledByNative
-    static void scheduleDailyTask() {
-        ExploreSitesBackgroundTask.schedule(false /* updateCurrent */);
-    }
-
     /**
      * Returns the scale factor on this device.
      */

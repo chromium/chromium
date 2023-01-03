@@ -294,11 +294,6 @@ void JNI_ExploreSitesBridge_RecordClick(JNIEnv* env,
 }
 
 // static
-void ExploreSitesBridge::ScheduleDailyTask() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ExploreSitesBridge_scheduleDailyTask(env);
-}
-
 float ExploreSitesBridge::GetScaleFactorFromDevice() {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Get scale factor from Java as a float.
