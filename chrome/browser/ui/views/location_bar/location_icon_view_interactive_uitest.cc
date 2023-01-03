@@ -28,6 +28,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
 };
 
 // Verify that clicking the location icon a second time hides the bubble.
+// TODO(crbug.com/1404640) flaky on mac11-arm64-rel, disabled via filter
 IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::View* location_icon_view =

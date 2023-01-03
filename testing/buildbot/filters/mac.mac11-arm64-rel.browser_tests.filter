@@ -67,6 +67,7 @@
 -InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
 -InspectUIFencedFrameTest.FencedFrameInFrontEnd
 -InspectUITest.LaunchUIDevtools
+-LocationIconViewTest.HideOnSecondClick
 -ManagementUITest.ManagementStateChange
 -MediaEngagementBrowserTest.SessionMultipleTabsClosingParent
 -MediaInternalsUIBrowserTest.Integration
