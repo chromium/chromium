@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 fn main() {
-    other_name::hello_world();
+    test_aliased_deps::other_name::hello_world();
 }
