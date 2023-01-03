@@ -816,6 +816,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Chrome OS {BatteryCapacityType} battery capacity in milliwatt-hours.
   </summary>
+  <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
@@ -1028,6 +1029,7 @@ chromium-metrics-reviews@google.com.
     rate sampling in Power.BatteryDischargeRate. Note that the size of the
     battery is derated by the low battery shutdown percent.
   </summary>
+  <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
 <histogram name="Power.BatteryLifeWhileSuspended.{BatteryCapacityType}"
@@ -1041,6 +1043,7 @@ chromium-metrics-reviews@google.com.
     This is calculated using size of the battery divide by battery discharge
     rate sampling in Power.BatteryDischargeRateWhileSuspended.
   </summary>
+  <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
 <histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-06-25">
