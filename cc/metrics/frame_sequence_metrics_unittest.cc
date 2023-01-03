@@ -36,7 +36,7 @@ TEST(FrameSequenceMetricsTest, MergeMetrics) {
   EXPECT_TRUE(first.HasEnoughDataForReporting());
 }
 
-#if DCHECK_IS_ON()
+#if GTEST_HAS_DEATH_TEST
 TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
   FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
   first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
@@ -53,7 +53,7 @@ TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
 
   ASSERT_DEATH(first.Merge(std::move(second)), "");
 }
-#endif  // DCHECK_IS_ON()
+#endif  // GTEST_HAS_DEATH_TEST
 
 TEST(FrameSequenceMetricsTest, AllMetricsReported) {
   base::HistogramTester histograms;
