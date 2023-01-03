@@ -39,8 +39,26 @@ GifTenorApiFetcher::GifTenorApiFetcher() = default;
 
 GifTenorApiFetcher::~GifTenorApiFetcher() = default;
 
+GURL GifTenorApiFetcher::GetURL(const char* endpoint,
+                                const absl::optional<std::string>& pos) {
+  GURL url = net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(endpoint),
+                                       kContentFilterName, kContentFilterValue);
+  url = net::AppendQueryParameter(url, kArRangeName, kArRangeValue);
+  url = net::AppendQueryParameter(url, kMediaFilterName, kMediaFilterValue);
+  if (pos) {
+    url = net::AppendQueryParameter(url, kPosName, pos.value());
+  }
+  return url;
+}
+
+void GifTenorApiFetcher::ResponseHandler(
+    TenorApiCallback callback,
+    std::unique_ptr<EndpointResponse> response) {
+  std::move(callback).Run(response->response);
+}
+
 void GifTenorApiFetcher::FetchCategories(
-    PageHandler::GetCategoriesCallback callback,
+    TenorApiCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   constexpr char kCategoriesApi[] = "/v2/categories";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -82,19 +100,13 @@ void GifTenorApiFetcher::FetchCategories(
           version_info::Channel::STABLE);
 
   endpoint_fetcher_->PerformRequest(
-      base::BindOnce(&GifTenorApiFetcher::FetchCategoriesResponseHandler,
+      base::BindOnce(&GifTenorApiFetcher::ResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       nullptr);
 }
 
-void GifTenorApiFetcher::FetchCategoriesResponseHandler(
-    PageHandler::GetCategoriesCallback callback,
-    std::unique_ptr<EndpointResponse> response) {
-  std::move(callback).Run(response->response);
-}
-
 void GifTenorApiFetcher::FetchFeaturedGifs(
-    PageHandler::GetFeaturedGifsCallback callback,
+    TenorApiCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const absl::optional<std::string>& pos) {
   constexpr char kFeaturedApi[] = "/v2/featured";
@@ -126,14 +138,62 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
       }
   )");
 
-  GURL url =
-      net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kFeaturedApi),
-                                kContentFilterName, kContentFilterValue);
-  url = net::AppendQueryParameter(url, kArRangeName, kArRangeValue);
-  url = net::AppendQueryParameter(url, kMediaFilterName, kMediaFilterValue);
-  if (pos) {
-    url = net::AppendQueryParameter(url, kPosName, pos.value());
-  }
+  endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
+      /*url_loader_factory=*/url_loader_factory,
+      /*url=*/GetURL(kFeaturedApi, pos),
+      /*http_method=*/kHttpMethod,
+      /*content_type=*/kHttpContentType,
+      /*timeout_ms=*/kTimeoutMs,
+      /*post_data=*/"",
+      /*headers=*/std::vector<std::string>(),
+      /*annotation_tag=*/kTrafficAnnotation,
+      /*is_stable_channel=*/chrome::GetChannel() ==
+          version_info::Channel::STABLE);
+
+  endpoint_fetcher_->PerformRequest(
+      base::BindOnce(&GifTenorApiFetcher::ResponseHandler,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      nullptr);
+}
+
+void GifTenorApiFetcher::FetchGifSearch(
+    TenorApiCallback callback,
+    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& query,
+    const absl::optional<std::string>& pos) {
+  constexpr char kSearchApi[] = "/v2/search";
+  constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+      net::DefineNetworkTrafficAnnotation(
+          "chromeos_emoji_picker_search_fetcher",
+          R"(
+      semantics {
+        sender: "ChromeOS Emoji Picker"
+        description:
+          "Gets a list of the most relevant GIFs from the tenor API "
+          "(https://developers.google.com/tenor) for a given search term."
+        trigger:
+          "When a user opens the emoji picker and selects the GIF section, "
+          "then type in a search query in the search bar."
+        data:
+          "Text a user has typed into a text field."
+          "Position of the next batch of GIFs, used for infiniate scroll."
+          "Authentication to this API is done through Chrome's API key."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No setting. The feature does nothing by default. Users must take"
+          "an explicit action to trigger it."
+        policy_exception_justification:
+          "Not implemented, not considered useful. This request is part of a "
+          "flow which is user-initiated, and is not a background request."
+      }
+  )");
+
+  GURL url = GetURL(kSearchApi, pos);
+  url = net::AppendQueryParameter(url, "q", query);
+
   endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory,
       /*url=*/url,
@@ -147,15 +207,9 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
           version_info::Channel::STABLE);
 
   endpoint_fetcher_->PerformRequest(
-      base::BindOnce(&GifTenorApiFetcher::FetchFeaturedGifsResponseHandler,
+      base::BindOnce(&GifTenorApiFetcher::ResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       nullptr);
-}
-
-void GifTenorApiFetcher::FetchFeaturedGifsResponseHandler(
-    PageHandler::GetFeaturedGifsCallback callback,
-    std::unique_ptr<EndpointResponse> response) {
-  std::move(callback).Run(response->response);
 }
 
 }  // namespace ash

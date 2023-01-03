@@ -77,4 +77,27 @@ interface PageHandler {
   //   }[]
   // }
   GetFeaturedGifs(string? pos) => (string featured);
+
+  // Returns a string in JSON format containing a list of the most relevant
+  // GIFs for a given search set of search terms or categories, fetched from
+  // the tenor API (https://tenor.googleapis.com).
+  // JSON response format is shown below.
+  // {
+  //   next: string,
+  //   results: {
+  //     id: string, // tenor result identifier
+  //     content_description: string, // a textual description of the content
+  //     media_formats: {
+  //       gif: {
+  //         url: string, // a url to the media source
+  //         dims: int[], width and height of the media in pixels
+  //       }
+  //       mediumgif: {
+  //         url: string, // a url to the media source
+  //         dims: int[], width and height of the media in pixels
+  //       }
+  //     },
+  //   }[]
+  // }
+  SearchGifs(string query, string? pos) => (string gifs);
 };

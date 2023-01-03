@@ -105,14 +105,13 @@ export function GifTestSuite(category) {
                   .map(item => item.shadowRoot.querySelector('cr-icon-button'));
           const categoryButton = allCategoryButtons[categoryIndex];
           categoryButton.click();
-          await waitForCondition(
-              () => isCategoryButtonActive(categoryButton),
+          waitForCondition(
+              () => isCategoryButtonActive(categoryButton) &&
+                  allCategoryButtons.every(
+                      (categoryButtonItem, index) =>
+                          (index === categoryIndex ||
+                           isCategoryButtonActive(categoryButtonItem))),
               'gif section failed to be active', 5000);
-          allCategoryButtons.forEach((categoryButtonItem, index) => {
-            if (index !== categoryIndex) {
-              assertFalse(isCategoryButtonActive(categoryButtonItem));
-            }
-          });
         });
   });
 }

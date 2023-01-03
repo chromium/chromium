@@ -38,6 +38,9 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void GetCategories(GetCategoriesCallback callback) override;
   void GetFeaturedGifs(const absl::optional<std::string>& pos,
                        GetFeaturedGifsCallback callback) override;
+  void SearchGifs(const std::string& query,
+                  const absl::optional<std::string>& pos,
+                  SearchGifsCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;

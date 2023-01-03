@@ -17,6 +17,8 @@ export interface EmojiPickerApiProxy {
   getCategories(): Promise<{categories: GifSubcategoryData[]}>;
 
   getFeaturedGifs(pos?: string): Promise<{featured: Results}>;
+
+  searchGifs(query: string, pos?: string): Promise<{gifs: Results}>;
 }
 
 interface Gif {
@@ -97,23 +99,35 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     };
   }
 
+  private formatGifResults = (res: string): Results => {
+    const gifs = JSON.parse(res);
+    return {
+      next: gifs.next,
+      results: gifs.results.map((response: ResponseObject) => {
+        const {gif, mediumgif} = response.media_formats;
+        const [width, height] = mediumgif.dims;
+        return {
+          url: {gif: gif.url, gifpreview: mediumgif.url},
+          preview_dims: {width, height},
+          content_description: response.content_description,
+        };
+      }),
+    };
+  };
+
   /** @override */
   async getFeaturedGifs(pos?: string): Promise<{featured: Results}> {
     const {featured} = await this.handler.getFeaturedGifs(pos || null);
-    const trending = JSON.parse(featured);
     return {
-      featured: {
-        next: trending.next,
-        results: trending.results.map((response: ResponseObject) => {
-          const {gif, mediumgif} = response.media_formats;
-          const [width, height] = mediumgif.dims;
-          return {
-            url: {gif: gif.url, gifpreview: mediumgif.url},
-            preview_dims: {width, height},
-            content_description: response.content_description,
-          };
-        }),
-      },
+      featured: this.formatGifResults(featured),
+    };
+  }
+
+  /** @override */
+  async searchGifs(query: string, pos?: string): Promise<{gifs: Results}> {
+    const {gifs} = await this.handler.searchGifs(query, pos || null);
+    return {
+      gifs: this.formatGifResults(gifs),
     };
   }
 

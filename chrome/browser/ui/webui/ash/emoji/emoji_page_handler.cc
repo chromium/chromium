@@ -180,6 +180,13 @@ void EmojiPageHandler::GetFeaturedGifs(const absl::optional<std::string>& pos,
                                            url_loader_factory_, pos);
 }
 
+void EmojiPageHandler::SearchGifs(const std::string& query,
+                                  const absl::optional<std::string>& pos,
+                                  SearchGifsCallback callback) {
+  gif_tenor_api_fetcher_.FetchGifSearch(std::move(callback),
+                                        url_loader_factory_, query, pos);
+}
+
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
                                    bool is_variant,
                                    int16_t search_length) {
