@@ -272,6 +272,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     static_assert(!std::is_same<T, PaintOp>::value,
                   "AnalyzeAddedOp needs a subtype of PaintOp");
     DCHECK(is_mutable());
+    DCHECK(op->IsValid());
 
     if (num_slow_paths_up_to_min_for_MSAA_ < kMinNumberOfSlowPathsForMSAA) {
       num_slow_paths_up_to_min_for_MSAA_ += op->CountSlowPathsFromFlags();

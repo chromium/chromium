@@ -39,6 +39,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
                 bool enable_security_constraints = false);
   ~PaintOpWriter();
 
+  const PaintOp::SerializeOptions& options() const { return *options_; }
+
   static size_t constexpr HeaderBytes() { return 4u; }
   static size_t constexpr Alignment() { return 4u; }
   static size_t GetFlattenableSize(const SkFlattenable* flattenable);

@@ -2387,168 +2387,31 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
                                     options_provider.deserialize_options()));
 }
 
-// Test that deserializing invalid SkClipOp enums fails silently.
-// Skia release asserts on this in several places so these are not safe
-// to pass through to the SkCanvas API.
-TEST(PaintOpBufferTest, ValidateSkClip) {
-  size_t buffer_size = kBufferBytesPerOp;
-  auto serialized = AllocateBuffer(buffer_size);
-  auto deserialized = AllocateBuffer(buffer_size);
-
-  PaintOpBuffer buffer;
-
-  // Successful first op.
-  SkPath path;
-  buffer.push<ClipPathOp>(path, SkClipOp::kMax_EnumValue, /*antialias=*/true,
-                          UsePaintCache::kDisabled);
-
-  // Bad other ops.
-  SkClipOp bad_clip = static_cast<SkClipOp>(
-      static_cast<uint32_t>(SkClipOp::kMax_EnumValue) + 1);
-
-  buffer.push<ClipPathOp>(path, bad_clip, /*antialias=*/true,
-                          UsePaintCache::kDisabled);
-  buffer.push<ClipRectOp>(test_rects[0], bad_clip, true);
-  buffer.push<ClipRRectOp>(test_rrects[0], bad_clip, false);
-
-  // SkClipOp is serialized to uint8_t (see WriteEnum). Values outside uint8_t
-  // would crash the serialization, so this is the max value that passes checked
-  // cast but will still fail validation during deserialization.
-  SkClipOp bad_clip_max = static_cast<SkClipOp>(static_cast<uint8_t>(~0));
-  buffer.push<ClipRectOp>(test_rects[1], bad_clip_max, false);
-
-  TestOptionsProvider options_provider;
-
-  int op_idx = 0;
-  for (const PaintOp& op : buffer) {
-    size_t bytes_written = op.Serialize(serialized.get(), buffer_size,
-                                        options_provider.serialize_options(),
-                                        nullptr, SkM44(), SkM44());
-    ASSERT_GT(bytes_written, 0u);
-    size_t bytes_read = 0;
-    PaintOp* written = PaintOp::Deserialize(
-        serialized.get(), bytes_written, deserialized.get(), buffer_size,
-        &bytes_read, options_provider.deserialize_options());
-    // First op should succeed.  Other ops with bad enums should
-    // serialize correctly but fail to deserialize due to the bad
-    // SkClipOp enum.
-    if (!op_idx) {
-      EXPECT_TRUE(written) << "op: " << op_idx;
-      EXPECT_EQ(bytes_written, bytes_read);
-      written->DestroyThis();
-    } else {
-      EXPECT_FALSE(written) << "op: " << op_idx;
-    }
-
-    ++op_idx;
-  }
-}
-
-TEST(PaintOpBufferTest, ValidateSkBlendMode) {
-  size_t buffer_size = kBufferBytesPerOp;
-  auto serialized = AllocateBuffer(buffer_size);
-  auto deserialized = AllocateBuffer(buffer_size);
-
-  PaintOpBuffer buffer;
-
-  // Successful first two ops.
-  buffer.push<DrawColorOp>(SkColors::kMagenta, SkBlendMode::kDstIn);
-  PaintFlags good_flags = test_flags[0];
-  good_flags.setBlendMode(SkBlendMode::kColorBurn);
-  buffer.push<DrawRectOp>(test_rects[0], good_flags);
-
-  // Modes that are not supported by drawColor or SkPaint.
-  SkBlendMode bad_modes_for_draw_color[] = {
-      SkBlendMode::kOverlay,
-      SkBlendMode::kDarken,
-      SkBlendMode::kLighten,
-      SkBlendMode::kColorDodge,
-      SkBlendMode::kColorBurn,
-      SkBlendMode::kHardLight,
-      SkBlendMode::kSoftLight,
-      SkBlendMode::kDifference,
-      SkBlendMode::kExclusion,
-      SkBlendMode::kMultiply,
-      SkBlendMode::kHue,
-      SkBlendMode::kSaturation,
-      SkBlendMode::kColor,
-      SkBlendMode::kLuminosity,
-      static_cast<SkBlendMode>(static_cast<uint8_t>(SkBlendMode::kLastMode) +
-                               1),
-      static_cast<SkBlendMode>(static_cast<uint8_t>(~0)),
-  };
-
-  SkBlendMode bad_modes_for_flags[] = {
-      static_cast<SkBlendMode>(static_cast<uint8_t>(SkBlendMode::kLastMode) +
-                               1),
-      static_cast<SkBlendMode>(static_cast<uint8_t>(~0)),
-  };
-
-  for (SkBlendMode blend_mode : bad_modes_for_draw_color) {
-    buffer.push<DrawColorOp>(SkColors::kMagenta, blend_mode);
-  }
-
-  for (size_t i = 0; i < std::size(bad_modes_for_flags); ++i) {
-    PaintFlags flags = test_flags[i % test_flags.size()];
-    flags.setBlendMode(bad_modes_for_flags[i]);
-    buffer.push<DrawRectOp>(test_rects[i % test_rects.size()], flags);
-  }
-
-  TestOptionsProvider options_provider;
-
-  int op_idx = 0;
-  for (const PaintOp& op : buffer) {
-    size_t bytes_written = op.Serialize(serialized.get(), buffer_size,
-                                        options_provider.serialize_options(),
-                                        nullptr, SkM44(), SkM44());
-    ASSERT_GT(bytes_written, 0u);
-    size_t bytes_read = 0;
-    PaintOp* written = PaintOp::Deserialize(
-        serialized.get(), bytes_written, deserialized.get(), buffer_size,
-        &bytes_read, options_provider.deserialize_options());
-    // First two ops should succeed.  Other ops with bad enums should
-    // serialize correctly but fail to deserialize due to the bad
-    // SkBlendMode enum.
-    if (op_idx < 2) {
-      EXPECT_TRUE(written) << "op: " << op_idx;
-      EXPECT_EQ(bytes_written, bytes_read);
-      written->DestroyThis();
-    } else {
-      EXPECT_FALSE(written) << "op: " << op_idx;
-    }
-
-    ++op_idx;
-  }
-}
-
+// Test that deserializing invalid paint ops fails silently. Skia release
+// asserts on invalid values in several places so these are not safe to pass
+// them to the SkCanvas API.
 TEST(PaintOpBufferTest, ValidateRects) {
   size_t buffer_size = kBufferBytesPerOp;
   auto serialized = AllocateBuffer(buffer_size);
   auto deserialized = AllocateBuffer(buffer_size);
 
-  // Used for QuickRejectDraw
-  SkCanvas device(256, 256);
-  SkCanvas* canvas = &device;
-
-  SkRect bad_rect = SkRect::MakeEmpty();
-  bad_rect.fBottom = std::numeric_limits<float>::quiet_NaN();
-  EXPECT_FALSE(bad_rect.isFinite());
-
+  float rect_size = 0x8.765432p1;
+  SkRect rect = SkRect::MakeWH(rect_size, rect_size);
   // Push all op variations that take rects.
   PaintOpBuffer buffer;
-  buffer.push<AnnotateOp>(PaintCanvas::AnnotationType::URL, bad_rect,
+  buffer.push<AnnotateOp>(PaintCanvas::AnnotationType::URL, rect,
                           SkData::MakeWithCString("test1"));
-  buffer.push<ClipRectOp>(bad_rect, SkClipOp::kDifference, true);
+  buffer.push<ClipRectOp>(rect, SkClipOp::kDifference, true);
 
-  buffer.push<DrawImageRectOp>(test_images[0], bad_rect, test_rects[1],
+  buffer.push<DrawImageRectOp>(test_images[0], rect, test_rects[1],
                                SkCanvas::kStrict_SrcRectConstraint);
-  buffer.push<DrawImageRectOp>(test_images[0], test_rects[0], bad_rect,
+  buffer.push<DrawImageRectOp>(test_images[0], test_rects[0], rect,
                                SkCanvas::kStrict_SrcRectConstraint);
-  buffer.push<DrawOvalOp>(bad_rect, test_flags[0]);
-  buffer.push<DrawRectOp>(bad_rect, test_flags[0]);
-  buffer.push<SaveLayerOp>(bad_rect, PaintFlags());
-  buffer.push<SaveLayerOp>(bad_rect, test_flags[0]);
-  buffer.push<SaveLayerAlphaOp>(bad_rect, test_floats[0]);
+  buffer.push<DrawOvalOp>(rect, test_flags[0]);
+  buffer.push<DrawRectOp>(rect, test_flags[0]);
+  buffer.push<SaveLayerOp>(rect, PaintFlags());
+  buffer.push<SaveLayerOp>(rect, test_flags[0]);
+  buffer.push<SaveLayerAlphaOp>(rect, test_floats[0]);
 
   TestOptionsProvider options_provider;
 
@@ -2558,21 +2421,61 @@ TEST(PaintOpBufferTest, ValidateRects) {
     size_t bytes_written = op.Serialize(serialized.get(), buffer_size,
                                         options_provider.serialize_options(),
                                         nullptr, SkM44(), SkM44());
-    ASSERT_GT(bytes_written, 0u);
+    ASSERT_GT(bytes_written, sizeof(float));
+
     size_t bytes_read = 0;
-    PaintOp* written = PaintOp::Deserialize(
+    PaintOp* deserialized_op = PaintOp::Deserialize(
         serialized.get(), bytes_written, deserialized.get(), buffer_size,
         &bytes_read, options_provider.deserialize_options());
-    EXPECT_FALSE(written) << "op: " << op_idx;
+    EXPECT_TRUE(deserialized_op) << op_idx;
+    deserialized_op->DestroyThis();
 
-    // Additionally, every draw op should be rejected by QuickRejectDraw if
-    // the paint op buffer were played back directly without going through
-    // deserialization (e.g. canvas2D, crbug.com/1186392)
-    if (op.IsDrawOp()) {
-      EXPECT_TRUE(PaintOp::QuickRejectDraw(op, canvas));
+    // Replace the first occurrence of rect_size with NaN to make the ClipRectOp
+    // invalid.
+    for (size_t i = 0; i < bytes_written; i += sizeof(float)) {
+      float* f = reinterpret_cast<float*>(serialized.get() + i);
+      if (*f == rect_size) {
+        *f = std::numeric_limits<float>::quiet_NaN();
+        break;
+      }
     }
+    deserialized_op = PaintOp::Deserialize(
+        serialized.get(), bytes_written, deserialized.get(), buffer_size,
+        &bytes_read, options_provider.deserialize_options());
+    EXPECT_FALSE(deserialized_op) << op_idx;
 
     ++op_idx;
+  }
+}
+
+TEST(PaintOpBufferTest, ValidateSkClip) {
+  SkPath path;
+  ClipPathOp good(path, SkClipOp::kMax_EnumValue, /*antialias=*/true,
+                  UsePaintCache::kDisabled);
+  EXPECT_TRUE(good.IsValid());
+
+  SkClipOp bad_clip = static_cast<SkClipOp>(
+      static_cast<uint32_t>(SkClipOp::kMax_EnumValue) + 1);
+  ClipPathOp bad1(path, bad_clip, /*antialias=*/true, UsePaintCache::kDisabled);
+  EXPECT_FALSE(bad1.IsValid());
+  ClipRectOp bad2(test_rects[0], bad_clip, true);
+  EXPECT_FALSE(bad2.IsValid());
+  ClipRRectOp bad3(test_rrects[0], bad_clip, false);
+  EXPECT_FALSE(bad3.IsValid());
+}
+
+TEST(PaintOpBufferTest, ValidateSkBlendMode) {
+  for (uint8_t i = 0; i < static_cast<uint8_t>(SkBlendMode::kLastMode) + 1;
+       i++) {
+    SkBlendMode blend_mode = static_cast<SkBlendMode>(i);
+
+    DrawColorOp draw_color(SkColors::kMagenta, blend_mode);
+    EXPECT_EQ(blend_mode <= SkBlendMode::kLastCoeffMode, draw_color.IsValid());
+
+    PaintFlags flags = test_flags[i % test_flags.size()];
+    flags.setBlendMode(blend_mode);
+    DrawRectOp draw_rect(test_rects[0], flags);
+    EXPECT_EQ(blend_mode <= SkBlendMode::kLastMode, draw_rect.IsValid());
   }
 }
 
