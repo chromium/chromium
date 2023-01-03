@@ -76,26 +76,27 @@ AnnotatorToolType ConvertStringToToolType(const std::string& type) {
 
 // static
 AnnotatorTool AnnotatorTool::FromValue(const base::Value& value) {
-  DCHECK(value.is_dict());
-  DCHECK(value.FindKey(kToolColor));
-  DCHECK(value.FindKey(kToolColor)->is_string());
-  DCHECK(value.FindKey(kToolSize));
-  DCHECK(value.FindKey(kToolSize)->is_int());
-  DCHECK(value.FindKey(kToolType));
-  DCHECK(value.FindKey(kToolType)->is_string());
+  const base::Value::Dict* dict = value.GetIfDict();
+  DCHECK(dict);
+  DCHECK(dict->Find(kToolColor));
+  DCHECK(dict->FindString(kToolColor));
+  DCHECK(dict->Find(kToolSize));
+  DCHECK(dict->FindInt(kToolSize));
+  DCHECK(dict->Find(kToolType));
+  DCHECK(dict->FindString(kToolType));
   AnnotatorTool t;
-  t.color = ConvertHexStringToColor(*(value.FindStringPath(kToolColor)));
-  t.size = *(value.FindIntPath(kToolSize));
-  t.type = ConvertStringToToolType(*(value.FindStringPath(kToolType)));
+  t.color = ConvertHexStringToColor(*(dict->FindString(kToolColor)));
+  t.size = *(dict->FindInt(kToolSize));
+  t.type = ConvertStringToToolType(*(dict->FindString(kToolType)));
   return t;
 }
 
 base::Value AnnotatorTool::ToValue() const {
-  base::Value val(base::Value::Type::DICTIONARY);
-  val.SetKey(kToolColor, base::Value(ConvertColorToHexString(color)));
-  val.SetKey(kToolSize, base::Value(size));
-  val.SetKey(kToolType, base::Value(ConvertToolTypeToString(type)));
-  return val;
+  base::Value::Dict val;
+  val.Set(kToolColor, ConvertColorToHexString(color));
+  val.Set(kToolSize, size);
+  val.Set(kToolType, ConvertToolTypeToString(type));
+  return base::Value(std::move(val));
 }
 
 bool AnnotatorTool::operator==(const AnnotatorTool& rhs) const {

@@ -29,15 +29,15 @@ NewScreencastPrecondition& NewScreencastPrecondition::operator=(
 NewScreencastPrecondition::~NewScreencastPrecondition() = default;
 
 base::Value NewScreencastPrecondition::ToValue() const {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetIntKey(kState, static_cast<int>(state));
+  base::Value::Dict result;
+  result.Set(kState, static_cast<int>(state));
 
-  base::Value reasons_value(base::Value::Type::LIST);
+  base::Value::List reasons_value;
   for (const auto& reason : reasons)
     reasons_value.Append(static_cast<int>(reason));
 
-  result.SetKey(kReasons, std::move(reasons_value));
-  return result;
+  result.Set(kReasons, std::move(reasons_value));
+  return base::Value(std::move(result));
 }
 
 bool NewScreencastPrecondition::operator==(
