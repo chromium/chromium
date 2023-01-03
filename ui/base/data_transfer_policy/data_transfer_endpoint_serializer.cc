@@ -90,14 +90,14 @@ absl::optional<EndpointType> EndpointStringToType(
 }  // namespace
 
 std::string ConvertDataTransferEndpointToJson(const DataTransferEndpoint& dte) {
-  base::Value encoded_dte(base::Value::Type::DICTIONARY);
+  base::Value::Dict encoded_dte;
 
-  encoded_dte.SetStringKey(kEndpointTypeKey, EndpointTypeToString(dte.type()));
+  encoded_dte.Set(kEndpointTypeKey, EndpointTypeToString(dte.type()));
 
   const GURL* url = dte.GetURL();
 
   if (url && url->is_valid())
-    encoded_dte.SetStringKey(kUrlKey, url->spec());
+    encoded_dte.Set(kUrlKey, url->spec());
 
   std::string json;
   base::JSONWriter::Write(encoded_dte, &json);
@@ -112,8 +112,8 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
     return nullptr;
 
   const std::string* endpoint_type =
-      dte_dictionary->FindStringKey(kEndpointTypeKey);
-  const std::string* url_string = dte_dictionary->FindStringKey(kUrlKey);
+      dte_dictionary->GetDict().FindString(kEndpointTypeKey);
+  const std::string* url_string = dte_dictionary->GetDict().FindString(kUrlKey);
 
   if (url_string) {
     GURL url = GURL(*url_string);

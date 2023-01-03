@@ -6,10 +6,7 @@
 #define UI_DISPLAY_UTIL_GPU_INFO_UTIL_H_
 
 #include "base/strings/string_piece_forward.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace display {
 
@@ -17,7 +14,8 @@ namespace display {
 // values named description (string) and value (depends on the helper).
 base::Value BuildGpuInfoEntry(base::StringPiece description,
                               base::StringPiece value);
-base::Value BuildGpuInfoEntry(base::StringPiece description, base::Value value);
+base::Value::Dict BuildGpuInfoEntry(base::StringPiece description,
+                                    base::Value value);
 
 }  // namespace display
 

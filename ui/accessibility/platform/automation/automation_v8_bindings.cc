@@ -529,7 +529,7 @@ void AutomationV8Bindings::SendNodesRemovedEvent(const ui::AXTreeID& tree_id,
   base::Value::List args;
   args.Append(tree_id.ToString());
   {
-    base::Value nodes(base::Value::Type::LIST);
+    base::Value::List nodes;
     for (auto id : ids)
       nodes.Append(id);
     args.Append(std::move(nodes));
@@ -555,33 +555,31 @@ void AutomationV8Bindings::SendAutomationEvent(
   const std::string automation_event_type_str =
       automation_v8_router_->GetEventTypeString(event_type);
 
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  event_params.SetKey("treeID", base::Value(tree_id.ToString()));
-  event_params.SetKey("targetID", base::Value(event.id));
-  event_params.SetKey("eventType", base::Value(automation_event_type_str));
+  base::Value::Dict event_params;
+  event_params.Set("treeID", base::Value(tree_id.ToString()));
+  event_params.Set("targetID", base::Value(event.id));
+  event_params.Set("eventType", base::Value(automation_event_type_str));
 
-  event_params.SetKey("eventFrom", base::Value(ui::ToString(event.event_from)));
-  event_params.SetKey("eventFromAction",
-                      base::Value(ui::ToString(event.event_from_action)));
-  event_params.SetKey("actionRequestID", base::Value(event.action_request_id));
-  event_params.SetKey("mouseX", base::Value(mouse_location.x()));
-  event_params.SetKey("mouseY", base::Value(mouse_location.y()));
+  event_params.Set("eventFrom", base::Value(ui::ToString(event.event_from)));
+  event_params.Set("eventFromAction",
+                   base::Value(ui::ToString(event.event_from_action)));
+  event_params.Set("actionRequestID", base::Value(event.action_request_id));
+  event_params.Set("mouseX", base::Value(mouse_location.x()));
+  event_params.Set("mouseY", base::Value(mouse_location.y()));
 
   // Populate intents.
-  base::Value value_intents(base::Value::Type::LIST);
+  base::Value::List value_intents;
   for (const auto& intent : event.event_intents) {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetKey("command", base::Value(ui::ToString(intent.command)));
-    dict.SetKey("inputEventType",
-                base::Value(ui::ToString(intent.input_event_type)));
-    dict.SetKey("textBoundary",
-                base::Value(ui::ToString(intent.text_boundary)));
-    dict.SetKey("moveDirection",
-                base::Value(ui::ToString(intent.move_direction)));
+    base::Value::Dict dict;
+    dict.Set("command", base::Value(ui::ToString(intent.command)));
+    dict.Set("inputEventType",
+             base::Value(ui::ToString(intent.input_event_type)));
+    dict.Set("textBoundary", base::Value(ui::ToString(intent.text_boundary)));
+    dict.Set("moveDirection", base::Value(ui::ToString(intent.move_direction)));
     value_intents.Append(std::move(dict));
   }
 
-  event_params.SetKey("intents", std::move(value_intents));
+  event_params.Set("intents", std::move(value_intents));
 
   base::Value::List args;
   args.Append(std::move(event_params));

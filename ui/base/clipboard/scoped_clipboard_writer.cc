@@ -32,13 +32,13 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
   // write to the clipboard.
   if (!registered_formats_.empty()) {
     std::string custom_format_json;
-    base::Value registered_formats_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict registered_formats_value;
     for (const auto& item : registered_formats_)
-      registered_formats_value.SetStringKey(item.first, item.second);
+      registered_formats_value.Set(item.first, item.second);
     base::JSONWriter::Write(registered_formats_value, &custom_format_json);
     Clipboard::ObjectMapParams parameters;
-    parameters.push_back(Clipboard::ObjectMapParam(custom_format_json.begin(),
-                                                   custom_format_json.end()));
+    parameters.emplace_back(custom_format_json.begin(),
+                            custom_format_json.end());
     objects_[Clipboard::PortableFormat::kWebCustomFormatMap] = parameters;
   }
   if (!objects_.empty() || !platform_representations_.empty()) {

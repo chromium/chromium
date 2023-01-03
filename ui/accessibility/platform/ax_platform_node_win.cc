@@ -5537,15 +5537,15 @@ IFACEMETHODIMP AXPlatformNodeWin::get_bulkFetch(
   // a stub that calls PostTask so that it's async, but it doesn't
   // actually parse the input.
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey("role", base::Value(ui::ToString(GetRole())));
+  base::Value::Dict result;
+  result.Set("role", base::Value(ui::ToString(GetRole())));
 
   gfx::Rect bounds = GetDelegate()->GetBoundsRect(
       AXCoordinateSystem::kScreenDIPs, AXClippingBehavior::kUnclipped);
-  result.SetKey("x", base::Value(bounds.x()));
-  result.SetKey("y", base::Value(bounds.y()));
-  result.SetKey("width", base::Value(bounds.width()));
-  result.SetKey("height", base::Value(bounds.height()));
+  result.Set("x", base::Value(bounds.x()));
+  result.Set("y", base::Value(bounds.y()));
+  result.Set("width", base::Value(bounds.width()));
+  result.Set("height", base::Value(bounds.height()));
   std::string json_result;
   base::JSONWriter::Write(result, &json_result);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

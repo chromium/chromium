@@ -21,20 +21,6 @@
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
-#define CHECK_ATSPI_ERROR(error)                       \
-  if (error) {                                         \
-    LOG(ERROR) << error->message;                      \
-    g_clear_error(&error);                             \
-    return base::Value(base::Value::Type::DICTIONARY); \
-  }
-
-#define CHECK_ATSPI_ERROR_NULLPTR(error) \
-  if (error) {                           \
-    LOG(ERROR) << error->message;        \
-    g_clear_error(&error);               \
-    return nullptr;                      \
-  }
-
 namespace ui {
 
 // Used in dictionary to disambiguate property vs object attribute when they

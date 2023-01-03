@@ -189,7 +189,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
   if (!root)
     return "error no accessibility tree found";
 
-  base::Value scripts(base::Value::Type::LIST);
+  base::Value::List scripts;
   ui::AXTreeIndexerWin indexer(root);
   std::map<std::string, AXTargetWin> storage;
   ui::AXCallStatementInvokerWin invoker(&indexer, &storage);
@@ -212,7 +212,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
   }
 
   std::string contents;
-  for (const base::Value& script : scripts.GetList()) {
+  for (const base::Value& script : scripts) {
     std::string line;
     WriteAttribute(true, script.GetString(), &line);
     contents += line + "\n";
@@ -804,7 +804,7 @@ std::string AXTreeFormatterWin::ProcessTreeForOutput(
         }
         break;
       }
-      case base::Value::Type::DICTIONARY: {
+      case base::Value::Type::DICT: {
         // Currently all dictionary values are coordinates.
         // Revisit this if that changes.
         const base::Value::Dict& dict_value = value->GetDict();
