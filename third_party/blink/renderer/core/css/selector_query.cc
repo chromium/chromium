@@ -381,9 +381,9 @@ void SelectorQuery::ExecuteWithId(
   ContainerNode* start = &root_node;
   if (element->IsDescendantOf(&root_node)) {
     start = element;
-  }
-  if (selector_id_affected_by_sibling_combinator_) {
-    start = start->parentNode();
+    if (selector_id_affected_by_sibling_combinator_) {
+      start = start->parentNode();
+    }
   }
   if (!start) {
     return;
