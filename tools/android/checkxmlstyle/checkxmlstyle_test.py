@@ -432,6 +432,30 @@ class NewTextAppearanceTest(unittest.TestCase):
     self.assertEqual(0, len(errors))
 
 
+class ImageAccessibilityTextTest(unittest.TestCase):
+
+  def testIgnoreContentDescription(self):
+    xmlChanges = [
+        '<ImageView',
+        '    android:id="@+id/obvious_image"',
+        '    tools:ignore="ContentDescription"',
+        '    android:layout_width="wrap_content"',
+        '    android:layout_height="match_parent"',
+        '    android:gravity="center_vertical"',
+        '/>'
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('chrome/android/java/res/layout/new_imageview.xml', xmlChanges)
+    ]
+    result = checkxmlstyle._CheckImportantForAccessibility(
+        mock_input_api, MockOutputApi())
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(1, len(result[0].items))
+    self.assertEqual('  chrome/android/java/res/layout/new_imageview.xml:3',
+                       result[0].items[0].splitlines()[0])
+
 class UnfavoredLayoutAttributesTest(unittest.TestCase):
 
   def testLineSpacingAttributesUsage(self):

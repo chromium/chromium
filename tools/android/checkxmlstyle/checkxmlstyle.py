@@ -77,6 +77,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckButtonCompatWidgetUsage(input_api, output_api))
   result.extend(_CheckStringResourceQuotesPunctuations(input_api, output_api))
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
+  result.extend(_CheckImportantForAccessibility(input_api, output_api))
   # Add more checks here
   return result
 
@@ -498,7 +499,7 @@ def _CheckLineSpacingAttribute(input_api, output_api):
     return [
       output_api.PresubmitPromptWarning(
           '''
-  Android Widget Check warning:
+  Android XML Widget Check warning:
     Your new code is using android:lineSpacingExtra
     or android:lineSpacingMultiplier, listed below.
 
@@ -508,6 +509,39 @@ def _CheckLineSpacingAttribute(input_api, output_api):
     perform the calculation to setup leading correctly.
 
     See https://crbug.com/1069805 for more information.
+  ''', warnings)
+    ]
+
+  return []
+
+### important for accessibility below ###
+def _CheckImportantForAccessibility(input_api, output_api):
+  """
+  Encourage android:importantForAccessibility="no" rather than
+  tools:ignore="ContentDescription" for images that don't need content
+  descriptions.
+  """
+  warnings = []
+  attributes = ['tools:ignore="ContentDescription"']
+  for f in IncludedFiles(input_api):
+    for line_number, line in f.ChangedContents():
+      for attribute in attributes:
+        if attribute in line:
+          warnings.append(
+            '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip()))
+
+  if warnings:
+    return [
+      output_api.PresubmitPromptWarning(
+          '''
+  Android XML Widget Check warning:
+    Your new code is using tools:ignore="ContentDescription", listed below.
+
+    Use android:importantForAccessibility="no" instead of tools:ignore="ContentDescription"
+    in your ImageView unless it is important for accessibility and a content description is set
+    in Java.
+
+    See https://crbug.com/1245341 for more information.
   ''', warnings)
     ]
 
