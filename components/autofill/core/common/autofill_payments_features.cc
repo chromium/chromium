@@ -67,14 +67,6 @@ BASE_FEATURE(kAutofillEnableCvcForVcnYellowPath,
              "AutofillEnableCvcForVcnYellowPath",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the GetDetailsForEnrollResponseDetails in the
-// UploadCardResponseDetails will be parsed, which will allow the Virtual Card
-// Enrollment flow to skip making a new GetDetailsForEnroll request. This is an
-// optimization to improve the latency of the Virtual Card Enrollment flow.
-BASE_FEATURE(kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse,
-             "AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, a progress dialog will display while authenticating with FIDO.
 // TODO(crbug.com/1337380): Clean up kAutofillEnableFIDOProgressDialog when it's
 // fully rolled out.

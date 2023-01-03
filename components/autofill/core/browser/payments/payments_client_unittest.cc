@@ -1458,9 +1458,6 @@ TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
 
 TEST_F(PaymentsClientTest,
        UploadSuccessGetDetailsForEnrollmentResponseDetailsPresent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse);
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,

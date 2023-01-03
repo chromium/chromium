@@ -9041,16 +9041,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kCommerceHintAndroid)},
 #endif
 
-    {"autofill-enable-get-details-for-enroll-parsing-in-upload-card-response",
-     flag_descriptions::
-         kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName,
-     flag_descriptions::
-         kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"enable-web-bluetooth-confirm-pairing-support",
      flag_descriptions::kWebBluetoothConfirmPairingSupportName,

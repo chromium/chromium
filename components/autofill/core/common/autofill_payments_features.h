@@ -19,8 +19,6 @@ BASE_DECLARE_FEATURE(kAutofillCreditCardAuthentication);
 BASE_DECLARE_FEATURE(kAutofillEnableCardArtImage);
 BASE_DECLARE_FEATURE(kAutofillEnableCardProductName);
 BASE_DECLARE_FEATURE(kAutofillEnableCvcForVcnYellowPath);
-BASE_DECLARE_FEATURE(
-    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse);
 BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
 BASE_DECLARE_FEATURE(kAutofillEnableManualFallbackForVirtualCards);
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantOptOutErrorDialog);
