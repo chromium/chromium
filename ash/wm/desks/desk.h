@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/observer_list.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
