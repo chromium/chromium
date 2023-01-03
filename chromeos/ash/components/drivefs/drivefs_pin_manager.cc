@@ -4,12 +4,14 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 
+#include <locale>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -54,6 +56,12 @@ class FreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
   }
 };
 
+class NumPunct : public std::numpunct<char> {
+ private:
+  char do_thousands_sep() const override { return ','; }
+  std::string do_grouping() const override { return "\3"; }
+};
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
@@ -67,8 +75,16 @@ std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
     i = -i;
   }
 
+  {
+    static const base::NoDestructor<std::locale> with_separators(
+        std::locale::classic(), new NumPunct);
+    std::locale old_locale = out.imbue(*with_separators);
+    out << i;
+    out.imbue(std::move(old_locale));
+  }
+
   if (i < 1024) {
-    return out << i << " B";
+    return out;
   }
 
   double d = static_cast<double>(i) / 1024;
@@ -79,7 +95,7 @@ std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
   }
 
   const int precision = d < 10 ? 2 : d < 100 ? 1 : 0;
-  return out << base::StringPrintf("%.*f %ciB", precision, d, *unit);
+  return out << base::StringPrintf(" (%.*f %c)", precision, d, *unit);
 }
 
 std::ostream& operator<<(std::ostream& out, const SetupError error) {
