@@ -5,7 +5,6 @@
 package org.chromium.base.compat;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
@@ -18,7 +17,6 @@ import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
-import android.widget.RemoteViews;
 
 import androidx.annotation.RequiresApi;
 
@@ -61,18 +59,6 @@ public final class ApiHelperForN {
     /** See {@link Process#getStartUptimeMillis()}. */
     public static long getStartUptimeMillis() {
         return Process.getStartUptimeMillis();
-    }
-
-    /** See {@link Notification.Builder#setCustomContentView(RemoteViews)}. */
-    public static Notification.Builder setCustomContentView(
-            Notification.Builder builder, RemoteViews views) {
-        return builder.setCustomContentView(views);
-    }
-
-    /** See {@link Notification.Builder#setCustomBigContentView(RemoteViews)}. */
-    public static Notification.Builder setCustomBigContentView(
-            Notification.Builder builder, RemoteViews view) {
-        return builder.setCustomBigContentView(view);
     }
 
     /** See {@link ConnectivityManager#getRestrictBackgroundStatus(ConnectivityManager)}. */

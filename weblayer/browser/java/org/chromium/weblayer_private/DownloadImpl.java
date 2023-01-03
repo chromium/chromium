@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -413,7 +412,7 @@ public final class DownloadImpl extends IDownload.Stub {
         // As with Chrome, transient downloads "promote" the source URL.
         if (!mIsIncognito && mIsTransient) {
             String formattedUrl = DownloadUtils.formatUrlForDisplayInNotification(mSourceUrl);
-            if (formattedUrl != null) setSubText(builder, formattedUrl);
+            if (formattedUrl != null) builder.setSubText(formattedUrl);
         }
         // TODO(estade): In incognito, Chrome uses a subtext of "Incognito tab". Should WL display
         // something similar?
@@ -507,19 +506,6 @@ public final class DownloadImpl extends IDownload.Stub {
         return PendingIntentProvider.getBroadcast(ContextUtils.getApplicationContext(),
                 mNotificationId, notificationIntent,
                 mIsTransient ? PendingIntent.FLAG_CANCEL_CURRENT : 0);
-    }
-
-    /**
-     * Helper method to set the sub text on different versions of Android.
-     * @param builder The builder to build notification.
-     * @param subText A string shown as sub text on the notification.
-     */
-    private static void setSubText(WebLayerNotificationWrapperBuilder builder, String subText) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setSubText(subText);
-        } else {
-            builder.setContentInfo(subText);
-        }
     }
 
     /**
