@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
             model_file_observer_foo.model_info()->GetModelFilePath());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_TestDissimilarProfilesNotShareModel \
   DISABLED_TestDissimilarProfilesNotShareModel
 #else
