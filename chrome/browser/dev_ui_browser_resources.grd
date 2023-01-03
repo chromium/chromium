@@ -60,7 +60,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_TRANSLATE_INTERNALS_CSS" file="../../components/translate/translate_internals/translate_internals.css" type="BINDATA" />
       <include name="IDR_TRANSLATE_INTERNALS_HTML" file="../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
       <include name="IDR_TRANSLATE_INTERNALS_JS" file="../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />
-      <include name="IDR_WEB_APP_INTERNALS_HTML" file="resources/web_app_internals/index.html" type="BINDATA" />
     </includes>
   </release>
 </grit>

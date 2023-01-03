@@ -92,12 +92,6 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
 #else
   source_->AddResourcePath("user-education",
                            IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
-
-  // chrome://internals/web-app
-  // This page has moved to chrome://web-app-internals, see
-  // WebAppInternalsSource.
-  // TODO(crbug.com/1226263): Clean up this redirect after M94 goes stable.
-  source_->AddResourcePath("web-app", IDR_WEB_APP_INTERNALS_HTML);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // chrome://internals/session-service
