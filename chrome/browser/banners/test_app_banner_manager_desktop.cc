@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "content/public/browser/web_contents.h"
 
@@ -150,7 +151,8 @@ void TestAppBannerManagerDesktop::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   debug_log_.Append(base::StrCat({"DidFinishLoad ", validated_url.spec()}));
-  if (ShouldIgnore(render_frame_host, validated_url)) {
+  UrlType url_type = GetUrlType(render_frame_host, validated_url);
+  if (url_type == AppBannerManager::UrlType::kInvalidPrimaryFrameUrl) {
     SetInstallable(false);
     return;
   }

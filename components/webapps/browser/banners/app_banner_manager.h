@@ -218,10 +218,19 @@ class AppBannerManager : public content::WebContentsObserver,
   explicit AppBannerManager(content::WebContents* web_contents);
   ~AppBannerManager() override;
 
-  // Returns true if |render_frame_host| and |url| should be ignored and not
-  // trigger the banner flow.
-  bool ShouldIgnore(content::RenderFrameHost* render_frame_host,
-                    const GURL& url);
+  enum class UrlType {
+    // This url & page should be considered for installability & promotability.
+    kValidForBanner,
+    // The load from the render frame host was not for the current/primary page
+    // so it can be ignored.
+    kNotPrimaryFrame,
+    // The primary url that was loaded can never be elibible for installability.
+    kInvalidPrimaryFrameUrl,
+  };
+  // Returns the URL type, allowing the banner logic to ignore urls that aren't
+  // the primary frame or aren't a valid URL.
+  UrlType GetUrlType(content::RenderFrameHost* render_frame_host,
+                     const GURL& url);
 
   // Returns true if the banner should be shown. Returns false if the banner has
   // been shown too recently, or if the app has already been installed.
