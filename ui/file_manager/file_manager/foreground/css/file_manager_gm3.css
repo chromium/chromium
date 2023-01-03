@@ -1067,6 +1067,9 @@ html.focus-outline-visible .dialog-footer select:focus {
   display: flex;
   flex-direction: row;
   overflow: hidden;
+  padding-bottom: 4px;
+  padding-inline: 8px 48px;
+  padding-top: 4px;
 }
 
 body.check-select .breadcrumbs {

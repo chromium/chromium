@@ -875,6 +875,13 @@ export class FileManager extends EventTarget {
     this.document_.documentElement.classList.add('files-ng');
     this.dialogDom_.classList.add('files-ng');
 
+    // Add theme attribute so widgets can render different styles based on
+    // this attribute:
+    // [theme="legacy"] -> Legacy style, [theme="refresh23"] -> Refresh23 style
+    const theme = util.isJellyEnabled() ? 'refresh23' : 'legacy';
+    this.document_.documentElement.setAttribute('theme', theme);
+    this.dialogDom_.setAttribute('theme', theme);
+
     chrome.fileManagerPrivate.isTabletModeEnabled(
         this.onTabletModeChanged_.bind(this));
     chrome.fileManagerPrivate.onTabletModeChanged.addListener(
