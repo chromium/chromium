@@ -1808,7 +1808,7 @@
     ],
 
     'angle_deqp_release_bot_dcheck_always_on_ios_reclient': [
-      'angle_deqp_tests', 'release_trybot_minimal_symbols_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
+      'angle_deqp_tests', 'release_trybot_minimal_symbols_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'angle_deqp_release_bot_dcheck_always_on_x86_reclient': [
@@ -1820,7 +1820,7 @@
     ],
 
     'angle_deqp_release_trybot_ios': [
-      'angle_deqp_tests', 'release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
+      'angle_deqp_tests', 'release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'angle_deqp_release_trybot_reclient': [
@@ -2302,7 +2302,7 @@
     ],
 
     'clang_code_coverage_ios_xctest_reclient': [
-      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'xctest', 'ios_disable_xcode_project_generation',
+      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'xctest',
     ],
 
     'clang_code_coverage_reclient': [
@@ -2907,80 +2907,80 @@
     ],
 
     'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting': [
-        'compile_only', 'debug_static_bot', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
+        'compile_only', 'debug_static_bot', 'ios', 'ios_catalyst', 'ios_cpu_x64',  'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
     ],
 
     'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient': [
-        'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
+        'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64',  'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
     ],
 
     'ios_clang_device_tot_xctest': [
-      'clang_tot', 'ios', 'ios_device', 'ios_cpu_arm64', 'release', 'ios_chromium_cert', 'xctest', 'ios_disable_xcode_project_generation',
+      'clang_tot', 'ios', 'ios_device', 'ios_cpu_arm64', 'release', 'ios_chromium_cert', 'xctest',
     ],
 
     'ios_clang_tot_xctest': [
-      'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest', 'ios_disable_xcode_project_generation',
+      'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest',
     ],
 
     'ios_cronet_xctest': [
-      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
+      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_cronet_xctest_arm64': [
-      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest',
     ],
 
     'ios_cronet_xctest_arm64_reclient': [
-      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest',
     ],
 
     'ios_cronet_xctest_reclient': [
-      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
+      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_device_release_compile_only': [
-        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot', 'ios_disable_xcode_project_generation',
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot',
     ],
 
     'ios_device_release_compile_only_reclient': [
-        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient', 'ios_disable_xcode_project_generation',
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient',
     ],
 
     # doesn't have symbol_level=0
     'ios_device_release_static_bot_xctest_reclient': [
-        'ios', 'ios_device', 'ios_cpu_arm64', 'ios_disable_code_signing', 'release_bot_reclient', 'xctest', 'ios_disable_xcode_project_generation',
+        'ios', 'ios_device', 'ios_cpu_arm64', 'ios_disable_code_signing', 'release_bot_reclient', 'xctest',
     ],
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest': [
-      'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation',
+      'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [
-        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'invert_fieldtrials', 'xctest', 'ios_disable_xcode_project_generation',
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'invert_fieldtrials', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest': [
-        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest_arm64': [
-        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest_arm64_reclient': [
-        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest_reclient': [
-        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
+        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_simulator_release_static_asan_bot_xctest': [
-        'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot', 'asan', 'xctest', 'ios_disable_xcode_project_generation',
+        'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot', 'asan', 'xctest',
     ],
 
     'ios_simulator_release_static_asan_bot_xctest_reclient': [
-        'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot_reclient', 'asan', 'xctest', 'ios_disable_xcode_project_generation',
+        'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot_reclient', 'asan', 'xctest',
     ],
 
     'lacros_on_linux_clang_code_coverage_reclient': [
@@ -4313,11 +4313,6 @@
     'ios_disable_code_signing': {
       # defaults to true under ios_sdk.gni
       'gn_args': 'ios_enable_code_signing=false'
-    },
-
-    'ios_disable_xcode_project_generation': {
-      # defaults to true under build/config/ios/rules.gni
-      'gn_args': 'ios_set_attributes_for_xcode_project_generation=false',
     },
 
     'ios_google_cert': {

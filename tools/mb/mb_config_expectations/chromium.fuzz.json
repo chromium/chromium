@@ -394,7 +394,6 @@
     "gn_args": {
       "enable_dsyms": false,
       "enable_remoting": false,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_asan": true,
       "is_component_build": false,
       "is_debug": true,

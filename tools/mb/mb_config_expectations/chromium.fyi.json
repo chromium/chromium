@@ -239,7 +239,6 @@
     "goma": {
       "gn_args": {
         "enable_run_ios_unittests_with_xctest": true,
-        "ios_set_attributes_for_xcode_project_generation": false,
         "is_component_build": false,
         "is_debug": true,
         "symbol_level": 1,
@@ -252,7 +251,6 @@
     "reclient": {
       "gn_args": {
         "enable_run_ios_unittests_with_xctest": true,
-        "ios_set_attributes_for_xcode_project_generation": false,
         "is_component_build": false,
         "is_debug": true,
         "symbol_level": 1,
@@ -798,7 +796,6 @@
   "ios-fieldtrial-rel": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -811,7 +808,6 @@
   "ios-m1-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -830,7 +826,6 @@
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
       "ios_deployment_target": "11.0",
-      "ios_set_attributes_for_xcode_project_generation": false,
       "ios_stack_profiler_enabled": false,
       "is_component_build": false,
       "is_cronet_build": true,
@@ -849,7 +844,6 @@
   "ios-simulator-code-coverage": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -862,7 +856,6 @@
   "ios-simulator-cr-recipe": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -881,7 +874,6 @@
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
       "ios_deployment_target": "11.0",
-      "ios_set_attributes_for_xcode_project_generation": false,
       "ios_stack_profiler_enabled": false,
       "is_component_build": false,
       "is_cronet_build": true,
@@ -900,7 +892,6 @@
   "ios-simulator-multi-window": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -913,7 +904,6 @@
   "ios-webkit-tot": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -926,7 +916,6 @@
   "ios-wpt-fyi-rel": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -939,7 +928,6 @@
   "ios15-beta-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -952,7 +940,6 @@
   "ios15-sdk-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -965,7 +952,6 @@
   "ios16-beta-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -980,7 +966,6 @@
       "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_enable_code_signing": false,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -992,7 +977,6 @@
   "ios16-sdk-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,

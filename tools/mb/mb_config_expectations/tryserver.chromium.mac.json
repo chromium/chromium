@@ -181,7 +181,6 @@
     "gn_args": {
       "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_asan": true,
       "is_component_build": false,
       "is_debug": false,
@@ -195,7 +194,6 @@
     "gn_args": {
       "enable_dsyms": false,
       "enable_remoting": false,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_asan": true,
       "is_component_build": false,
       "is_debug": true,
@@ -212,7 +210,6 @@
       "dcheck_always_on": false,
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -225,7 +222,6 @@
   "ios-fieldtrial-rel": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -238,7 +234,6 @@
   "ios-m1-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -257,7 +252,6 @@
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
       "ios_deployment_target": "11.0",
-      "ios_set_attributes_for_xcode_project_generation": false,
       "ios_stack_profiler_enabled": false,
       "is_component_build": false,
       "is_cronet_build": true,
@@ -277,7 +271,6 @@
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -291,7 +284,6 @@
   "ios-simulator-cr-recipe": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -310,7 +302,6 @@
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
       "ios_deployment_target": "11.0",
-      "ios_set_attributes_for_xcode_project_generation": false,
       "ios_stack_profiler_enabled": false,
       "is_component_build": false,
       "is_cronet_build": true,
@@ -330,7 +321,6 @@
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -345,7 +335,6 @@
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
       "invert_fieldtrials": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -358,7 +347,6 @@
   "ios-simulator-multi-window": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -371,7 +359,6 @@
   "ios-simulator-noncq": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -385,7 +372,6 @@
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -399,7 +385,6 @@
   "ios15-beta-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -412,7 +397,6 @@
   "ios15-sdk-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -425,7 +409,6 @@
   "ios16-beta-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -438,7 +421,6 @@
   "ios16-sdk-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,

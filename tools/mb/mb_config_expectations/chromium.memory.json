@@ -134,7 +134,6 @@
     "gn_args": {
       "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
       "is_asan": true,
       "is_component_build": false,
       "is_debug": false,
