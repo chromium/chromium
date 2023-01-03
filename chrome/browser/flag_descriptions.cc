@@ -4773,6 +4773,12 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kCaptureModeDemoToolsName[] =
+    "Enable demo tools feature in screen capture";
+const char kCaptureModeDemoToolsDescription[] =
+    "Enables the ability to show clicks and keys during video recordings to "
+    "enhance demo experience.";
+
 const char kCalendarModelDebugModeName[] = "Monthly Calendar Model Debug Mode";
 const char kCalendarModelDebugModeDescription[] =
     "Debug mode for Monthly Calendar Model. This helps a lot in diagnosing any "

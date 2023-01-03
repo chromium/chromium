@@ -59515,6 +59515,7 @@ from previous Chrome versions.
   <int value="-762738927" label="LogJsConsoleMessages:enabled"/>
   <int value="-762687134" label="ExperimentalCrostiniUI:enabled"/>
   <int value="-762541013" label="enable-bluetooth-spp-in-serial-api"/>
+  <int value="-761870200" label="CaptureModeDemoTools:disabled"/>
   <int value="-759830869" label="enable-tab-discarding"/>
   <int value="-758999727" label="ContentIndexingNTP:disabled"/>
   <int value="-758917191" label="AccountIdMigration:enabled"/>
@@ -60646,6 +60647,7 @@ from previous Chrome versions.
   <int value="-86788587" label="allow-autofill-sync-credential"/>
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
+  <int value="-82880083" label="CaptureModeDemoTools:enabled"/>
   <int value="-82530769" label="WebXRPlaneDetection:enabled"/>
   <int value="-82328138"
       label="AutofillEnableRemadeDownstreamMetrics:disabled"/>

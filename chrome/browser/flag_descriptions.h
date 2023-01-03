@@ -2750,6 +2750,9 @@ extern const char kCalendarModelDebugModeDescription[];
 extern const char kDefaultLinkCapturingInBrowserName[];
 extern const char kDefaultLinkCapturingInBrowserDescription[];
 
+extern const char kCaptureModeDemoToolsName[];
+extern const char kCaptureModeDemoToolsDescription[];
+
 extern const char kDesks16Name[];
 extern const char kDesks16Description[];
 
