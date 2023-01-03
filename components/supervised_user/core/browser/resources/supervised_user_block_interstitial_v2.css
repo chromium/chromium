@@ -234,7 +234,7 @@ p {
 }
 
 .primary-button {
-  margin-left: 8px;
+  margin-inline-start: 8px;
 }
 
 /* Remove focus-visible outline styles, because forced focus is used for
