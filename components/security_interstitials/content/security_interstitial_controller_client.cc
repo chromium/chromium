@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
@@ -86,7 +87,16 @@ void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
 }
 
 void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
+#if BUILDFLAG(IS_ANDROID)
   settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);
+#else
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kEsbIphBubbleAndCollapseSettings)) {
+    settings_page_helper_->OpenEnhancedProtectionSettingsWithIph(web_contents_);
+  } else {
+    settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);
+  }
+#endif
 }
 
 const std::string&

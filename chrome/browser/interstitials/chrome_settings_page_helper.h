@@ -33,6 +33,8 @@ class ChromeSettingsPageHelper : public SettingsPageHelper {
   // SettingsPageHelper:
   void OpenEnhancedProtectionSettings(
       content::WebContents* web_contents) const override;
+  void OpenEnhancedProtectionSettingsWithIph(
+      content::WebContents* web_contents) const override;
 };
 
 }  // namespace security_interstitials
