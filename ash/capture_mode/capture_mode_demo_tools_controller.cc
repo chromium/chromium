@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -207,36 +208,42 @@ void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
   const int modifier_flag = GetModifierFlagForKeyCode(key_code);
   modifiers_ &= ~modifier_flag;
 
-  // If the timer is running, it means that the non-modifier key of the
-  // key combo has recently been released and the timer is about to hide the
-  // entire widget when it expires. When the modifier keys of the shortcut get
-  // released, we want to ignore them such that the key combo continues to show
-  // on the screen as a complete combo until the timer expires.
-  if (hide_timer_.IsRunning() && modifier_flag != ui::EF_NONE)
-    return;
-
   if (last_non_modifier_key_ == key_code) {
     last_non_modifier_key_ = ui::VKEY_UNKNOWN;
-    hide_timer_.Start(FROM_HERE, capture_mode::kDelayToHideKeyComboDuration,
-                      this,
-                      &CaptureModeDemoToolsController::AnimateToResetTheWidget);
+  }
+
+  if (key_up_refresh_timer_.IsRunning() &&
+      key_up_refresh_timer_.GetCurrentDelay() ==
+          capture_mode::kRefreshKeyComboWidgetLongDelay) {
+    // If the timer is running with a delay of
+    // `capture_mode::kRefreshKeyComboWidgetLongDelay`, it means that the
+    // non-modifier key of the key combo has recently been released with no
+    // modifier keys pressed or the last modifier key has been released with
+    // no non-modifier key that can be displayed when independently pressed
+    // which will trigger the hide timer to hide the entire widget when it
+    // expires. If there are other key up events, we want to ignore them such
+    // that the key combo continues to show on the screen as a complete combo
+    // until the timer expires.
     return;
   }
 
-  RefreshKeyComboViewer();
+  const auto& target_delay =
+      ShouldResetWidget() ? capture_mode::kRefreshKeyComboWidgetLongDelay
+                          : capture_mode::kRefreshKeyComboWidgetShortDelay;
+
+  key_up_refresh_timer_.Start(
+      FROM_HERE, target_delay, this,
+      &CaptureModeDemoToolsController::RefreshKeyComboViewer);
 }
 
 void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
 
-  // On any key down, we want to cancel any ongoing request to hide the widget,
-  // since this is considered a new key combo other than the one the timer was
-  // running for.
-  hide_timer_.Stop();
-
   // Return directly if it is a repeated key event for non-modifier key.
   if (key_code == last_non_modifier_key_)
     return;
+
+  key_up_refresh_timer_.Stop();
 
   const int modifier_flag = GetModifierFlagForKeyCode(key_code);
   modifiers_ |= modifier_flag;
@@ -248,7 +255,7 @@ void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
-  if ((modifiers_ == 0) && !ShouldConsiderKey(last_non_modifier_key_)) {
+  if (ShouldResetWidget()) {
     AnimateToResetTheWidget();
     return;
   }
@@ -279,6 +286,10 @@ gfx::Rect CaptureModeDemoToolsController::CalculateBounds() const {
   bounds.ClampToCenteredSize(preferred_size);
   bounds.set_y(demo_tools_y);
   return bounds;
+}
+
+bool CaptureModeDemoToolsController::ShouldResetWidget() const {
+  return (modifiers_ == 0) && !ShouldConsiderKey(last_non_modifier_key_);
 }
 
 void CaptureModeDemoToolsController::AnimateToResetTheWidget() {

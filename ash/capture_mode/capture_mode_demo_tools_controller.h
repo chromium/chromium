@@ -78,6 +78,10 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
 
   gfx::Rect CalculateBounds() const;
 
+  // Returns true if there is no modifier keys pressed and the non-modifier key
+  // can not be displayed independently.
+  bool ShouldResetWidget() const;
+
   // Resets the `demo_tools_widget_` when the `hide_timer_` expires.
   void AnimateToResetTheWidget();
 
@@ -118,9 +122,17 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
   // field, false otherwise.
   bool in_password_text_input_ = false;
 
-  // Starts on key up of the last non-modifier key and the `key_combo_view_`
-  // will disappear when it expires.
-  base::OneShotTimer hide_timer_;
+  // Used to hold on `RefreshKeyComboViewer`. The key combo widget will be
+  // scheduled to hide after `capture_mode::kRefreshKeyComboWidgetLongDelay`
+  // when a key up event is received, and the remaining pressed keys are no
+  // longer displayable, e.g. for a key combo Ctrl
+  // + C, after Ctrl is released, the remaining C is no longer displayable on
+  // its own as a complete key combo, so the widget will be scheduled to hide
+  // after `capture_mode::kRefreshKeyComboWidgetLongDelay`. Otherwise
+  // `capture_mode::kRefreshKeyComboWidgetShortDelay` will be used as the
+  // threshold duration to decide the user intention on whether to do an update
+  // or release multiple keys at one time.
+  base::OneShotTimer key_up_refresh_timer_;
 
   // Contains all the mouse highlight layers that are being animated.
   MouseHighlightLayers mouse_highlight_layers_;

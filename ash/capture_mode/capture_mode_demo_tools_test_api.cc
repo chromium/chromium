@@ -53,9 +53,9 @@ ui::KeyboardCode CaptureModeDemoToolsTestApi::GetShownNonModifierKeyCode() {
   return key_combo_view->last_non_modifier_key_;
 }
 
-base::OneShotTimer* CaptureModeDemoToolsTestApi::GetKeyComboHideTimer() {
+base::OneShotTimer* CaptureModeDemoToolsTestApi::GetRefreshKeyComboTimer() {
   DCHECK(demo_tools_controller_);
-  return &(demo_tools_controller_->hide_timer_);
+  return &(demo_tools_controller_->key_up_refresh_timer_);
 }
 
 views::ImageView* CaptureModeDemoToolsTestApi::GetNonModifierKeyItemIcon() {

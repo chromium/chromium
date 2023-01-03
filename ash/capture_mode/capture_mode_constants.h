@@ -96,9 +96,15 @@ constexpr auto kSettingsMenuBorderSize = gfx::Insets::VH(8, 16);
 constexpr int kKeyWidgetDistanceFromBottom = 24;
 
 // The duration to continue showing the key combo view on key up of the
-// non-modifier key.
-constexpr base::TimeDelta kDelayToHideKeyComboDuration =
+// non-modifier key with no modifier keys pressed or on key up of the last
+// modifier key up with no non-modifier key that can be displayed independently
+// pressed.
+constexpr base::TimeDelta kRefreshKeyComboWidgetLongDelay =
     base::Milliseconds(1500);
+
+// The duration to hold on the update of the key combo view on key up.
+constexpr base::TimeDelta kRefreshKeyComboWidgetShortDelay =
+    base::Milliseconds(100);
 
 // The radius of the highlight layer generated on mouse or touch event when the
 // demo tools feature is enabled.

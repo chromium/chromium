@@ -119,23 +119,28 @@ class CaptureModeDemoToolsTest : public AshTestBase {
   }
 
   // Fires the key combo viewer timer and verifies the existence of the widget
-  // after the timer expires.
-  void FireHideTimerAndVerifyWidget() {
+  // after the timer expires if `should_hide_view` is true.
+  void FireTimerAndVerifyWidget(bool should_hide_view) {
     auto* demo_tools_controller = GetCaptureModeDemoToolsController();
     DCHECK(demo_tools_controller);
     CaptureModeDemoToolsTestApi capture_mode_demo_tools_test_api(
         demo_tools_controller);
-    auto* hide_timer = capture_mode_demo_tools_test_api.GetKeyComboHideTimer();
-    EXPECT_TRUE(hide_timer->IsRunning());
-    EXPECT_EQ(hide_timer->GetCurrentDelay(),
-              capture_mode::kDelayToHideKeyComboDuration);
+    auto* timer = capture_mode_demo_tools_test_api.GetRefreshKeyComboTimer();
+    EXPECT_TRUE(timer->IsRunning());
+    EXPECT_EQ(timer->GetCurrentDelay(),
+              should_hide_view
+                  ? capture_mode::kRefreshKeyComboWidgetLongDelay
+                  : capture_mode::kRefreshKeyComboWidgetShortDelay);
     KeyComboView* key_combo_view =
         capture_mode_demo_tools_test_api.GetKeyComboView();
     ViewVisibilityChangeWaiter waiter(key_combo_view);
-    hide_timer->FireNow();
-    waiter.Wait();
-    EXPECT_FALSE(capture_mode_demo_tools_test_api.GetDemoToolsWidget());
-    EXPECT_FALSE(capture_mode_demo_tools_test_api.GetKeyComboView());
+    timer->FireNow();
+
+    if (should_hide_view) {
+      waiter.Wait();
+      EXPECT_FALSE(capture_mode_demo_tools_test_api.GetDemoToolsWidget());
+      EXPECT_FALSE(capture_mode_demo_tools_test_api.GetKeyComboView());
+    }
   }
 
   void EnableTextInputFocus(ui::TextInputType input_type) {
@@ -232,14 +237,13 @@ TEST_F(CaptureModeDemoToolsTest, ConsiderKeyEvent) {
             ui::EF_CONTROL_DOWN);
   EXPECT_EQ(demo_tools_test_api.GetLastNonModifierKey(), ui::VKEY_A);
 
-  event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  base::OneShotTimer* hide_timer = demo_tools_test_api.GetKeyComboHideTimer();
-  EXPECT_TRUE(hide_timer->IsRunning());
-  hide_timer->FireNow();
   event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  base::OneShotTimer* timer = demo_tools_test_api.GetRefreshKeyComboTimer();
+  EXPECT_TRUE(timer->IsRunning());
+  timer->FireNow();
   EXPECT_FALSE(demo_tools_test_api.GetDemoToolsWidget());
   EXPECT_EQ(demo_tools_test_api.GetCurrentModifiersFlags(), 0);
-  EXPECT_EQ(demo_tools_test_api.GetLastNonModifierKey(), ui::VKEY_UNKNOWN);
+  event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
 
   event_generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
   EXPECT_TRUE(demo_tools_test_api.GetDemoToolsWidget());
@@ -331,21 +335,28 @@ TEST_F(CaptureModeDemoToolsTest, KeyComboWidgetTest) {
               expected_modifier_key_vector);
   EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_C);
 
-  // Release the modifier keys, and the key combo view will not be displayed.
+  // Release the modifier keys, and the key combo view will hide after the
+  // refresh timer expires.
   event_generator->ReleaseKey(ui::VKEY_SHIFT, ui::EF_NONE);
   event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
   EXPECT_FALSE(demo_tools_test_api.GetDemoToolsWidget());
 }
 
-// Tests the hide timer behaviors for the key combo view:
-// 1. The hide timer will be triggered on key up of the non-modifier key, the
-// key combo view will be hidden after the timer expires;
-// 2. If there is another key down event happens before the timer expires, the
-// hide timer stops and the key combo view will be updated to match the current
-// keys pressed;
-// 3. On key up of the modifier key while the hide timer is still running, the
-// key combo view will stay visible until the timer expires.
-TEST_F(CaptureModeDemoToolsTest, DemoToolsHideTimerTest) {
+// Tests the timer behaviors for the key combo view:
+// 1. The refresh timer will be triggered on key up of the non-modifier key with
+// no modifier keys pressed, the key combo view will hide after the timer
+// expires;
+// 2. The refresh timer will also be triggered on key up of the last modifier
+// key with no non-modifier key that can be displayed independently pressed. The
+// key combo view will hide after the timer expires;
+// 3. If there is another key down event happens before the timer expires, the
+// refresh timer stops and the key combo view will be updated to match the
+// current keys pressed;
+// 4. On key up while the refresh timer is still running, the key combo view
+// will stay visible even the key states have been updated until the timer
+// expires.
+TEST_F(CaptureModeDemoToolsTest, DemoToolsTimerTest) {
   CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   controller->EnableDemoTools(true);
@@ -369,15 +380,35 @@ TEST_F(CaptureModeDemoToolsTest, DemoToolsHideTimerTest) {
             expected_modifier_key_vector);
   EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_A);
 
-  // Release the non-modifier key and the hide timer will be triggered, the key
-  // combo view will hide when the timer expires.
+  // Release the non-modifier key and the timer with a delay of
+  // `capture_mode::kRefreshKeyComboWidgetShortDelay` will be triggered, the key
+  // combo view will be updated to show 'Ctrl'.
+  event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/false);
+  EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
+            expected_modifier_key_vector);
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_UNKNOWN);
+
+  // Release the non-modifier key with no modifier keys pressed and the hide
+  // timer will be triggered.
+  event_generator->PressKey(ui::VKEY_A, ui::EF_NONE);
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+
+  // Press 'Ctrl' + 'A' and release the only modifier key 'Ctrl' and
+  // the refresh timer will be triggered. The entire key combo viewer will hide
+  // after the refresh timer expires.
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  event_generator->PressKey(ui::VKEY_A, ui::EF_NONE);
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
 
-  FireHideTimerAndVerifyWidget();
-
-  // Press 'Ctrl' + 'Shift' + 'A', then release 'A', the timer will be
-  // triggered. Press 'B' and the timer will stop and the key combo view will be
-  // updated accordingly, i.e. 'Ctrl' + 'Shift' + 'B'.
+  // Press 'Ctrl' + 'Shift' + 'A', then release 'A', the timer with a delay of
+  // `capture_mode::kRefreshKeyComboWidgetShortDelay` will be triggered. Press
+  // 'B' and the key combo view will be updated accordingly, i.e. 'Ctrl' +
+  // 'Shift' + 'B'.
   event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
   event_generator->PressKey(ui::VKEY_SHIFT, ui::EF_NONE);
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -387,29 +418,32 @@ TEST_F(CaptureModeDemoToolsTest, DemoToolsHideTimerTest) {
             expected_modifier_key_vector);
   EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_A);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  base::OneShotTimer* hide_timer = demo_tools_test_api.GetKeyComboHideTimer();
-  EXPECT_TRUE(hide_timer->IsRunning());
+  base::OneShotTimer* timer = demo_tools_test_api.GetRefreshKeyComboTimer();
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            capture_mode::kRefreshKeyComboWidgetShortDelay);
   event_generator->PressKey(ui::VKEY_B, ui::EF_NONE);
-  EXPECT_FALSE(hide_timer->IsRunning());
+  EXPECT_FALSE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            capture_mode::kRefreshKeyComboWidgetShortDelay);
   EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_B);
 
-  // Release 'B', the timer will be triggered. Release 'Ctrl' will not hide
-  // the 'Ctrl' key combo view on display immediately. Similarly for releasing
-  // the 'Shift' key. The entire key combo view will hide after the timer
-  // expires.
-  event_generator->ReleaseKey(ui::VKEY_B, ui::EF_NONE);
-  EXPECT_TRUE(hide_timer->IsRunning());
-  EXPECT_EQ(hide_timer->GetCurrentDelay(),
-            capture_mode::kDelayToHideKeyComboDuration);
+  // Release the 'Ctrl' key, the timer with a delay of
+  // `capture_mode::kRefreshKeyComboWidgetShortDelay` will be triggered. Then
+  // release the 'Shift' key and the refresh timer will be triggered The entire
+  // key combo view will hide after the timer expires.
   event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
-  EXPECT_TRUE(hide_timer->IsRunning());
-  expected_modifier_key_vector = {ui::VKEY_CONTROL, ui::VKEY_SHIFT};
+  FireTimerAndVerifyWidget(/*should_hide_view=*/false);
+  expected_modifier_key_vector = {ui::VKEY_SHIFT};
   EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
             expected_modifier_key_vector);
   EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_B);
 
   event_generator->ReleaseKey(ui::VKEY_SHIFT, ui::EF_NONE);
-  EXPECT_TRUE(hide_timer->IsRunning());
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            capture_mode::kRefreshKeyComboWidgetLongDelay);
+  event_generator->ReleaseKey(ui::VKEY_B, ui::EF_NONE);
 
   // The contents of the widget remains the same before the timer expires.
   EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
@@ -420,7 +454,7 @@ TEST_F(CaptureModeDemoToolsTest, DemoToolsHideTimerTest) {
   EXPECT_EQ(demo_tools_test_api.GetCurrentModifiersFlags(), 0);
   EXPECT_EQ(demo_tools_test_api.GetLastNonModifierKey(), ui::VKEY_UNKNOWN);
 
-  FireHideTimerAndVerifyWidget();
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
 }
 
 // Tests that all the non-modifier keys with the icon are displayed
@@ -481,8 +515,8 @@ TEST_F(CaptureModeDemoToolsTest, DoNotShowKeyComboViewerInInputField) {
   EXPECT_TRUE(demo_tools_test_api.GetDemoToolsWidget());
   EXPECT_TRUE(demo_tools_test_api.GetKeyComboView());
   event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
-  FireHideTimerAndVerifyWidget();
   event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
 
   // Enable the password text input focus during the recording, the key combo
   // viewer will not display when pressing 'Ctrl' and 'T'.
@@ -493,6 +527,107 @@ TEST_F(CaptureModeDemoToolsTest, DoNotShowKeyComboViewerInInputField) {
   EXPECT_FALSE(demo_tools_test_api.GetKeyComboView());
   event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
   event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+}
+
+// verifies that after any key release, if the remaining pressed keys are no
+// longer displayable, the widget will be scheduled to hide after
+// `capture_mode::kRefreshKeyComboWidgetLongDelay`.
+TEST_F(CaptureModeDemoToolsTest, ReleaseAllKeysConsistencyTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  auto* event_generator = GetEventGenerator();
+  auto key_combo_generator = [&]() {
+    event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    event_generator->PressKey(ui::VKEY_SHIFT, ui::EF_NONE);
+    event_generator->PressKey(ui::VKEY_C, ui::EF_NONE);
+  };
+
+  key_combo_generator();
+  KeyComboView* key_combo_view = demo_tools_test_api.GetKeyComboView();
+  EXPECT_TRUE(key_combo_view);
+
+  // Release the modifier key 'Ctrl' to trigger the timer with a delay
+  // of `capture_mode::kRefreshKeyComboWidgetShortDelay`.
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+
+  base::OneShotTimer* timer = demo_tools_test_api.GetRefreshKeyComboTimer();
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            capture_mode::kRefreshKeyComboWidgetShortDelay);
+
+  std::vector<ui::KeyboardCode> expected_modifier_key_vector = {
+      ui::VKEY_CONTROL, ui::VKEY_SHIFT};
+  EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
+            expected_modifier_key_vector);
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_C);
+
+  // Release the modifier key 'Shift' and the refresh timer will be triggered.
+  event_generator->ReleaseKey(ui::VKEY_SHIFT, ui::EF_NONE);
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            capture_mode::kRefreshKeyComboWidgetLongDelay);
+  EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
+            expected_modifier_key_vector);
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_C);
+
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+
+  // Key combo viewer update test.
+  key_combo_generator();
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            capture_mode::kRefreshKeyComboWidgetShortDelay);
+  timer->FireNow();
+  expected_modifier_key_vector = {ui::VKEY_SHIFT};
+  EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
+            expected_modifier_key_vector);
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_C);
+}
+
+// Tests that when the key combo is 'modifier key' + 'non-modifier key that can
+// be shown independently', on key up of either key, the key combo viewer should
+// be updated to show the other key. When both keys are released, the refresh
+// timer will be triggered.
+TEST_F(CaptureModeDemoToolsTest,
+       ModifierAndIndependentlyShownNonModifierKeyComboTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  event_generator->PressKey(kIconKeyCodes[0], ui::EF_NONE);
+  EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
+            std::vector<ui::KeyboardCode>{ui::VKEY_CONTROL});
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), kIconKeyCodes[0]);
+
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/false);
+  EXPECT_TRUE(demo_tools_test_api.GetShownModifiersKeyCodes().empty());
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), kIconKeyCodes[0]);
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+
+  event_generator->ReleaseKey(kIconKeyCodes[0], ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/false);
+  EXPECT_EQ(demo_tools_test_api.GetShownModifiersKeyCodes(),
+            std::vector<ui::KeyboardCode>{ui::VKEY_CONTROL});
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_UNKNOWN);
+
+  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
 }
 
 class CaptureModeDemoToolsTestWithAllSources

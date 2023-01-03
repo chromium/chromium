@@ -57,9 +57,9 @@ class CaptureModeDemoToolsTestApi {
   // Returns the non-modifier key that is currently on display.
   ui::KeyboardCode GetShownNonModifierKeyCode();
 
-  // Returns the timer to hide the key combo view on key up of the
+  // Returns the timer to hide the key combo viewer on key up of the
   // non-modifier key after the expiration.
-  base::OneShotTimer* GetKeyComboHideTimer();
+  base::OneShotTimer* GetRefreshKeyComboTimer();
 
   // Returns the `icon_` of the non-modifier component of the key combo.
   views::ImageView* GetNonModifierKeyItemIcon();
