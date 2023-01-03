@@ -71,11 +71,6 @@ public abstract class XrTestFramework {
     public static final int POLL_TIMEOUT_LONG_MS = getLongPollTimeout();
     public static final boolean DEBUG_LOGS = false;
 
-    // We need to make sure the port is constant, otherwise the URL changes between test runs, which
-    // is really bad for image diff tests. There's nothing special about this port other than that
-    // it shouldn't be in use by anything.
-    public static final int SERVER_PORT = 39558;
-
     // The "3" corresponds to the "Mobile Bookmarks" folder - omitting a particular folder
     // automatically redirects to that folder, and not having it in the URL causes issues with the
     // URL we expect to be loaded being different than the actual URL.
@@ -451,9 +446,6 @@ public abstract class XrTestFramework {
 
         // WebXr requires HTTPS, so configure the server to by default use it.
         mRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
-        // Tests that use RenderTestRule need a static port, as the port shows up in the URL. It
-        // doesn't hurt to use the same port in non-RenderTests, so set here.
-        mRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT);
     }
 
     /**
