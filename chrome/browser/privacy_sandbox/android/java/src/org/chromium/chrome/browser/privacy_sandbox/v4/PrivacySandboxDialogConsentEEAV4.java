@@ -80,6 +80,7 @@ public class PrivacySandboxDialogConsentEEAV4
             if (!mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mMoreButton.setVisibility(View.GONE);
                 mActionButtons.setVisibility(View.VISIBLE);
+                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
             }
         });
     }
@@ -101,7 +102,13 @@ public class PrivacySandboxDialogConsentEEAV4
             PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.more_button) {
-            mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+            if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
+                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+            } else {
+                mMoreButton.setVisibility(View.GONE);
+                mActionButtons.setVisibility(View.VISIBLE);
+                mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
+            }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
                 PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
