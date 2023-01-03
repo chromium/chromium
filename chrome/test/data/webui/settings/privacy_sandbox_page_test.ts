@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxFledgeSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -362,6 +362,17 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertTrue(page.$.topicsToggle.controlDisabled());
     assertFalse(isChildVisible(page, '#currentTopicsSection'));
   });
+
+  test('footerLinks', async function() {
+    assertTrue(isChildVisible(page, '#footer'));
+    const links =
+        page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
+    assertEquals(links.length, 2, 'footer should contains two links');
+    const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
+    const expectedLinks =
+        ['chrome://settings/adPrivacy/sites', 'chrome://settings/cookies'];
+    assertDeepEquals(hrefs, expectedLinks);
+  });
 });
 
 suite('PrivacySandboxFledgeSubpageTests', function() {
@@ -509,6 +520,17 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('fledgePageBlockedSitesDescription'),
         blockedSitesDescription.innerText);
+  });
+
+  test('footerLinks', async function() {
+    assertTrue(isChildVisible(page, '#footer'));
+    const links =
+        page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
+    assertEquals(links.length, 2, 'footer should contains two links');
+    const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
+    const expectedLinks =
+        ['chrome://settings/adPrivacy/interests', 'chrome://settings/cookies'];
+    assertDeepEquals(hrefs, expectedLinks);
   });
 });
 

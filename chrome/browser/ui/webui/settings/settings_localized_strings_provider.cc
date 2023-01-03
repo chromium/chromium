@@ -2019,7 +2019,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"topicsPageBlockedTopicsDescriptionEmpty",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY},
       {"topicsPageAllowTopic", IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC},
-      {"topicsPageFooter", IDS_SETTINGS_TOPICS_PAGE_FOOTER},
       {"fledgePageTitle", IDS_SETTINGS_FLEDGE_PAGE_TITLE},
       {"fledgePageToggleLabel", IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL},
       {"fledgePageToggleSubLabel", IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL},
@@ -2047,7 +2046,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2},
       {"fledgePageLearnMoreBullet3",
        IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3},
-      {"fledgePageFooter", IDS_SETTINGS_FLEDGE_PAGE_FOOTER},
       {"adMeasurementPageTitle", IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE},
       {"adMeasurementPageToggleLabel",
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL},
@@ -2072,6 +2070,20 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT,
           base::ASCIIToUTF16(chrome::kChromeUIHistoryURL)));
+  // Topics and fledge both link to the cookies setting page and cross-link
+  // each other in the footers.
+  html_source->AddString(
+      "topicsPageFooter",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TOPICS_PAGE_FOOTER,
+          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
+          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
+  html_source->AddString(
+      "fledgePageFooter",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TOPICS_PAGE_FOOTER,
+          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxTopicsURL),
+          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
   html_source->AddBoolean(
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(

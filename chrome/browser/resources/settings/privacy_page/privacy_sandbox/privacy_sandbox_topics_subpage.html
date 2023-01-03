@@ -48,8 +48,11 @@
   }
 
   #footer {
-    padding-block-end: 16px;
-    padding-block-start: 16px;
+    padding: 16px var(--cr-section-padding);
+  }
+
+  #footer a {
+    color: var(--cr-link-color);
   }
 
   #dialog p {
@@ -121,9 +124,8 @@
     </template>
   </div>
 </iron-collapse>
-<!-- TODO(b/254412650): Add links to footer. -->
-<div id="footer" class="cr-row cr-secondary-text">
-  $i18n{topicsPageFooter}
+<div id="footer" class="cr-secondary-text">
+  $i18nRaw{topicsPageFooter}
 </div>
 
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>

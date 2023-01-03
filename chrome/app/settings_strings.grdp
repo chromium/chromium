@@ -1907,7 +1907,7 @@
     Aenean
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer with more information at the bottom of the Topics preferences page.">
-    Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, justo nec ultricies semper, eros mauris varius nibh, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
+    Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>justo nec ultricies semper<ph name="LINK_END1">&lt;/a&gt;</ph>, eros mauris varius nibh, <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>sit amet molestie quam<ph name="LINK_END2">&lt;/a&gt;</ph> arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the Topics preferences page.">
     Suspendisse sit amet consectetur sapien
@@ -1957,7 +1957,7 @@
     Vivamus non urna sit amet turpis euismod semper. Phasellus sodales turpis ipsum.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" translateable="false" desc="Footer with more information at the bottom of the FLEDGE preferences page.">
-    Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, et fringilla nunc. Vivamus sit amet cursus quam. Etiam ultricies rutrum orci, eget accumsan purus mattis in.
+    Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>et fringilla nunc<ph name="LINK_END1">&lt;/a&gt;</ph>. Vivamus sit amet cursus quam. <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>Etiam ultricies rutrum orci<ph name="LINK_END2">&lt;/a&gt;</ph>, eget accumsan purus mattis in.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the FLEDGE preferences page.">
     Nam a ornare ligula, nec auctor enim

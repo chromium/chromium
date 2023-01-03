@@ -53,6 +53,14 @@
     padding-block-end: 16px;
     padding-block-start: 4px;
   }
+
+  #footer {
+    padding: 16px var(--cr-section-padding);
+  }
+
+  #footer a {
+    color: var(--cr-link-color);
+  }
 </style>
 
 <settings-toggle-button
@@ -104,9 +112,8 @@
   </div>
   <!-- TODO(b/254411463): Add blocked sites list. -->
 </iron-collapse>
-<!-- TODO(b/254412043): Add links to footer. -->
-<div id="footer" class="cr-row cr-secondary-text">
-  $i18n{fledgePageFooter}
+<div id="footer" class="cr-secondary-text">
+  $i18nRaw{fledgePageFooter}
 </div>
 
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
