@@ -16,6 +16,7 @@
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/test_helpers.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -33,133 +34,127 @@ constexpr CertificateTrust ExpectedTrustForAnchor() {
   return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
 }
 
-// These tests use a series of cross-signed certificates. The overall
-// hierarchy is documented in
-// //net/data/ssl/scripts/generate-multi-root-test-chains.sh.
-constexpr char kMultiRootCByD[] = "multi-root-C-by-D.pem";
-constexpr char kMultiRootCByE[] = "multi-root-C-by-E.pem";
-constexpr char kMultiRootDByD[] = "multi-root-D-by-D.pem";
-constexpr char kMultiRootEByE[] = "multi-root-E-by-E.pem";
-constexpr char kMultiRootFByE[] = "multi-root-F-by-E.pem";
-
-std::shared_ptr<const ParsedCertificate> ParseCertFromFile(
-    base::StringPiece file_name) {
+::testing::AssertionResult ParseCertFromFile(
+    base::StringPiece file_name,
+    std::shared_ptr<const ParsedCertificate>* out_cert) {
   const scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(net::GetTestCertsDirectory(), file_name);
   if (!cert) {
-    return nullptr;
+    return ::testing::AssertionFailure() << "ImportCertFromFile failed";
   }
   CertErrors errors;
   std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
       bssl::UpRef(cert->cert_buffer()),
       x509_util::DefaultParseCertificateOptions(), &errors);
-  EXPECT_TRUE(parsed) << errors.ToDebugString();
-  return parsed;
+  if (!parsed) {
+    return ::testing::AssertionFailure() << "ParseCertificate::Create failed:\n"
+                                         << errors.ToDebugString();
+  }
+  *out_cert = parsed;
+  return ::testing::AssertionSuccess();
 }
 
-// Returns true if cert at file_name successfully added to store, false
-// otherwise.
-bool AddToStore(HCERTSTORE store, const std::string file_name) {
-  const scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(net::GetTestCertsDirectory(), file_name);
-  if (!cert) {
-    return false;
-  }
-  crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
-      X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
-      CRYPTO_BUFFER_len(cert->cert_buffer())));
-  return CertAddCertificateContextToStore(store, os_cert.get(),
-                                          CERT_STORE_ADD_ALWAYS, nullptr);
-}
+class TrustStoreWinTest : public testing::Test {
+ public:
+  void SetUp() override {
+    root_store_.reset(CertOpenStore(CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING,
+                                    NULL, 0, nullptr));
+    intermediate_store_.reset(CertOpenStore(
+        CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+    disallowed_store_.reset(CertOpenStore(CERT_STORE_PROV_MEMORY,
+                                          X509_ASN_ENCODING, NULL, 0, nullptr));
 
-// Returns true if cert at file_name successfully added to store with
-// restricted usage, false otherwise.
-bool AddToStoreWithEKURestriction(HCERTSTORE store,
-                                  const std::string file_name,
-                                  LPCSTR usage_identifier) {
-  const scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(net::GetTestCertsDirectory(), file_name);
-  if (!cert) {
-    return false;
+    ASSERT_TRUE(ParseCertFromFile("multi-root-A-by-B.pem", &a_by_b_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-B-by-C.pem", &b_by_c_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-B-by-F.pem", &b_by_f_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-C-by-D.pem", &c_by_d_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-C-by-E.pem", &c_by_e_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-D-by-D.pem", &d_by_d_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-E-by-E.pem", &e_by_e_));
+    ASSERT_TRUE(ParseCertFromFile("multi-root-F-by-E.pem", &f_by_e_));
   }
-  crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
-      X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
-      CRYPTO_BUFFER_len(cert->cert_buffer())));
 
-  CERT_ENHKEY_USAGE usage;
-  memset(&usage, 0, sizeof(usage));
-  if (!CertSetEnhancedKeyUsage(os_cert.get(), &usage)) {
-    return false;
+  // Returns true if |cert| successfully added to store, false otherwise.
+  bool AddToStore(HCERTSTORE store,
+                  std::shared_ptr<const ParsedCertificate> cert) {
+    crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
+        X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
+        CRYPTO_BUFFER_len(cert->cert_buffer())));
+    return CertAddCertificateContextToStore(store, os_cert.get(),
+                                            CERT_STORE_ADD_ALWAYS, nullptr);
   }
-  if (usage_identifier) {
-    if (!CertAddEnhancedKeyUsageIdentifier(os_cert.get(), usage_identifier)) {
+
+  // Returns true if cert at file_name successfully added to store with
+  // restricted usage, false otherwise.
+  bool AddToStoreWithEKURestriction(
+      HCERTSTORE store,
+      std::shared_ptr<const ParsedCertificate> cert,
+      LPCSTR usage_identifier) {
+    crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
+        X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
+        CRYPTO_BUFFER_len(cert->cert_buffer())));
+
+    CERT_ENHKEY_USAGE usage;
+    memset(&usage, 0, sizeof(usage));
+    if (!CertSetEnhancedKeyUsage(os_cert.get(), &usage)) {
       return false;
     }
+    if (usage_identifier) {
+      if (!CertAddEnhancedKeyUsageIdentifier(os_cert.get(), usage_identifier)) {
+        return false;
+      }
+    }
+    return !!CertAddCertificateContextToStore(store, os_cert.get(),
+                                              CERT_STORE_ADD_ALWAYS, nullptr);
   }
-  return !!CertAddCertificateContextToStore(store, os_cert.get(),
-                                            CERT_STORE_ADD_ALWAYS, nullptr);
-}
 
-// TrustStoreWin isset up as follows:
-// Trusted as Root: D-by-D
-// Known Intermediates: C-by-D, C-by-E, F-by-E
-std::unique_ptr<TrustStoreWin> CreateTrustStoreWin() {
-  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-
-  if (!AddToStore(root_store.get(), kMultiRootDByD) ||
-      !AddToStore(intermediate_store.get(), kMultiRootCByD) ||
-      !AddToStore(intermediate_store.get(), kMultiRootCByE) ||
-      !AddToStore(intermediate_store.get(), kMultiRootFByE)) {
-    return nullptr;
+  std::unique_ptr<TrustStoreWin> CreateTrustStoreWin() {
+    return TrustStoreWin::CreateForTesting(std::move(root_store_),
+                                           std::move(intermediate_store_),
+                                           std::move(disallowed_store_));
   }
-  return TrustStoreWin::CreateForTesting(std::move(root_store),
-                                         std::move(intermediate_store),
-                                         std::move(disallowed_store));
-}
 
-TEST(TrustStoreWin, GetTrustInitializationError) {
+  // The cert stores that will be used to create the trust store. These handles
+  // will be null after CreateTrustStoreWin() is called.
+  crypto::ScopedHCERTSTORE root_store_;
+  crypto::ScopedHCERTSTORE intermediate_store_;
+  crypto::ScopedHCERTSTORE disallowed_store_;
+
+  std::shared_ptr<const ParsedCertificate> a_by_b_, b_by_c_, b_by_f_, c_by_d_,
+      c_by_e_, d_by_d_, e_by_e_, f_by_e_;
+};
+
+TEST_F(TrustStoreWinTest, GetTrustInitializationError) {
   // Simulate an initialization error by using null stores.
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(crypto::ScopedHCERTSTORE(),
                                       crypto::ScopedHCERTSTORE(),
                                       crypto::ScopedHCERTSTORE());
   ASSERT_TRUE(trust_store_win);
-  auto parsed_cert = ParseCertFromFile(kMultiRootDByD);
-  CertificateTrust trust =
-      trust_store_win->GetTrust(parsed_cert.get(), nullptr);
+  CertificateTrust trust = trust_store_win->GetTrust(d_by_d_.get(), nullptr);
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
 
-TEST(TrustStoreWin, GetTrust) {
+TEST_F(TrustStoreWinTest, GetTrust) {
+  ASSERT_TRUE(AddToStore(root_store_.get(), d_by_d_));
+  ASSERT_TRUE(AddToStore(intermediate_store_.get(), c_by_d_));
+
   std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
   ASSERT_TRUE(trust_store_win);
 
-  constexpr struct TestData {
-    base::StringPiece file_name;
-    CertificateTrust expected_result;
-  } kTestData[] = {
-      // Explicitly trusted root should be trusted.
-      {kMultiRootDByD, ExpectedTrustForAnchor()},
-      // Intermediate for path building should not be trusted.
-      {kMultiRootCByD, CertificateTrust::ForUnspecified()},
-      // Unknown roots should not be trusted (e.g. just because they're
-      // self-signed doesn't make them a root)
-      {kMultiRootEByE, CertificateTrust::ForUnspecified()},
-  };
-  for (const auto& test_data : kTestData) {
-    SCOPED_TRACE(test_data.file_name);
-    auto parsed_cert = ParseCertFromFile(test_data.file_name);
-    ASSERT_TRUE(parsed_cert);
-    CertificateTrust trust =
-        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
-  }
+  // Explicitly trusted root should be trusted.
+  EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+
+  // Intermediate for path building should not be trusted.
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(c_by_d_.get(), nullptr).ToDebugString());
+
+  // Unknown roots should not be trusted (e.g. just because they're
+  // self-signed doesn't make them a root)
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
 }
 
 // This test has a special TrustStoreWin setup with restricted EKU usages.
@@ -170,140 +165,87 @@ TEST(TrustStoreWin, GetTrust) {
 // - kMultiRootEByE: only has szOID_PKIX_KP_CLIENT_AUTH set
 // - kMultiRootCByE: only has szOID_ANY_ENHANCED_KEY_USAGE set
 // - kMultiRootCByD: no EKU usages set
-TEST(TrustStoreWin, GetTrustRestrictedEKU) {
-  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-
-  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD,
+TEST_F(TrustStoreWinTest, GetTrustRestrictedEKU) {
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store_.get(), d_by_d_,
                                            szOID_PKIX_KP_SERVER_AUTH));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootEByE,
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store_.get(), e_by_e_,
                                            szOID_PKIX_KP_CLIENT_AUTH));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootCByE,
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store_.get(), c_by_e_,
                                            szOID_ANY_ENHANCED_KEY_USAGE));
   ASSERT_TRUE(
-      AddToStoreWithEKURestriction(root_store.get(), kMultiRootCByD, nullptr));
-  std::unique_ptr<TrustStoreWin> trust_store_win =
-      TrustStoreWin::CreateForTesting(std::move(root_store),
-                                      std::move(intermediate_store),
-                                      std::move(disallowed_store));
+      AddToStoreWithEKURestriction(root_store_.get(), c_by_d_, nullptr));
 
-  constexpr struct TestData {
-    base::StringPiece file_name;
-    CertificateTrust expected_result;
-  } kTestData[] = {
-      // Root cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
-      // trusted.
-      {kMultiRootDByD, ExpectedTrustForAnchor()},
-      // Root cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should be
-      // trusted.
-      {kMultiRootCByE, ExpectedTrustForAnchor()},
-      // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
-      // cert for server auth, return UNSPECIFIED.
-      {kMultiRootEByE, CertificateTrust::ForUnspecified()},
-      // Root cert with no EKU usages, return UNSPECIFIED.
-      {kMultiRootCByD, CertificateTrust::ForUnspecified()},
-      // Unknown cert has unspecified trust.
-      {kMultiRootFByE, CertificateTrust::ForUnspecified()},
-  };
-  for (const auto& test_data : kTestData) {
-    SCOPED_TRACE(test_data.file_name);
-    auto parsed_cert = ParseCertFromFile(test_data.file_name);
-    ASSERT_TRUE(parsed_cert);
-    CertificateTrust trust =
-        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
-  }
+  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
+  ASSERT_TRUE(trust_store_win);
+
+  // Root cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
+  // trusted.
+  EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+
+  // Root cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should be
+  // trusted.
+  EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+            trust_store_win->GetTrust(c_by_e_.get(), nullptr).ToDebugString());
+
+  // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
+  // cert for server auth, return UNSPECIFIED.
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
+
+  // Root cert with no EKU usages, return UNSPECIFIED.
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(c_by_d_.get(), nullptr).ToDebugString());
+
+  // Unknown cert has unspecified trust.
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(f_by_e_.get(), nullptr).ToDebugString());
 }
 
-// Test if duplicate certs are added to the root and intermediate stores,
-// possibly with different EKU usages. Root store set up as follows:
+// If duplicate certs are added to the root store with different EKU usages,
+// the cert should be trusted if any one of the usages is valid.
+// Root store set up as follows:
 //
 // - kMultiRootDByD: only has szOID_PKIX_KP_CLIENT_AUTH EKU set
 // - kMultiRootDByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH set
 // - kMultiRootDByD (dupe 2): no EKU usages set
-//
-// And the intermediate store as follows:
-//
-// - kMultiRootCByD: only has szOID_PKIX_KP_CLIENT_AUTH set
-// - kMultiRootCByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH EKU set
-
-TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
-  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-
-  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD,
+TEST_F(TrustStoreWinTest, GetTrustRestrictedEKUDuplicateCerts) {
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store_.get(), d_by_d_,
                                            szOID_PKIX_KP_CLIENT_AUTH));
-  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD,
+  ASSERT_TRUE(AddToStoreWithEKURestriction(root_store_.get(), d_by_d_,
                                            szOID_PKIX_KP_SERVER_AUTH));
   ASSERT_TRUE(
-      AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD, nullptr));
-  std::unique_ptr<TrustStoreWin> trust_store_win =
-      TrustStoreWin::CreateForTesting(std::move(root_store),
-                                      std::move(intermediate_store),
-                                      std::move(disallowed_store));
+      AddToStoreWithEKURestriction(root_store_.get(), d_by_d_, nullptr));
 
-  constexpr struct TestData {
-    base::StringPiece file_name;
-    CertificateTrust expected_result;
-  } kTestData[] = {
-      // One copy of the Root cert is trusted for TLS Server Auth.
-      {kMultiRootDByD, ExpectedTrustForAnchor()},
-  };
-  for (const auto& test_data : kTestData) {
-    SCOPED_TRACE(test_data.file_name);
-    auto parsed_cert = ParseCertFromFile(test_data.file_name);
-    ASSERT_TRUE(parsed_cert);
-    CertificateTrust trust =
-        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
-  }
+  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
+  ASSERT_TRUE(trust_store_win);
+
+  // One copy of the Root cert is trusted for TLS Server Auth.
+  EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
 }
 
 // Test that disallowed certs will be distrusted regardless of EKU settings.
-TEST(TrustStoreWin, GetTrustDisallowedCerts) {
-  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+TEST_F(TrustStoreWinTest, GetTrustDisallowedCerts) {
+  ASSERT_TRUE(AddToStore(root_store_.get(), d_by_d_));
+  ASSERT_TRUE(AddToStore(root_store_.get(), e_by_e_));
 
-  AddToStore(root_store.get(), kMultiRootDByD);
-  AddToStore(root_store.get(), kMultiRootEByE);
-  ASSERT_TRUE(AddToStoreWithEKURestriction(
-      disallowed_store.get(), kMultiRootDByD, szOID_PKIX_KP_CLIENT_AUTH));
-  AddToStore(disallowed_store.get(), kMultiRootEByE);
+  ASSERT_TRUE(AddToStoreWithEKURestriction(disallowed_store_.get(), d_by_d_,
+                                           szOID_PKIX_KP_CLIENT_AUTH));
+  ASSERT_TRUE(AddToStore(disallowed_store_.get(), e_by_e_));
 
-  std::unique_ptr<TrustStoreWin> trust_store_win =
-      TrustStoreWin::CreateForTesting(std::move(root_store),
-                                      std::move(intermediate_store),
-                                      std::move(disallowed_store));
+  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
+  ASSERT_TRUE(trust_store_win);
 
-  constexpr struct TestData {
-    base::StringPiece file_name;
-    CertificateTrust expected_result;
-  } kTestData[] = {
-      // dByD in root, distrusted but without szOID_PKIX_KP_SERVER_AUTH set.
-      {kMultiRootDByD, CertificateTrust::ForDistrusted()},
-      // dByD in root, also in distrusted with szOID_PKIX_KP_SERVER_AUTH set.
-      {kMultiRootEByE, CertificateTrust::ForDistrusted()},
-  };
-  for (const auto& test_data : kTestData) {
-    SCOPED_TRACE(test_data.file_name);
-    auto parsed_cert = ParseCertFromFile(test_data.file_name);
-    ASSERT_TRUE(parsed_cert);
-    CertificateTrust trust =
-        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
-  }
+  // E-by-E is in both root and distrusted store. Distrust takes precedence.
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
+            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
+
+  // D-by-D is in root and in distrusted but without szOID_PKIX_KP_SERVER_AUTH
+  // set. It should still be distrusted since the EKU settings aren't checked
+  // on distrust.
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
+            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
 }
 
 MATCHER_P(ParsedCertEq, expected_cert, "") {
@@ -312,7 +254,7 @@ MATCHER_P(ParsedCertEq, expected_cert, "") {
                              expected_cert->der_cert().AsSpan());
 }
 
-TEST(TrustStoreWin, GetIssuersInitializationError) {
+TEST_F(TrustStoreWinTest, GetIssuersInitializationError) {
   // Simulate an initialization error by using null stores.
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(crypto::ScopedHCERTSTORE(),
@@ -320,57 +262,49 @@ TEST(TrustStoreWin, GetIssuersInitializationError) {
                                       crypto::ScopedHCERTSTORE());
   ASSERT_TRUE(trust_store_win);
   ParsedCertificateList issuers;
-  std::shared_ptr<const ParsedCertificate> cert =
-      ParseCertFromFile("multi-root-B-by-F.pem");
-  ASSERT_TRUE(cert);
-  trust_store_win->SyncGetIssuersOf(cert.get(), &issuers);
+  trust_store_win->SyncGetIssuersOf(b_by_f_.get(), &issuers);
   ASSERT_EQ(0U, issuers.size());
 }
 
-TEST(TrustStoreWin, GetIssuersNoIssuerFound) {
-  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
-  ParsedCertificateList issuers;
-  std::shared_ptr<const ParsedCertificate> cert =
-      ParseCertFromFile("multi-root-A-by-B.pem");
-  ASSERT_TRUE(cert);
-  trust_store_win->SyncGetIssuersOf(cert.get(), &issuers);
-  ASSERT_EQ(0U, issuers.size());
-}
+TEST_F(TrustStoreWinTest, GetIssuers) {
+  ASSERT_TRUE(AddToStore(root_store_.get(), d_by_d_));
+  ASSERT_TRUE(AddToStore(intermediate_store_.get(), c_by_d_));
+  ASSERT_TRUE(AddToStore(intermediate_store_.get(), c_by_e_));
+  ASSERT_TRUE(AddToStore(intermediate_store_.get(), f_by_e_));
 
-TEST(TrustStoreWin, GetIssuersSingleIssuerFoundFromIntermediates) {
   std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
-  ParsedCertificateList issuers;
-  std::shared_ptr<const ParsedCertificate> cert =
-      ParseCertFromFile("multi-root-B-by-F.pem");
-  ASSERT_TRUE(cert);
-  trust_store_win->SyncGetIssuersOf(cert.get(), &issuers);
-  ASSERT_EQ(1U, issuers.size());
-  EXPECT_THAT(issuers, testing::UnorderedElementsAre(
-                           ParsedCertEq(ParseCertFromFile(kMultiRootFByE))));
-}
 
-TEST(TrustStoreWin, GetIssuersSingleIssuerFoundFromRoot) {
-  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
-  ParsedCertificateList issuers;
-  std::shared_ptr<const ParsedCertificate> cert =
-      ParseCertFromFile(kMultiRootDByD);
-  ASSERT_TRUE(cert);
-  trust_store_win->SyncGetIssuersOf(cert.get(), &issuers);
-  ASSERT_EQ(1U, issuers.size());
-  EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(cert)));
-}
+  // No matching issuer.
+  {
+    ParsedCertificateList issuers;
+    trust_store_win->SyncGetIssuersOf(a_by_b_.get(), &issuers);
+    ASSERT_EQ(0U, issuers.size());
+  }
 
-TEST(TrustStoreWin, GetIssuersMultipleIssuersFound) {
-  std::unique_ptr<TrustStoreWin> trust_store_win = CreateTrustStoreWin();
-  ParsedCertificateList issuers;
-  std::shared_ptr<const ParsedCertificate> cert =
-      ParseCertFromFile("multi-root-B-by-C.pem");
-  ASSERT_TRUE(cert);
-  trust_store_win->SyncGetIssuersOf(cert.get(), &issuers);
-  ASSERT_EQ(2U, issuers.size());
-  EXPECT_THAT(issuers, testing::UnorderedElementsAre(
-                           ParsedCertEq(ParseCertFromFile(kMultiRootCByD)),
-                           ParsedCertEq(ParseCertFromFile(kMultiRootCByE))));
+  // Single matching issuer found in intermediates.
+  {
+    ParsedCertificateList issuers;
+    trust_store_win->SyncGetIssuersOf(b_by_f_.get(), &issuers);
+    ASSERT_EQ(1U, issuers.size());
+    EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(f_by_e_)));
+  }
+
+  // Single matching issuer found in roots.
+  {
+    ParsedCertificateList issuers;
+    trust_store_win->SyncGetIssuersOf(d_by_d_.get(), &issuers);
+    ASSERT_EQ(1U, issuers.size());
+    EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(d_by_d_)));
+  }
+
+  // Multiple issuers found.
+  {
+    ParsedCertificateList issuers;
+    trust_store_win->SyncGetIssuersOf(b_by_c_.get(), &issuers);
+    ASSERT_EQ(2U, issuers.size());
+    EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(c_by_d_),
+                                                       ParsedCertEq(c_by_e_)));
+  }
 }
 
 }  // namespace
