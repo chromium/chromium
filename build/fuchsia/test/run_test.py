@@ -23,6 +23,7 @@ from run_blink_test import BlinkTestRunner
 from run_executable_test import create_executable_test_runner, \
                                 register_executable_test_args
 from run_telemetry_test import TelemetryTestRunner
+from run_webpage_test import WebpageTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
 from test_runner import TestRunner
@@ -39,6 +40,9 @@ def _get_test_runner(runner_args: argparse.Namespace,
     if runner_args.test_type in ['gpu', 'perf']:
         return TelemetryTestRunner(runner_args.test_type, runner_args.out_dir,
                                    test_args, runner_args.target_id)
+    if runner_args.test_type in ['webpage']:
+        return WebpageTestRunner(runner_args.out_dir, test_args,
+                                 runner_args.target_id)
     return create_executable_test_runner(runner_args, test_args)
 
 
