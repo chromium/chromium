@@ -32,6 +32,10 @@ class ASH_EXPORT KeyboardBacklightColorController
       public SessionObserver,
       public WallpaperControllerObserver {
  public:
+  // Default brightness to be set by the `KeyboardBacklightColorController` when
+  // the backlight is off and the user configures a new color.
+  static constexpr double kDefaultBacklightBrightness = 40.0;
+
   explicit KeyboardBacklightColorController(PrefService* local_state);
 
   KeyboardBacklightColorController(const KeyboardBacklightColorController&) =
@@ -92,7 +96,6 @@ class ASH_EXPORT KeyboardBacklightColorController
   void KeyboardBrightnessPercentReceived(absl::optional<double> percentage);
 
   SkColor displayed_color_for_testing_ = SK_ColorTRANSPARENT;
-  bool keyboard_brightness_on_for_testing_ = false;
 
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       session_observer_{this};

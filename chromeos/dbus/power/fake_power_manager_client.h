@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   double screen_brightness_percent() const {
     return screen_brightness_percent_.value();
   }
+  double keyboard_brightness_percent() const {
+    return keyboard_brightness_percent_.value();
+  }
   bool is_projecting() const { return is_projecting_; }
   bool have_video_activity_report() const {
     return !video_activity_reports_.empty();
