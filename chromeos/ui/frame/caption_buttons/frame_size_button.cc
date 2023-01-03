@@ -45,8 +45,7 @@ const int kMaxOvershootY = 50;
 constexpr base::TimeDelta kPieAnimationPressDuration = base::Milliseconds(150);
 constexpr base::TimeDelta kPieAnimationHoverDuration = base::Milliseconds(500);
 
-// TODO(sammiequon): Update the color to match specs.
-constexpr SkColor kPieColor = SkColorSetA(SK_ColorGRAY, 128);
+constexpr SkColor kPieColor = SkColorSetARGB(0x10, 0x00, 0x00, 0x00);
 
 // Returns true if a mouse drag while in "snap mode" at |location_in_screen|
 // would hover/press |button| or keep it hovered/pressed.

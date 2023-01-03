@@ -106,6 +106,7 @@ MultitaskMenuView::MultitaskMenuView(
         base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
                             base::Unretained(this)),
         MultitaskButton::Type::kFull, is_portrait_mode,
+        /*paint_as_active=*/fullscreened,
         l10n_util::GetStringUTF16(message_id));
     full_button_for_testing_ = full_button.get();
     AddChildView(CreateButtonContainer(std::move(full_button), message_id));
@@ -121,7 +122,7 @@ MultitaskMenuView::MultitaskMenuView(
         base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
                             base::Unretained(this)),
         MultitaskButton::Type::kFloat, is_portrait_mode,
-        l10n_util::GetStringUTF16(message_id));
+        /*paint_as_active=*/floated, l10n_util::GetStringUTF16(message_id));
     float_button_for_testing_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id));
   }

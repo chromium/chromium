@@ -24,6 +24,7 @@ class MultitaskButton : public views::Button {
   MultitaskButton(PressedCallback callback,
                   Type type,
                   bool is_portrait_mode,
+                  bool paint_as_active,
                   const std::u16string& name);
 
   MultitaskButton(const MultitaskButton&) = delete;
@@ -39,6 +40,10 @@ class MultitaskButton : public views::Button {
   // The display orientation. This determines whether button is in
   // landscape/portrait mode.
   const bool is_portrait_mode_;
+
+  // Used to determine whether the button should be painted as active. If a
+  // window is in fullscreen or floated state, it should be painted as active.
+  const bool paint_as_active_;
 };
 
 }  // namespace chromeos

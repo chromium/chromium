@@ -25,10 +25,12 @@ constexpr gfx::Rect kFullPatternPortraitBounds(4, 4, 64, 100);
 MultitaskButton::MultitaskButton(PressedCallback callback,
                                  Type type,
                                  bool is_portrait_mode,
+                                 bool paint_as_active,
                                  const std::u16string& name)
     : views::Button(std::move(callback)),
       type_(type),
-      is_portrait_mode_(is_portrait_mode) {
+      is_portrait_mode_(is_portrait_mode),
+      paint_as_active_(paint_as_active) {
   SetPreferredSize(is_portrait_mode_ ? kMultitaskButtonPortraitSize
                                      : kMultitaskButtonLandscapeSize);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -51,7 +53,8 @@ void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
   pattern_flags.setAntiAlias(true);
   pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
 
-  if (GetState() == Button::STATE_HOVERED) {
+  if (paint_as_active_ || GetState() == Button::STATE_HOVERED ||
+      GetState() == Button::STATE_PRESSED) {
     fill_flags.setColor(kMultitaskButtonViewHoverColor);
     border_flags.setColor(kMultitaskButtonPrimaryHoverColor);
     pattern_flags.setColor(gfx::kGoogleBlue600);

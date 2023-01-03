@@ -45,8 +45,8 @@ class SplitButtonView : public views::BoxLayoutView {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  // Called when either button is hovered. Updates button colors.
-  void OnButtonHovered();
+  // Called when either button is hovered or pressed. Updates button colors.
+  void OnButtonHoveredOrPressed();
 
   // Pointers to the buttons that are owned by the views hierarchy. The names
   // refer to the physical location of the button, which do not change in RTL

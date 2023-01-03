@@ -43,6 +43,11 @@ const std::u16string kBottomButtonName = u"Split Bottom";
 constexpr SkColor kSplitButtonSecondaryHoverColor =
     SkColorSetA(gfx::kGoogleBlue600, SK_AlphaOPAQUE * 0.4);
 
+bool IsHoveredOrPressedState(views::Button::ButtonState button_state) {
+  return button_state == views::Button::STATE_PRESSED ||
+         button_state == views::Button::STATE_HOVERED;
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -51,13 +56,13 @@ constexpr SkColor kSplitButtonSecondaryHoverColor =
 class SplitButtonView::SplitButton : public views::Button {
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
-              base::RepeatingClosure hovered_callback,
+              base::RepeatingClosure hovered_pressed_callback,
               const std::u16string& name,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
         button_color_(kMultitaskButtonDefaultColor),
         insets_(insets),
-        hovered_callback_(std::move(hovered_callback)) {
+        hovered_pressed_callback_(std::move(hovered_pressed_callback)) {
     // Subtract by the preferred insets so that the focus ring is drawn around
     // the painted region below. Also, use the parent's rounded radius so the
     // ring matches the parent border.
@@ -84,18 +89,20 @@ class SplitButtonView::SplitButton : public views::Button {
   }
 
   void StateChanged(ButtonState old_state) override {
-    if (old_state == STATE_HOVERED || GetState() == STATE_HOVERED)
-      hovered_callback_.Run();
+    if (IsHoveredOrPressedState(old_state) ||
+        IsHoveredOrPressedState(GetState())) {
+      hovered_pressed_callback_.Run();
+    }
   }
 
  private:
   SkColor button_color_;
   // The inset between the button window pattern and the border.
-  const gfx::Insets insets_;
-  // Callback to `SplitButtonView` to change button color.
-  // When one split button is hovered, both split buttons on SplitButtonView
-  // changed color.
-  base::RepeatingClosure hovered_callback_;
+  gfx::Insets insets_;
+  // Callback to `SplitButtonView` to change button color. When one split button
+  // is hovered or pressed, both split buttons on `SplitButtonView` change
+  // color.
+  base::RepeatingClosure hovered_pressed_callback_;
 };
 
 // -----------------------------------------------------------------------------
@@ -114,8 +121,8 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
   SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
                                     : kMultitaskButtonLandscapeSize);
 
-  auto on_hover = base::BindRepeating(&SplitButtonView::OnButtonHovered,
-                                      base::Unretained(this));
+  auto on_hover_pressed = base::BindRepeating(
+      &SplitButtonView::OnButtonHoveredOrPressed, base::Unretained(this));
 
   const SnapDirection left_top_direction =
       GetSnapDirectionForWindow(window, /*left_top=*/true);
@@ -129,11 +136,11 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
       base::BindRepeating(split_button_callback, right_bottom_direction);
 
   left_top_button_ = AddChildView(std::make_unique<SplitButton>(
-      on_left_top_press, on_hover,
+      on_left_top_press, on_hover_pressed,
       is_portrait_mode ? kTopButtonName : kLeftButtonName,
       is_portrait_mode ? kTopButtonInsets : kLeftButtonInsets));
   right_bottom_button_ = AddChildView(std::make_unique<SplitButton>(
-      on_right_bottom_press, on_hover,
+      on_right_bottom_press, on_hover_pressed,
       is_portrait_mode ? kBottomButtonName : kRightButtonName,
       is_portrait_mode ? kBottomButtonInsets : kRightButtonInsets));
 
@@ -153,13 +160,13 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
           : gfx::Size(right_bottom_width, kMultitaskHalfButtonHeight));
 }
 
-void SplitButtonView::OnButtonHovered() {
+void SplitButtonView::OnButtonHoveredOrPressed() {
   border_color_ = kMultitaskButtonPrimaryHoverColor;
   fill_color_ = kMultitaskButtonViewHoverColor;
-  if (right_bottom_button_->GetState() == views::Button::STATE_HOVERED) {
+  if (IsHoveredOrPressedState(right_bottom_button_->GetState())) {
     right_bottom_button_->set_button_color(kMultitaskButtonPrimaryHoverColor);
     left_top_button_->set_button_color(kSplitButtonSecondaryHoverColor);
-  } else if (left_top_button_->GetState() == views::Button::STATE_HOVERED) {
+  } else if (IsHoveredOrPressedState(left_top_button_->GetState())) {
     left_top_button_->set_button_color(kMultitaskButtonPrimaryHoverColor);
     right_bottom_button_->set_button_color(kSplitButtonSecondaryHoverColor);
   } else {
@@ -169,8 +176,6 @@ void SplitButtonView::OnButtonHovered() {
     right_bottom_button_->set_button_color(kMultitaskButtonDefaultColor);
     left_top_button_->set_button_color(kMultitaskButtonDefaultColor);
   }
-  left_top_button_->SchedulePaint();
-  right_bottom_button_->SchedulePaint();
   SchedulePaint();
 }
 
