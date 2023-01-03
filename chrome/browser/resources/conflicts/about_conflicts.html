@@ -169,28 +169,28 @@ html[dir=rtl] .clearing {
               <td valign="top">
                 <table cellpadding="2" cellspacing="0" border="0">
                   <tr>
-                    <td class="datacell">
+                    <th role="columnheader">
                       <span dir="ltr">Software</span>
-                    </td>
-                    <td class="datacell">
+                    </th>
+                    <th role="columnheader">
                       <span dir="ltr">Signed by</span>
-                    </td>
-                    <td class="datacell">
+                    </th>
+                    <th role="columnheader">
                       <span dir="ltr">Version</span>
-                    </td>
-                    <td class="datacell">
+                    </th>
+                    <th role="columnheader">
                       <span dir="ltr">Code Id</span>
-                    </td>
-                    <td class="datacell">
+                    </th>
+
+                    <th role="columnheader">
                       <span dir="ltr">Process types</span>
-                    </td>
-                    <td class="datacell">
+                    </th>
+                    <th role="columnheader">
                       <span dir="ltr">Location</span>
-                    </td>
-                    <td hidden$="[[!data.thirdPartyFeatureEnabled]]"
-                        class="datacell">
+                    </th>
+                    <th role="columnheader" hidden$="[[!data.thirdPartyFeatureEnabled]]">
                       <span dir="ltr">Conflicts Status</span>
-                    </td>
+                    </th>
                   </tr>
 
                   <template is="dom-repeat" items="[[data.moduleList]]">
