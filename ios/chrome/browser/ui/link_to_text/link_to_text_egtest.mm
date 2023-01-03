@@ -218,7 +218,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 }
 
 // Tests that a link can be generated for a simple text selection.
-- (void)testGenerateLinkForSimpleText {
+// crbug.com/1403831 Disable flaky test
+- (void)DISABLED_testGenerateLinkForSimpleText {
   [ChromeEarlGrey clearPasteboard];
   GURL pageURL = self.testServer->GetURL(kTestURL);
   [ChromeEarlGrey loadURL:pageURL];
