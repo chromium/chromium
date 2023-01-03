@@ -1238,6 +1238,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2104166991923847969">Désactiver le point d'accès automatiquement</translation>
 <translation id="2105809836724866556">Vous avez masqué : <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
+<translation id="2110941575868943054">Autorisés à rechercher des appareils Bluetooth</translation>
 <translation id="211144231511833662">Effacer les types</translation>
 <translation id="2111670510994270194">Nouvel onglet à droite</translation>
 <translation id="2112554630428445878">Bienvenue <ph name="USERNAME" /></translation>
@@ -3029,6 +3030,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3756485814916578707">Diffusion de l'écran</translation>
 <translation id="3756578970075173856">Définir le code</translation>
 <translation id="3756795331760037744">Autoriser l'Assistant Google à utiliser les infos sur l'écran de <ph name="SUPERVISED_USER_NAME" /> pour vous aider</translation>
+<translation id="3756806135608816820">Les sites peuvent demander à rechercher des appareils Bluetooth</translation>
 <translation id="3757733214359997190">Aucun site trouvé</translation>
 <translation id="375841316537350618">Téléchargement du script du proxy en cours…</translation>
 <translation id="3758842566811519622">Cookies configurés</translation>
@@ -5003,6 +5005,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5600706100022181951">Le téléchargement de la mise à jour utilisera <ph name="UPDATE_SIZE_MB" /> Mo de données mobiles. Voulez-vous continuer ?</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5601823921345337195">Non autorisé à se connecter à des appareils MIDI</translation>
+<translation id="5601833336918638013">Ne pas autoriser les sites à rechercher des appareils Bluetooth</translation>
 <translation id="5602765853043467355">Effacer les favoris, l'historique, les mots de passe et autres paramètres de cet appareil</translation>
 <translation id="5605758115928394442">Une notification a été envoyée à votre téléphone pour que vous puissiez confirmer votre identité.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
@@ -6463,6 +6466,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6960507406838246615">Mise à jour de Linux requise</translation>
 <translation id="6960648667961844909">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" />. Le téléchargement sera relancé plus tard. Les paroles sont envoyées à Google pour traitement jusqu'à la fin du téléchargement.</translation>
 <translation id="696103774840402661">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) ont été supprimés définitivement.</translation>
+<translation id="6961327401577924850">Les sites recherchent généralement des appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un coach électronique ou d'une ampoule connectée</translation>
 <translation id="6963872466817251924">Mettre le curseur de texte en surbrillance</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>
@@ -8100,6 +8104,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8465444703385715657">L'exécution de <ph name="PLUGIN_NAME" /> requiert votre autorisation.</translation>
 <translation id="8466417995783206254">Une vidéo est diffusée en mode PIP dans cet onglet.</translation>
 <translation id="8467326454809944210">Sélectionner une autre langue</translation>
+<translation id="8468087214092422866">Non autorisés à rechercher des appareils Bluetooth</translation>
 <translation id="8470513973197838199">Mots de passe enregistrés pour <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de documents ou l'enregistrement sur un périphérique de stockage</translation>
 <translation id="8471959340398751476">Les remises sont désactivées. Vous pouvez les activer dans le menu de personnalisation.</translation>

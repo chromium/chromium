@@ -870,6 +870,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres de niveau administrateur sur le bureau.</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
+<translation id="1838910874018595451">Configuration préremplie pour les demandes Kerberos</translation>
 <translation id="1843117931376765605">Fréquence d'actualisation des règles relatives aux utilisateurs</translation>
 <translation id="1844620919405873871">Permet de configurer les règles associées au déverrouillage rapide.</translation>
 <translation id="1844972978764975668">Autoriser l'envoi de requêtes à un serveur Google visant à récupérer un horodatage précis</translation>
@@ -889,6 +890,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
 
       Les URL de cette règle ne doivent pas entrer en conflit avec celles configurées via <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="1858775210076906272">Configuration Kerberos préremplie</translation>
 <translation id="1861206724856734193">Définit la liste des règles de prévention des fuites de données.</translation>
 <translation id="1862267110714201519">Désactiver la fonctionnalité Fenêtre fantôme.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
@@ -1270,6 +1272,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="2204753382813641270">Règle pour masquer automatiquement l'étagère</translation>
 <translation id="2208976000652006649">Paramètres pour l'URL de recherche utilisant POST</translation>
 <translation id="2213059592185933570">Activer la création de profils itinérants</translation>
+<translation id="2213342458177721585">Activer la disposition de clavier Hindi Inscript pour tout l'appareil.</translation>
 <translation id="2215238871726750562">Si cette règle est définie sur "True", la fenêtre du navigateur ne s'ouvre pas au début de la session.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, la fenêtre du navigateur s'ouvre.
@@ -1735,6 +1738,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2664682171745499686">Supprimer les avertissements concernant des domaines similaires</translation>
 <translation id="2665422249821137126">Activer le grand curseur sur l'écran de connexion</translation>
 <translation id="2667894101494585925">Activer l'optimisation du guide d'extraction</translation>
+<translation id="2669157090883237118">Ne pas modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
 <translation id="2672012807430078509">Contrôle l'activation du protocole d'authentification NTLM pour les installations SMB</translation>
 <translation id="2673363037046384711">L'utilisateur final peut activer ou désactiver le mode Haute efficacité.</translation>
 <translation id="2678503605767349615">Certificats clients requis au niveau de l'appareil</translation>
@@ -2578,6 +2582,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
       Pour connaître la liste des variables acceptées, consultez cette page : https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Si cette règle n'est pas définie, le chemin de profil par défaut sera utilisé, et l'utilisateur pourra le remplacer avec le flag de ligne de commande "--user-data-dir".</translation>
+<translation id="3380801667330555918">Modifier la configuration préremplie pour les demandes Kerberos</translation>
 <translation id="338149029069528354">Ne pas effacer les données utilisateur locales</translation>
 <translation id="3381968327636295719">Utiliser le navigateur hôte par défaut</translation>
 <translation id="3387211681524224831">Si cette règle est activée, l'historique de navigation n'est pas enregistré, la synchronisation des onglets est désactivée et les utilisateurs ne peuvent pas modifier ce paramètre.
@@ -3958,6 +3963,11 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
           Si cette règle n'est pas définie, l'audio mono est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
 <translation id="4770334626033858263">Configuration utilisée pour générer et valider le code d'accès parental.</translation>
+<translation id="4773997835955617342">Modifie la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
+
+      Si cette règle est activée, la valeur de la règle "KerberosCustomPrefilledConfig" est appliquée en tant que configuration suggérée et figure dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos.
+
+      Si cette règle est désactivée ou n'est pas définie, la configuration <ph name="PRODUCT_OS_NAME" /> recommandée est appliquée à la place. Notez que celle-ci s'affiche également dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos.</translation>
 <translation id="4774030790286815890">Si ce paramètre est activé, les utilisateurs seront autorisés à activer Phone Hub, qui leur permet d'interagir avec leur téléphone sur un appareil Chrome OS.
 
       S'il est désactivé, ils ne seront pas autorisés à activer Phone Hub.
@@ -6083,6 +6093,8 @@ Cette règle sera supprimée prochainement de <ph name="PRODUCT_NAME" />.</trans
 
       Spécifie les indicateurs à appliquer à <ph name="PRODUCT_NAME" /> au démarrage. Ceux-ci ne sont appliqués que sur l'écran de connexion. Les indicateurs définis par cette règle ne sont pas répercutés dans les sessions utilisateur.</translation>
 <translation id="6857240169209507953">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
+<translation id="6857372417233723544">Cette règle permet d'activer la disposition de clavier Hindi Inscript sur <ph name="PRODUCT_OS_NAME" />.
+Si la règle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible. Un redémarrage est nécessaire pour que la règle soit prise en compte.</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
 <translation id="68818134518270542">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
@@ -7011,6 +7023,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 
           Si elle n'est pas configurée, les raccourcis des fonctionnalités d'accessibilité sont activés par défaut sur l'écran de connexion.</translation>
 <translation id="7777535871204167559">Traiter les appareils de stockage externe en lecture seule</translation>
+<translation id="7781452670568828399">Modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
 <translation id="7784062550705119230">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Par profil</translation>
 <translation id="7788632499792081231">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent solliciter l'autorisation d'accès au presse-papiers. Cette règle n'affecte pas la totalité des opérations dont la provenance correspond à ces formats. Par exemple, il restera possible d'utiliser le raccourci clavier pour coller, cette opération n'étant pas contrôlée par la permission d'utiliser le presse-papiers.

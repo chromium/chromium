@@ -868,6 +868,7 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 
       Si se inhabilita esta política o no se le asigna ningún valor, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros</translation>
+<translation id="1838910874018595451">Configuración rellenada previamente de los tickets de Kerberos</translation>
 <translation id="1843117931376765605">Frecuencia con la que se actualiza la política de usuario</translation>
 <translation id="1844620919405873871">Configura las políticas relacionadas con el desbloqueo rápido.</translation>
 <translation id="1844972978764975668">Permitir que consultas ocasionales a un servidor de Google obtengan una marca de tiempo precisa</translation>
@@ -887,6 +888,7 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
       Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Las URLs de esta política no deben entrar en conflicto con las de la política <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. En caso de conflicto, esta política prevalece sobre <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="1858775210076906272">Configuración rellenada previamente de Kerberos</translation>
 <translation id="1861206724856734193">Configura una lista de reglas de prevención de filtración de datos.</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma</translation>
 <translation id="1865417998205858223">Permisos clave</translation>
@@ -1270,6 +1272,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
 <translation id="2213059592185933570">Habilitar la creación de perfiles de roaming</translation>
+<translation id="2213342458177721585">Habilitar el diseño InScript para hindi a nivel de dispositivo.</translation>
 <translation id="2215238871726750562">Si se asigna el valor "Verdadero" a esta política, impedirá que se abra la ventana del navegador al comienzo de la sesión.
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, permitirá que se abra la ventana.
@@ -1736,6 +1739,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2664682171745499686">Eliminar las advertencias de dominio similares en dominios</translation>
 <translation id="2665422249821137126">Habilitar el cursor grande en la pantalla de inicio de sesión</translation>
 <translation id="2667894101494585925">Habilitar la obtención de la guía de optimización</translation>
+<translation id="2669157090883237118">No cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2672012807430078509">Controla la habilitación de NTLM como protocolo de autenticación para activaciones SMB.</translation>
 <translation id="2673363037046384711">El usuario final puede habilitar o inhabilitar el modo Alta eficiencia.</translation>
 <translation id="2678503605767349615">Certificados de cliente de todo el dispositivo obligatorios</translation>
@@ -2587,6 +2591,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
       Para consultar una lista con las variables que se pueden utilizar, visita https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Si no se establece esta política, se utilizará la ruta de perfil predeterminada y el usuario podrá anularla mediante la instrucción de línea de comandos "--user-data-dir".</translation>
+<translation id="3380801667330555918">Cambiar la configuración rellenada previamente de los tickets de Kerberos</translation>
 <translation id="338149029069528354">No borrar los datos de usuario locales</translation>
 <translation id="3381968327636295719">Utilizar el navegador del host de forma predeterminada</translation>
 <translation id="3387211681524224831">Si la política se habilita, no se almacenará el historial de navegación y se inhabilitará la sincronización de pestañas. Los usuarios no pueden cambiar esta opción.
@@ -3982,6 +3987,11 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
           Si no se le asigna ningún valor, el audio en mono se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4768446404233019970">Habilitar los paquetes de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">Configuración que se utiliza para generar y verificar códigos de acceso parental.</translation>
+<translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
+
+      Si se habilita esta política, el valor de la política KerberosCustomPrefillConfig se aplicará como configuración sugerida y se mostrará en la sección Configuración avanzada del cuadro de diálogo de autenticación de Kerberos.
+
+      Si se inhabilita esta política o no se define, se aplicará la configuración recomendada de <ph name="PRODUCT_OS_NAME" />. Ten en cuenta que también se mostrará en la sección Configuración avanzada del cuadro de diálogo de autenticación de Kerberos.</translation>
 <translation id="4774030790286815890">Si se habilita esta opción, los usuarios podrán usar la función Mi teléfono, que les permite interactuar con su teléfono desde un dispositivo ChromeOS.
 
       Si se inhabilita esta opción, los usuarios no podrán usar Mi teléfono.
@@ -6127,6 +6137,8 @@ Esta política se eliminará de <ph name="PRODUCT_NAME" /> en el futuro.</transl
 
       Especifica las opciones que se deben aplicar a <ph name="PRODUCT_NAME" /> cuando se inicia. Las opciones especificadas solo se aplican en la pantalla de inicio de sesión. Las opciones establecidas a través de esta política no se propagan a las sesiones del usuario.</translation>
 <translation id="6857240169209507953">Impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
+<translation id="6857372417233723544">Si se define esta política, se habilitará el diseño InScript para hindi en <ph name="PRODUCT_OS_NAME" />.
+Si se asigna el valor false a esta política o no se define, este diseño no estará disponible. Es necesario reiniciar el dispositivo para que esta política tenga efecto.</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto en YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
 <translation id="68818134518270542">Si se establece esta política, se especificarán las aplicaciones que pueden activar los usuarios para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
@@ -7060,6 +7072,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 
           Si no se le asigna ningún valor, las combinaciones de teclas para las funciones de accesibilidad estarán habilitadas de forma predeterminada en la pantalla de inicio de sesión.</translation>
 <translation id="7777535871204167559">Usar los dispositivos de almacenamiento externo como dispositivos de solo lectura</translation>
+<translation id="7781452670568828399">Cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7784062550705119230">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="7788632499792081231">Si se establece esta política, te permitirá definir una lista de patrones de URL para especificar los sitios que podrán usar el permiso de portapapeles de sitios. Esto no incluye todas las operaciones de portapapeles que se realicen en orígenes que coincidan con esos patrones. Por ejemplo, los usuarios seguirán pudiendo pegar mediante combinaciones de teclas, ya que esta acción está fuera del ámbito del permiso de portapapeles de sitios.

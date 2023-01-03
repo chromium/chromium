@@ -785,7 +785,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
 <translation id="5321849971085220133">Chrome travaille à trouver de nouvelles façons de réduire le suivi et d'encore mieux vous protéger lorsque vous naviguez. De plus, il <ph name="BEGIN_LINK" />évalue quels sont vos centres d'intérêt<ph name="END_LINK" /> et vous permet de les gérer. Ensuite, les sites que vous consultez peuvent les lui demander afin de vous montrer des annonces.</translation>
-<translation id="5324858694974489420">Paramètres parentaux</translation>
+<translation id="5324858694974489420">Paramètres de contrôle parental</translation>
 <translation id="5326921373682845375">Étant donné que les pages préchargées sont chiffrées et que le site lié aux pages est un site Google, les serveurs de Google ne reçoivent pas de nouvelles informations lors du préchargement de ces pages en mode privé.</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5339031667684712858">Sites que vous avez supprimés</translation>
@@ -1330,7 +1330,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8209050860603202033">Ouvrir l'image</translation>
 <translation id="8216351761227087153">Regarder</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
-<translation id="8221656072740924283">Continuer</translation>
 <translation id="8223642481677794647">Menu de la carte de flux</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Les sites ne peuvent utiliser vos cookies que pour voir votre activité de navigation sur ces sites</translation>

@@ -1249,7 +1249,7 @@
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">「<ph name="MODULE_TITLE" />」已隱藏</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
-<translation id="2110941575868943054">可以尋找藍牙裝置</translation>
+<translation id="2110941575868943054">允許尋找藍牙裝置</translation>
 <translation id="211144231511833662">清除類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />，歡迎使用！</translation>
@@ -3044,7 +3044,7 @@
 <translation id="3756485814916578707">正在投放畫面</translation>
 <translation id="3756578970075173856">設定 PIN</translation>
 <translation id="3756795331760037744">允許「Google 助理」使用<ph name="SUPERVISED_USER_NAME" />畫面上的資料來提供協助</translation>
-<translation id="3756806135608816820">網站可要求掃描藍牙裝置</translation>
+<translation id="3756806135608816820">網站可要求尋找藍牙裝置</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
 <translation id="375841316537350618">正在下載 Proxy 指令碼…</translation>
 <translation id="3758842566811519622">已設定 Cookie</translation>
@@ -5020,7 +5020,7 @@
 <translation id="5600706100022181951">下載更新將會使用 <ph name="UPDATE_SIZE_MB" /> MB 流動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">不允許連接 MIDI 裝置</translation>
-<translation id="5601833336918638013">不允許網站掃描藍牙裝置</translation>
+<translation id="5601833336918638013">不允許網站尋找藍牙裝置</translation>
 <translation id="5602765853043467355">清除此裝置上的書籤、記錄和密碼等資料。</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充程式}other{已封鎖這些擴充程式}}</translation>
@@ -6476,7 +6476,7 @@
 <translation id="6960507406838246615">Linux 需要更新</translation>
 <translation id="6960648667961844909">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載，語音會暫時傳送給 Google 處理，直至下載完成。</translation>
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>
-<translation id="6961327401577924850">一般來說，網站掃描藍牙裝置的原因是為了執行功能，例如設定或同步低功耗信標、健康/健身智慧手環或智慧型燈泡</translation>
+<translation id="6961327401577924850">網站通常會尋找藍牙裝置，以提供設定或同步低功耗信標、健康與健身追蹤器或智能燈泡等功能</translation>
 <translation id="6963872466817251924">文字游標突顯工具</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
@@ -8114,7 +8114,7 @@
 <translation id="8465444703385715657">需要您的授權才能執行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="8466417995783206254">此分頁正在以畫中畫模式播放影片。</translation>
 <translation id="8467326454809944210">選擇其他語言</translation>
-<translation id="8468087214092422866">不得尋找藍牙裝置</translation>
+<translation id="8468087214092422866">不允許尋找藍牙裝置</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>
 <translation id="8471959340398751476">折扣搜尋功能已關閉。您可在自訂選單中開啟此功能</translation>

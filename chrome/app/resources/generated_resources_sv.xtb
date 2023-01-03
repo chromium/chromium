@@ -1249,6 +1249,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2104166991923847969">Inaktivera surfzon automatiskt</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> har dolts</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnummer}}</translation>
+<translation id="2110941575868943054">Tillåts att söka efter Bluetooth-enheter</translation>
 <translation id="211144231511833662">Rensa typer</translation>
 <translation id="2111670510994270194">Ny flik till höger</translation>
 <translation id="2112554630428445878">Välkommen <ph name="USERNAME" />!</translation>
@@ -3043,6 +3044,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3756485814916578707">Skärmen castas</translation>
 <translation id="3756578970075173856">Ange pinkod</translation>
 <translation id="3756795331760037744">Ge Google Assistent tillåtelse att använda information på skärmen på enheten som tillhör <ph name="SUPERVISED_USER_NAME" /> för att hjälpa till</translation>
+<translation id="3756806135608816820">Webbplatser kan begära att få söka efter Bluetooth-enheter</translation>
 <translation id="3757733214359997190">Inga webbplatser hittades</translation>
 <translation id="375841316537350618">Laddar ned proxyskript ...</translation>
 <translation id="3758842566811519622">Cookies har sparats</translation>
@@ -3813,6 +3815,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4469762931504673593"><ph name="ORIGIN" /> har redigeringsbehörighet för <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Inställningar för extern lagring</translation>
 <translation id="4471354919263203780">Filer för taligenkänning laddas ned … <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Du kan använda ditt föredragna språk för Google-kontot (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Bidra till att förbättra Chromes funktioner och prestanda</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4474155171896946103">Skapa bokmärken för alla flikar ...</translation>
@@ -5017,6 +5020,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5600706100022181951">Nedladdningen av uppdateringen förbrukar <ph name="UPDATE_SIZE_MB" /> MB mobildata. Vill du fortsätta?</translation>
 <translation id="5601503069213153581">Pinkod</translation>
 <translation id="5601823921345337195">Får inte ansluta till MIDI-enheter</translation>
+<translation id="5601833336918638013">Tillåt inte att webbplatser söker efter Bluetooth-enheter</translation>
 <translation id="5602765853043467355">Rensa bokmärken, historik , lösenord med mera från den här enheten</translation>
 <translation id="5605758115928394442">En avisering har skickats till din mobil för att bekräfta att det är du.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Detta tillägg har blockerats}other{Dessa tillägg har blockerats}}</translation>
@@ -6474,6 +6478,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6960507406838246615">Uppdatering av Linux krävs</translation>
 <translation id="6960648667961844909">Det gick inte att ladda ned filer för taligenkänning på <ph name="LANGUAGE" />. Ett nytt nedladdningsförsök görs senare. Tal skickas till Google för bearbetning tills nedladdningen har slutförts.</translation>
 <translation id="696103774840402661">Alla filer och lokal data för alla användare på denna <ph name="DEVICE_TYPE" /> har raderats permanent.</translation>
+<translation id="6961327401577924850">Webbplatser söker vanligtvis efter Bluetooth-enheter för funktioner som att konfigurera eller synkronisera en beacon-sändare med låg energiförbrukning, ett aktivitetsarmband eller en smart glödlampa</translation>
 <translation id="6963872466817251924">Framhäv textmarkören</translation>
 <translation id="6964390816189577014">Hjälte</translation>
 <translation id="6964760285928603117">Ta bort från gruppen</translation>
@@ -6750,6 +6755,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7227458944009118910">Apparna nedan kan även hantera protokollänkar. Andra appar ber om tillstånd.</translation>
 <translation id="7228056665272655255">Låt ditt barn trycka på fingeravtryckssensorn uppe till höger på tangentbordet för att ställa in fingeravtryck. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Skärmlås och inloggning</translation>
+<translation id="7228854227189381547">Byt inte</translation>
 <translation id="7230222852462421043">&amp;Återställ fönster</translation>
 <translation id="7231260028442989757">Visa, ignorera eller svara på aviseringar från telefonen</translation>
 <translation id="7232750842195536390">Det gick inte att byta namn</translation>
@@ -7083,6 +7089,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7545466883021407599">Det gick inte att ansluta till servern. Kontrollera nätverksanslutningen och försök igen. Om problemen kvarstår kan du testa att starta om Chromebook. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Varning! Dina inställningar för <ph name="PRODUCT_NAME" /> sparas på en nätverksenhet. Det kan göra datorn långsammare eller orsaka krascher och till och med dataförlust.</translation>
 <translation id="7548856833046333824">Drink</translation>
+<translation id="7549434883223124329">Vill du byta språk på enheten?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Det gick inte att ladda ned <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
@@ -8109,6 +8116,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8465444703385715657">Du måste godkänna att <ph name="PLUGIN_NAME" /> körs</translation>
 <translation id="8466417995783206254">På den här fliken spelas en video upp i bild-i-bild-läge.</translation>
 <translation id="8467326454809944210">Välj ett annat språk</translation>
+<translation id="8468087214092422866">Tillåts inte att söka efter Bluetooth-enheter</translation>
 <translation id="8470513973197838199">Sparade lösenord för <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Åtkomst till USB-enheter brukar kunna behövas för funktioner som att skriva ut dokument eller spara filer på en lagringsenhet</translation>
 <translation id="8471959340398751476">Rabatter har inaktiverats. Du kan inaktivera dem i menyn Anpassa</translation>

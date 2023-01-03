@@ -926,6 +926,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
+<translation id="6045629311476491587">En uso por parte de <ph name="APP_COUNT" /> apps</translation>
 <translation id="6047696787498798094">Cuando cambies de usuario, se dejará de compartir la pantalla. ¿Quieres continuar?</translation>
 <translation id="6054305421211936131">Acceder con una tarjeta inteligente</translation>
 <translation id="6059276912018042191">Pestañas recientes de Chrome</translation>

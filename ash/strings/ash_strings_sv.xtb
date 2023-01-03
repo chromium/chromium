@@ -925,6 +925,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
+<translation id="6045629311476491587">Används av <ph name="APP_COUNT" /> appar</translation>
 <translation id="6047696787498798094">Skärmdelningen avbryts när du byter till en annan användare. Vill du fortsätta?</translation>
 <translation id="6054305421211936131">Logga in med smartkort</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>

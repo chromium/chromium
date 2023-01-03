@@ -1001,6 +1001,11 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="1962864958436828230">Mindestgrößenbeschränkung zur Zwischenablagenbeschränkung für die Verhinderung von Datenlecks festlegen</translation>
 <translation id="1964634611280150550">Inkognitomodus deaktiviert</translation>
 <translation id="1964802606569741174">Diese Richtlinie hat keine Auswirkungen auf die Android YouTube App. Wenn der Sicherheitsmodus in YouTube erzwungen werden soll, darf das Installieren der Android YouTube App nicht zugelassen werden.</translation>
+<translation id="1964985353230379667">Legt die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets fest.
+
+      Wenn die Richtlinie „KerberosUseCustomPrefilledConfig“ aktiviert ist, wird der Wert der Richtlinie als vorgeschlagene Konfiguration angewendet und im Authentifizierungsdialogfeld von Kerberos unter „Advanced“ (Erweitert) angezeigt. Wenn du diese Richtlinie leer lässt oder nicht konfigurierst, wird die empfohlene <ph name="PRODUCT_OS_NAME" />-Konfiguration gelöscht.
+
+      Wenn die Richtlinie „KerberosUseCustomPrefilledConfig“ deaktiviert ist, wird der Wert dieser Richtlinie nicht verwendet.</translation>
 <translation id="1969212217917526199">Überschreibt Richtlinien auf Fehlerbehebungs-Builds des Hosts für den Remotezugriff
 
           Der Wert wird als JSON-Wörterbuch für die Verknüpfung zwischen Richtliniennamen und Richtlinienwerten geparst.</translation>

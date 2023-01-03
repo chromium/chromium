@@ -1014,6 +1014,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> वेबसाइट आपके माइक्रोफ़ोन का इस्तेमाल करना चाहती है</translation>
 <translation id="3533328374079021623">मेलबॉक्स 5</translation>
 <translation id="3537165859691846083">लेटर प्लस</translation>
+<translation id="3542628208405253498">कार्ड की इमेज</translation>
 <translation id="3542768452570884558">लिंक को नई विंडो में खोलें</translation>
 <translation id="3547746132308051926">20 x 24 इंच</translation>
 <translation id="3550112004925580947">हॉस्पिटैलिटी इंडस्ट्री</translation>
@@ -1104,6 +1105,7 @@
 <translation id="3745099705178523657">आपके पुष्टि करने के बाद, आपके Google खाते के कार्ड का ब्यौरा इस साइट से शेयर किया जाएगा.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> पर मौजूद हमलावर आपको सॉफ़्टवेयर इंस्टॉल करने या आपकी व्यक्तिगत जानकारी (उदाहरण के लिए, पासवर्ड, फ़ोन नंबर या क्रेडिट कार्ड) हासिल करने जैसा खतरनाक काम करने के लिए फंसा सकते हैं. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">एविएशन इंडस्ट्री</translation>
+<translation id="3752543821772132562"><ph name="POLICY_NAME" /> को सेट नहीं किया गया है, इसलिए इसे अनदेखा किया गया.</translation>
 <translation id="3754210790023674521">'पिक्चर में पिक्चर' सुविधा से बाहर निकलें</translation>
 <translation id="3759461132968374835">आपने हाल में किसी क्रैश की रिपोर्ट नहीं की है. क्रैश रिपोर्ट की सुविधा बंद होने पर अगर कोई क्रैश होता है, तो वह यहां नहीं दिखेगा.</translation>
 <translation id="3760561303380396507">क्या आप कार्ड वेरीफ़िकेशन कोड (सीवीसी) के बजाय Windows Hello का इस्तेमाल करना चाहते हैं?</translation>
@@ -2920,6 +2922,7 @@
 <translation id="8355270400102541638">स्थानीय खराबी रिपोर्ट से जुड़ी जानकारी:</translation>
 <translation id="8363502534493474904">हवाई जहाज़ मोड बंद करें</translation>
 <translation id="8364627913115013041">सेट नहीं है.</translation>
+<translation id="836616551641291797">आपका ब्राउज़र कैसे मैनेज किया जाता है, इस बारे में ज़्यादा जानें</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>
 <translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play सेवाएं</translation>

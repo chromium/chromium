@@ -3813,6 +3813,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4469762931504673593">A(z) <ph name="ORIGIN" /> szerkesztheti a(z) <ph name="FOLDERNAME" /> mappában lévő fájlokat</translation>
 <translation id="4470957202018033307">Külső tárhely beállításai</translation>
 <translation id="4471354919263203780">Beszédfelismerési fájlok letöltése… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Lehetősége van az előnyben részesített Google-fiók nyelvének (<ph name="NEW_LOCALE_FROM_GAIA" />) használatára</translation>
 <translation id="447252321002412580">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4474155171896946103">Összes lap hozzáadása a könyvjelzőkhöz...</translation>
@@ -6754,6 +6755,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7227458944009118910">Az alábbi listában szereplő alkalmazások linkeket is képesek kezelni. Más alkalmazások engedélyt kérnek erre.</translation>
 <translation id="7228056665272655255">Az ujjlenyomat beállításához gyermekének meg kell érintenie a billentyűzet jobb felső sarkában található ujjlenyomat-érzékelőt. Gyermeke ujjlenyomatadatait a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
 <translation id="7228523857728654909">Képernyőzár és bejelentkezés</translation>
+<translation id="7228854227189381547">Nincs váltás</translation>
 <translation id="7230222852462421043">&amp;Ablak visszaállítása</translation>
 <translation id="7231260028442989757">Telefonja értesítéseinek megtekintése, elvetése, illetve válasz rájuk</translation>
 <translation id="7232750842195536390">Az átnevezés nem sikerült</translation>
@@ -7087,6 +7089,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7545466883021407599">Nem sikerült csatlakozni a szerverhez. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Ha továbbra is jelentkeznek a problémák, próbálkozzon a Chromebook újraindításával. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Figyelem: a(z) <ph name="PRODUCT_NAME" /> beállításai a hálózati meghajtón találhatók. Ez lassulást, összeomlást vagy adatvesztést eredményezhet.</translation>
 <translation id="7548856833046333824">Limonádé</translation>
+<translation id="7549434883223124329">Átállítja az eszköz nyelvét?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">A(z) <ph name="FILE_NAME" /> letöltése nem sikerült</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>

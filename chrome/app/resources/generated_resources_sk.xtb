@@ -3802,6 +3802,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4469762931504673593">Web <ph name="ORIGIN" /> môže upravovať súbory v priečinku <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Predvoľby externých úložísk</translation>
 <translation id="4471354919263203780">Sťahujú sa súbory rozpoznávania reči… <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Môžete použiť preferovaný jazyk účtu Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomáhať s vylepšovaním funkcií a výkonu Chromu</translation>
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4474155171896946103">Uložiť všetky karty ako záložky...</translation>
@@ -6744,6 +6745,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7227458944009118910">Aplikácie uvedené nižšie dokážu spracúvať aj odkazy na protokol. Iné budú žiadať povolenie.</translation>
 <translation id="7228056665272655255">Ak chcete nastaviť odtlačok prsta, vaše dieťa sa musí dotknúť senzora odtlačkov prstov v pravom hornom rohu klávesnice. Údaje odtlačkov prstov vášho dieťaťa sa bezpečne uložia a nikdy neopustia toto zariadenie (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7228523857728654909">Zámka obrazovky a prihlásenie</translation>
+<translation id="7228854227189381547">Neprepínať</translation>
 <translation id="7230222852462421043">&amp;Obnoviť okno</translation>
 <translation id="7231260028442989757">Zobrazovať upozornenia telefónu, zatvárať ich a odpovedať na ne</translation>
 <translation id="7232750842195536390">Nepodarilo sa premenovať</translation>
@@ -7077,6 +7079,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7545466883021407599">Nepodarilo sa pripojiť k serveru. Skontrolujte ho a skúste to znova. Ak problémy pretrvávajú, skúste reštartovať Chromebook. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Upozornenie: Vaše nastavenia aplikácie <ph name="PRODUCT_NAME" /> sú uložené na sieťovom disku. Môže to viesť ku spomaleniu, chybám alebo strate údajov.</translation>
 <translation id="7548856833046333824">Limonáda</translation>
+<translation id="7549434883223124329">Chcete prepnúť jazyk zariadenia?</translation>
 <translation id="7550830279652415241">záložky_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Nepodarilo sa stiahnuť súbor <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>

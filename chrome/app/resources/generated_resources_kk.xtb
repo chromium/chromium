@@ -1234,6 +1234,7 @@
 <translation id="2104166991923847969">Хотспотты автоматты өшіру</translation>
 <translation id="2105809836724866556">"<ph name="MODULE_TITLE" />" жасырылды.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефон нөмірі}other{# телефон нөмірі}}</translation>
+<translation id="2110941575868943054">Bluetooth құрылғыларын іздеуге рұқсат етіледі.</translation>
 <translation id="211144231511833662">Түрлеріндегі құсбелгілерді алып тастау</translation>
 <translation id="2111670510994270194">Оң жақтағы жаңа қойынды</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />, қош келдіңіз!</translation>
@@ -3025,6 +3026,7 @@
 <translation id="3756485814916578707">Экран трансляциялануда</translation>
 <translation id="3756578970075173856">PIN кодын орнату</translation>
 <translation id="3756795331760037744">Google Assistant көмектесе алу үшін <ph name="SUPERVISED_USER_NAME" /> экранын пайдалануға рұқсат ету</translation>
+<translation id="3756806135608816820">Сайттар Bluetooth құрылғыларын іздеуді сұрай алады.</translation>
 <translation id="3757733214359997190">Ешқандай сайт табылмады.</translation>
 <translation id="375841316537350618">Прокси сценарийі жүктелуде…</translation>
 <translation id="3758842566811519622">Cookie файлдары орнатылды</translation>
@@ -4998,6 +5000,7 @@
 <translation id="5600706100022181951">Жаңа нұсқаны жүктеп алуға мобильдік интернеттен <ph name="UPDATE_SIZE_MB" /> МБ алынады. Жалғастырғыңыз келе ме?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI құрылғыларына қосылуға рұқсаты жоқтар</translation>
+<translation id="5601833336918638013">Сайттардың Bluetooth құрылғыларын іздеуіне рұқсат берілмесін.</translation>
 <translation id="5602765853043467355">Осы құрылғыдан алынған бетбелгілерді, тарихты, құпия сөздерді, т.б. өшіру</translation>
 <translation id="5605758115928394442">Жеке басыңызды растау үшін телефоныңызға хабарландыру жіберілді.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім бөгелді}other{Бұл кеңейтімдер бөгелді}}</translation>
@@ -6452,6 +6455,7 @@
 <translation id="6960507406838246615">Linux жүйесін жаңарту қажет.</translation>
 <translation id="6960648667961844909">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынбады. Жүктеп алу кейінірек қайталанады. Жүктеп алу аяқталғанша, айтылған сөз оны өңдеу үшін Google-ға жіберілді.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> құрылғысындағы барлық пайдаланушының файлдары мен жергілікті деректері біржола жойылды.</translation>
+<translation id="6961327401577924850">Сайттар әдетте төмен қуатты сигналды, денсаулық немесе фитнес трекерін, сондай-ақ смарт жарық көзін орнату немесе синхрондау сияқты функциялар үшін Bluetooth құрылғыларын іздейді.</translation>
 <translation id="6963872466817251924">Мәтін курсорын бөлектеу құралы</translation>
 <translation id="6964390816189577014">Қаһарман</translation>
 <translation id="6964760285928603117">Топтан өшіру</translation>
@@ -8086,6 +8090,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> плагині іске қосылуы үшін рұқсатыңыз қажет</translation>
 <translation id="8466417995783206254">Бұл қойынды "суреттегі сурет" режимінде бейне ойнатуда.</translation>
 <translation id="8467326454809944210">Басқа тілді таңдау</translation>
+<translation id="8468087214092422866">Bluetooth құрылғыларын іздеуге рұқсат етілмейді.</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> сайты үшін құпия сөздер сақталды</translation>
 <translation id="8471525937465764768">Сайттар әдетте құжатты басып шығару немесе жад құрылғысына сақтау сияқты функциялар үшін USB құрылғыларына қосылады</translation>
 <translation id="8471959340398751476">Жеңілдіктер өшірулі. Оларды арнаулы мәзірден қосуыңызға болады.</translation>

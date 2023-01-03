@@ -1234,6 +1234,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2104166991923847969">Desactivar el hotspot automáticamente</translation>
 <translation id="2105809836724866556">Se ocultó el <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
+<translation id="2110941575868943054">Puede buscar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
 <translation id="2112554630428445878">Te damos la bienvenida, <ph name="USERNAME" /></translation>
@@ -2878,7 +2879,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620136223548713675">Ubicación geográfica</translation>
 <translation id="362023940451053340">En tu Cuenta de Google, para <ph name="ACCOUNT" /></translation>
-<translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de Chrome OS</translation>
+<translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{una app}other{# apps}}</translation>
 <translation id="362333465072914957">Esperando que la CA emita un certificado</translation>
 <translation id="3624567683873126087">Desbloquear el dispositivo y acceder a la cuenta de Google</translation>
@@ -3025,6 +3026,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3756485814916578707">Transmitiendo pantalla</translation>
 <translation id="3756578970075173856">Establecer un PIN</translation>
 <translation id="3756795331760037744">Permite que Asistente de Google utilice información de la pantalla de <ph name="SUPERVISED_USER_NAME" /> para que le sea útil</translation>
+<translation id="3756806135608816820">Permitir que los sitios soliciten permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
 <translation id="375841316537350618">Descargando secuencia de comandos proxy...</translation>
 <translation id="3758842566811519622">Se establecieron cookies</translation>
@@ -3795,6 +3797,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4469762931504673593"><ph name="ORIGIN" /> puede editar archivos en <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencias de almacenamiento externo</translation>
 <translation id="4471354919263203780">Descargando archivos de reconocimiento de voz… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Puedes usar el idioma preferido de tu Cuenta de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="4472575034687746823">Comenzar</translation>
 <translation id="4474155171896946103">Agregar a favoritos todas las pestañas...</translation>
@@ -4998,6 +5001,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5600706100022181951">Para descargar la actualización, se usarán <ph name="UPDATE_SIZE_MB" /> MB de datos móviles. ¿Deseas continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">No puede conectarse con dispositivos MIDI</translation>
+<translation id="5601833336918638013">No permitir que los sitios busquen dispositivos Bluetooth</translation>
 <translation id="5602765853043467355">Borrar favoritos, historial, contraseñas y otras opciones de configuración de este dispositivo</translation>
 <translation id="5605758115928394442">Se envió una notificación a tu teléfono para confirmar que eres tú</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Se bloqueó esta extensión}other{Se bloquearon estas extensiones}}</translation>
@@ -6455,6 +6459,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6960507406838246615">Debes actualizar Linux</translation>
 <translation id="6960648667961844909">No se pudieron descargar los archivos de voz en <ph name="LANGUAGE" />. Se intentará completar la descarga más tarde. La enunciación se enviará a Google para su procesamiento hasta que se complete la descarga.</translation>
 <translation id="696103774840402661">Se borraron de forma permanente todos los archivos y datos locales de todos los usuarios de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6961327401577924850">Por lo general, los sitios buscan dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de estado físico o de salud, o una lámpara inteligente</translation>
 <translation id="6963872466817251924">Destacador del cursor de texto</translation>
 <translation id="6964390816189577014">Héroe</translation>
 <translation id="6964760285928603117">Quitar del grupo</translation>
@@ -6731,6 +6736,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7227458944009118910">Las apps enumeradas a continuación también admiten los enlaces del protocolo. Otras apps solicitarán permiso.</translation>
 <translation id="7228056665272655255">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en la esquina superior derecha del teclado. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla y acceso</translation>
+<translation id="7228854227189381547">No cambiar</translation>
 <translation id="7230222852462421043">&amp;Restablecer ventana</translation>
 <translation id="7231260028442989757">Ve las notificaciones del teléfono, descártalas o respóndelas</translation>
 <translation id="7232750842195536390">No se pudo cambiar el nombre</translation>
@@ -7064,6 +7070,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7545466883021407599">No fue posible establecer una conexión con el servidor. Verifica tu conexión de red y vuelve a intentarlo. Si los problemas persisten, reinicia tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertencia: La configuración de <ph name="PRODUCT_NAME" /> se almacena en una unidad de red, lo que puede provocar ralentizaciones, fallas o, incluso, la pérdida de datos.</translation>
 <translation id="7548856833046333824">Limonada</translation>
+<translation id="7549434883223124329">¿Quieres cambiar el idioma del dispositivo?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Se descargó <ph name="FILE_NAME" /> correctamente.</translation>
 <translation id="7551643184018910560">Fijar en la barra</translation>
@@ -8090,6 +8097,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8465444703385715657">Se necesita tu permiso para ejecutar <ph name="PLUGIN_NAME" /></translation>
 <translation id="8466417995783206254">Esta pestaña está reproduciendo un video en el modo de pantalla en pantalla.</translation>
 <translation id="8467326454809944210">Elegir otro idioma</translation>
+<translation id="8468087214092422866">No puede buscar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Se guardaron contraseñas para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Por lo general los sitios se conectan a dispositivos USB para habilitar funciones, como imprimir un documento o guardar datos en un dispositivo de almacenamiento.</translation>
 <translation id="8471959340398751476">Se desactivaron las notificaciones de descuentos. Puedes activarlas en el menú de personalización.</translation>

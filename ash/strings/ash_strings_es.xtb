@@ -926,6 +926,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6043212731627905357">Este monitor no se puede utilizar con tu <ph name="DEVICE_TYPE" /> (el monitor no es compatible).</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
+<translation id="6045629311476491587">Usados por <ph name="APP_COUNT" /> aplicaciones</translation>
 <translation id="6047696787498798094">Cuando cambies de usuario, la pantalla dejará de compartirse. ¿Quieres continuar?</translation>
 <translation id="6054305421211936131">Iniciar sesión con tarjeta inteligente</translation>
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>

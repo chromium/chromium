@@ -4304,6 +4304,17 @@
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5194683382395300627">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" />来实现诸多目的（例如启用自动更改密码的功能）</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
+<translation id="5198660575318473544">控制可否在 <ph name="PRODUCT_OS_NAME" /> 登录页面上使用 Manifest V2 扩展程序。
+
+对 Manifest V2 扩展程序的支持将被弃用，日后所有扩展程序都需要迁移到 V3。如需了解详情和迁移时间轴，请访问 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
+
+如果此政策设为 <ph name="DEFAULT" /> (0) 或未设置，设备会根据上述时间轴决定是否加载 V2 扩展程序。
+如果此政策设为 <ph name="DISABLE" /> (1)，系统会禁止安装 V2 扩展程序，并停用已安装的这类扩展程序。在 V2 支持被默认关闭之后，系统对该选项的处理方式将与未设置此政策时的情形相同。
+如果此政策设为 <ph name="ENABLE" /> (2)，系统将允许安装 V2 扩展程序。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
+如果此政策设为 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系统将允许使用强制安装的 V2 扩展程序。这包括由 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 列出且 <ph name="INSTALLATION_MODE" /> 为“force_installed”或“normal_installed”的扩展程序。所有其他 V2 扩展程序均会被停用。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
+
+
+扩展程序的可用性仍由其他政策控制。</translation>
 <translation id="5206454085187851382">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="5207543664699568887">配置 Linux 上的 <ph name="PRODUCT_NAME" /> 是否会使用系统通知。
 
@@ -4748,6 +4759,7 @@
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理设置</translation>
 <translation id="5601503069213153581">PIN 码</translation>
 <translation id="5607021831414604820">启用设备存储状态报告功能</translation>
+<translation id="5608114828230655271">默认设备行为</translation>
 <translation id="5614865701790130558">记录基于政策的扩展程序安装事件</translation>
 <translation id="5618398258385745432">在我们推出“查看密码时需重新验证”这一规定之前，我们是使用相关的设置来控制用户能否查看密码。自这一规定推出后，相关设置以及此政策便不再对 Chrome 的行为有任何影响。Chrome 的当前行为等同于此政策设为在密码管理器设置页面中禁止以明文形式显示密码。这意味着，设置页面中包含的只是一个占位符，仅当用户点击“显示”（并进行重新验证，如果适用的话）后，Chrome 才会显示相应密码。此政策的原始描述如下所示：
 

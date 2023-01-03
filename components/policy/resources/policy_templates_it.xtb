@@ -4334,6 +4334,17 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
 <translation id="5194683382395300627">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per attivare la modifica automatica delle password</translation>
 <translation id="5196630732055960309">Consenti l'API File Handling su queste app web</translation>
+<translation id="5198660575318473544">Controlla se le estensioni Manifest v2 possono essere utilizzate nella schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
+
+Il supporto delle estensioni Manifest v2 verrà ritirato e in futuro sarà necessario eseguire la migrazione di tutte le estensioni alla versione 3. Ulteriori informazioni e tempistiche della migrazione sono disponibili all'indirizzo https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Se il criterio viene impostato su <ph name="DEFAULT" /> (0) o se non viene configurato, il caricamento delle estensioni v2 viene determinato dal dispositivo, in base alle tempistiche indicate nella pagina precedente.
+Se il criterio viene impostato su <ph name="DISABLE" /> (1), l'installazione delle estensioni v2 viene bloccata, mentre le estensioni esistenti vengono disattivate. L'opzione verrà trattata come se il criterio non fosse impostato dopo la disattivazione del supporto della versione 2 per impostazione predefinita.
+Se il criterio viene impostato su <ph name="ENABLE" /> (2), le estensioni v2 sono consentite. L'opzione verrà trattata come se il criterio non fosse impostato prima della disattivazione del supporto della versione 2 per impostazione predefinita.
+Se il criterio viene impostato su <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), le estensioni v2 con installazione forzata sono consentite. Sono incluse le estensioni elencate da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Tutte le altre estensioni v2 vengono disattivate. L'opzione verrà trattata come se il criterio non fosse impostato prima della disattivazione del supporto della versione 2 per impostazione predefinita.
+
+
+La disponibilità delle estensioni è comunque controllata da altri criteri.</translation>
 <translation id="5206454085187851382">Se per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche di sistema su Linux.
 
@@ -4780,6 +4791,7 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
 <translation id="5599461642204007579">Impostazioni di gestione di <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Attiva i report sullo stato di archiviazione del dispositivo</translation>
+<translation id="5608114828230655271">Comportamento predefinito del dispositivo</translation>
 <translation id="5614865701790130558">Registra eventi per le installazioni di estensioni basate sul criterio</translation>
 <translation id="5618398258385745432">L'impostazione associata veniva utilizzata prima dell'introduzione della riautenticazione per la visualizzazione delle password. Dopodiché l'impostazione e quindi la norma non hanno più inciso sul comportamento di Chrome. Ora Chrome funziona come se la norma fosse impostata in modo da disattivare la visualizzazione delle password in testo non criptato nella pagina delle impostazioni di Gestione password. Ciò significa che la pagina delle impostazioni contiene soltanto un segnaposto e che Chrome mostra la password soltanto se l'utente fa clic su "Mostra" (ed esegue la riautenticazione, se possibile). Di seguito è riportata la descrizione originale della norma.
 

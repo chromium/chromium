@@ -1006,6 +1006,11 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="1962864958436828230">Minimale groottelimiet instellen voor klembordbeperking ter voorkoming van datalekken</translation>
 <translation id="1964634611280150550">Incognitomodus staat uit</translation>
 <translation id="1964802606569741174">Dit beleid is niet van invloed op de YouTube-app voor Android. Als de veiligheidsmodus voor YouTube moet worden afgedwongen, moet je installatie van de YouTube-app voor Android niet toestaan.</translation>
+<translation id="1964985353230379667">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets opgegeven.
+
+      Als je het beleid KerberosUseCustomPrefilledConfig toepast, wordt de waarde van het beleid toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie. Als je dit beleid instelt op een lege tekenreeks of niet instelt, wordt de aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie verwijderd.
+
+      Als je het beleid KerberosUseCustomPrefilledConfig niet toepast, wordt de waarde van dit beleid niet gebruikt.</translation>
 <translation id="1969212217917526199">Hiermee worden beleidsregels overgeschreven op Debug-builds van de host voor externe toegang.
 
           De waarde wordt geparseerd als een JSON-woordenboek van beleidsnaam tot beleidswaardelocaties.</translation>

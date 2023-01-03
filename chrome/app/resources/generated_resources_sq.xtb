@@ -1234,6 +1234,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2104166991923847969">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> është e fshehur</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numër telefoni}other{# numra telefoni}}</translation>
+<translation id="2110941575868943054">Lejohen të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="211144231511833662">Pastro llojet</translation>
 <translation id="2111670510994270194">Skedë e re djathtas</translation>
 <translation id="2112554630428445878">Mirë se erdhe, <ph name="USERNAME" /></translation>
@@ -3026,6 +3027,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3756485814916578707">Ekrani po transmetohet</translation>
 <translation id="3756578970075173856">Cakto kodin PIN</translation>
 <translation id="3756795331760037744">Lejo që "Asistenti i Google" të përdorë informacionet në ekranin e <ph name="SUPERVISED_USER_NAME" /> për të ndihmuar</translation>
+<translation id="3756806135608816820">Sajtet mund të pyesin që të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="3757733214359997190">Nuk u gjet asnjë sajt</translation>
 <translation id="375841316537350618">Po shkarkon skriptin e përfaqësuesit...</translation>
 <translation id="3758842566811519622">Kukit u vendosën</translation>
@@ -3796,6 +3798,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4469762931504673593"><ph name="ORIGIN" /> mund t'i modifikojë skedarët në <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencat e hapësirës së jashtme ruajtëse</translation>
 <translation id="4471354919263203780">Po shkarkon skedarët e njohjes së ligjërimit... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Mund të përdorësh gjuhën tënde të preferuar të "Llogarisë së Google" (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ndihmo në përmirësimin e funksioneve dhe cilësisë së funksionimit të Chrome</translation>
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
@@ -4999,6 +5002,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5600706100022181951">Përditësimi do të shkarkohet duke përdorur <ph name="UPDATE_SIZE_MB" /> MB të dhëna celulare. Dëshiron të vazhdosh?</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
 <translation id="5601823921345337195">Nuk lejohen të lidhen me pajisjet MIDI</translation>
+<translation id="5601833336918638013">Mos lejo që sajtet të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="5602765853043467355">Pastro faqeshënuesit, historikun, fjalëkalimet dhe më shumë nga kjo pajisje</translation>
 <translation id="5605758115928394442">Një njoftim është dërguar te telefoni yt për të konfirmuar që je ti.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Kjo shtesë është bllokuar}other{Këto shtesa janë bllokuar}}</translation>
@@ -6456,6 +6460,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6960507406838246615">Kërkohet përditësimi i Linux</translation>
 <translation id="6960648667961844909">Skedarët ligjërimit në <ph name="LANGUAGE" /> nuk mund të shkarkoheshin. Shkarkimi do të provohet më vonë. Ligjërimi dërgohet te Google për përpunim derisa shkarkimi të përfundojë.</translation>
 <translation id="696103774840402661">Të gjithë skedarët dhe të dhënat lokale për të gjithë përdoruesit në këtë <ph name="DEVICE_TYPE" /> janë fshirë përfundimisht.</translation>
+<translation id="6961327401577924850">Sajtet kërkojnë zakonisht për pajisjet me Bluetooth për veçoritë si p.sh. konfigurimi ose sinkronizimi i një sinjalizuesi me nivel të ulët energjie, një monitoruesi shëndeti ose fitnesi ose një llambe inteligjente</translation>
 <translation id="6963872466817251924">Theksuesi i kursorit për tekstin</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Largo nga grupi</translation>
@@ -6732,6 +6737,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7227458944009118910">Aplikacionet e listuara më poshtë mund të trajtojnë edhe lidhjet e protokollit. Aplikacionet e tjera do të kërkojnë leje.</translation>
 <translation id="7228056665272655255">Për të konfiguruar gjurmën e gishtit, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit në këndin lart djathtas të tastierës. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga kjo pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Kyçja e ekranit dhe identifikimi</translation>
+<translation id="7228854227189381547">Mos ndërro</translation>
 <translation id="7230222852462421043">&amp;Restauro dritaren</translation>
 <translation id="7231260028442989757">Shiko, shpërfill dhe përgjigjju njoftimeve të telefonit</translation>
 <translation id="7232750842195536390">Riemërtimi dështoi</translation>
@@ -7065,6 +7071,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7545466883021407599">Nuk mund të lidhej me serverin. Kontrollo lidhjen e rrjetit dhe provo përsëri. Nëse ke ende probleme, provo të rinisësh Chromebook. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Paralajmërim! Cilësimet e <ph name="PRODUCT_NAME" /> ruhen në një disk rrjeti. Kjo mund të rezultojë në ngadalësime, ndërprerje aksidentale, madje edhe në humbjen e të dhënave.</translation>
 <translation id="7548856833046333824">Limonatë</translation>
+<translation id="7549434883223124329">Të ndërrohet gjuha e pajisjes?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Shkarkimi i <ph name="FILE_NAME" /> nuk u krye me sukses</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
@@ -8089,6 +8096,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ka nevojë për leje që të ekzekutohet</translation>
 <translation id="8466417995783206254">Kjo skedë po luan një video në modalitetin "figurë brenda figurës".</translation>
 <translation id="8467326454809944210">Zgjidh një gjuhë tjetër</translation>
+<translation id="8468087214092422866">Nuk lejohen të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="8470513973197838199">Fjalëkalimet e ruajtura për <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sajtet lidhen zakonisht me pajisjet me USB për veçoritë si printimi i një dokumenti ose ruajtja te një pajisje e hapësirës ruajtëse</translation>
 <translation id="8471959340398751476">Uljet e çmimeve janë joaktive. Mund t'i aktivizosh te menyja e personalizimit</translation>

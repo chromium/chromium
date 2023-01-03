@@ -1238,6 +1238,7 @@
 <translation id="2104166991923847969">හොට්ස්පොට් ස්වයංක්‍රීයව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> සඟවා ඇත</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{දුරකථන අංකය}one{දුරකථන අංක #}other{දුරකථන අංක #}}</translation>
+<translation id="2110941575868943054">බ්ලූටූත් උපාංග සෙවීමට ඉඩ දී ඇත</translation>
 <translation id="211144231511833662">වර්ග හිස් කරන්න</translation>
 <translation id="2111670510994270194">දකුණට නව පටිත්ත</translation>
 <translation id="2112554630428445878">ආයුබෝවන්, <ph name="USERNAME" /></translation>
@@ -3032,6 +3033,7 @@
 <translation id="3756485814916578707">තිරය විකාශය කරමින්</translation>
 <translation id="3756578970075173856">රහස් අංකය සකසන්න</translation>
 <translation id="3756795331760037744">උදව් කිරීමට <ph name="SUPERVISED_USER_NAME" />ගේ තිරයේ තතු භාවිත කිරීමට Google සහායකට ඉඩ දෙන්න</translation>
+<translation id="3756806135608816820">බ්ලූටූත් උපාංග සෙවීමට අඩවිවලට විමසා සිටිය හැක</translation>
 <translation id="3757733214359997190">වෙබ් අඩවි කිසිවක් හමු නොවිය</translation>
 <translation id="375841316537350618">ප්‍රොක්සි ස්ක්‍රිප්ටය බාගනිමින්...</translation>
 <translation id="3758842566811519622">කුකීස් සැකසිණි</translation>
@@ -3803,6 +3805,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4469762931504673593"><ph name="ORIGIN" /> හට <ph name="FOLDERNAME" /> තුළ ඇති ගොනු සංස්කරණ කළ හැක</translation>
 <translation id="4470957202018033307">බාහිර ආචයන මනාප</translation>
 <translation id="4471354919263203780">කථන හැඳුනුම් ‍ගොනු බාගනිමින්... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">ඔබට ඔබ කැමති Google ගිණුම් භාෂාව (<ph name="NEW_LOCALE_FROM_GAIA" />) භාවිතා කළ හැක</translation>
 <translation id="447252321002412580">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උපකාරී වේ</translation>
 <translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4474155171896946103">සියලු ටැබ් පිටු සලකුණු කරන්න...</translation>
@@ -5006,6 +5009,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5600706100022181951">යාවත්කාලීනය <ph name="UPDATE_SIZE_MB" /> MB ජංගම දත්ත භාවිත කර බාගනු ඇත. ඔබ දිගටම කරගෙන යාමට කැමතිද?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI උපාංග වෙත සම්බන්ධ වීමට ඉඩ නොදේ</translation>
+<translation id="5601833336918638013">බ්ලූටූත් උපාංග සෙවීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="5602765853043467355">මෙම උපාංගයෙන් පිටුසන්, ඉතිහාසය, මුරපද, සහ තවත් දේ හිස් කරන්න</translation>
 <translation id="5605758115928394442">ඒ ඔබ බව තහවුරු කිරීමට ඔබේ දුරකථනයට දැනුම්දීමක් යවන ලදි.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{මෙම දිගුව අවහිර කර ඇත}one{මෙම දිගු අවහිර කර ඇත}other{මෙම දිගු අවහිර කර ඇත}}</translation>
@@ -6464,6 +6468,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6960507406838246615">Linux යාවත්කාලීනය අවශ්‍යයි</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> කථන ගොනු බාගැනීමට නොහැකි විය. බාගැනීම පසුව උත්සාහ කරනු ඇත. බාගැනීම සම්පූර්ණ වනතෙක් සැකසීම සඳහා කථනය Google වෙත යැවේ.</translation>
 <translation id="696103774840402661">මෙම <ph name="DEVICE_TYPE" /> හි සියලු පරිශීලකයන් සඳහා සියලු ගොනු සහ ස්ථානීය දත්ත ස්ථිරවම මකා ඇත.</translation>
+<translation id="6961327401577924850">අඩවි සාමාන්‍යයෙන් අඩු ශක්ති බීකනයක්, සෞඛ්‍ය හෝ යෝග්‍යතා හඹා යන්නෙක් හෝ ස්මාර්ට් ආලෝක බුබුලක් පිහිටුවීම හෝ සමමුහුර්ත කිරීම වැනි විශේෂාංග සඳහා බ්ලූටූත් උපාංග සඳහා සොයයි</translation>
 <translation id="6963872466817251924">පෙළ කර්සර උද්දීපනය</translation>
 <translation id="6964390816189577014">වීරයා</translation>
 <translation id="6964760285928603117">කණ්ඩායමෙන් ඉවත් කරන්න</translation>
@@ -6740,6 +6745,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7227458944009118910">පහත ලැයිස්තුගත කර ඇති යෙදුම්වලට ප්‍රොටොකෝල සබැඳිද හැසිරවිය හැකිය. වෙනත් යෙදුම් අවසර ඉල්ලනු ඇත.</translation>
 <translation id="7228056665272655255">ඇඟිලි සලකුණ පිහිටුවීම සඳහා, ඔබේ දරුවාට යතුරුපුවරුවේ ඉහළ දකුණු කෙළවරේ ඇති ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කිරීමට සලස්වන්න. ඔබේ දරුවාගේ ඇඟිලි සලකුණු දත්ත ආරක්ෂිතව ගබඩා කෙරෙන අතර කිසි විටක ඔබේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="7228523857728654909">තිර අගුල සහ පුරනය</translation>
+<translation id="7228854227189381547">මාරු නොකරන්න</translation>
 <translation id="7230222852462421043">&amp;කවුළුව ප්‍රතිසාධනය කරන්න</translation>
 <translation id="7231260028442989757">ඔබගේ දුරකථනයේ දැනුම්දීම් බලන්න, ඉවත ලන්න සහ පිළිතුරු දෙන්න</translation>
 <translation id="7232750842195536390">යළි නම් කිරීමට අසමත් විය</translation>
@@ -7073,6 +7079,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7545466883021407599">සේවාදායකය සමග සම්බන්ධ විය නොහැකි විය. ඔබේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න. ඔබට තවමත් ගැටලු තිබේ නම්, ඔබගේ Chromebook යළි ආරම්භ කිරීම උත්සාහ කරන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">අවවාදයයි: ඔබේ <ph name="PRODUCT_NAME" /> සැකසුම් ජාල ධාවකයක පිහිටා ඇත. මෙය මන්දගාමී වීම, බිඳවැටීම හෝ දත්ත අහිමි වීම සඳහා පවා හේතු විය හැක.</translation>
 <translation id="7548856833046333824">ලෙමනේඩ්</translation>
+<translation id="7549434883223124329">උපාංග භාෂාව මාරු කරන්න ද?</translation>
 <translation id="7550830279652415241">පිටුසලකුණු_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> බාගැනීම සාර්ථකයි</translation>
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
@@ -8097,6 +8104,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> හට ධාවනය වීමට ඔබේ අවසරය අවශ්‍යයි</translation>
 <translation id="8466417995783206254">මෙම පටිත්ත පින්තූරය-තුළ-පින්තූරය තුළ වීඩියෝව ධාවනය කරයි.</translation>
 <translation id="8467326454809944210">වෙනත් භාෂාවක් තෝරන්න</translation>
+<translation id="8468087214092422866">බ්ලූටූත් උපාංග සෙවීමට ඉඩ දී නැත</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> සඳහා සුරැකි මුරපද</translation>
 <translation id="8471525937465764768">අඩවි සාමාන්‍යයෙන් ලේඛනයක් මුද්‍රණය කිරීම හෝ ගබඩා උපාංගයකට සුරැකීම වැනි විශේෂාංග සඳහා USB උපාංග සමඟ සම්බන්ධ වේ</translation>
 <translation id="8471959340398751476">වට්ටම් ක්‍රියාවිරහිතයි. අභිරුචිකරණ මෙනුවෙන් ඔබට ඒවා ක්‍රියාත්මක කළ හැකිය</translation>

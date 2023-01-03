@@ -3790,6 +3790,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを編集できます</translation>
 <translation id="4470957202018033307">外部ストレージの設定</translation>
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Google アカウントの言語（<ph name="NEW_LOCALE_FROM_GAIA" />）を使用できます</translation>
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
 <translation id="4472575034687746823">始める</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
@@ -6722,6 +6723,7 @@
 <translation id="7227458944009118910">以下のアプリでもプロトコル リンクを処理できます。他のアプリでは許可が必要となります。</translation>
 <translation id="7228056665272655255">指紋を設定するには、キーボードの右上にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7228523857728654909">画面ロックとログイン</translation>
+<translation id="7228854227189381547">切り替えない</translation>
 <translation id="7230222852462421043">ウィンドウを復元(&amp;R)</translation>
 <translation id="7231260028442989757">スマートフォンの通知を確認する、閉じる、返信するなどの操作を行います</translation>
 <translation id="7232750842195536390">名前を変更できませんでした</translation>
@@ -7054,6 +7056,7 @@
 <translation id="7545466883021407599">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告: お使いの <ph name="PRODUCT_NAME" /> の設定はネットワーク ドライブに保存されています。遅延、クラッシュ、データ損失が生じる場合があります。</translation>
 <translation id="7548856833046333824">レモネード</translation>
+<translation id="7549434883223124329">デバイスの言語を切り替えますか？</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> をダウンロードできませんでした</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>

@@ -1249,6 +1249,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2104166991923847969">Matikan tempat liputan secara automatik</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> disembunyikan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nombor telefon}other{# nombor telefon}}</translation>
+<translation id="2110941575868943054">Dibenarkan mencari peranti Bluetooth</translation>
 <translation id="211144231511833662">Kosongkan Jenis</translation>
 <translation id="2111670510994270194">Tab baharu ke kanan</translation>
 <translation id="2112554630428445878">Selamat datang, <ph name="USERNAME" /></translation>
@@ -3043,6 +3044,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3756485814916578707">Menghantar skrin</translation>
 <translation id="3756578970075173856">Tetapkan PIN</translation>
 <translation id="3756795331760037744">Benarkan Google Assistant menggunakan maklumat pada skrin <ph name="SUPERVISED_USER_NAME" /> untuk memberikan bantuan</translation>
+<translation id="3756806135608816820">Laman boleh meminta untuk mencari peranti Bluetooth</translation>
 <translation id="3757733214359997190">Tiada tapak ditemui</translation>
 <translation id="375841316537350618">Memuat turun skrip proksi...</translation>
 <translation id="3758842566811519622">Kuki ditetapkan</translation>
@@ -5018,6 +5020,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5600706100022181951">Kemas kini akan dimuat turun menggunakan <ph name="UPDATE_SIZE_MB" /> MB data mudah alih. Adakah anda ingin meneruskan?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Tidak dibenarkan untuk menyambung kepada peranti MIDI</translation>
+<translation id="5601833336918638013">Jangan benarkan laman mencari peranti Bluetooth</translation>
 <translation id="5602765853043467355">Kosongkan penanda halaman, sejarah, kata laluan dan pelbagai lagi daripada peranti ini</translation>
 <translation id="5605758115928394442">Pemberitahuan telah dihantar ke telefon anda untuk mengesahkan orang itu ialah anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Sambungan ini disekat}other{Sambungan ini disekat}}</translation>
@@ -6475,6 +6478,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6960507406838246615">Memerlukan kemas kini Linux</translation>
 <translation id="6960648667961844909">Tidak dapat memuat turun fail pertuturan <ph name="LANGUAGE" />. Muat turun akan cuba dilakukan kemudian. Pertuturan dihantar kepada Google untuk diproses sehingga muat turun selesai.</translation>
 <translation id="696103774840402661">Semua fail dan data setempat untuk semua pengguna pada <ph name="DEVICE_TYPE" /> ini telah dipadamkan secara kekal.</translation>
+<translation id="6961327401577924850">Laman biasanya mencari peranti Bluetooth untuk ciri seperti menyediakan atau menyegerakkan bikon tenaga rendah, penjejak kesihatan atau kecergasan atau mentol lampu pintar</translation>
 <translation id="6963872466817251924">Penyerlah kursor teks</translation>
 <translation id="6964390816189577014">Wira</translation>
 <translation id="6964760285928603117">Alih Keluar Daripada Kumpulan</translation>
@@ -8113,6 +8117,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> memerlukan kebenaran anda untuk dijalankan</translation>
 <translation id="8466417995783206254">Tab ini memainkan video dalam mod gambar dalam gambar.</translation>
 <translation id="8467326454809944210">Pilih bahasa lain</translation>
+<translation id="8468087214092422866">Tidak dibenarkan mencari peranti Bluetooth</translation>
 <translation id="8470513973197838199">Kata laluan disimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Tapak biasanya menyambung kepada peranti USB untuk ciri seperti mencetak dokumen atau menyimpan pada peranti storan</translation>
 <translation id="8471959340398751476">Diskaun dimatikan. Anda boleh menghidupkan diskaun dalam menu sesuaikan</translation>

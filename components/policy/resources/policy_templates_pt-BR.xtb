@@ -1006,6 +1006,11 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="1962864958436828230">Definir o limite mínimo para a prevenção contra vazamento de dados de acordo com a restrição da área de transferência</translation>
 <translation id="1964634611280150550">Modo de navegação anônima desativado</translation>
 <translation id="1964802606569741174">Esta política não tem nenhum efeito sobre o app YouTube para Android. Se o modo de segurança do YouTube precisar ser aplicado, a instalação desse app será bloqueada.</translation>
+<translation id="1964985353230379667">Especifica a configuração <ph name="KRB5_CONFIG" /> sugerida para os novos tíquetes criados manualmente.
+
+      Se a política "KerberosUseCustomPrefilledConfig" for ativada, o valor dela vai ser aplicado como a configuração sugerida e mostrado na seção "Avançado" da caixa de diálogo de autenticação do Kerberos. Se a política for definida como uma string vazia ou deixada sem definição, a configuração recomendada do <ph name="PRODUCT_OS_NAME" /> vai ser excluída.
+
+      Se a política for desativada, o valor dela não será usado.</translation>
 <translation id="1969212217917526199">Modifica as políticas sobre versões de depuração do host de acesso remoto.
 
           O valor é analisado como um dicionário JSON de nome de política para mapeamentos de valor de política.</translation>
