@@ -215,7 +215,7 @@ export namespace CommonDataTypes {
   export type LocalOrRemoteValue = RemoteReference | LocalValue;
 
   // ListLocalValue = [*LocalValue];
-  export type ListLocalValue = Array<LocalOrRemoteValue>;
+  export type ListLocalValue = LocalOrRemoteValue[];
 
   // ArrayLocalValue = {
   //   type: "array",
@@ -236,9 +236,7 @@ export namespace CommonDataTypes {
   };
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  export type MappingLocalValue = Array<
-    [string | LocalOrRemoteValue, LocalOrRemoteValue]
-  >;
+  export type MappingLocalValue = [string | LocalOrRemoteValue, LocalOrRemoteValue][];
 
   // MapLocalValue = {
   //   type: "map",
@@ -559,7 +557,7 @@ export namespace Script {
 
   export type DisownParameters = {
     target: Target;
-    handles: Array<string>;
+    handles: string[];
   };
 
   export type DisownResult = {result: {}};
@@ -576,7 +574,7 @@ export namespace Script {
   export type CallFunctionParameters = {
     functionDeclaration: string;
     target: Target;
-    arguments?: Array<ArgumentValue>;
+    arguments?: ArgumentValue[];
     this?: ArgumentValue;
     awaitPromise: boolean;
     resultOwnership?: OwnershipModel;
@@ -865,8 +863,8 @@ export namespace Session {
   //   ?contexts: [*BrowsingContext],
   // }
   export type SubscribeParameters = {
-    events: Array<SubscribeParametersEvent>;
-    contexts?: Array<CommonDataTypes.BrowsingContext>;
+    events: SubscribeParametersEvent[];
+    contexts?: CommonDataTypes.BrowsingContext[];
   };
 
   export type SubscribeResult = {result: {}};

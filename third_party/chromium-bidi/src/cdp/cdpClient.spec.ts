@@ -29,9 +29,9 @@ import {Protocol} from 'devtools-protocol';
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
 
-describe('CdpClient tests.', function () {
+describe('CdpClient tests.', () => {
   it(`given CdpClient, when some command is called, then cdpBindings should be
-      called with proper values`, async function () {
+      called with proper values`, async () => {
     const expectedMessageStr = JSON.stringify({
       id: 0,
       method: 'Target.activateTarget',
@@ -53,7 +53,7 @@ describe('CdpClient tests.', function () {
   });
 
   it(`given some command is called, when CDP command is done, then
-        'sendMessage' promise is resolved`, async function () {
+        'sendMessage' promise is resolved`, async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -75,7 +75,7 @@ describe('CdpClient tests.', function () {
   });
 
   it(`given some command is called 2 times, when CDP commands are done, then
-        each command promise is resolved with proper results`, async function () {
+        each command promise is resolved with proper results`, async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
     const cdpClient = cdpConnection.browserClient();
@@ -114,7 +114,7 @@ describe('CdpClient tests.', function () {
     chai.assert.deepEqual(actualResult2, expectedResult2);
   });
 
-  it('gets event callbacks when events are received from CDP', async function () {
+  it('gets event callbacks when events are received from CDP', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
     const cdpClient = cdpConnection.browserClient();
@@ -158,8 +158,8 @@ describe('CdpClient tests.', function () {
     sinon.assert.notCalled(typedCallback);
   });
 
-  describe('sendCommand()', function () {
-    it('sends a raw CDP messages and returns a promise that will be resolved with the result', async function () {
+  describe('sendCommand()', () => {
+    it('sends a raw CDP messages and returns a promise that will be resolved with the result', async () => {
       const mockCdpServer = new StubTransport();
       const cdpConnection = new CdpConnection(mockCdpServer);
       const cdpClient = cdpConnection.browserClient();
@@ -184,7 +184,7 @@ describe('CdpClient tests.', function () {
       });
     });
 
-    it('sends a raw CDP messages and returns a promise that will reject on error', async function () {
+    it('sends a raw CDP messages and returns a promise that will reject on error', async () => {
       const mockCdpServer = new StubTransport();
       const cdpConnection = new CdpConnection(mockCdpServer);
       const cdpClient = cdpConnection.browserClient();

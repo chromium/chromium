@@ -87,7 +87,7 @@ export class CdpConnection {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;
       this.#commandCallbacks.set(id, {resolve, reject});
-      let messageObj: CdpMessage = {id, method, params};
+      const messageObj: CdpMessage = {id, method, params};
       if (sessionId) {
         messageObj.sessionId = sessionId;
       }

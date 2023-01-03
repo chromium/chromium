@@ -40,7 +40,7 @@ const logBidi = log(LogType.bidi);
 
 declare global {
   interface Window {
-    //`window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
+    // `window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
     // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
     cdp: {
       send: (message: string) => void;
@@ -191,7 +191,7 @@ async function _createBidiServer(selfTargetId: string) {
     ): Message.OutgoingMessage {
       // TODO: this is bizarre per spec. We reparse the payload and
       // extract the ID, regardless of what kind of value it was.
-      let messageId = undefined;
+      let messageId;
       try {
         const messageObj = JSON.parse(messageStr);
         if (
@@ -306,7 +306,7 @@ class BidiParserImpl implements BidiParser {
 // Needed to filter out info related to BiDi target.
 async function _waitSelfTargetId(): Promise<string> {
   return await new Promise((resolve) => {
-    window.setSelfTargetId = function (targetId) {
+    window.setSelfTargetId = (targetId) => {
       logSystem('current target ID: ' + targetId);
       resolve(targetId);
     };

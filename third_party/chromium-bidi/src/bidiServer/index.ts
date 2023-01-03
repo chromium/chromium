@@ -63,10 +63,10 @@ function parseArguments() {
     const args = parseArguments();
     const bidiPort = args.port;
     const headless = args.headless !== 'false';
-    const chrome_channel = args.channel;
+    const chromeChannel = args.channel;
 
     BidiServerRunner.run(bidiPort, (bidiServer) => {
-      return _onNewBidiConnectionOpen(headless, chrome_channel, bidiServer);
+      return _onNewBidiConnectionOpen(headless, chromeChannel, bidiServer);
     });
     console.log('BiDi server launched.');
   } catch (e) {
@@ -85,14 +85,14 @@ function parseArguments() {
  */
 async function _onNewBidiConnectionOpen(
   headless: boolean,
-  chrome_channel: string,
+  chromeChannel: string,
   bidiTransport: ITransport
 ): Promise<() => void> {
   const browserLaunchOptions: any = {
     headless,
   };
-  if (chrome_channel) {
-    browserLaunchOptions.channel = chrome_channel;
+  if (chromeChannel) {
+    browserLaunchOptions.channel = chromeChannel;
   }
 
   // 1. Launch Chromium (using Puppeteer for now).

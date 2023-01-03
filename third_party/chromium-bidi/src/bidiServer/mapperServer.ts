@@ -93,7 +93,7 @@ export class MapperServer {
   }
 
   private _onBidiMessage(bidiMessage: string): void {
-    for (let handler of this._handlers) handler(bidiMessage);
+    for (const handler of this._handlers) handler(bidiMessage);
   }
 
   private _onBindingCalled = async (

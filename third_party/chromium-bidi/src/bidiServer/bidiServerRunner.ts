@@ -40,10 +40,10 @@ export class BidiServerRunner {
   ) {
     const self = this;
 
-    const server = http.createServer(async function (
+    const server = http.createServer(async (
       request: http.IncomingMessage,
       response: http.ServerResponse
-    ) {
+    ) => {
       debugInternal(
         `${new Date()} Received ${request.method} request for ${request.url}`
       );
@@ -99,7 +99,7 @@ export class BidiServerRunner {
       }
       return response.end();
     });
-    server.listen(bidiPort, function () {
+    server.listen(bidiPort, () => {
       console.log(`Server is listening on port ${bidiPort}`);
     });
 
@@ -108,7 +108,7 @@ export class BidiServerRunner {
       autoAcceptConnections: false,
     });
 
-    wsServer.on('request', async function (request: websocket.request) {
+    wsServer.on('request', async (request: websocket.request) => {
       debugInternal(
         `new WS request received: ${JSON.stringify(request.resourceURL.path)}`
       );
@@ -119,7 +119,7 @@ export class BidiServerRunner {
 
       const connection = request.accept();
 
-      connection.on('message', function (message) {
+      connection.on('message', (message) => {
         // 1. If |type| is not text, return.
         if (message.type !== 'utf8') {
           self.#respondWithError(
@@ -137,7 +137,7 @@ export class BidiServerRunner {
         bidiServer.onMessage(plainCommandData);
       });
 
-      connection.on('close', function () {
+      connection.on('close', () => {
         debugInternal(
           new Date() + ' Peer ' + connection.remoteAddress + ' disconnected.'
         );
@@ -203,7 +203,7 @@ export class BidiServerRunner {
   ): any {
     // TODO: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
-    let commandId = undefined;
+    let commandId;
     try {
       const commandData = JSON.parse(plainCommandData);
       if ('id' in commandData) {
@@ -242,6 +242,6 @@ class BidiServer implements ITransport {
   }
 
   onMessage(messageStr: string): void {
-    for (let handler of this.#handlers) handler(messageStr);
+    for (const handler of this.#handlers) handler(messageStr);
   }
 }

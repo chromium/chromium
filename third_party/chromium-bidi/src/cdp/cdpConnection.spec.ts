@@ -28,8 +28,8 @@ import {CdpConnection} from './cdpConnection.js';
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';
 
-describe('CdpConnection', function () {
-  it('can send a command message for a CdpClient', async function () {
+describe('CdpConnection', () => {
+  it('can send a command message for a CdpClient', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -45,7 +45,7 @@ describe('CdpConnection', function () {
     );
   });
 
-  it('creates a CdpClient for a session when the Target.attachedToTarget event is received', async function () {
+  it('creates a CdpClient for a session when the Target.attachedToTarget event is received', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -63,7 +63,7 @@ describe('CdpConnection', function () {
     chai.assert.isNotNull(cdpClient);
   });
 
-  it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async function () {
+  it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -86,7 +86,7 @@ describe('CdpConnection', function () {
     );
   });
 
-  it('routes event messages to the correct handler based on sessionId', async function () {
+  it('routes event messages to the correct handler based on sessionId', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -155,7 +155,7 @@ describe('CdpConnection', function () {
     otherSessionCallback.resetHistory();
   });
 
-  it('closes the transport connection when closed', async function () {
+  it('closes the transport connection when closed', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
     cdpConnection.close();
