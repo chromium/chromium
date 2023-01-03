@@ -55,10 +55,9 @@ void KeyboardBacklightColorNudgeController::HandleWallpaperColorNudgeShown() {
 
 void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
     views::View* keyboard_brightness_slider_view) {
-  if (!keyboard_brightness_slider_view)
+  if (!keyboard_brightness_slider_view || education_nudge_) {
     return;
-  if (education_nudge_)
-    return;
+  }
   if (!contextual_tooltip::ShouldShowNudge(
           GetActivePrefService(),
           contextual_tooltip::TooltipType::kKeyboardBacklightColor,

@@ -100,8 +100,9 @@ personalization_app::mojom::BacklightColor
 KeyboardBacklightColorController::GetBacklightColor(
     const AccountId& account_id) {
   // |account_id| may be empty in tests.
-  if (account_id.empty())
+  if (account_id.empty()) {
     return personalization_app::mojom::BacklightColor::kWallpaper;
+  }
   auto* pref_service = GetUserPrefService(account_id);
   DCHECK(pref_service);
   return static_cast<personalization_app::mojom::BacklightColor>(
@@ -156,8 +157,9 @@ void KeyboardBacklightColorController::OnRgbKeyboardSupportedChanged(
 void KeyboardBacklightColorController::OnSessionStateChanged(
     session_manager::SessionState state) {
   // If we are in OOBE, we should set the backlight to a default of white.
-  if (state != session_manager::SessionState::OOBE)
+  if (state != session_manager::SessionState::OOBE) {
     return;
+  }
   DisplayBacklightColor(personalization_app::mojom::BacklightColor::kWhite);
 }
 
@@ -175,8 +177,10 @@ void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
 
 void KeyboardBacklightColorController::OnWallpaperColorsChanged() {
   const auto backlight_color = GetBacklightColor(GetActiveAccountId());
-  if (backlight_color != personalization_app::mojom::BacklightColor::kWallpaper)
+  if (backlight_color !=
+      personalization_app::mojom::BacklightColor::kWallpaper) {
     return;
+  }
   DisplayBacklightColor(personalization_app::mojom::BacklightColor::kWallpaper);
 }
 

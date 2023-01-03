@@ -187,11 +187,13 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
   VLOG(1) << "RGB Keyboard capabilities="
           << static_cast<uint32_t>(capabilities_);
 
-  if (IsRgbKeyboardSupported())
+  if (IsRgbKeyboardSupported()) {
     InitializeRgbKeyboard();
+  }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnRgbKeyboardSupportedChanged(IsRgbKeyboardSupported());
+  }
 }
 
 void RgbKeyboardManager::InitializeRgbKeyboard() {
