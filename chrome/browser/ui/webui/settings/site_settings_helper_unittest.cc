@@ -31,6 +31,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/permission_test_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -514,6 +515,87 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
 }
 
+TEST_F(SiteSettingsHelperTest, CookieExceptions) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  struct TestCase {
+    std::string primary_pattern;
+    std::string secondary_pattern;
+    ContentSetting initial_setting;
+    ContentSetting updated_setting;
+  };
+
+  auto test_cases = std::vector<TestCase>{
+      {"*", "[*.]allowed-top-frame.com", CONTENT_SETTING_ALLOW,
+       CONTENT_SETTING_ALLOW},
+      {"[*.]allowed.com", "*", CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW},
+      {"[*.]allowed.com", "[*.]allowed-top-frame.com", CONTENT_SETTING_ALLOW,
+       CONTENT_SETTING_ALLOW},
+      {"*", "[*.]session-top-frame.com", CONTENT_SETTING_SESSION_ONLY,
+       CONTENT_SETTING_ALLOW},
+      {"[*.]session.com", "*", CONTENT_SETTING_SESSION_ONLY,
+       CONTENT_SETTING_SESSION_ONLY},
+      {"[*.]session.com", "[*.]session-top-frame.com",
+       CONTENT_SETTING_SESSION_ONLY, CONTENT_SETTING_ALLOW},
+      {"[*.]blocked.com", "[*.]blocked-top-frame.com", CONTENT_SETTING_BLOCK,
+       CONTENT_SETTING_BLOCK},
+      {"*", "[*.]blocked-top-frame.com", CONTENT_SETTING_BLOCK,
+       CONTENT_SETTING_BLOCK},
+      {"[*.]blocked.com", "*", CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+  };
+
+  for (const auto& test_case : test_cases) {
+    map->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString(test_case.primary_pattern),
+        ContentSettingsPattern::FromString(test_case.secondary_pattern),
+        kContentTypeCookies, test_case.initial_setting);
+  }
+
+  for (const auto feature_state : std::vector<bool>{true, false}) {
+    base::test::ScopedFeatureList feature_list_;
+    feature_list_.InitWithFeatureState(
+        privacy_sandbox::kPrivacySandboxSettings4, feature_state);
+
+    base::Value::List exceptions;
+    site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
+                                               /*extension_registry=*/nullptr,
+                                               /*web_ui=*/nullptr,
+                                               /*incognito=*/false,
+                                               &exceptions);
+
+    // Convert the test cases, and the returned dictionary, into tuples for
+    // unordered comparison, as the order of exception is not relevant.
+    std::vector<std::tuple<std::string, std::string, std::string>> expected;
+    std::vector<std::tuple<std::string, std::string, std::string>> actual;
+    base::ranges::transform(
+        test_cases, std::back_inserter(expected), [&](const auto& test_case) {
+          // make_tuple as we've some temporary rvalues.
+          return std::make_tuple(
+              test_case.primary_pattern,
+              test_case.secondary_pattern ==
+                      ContentSettingsPattern::Wildcard().ToString()
+                  ? ""
+                  : test_case.secondary_pattern,
+              content_settings::ContentSettingToString(
+                  feature_state ? test_case.updated_setting
+                                : test_case.initial_setting));
+        });
+    base::ranges::transform(
+        exceptions, std::back_inserter(actual), [](const auto& exception) {
+          const base::Value::Dict& dict = exception.GetDict();
+          return std::forward_as_tuple(*dict.FindString(kOrigin),
+                                       *dict.FindString(kEmbeddingOrigin),
+                                       *dict.FindString(kSetting));
+        });
+
+    EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
+        << "Privacy Sandbox Settings 4 "
+        << (feature_state ? "enabled" : "disabled");
+  }
+}
+
 namespace {
 
 void ExpectValidChooserExceptionObject(
@@ -790,9 +872,9 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
       SiteSettingSourceToString(SiteSettingSource::kPreference);
 
   // The chooser exceptions are ordered by display name. Their corresponding
-  // sites are ordered by permission source precedence, then by the origin. User
-  // granted permissions that are also granted by policy are combined with the
-  // policy so that duplicate permissions are not displayed.
+  // sites are ordered by permission source precedence, then by the origin.
+  // User granted permissions that are also granted by policy are combined with
+  // the policy so that duplicate permissions are not displayed.
   base::Value::List exceptions_list =
       GetChooserExceptionListFromProfile(profile(), *chooser_type);
   ASSERT_EQ(exceptions_list.size(), 4u);
@@ -818,8 +900,8 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
 
   // This exception should describe the permissions for any device.
   // There are no user granted permissions that intersect with this permission,
-  // and this policy only grants one permission to the following site:
-  // "https://google.com".
+  // and this policy only grants one permission to the following
+  // site: "https://google.com".
   {
     const auto& exception = exceptions_list[1];
     ExpectDisplayNameEq(exception,

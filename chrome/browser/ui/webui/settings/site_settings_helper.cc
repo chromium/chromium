@@ -48,6 +48,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -639,9 +640,26 @@ void GetExceptionsForContentType(
       continue;
     }
 
+    auto content_setting = setting.GetContentSetting();
+
+    if (type == ContentSettingsType::COOKIES &&
+        base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxSettings4)) {
+      // With the changes to settings introduced in PrivacySandboxSettings4,
+      // there is no user-facing concept of SESSION_ONLY cookie exceptions that
+      // use secondary patterns. These are instead presented as ALLOW.
+      // TODO(crbug.com/1404436): Perform a one time migration of the actual
+      // content settings when the extension API no-longer allows them to be
+      // created.
+      if (content_setting == ContentSetting::CONTENT_SETTING_SESSION_ONLY &&
+          setting.secondary_pattern != ContentSettingsPattern::Wildcard()) {
+        content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
+      }
+    }
+
     all_patterns_settings[std::make_pair(
         setting.primary_pattern, setting.source)][setting.secondary_pattern] =
-        setting.GetContentSetting();
+        content_setting;
   }
 
   ContentSettingsForOneType embargo_settings;
@@ -690,32 +708,10 @@ void GetExceptionsForContentType(
     const std::string display_name =
         GetDisplayNameForPattern(primary_pattern, extension_registry);
 
-    // The "parent" entry either has an identical primary and secondary pattern,
-    // or has a wildcard secondary. The two cases are indistinguishable in the
-    // UI.
-    auto parent = one_settings.find(primary_pattern);
-    if (parent == one_settings.end())
-      parent = one_settings.find(ContentSettingsPattern::Wildcard());
-
     auto& this_provider_exceptions = all_provider_exceptions
         [HostContentSettingsMap::GetProviderTypeFromSource(source)];
 
-    // Add the "parent" entry for the non-embedded setting.
-    ContentSetting parent_setting =
-        parent == one_settings.end() ? CONTENT_SETTING_DEFAULT : parent->second;
-    const ContentSettingsPattern& secondary_pattern =
-        parent == one_settings.end() ? primary_pattern : parent->first;
-    this_provider_exceptions.push_back(GetExceptionForPage(
-        type, profile, primary_pattern, secondary_pattern, display_name,
-        parent_setting, source, incognito,
-        base::Contains(origins_under_embargo, primary_pattern)));
-
-    // Add the "children" for any embedded settings.
     for (auto j = one_settings.begin(); j != one_settings.end(); ++j) {
-      // Skip the non-embedded setting which we already added above.
-      if (j == parent)
-        continue;
-
       ContentSetting content_setting = j->second;
       this_provider_exceptions.push_back(GetExceptionForPage(
           type, profile, primary_pattern, j->first, display_name,
