@@ -194,7 +194,7 @@ interface FrameSinkManager {
 
   // Stops frame counting on the Viz thread and returns all records to the
   // caller.
-  StopFrameCountingForTest() => (FrameCountingData data);
+  StopFrameCountingForTest() => (FrameCountingData? data);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

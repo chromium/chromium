@@ -1128,6 +1128,12 @@ var defaultTests = [
         });
   },
 
+  function stopFrameCountingWithoutStart() {
+    // Expects the stop call to fail when not paired with a start call.
+    chrome.autotestPrivate.stopFrameCounting(
+        chrome.test.callbackFail('No frame counting data'));
+  },
+
   // KEEP |lockScreen()| TESTS AT THE BOTTOM OF THE defaultTests AS IT WILL
   // CHANGE THE SESSION STATE TO LOCKED STATE.
   function lockScreen() {

@@ -841,7 +841,14 @@ void FrameSinkManagerImpl::StartFrameCountingForTest(
 
 void FrameSinkManagerImpl::StopFrameCountingForTest(
     StopFrameCountingForTestCallback callback) {
-  DCHECK(frame_counter_.has_value());
+  // Returns empty data if `frame_counter_` has no value. This could happen
+  // when gpu-process is restarted in middle of test and test scripts still
+  // calls this at the end.
+  if (!frame_counter_.has_value()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   std::move(callback).Run(frame_counter_->TakeData());
   frame_counter_.reset();
 }
