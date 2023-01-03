@@ -39,6 +39,10 @@ BASE_DECLARE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart);
 // very short attention log.
 BASE_DECLARE_FEATURE(kEnableRefineDataSourceReloadReporting);
 
+// Flag to modify the feed header through the server. Enabling this feature on
+// its own does nothing; relies on feature parameters.
+BASE_DECLARE_FEATURE(kFeedHeaderSettings);
+
 // Flag to override feed settings through the server. Enabling this feature on
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kOverrideFeedSettings);
@@ -112,5 +116,16 @@ bool IsCheckVisibilityOnAttentionLogStartEnabled();
 // YES if enabled refining data source reload reporting when having a very short
 // attention log.
 bool IsRefineDataSourceReloadReportingEnabled();
+
+// YES if the Following feed header should not be sticky.
+bool IsStickyHeaderDisabledForFollowingFeed();
+
+// YES if a dot should appear to indicate that there is new content in the
+// Following feed.
+bool IsDotEnabledForNewFollowedContent();
+
+// Returns a custom height for the Following feed header if it is overridden
+// from the server, or returns the default value.
+int FollowingFeedHeaderHeight();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

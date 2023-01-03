@@ -47,8 +47,10 @@ BASE_FEATURE(kEnableRefineDataSourceReloadReporting,
              "EnableRefineDataSourceReloadReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Flag to override feed settings through the server. Enabling this feature on
-// its own does nothing; relies on feature parameters.
+BASE_FEATURE(kFeedHeaderSettings,
+             "FeedHeaderSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -71,6 +73,13 @@ const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
 const char kFollowingFeedDefaultSortTypeSortByLatest[] = "SortByLatest";
 const char kFollowingFeedDefaultSortTypeGroupedByPublisher[] =
     "GroupedByPublisher";
+
+// Feature parameters for `kFeedHeaderSettings`.
+const char kEnableDotForNewFollowedContent[] =
+    "kEnableDotForNewFollowedContent";
+const char kDisableStickyHeaderForFollowingFeed[] =
+    "DisableStickyHeaderForFollowingFeed";
+const char kOverrideFeedHeaderHeight[] = "OverrideFeedHeaderHeight";
 
 // Feature parameters for `kOverrideFeedSettings`.
 const char kFeedSettingRefreshThresholdInSeconds[] =
@@ -130,4 +139,21 @@ bool IsCheckVisibilityOnAttentionLogStartEnabled() {
 
 bool IsRefineDataSourceReloadReportingEnabled() {
   return base::FeatureList::IsEnabled(kEnableRefineDataSourceReloadReporting);
+}
+
+bool IsStickyHeaderDisabledForFollowingFeed() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kFeedHeaderSettings, kDisableStickyHeaderForFollowingFeed, false);
+}
+
+bool IsDotEnabledForNewFollowedContent() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
+}
+
+int FollowingFeedHeaderHeight() {
+  int defaultWebChannelsHeaderHeight = 52;
+  return base::GetFieldTrialParamByFeatureAsInt(kFeedHeaderSettings,
+                                                kOverrideFeedHeaderHeight,
+                                                defaultWebChannelsHeaderHeight);
 }
