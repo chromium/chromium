@@ -182,10 +182,15 @@ class PrivacySandboxSettings : public KeyedService {
   // disallow APIs e.g. site data exceptions.
   void SetAllPrivacySandboxAllowedForTesting();
 
+  // Blocks Topics pref for testing.
+  void SetTopicsBlockedForTesting();
+
   // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
   // is true, more granular checks will still be performed, and the delegate
   // consulted, to determine if specific APIs are available in specific
   // contexts.
+  // DEPRECATED: Use `SetAllPrivacySandboxAllowedForTesting()` to allow all
+  // Privacy Sandbox prefs or per-API block-for-testing functions.
   void SetPrivacySandboxEnabled(bool enabled);
 
   // Returns whether Trust Tokens are "generally" available. A return value of

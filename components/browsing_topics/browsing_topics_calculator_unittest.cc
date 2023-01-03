@@ -210,7 +210,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
 TEST_F(BrowsingTopicsCalculatorTest, PermissionDenied) {
   base::HistogramTester histograms;
 
-  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
+  privacy_sandbox_settings_->SetTopicsBlockedForTesting();
 
   EpochTopics result = CalculateTopics();
   EXPECT_TRUE(result.empty());
@@ -481,7 +481,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsPartiallyPadded) {
 
 TEST_F(BrowsingTopicsCalculatorTest, CalculationResultUkm_FailedCalculation) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
+  privacy_sandbox_settings_->SetTopicsBlockedForTesting();
 
   CalculateTopics();
 

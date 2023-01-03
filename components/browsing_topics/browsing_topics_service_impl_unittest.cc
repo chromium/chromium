@@ -835,7 +835,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   task_environment()->RunUntilIdle();
 
-  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
+  privacy_sandbox_settings_->SetTopicsBlockedForTesting();
 
   NavigateToPage(GURL("https://www.foo.com"));
 
@@ -1377,7 +1377,7 @@ TEST_F(
 
   NavigateToPage(GURL("https://www.foo.com"));
 
-  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
+  privacy_sandbox_settings_->SetTopicsBlockedForTesting();
 
   std::vector<blink::mojom::EpochTopicPtr> result;
   EXPECT_FALSE(browsing_topics_service_->HandleTopicsWebApi(
