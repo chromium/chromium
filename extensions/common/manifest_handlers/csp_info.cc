@@ -39,7 +39,7 @@ const char kDefaultSandboxedPageContentSecurityPolicy[] =
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';";
 
 // The default CSP to be used if no CSP provided.
-static const char kDefaultMV3CSP[] = "script-src 'self'; object-src 'self';";
+static const char kDefaultMV3CSP[] = "script-src 'self';";
 
 // The minimum CSP to be used in order to prevent remote scripts.
 static const char kMinimumMV3CSP[] =
