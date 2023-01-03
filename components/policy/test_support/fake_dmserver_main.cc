@@ -25,11 +25,13 @@ int main(int argc, char** argv) {
   base::RunLoop run_loop;
   fakedms::FakeDMServer policy_test_server(policy_blob_path, client_state_path,
                                            run_loop.QuitClosure());
-  if (!policy_test_server.Start())
+  if (!policy_test_server.Start()) {
     return 1;
+  }
   if (startup_pipe.is_valid()) {
-    if (!policy_test_server.WriteURLToPipe(startup_pipe))
+    if (!policy_test_server.WriteURLToPipe(std::move(startup_pipe))) {
       return 1;
+    }
   }
   run_loop.Run();
   return 0;

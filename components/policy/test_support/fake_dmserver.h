@@ -111,7 +111,7 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // Writes the host and port of the EmbeddedPolicyTestServer to the given pipe
   // in a json format {"host": "localhost", "port": 1234}, it will return true
   // if it's able to write the URL to the pipe, and false otherwise.
-  bool WriteURLToPipe(const base::ScopedFD& startup_pipe);
+  bool WriteURLToPipe(base::ScopedFD&& startup_pipe);
 
   // Overrides the EmbeddedPolicyTestServer request handler.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(

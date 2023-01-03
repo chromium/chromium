@@ -147,21 +147,19 @@ bool FakeDMServer::Start() {
   return true;
 }
 
-bool FakeDMServer::WriteURLToPipe(const base::ScopedFD& startup_pipe) {
+bool FakeDMServer::WriteURLToPipe(base::ScopedFD&& startup_pipe) {
   GURL server_url = EmbeddedPolicyTestServer::GetServiceURL();
   std::string server_data =
       base::StringPrintf("{\"host\": \"%s\", \"port\": %s}",
                          server_url.host().c_str(), server_url.port().c_str());
 
-  base::PlatformFile fd(startup_pipe.get());
-  base::File pipe_writer(fd);
+  base::File pipe_writer(startup_pipe.release());
   if (!pipe_writer.WriteAtCurrentPosAndCheck(
           base::as_bytes(base::make_span(server_data)))) {
     LOG(ERROR) << "Failed to write the server url data to the pipe, data: "
                << server_data;
     return false;
   }
-  pipe_writer.Close();
   return true;
 }
 
