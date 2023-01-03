@@ -200,7 +200,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool IsIdentityOr2dTranslation() const {
-    return state_.transform_and_origin.matrix.IsIdentityOr2DTranslation();
+    return state_.transform_and_origin.matrix.IsIdentityOr2dTranslation();
   }
   bool IsIdentity() const {
     return state_.transform_and_origin.matrix.IsIdentity();

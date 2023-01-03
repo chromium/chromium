@@ -248,7 +248,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
       is_scrollable || layer->IsSnappedToPixelGridInTarget();
 
   const bool has_significant_transform =
-      !layer->transform().IsIdentityOr2DTranslation();
+      !layer->transform().IsIdentityOr2dTranslation();
 
   const bool has_potentially_animated_transform =
       HasPotentiallyRunningTransformAnimation(*mutator_host_, layer);

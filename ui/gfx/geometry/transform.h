@@ -256,8 +256,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   }
 
   // Returns true if the matrix is either the identity or a 2d translation.
-  // TODO(crbug.com/1359528): Rename "2D" to "2d".
-  bool IsIdentityOr2DTranslation() const {
+  bool IsIdentityOr2dTranslation() const {
     return LIKELY(!full_matrix_)
                ? axis_2d_.scale() == Vector2dF(1, 1)
                : matrix_.IsIdentityOrTranslation() && matrix_.rc(2, 3) == 0;

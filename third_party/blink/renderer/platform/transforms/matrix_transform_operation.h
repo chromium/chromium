@@ -79,7 +79,7 @@ class PLATFORM_EXPORT MatrixTransformOperation final
     return Matrix().Preserves2dAxisAlignment();
   }
   bool IsIdentityOrTranslation() const final {
-    return Matrix().IsIdentityOr2DTranslation();
+    return Matrix().IsIdentityOr2dTranslation();
   }
 
   MatrixTransformOperation(double a,

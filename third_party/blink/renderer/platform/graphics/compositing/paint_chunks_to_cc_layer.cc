@@ -161,7 +161,7 @@ class ConversionContext {
     if (&target_transform == current_transform_)
       return;
     gfx::Transform projection = TargetToCurrentProjection(target_transform);
-    if (projection.IsIdentityOr2DTranslation()) {
+    if (projection.IsIdentityOr2dTranslation()) {
       gfx::Vector2dF translation = projection.To2dTranslation();
       if (!translation.IsZero())
         push<cc::TranslateOp>(translation.x(), translation.y());
@@ -743,7 +743,7 @@ void ConversionContext<Result>::SwitchToTransform(
 
   result_.StartPaint();
   push<cc::SaveOp>();
-  if (projection.IsIdentityOr2DTranslation()) {
+  if (projection.IsIdentityOr2dTranslation()) {
     gfx::Vector2dF translation = projection.To2dTranslation();
     push<cc::TranslateOp>(translation.x(), translation.y());
   } else {

@@ -620,7 +620,7 @@ void RootWindowDeskSwitchAnimator::OnScreenshotLayerCreated() {
 
   // If there is an existing transform, continue animating from there.
   gfx::Transform current_transform = animation_layer->transform();
-  DCHECK(current_transform.IsIdentityOr2DTranslation());
+  DCHECK(current_transform.IsIdentityOr2dTranslation());
   if (!current_transform.IsIdentity()) {
     // If the new layer is located on the left of the prior created layers,
     // shift the animation layer transform so that the content shown to users

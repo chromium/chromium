@@ -5897,7 +5897,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   // If the transform is just a simple translation, apply that to the
   // bounding box, but if it's a non-trivial transformation like a rotation,
   // scaling, etc. then return the full matrix instead.
-  if (transform.IsIdentityOr2DTranslation()) {
+  if (transform.IsIdentityOr2dTranslation()) {
     out_bounds_in_container.Offset(transform.To2dTranslation());
   } else {
     out_container_transform = transform;

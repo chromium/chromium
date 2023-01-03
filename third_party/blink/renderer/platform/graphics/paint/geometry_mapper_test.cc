@@ -136,7 +136,7 @@ void GeometryMapperTest::CheckSourceToDestinationProjection() {
   if (expected_transform) {
     EXPECT_EQ(*expected_transform, projection);
   } else {
-    EXPECT_TRUE(projection.IsIdentityOr2DTranslation());
+    EXPECT_TRUE(projection.IsIdentityOr2dTranslation());
     EXPECT_EQ(expected_translation_2d, projection.To2dTranslation());
   }
 }

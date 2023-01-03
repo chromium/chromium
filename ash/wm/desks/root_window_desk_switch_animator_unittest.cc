@@ -52,7 +52,7 @@ gfx::Rect GetVisibleBounds(ui::Layer* child_layer,
   const gfx::Transform animating_layer_transform =
       use_target_transform ? animating_layer->GetTargetTransform()
                            : animating_layer->transform();
-  DCHECK(animating_layer_transform.IsIdentityOr2DTranslation());
+  DCHECK(animating_layer_transform.IsIdentityOr2dTranslation());
   return animating_layer_transform.MapRect(child_layer->bounds());
 }
 

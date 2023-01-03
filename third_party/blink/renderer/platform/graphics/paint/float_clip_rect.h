@@ -99,7 +99,7 @@ class PLATFORM_EXPORT FloatClipRect {
   }
 
   void Map(const gfx::Transform& matrix) {
-    if (matrix.IsIdentityOr2DTranslation()) {
+    if (matrix.IsIdentityOr2dTranslation()) {
       Move(matrix.To2dTranslation());
       return;
     }

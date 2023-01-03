@@ -1685,22 +1685,22 @@ TEST(XFormTest, DecomposeAndCompose) {
   EXPECT_EQ(0, ComputeDecompRecompError(transform(-1, -1, 1, 1, 2)));
 }
 
-TEST(XFormTest, IsIdentityOr2DTranslation) {
-  EXPECT_TRUE(Transform().IsIdentityOr2DTranslation());
-  EXPECT_TRUE(Transform::MakeTranslation(10, 0).IsIdentityOr2DTranslation());
-  EXPECT_TRUE(Transform::MakeTranslation(0, -20).IsIdentityOr2DTranslation());
+TEST(XFormTest, IsIdentityOr2dTranslation) {
+  EXPECT_TRUE(Transform().IsIdentityOr2dTranslation());
+  EXPECT_TRUE(Transform::MakeTranslation(10, 0).IsIdentityOr2dTranslation());
+  EXPECT_TRUE(Transform::MakeTranslation(0, -20).IsIdentityOr2dTranslation());
 
   Transform transform;
   transform.Translate3d(0, 0, 1);
-  EXPECT_FALSE(transform.IsIdentityOr2DTranslation());
+  EXPECT_FALSE(transform.IsIdentityOr2dTranslation());
 
   transform.MakeIdentity();
   transform.Rotate(40);
-  EXPECT_FALSE(transform.IsIdentityOr2DTranslation());
+  EXPECT_FALSE(transform.IsIdentityOr2dTranslation());
 
   transform.MakeIdentity();
   transform.SkewX(30);
-  EXPECT_FALSE(transform.IsIdentityOr2DTranslation());
+  EXPECT_FALSE(transform.IsIdentityOr2dTranslation());
 }
 
 TEST(XFormTest, IntegerTranslation) {
