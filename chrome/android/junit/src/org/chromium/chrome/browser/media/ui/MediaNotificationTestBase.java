@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.media.ui;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
@@ -19,7 +18,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import org.junit.After;
@@ -108,9 +106,6 @@ public class MediaNotificationTestBase {
 
     @Before
     public void setUp() {
-        // For checking the notification presented to NotificationManager.
-        assertTrue(RuntimeEnvironment.getApiLevel() >= Build.VERSION_CODES.N);
-
         ShadowLog.stream = System.out;
 
         mMockContext = spy(RuntimeEnvironment.application);

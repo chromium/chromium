@@ -20,7 +20,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
@@ -53,17 +52,12 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         if (info.isPrivate) {
             assertNotEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
             assertNull(shadowNotification.getContentText());
-            if (hasNApis()) {
-                assertNotEquals(
-                        info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
-            }
+            assertNotEquals(
+                    info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
         } else {
             assertEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
             assertEquals("", shadowNotification.getContentText());
-            if (hasNApis()) {
-                assertEquals(
-                        info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
-            }
+            assertEquals(info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
         }
     }
 
@@ -75,12 +69,10 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();
         Notification notification = updateNotificationBuilderAndBuild(info);
 
-        if (hasNApis()) {
-            if (info.isPrivate) {
-                assertNull(notification.getLargeIcon());
-            } else {
-                assertTrue(largeIcon.sameAs(iconToBitmap(notification.getLargeIcon())));
-            }
+        if (info.isPrivate) {
+            assertNull(notification.getLargeIcon());
+        } else {
+            assertTrue(largeIcon.sameAs(iconToBitmap(notification.getLargeIcon())));
         }
     }
 
@@ -91,9 +83,7 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();
         Notification notification = updateNotificationBuilderAndBuild(info);
 
-        if (hasNApis()) {
-            assertNull(notification.getLargeIcon());
-        }
+        assertNull(notification.getLargeIcon());
         assertNull(getController().mDefaultNotificationLargeIcon);
     }
 
@@ -105,9 +95,7 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();
         Notification notification = updateNotificationBuilderAndBuild(info);
 
-        if (hasNApis()) {
-            assertNull(notification.getLargeIcon());
-        }
+        assertNull(notification.getLargeIcon());
     }
 
     @Test
@@ -122,15 +110,13 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
 
         assertFalse(shadowNotification.isWhenShown());
         assertFalse(shadowNotification.isOngoing());
-        if (hasNApis()) {
-            assertNotNull(notification.getSmallIcon());
-            assertFalse((notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
-            assertTrue((notification.flags & Notification.FLAG_LOCAL_ONLY) != 0);
-            assertEquals(NOTIFICATION_GROUP_NAME, notification.getGroup());
-            assertTrue(notification.isGroupSummary());
-            assertNotNull(notification.contentIntent);
-            assertEquals(Notification.VISIBILITY_PRIVATE, notification.visibility);
-        }
+        assertNotNull(notification.getSmallIcon());
+        assertFalse((notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertTrue((notification.flags & Notification.FLAG_LOCAL_ONLY) != 0);
+        assertEquals(NOTIFICATION_GROUP_NAME, notification.getGroup());
+        assertTrue(notification.isGroupSummary());
+        assertNotNull(notification.contentIntent);
+        assertEquals(Notification.VISIBILITY_PRIVATE, notification.visibility);
     }
 
     @Test
@@ -141,9 +127,7 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);
 
         assertTrue(shadowNotification.isOngoing());
-        if (hasNApis()) {
-            assertNotNull(notification.deleteIntent);
-        }
+        assertNotNull(notification.deleteIntent);
     }
 
     @Test
@@ -152,9 +136,7 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();
         Notification notification = updateNotificationBuilderAndBuild(info);
 
-        if (hasNApis()) {
-            assertEquals(Notification.VISIBILITY_PUBLIC, notification.visibility);
-        }
+        assertEquals(Notification.VISIBILITY_PUBLIC, notification.visibility);
     }
 
     @Test
@@ -233,9 +215,5 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
         getController().updateNotificationBuilder();
 
         return getController().mNotificationBuilder.build();
-    }
-
-    private boolean hasNApis() {
-        return RuntimeEnvironment.getApiLevel() >= Build.VERSION_CODES.N;
     }
 }
