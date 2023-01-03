@@ -118,44 +118,44 @@ TEST_F(ActivityTrackerTest, UserDataTest) {
   memset(buffer, 0, sizeof(buffer));
   ActivityUserData data(buffer, sizeof(buffer));
   size_t space = sizeof(buffer) - sizeof(ActivityUserData::MemoryHeader);
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetInt("foo", 1);
   space -= 24;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetUint("b", 1U);  // Small names fit beside header in a word.
   space -= 16;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.Set("c", buffer, 10);
   space -= 24;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetString("dear john", "it's been fun");
   space -= 32;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.Set("c", buffer, 20);
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetString("dear john", "but we're done together");
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetString("dear john", "bye");
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetChar("d", 'x');
   space -= 8;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetBool("ee", true);
   space -= 16;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 
   data.SetString("f", "");
   space -= 8;
-  ASSERT_EQ(space, data.available_);
+  ASSERT_EQ(space, data.memory_.size());
 }
 
 TEST_F(ActivityTrackerTest, PushPopTest) {

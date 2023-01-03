@@ -20,6 +20,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
@@ -516,6 +517,9 @@ class BASE_EXPORT ActivityUserData {
     OwningProcess owner;  // Information about the creating process.
   };
 
+  static_assert(sizeof(MemoryHeader) % kMemoryAlignment == 0,
+                "Memory following header must also be aligned");
+
   // Header to a key/value record held in persistent memory.
   struct FieldHeader {
     FieldHeader();
@@ -568,17 +572,17 @@ class BASE_EXPORT ActivityUserData {
   // Information about the memory block in which new data can be stored. These
   // are "mutable" because they change even on "const" objects that are just
   // skipping already set values.
-  mutable raw_ptr<char> memory_;
-  mutable size_t available_;
+  mutable base::span<char> memory_;
 
   // A pointer to the memory header for this instance.
-  const raw_ptr<MemoryHeader> header_;
+  mutable raw_ptr<MemoryHeader> header_ = nullptr;
 
   // These hold values used when initially creating the object. They are
   // compared against current header values to check for outside changes.
-  const uint32_t orig_data_id;
-  const ProcessId orig_process_id;
-  const int64_t orig_create_stamp;
+  // They may be updated by casting away the const in the constructor.
+  const uint32_t orig_data_id = 0;
+  const ProcessId orig_process_id = 0;
+  const int64_t orig_create_stamp = 0;
 };
 
 // This class manages tracking a stack of activities for a single thread in
