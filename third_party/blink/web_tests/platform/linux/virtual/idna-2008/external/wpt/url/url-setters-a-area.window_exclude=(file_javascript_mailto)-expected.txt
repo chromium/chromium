@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 371 tests; 229 PASS, 142 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 395 tests; 249 PASS, 146 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -287,6 +287,10 @@ PASS <a>: Setting <sc:///>.port = '12'
 PASS <area>: Setting <sc:///>.port = '12'
 FAIL <a>: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
 FAIL <area>: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
+PASS <a>: Setting <data:original>.pathname = 'new value'
+PASS <area>: Setting <data:original>.pathname = 'new value'
+PASS <a>: Setting <sc:original>.pathname = 'new value'
+PASS <area>: Setting <sc:original>.pathname = 'new value'
 FAIL <a>: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
 FAIL <area>: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
 FAIL <a>: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased assert_equals: expected "foo://" but got "foo:///some/path"
@@ -331,6 +335,10 @@ FAIL <a>: Setting <non-spec:/>.pathname = '//p' assert_equals: expected "non-spe
 FAIL <area>: Setting <non-spec:/>.pathname = '//p' assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
 FAIL <a>: Setting <non-spec:/.//>.pathname = 'p' Drop /. from path assert_equals: expected "non-spec:/p" but got "non-spec:/.//"
 FAIL <area>: Setting <non-spec:/.//>.pathname = 'p' Drop /. from path assert_equals: expected "non-spec:/p" but got "non-spec:/.//"
+FAIL <a>: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020 assert_equals: expected "data:/space%20" but got "data:/nospace"
+FAIL <area>: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020 assert_equals: expected "data:/space%20" but got "data:/nospace"
+FAIL <a>: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
+FAIL <area>: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
 PASS <a>: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS <area>: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS <a>: Setting <https://example.net?lang=en-US#nav>.search = 'lang=fr'
@@ -353,6 +361,14 @@ FAIL <area>: Setting <a:/>.search = '\0
 \r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 PASS <a>: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
 PASS <area>: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
+PASS <a>: Setting <data:space ?query>.search = '' Drop trailing spaces from trailing opaque paths
+PASS <area>: Setting <data:space ?query>.search = '' Drop trailing spaces from trailing opaque paths
+PASS <a>: Setting <sc:space ?query>.search = ''
+PASS <area>: Setting <sc:space ?query>.search = ''
+PASS <a>: Setting <data:space  ?query#fragment>.search = '' Do not drop trailing spaces from non-trailing opaque paths
+PASS <area>: Setting <data:space  ?query#fragment>.search = '' Do not drop trailing spaces from non-trailing opaque paths
+PASS <a>: Setting <sc:space  ?query#fragment>.search = ''
+PASS <area>: Setting <sc:space  ?query#fragment>.search = ''
 PASS <a>: Setting <https://example.net>.hash = 'main'
 PASS <area>: Setting <https://example.net>.hash = 'main'
 PASS <a>: Setting <https://example.net#nav>.hash = 'main'
@@ -385,5 +401,13 @@ PASS <a>: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS <area>: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS <a>: Setting <http://example.net>.hash = '%c3%89té' Bytes already percent-encoded are left as-is
 PASS <area>: Setting <http://example.net>.hash = '%c3%89té' Bytes already percent-encoded are left as-is
+PASS <a>: Setting <data:space                                                                                                                                  #fragment>.hash = '' Drop trailing spaces from trailing opaque paths
+PASS <area>: Setting <data:space                                                                                                                                  #fragment>.hash = '' Drop trailing spaces from trailing opaque paths
+PASS <a>: Setting <sc:space    #fragment>.hash = ''
+PASS <area>: Setting <sc:space    #fragment>.hash = ''
+PASS <a>: Setting <data:space  ?query#fragment>.hash = '' Do not drop trailing spaces from non-trailing opaque paths
+PASS <area>: Setting <data:space  ?query#fragment>.hash = '' Do not drop trailing spaces from non-trailing opaque paths
+PASS <a>: Setting <sc:space  ?query#fragment>.hash = ''
+PASS <area>: Setting <sc:space  ?query#fragment>.hash = ''
 Harness: the test ran to completion.
 

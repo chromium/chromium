@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 186 tests; 116 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 198 tests; 122 PASS, 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -144,6 +144,8 @@ FAIL URL: Setting <non-special://example.net:8080/path>.port = '65536' Port numb
 PASS URL: Setting <non-base:value>.port = '12'
 PASS URL: Setting <sc:///>.port = '12'
 FAIL URL: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
+PASS URL: Setting <data:original>.pathname = 'new value'
+PASS URL: Setting <sc:original>.pathname = 'new value'
 FAIL URL: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
 FAIL URL: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased assert_equals: expected "foo://" but got "foo:///some/path"
 FAIL URL: Setting <foo:/some/path>.pathname = '' Path-only URLs cannot have their paths erased assert_equals: expected "foo:/" but got "foo:/some/path"
@@ -166,6 +168,8 @@ FAIL URL: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path assert_eq
 FAIL URL: Setting <non-spec:/>.pathname = '/..//p' assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
 FAIL URL: Setting <non-spec:/>.pathname = '//p' assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
 FAIL URL: Setting <non-spec:/.//>.pathname = 'p' Drop /. from path assert_equals: expected "non-spec:/p" but got "non-spec:/.//"
+FAIL URL: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020 assert_equals: expected "data:/space%20" but got "data:/nospace"
+FAIL URL: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
 PASS URL: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS URL: Setting <https://example.net?lang=en-US#nav>.search = 'lang=fr'
 PASS URL: Setting <https://example.net?lang=en-US#nav>.search = '?lang=fr'
@@ -177,6 +181,10 @@ PASS URL: Setting <https://example.net>.search = ''
 FAIL URL: Setting <a:/>.search = '\0	
 \r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 PASS URL: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
+FAIL URL: Setting <data:space ?query>.search = '' Drop trailing spaces from trailing opaque paths assert_equals: expected "data:space" but got "data:space "
+FAIL URL: Setting <sc:space ?query>.search = '' assert_equals: expected "sc:space" but got "sc:space "
+PASS URL: Setting <data:space  ?query#fragment>.search = '' Do not drop trailing spaces from non-trailing opaque paths
+PASS URL: Setting <sc:space  ?query#fragment>.search = ''
 PASS URL: Setting <https://example.net>.hash = 'main'
 PASS URL: Setting <https://example.net#nav>.hash = 'main'
 PASS URL: Setting <https://example.net?lang=en-US>.hash = '##nav'
@@ -193,5 +201,9 @@ PASS URL: Setting <a:/>.hash = '\0
 PASS URL: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS URL: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS URL: Setting <http://example.net>.hash = '%c3%89té' Bytes already percent-encoded are left as-is
+FAIL URL: Setting <data:space                                                                                                                                  #fragment>.hash = '' Drop trailing spaces from trailing opaque paths assert_equals: expected "data:space" but got "data:space                                                                                                                                  "
+FAIL URL: Setting <sc:space    #fragment>.hash = '' assert_equals: expected "sc:space" but got "sc:space    "
+PASS URL: Setting <data:space  ?query#fragment>.hash = '' Do not drop trailing spaces from non-trailing opaque paths
+PASS URL: Setting <sc:space  ?query#fragment>.hash = ''
 Harness: the test ran to completion.
 

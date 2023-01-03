@@ -2980,6 +2980,12 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-attribute.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-classname-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-has.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-not.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-nth-child.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-universal-selector.html [ Failure ]
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
