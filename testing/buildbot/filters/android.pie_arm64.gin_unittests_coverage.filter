@@ -1,0 +1,2 @@
+# crbug.com/1404782
+-V8PlatformAllocatorBTITest.VerifyReadWriteExecutePagesAreNotProtected

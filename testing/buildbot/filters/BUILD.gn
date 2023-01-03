@@ -248,7 +248,10 @@ source_set("extensions_unittests_filters") {
 source_set("gin_unittests_filters") {
   testonly = true
 
-  data = [ "//testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/android.pie_arm64.gin_unittests_coverage.filter",
+    "//testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter",
+  ]
 }
 
 source_set("skia_unittests_filters") {
