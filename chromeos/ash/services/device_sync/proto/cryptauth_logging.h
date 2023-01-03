@@ -29,61 +29,62 @@ std::string ConnectivityStatusToString(ConnectivityStatus status);
 std::ostream& operator<<(std::ostream& stream,
                          const ConnectivityStatus& status);
 
-base::Value PolicyReferenceToReadableDictionary(const PolicyReference& policy);
+base::Value::Dict PolicyReferenceToReadableDictionary(
+    const PolicyReference& policy);
 std::ostream& operator<<(std::ostream& stream, const PolicyReference& policy);
 
-base::Value InvokeNextToReadableDictionary(const InvokeNext& invoke_next);
+base::Value::Dict InvokeNextToReadableDictionary(const InvokeNext& invoke_next);
 std::ostream& operator<<(std::ostream& stream, const InvokeNext& invoke_next);
 
-base::Value ClientDirectiveToReadableDictionary(
+base::Value::Dict ClientDirectiveToReadableDictionary(
     const ClientDirective& directive);
 std::ostream& operator<<(std::ostream& stream,
                          const ClientDirective& directive);
 
-base::Value DeviceMetadataPacketToReadableDictionary(
+base::Value::Dict DeviceMetadataPacketToReadableDictionary(
     const DeviceMetadataPacket& packet);
 std::ostream& operator<<(std::ostream& stream,
                          const DeviceMetadataPacket& packet);
 
-base::Value EncryptedGroupPrivateKeyToReadableDictionary(
+base::Value::Dict EncryptedGroupPrivateKeyToReadableDictionary(
     const EncryptedGroupPrivateKey& key);
 std::ostream& operator<<(std::ostream& stream,
                          const EncryptedGroupPrivateKey& key);
 
-base::Value SyncMetadataResponseToReadableDictionary(
+base::Value::Dict SyncMetadataResponseToReadableDictionary(
     const SyncMetadataResponse& response);
 std::ostream& operator<<(std::ostream& stream,
                          const SyncMetadataResponse& response);
 
-base::Value FeatureStatusToReadableDictionary(
+base::Value::Dict FeatureStatusToReadableDictionary(
     const DeviceFeatureStatus::FeatureStatus& status);
 std::ostream& operator<<(std::ostream& stream,
                          const DeviceFeatureStatus::FeatureStatus& status);
 
-base::Value DeviceFeatureStatusToReadableDictionary(
+base::Value::Dict DeviceFeatureStatusToReadableDictionary(
     const DeviceFeatureStatus& status);
 std::ostream& operator<<(std::ostream& stream,
                          const DeviceFeatureStatus& status);
 
-base::Value BatchGetFeatureStatusesResponseToReadableDictionary(
+base::Value::Dict BatchGetFeatureStatusesResponseToReadableDictionary(
     const BatchGetFeatureStatusesResponse& response);
 std::ostream& operator<<(std::ostream& stream,
                          const BatchGetFeatureStatusesResponse& response);
 
-base::Value DeviceActivityStatusToReadableDictionary(
+base::Value::Dict DeviceActivityStatusToReadableDictionary(
     const DeviceActivityStatus& status);
 std::ostream& operator<<(std::ostream& stream,
                          const DeviceActivityStatus& status);
 
-base::Value GetDevicesActivityStatusResponseToReadableDictionary(
+base::Value::Dict GetDevicesActivityStatusResponseToReadableDictionary(
     const GetDevicesActivityStatusResponse& response);
 std::ostream& operator<<(std::ostream& stream,
                          const GetDevicesActivityStatusResponse& response);
 
-base::Value BeaconSeedToReadableDictionary(const BeaconSeed& seed);
+base::Value::Dict BeaconSeedToReadableDictionary(const BeaconSeed& seed);
 std::ostream& operator<<(std::ostream& stream, const BeaconSeed& seed);
 
-base::Value BetterTogetherDeviceMetadataToReadableDictionary(
+base::Value::Dict BetterTogetherDeviceMetadataToReadableDictionary(
     const BetterTogetherDeviceMetadata& metadata);
 std::ostream& operator<<(std::ostream& stream,
                          const BetterTogetherDeviceMetadata& metadata);

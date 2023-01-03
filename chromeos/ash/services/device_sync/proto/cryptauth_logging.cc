@@ -119,10 +119,11 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value PolicyReferenceToReadableDictionary(const PolicyReference& policy) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Name", policy.name());
-  dict.SetIntKey("Version", policy.version());
+base::Value::Dict PolicyReferenceToReadableDictionary(
+    const PolicyReference& policy) {
+  base::Value::Dict dict;
+  dict.Set("Name", policy.name());
+  dict.Set("Version", static_cast<int>(policy.version()));
   return dict;
 }
 
@@ -131,11 +132,11 @@ std::ostream& operator<<(std::ostream& stream, const PolicyReference& policy) {
   return stream;
 }
 
-base::Value InvokeNextToReadableDictionary(const InvokeNext& invoke_next) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Target service",
-                    TargetServiceToString(invoke_next.service()));
-  dict.SetStringKey("Key name", invoke_next.key_name());
+base::Value::Dict InvokeNextToReadableDictionary(
+    const InvokeNext& invoke_next) {
+  base::Value::Dict dict;
+  dict.Set("Target service", TargetServiceToString(invoke_next.service()));
+  dict.Set("Key name", invoke_next.key_name());
   return dict;
 }
 
@@ -144,11 +145,11 @@ std::ostream& operator<<(std::ostream& stream, const InvokeNext& invoke_next) {
   return stream;
 }
 
-base::Value ClientDirectiveToReadableDictionary(
+base::Value::Dict ClientDirectiveToReadableDictionary(
     const ClientDirective& directive) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("Policy reference", PolicyReferenceToReadableDictionary(
-                                      directive.policy_reference()));
+  base::Value::Dict dict;
+  dict.Set("Policy reference",
+           PolicyReferenceToReadableDictionary(directive.policy_reference()));
 
   {
     std::u16string checkin_delay;
@@ -156,15 +157,15 @@ base::Value ClientDirectiveToReadableDictionary(
         base::Milliseconds(directive.checkin_delay_millis()),
         base::DurationFormatWidth::DURATION_WIDTH_NARROW, &checkin_delay);
     if (success) {
-      dict.SetStringKey("Next enrollment", checkin_delay);
+      dict.Set("Next enrollment", checkin_delay);
     }
     checkin_delay = base::UTF8ToUTF16(
         "[Error formatting time " +
         base::NumberToString(directive.checkin_delay_millis()) + "ms]");
   }
 
-  dict.SetIntKey("Immediate failure retry attempts",
-                 directive.retry_attempts());
+  dict.Set("Immediate failure retry attempts",
+           static_cast<int>(directive.retry_attempts()));
 
   {
     std::u16string retry_period;
@@ -176,19 +177,18 @@ base::Value ClientDirectiveToReadableDictionary(
           "[Error formatting time " +
           base::NumberToString(directive.retry_period_millis()) + "ms]");
     }
-    dict.SetStringKey("Failure retry delay", retry_period);
+    dict.Set("Failure retry delay", retry_period);
   }
 
-  dict.SetStringKey(
-      "Directive creation time",
-      base::TimeFormatShortDateAndTimeWithTimeZone(
-          base::Time::FromJavaTime(directive.create_time_millis())));
+  dict.Set("Directive creation time",
+           base::TimeFormatShortDateAndTimeWithTimeZone(
+               base::Time::FromJavaTime(directive.create_time_millis())));
 
-  base::Value invoke_next_list(base::Value::Type::LIST);
+  base::Value::List invoke_next_list;
   for (const auto& invoke_next : directive.invoke_next()) {
     invoke_next_list.Append(InvokeNextToReadableDictionary(invoke_next));
   }
-  dict.SetKey("Invoke next list", std::move(invoke_next_list));
+  dict.Set("Invoke next list", std::move(invoke_next_list));
 
   return dict;
 }
@@ -199,19 +199,18 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value DeviceMetadataPacketToReadableDictionary(
+base::Value::Dict DeviceMetadataPacketToReadableDictionary(
     const DeviceMetadataPacket& packet) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Instance ID", packet.device_id());
-  dict.SetStringKey(
-      "Encrypted metadata",
-      (packet.encrypted_metadata().empty()
-           ? "[Empty]"
-           : TruncateStringForLogs(Encode(packet.encrypted_metadata()))));
-  dict.SetBoolKey("Needs group private key?", packet.need_group_private_key());
-  dict.SetStringKey("DeviceSync:BetterTogether device public key",
-                    TruncateStringForLogs(Encode(packet.device_public_key())));
-  dict.SetStringKey("Device name", packet.device_name());
+  base::Value::Dict dict;
+  dict.Set("Instance ID", packet.device_id());
+  dict.Set("Encrypted metadata",
+           (packet.encrypted_metadata().empty()
+                ? "[Empty]"
+                : TruncateStringForLogs(Encode(packet.encrypted_metadata()))));
+  dict.Set("Needs group private key?", packet.need_group_private_key());
+  dict.Set("DeviceSync:BetterTogether device public key",
+           TruncateStringForLogs(Encode(packet.device_public_key())));
+  dict.Set("Device name", packet.device_name());
   return dict;
 }
 
@@ -221,18 +220,17 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value EncryptedGroupPrivateKeyToReadableDictionary(
+base::Value::Dict EncryptedGroupPrivateKeyToReadableDictionary(
     const EncryptedGroupPrivateKey& key) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Recipient Instance ID", key.recipient_device_id());
-  dict.SetStringKey("Sender Instance ID", key.sender_device_id());
-  dict.SetStringKey(
-      "Encrypted group private key",
-      (key.encrypted_private_key().empty()
-           ? "[Empty]"
-           : TruncateStringForLogs(Encode(key.encrypted_private_key()))));
-  dict.SetStringKey("Group public key hash",
-                    base::NumberToString(key.group_public_key_hash()));
+  base::Value::Dict dict;
+  dict.Set("Recipient Instance ID", key.recipient_device_id());
+  dict.Set("Sender Instance ID", key.sender_device_id());
+  dict.Set("Encrypted group private key",
+           (key.encrypted_private_key().empty()
+                ? "[Empty]"
+                : TruncateStringForLogs(Encode(key.encrypted_private_key()))));
+  dict.Set("Group public key hash",
+           base::NumberToString(key.group_public_key_hash()));
   return dict;
 }
 
@@ -242,32 +240,32 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value SyncMetadataResponseToReadableDictionary(
+base::Value::Dict SyncMetadataResponseToReadableDictionary(
     const SyncMetadataResponse& response) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  base::Value metadata_list(base::Value::Type::LIST);
+  base::Value::List metadata_list;
   for (const auto& metadata : response.encrypted_metadata()) {
     metadata_list.Append(DeviceMetadataPacketToReadableDictionary(metadata));
   }
-  dict.SetKey("Device metadata packets", std::move(metadata_list));
+  dict.Set("Device metadata packets", std::move(metadata_list));
 
-  dict.SetStringKey("Group public key",
-                    TruncateStringForLogs(Encode(response.group_public_key())));
+  dict.Set("Group public key",
+           TruncateStringForLogs(Encode(response.group_public_key())));
   if (response.has_encrypted_group_private_key()) {
-    dict.SetKey("Encrypted group private key",
-                EncryptedGroupPrivateKeyToReadableDictionary(
-                    response.encrypted_group_private_key()));
+    dict.Set("Encrypted group private key",
+             EncryptedGroupPrivateKeyToReadableDictionary(
+                 response.encrypted_group_private_key()));
   } else {
-    dict.SetStringKey("Encrypted group private key", "[Not sent]");
+    dict.Set("Encrypted group private key", "[Not sent]");
   }
-  dict.SetStringKey("Freshness token",
-                    TruncateStringForLogs(Encode(response.freshness_token())));
+  dict.Set("Freshness token",
+           TruncateStringForLogs(Encode(response.freshness_token())));
   if (response.has_client_directive()) {
-    dict.SetKey("Client directive", ClientDirectiveToReadableDictionary(
-                                        response.client_directive()));
+    dict.Set("Client directive",
+             ClientDirectiveToReadableDictionary(response.client_directive()));
   } else {
-    dict.SetStringKey("Client directive", "[Not sent]");
+    dict.Set("Client directive", "[Not sent]");
   }
 
   return dict;
@@ -279,17 +277,15 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value FeatureStatusToReadableDictionary(
+base::Value::Dict FeatureStatusToReadableDictionary(
     const DeviceFeatureStatus::FeatureStatus& status) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Feature type", status.feature_type());
-  dict.SetBoolKey("Enabled?", status.enabled());
-  dict.SetStringKey(
-      "Last modified time (BatchGet* only)",
-      base::TimeFormatShortDateAndTimeWithTimeZone(
-          base::Time::FromJavaTime(status.last_modified_time_millis())));
-  dict.SetBoolKey("Enable exclusively (BatchSet* only)?",
-                  status.enable_exclusively());
+  base::Value::Dict dict;
+  dict.Set("Feature type", status.feature_type());
+  dict.Set("Enabled?", status.enabled());
+  dict.Set("Last modified time (BatchGet* only)",
+           base::TimeFormatShortDateAndTimeWithTimeZone(
+               base::Time::FromJavaTime(status.last_modified_time_millis())));
+  dict.Set("Enable exclusively (BatchSet* only)?", status.enable_exclusively());
   return dict;
 }
 
@@ -299,17 +295,17 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value DeviceFeatureStatusToReadableDictionary(
+base::Value::Dict DeviceFeatureStatusToReadableDictionary(
     const DeviceFeatureStatus& status) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Instance ID", status.device_id());
+  base::Value::Dict dict;
+  dict.Set("Instance ID", status.device_id());
 
-  base::Value feature_status_list(base::Value::Type::LIST);
+  base::Value::List feature_status_list;
   for (const auto& feature_status : status.feature_statuses()) {
     feature_status_list.Append(
         FeatureStatusToReadableDictionary(feature_status));
   }
-  dict.SetKey("Feature statuses", std::move(feature_status_list));
+  dict.Set("Feature statuses", std::move(feature_status_list));
 
   return dict;
 }
@@ -320,16 +316,16 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value BatchGetFeatureStatusesResponseToReadableDictionary(
+base::Value::Dict BatchGetFeatureStatusesResponseToReadableDictionary(
     const BatchGetFeatureStatusesResponse& response) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  base::Value device_statuses_list(base::Value::Type::LIST);
+  base::Value::List device_statuses_list;
   for (const auto& device_statuses : response.device_feature_statuses()) {
     device_statuses_list.Append(
         DeviceFeatureStatusToReadableDictionary(device_statuses));
   }
-  dict.SetKey("Device feature statuses list", std::move(device_statuses_list));
+  dict.Set("Device feature statuses list", std::move(device_statuses_list));
 
   return dict;
 }
@@ -340,21 +336,19 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value DeviceActivityStatusToReadableDictionary(
+base::Value::Dict DeviceActivityStatusToReadableDictionary(
     const DeviceActivityStatus& status) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Instance ID", status.device_id());
-  dict.SetStringKey(
-      "Last activity time",
-      base::TimeFormatShortDateAndTimeWithTimeZone(
-          base::Time::FromTimeT(status.last_activity_time_sec())));
-  dict.SetStringKey("Connectivity status",
-                    ConnectivityStatusToString(status.connectivity_status()));
-  dict.SetStringKey(
-      "Last update time",
-      base::TimeFormatShortDateAndTimeWithTimeZone(
-          base::Time::FromTimeT(status.last_update_time().seconds()) +
-          base::Nanoseconds(status.last_update_time().nanos())));
+  base::Value::Dict dict;
+  dict.Set("Instance ID", status.device_id());
+  dict.Set("Last activity time",
+           base::TimeFormatShortDateAndTimeWithTimeZone(
+               base::Time::FromTimeT(status.last_activity_time_sec())));
+  dict.Set("Connectivity status",
+           ConnectivityStatusToString(status.connectivity_status()));
+  dict.Set("Last update time",
+           base::TimeFormatShortDateAndTimeWithTimeZone(
+               base::Time::FromTimeT(status.last_update_time().seconds()) +
+               base::Nanoseconds(status.last_update_time().nanos())));
 
   return dict;
 }
@@ -365,15 +359,15 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value GetDevicesActivityStatusResponseToReadableDictionary(
+base::Value::Dict GetDevicesActivityStatusResponseToReadableDictionary(
     const GetDevicesActivityStatusResponse& response) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  base::Value status_list(base::Value::Type::LIST);
+  base::Value::List status_list;
   for (const auto& status : response.device_activity_statuses()) {
     status_list.Append(DeviceActivityStatusToReadableDictionary(status));
   }
-  dict.SetKey("Device activity statuses", std::move(status_list));
+  dict.Set("Device activity statuses", std::move(status_list));
 
   return dict;
 }
@@ -384,15 +378,14 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-base::Value BeaconSeedToReadableDictionary(const BeaconSeed& seed) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Data", TruncateStringForLogs(Encode(seed.data())));
-  dict.SetStringKey("Start time",
-                    base::TimeFormatShortDateAndTimeWithTimeZone(
-                        base::Time::FromJavaTime(seed.start_time_millis())));
-  dict.SetStringKey("End time",
-                    base::TimeFormatShortDateAndTimeWithTimeZone(
-                        base::Time::FromJavaTime(seed.end_time_millis())));
+base::Value::Dict BeaconSeedToReadableDictionary(const BeaconSeed& seed) {
+  base::Value::Dict dict;
+  dict.Set("Data", TruncateStringForLogs(Encode(seed.data())));
+  dict.Set("Start time",
+           base::TimeFormatShortDateAndTimeWithTimeZone(
+               base::Time::FromJavaTime(seed.start_time_millis())));
+  dict.Set("End time", base::TimeFormatShortDateAndTimeWithTimeZone(
+                           base::Time::FromJavaTime(seed.end_time_millis())));
   return dict;
 }
 
@@ -401,20 +394,18 @@ std::ostream& operator<<(std::ostream& stream, const BeaconSeed& seed) {
   return stream;
 }
 
-base::Value BetterTogetherDeviceMetadataToReadableDictionary(
+base::Value::Dict BetterTogetherDeviceMetadataToReadableDictionary(
     const BetterTogetherDeviceMetadata& metadata) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Public key",
-                    TruncateStringForLogs(Encode(metadata.public_key())));
-  dict.SetStringKey("PII-free device name", metadata.no_pii_device_name());
-  dict.SetStringKey("Bluetooth MAC address",
-                    metadata.bluetooth_public_address());
+  base::Value::Dict dict;
+  dict.Set("Public key", TruncateStringForLogs(Encode(metadata.public_key())));
+  dict.Set("PII-free device name", metadata.no_pii_device_name());
+  dict.Set("Bluetooth MAC address", metadata.bluetooth_public_address());
 
-  base::Value beacon_seed_list(base::Value::Type::LIST);
+  base::Value::List beacon_seed_list;
   for (const auto& seed : metadata.beacon_seeds()) {
     beacon_seed_list.Append(BeaconSeedToReadableDictionary(seed));
   }
-  dict.SetKey("Beacon seeds", std::move(beacon_seed_list));
+  dict.Set("Beacon seeds", std::move(beacon_seed_list));
 
   return dict;
 }

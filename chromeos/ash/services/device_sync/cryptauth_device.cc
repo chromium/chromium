@@ -183,11 +183,13 @@ base::Value::Dict CryptAuthDevice::AsReadableDictionary() const {
            cryptauthv2::TruncateStringForLogs(
                util::EncodeAsString(device_better_together_public_key)));
   dict.Set("Feature states", FeatureStatesToReadableDictionary(feature_states));
-  dict.Set("BetterTogether device metadata",
-           (better_together_device_metadata
-                ? cryptauthv2::BetterTogetherDeviceMetadataToReadableDictionary(
-                      *better_together_device_metadata)
-                : base::Value("[No decrypted metadata]")));
+  dict.Set(
+      "BetterTogether device metadata",
+      (better_together_device_metadata
+           ? base::Value(
+                 cryptauthv2::BetterTogetherDeviceMetadataToReadableDictionary(
+                     *better_together_device_metadata))
+           : base::Value("[No decrypted metadata]")));
   return dict;
 }
 
