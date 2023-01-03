@@ -285,6 +285,15 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
             image_path_, base::BindOnce(&Job::OnLoadImageDone,
                                         weak_factory_.GetWeakPtr(), false));
       } else {
+        if (g_skip_default_user_image_download) {
+          auto user_image = std::make_unique<user_manager::UserImage>(
+              *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                  IDR_LOGIN_DEFAULT_USER));
+          UpdateUser(std::move(user_image));
+          UpdateLocalState();
+          NotifyJobDone();
+          return;
+        }
         // Fetch the default image from cloud before caching it.
         image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
         user_image_loader::StartWithGURLAnimated(

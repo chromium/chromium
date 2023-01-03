@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/extensions/test_external_cache.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
@@ -371,6 +372,7 @@ class StartupAppLauncherNoCreateTest
   void SetUp() override {
     ash_test_helper_.SetUp();
 
+    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);
     command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);

@@ -69,6 +69,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -159,6 +160,7 @@ class ProfileManagerTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
+    ash::UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     wallpaper_controller_client_ =
         std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);

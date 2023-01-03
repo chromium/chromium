@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -124,6 +125,8 @@ class UserManagerTest : public testing::Test {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(::switches::kTestType);
     command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
+
+    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
