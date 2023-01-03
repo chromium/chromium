@@ -920,10 +920,10 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
                                 ->GetCreatorLocation()
                                 .ToString();
       SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/creator", creator);
-
       NOTREACHED()
           << "BrowserContext is getting destroyed without first closing all "
-             "WebContents (for more info see https://crbug.com/1376879#c44)";
+          << "WebContents (for more info see https://crbug.com/1376879#c44); "
+          << "creator = " << creator;
       base::debug::DumpWithoutCrashing();
     }
   }

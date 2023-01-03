@@ -14196,10 +14196,10 @@ void RenderFrameHostImpl::AssertBrowserContextShutdownHasntStarted() {
   if (LIKELY(!GetBrowserContext()->ShutdownStarted()))
     return;
 
-  SCOPED_CRASH_KEY_STRING256("shutdown", "frame->ToDebugString",
-                             ToDebugString());
+  std::string debug_string = ToDebugString();
+  SCOPED_CRASH_KEY_STRING256("shutdown", "frame->ToDebugString", debug_string);
   NOTREACHED() << "BrowserContext->ShutdownStarted() without first closing all "
-                  "WebContents";
+               << "WebContents; debug_string = " << debug_string;
   base::debug::DumpWithoutCrashing();
 }
 
