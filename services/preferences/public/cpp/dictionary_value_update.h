@@ -17,7 +17,7 @@
 
 namespace prefs {
 
-// A wrapper around base::DictionaryValue that reports changes to its contents
+// A wrapper around base::Value::Dict that reports changes to its contents
 // via a callback.
 class DictionaryValueUpdate {
  public:
@@ -25,7 +25,7 @@ class DictionaryValueUpdate {
       base::RepeatingCallback<void(const std::vector<std::string>&)>;
 
   DictionaryValueUpdate(UpdateCallback report_update,
-                        base::DictionaryValue* value,
+                        base::Value::Dict* value,
                         std::vector<std::string> path);
 
   DictionaryValueUpdate(const DictionaryValueUpdate&) = delete;
@@ -51,11 +51,6 @@ class DictionaryValueUpdate {
   // a DictionaryValue, a new DictionaryValue will be created and attached
   // to the path in that location.
   void Set(base::StringPiece path, base::Value in_value);
-
-  // This is similar to |Set|, but lets callers explicitly specify the path
-  // components and thus allows nested keys with periods in them.
-  void SetPath(std::initializer_list<base::StringPiece> path,
-               base::Value value);
 
   // Convenience forms of Set().  These methods will replace any existing
   // value at that path, even if it has a different type.
@@ -90,7 +85,7 @@ class DictionaryValueUpdate {
   bool GetDouble(base::StringPiece path, double* out_value) const;
   bool GetString(base::StringPiece path, std::string* out_value) const;
   bool GetDictionary(base::StringPiece path,
-                     const base::DictionaryValue** out_value) const;
+                     const base::Value::Dict** out_value) const;
   bool GetDictionary(base::StringPiece path,
                      std::unique_ptr<DictionaryValueUpdate>* out_value);
 
@@ -108,7 +103,7 @@ class DictionaryValueUpdate {
                                      std::u16string* out_value) const;
   bool GetDictionaryWithoutPathExpansion(
       base::StringPiece key,
-      const base::DictionaryValue** out_value) const;
+      const base::Value::Dict** out_value) const;
   bool GetDictionaryWithoutPathExpansion(
       base::StringPiece key,
       std::unique_ptr<DictionaryValueUpdate>* out_value);
@@ -151,7 +146,7 @@ class DictionaryValueUpdate {
   UpdateCallback report_update_;
   // `value_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data).
-  RAW_PTR_EXCLUSION base::DictionaryValue* const value_;
+  RAW_PTR_EXCLUSION base::Value::Dict* const value_;
   const std::vector<std::string> path_;
 };
 
