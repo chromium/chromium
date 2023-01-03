@@ -23,9 +23,9 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -34,9 +34,9 @@ import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {StoredAccount, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
-import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
+import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mixin.js';
 import {AccountStorageOptInStateChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_device_section.html.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
@@ -64,17 +64,9 @@ export interface PasswordsDeviceSectionElement {
   };
 }
 
-// TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
-// TypeScript.
-type Constructor<T> = new (...args: any[]) => T;
-
 const PasswordsDeviceSectionElementBase =
-    MergePasswordsStoreCopiesMixin(GlobalScrollTargetMixin(WebUiListenerMixin(
-        RouteObserverMixin(PolymerElement) as unknown as
-        Constructor<PolymerElement>))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          MergePasswordsStoreCopiesMixinInterface & RouteObserverMixinInterface,
-    };
+    MergePasswordsStoreCopiesMixin(GlobalScrollTargetMixin(
+        WebUiListenerMixin(RouteObserverMixin(PolymerElement))));
 
 export class PasswordsDeviceSectionElement extends
     PasswordsDeviceSectionElementBase {

@@ -27,7 +27,7 @@ import {loadTimeData} from '../i18n_setup.js';
 // </if>
 
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './reset_page.html.js';
 import {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
@@ -40,8 +40,7 @@ export interface SettingsResetPageElement {
 }
 
 const SettingsResetPageElementBase =
-    RouteObserverMixin(BaseMixin(PolymerElement)) as
-    {new (): PolymerElement & RouteObserverMixinInterface};
+    RouteObserverMixin(BaseMixin(PolymerElement));
 
 export class SettingsResetPageElement extends SettingsResetPageElementBase {
   static get is() {

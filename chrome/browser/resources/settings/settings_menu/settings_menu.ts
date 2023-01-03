@@ -22,7 +22,7 @@ import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
 
@@ -34,8 +34,7 @@ export interface SettingsMenuElement {
   };
 }
 
-const SettingsMenuElementBase = RouteObserverMixin(PolymerElement) as
-    {new (): PolymerElement & RouteObserverMixinInterface};
+const SettingsMenuElementBase = RouteObserverMixin(PolymerElement);
 
 export class SettingsMenuElement extends SettingsMenuElementBase {
   static get is() {

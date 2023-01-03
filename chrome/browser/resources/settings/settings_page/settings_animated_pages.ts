@@ -18,12 +18,11 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FocusConfig} from '../focus_config.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_animated_pages.html.js';
 import {SettingsSubpageElement} from './settings_subpage.js';
@@ -34,8 +33,7 @@ interface SettingsAnimatedPagesElement {
   };
 }
 
-const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement) as
-    {new (): PolymerElement & RouteObserverMixinInterface};
+const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement);
 
 class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
   static get is() {

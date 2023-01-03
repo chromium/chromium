@@ -27,46 +27,34 @@ import '../settings_page_styles.css.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
 // </if>
-
 // <if expr="not chromeos_ash">
 import '../languages_page/languages.js';
 
 // </if>
 
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PageVisibility} from '../page_visibility.js';
-import {SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
-import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
-import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
-import {getSearchManager, SearchResult} from '../search_settings.js';
-import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_mixin.js';
-
 // <if expr="not chromeos_ash">
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
+import {PageVisibility} from '../page_visibility.js';
+import {SyncStatus} from '../people_page/sync_browser_proxy.js';
+import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
+import {getSearchManager, SearchResult} from '../search_settings.js';
+import {MainPageMixin} from '../settings_page/main_page_mixin.js';
 
 import {getTemplate} from './basic_page.html.js';
 
-// TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
-// TypeScript.
-type Constructor<T> = new (...args: any[]) => T;
-
-const SettingsBasicPageElementBase =
-    PrefsMixin(MainPageMixin(
-        RouteObserverMixin(WebUiListenerMixin(PolymerElement)) as unknown as
-        Constructor<PolymerElement>)) as unknown as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          PrefsMixinInterface & RouteObserverMixinInterface &
-          MainPageMixinInterface,
-    };
+const SettingsBasicPageElementBase = PrefsMixin(
+    MainPageMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement))));
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {

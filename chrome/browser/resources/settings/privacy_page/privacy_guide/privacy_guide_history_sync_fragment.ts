@@ -13,7 +13,7 @@ import './privacy_guide_fragment_shared.css.js';
 import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../../base_mixin.js';
@@ -21,7 +21,7 @@ import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from '../../people_page/sync_browser_proxy.js';
 import {routes} from '../../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, RouteObserverMixin, Router} from '../../router.js';
 
 import {PrivacyGuideStep} from './constants.js';
 import {getTemplate} from './privacy_guide_history_sync_fragment.html.js';
@@ -33,10 +33,7 @@ export interface PrivacyGuideHistorySyncFragmentElement {
 }
 
 const PrivacyGuideHistorySyncFragmentElementBase =
-    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement))) as {
-      new (): PolymerElement & RouteObserverMixinInterface &
-          WebUiListenerMixinInterface,
-    };
+    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
 
 export class PrivacyGuideHistorySyncFragmentElement extends
     PrivacyGuideHistorySyncFragmentElementBase {

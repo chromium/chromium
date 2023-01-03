@@ -25,22 +25,22 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME, PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
-import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
+import {PasswordRemovalMixin} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
-import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 import {PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, PasswordRemovalUrlParams, PasswordViewPageRequestedEvent} from './password_view.js';
 import {getTemplate} from './passwords_list_handler.html.js';
 
@@ -59,13 +59,8 @@ export interface PasswordsListHandlerElement {
 
 type FocusConfig = Map<string, string|(() => void)>;
 
-const PasswordsListHandlerElementBase =
-    RouteObserverMixin(PasswordRemovalMixin(PasswordRequestorMixin(
-        WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & PasswordRequestorMixinInterface &
-          PasswordRemovalMixinInterface & RouteObserverMixinInterface,
-    };
+const PasswordsListHandlerElementBase = RouteObserverMixin(PasswordRemovalMixin(
+    PasswordRequestorMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class PasswordsListHandlerElement extends
     PasswordsListHandlerElementBase {

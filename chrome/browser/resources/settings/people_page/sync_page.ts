@@ -26,12 +26,12 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -39,7 +39,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
 
-import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 // <if expr="chromeos_ash">
@@ -60,10 +60,7 @@ export interface SettingsSyncPageElement {
  */
 
 const SettingsSyncPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          I18nMixinInterface & RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   static get is() {
@@ -336,11 +333,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onFocusConfigChange_() {
     this.focusConfig.set(
         Router.getInstance().getRoutes().SYNC_ADVANCED.path, () => {
-      const toFocus =
-          this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
-      assert(toFocus);
-      focusWithoutInk(toFocus);
-    });
+          const toFocus =
+              this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
+          assert(toFocus);
+          focusWithoutInk(toFocus);
+        });
   }
 
   // <if expr="not chromeos_ash">
@@ -666,7 +663,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     const passphraseInput = this.shadowRoot!.querySelector<CrInputElement>(
         '#existingPassphraseInput');
     const router = Router.getInstance();
-    if (passphraseInput && router.getCurrentRoute() === router.getRoutes().SYNC) {
+    if (passphraseInput &&
+        router.getCurrentRoute() === router.getRoutes().SYNC) {
       passphraseInput.focus();
     }
   }

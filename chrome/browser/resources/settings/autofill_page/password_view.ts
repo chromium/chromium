@@ -20,21 +20,21 @@ import './password_remove_dialog.js';
 import './passwords_shared.css.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
 import {PasswordListItemElement} from './password_list_item.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
+import {PasswordRemovalMixin} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
-import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 import {getTemplate} from './password_view.html.js';
 
 declare global {
@@ -55,13 +55,8 @@ export interface PasswordViewElement {
   };
 }
 
-const PasswordViewElementBase =
-    PasswordRemovalMixin(PasswordRequestorMixin(
-        RouteObserverMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & PasswordRequestorMixinInterface &
-          PasswordRemovalMixinInterface,
-    };
+const PasswordViewElementBase = PasswordRemovalMixin(
+    PasswordRequestorMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 export enum PasswordRemovalUrlParams {
   REMOVED_FROM_STORES = 'removedFromStores',

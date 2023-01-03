@@ -34,7 +34,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="is_win">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -43,10 +43,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
-import {RelaunchMixin, RelaunchMixinInterface, RestartType} from '../relaunch_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.js';
+import {Route, RouteObserverMixin} from '../router.js';
 
 import {getTemplate} from './languages_page.html.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
@@ -58,18 +58,16 @@ import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.j
  * Millisecond delay that can be used when closing an action menu to keep it
  * briefly on-screen.
  */
- export const kMenuCloseDelay: number = 100;
+export const kMenuCloseDelay: number = 100;
 
- export interface SettingsLanguagesPageElement {
-   $: {
-     menu: CrLazyRenderElement<CrActionMenuElement>,
-   };
- }
+export interface SettingsLanguagesPageElement {
+  $: {
+    menu: CrLazyRenderElement<CrActionMenuElement>,
+  };
+}
 
 const SettingsLanguagesPageElementBase =
-    RouteObserverMixin(RelaunchMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
-      new (): PolymerElement & RelaunchMixinInterface & I18nMixinInterface & PrefsMixinInterface & RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(RelaunchMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsLanguagesPageElement extends
     SettingsLanguagesPageElementBase {
@@ -176,7 +174,7 @@ export class SettingsLanguagesPageElement extends
    * Formats language index (zero-indexed)
    */
   private formatIndex_(index: number): string {
-    return (index+1).toLocaleString();
+    return (index + 1).toLocaleString();
   }
 
   /**

@@ -25,7 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_main.html.js';
 
@@ -40,8 +40,7 @@ export interface SettingsMainElement {
   };
 }
 
-const SettingsMainElementBase = RouteObserverMixin(PolymerElement) as
-    {new (): PolymerElement & RouteObserverMixinInterface};
+const SettingsMainElementBase = RouteObserverMixin(PolymerElement);
 
 export class SettingsMainElement extends SettingsMainElementBase {
   static get is() {

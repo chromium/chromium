@@ -14,8 +14,8 @@ import '../prefs/prefs.js';
 import '../settings_shared.css.js';
 import './disable_safebrowsing_dialog.js';
 
-import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -29,10 +29,10 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 // </if>
 
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
@@ -61,12 +61,7 @@ export interface SettingsSecurityPageElement {
 }
 
 const SettingsSecurityPageElementBase =
-    HelpBubbleMixin(
-        RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & PrefsMixinInterface &
-          HelpBubbleMixinInterface,
-    };
+    HelpBubbleMixin(RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsSecurityPageElement extends
     SettingsSecurityPageElementBase {
@@ -208,9 +203,8 @@ export class SettingsSecurityPageElement extends
 
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
-        const toFocus =
-            this.shadowRoot!.querySelector<HTMLElement>(
-                '#security-keys-subpage-trigger');
+        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+            '#security-keys-subpage-trigger');
         assert(toFocus);
         focusWithoutInk(toFocus);
       });

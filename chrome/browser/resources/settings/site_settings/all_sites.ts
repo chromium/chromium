@@ -23,8 +23,8 @@ import './site_entry.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,11 +32,11 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './all_sites.html.js';
 import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 interface ActionMenuModel {
@@ -78,19 +78,8 @@ export interface AllSitesElement {
   };
 }
 
-// TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
-// TypeScript.
-type Constructor<T> = new (...args: any[]) => T;
-
-const AllSitesElementBaseTemp = GlobalScrollTargetMixin(
-    RouteObserverMixin(
-        WebUiListenerMixin(I18nMixin(SiteSettingsMixin(PolymerElement)))) as
-    unknown as Constructor<PolymerElement>);
-
-const AllSitesElementBase = AllSitesElementBaseTemp as unknown as {
-  new (): PolymerElement & I18nMixinInterface & WebUiListenerMixinInterface &
-      SiteSettingsMixinInterface & RouteObserverMixinInterface,
-};
+const AllSitesElementBase = GlobalScrollTargetMixin(RouteObserverMixin(
+    WebUiListenerMixin(I18nMixin(SiteSettingsMixin(PolymerElement)))));
 
 const FPS_RELATED_SEARCH_PREFIX: string = 'related:';
 

@@ -26,10 +26,10 @@ import '../settings_shared.css.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {isChromeOS} from 'chrome://resources/js/platform.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getImage} from 'chrome://resources/js/icon.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -38,7 +38,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 // <if expr="chromeos_ash">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
@@ -56,10 +56,7 @@ export interface SettingsPeoplePageElement {
 }
 
 const SettingsPeoplePageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
 
 export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static get is() {

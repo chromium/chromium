@@ -8,9 +8,9 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
@@ -18,11 +18,11 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {FocusConfig} from '../focus_config.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/site_settings_mixin.js';
+import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
-import {TooltipMixin, TooltipMixinInterface} from '../tooltip_mixin.js';
+import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getTemplate} from './recent_site_permissions.html.js';
 import {getLocalizationStringForContentType} from './site_settings_page_util.js';
@@ -35,11 +35,7 @@ export interface SettingsRecentSitePermissionsElement {
 
 const SettingsRecentSitePermissionsElementBase =
     TooltipMixin(RouteObserverMixin(
-        SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & SiteSettingsMixinInterface &
-          RouteObserverMixinInterface & TooltipMixinInterface,
-    };
+        SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsRecentSitePermissionsElement extends
     SettingsRecentSitePermissionsElementBase {
@@ -295,9 +291,8 @@ export class SettingsRecentSitePermissionsElement extends
       assert(!!toFocus);
       focusWithoutInk(toFocus);
     } else {
-      const toFocus =
-          this.shadowRoot!.querySelector<HTMLElement>(
-              `#siteEntryButton_${index}`);
+      const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+          `#siteEntryButton_${index}`);
       assert(!!toFocus);
       focusWithoutInk(toFocus);
     }
