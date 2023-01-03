@@ -405,6 +405,12 @@ int GpuMain(MainFunctionParams parameters) {
 namespace {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+bool IsAsahiGpu(const gpu::GPUInfo::GPUDevice& device) {
+  // Asahi's vendor ID is a stub value (0xffffffff), so match the vendor name
+  // instead.
+  return device.vendor_string.find("Asahi") != std::string::npos;
+}
+
 bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
                        const gpu::GPUInfo* gpu_info,
                        const gpu::GpuPreferences& gpu_prefs) {
@@ -428,6 +434,8 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
         angle::IsIntel(gpu_info->active_gpu().vendor_id);
     sandbox_options.use_nvidia_specific_policies =
         angle::IsNVIDIA(gpu_info->active_gpu().vendor_id);
+    sandbox_options.use_asahi_specific_policies =
+        IsAsahiGpu(gpu_info->active_gpu());
     for (const auto& gpu : gpu_info->secondary_gpus) {
       if (angle::IsAMD(gpu.vendor_id))
         sandbox_options.use_amd_specific_policies = true;
@@ -435,6 +443,8 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
         sandbox_options.use_intel_specific_policies = true;
       else if (angle::IsNVIDIA(gpu.vendor_id))
         sandbox_options.use_nvidia_specific_policies = true;
+      else if (IsAsahiGpu(gpu))
+        sandbox_options.use_asahi_specific_policies = true;
     }
   }
   sandbox_options.accelerated_video_decode_enabled =

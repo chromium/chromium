@@ -28,6 +28,7 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
     bool use_amd_specific_policies = false;     // For ChromiumOS.
     bool use_intel_specific_policies = false;   // For ChromiumOS.
     bool use_nvidia_specific_policies = false;  // For Linux.
+    bool use_asahi_specific_policies = false;   // For Linux.
 
     // Options for GPU's PreSandboxHook.
     bool accelerated_video_decode_enabled = false;
