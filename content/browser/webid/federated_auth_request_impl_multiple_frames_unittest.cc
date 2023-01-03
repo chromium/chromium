@@ -1,0 +1,299 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/webid/federated_auth_request_impl.h"
+
+#include <memory>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+
+#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
+#include "content/browser/webid/test/mock_api_permission_delegate.h"
+#include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
+#include "content/browser/webid/test/mock_idp_network_request_manager.h"
+#include "content/browser/webid/test/mock_permission_delegate.h"
+#include "content/common/content_navigation_policy.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/common/content_features.h"
+#include "content/test/test_render_frame_host.h"
+#include "content/test/test_render_view_host.h"
+#include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_status_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+using ApiPermissionStatus =
+    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using AuthRequestCallbackHelper =
+    content::FederatedAuthRequestRequestTokenCallbackHelper;
+using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using RequestTokenCallback =
+    content::FederatedAuthRequestImpl::RequestTokenCallback;
+using blink::mojom::RequestTokenStatus;
+using ::testing::NiceMock;
+
+namespace content {
+
+namespace {
+
+constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
+constexpr char kRpUrl[] = "https://rp.example/";
+constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
+constexpr char kTokenEndpoint[] = "https://idp.example/token";
+constexpr char kClientId[] = "client_id_123";
+constexpr char kNonce[] = "nonce123";
+constexpr char kAccountId[] = "1234";
+constexpr char kToken[] = "[not a real token]";
+
+static const std::initializer_list<IdentityRequestAccount> kAccounts{{
+    kAccountId,         // id
+    "ken@idp.example",  // email
+    "Ken R. Example",   // name
+    "Ken",              // given_name
+    GURL()              // picture
+}};
+
+// IdpNetworkRequestManager which returns valid data from IdP.
+class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
+ public:
+  void FetchWellKnown(const GURL& provider,
+                      FetchWellKnownCallback callback) override {
+    std::set<GURL> well_known_configs;
+    well_known_configs.insert(GURL(kProviderUrlFull));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
+                                  well_known_configs));
+  }
+
+  void FetchConfig(const GURL& provider,
+                   int idp_brand_icon_ideal_size,
+                   int idp_brand_icon_minimum_size,
+                   FetchConfigCallback callback) override {
+    IdpNetworkRequestManager::Endpoints endpoints;
+    endpoints.token = GURL(kTokenEndpoint);
+    endpoints.accounts = GURL(kAccountsEndpoint);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
+                                  endpoints, IdentityProviderMetadata()));
+  }
+
+  void SendAccountsRequest(const GURL& accounts_url,
+                           const std::string& client_id,
+                           AccountsRequestCallback callback) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), kFetchStatusSuccess, kAccounts));
+  }
+
+  void SendTokenRequest(const GURL& token_url,
+                        const std::string& account,
+                        const std::string& url_encoded_post_data,
+                        TokenRequestCallback callback) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), kFetchStatusSuccess, kToken));
+  }
+
+ private:
+  FetchStatus kFetchStatusSuccess{
+      IdpNetworkRequestManager::ParseStatus::kSuccess, net::HTTP_OK};
+};
+
+class TestDialogController
+    : public NiceMock<MockIdentityRequestDialogController> {
+ public:
+  struct State {
+    bool did_show_accounts_dialog{false};
+  };
+
+  enum class AccountsDialogAction {
+    kNone,
+    kSelectAccount,
+  };
+
+  // `state` is a pointer parameter so that it can outlive TestDialogController.
+  TestDialogController(AccountsDialogAction accounts_dialog_action,
+                       State* state)
+      : accounts_dialog_action_(accounts_dialog_action), state_(state) {}
+
+  ~TestDialogController() override = default;
+  TestDialogController(TestDialogController&) = delete;
+  TestDialogController& operator=(TestDialogController&) = delete;
+
+  void ShowAccountsDialog(
+      WebContents* rp_web_contents,
+      const std::string& rp_for_display,
+      const std::vector<IdentityProviderData>& identity_provider_data,
+      IdentityRequestAccount::SignInMode sign_in_mode,
+      IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::DismissCallback dismiss_callback)
+      override {
+    state_->did_show_accounts_dialog = true;
+    if (accounts_dialog_action_ == AccountsDialogAction::kSelectAccount) {
+      std::move(on_selected)
+          .Run(GURL(kProviderUrlFull), kAccountId, /*is_sign_in=*/true);
+    }
+  }
+
+ private:
+  AccountsDialogAction accounts_dialog_action_{AccountsDialogAction::kNone};
+  raw_ptr<State> state_;
+};
+
+class TestApiPermissionDelegate : public MockApiPermissionDelegate {
+ public:
+  ApiPermissionStatus GetApiPermissionStatus(
+      const url::Origin& origin) override {
+    return ApiPermissionStatus::GRANTED;
+  }
+};
+
+}  // namespace
+
+class FederatedAuthRequestImplMultipleFramesTest
+    : public RenderViewHostImplTestHarness {
+ protected:
+  FederatedAuthRequestImplMultipleFramesTest() = default;
+  ~FederatedAuthRequestImplMultipleFramesTest() override = default;
+
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    test_api_permission_delegate_ =
+        std::make_unique<TestApiPermissionDelegate>();
+    mock_permission_delegate_ =
+        std::make_unique<NiceMock<MockPermissionDelegate>>();
+
+    static_cast<TestWebContents*>(web_contents())
+        ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
+  }
+
+  // Does token request and waits for result.
+  void DoRequestTokenAndWait(
+      mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
+      AuthRequestCallbackHelper& callback_helper) {
+    DoRequestToken(request_remote, callback_helper.callback());
+    request_remote.set_disconnect_handler(callback_helper.quit_closure());
+
+    // Ensure that the request makes its way to FederatedAuthRequestImpl.
+    base::RunLoop().RunUntilIdle();
+    // Fast forward clock so that the pending
+    // FederatedAuthRequestImpl::OnRejectRequest() task, if any, gets a
+    // chance to run.
+    task_environment()->FastForwardBy(base::Minutes(10));
+
+    callback_helper.WaitForCallback();
+    request_remote.set_disconnect_handler(base::OnceClosure());
+  }
+
+  FederatedAuthRequestImpl* CreateFederatedAuthRequestImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
+      TestDialogController::AccountsDialogAction accounts_dialog_action,
+      TestDialogController::State* dialog_controller_state) {
+    FederatedAuthRequestImpl* federated_auth_request_impl =
+        &FederatedAuthRequestImpl::CreateForTesting(
+            render_frame_host, test_api_permission_delegate_.get(),
+            mock_permission_delegate_.get(),
+            request_remote.BindNewPipeAndPassReceiver());
+    federated_auth_request_impl->SetDialogControllerForTests(
+        std::make_unique<TestDialogController>(accounts_dialog_action,
+                                               dialog_controller_state));
+    federated_auth_request_impl->SetNetworkManagerForTests(
+        std::make_unique<TestIdpNetworkRequestManager>());
+    federated_auth_request_impl->SetTokenRequestDelayForTests(
+        base::TimeDelta());
+    return federated_auth_request_impl;
+  }
+
+  void DoRequestToken(
+      mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
+      RequestTokenCallback callback) {
+    auto idp_ptr = blink::mojom::IdentityProviderConfig::New(
+        GURL(kProviderUrlFull), kClientId, kNonce, /*login_hint=*/"");
+    std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
+    idp_ptrs.push_back(std::move(idp_ptr));
+    auto get_params = blink::mojom::IdentityProviderGetParameters::New(
+        std::move(idp_ptrs), /*prefer_auto_signin=*/true);
+    std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
+    idp_get_params.push_back(std::move(get_params));
+
+    request_remote->RequestToken(std::move(idp_get_params),
+                                 std::move(callback));
+    request_remote.FlushForTesting();
+  }
+
+ protected:
+  std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
+  std::unique_ptr<NiceMock<MockPermissionDelegate>> mock_permission_delegate_;
+};
+
+// Test that test harness can execute successful FedCM flow for iframe.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest, TestHarness) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures({features::kFedCm, features::kFedCmIframeSupport}, {});
+
+  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
+                                    ->AppendChild(/*frame_name=*/"");
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  CreateFederatedAuthRequestImpl(
+      *iframe_rfh, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  AuthRequestCallbackHelper iframe_callback_helper;
+  DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+  EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
+  EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
+}
+
+// Test that FedCM request fails on iframe if there is an in-progress FedCM
+// request for a different frame on the page.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest, IframeTooManyRequests) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures({features::kFedCm, features::kFedCmIframeSupport}, {});
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
+  TestDialogController::State main_frame_dialog_state;
+  CreateFederatedAuthRequestImpl(
+      *main_rfh(), main_frame_request_remote,
+      TestDialogController::AccountsDialogAction::kNone,
+      &main_frame_dialog_state);
+  DoRequestToken(main_frame_request_remote, RequestTokenCallback());
+  EXPECT_TRUE(main_frame_dialog_state.did_show_accounts_dialog);
+
+  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
+                                    ->AppendChild(/*frame_name=*/"");
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  CreateFederatedAuthRequestImpl(
+      *iframe_rfh, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  AuthRequestCallbackHelper iframe_callback_helper;
+  DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+  EXPECT_EQ(RequestTokenStatus::kErrorTooManyRequests,
+            iframe_callback_helper.status());
+  EXPECT_FALSE(iframe_dialog_state.did_show_accounts_dialog);
+}
+
+}  // namespace content

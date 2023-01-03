@@ -20,6 +20,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
+#include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
@@ -47,6 +48,8 @@ using blink::mojom::RequestTokenStatus;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using AuthRequestCallbackHelper =
+    content::FederatedAuthRequestRequestTokenCallbackHelper;
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
@@ -295,67 +298,6 @@ MockConfiguration kConfigurationMultiIdpValid{
 url::Origin OriginFromString(const std::string& url_string) {
   return url::Origin::Create(GURL(url_string));
 }
-
-// Helper class for receiving the mojo method callback.
-class AuthRequestCallbackHelper {
- public:
-  AuthRequestCallbackHelper() = default;
-  ~AuthRequestCallbackHelper() = default;
-
-  AuthRequestCallbackHelper(const AuthRequestCallbackHelper&) = delete;
-  AuthRequestCallbackHelper& operator=(const AuthRequestCallbackHelper&) =
-      delete;
-
-  absl::optional<RequestTokenStatus> status() const { return status_; }
-  absl::optional<GURL> selected_idp_config_url() const {
-    return selected_idp_config_url_;
-  }
-  absl::optional<std::string> token() const { return token_; }
-
-  base::OnceClosure quit_closure() {
-    return base::BindOnce(&AuthRequestCallbackHelper::Quit,
-                          base::Unretained(this));
-  }
-
-  // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(RequestTokenStatus,
-                          const absl::optional<GURL>&,
-                          const absl::optional<std::string>&)>
-  callback() {
-    return base::BindOnce(&AuthRequestCallbackHelper::ReceiverMethod,
-                          base::Unretained(this));
-  }
-
-  bool was_callback_called() const { return was_called_; }
-
-  // Returns when callback() is called, which can be immediately if it has
-  // already been called.
-  void WaitForCallback() {
-    if (was_called_)
-      return;
-    wait_for_callback_loop_.Run();
-  }
-
- private:
-  void ReceiverMethod(RequestTokenStatus status,
-                      const absl::optional<GURL>& selected_idp_config_url,
-                      const absl::optional<std::string>& token) {
-    CHECK(!was_called_);
-    status_ = status;
-    selected_idp_config_url_ = selected_idp_config_url;
-    token_ = token;
-    was_called_ = true;
-    wait_for_callback_loop_.Quit();
-  }
-
-  void Quit() { wait_for_callback_loop_.Quit(); }
-
-  bool was_called_ = false;
-  base::RunLoop wait_for_callback_loop_;
-  absl::optional<RequestTokenStatus> status_;
-  absl::optional<GURL> selected_idp_config_url_;
-  absl::optional<std::string> token_;
-};
 
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
@@ -2447,79 +2389,6 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
   // The next FedCM request should fail since the initial request has not yet
   // been finalized.
-  expectations = {RequestTokenStatus::kErrorTooManyRequests,
-                  /*devtools_issue_statuses=*/{},
-                  /*selected_idp_config_url=*/absl::nullopt,
-                  /*fetched_endpoints=*/0};
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
-}
-
-TEST_F(FederatedAuthRequestImplTest, IframeTooManyRequests) {
-  base::test::ScopedFeatureList list;
-  list.InitWithFeatures({features::kFedCm, features::kFedCmIframeSupport}, {});
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
-      .WillOnce(Invoke(
-          [&](content::WebContents* rp_web_contents,
-              const std::string& rp_for_display,
-              const std::vector<IdentityProviderData>& identity_provider_data,
-              SignInMode sign_in_mode,
-              IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected,
-              IdentityRequestDialogController::DismissCallback
-                  dismiss_callback) {
-            // Does not do anything (user did not close or select an account).
-          }));
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.wait_for_callback = false;
-  configuration.customized_dialog = true;
-  RequestExpectations expectations = {
-      /*return_status=*/absl::nullopt,
-      /*devtools_issue_statuses=*/{},
-      /*selected_idp_config_url=*/absl::nullopt,
-      /*fetched_endpoints=*/FETCH_ENDPOINT_ALL_REQUEST_TOKEN &
-          ~FetchedEndpoint::TOKEN};
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
-
-  // Add an iframe and test that it fails to invoke the API. This test could be
-  // improved: it is hacky in that it resets the parameters needed to reuse the
-  // methods in the test class.
-  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
-                                    ->AppendChild(/*frame_name=*/"");
-  // We need to keep the main frame's Remote alive so store it in a separate
-  // variable so that we can set  |request_remote_| as the iframe's remote and
-  // use the test methods.
-  mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote =
-      std::move(request_remote_);
-  request_remote_.reset();
-
-  // Initialize the iframe FederatedAuthRequestImpl as well as the helper test
-  // classes so that they all now belong to the iframe's
-  // FederatedAuthRequestImpl.
-  FederatedAuthRequestImpl* iframe_federated_auth_request_impl =
-      &FederatedAuthRequestImpl::CreateForTesting(
-          *iframe_rfh, test_api_permission_delegate_.get(),
-          mock_permission_delegate_.get(),
-          request_remote_.BindNewPipeAndPassReceiver());
-
-  auto mock_dialog_controller =
-      std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-  mock_dialog_controller_ = mock_dialog_controller.get();
-  iframe_federated_auth_request_impl->SetDialogControllerForTests(
-      std::move(mock_dialog_controller));
-
-  std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
-      std::make_unique<TestIdpNetworkRequestManager>();
-  test_network_request_manager_ = std::move(network_request_manager);
-  iframe_federated_auth_request_impl->SetNetworkManagerForTests(
-      std::make_unique<DelegatedIdpNetworkRequestManager>(
-          test_network_request_manager_.get()));
-
-  iframe_federated_auth_request_impl->SetTokenRequestDelayForTests(
-      base::TimeDelta());
-  configuration.customized_dialog = false;
-  // The iframe invocation should fail with
-  // RequestTokenStatus::kErrorTooManyRequests since the main frame's FedCM
-  // request has not yet been finalized.
   expectations = {RequestTokenStatus::kErrorTooManyRequests,
                   /*devtools_issue_statuses=*/{},
                   /*selected_idp_config_url=*/absl::nullopt,
