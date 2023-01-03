@@ -97,6 +97,13 @@ bool AreHttpRequestHeadersCompatible(
   return false;
 }
 
+static_assert(
+    static_cast<int>(PrerenderFinalStatus::kMaxValue) +
+        static_cast<int>(
+            PreloadingFailureReason::kPreloadingFailureReasonCommonEnd) <
+    static_cast<int>(
+        PreloadingFailureReason::kPreloadingFailureReasonContentEnd));
+
 PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
   return static_cast<PreloadingFailureReason>(
       static_cast<int>(status) +

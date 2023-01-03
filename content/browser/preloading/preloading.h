@@ -35,6 +35,10 @@ enum class ContentPreloadingPredictor {
 
   // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
   // logging.
+
+  // The max value of the ContentPreloadingPredictor. Update this when new enums
+  // are added.
+  kMaxValue = kSpeculationRules,
 };
 
 // Helper method to convert ContentPreloadingPredictor to

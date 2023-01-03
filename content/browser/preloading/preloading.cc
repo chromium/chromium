@@ -6,6 +6,10 @@
 
 namespace content {
 
+static_assert(
+    static_cast<int>(ContentPreloadingPredictor::kMaxValue) <
+    static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd));
+
 PreloadingPredictor ToPreloadingPredictor(
     ContentPreloadingPredictor predictor) {
   return static_cast<PreloadingPredictor>(predictor);
