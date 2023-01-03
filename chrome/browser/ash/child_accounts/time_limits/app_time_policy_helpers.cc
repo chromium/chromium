@@ -94,17 +94,18 @@ std::string AppRestrictionToPolicyString(const AppRestriction& restriction) {
   }
 }
 
-absl::optional<AppId> AppIdFromDict(const base::Value& dict) {
-  if (!dict.is_dict())
+absl::optional<AppId> AppIdFromDict(const base::Value::Dict* dict) {
+  if (!dict) {
     return absl::nullopt;
+  }
 
-  const std::string* id = dict.FindStringKey(kAppId);
+  const std::string* id = dict->FindString(kAppId);
   if (!id || id->empty()) {
     DLOG(ERROR) << "Invalid id.";
     return absl::nullopt;
   }
 
-  const std::string* type_string = dict.FindStringKey(kAppType);
+  const std::string* type_string = dict->FindString(kAppType);
   if (!type_string || type_string->empty()) {
     DLOG(ERROR) << "Invalid type.";
     return absl::nullopt;
@@ -113,24 +114,25 @@ absl::optional<AppId> AppIdFromDict(const base::Value& dict) {
   return AppId(PolicyStringToAppType(*type_string), *id);
 }
 
-base::Value AppIdToDict(const AppId& app_id) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kAppId, base::Value(app_id.app_id()));
-  value.SetKey(kAppType, base::Value(AppTypeToPolicyString(app_id.app_type())));
+base::Value::Dict AppIdToDict(const AppId& app_id) {
+  base::Value::Dict dict;
+  dict.Set(kAppId, base::Value(app_id.app_id()));
+  dict.Set(kAppType, base::Value(AppTypeToPolicyString(app_id.app_type())));
 
-  return value;
+  return dict;
 }
 
-absl::optional<AppId> AppIdFromAppInfoDict(const base::Value& dict) {
-  if (!dict.is_dict())
+absl::optional<AppId> AppIdFromAppInfoDict(const base::Value::Dict* dict) {
+  if (!dict) {
     return absl::nullopt;
+  }
 
-  const base::Value* app_info = dict.FindKey(kAppInfoDict);
-  if (!app_info || !app_info->is_dict()) {
+  const base::Value::Dict* app_info = dict->FindDict(kAppInfoDict);
+  if (!app_info) {
     DLOG(ERROR) << "Invalid app info dictionary.";
     return absl::nullopt;
   }
-  return AppIdFromDict(*app_info);
+  return AppIdFromDict(app_info);
 }
 
 absl::optional<AppLimit> AppLimitFromDict(const base::Value::Dict& dict) {
@@ -173,17 +175,17 @@ absl::optional<AppLimit> AppLimitFromDict(const base::Value::Dict& dict) {
   return AppLimit(restriction, daily_limit, last_updated);
 }
 
-base::Value AppLimitToDict(const AppLimit& limit) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kRestrictionEnum,
-               base::Value(AppRestrictionToPolicyString(limit.restriction())));
+base::Value::Dict AppLimitToDict(const AppLimit& limit) {
+  base::Value::Dict dict;
+  dict.Set(kRestrictionEnum,
+           base::Value(AppRestrictionToPolicyString(limit.restriction())));
   if (limit.daily_limit())
-    value.SetKey(kDailyLimitInt, base::Value(limit.daily_limit()->InMinutes()));
+    dict.Set(kDailyLimitInt, base::Value(limit.daily_limit()->InMinutes()));
   const std::string last_updated_string = base::NumberToString(
       (limit.last_updated() - base::Time::UnixEpoch()).InMilliseconds());
-  value.SetKey(kLastUpdatedString, base::Value(last_updated_string));
+  dict.Set(kLastUpdatedString, base::Value(last_updated_string));
 
-  return value;
+  return dict;
 }
 
 absl::optional<base::TimeDelta> ResetTimeFromDict(
@@ -210,12 +212,12 @@ absl::optional<base::TimeDelta> ResetTimeFromDict(
   return base::Minutes(hour.value() * hour_in_mins + minutes.value());
 }
 
-base::Value ResetTimeToDict(int hour, int minutes) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kHourInt, base::Value(hour));
-  value.SetKey(kMinInt, base::Value(minutes));
+base::Value::Dict ResetTimeToDict(int hour, int minutes) {
+  base::Value::Dict dict;
+  dict.Set(kHourInt, base::Value(hour));
+  dict.Set(kMinInt, base::Value(minutes));
 
-  return value;
+  return dict;
 }
 
 absl::optional<bool> ActivityReportingEnabledFromDict(
@@ -238,7 +240,8 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict) {
       continue;
     }
 
-    absl::optional<AppId> app_id = AppIdFromAppInfoDict(app_limits_dict);
+    absl::optional<AppId> app_id =
+        AppIdFromAppInfoDict(&app_limits_dict.GetDict());
     if (!app_id) {
       DLOG(ERROR) << "Invalid app id.";
       continue;

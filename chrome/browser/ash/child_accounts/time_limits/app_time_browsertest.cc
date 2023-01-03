@@ -111,7 +111,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     arc::ArcSessionManager::Get()->Shutdown();
   }
 
-  void UpdatePerAppTimeLimitsPolicy(const base::Value& policy) {
+  void UpdatePerAppTimeLimitsPolicy(const base::Value::Dict& policy) {
     std::string policy_value;
     base::JSONWriter::Write(policy, &policy_value);
 

@@ -10,7 +10,6 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 
 namespace ash {
 namespace parent_access {
@@ -32,8 +31,7 @@ constexpr char kClockDriftDictKey[] = "clock_drift_tolerance";
 
 // static
 absl::optional<AccessCodeConfig> AccessCodeConfig::FromDictionary(
-    const base::Value& value) {
-  const base::Value::Dict& dict = value.GetDict();
+    const base::Value::Dict& dict) {
   const std::string* secret = dict.FindString(kSharedSecretDictKey);
   if (!secret || secret->empty())
     return absl::nullopt;
@@ -74,14 +72,13 @@ AccessCodeConfig& AccessCodeConfig::operator=(AccessCodeConfig&&) = default;
 
 AccessCodeConfig::~AccessCodeConfig() = default;
 
-base::Value AccessCodeConfig::ToDictionary() const {
-  base::Value config(base::Value::Type::DICTIONARY);
-  config.SetKey(kSharedSecretDictKey, base::Value(shared_secret_));
-  config.SetKey(kCodeValidityDictKey,
-                base::Value(static_cast<int>(code_validity_.InSeconds())));
-  config.SetKey(
-      kClockDriftDictKey,
-      base::Value(static_cast<int>(clock_drift_tolerance_.InSeconds())));
+base::Value::Dict AccessCodeConfig::ToDictionary() const {
+  base::Value::Dict config;
+  config.Set(kSharedSecretDictKey, base::Value(shared_secret_));
+  config.Set(kCodeValidityDictKey,
+             base::Value(static_cast<int>(code_validity_.InSeconds())));
+  config.Set(kClockDriftDictKey,
+             base::Value(static_cast<int>(clock_drift_tolerance_.InSeconds())));
   return config;
 }
 

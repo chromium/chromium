@@ -86,15 +86,15 @@ absl::optional<TimeLimitOverride> TimeLimitOverride::FromDictionary(
 
 // static
 absl::optional<TimeLimitOverride> TimeLimitOverride::MostRecentFromList(
-    const base::Value* list) {
-  if (!list || !list->is_list()) {
+    const base::Value::List* list) {
+  if (!list) {
     DLOG(ERROR) << "Override entries should be a list.";
     return absl::nullopt;
   }
 
   // The most recent override created.
   absl::optional<TimeLimitOverride> last_override;
-  for (const base::Value& override_value : list->GetList()) {
+  for (const base::Value& override_value : *list) {
     absl::optional<TimeLimitOverride> current_override =
         FromDictionary(&override_value.GetDict());
     if (!current_override.has_value()) {

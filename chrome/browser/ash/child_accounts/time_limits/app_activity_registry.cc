@@ -637,25 +637,26 @@ void AppActivityRegistry::SaveAppActivity() {
     const base::Time now = base::Time::Now();
 
     for (base::Value& entry : list) {
-      absl::optional<AppId> app_id = policy::AppIdFromAppInfoDict(entry);
+      absl::optional<AppId> app_id =
+          policy::AppIdFromAppInfoDict(entry.GetIfDict());
       DCHECK(app_id.has_value());
 
       if (!base::Contains(activity_registry_, app_id.value())) {
         absl::optional<AppState> state =
-            PersistedAppInfo::GetAppStateFromDict(&entry);
+            PersistedAppInfo::GetAppStateFromDict(entry.GetIfDict());
         DCHECK(state.has_value() && state.value() == AppState::kUninstalled);
         continue;
       }
 
       const PersistedAppInfo info =
           GetPersistedAppInfoForApp(app_id.value(), now);
-      info.UpdateAppActivityPreference(&entry, /* replace */ false);
+      info.UpdateAppActivityPreference(entry.GetDict(), /* replace */ false);
     }
 
     for (const AppId& app_id : newly_installed_apps_) {
       const PersistedAppInfo info = GetPersistedAppInfoForApp(app_id, now);
-      base::Value value(base::Value::Type::DICTIONARY);
-      info.UpdateAppActivityPreference(&value, /* replace */ false);
+      base::Value::Dict value;
+      info.UpdateAppActivityPreference(value, /* replace */ false);
       list.Append(std::move(value));
     }
     newly_installed_apps_.clear();
@@ -709,10 +710,10 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
   for (size_t index = 0; index < list.size();) {
     base::Value& entry = list[index];
     absl::optional<PersistedAppInfo> info =
-        PersistedAppInfo::PersistedAppInfoFromDict(&entry, true);
+        PersistedAppInfo::PersistedAppInfoFromDict(entry.GetIfDict(), true);
     DCHECK(info.has_value());
     info->RemoveActiveTimeEarlierThan(timestamp);
-    info->UpdateAppActivityPreference(&entry, /* replace */ true);
+    info->UpdateAppActivityPreference(entry.GetDict(), /* replace */ true);
 
     if (info->ShouldRemoveApp()) {
       // Remove entry in |activity_registry_| if it is present.

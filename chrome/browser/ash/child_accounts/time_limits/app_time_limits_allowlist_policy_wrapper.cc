@@ -30,7 +30,7 @@ std::vector<AppId> AppTimeLimitsAllowlistPolicyWrapper::GetAllowlistAppList()
   }
 
   for (const base::Value& value : *app_list) {
-    absl::optional<AppId> app_id = policy::AppIdFromDict(value);
+    absl::optional<AppId> app_id = policy::AppIdFromDict(value.GetIfDict());
     if (app_id)
       return_value.push_back(*app_id);
   }

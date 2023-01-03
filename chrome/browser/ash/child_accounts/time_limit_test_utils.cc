@@ -64,38 +64,37 @@ base::TimeDelta CreateTime(int hour, int minute) {
   return base::Minutes(hour * 60 + minute);
 }
 
-base::Value CreatePolicyTime(base::TimeDelta time) {
+base::Value::Dict CreatePolicyTime(base::TimeDelta time) {
   DCHECK_EQ(time.InNanoseconds() % base::Minutes(1).InNanoseconds(), 0);
   DCHECK_LT(time, base::Hours(24));
 
   int hour = time.InHours();
   int minute = time.InMinutes() - time.InHours() * base::Hours(1).InMinutes();
-  base::Value policyTime(base::Value::Type::DICTIONARY);
-  policyTime.SetKey(kWindowLimitEntryTimeHour, base::Value(hour));
-  policyTime.SetKey(kWindowLimitEntryTimeMinute, base::Value(minute));
+  base::Value::Dict policyTime;
+  policyTime.Set(kWindowLimitEntryTimeHour, base::Value(hour));
+  policyTime.Set(kWindowLimitEntryTimeMinute, base::Value(minute));
   return policyTime;
 }
 
-base::Value CreateTimeWindow(const std::string& day,
-                             base::TimeDelta start_time,
-                             base::TimeDelta end_time,
-                             base::Time last_updated) {
-  base::Value time_window(base::Value::Type::DICTIONARY);
-  time_window.SetKey(kWindowLimitEntryEffectiveDay, base::Value(day));
-  time_window.SetKey(kWindowLimitEntryStartsAt, CreatePolicyTime(start_time));
-  time_window.SetKey(kWindowLimitEntryEndsAt, CreatePolicyTime(end_time));
-  time_window.SetKey(kTimeLimitLastUpdatedAt,
-                     base::Value(CreatePolicyTimestamp(last_updated)));
+base::Value::Dict CreateTimeWindow(const std::string& day,
+                                   base::TimeDelta start_time,
+                                   base::TimeDelta end_time,
+                                   base::Time last_updated) {
+  base::Value::Dict time_window;
+  time_window.Set(kWindowLimitEntryEffectiveDay, base::Value(day));
+  time_window.Set(kWindowLimitEntryStartsAt, CreatePolicyTime(start_time));
+  time_window.Set(kWindowLimitEntryEndsAt, CreatePolicyTime(end_time));
+  time_window.Set(kTimeLimitLastUpdatedAt,
+                  base::Value(CreatePolicyTimestamp(last_updated)));
   return time_window;
 }
 
-base::Value CreateTimeUsage(base::TimeDelta usage_quota,
-                            base::Time last_updated) {
-  base::Value time_usage(base::Value::Type::DICTIONARY);
-  time_usage.SetKey(kUsageLimitUsageQuota,
-                    base::Value(usage_quota.InMinutes()));
-  time_usage.SetKey(kTimeLimitLastUpdatedAt,
-                    base::Value(CreatePolicyTimestamp(last_updated)));
+base::Value::Dict CreateTimeUsage(base::TimeDelta usage_quota,
+                                  base::Time last_updated) {
+  base::Value::Dict time_usage;
+  time_usage.Set(kUsageLimitUsageQuota, base::Value(usage_quota.InMinutes()));
+  time_usage.Set(kTimeLimitLastUpdatedAt,
+                 base::Value(CreatePolicyTimestamp(last_updated)));
   return time_usage;
 }
 
@@ -120,7 +119,8 @@ void AddTimeUsageLimit(base::Value::Dict* policy,
 
   std::transform(day.begin(), day.end(), day.begin(), ::tolower);
   policy->Find(kTimeUsageLimit)
-      ->SetKey(day, CreateTimeUsage(quota, last_updated));
+      ->GetDict()
+      .Set(day, CreateTimeUsage(quota, last_updated));
 }
 
 void AddTimeWindowLimit(base::Value::Dict* policy,
@@ -134,11 +134,12 @@ void AddTimeWindowLimit(base::Value::Dict* policy,
         &policy->Set(kTimeWindowLimit, base::Value::Dict())->GetDict();
   }
 
-  base::Value* window_limit_entries =
-      time_window_limit->Find(kWindowLimitEntries);
+  base::Value::List* window_limit_entries =
+      time_window_limit->FindList(kWindowLimitEntries);
   if (!window_limit_entries) {
     window_limit_entries =
-        time_window_limit->Set(kWindowLimitEntries, base::Value::List());
+        &time_window_limit->Set(kWindowLimitEntries, base::Value::List())
+             ->GetList();
   }
 
   window_limit_entries->Append(

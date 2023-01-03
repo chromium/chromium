@@ -264,7 +264,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
 
     builder.SetResetTime(6, 0);
     GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
-                        builder.value().GetDict().Clone());
+                        builder.value().Clone());
   }
 
   histogram_tester_.ExpectBucketCount(

@@ -63,22 +63,23 @@ using UsageTimeLimitProcessorInternalTest = testing::Test;
 
 TEST_F(UsageTimeLimitProcessorInternalTest, TimeLimitWindowValid) {
   base::Time last_updated = utils::TimeFromString("1 Jan 1970 00:00:00");
-  base::Value monday_time_limit =
+  base::Value::Dict monday_time_limit =
       utils::CreateTimeWindow(utils::kMonday, base::Minutes(22 * 60 + 30),
                               base::Minutes(7 * 60 + 30), last_updated);
-  base::Value friday_time_limit =
+  base::Value::Dict friday_time_limit =
       utils::CreateTimeWindow(utils::kFriday, base::Hours(23),
                               base::Minutes(8 * 60 + 20), last_updated);
 
-  base::Value window_limit_entries(base::Value::Type::LIST);
+  base::Value::List window_limit_entries;
   window_limit_entries.Append(std::move(monday_time_limit));
   window_limit_entries.Append(std::move(friday_time_limit));
 
-  base::Value time_window_limit = base::Value(base::Value::Type::DICTIONARY);
-  time_window_limit.SetKey("entries", std::move(window_limit_entries));
+  base::Value::Dict time_window_limit;
+  time_window_limit.Set("entries", std::move(window_limit_entries));
 
   // Call tested function.
-  TimeWindowLimit window_limit_struct(time_window_limit);
+  TimeWindowLimit window_limit_struct(
+      base::Value(std::move(time_window_limit)));
 
   ASSERT_TRUE(window_limit_struct.entries[Weekday::kMonday]);
   ASSERT_EQ(window_limit_struct.entries[Weekday::kMonday]
@@ -117,19 +118,19 @@ TEST_F(UsageTimeLimitProcessorInternalTest, TimeUsageWindowValid) {
   // Create dictionary containing the policy information.
   base::Time last_updated_one = utils::TimeFromString("1 Jan 2018 10:00:00");
   base::Time last_updated_two = utils::TimeFromString("1 Jan 2018 11:00:00");
-  base::Value tuesday_time_usage =
+  base::Value::Dict tuesday_time_usage =
       utils::CreateTimeUsage(base::Minutes(120), last_updated_one);
-  base::Value thursday_time_usage =
+  base::Value::Dict thursday_time_usage =
       utils::CreateTimeUsage(base::Minutes(80), last_updated_two);
 
-  base::Value time_usage_limit = base::Value(base::Value::Type::DICTIONARY);
-  time_usage_limit.SetKey("tuesday", std::move(tuesday_time_usage));
-  time_usage_limit.SetKey("thursday", std::move(thursday_time_usage));
-  time_usage_limit.SetKey("reset_at",
-                          utils::CreatePolicyTime(utils::CreateTime(8, 0)));
+  base::Value::Dict time_usage_limit;
+  time_usage_limit.Set("tuesday", std::move(tuesday_time_usage));
+  time_usage_limit.Set("thursday", std::move(thursday_time_usage));
+  time_usage_limit.Set("reset_at",
+                       utils::CreatePolicyTime(utils::CreateTime(8, 0)));
 
   // Call tested functions.
-  TimeUsageLimit usage_limit_struct(time_usage_limit);
+  TimeUsageLimit usage_limit_struct(base::Value(std::move(time_usage_limit)));
 
   ASSERT_EQ(usage_limit_struct.resets_at.InMinutes(), 8 * 60);
 
@@ -162,19 +163,18 @@ TEST_F(UsageTimeLimitProcessorInternalTest, OverrideValid) {
   // Create policy information.
   std::string created_at_millis =
       utils::CreatePolicyTimestamp("1 Jan 2018 10:00:00");
-  base::Value override_one = base::Value(base::Value::Type::DICTIONARY);
-  override_one.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_one.SetKey("created_at_millis", base::Value(created_at_millis));
+  base::Value::Dict override_one;
+  override_one.Set("action",
+                   ValueFromAction(TimeLimitOverride::Action::kUnlock));
+  override_one.Set("created_at_millis", base::Value(created_at_millis));
 
-  base::Value override_two = base::Value(base::Value::Type::DICTIONARY);
-  override_two.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.SetKey(
+  base::Value::Dict override_two;
+  override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
+  override_two.Set(
       "created_at_millis",
       base::Value(utils::CreatePolicyTimestamp("1 Jan 2018 9:00:00")));
 
-  base::Value overrides(base::Value::Type::LIST);
+  base::Value::List overrides;
   overrides.Append(std::move(override_one));
   overrides.Append(std::move(override_two));
 
@@ -197,30 +197,29 @@ TEST_F(UsageTimeLimitProcessorInternalTest, OverrideWithDurationValid) {
   // Create policy information.
   std::string created_at_millis =
       utils::CreatePolicyTimestamp("1 Jan 2018 10:00:00");
-  base::Value action_specific_data = base::Value(base::Value::Type::DICTIONARY);
-  action_specific_data.SetKey("duration_mins", base::Value(30));
+  base::Value::Dict action_specific_data;
+  action_specific_data.Set("duration_mins", base::Value(30));
 
-  base::Value override_one = base::Value(base::Value::Type::DICTIONARY);
-  override_one.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_one.SetKey("created_at_millis", base::Value(created_at_millis));
-  override_one.SetKey("action_specific_data", std::move(action_specific_data));
+  base::Value::Dict override_one;
+  override_one.Set("action",
+                   ValueFromAction(TimeLimitOverride::Action::kUnlock));
+  override_one.Set("created_at_millis", base::Value(created_at_millis));
+  override_one.Set("action_specific_data", std::move(action_specific_data));
 
-  base::Value override_two = base::Value(base::Value::Type::DICTIONARY);
-  override_two.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.SetKey(
+  base::Value::Dict override_two;
+  override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
+  override_two.Set(
       "created_at_millis",
       base::Value(utils::CreatePolicyTimestamp("1 Jan 2018 9:00:00")));
 
-  base::Value override_three = base::Value(base::Value::Type::DICTIONARY);
-  override_three.SetKey("action",
-                        ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_three.SetKey(
+  base::Value::Dict override_three;
+  override_three.Set("action",
+                     ValueFromAction(TimeLimitOverride::Action::kLock));
+  override_three.Set(
       "created_at_millis",
       base::Value(utils::CreatePolicyTimestamp("1 Jan 2018 8:00:00")));
 
-  base::Value overrides(base::Value::Type::LIST);
+  base::Value::List overrides;
   overrides.Append(std::move(override_one));
   overrides.Append(std::move(override_two));
   overrides.Append(std::move(override_three));
@@ -243,27 +242,25 @@ TEST_F(UsageTimeLimitProcessorInternalTest, OverrideWithDurationValid) {
 // different sizes.
 TEST_F(UsageTimeLimitProcessorInternalTest, MultipleOverrides) {
   // Create policy information.
-  base::Value override_one = base::Value(base::Value::Type::DICTIONARY);
-  override_one.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_one.SetKey("created_at_millis", base::Value("1000000"));
+  base::Value::Dict override_one;
+  override_one.Set("action",
+                   ValueFromAction(TimeLimitOverride::Action::kUnlock));
+  override_one.Set("created_at_millis", base::Value("1000000"));
 
-  base::Value override_two = base::Value(base::Value::Type::DICTIONARY);
-  override_two.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.SetKey("created_at_millis", base::Value("999999"));
+  base::Value::Dict override_two;
+  override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
+  override_two.Set("created_at_millis", base::Value("999999"));
 
-  base::Value override_three = base::Value(base::Value::Type::DICTIONARY);
-  override_two.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.SetKey("created_at_millis", base::Value("900000"));
+  base::Value::Dict override_three;
+  override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
+  override_two.Set("created_at_millis", base::Value("900000"));
 
-  base::Value override_four = base::Value(base::Value::Type::DICTIONARY);
-  override_two.SetKey("action",
-                      ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_two.SetKey("created_at_millis", base::Value("1200000"));
+  base::Value::Dict override_four;
+  override_two.Set("action",
+                   ValueFromAction(TimeLimitOverride::Action::kUnlock));
+  override_two.Set("created_at_millis", base::Value("1200000"));
 
-  base::Value overrides(base::Value::Type::LIST);
+  base::Value::List overrides;
   overrides.Append(std::move(override_one));
   overrides.Append(std::move(override_two));
   overrides.Append(std::move(override_three));
@@ -2807,8 +2804,8 @@ TEST_F(UsageTimeLimitProcessorTest, GetTimeUsageLimitResetTime) {
   // be returned.
   const int kHour = 8;
   const int kMinutes = 30;
-  auto time_usage_limit = base::Value(base::Value::Type::DICTIONARY);
-  time_usage_limit.SetKey(
+  base::Value::Dict time_usage_limit;
+  time_usage_limit.Set(
       "reset_at", utils::CreatePolicyTime(utils::CreateTime(kHour, kMinutes)));
   base::Value::Dict time_limit_dictionary;
   time_limit_dictionary.Set("time_usage_limit", std::move(time_usage_limit));

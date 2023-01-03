@@ -1218,8 +1218,8 @@ absl::optional<internal::TimeUsageLimit> TimeUsageLimitFromPolicy(
 
 absl::optional<TimeLimitOverride> OverrideFromPolicy(
     const base::Value::Dict& time_limit) {
-  const base::Value* override_value =
-      time_limit.Find(TimeLimitOverride::kOverridesDictKey);
+  const base::Value::List* override_value =
+      time_limit.FindList(TimeLimitOverride::kOverridesDictKey);
   return TimeLimitOverride::MostRecentFromList(override_value);
 }
 

@@ -776,7 +776,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
     ash::app_time::AppTimeLimitsPolicyBuilder builder;
     builder.SetAppActivityReportingEnabled(/* enabled */ false);
     testing_profile()->GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
-                                           builder.value().GetDict().Clone());
+                                           builder.value().Clone());
   }
 
   SimulateAppActivity(app1, app1_interval);

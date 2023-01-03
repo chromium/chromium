@@ -30,10 +30,10 @@ class AppTimeLimitsPolicyBuilder {
 
   void SetAppActivityReportingEnabled(bool enabled);
 
-  const base::Value& value() const { return value_; }
+  const base::Value::Dict& value() const { return value_; }
 
  private:
-  base::Value value_{base::Value::Type::DICTIONARY};
+  base::Value::Dict value_;
 };
 
 }  // namespace app_time

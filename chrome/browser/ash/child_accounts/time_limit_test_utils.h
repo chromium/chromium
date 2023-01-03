@@ -41,17 +41,17 @@ base::TimeDelta CreateTime(int hour, int minute);
 
 // Creates a time object with the correct format that is used in the Time Limit
 // policy.
-base::Value CreatePolicyTime(base::TimeDelta time);
+base::Value::Dict CreatePolicyTime(base::TimeDelta time);
 
 // Creates a time window limit dictionary used in the Time Limit policy.
-base::Value CreateTimeWindow(const std::string& day,
-                             base::TimeDelta start_time,
-                             base::TimeDelta end_time,
-                             base::Time last_updated);
+base::Value::Dict CreateTimeWindow(const std::string& day,
+                                   base::TimeDelta start_time,
+                                   base::TimeDelta end_time,
+                                   base::Time last_updated);
 
 // Creates a time usage limit dictionary used in the Time Limit policy.
-base::Value CreateTimeUsage(base::TimeDelta usage_quota,
-                            base::Time last_updated);
+base::Value::Dict CreateTimeUsage(base::TimeDelta usage_quota,
+                                  base::Time last_updated);
 
 // Creates dictionary with a minimalist Time Limit policy, containing only the
 // time usage limit reset time.

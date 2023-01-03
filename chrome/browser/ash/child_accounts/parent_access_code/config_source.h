@@ -47,7 +47,7 @@ class ConfigSource {
  private:
   // Creates and adds an authenticator to the |config_map_|. |dict| corresponds
   // to an AccessCodeConfig in its serialized format.
-  void AddAuthenticator(const base::Value& dict,
+  void AddAuthenticator(const base::Value::Dict& dict,
                         const user_manager::User* user);
 
   // Holds the Parent Access Code Authenticators for all children signed in this

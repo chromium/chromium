@@ -39,7 +39,7 @@ class TimeLimitOverride {
   // the list of overrides passed in |list|. Returns nullopt if |list| could not
   // be parsed.
   static absl::optional<TimeLimitOverride> MostRecentFromList(
-      const base::Value* list);
+      const base::Value::List* list);
 
   TimeLimitOverride(Action action,
                     base::Time created_at,

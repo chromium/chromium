@@ -50,22 +50,22 @@ std::string AppRestrictionToPolicyString(const AppRestriction& restriction);
 
 // Deserializes AppId from |dict|.
 // Returns value if |dict| contains valid app information.
-absl::optional<AppId> AppIdFromDict(const base::Value& dict);
+absl::optional<AppId> AppIdFromDict(const base::Value::Dict* dict);
 
 // Serializes AppId to the dictionary.
-base::Value AppIdToDict(const AppId& app_id);
+base::Value::Dict AppIdToDict(const AppId& app_id);
 
 // Deserializes AppId from |dict|.
 // Returns value if |dict| contains valid app information in its entry keyed by
 // kAppInfoDict.
-absl::optional<AppId> AppIdFromAppInfoDict(const base::Value& dict);
+absl::optional<AppId> AppIdFromAppInfoDict(const base::Value::Dict* dict);
 
 // Deserializes AppLimit from |dict|.
 // Returns value if |dict| contains valid app limit information.
 absl::optional<AppLimit> AppLimitFromDict(const base::Value::Dict& dict);
 
 // Serializes AppLimit to the dictionary.
-base::Value AppLimitToDict(const AppLimit& limit);
+base::Value::Dict AppLimitToDict(const AppLimit& limit);
 
 // Deserializes daily limits reset time from |dict|.
 // Returns value if |dict| contains valid reset time information.
@@ -73,7 +73,7 @@ absl::optional<base::TimeDelta> ResetTimeFromDict(
     const base::Value::Dict& dict);
 
 // Serializes daily limits reset to the dictionary.
-base::Value ResetTimeToDict(int hour, int minutes);
+base::Value::Dict ResetTimeToDict(int hour, int minutes);
 
 // Deserializes activity reporting enabled boolean from |dict|.
 // Returns value if |dict| contains a valid entry.

@@ -66,14 +66,14 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
 
   PersistedAppInfo app_info(app, app_state, running_active_time,
                             {{entry1, entry2, entry3}});
-  base::Value entry(base::Value::Type::DICTIONARY);
+  base::Value::Dict entry;
 
-  app_info.UpdateAppActivityPreference(&entry, /* replace */ false);
+  app_info.UpdateAppActivityPreference(entry, /* replace */ false);
   AppActivity::ActiveTime to_append = AppActivity::ActiveTime(
       start_time + 6 * activity, start_time + 7 * activity);
   PersistedAppInfo app_info2(app, app_state, running_active_time,
                              {{to_append}});
-  app_info2.UpdateAppActivityPreference(&entry, /* replace */ false);
+  app_info2.UpdateAppActivityPreference(entry, /* replace */ false);
 
   absl::optional<PersistedAppInfo> updated_entry =
       PersistedAppInfo::PersistedAppInfoFromDict(
@@ -89,7 +89,7 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
   EXPECT_EQ(active_times[2], entry3);
   EXPECT_EQ(active_times[3], to_append);
 
-  app_info2.UpdateAppActivityPreference(&entry, /* replace */ true);
+  app_info2.UpdateAppActivityPreference(entry, /* replace */ true);
   absl::optional<PersistedAppInfo> final_entry =
       PersistedAppInfo::PersistedAppInfoFromDict(
           &entry, /* include_app_activity_array */ true);

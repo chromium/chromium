@@ -53,14 +53,14 @@ void UpdateAcceptedToSVersionPref(Profile* profile,
 void SetUserConsentInfoListForProfile(
     Profile* profile,
     const std::vector<UserConsentInfo>& user_consent_info_list) {
-  base::Value user_consent_info_list_value(base::Value::Type::DICTIONARY);
+  base::Value::Dict user_consent_info_list_value;
   for (const auto& info : user_consent_info_list) {
-    user_consent_info_list_value.SetStringPath(
+    user_consent_info_list_value.SetByDottedPath(
         info.edu_account_gaia_id, info.edu_coexistence_tos_version);
   }
 
-  profile->GetPrefs()->Set(prefs::kEduCoexistenceToSAcceptedVersion,
-                           std::move(user_consent_info_list_value));
+  profile->GetPrefs()->SetDict(prefs::kEduCoexistenceToSAcceptedVersion,
+                               std::move(user_consent_info_list_value));
 }
 
 std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(

@@ -332,28 +332,26 @@ void ScreenTimeController::ScheduleUsageTimeLimitWarning(
 
 void ScreenTimeController::SaveCurrentStateToPref(
     const usage_time_limit::State& state) {
-  auto state_dict =
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  base::Value::Dict state_dict;
 
-  state_dict->SetKey(kScreenStateLocked, base::Value(state.is_locked));
-  state_dict->SetKey(kScreenStateCurrentPolicyType,
-                     base::Value(static_cast<int>(state.active_policy)));
-  state_dict->SetKey(kScreenStateTimeUsageLimitEnabled,
-                     base::Value(state.is_time_usage_limit_enabled));
-  state_dict->SetKey(kScreenStateRemainingUsage,
-                     base::Value(base::checked_cast<int>(
-                         state.remaining_usage.InMilliseconds())));
-  state_dict->SetKey(kScreenStateUsageLimitStarted,
-                     base::Value(state.time_usage_limit_started.ToDoubleT()));
-  state_dict->SetKey(kScreenStateNextStateChangeTime,
-                     base::Value(state.next_state_change_time.ToDoubleT()));
-  state_dict->SetKey(
-      kScreenStateNextPolicyType,
-      base::Value(static_cast<int>(state.next_state_active_policy)));
-  state_dict->SetKey(kScreenStateNextUnlockTime,
-                     base::Value(state.next_unlock_time.ToDoubleT()));
+  state_dict.Set(kScreenStateLocked, base::Value(state.is_locked));
+  state_dict.Set(kScreenStateCurrentPolicyType,
+                 static_cast<int>(state.active_policy));
+  state_dict.Set(kScreenStateTimeUsageLimitEnabled,
+                 state.is_time_usage_limit_enabled);
+  state_dict.Set(
+      kScreenStateRemainingUsage,
+      base::checked_cast<int>(state.remaining_usage.InMilliseconds()));
+  state_dict.Set(kScreenStateUsageLimitStarted,
+                 state.time_usage_limit_started.ToDoubleT());
+  state_dict.Set(kScreenStateNextStateChangeTime,
+                 state.next_state_change_time.ToDoubleT());
+  state_dict.Set(kScreenStateNextPolicyType,
+                 static_cast<int>(state.next_state_active_policy));
+  state_dict.Set(kScreenStateNextUnlockTime,
+                 state.next_unlock_time.ToDoubleT());
 
-  pref_service_->Set(prefs::kScreenTimeLastState, *state_dict);
+  pref_service_->SetDict(prefs::kScreenTimeLastState, std::move(state_dict));
   pref_service_->CommitPendingWrite();
 }
 
