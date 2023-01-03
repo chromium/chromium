@@ -898,6 +898,59 @@ TEST_P(CookieSettingsTest,
               _, _, _))));
 }
 
+TEST_P(
+    CookieSettingsTest,
+    AnnotateAndMoveUserBlockedCookies_SitesInFirstPartySet_FirstPartyURLBlocked) {
+  CookieSettings settings;
+  settings.set_content_settings(
+      {CreateSetting(kFPSOwnerURL, kFPSOwnerURL, CONTENT_SETTING_BLOCK)});
+
+  std::unique_ptr<net::CanonicalCookie> cookie = MakeCanonicalCookie(
+      "third_party_but_member", kFPSMemberURL, false /* sameparty */);
+
+  url::Origin top_frame_origin = url::Origin::Create(GURL(kFPSOwnerURL));
+
+  // Without third-party-cookie-blocking enabled, the cookie is accessible, even
+  // though cookies are blocked for the top-level URL.
+  ASSERT_TRUE(settings.IsCookieAccessible(
+      *cookie, GURL(kFPSMemberURL), net::SiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides()));
+
+  // Now we enable third-party-cookie-blocking, and verify that the right
+  // exclusion reasons are still applied.
+  settings.set_block_third_party_cookies(true);
+
+  net::CookieAccessResultList maybe_included_cookies = {{*cookie, {}}};
+  net::CookieAccessResultList excluded_cookies = {};
+
+  net::SchemefulSite primary((GURL(kFPSOwnerURL)));
+  net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
+  net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
+                                          absl::nullopt);
+
+  EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kFPSMemberURL), net::SiteForCookies(), &top_frame_origin,
+      net::FirstPartySetMetadata(
+          net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
+          &frame_entry, &top_frame_entry),
+      maybe_included_cookies, excluded_cookies));
+
+  EXPECT_EQ(0u, maybe_included_cookies.size());
+
+  EXPECT_THAT(
+      excluded_cookies,
+      ElementsAre(MatchesCookieWithAccessResult(
+          net::MatchesCookieWithName("third_party_but_member"),
+          MatchesCookieAccessResult(
+              HasExactlyExclusionReasonsForTesting(
+                  std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      net::CookieInclusionStatus::
+                          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
+                  }),
+              _, _, _))));
+}
+
 TEST_P(SamePartyCookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);

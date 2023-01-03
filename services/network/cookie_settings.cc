@@ -367,12 +367,11 @@ bool CookieSettings::IsAllowedPartitionedCookie(
 bool CookieSettings::IsThirdPartyCookieBlockedInSamePartySites(
     ThirdPartyBlockingOutcome third_party_blocking_outcome,
     const net::FirstPartySetMetadata& first_party_set_metadata) {
-  // If partitioned state is allowed only, it means the cookie was excluded due
-  // to the third-party cookie blocking setting.
-  if (third_party_blocking_outcome !=
-      ThirdPartyBlockingOutcome::kPartitionedStateAllowed)
-    return false;
-  return first_party_set_metadata.AreSitesInSameFirstPartySet();
+  // If third_party_blocking_outcome isn't kIrrelevant, it means the cookie was
+  // excluded due to the third-party cookie blocking setting.
+  return third_party_blocking_outcome !=
+             ThirdPartyBlockingOutcome::kIrrelevant &&
+         first_party_set_metadata.AreSitesInSameFirstPartySet();
 }
 
 bool CookieSettings::IsHypotheticalCookieAllowed(
