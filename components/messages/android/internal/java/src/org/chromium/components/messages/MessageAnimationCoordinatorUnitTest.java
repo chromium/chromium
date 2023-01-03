@@ -486,6 +486,54 @@ public class MessageAnimationCoordinatorUnitTest {
         verify(mAnimatorStartCallback, times(1)).onResult(any());
     }
 
+    // Test showing animation is triggered after hiding animation is started.
+    @Test
+    @SmallTest
+    public void testObsoleteShowingAnimationByOnStartedShowing() {
+        mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, mAnimatorStartCallback);
+        MessageQueueDelegate queueDelegate = Mockito.mock(MessageQueueDelegate.class);
+        mAnimationCoordinator.setMessageQueueDelegate(queueDelegate);
+        var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.SHOW_ALL);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_FRONT),
+                1);
+        HistogramDelta d3 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_BACK),
+                2);
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        verify(queueDelegate).onStartShowing(captor.capture());
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
+        Assert.assertEquals(1, d3.getDelta());
+        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        verify(m2.handler).show(Position.FRONT, Position.BACK);
+        currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {m1, m2}, currentMessages.toArray());
+        verify(mAnimatorStartCallback, never()).onResult(any());
+
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(null, null), false, () -> {});
+        verify(m1.handler).hide(anyInt(), anyInt(), anyBoolean());
+        verify(m2.handler).hide(anyInt(), anyInt(), anyBoolean());
+        verify(queueDelegate, times(1)).onAnimationStart();
+        verify(mAnimatorStartCallback, times(1)).onResult(any());
+
+        // Trigger showing animation after hiding animation is started.
+        captor.getValue().run();
+        verify(mContainer).runAfterInitialMessageLayout(captor.capture());
+        captor.getValue().run();
+        verify(queueDelegate, times(1)).onAnimationStart();
+        verify(mAnimatorStartCallback, times(1)).onResult(any());
+    }
     private void setMessageIdentifier(MessageState message, int messageIdentifier) {
         doReturn(messageIdentifier).when(message.handler).getMessageIdentifier();
     }
