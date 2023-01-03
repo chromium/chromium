@@ -516,7 +516,8 @@ bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 NetworkDelegate::PrivacySetting TestNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    CookieSettingOverrides overrides) const {
   return NetworkDelegate::PrivacySetting::kStateAllowed;
 }
 
@@ -587,7 +588,8 @@ NetworkDelegate::PrivacySetting
 FilteringTestNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    CookieSettingOverrides overrides) const {
   if (force_privacy_mode_) {
     return partitioned_state_allowed_
                ? NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly
@@ -595,7 +597,7 @@ FilteringTestNetworkDelegate::OnForcePrivacyMode(
   }
 
   return TestNetworkDelegate::OnForcePrivacyMode(url, site_for_cookies,
-                                                 top_frame_origin);
+                                                 top_frame_origin, overrides);
 }
 
 bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

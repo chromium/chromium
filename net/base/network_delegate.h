@@ -18,6 +18,7 @@
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -105,7 +106,8 @@ class NET_EXPORT NetworkDelegate {
   PrivacySetting ForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const;
+      const absl::optional<url::Origin>& top_frame_origin,
+      CookieSettingOverrides overrides) const;
 
   bool CancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
@@ -276,7 +278,8 @@ class NET_EXPORT NetworkDelegate {
   virtual PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const = 0;
+      const absl::optional<url::Origin>& top_frame_origin,
+      CookieSettingOverrides overrides) const = 0;
 
   // Called when the |referrer_url| for requesting |target_url| during handling
   // of the |request| is does not comply with the referrer policy (e.g. a

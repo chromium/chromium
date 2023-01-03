@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
@@ -81,7 +82,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin,
+      CookieSettingOverrides overrides) const override;
 
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,

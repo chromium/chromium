@@ -230,6 +230,10 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // set.
   bool IsPartitionedCookiesEnabled() const;
 
+  // Creates the CookieSettingOverrides that should be used when accessing any
+  // cookies for this request job.
+  CookieSettingOverrides GetCookieSettingOverrides() const;
+
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;

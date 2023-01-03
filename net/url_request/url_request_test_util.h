@@ -320,7 +320,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin,
+      CookieSettingOverrides overrides) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       CookieOptions* options) override;
@@ -412,7 +413,8 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin,
+      CookieSettingOverrides overrides) const override;
 
   void set_block_annotate_cookies() { block_annotate_cookies_ = true; }
 

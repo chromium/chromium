@@ -109,23 +109,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // It may be set to kPartitionedStateAllowedOnly if the request allows
   // partitioned state to be sent over the connection, but unpartitioned
   // state should be blocked.
-  // DEPRECATED: Use IsPrivacyModeEnabled(GURL, SiteForCookies, Origin,
-  // bool).
-  // TODO(crbug.com/1386190): Update callers and remove.
-  net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const {
-    return IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin,
-                                net::CookieSettingOverrides());
-  }
-
-  // Returns kStateDisallowed iff the given |url| has to be requested over
-  // connection that is not tracked by the server. Usually is kStateAllowed,
-  // unless user privacy settings block cookies from being get or set.
-  // It may be set to kPartitionedStateAllowedOnly if the request allows
-  // partitioned state to be sent over the connection, but unpartitioned
-  // state should be blocked.
   net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,

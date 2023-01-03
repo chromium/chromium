@@ -64,7 +64,8 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
   net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin,
+      net::CookieSettingOverrides overrides) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const net::URLRequest& request,
       const GURL& target_url,

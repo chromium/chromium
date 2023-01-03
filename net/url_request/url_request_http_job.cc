@@ -415,7 +415,8 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
   if (request_->network_delegate()) {
     privacy_setting = request()->network_delegate()->ForcePrivacyMode(
         request_->url(), request_->site_for_cookies(),
-        request_->isolation_info().top_frame_origin());
+        request_->isolation_info().top_frame_origin(),
+        GetCookieSettingOverrides());
   }
   switch (privacy_setting) {
     case NetworkDelegate::PrivacySetting::kStateAllowed:
@@ -1713,6 +1714,10 @@ bool URLRequestHttpJob::IsPartitionedCookiesEnabled() const {
   // Only valid to call this after we've computed the key.
   DCHECK(cookie_partition_key_.has_value());
   return cookie_partition_key_.value().has_value();
+}
+
+CookieSettingOverrides URLRequestHttpJob::GetCookieSettingOverrides() const {
+  return CookieSettingOverrides();
 }
 
 }  // namespace net
