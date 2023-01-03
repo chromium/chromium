@@ -612,9 +612,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
-TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_ForwardsOddPixelBufferResolution) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
   // See crbug/1168112.
   RunTestCase(base::BindOnce([] {
     testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
@@ -639,9 +637,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
-TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_FrameRateFloatInaccuracyIsHandled) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, FrameRateFloatInaccuracyIsHandled) {
   // See crbug/1299812.
   RunTestCase(base::BindOnce([] {
     double max_frame_rate = 30.000030;
