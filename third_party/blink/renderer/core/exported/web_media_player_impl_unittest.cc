@@ -809,7 +809,7 @@ class WebMediaPlayerImplTest
 
     // Verify we made it through pipeline startup.
     EXPECT_TRUE(wmpi_->demuxer_manager_->HasDataSource());
-    EXPECT_TRUE(wmpi_->demuxer_);
+    EXPECT_TRUE(wmpi_->demuxer_manager_->HasDemuxer());
 
     if (ready_state > WebMediaPlayer::kReadyStateHaveCurrentData)
       EXPECT_FALSE(wmpi_->seeking_);

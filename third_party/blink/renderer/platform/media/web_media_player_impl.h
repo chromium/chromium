@@ -13,7 +13,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +26,7 @@
 #include "media/base/cdm_config.h"
 #include "media/base/data_source.h"
 #include "media/base/demuxer.h"
+#include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_observer.h"
 #include "media/base/media_tracks.h"
@@ -215,8 +215,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool Seeking() const override;
   double Duration() const override;
   virtual double timelineOffset() const;
-  double CurrentTime() const override;
   bool IsEnded() const override;
+
+  // Shared between the WebMediaPlayer and DemuxerManager::Client interfaces.
+  double CurrentTime() const override;
 
   bool PausedWhenHidden() const override;
 
@@ -386,7 +388,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnBeforePipelineResume();
   void OnPipelineResumed();
   void OnPipelineSeeked(bool time_updated);
-  void OnChunkDemuxerOpened();
 
   // media::Pipeline::Client overrides.
   void OnError(media::PipelineStatus status) override;
@@ -408,6 +409,26 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnVideoAverageKeyframeDistanceUpdate() override;
   void OnAudioPipelineInfoChange(const media::AudioPipelineInfo& info) override;
   void OnVideoPipelineInfoChange(const media::VideoPipelineInfo& info) override;
+
+  // media::DemuxerManager::Client overrides.
+  void OnChunkDemuxerOpened(media::ChunkDemuxer* demuxer) override;
+  void OnProgress() override;
+  void OnEncryptedMediaInitData(media::EmeInitDataType init_data_type,
+                                const std::vector<uint8_t>& init_data) override;
+  void MakeDemuxerThreadDumper(media::Demuxer* demuxer) override;
+  bool CouldPlayIfEnoughData() override;
+  bool IsMediaPlayerRendererClient() override;
+
+#if BUILDFLAG(ENABLE_FFMPEG)
+  void AddAudioTrack(const std::string& id,
+                     const std::string& label,
+                     const std::string& language,
+                     bool is_first_track) override;
+  void AddVideoTrack(const std::string& id,
+                     const std::string& label,
+                     const std::string& language,
+                     bool is_first_track) override;
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
   // Simplified watch time reporting.
   void OnSimpleWatchTimerTick();
@@ -472,15 +493,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Can return a nullptr.
   scoped_refptr<media::VideoFrame> GetCurrentFrameFromCompositor() const;
 
-  // Called when the demuxer encounters encrypted streams.
-  void OnEncryptedMediaInitData(media::EmeInitDataType init_data_type,
-                                const std::vector<uint8_t>& init_data);
-
-  // Called when the FFmpegDemuxer encounters new media tracks. This is only
-  // invoked when using FFmpegDemuxer, since MSE/ChunkDemuxer handle media
-  // tracks separately in WebSourceBufferImpl.
-  void OnFFmpegMediaTracksUpdated(std::unique_ptr<media::MediaTracks> tracks);
-
   // Sets CdmContext from |cdm| on the pipeline and calls OnCdmAttached()
   // when done.
   void SetCdmInternal(WebContentDecryptionModule* cdm);
@@ -515,8 +527,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetMemoryReportingState(bool is_memory_reporting_enabled);
   void SetSuspendState(bool is_suspended);
 
-  void SetDemuxer(std::unique_ptr<media::Demuxer> demuxer);
-
   // Called at low frequency to tell external observers how much memory we're
   // using for video playback.  Called by |memory_usage_reporting_timer_|.
   // Memory usage reporting is done in two steps, because |demuxer_| must be
@@ -532,9 +542,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       media::Demuxer* demuxer,
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* pmd);
-
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   // Called during OnHidden() when we want a suspended player to enter the
   // paused state after some idle timeout.
@@ -623,11 +630,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // handling a src= or MSE based playback.
   void RecordUnderflowDuration(base::TimeDelta duration);
 
-  // Called by the data source (for src=) or demuxer (for mse) when loading
-  // progresses.
-  // Can be called quite often.
-  void OnProgress();
-
   // Returns true when we estimate that we can play the rest of the media
   // without buffering.
   bool CanPlayThrough();
@@ -698,21 +700,13 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Report UMAs when this object instance is destroyed.
   void ReportSessionUMAs() const;
 
-  // Helper methods for creating demuxers to encapsulate build flags.
-  std::unique_ptr<media::Demuxer> CreateChunkDemuxer();
-
-#if BUILDFLAG(ENABLE_FFMPEG)
-  std::unique_ptr<media::Demuxer> CreateFFmpegDemuxer();
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
-      bool expect_hls_content);
-
-  media::PipelineStatus StartHLSFallback();
-#endif
-
   absl::optional<media::DemuxerType> GetDemuxerType() const;
+
+  // Useful to bind for a cb to be called when a demuxer is created.
+  media::PipelineStatus OnDemuxerCreated(media::Demuxer* demuxer,
+                                         media::Pipeline::StartType start_type,
+                                         bool is_streaming,
+                                         bool is_static);
 
   WebLocalFrame* const frame_;
 
@@ -842,12 +836,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Manages the lifetime of the DataSource, and soon the Demuxer.
   std::unique_ptr<media::DemuxerManager> demuxer_manager_;
 
-  // |demuxer_| holds the the appropriate demuxer based on which resource load
-  // strategy we're using.
-  std::unique_ptr<media::Demuxer> demuxer_;
-
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
   const base::TickClock* tick_clock_ = nullptr;
 
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
@@ -946,11 +934,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Stores the current position state of the media.
   media_session::MediaPosition media_position_state_;
 
-  // Set whenever the demuxer encounters an HLS file.
-  // This flag is distinct from |using_media_player_renderer_|, because on older
-  // devices we might use MediaPlayerRenderer for non HLS playback.
-  bool demuxer_found_hls_ = false;
-
   // Called sometime after the media is suspended in a playing state in
   // OnFrameHidden(), causing the state to change to paused.
   base::OneShotTimer background_pause_timer_;
@@ -998,12 +981,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // The maximum video keyframe distance that allows triggering background
   // playback optimizations (MSE).
   base::TimeDelta max_keyframe_distance_to_disable_background_video_mse_;
-
-  // When MSE memory pressure based garbage collection is enabled, the
-  // |enable_instant_source_buffer_gc| controls whether the GC is done
-  // immediately on memory pressure notification or during the next SourceBuffer
-  // append (slower, but MSE spec compliant).
-  bool enable_instant_source_buffer_gc_ = false;
 
   // Whether disabled the video track as an optimization.
   bool video_track_disabled_ = false;
@@ -1108,9 +1085,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   media::SimpleWatchTimer simple_watch_timer_;
 
   LearningExperimentHelper will_play_helper_;
-
-  // Stores the optional override Demuxer until it is used in DoLoad().
-  std::unique_ptr<media::Demuxer> demuxer_override_;
 
   std::unique_ptr<PowerStatusHelper> power_status_helper_;
 
