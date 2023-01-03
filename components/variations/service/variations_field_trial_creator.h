@@ -125,10 +125,9 @@ class VariationsFieldTrialCreator {
   // |safe_seed_manager| should be notified of the combined server and client
   // state that was activated to create the field trials (only when the return
   // value is true). Must not be null.
-  // |low_entropy_source_value| contains the low entropy source value that was
-  // used for client-side randomization of variations, and indicates a
-  // variations ID for it should be added to FIRST_PARTY variation headers.
-  // TODO(b/183955043): eliminate this argument if we can always add the ID.
+  // |add_entropy_source_to_variations_ids| controls if variations ID for the
+  // low entropy source should be added to FIRST_PARTY variation headers.
+  // TODO(b/263797385): eliminate this argument if we can always add the ID.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
   // explicit --disable-features and --enable-features from the command line
@@ -143,7 +142,7 @@ class VariationsFieldTrialCreator {
       metrics::MetricsStateManager* metrics_state_manager,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManager* safe_seed_manager,
-      absl::optional<int> low_entropy_source_value);
+      bool add_entropy_source_to_variations_ids);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.

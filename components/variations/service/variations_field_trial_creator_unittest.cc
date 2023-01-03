@@ -293,7 +293,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
         &platform_field_trials, safe_seed_manager_,
-        metrics_state_manager_->GetLowEntropySource());
+        /*add_entropy_source_to_variations_ids=*/true);
   }
 
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
@@ -833,7 +833,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
-      metrics_state_manager->GetLowEntropySource()));
+      /*add_entropy_source_to_variations_ids=*/true));
 
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
   EXPECT_EQ(
@@ -883,7 +883,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
-      metrics_state_manager->GetLowEntropySource()));
+      /*add_entropy_source_to_variations_ids=*/true));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));

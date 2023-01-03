@@ -736,7 +736,7 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
       content::GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
-      /*low_entropy_source_value=*/absl::nullopt);
+      /*add_entropy_source_to_variations_ids=*/false);
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>

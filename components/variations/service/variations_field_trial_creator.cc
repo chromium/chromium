@@ -230,7 +230,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManager* safe_seed_manager,
-    absl::optional<int> low_entropy_source_value) {
+    bool add_entropy_source_to_variations_ids) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
   DCHECK(platform_field_trials);
@@ -244,9 +244,9 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
 
-  if (low_entropy_source_value.has_value()) {
+  if (add_entropy_source_to_variations_ids) {
     http_header_provider->SetLowEntropySourceValue(
-        low_entropy_source_value.value());
+        metrics_state_manager->GetLowEntropySource());
   }
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
