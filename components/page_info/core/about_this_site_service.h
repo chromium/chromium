@@ -37,6 +37,7 @@ class AboutThisSiteService : public KeyedService {
   // therefore the interface cannot be used in this service.
   class Client {
    public:
+    virtual bool IsOptimizationGuideAllowed() = 0;
     virtual optimization_guide::OptimizationGuideDecision CanApplyOptimization(
         const GURL& url,
         optimization_guide::OptimizationMetadata* optimization_metadata) = 0;
@@ -54,8 +55,10 @@ class AboutThisSiteService : public KeyedService {
     kClickedWithoutDescription = 4,
     kOpenedDirectlyFromSidePanel = 5,
     kNotShownNonGoogleDSE = 6,
+    kNotShownLocalHost = 7,
+    kNotShownOptimizationGuideNotAllowed = 8,
 
-    kMaxValue = kNotShownNonGoogleDSE,
+    kMaxValue = kNotShownOptimizationGuideNotAllowed,
   };
 
   explicit AboutThisSiteService(std::unique_ptr<Client> client,

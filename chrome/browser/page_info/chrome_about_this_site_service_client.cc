@@ -24,12 +24,16 @@ ChromeAboutThisSiteServiceClient::ChromeAboutThisSiteServiceClient(
 
 ChromeAboutThisSiteServiceClient::~ChromeAboutThisSiteServiceClient() = default;
 
+bool ChromeAboutThisSiteServiceClient::IsOptimizationGuideAllowed() {
+  return optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+      is_off_the_record_, prefs_);
+}
+
 optimization_guide::OptimizationGuideDecision
 ChromeAboutThisSiteServiceClient::CanApplyOptimization(
     const GURL& url,
     optimization_guide::OptimizationMetadata* optimization_metadata) {
-  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-          is_off_the_record_, prefs_)) {
+  if (!IsOptimizationGuideAllowed()) {
     return optimization_guide::OptimizationGuideDecision::kUnknown;
   }
   return optimization_guide_decider_->CanApplyOptimization(

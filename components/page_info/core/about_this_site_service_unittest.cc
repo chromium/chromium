@@ -31,6 +31,7 @@ class MockAboutThisSiteServiceClient : public AboutThisSiteService::Client {
  public:
   MockAboutThisSiteServiceClient() = default;
 
+  MOCK_METHOD0(IsOptimizationGuideAllowed, bool());
   MOCK_METHOD2(CanApplyOptimization,
                OptimizationGuideDecision(const GURL&, OptimizationMetadata*));
 };
@@ -91,11 +92,18 @@ class AboutThisSiteServiceTest : public testing::Test {
         std::make_unique<testing::StrictMock<MockAboutThisSiteServiceClient>>();
 
     client_ = client_mock.get();
+    SetOptimizationGuideAllowed(true);
+
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
 
     service_ = std::make_unique<AboutThisSiteService>(
         std::move(client_mock), template_url_service_.get(),
         /*allow_missing_description*/ false);
+  }
+
+  void SetOptimizationGuideAllowed(bool allowed) {
+    EXPECT_CALL(*client(), IsOptimizationGuideAllowed())
+        .WillRepeatedly(Return(allowed));
   }
 
   MockAboutThisSiteServiceClient* client() { return client_; }
@@ -200,8 +208,42 @@ TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
 
+  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
                        AboutThisSiteInteraction::kNotShownNonGoogleDSE, 1);
+}
+
+// Tests that IP addresses and localhost are handled.
+TEST_F(AboutThisSiteServiceTest, LocalHosts) {
+  base::HistogramTester t;
+
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://localhost"), ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_FALSE(info.has_value());
+  info = service()->GetAboutThisSiteInfo(GURL("https://127.0.0.1"),
+                                         ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_FALSE(info.has_value());
+  info = service()->GetAboutThisSiteInfo(GURL("https://192.168.0.1"),
+                                         ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_FALSE(info.has_value());
+
+  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       AboutThisSiteInteraction::kNotShownLocalHost, 3);
+}
+
+// Tests that disabled optimization guide is handled.
+TEST_F(AboutThisSiteServiceTest, NotAllowed) {
+  base::HistogramTester t;
+  SetOptimizationGuideAllowed(false);
+
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
+  EXPECT_FALSE(info.has_value());
+  t.ExpectTotalCount("Security.PageInfo.AboutThisSiteStatus", 0);
+  t.ExpectUniqueSample(
+      "Security.PageInfo.AboutThisSiteInteraction",
+      AboutThisSiteInteraction::kNotShownOptimizationGuideNotAllowed, 1);
 }
 
 }  // namespace page_info

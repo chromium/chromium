@@ -27,6 +27,7 @@ class ChromeAboutThisSiteServiceClient
       const ChromeAboutThisSiteServiceClient&) = delete;
 
   // page_info::AboutThisSiteService::Client:
+  bool IsOptimizationGuideAllowed() override;
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       optimization_guide::OptimizationMetadata* optimization_metadata) override;

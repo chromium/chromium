@@ -57,6 +57,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="kClickedWithDescription"/>
   <int value="4" label="kClickedWithoutDescription"/>
   <int value="5" label="kOpenedDirectlyFromSidePanel"/>
+  <int value="6" label="kNotShownNonGoogleDSE"/>
+  <int value="7" label="kNotShownLocalHost"/>
+  <int value="8" label="kNotShownOptimizationGuideNotAllowed"/>
 </enum>
 
 <enum name="AboutThisSiteStatus">
