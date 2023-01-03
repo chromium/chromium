@@ -89,6 +89,7 @@ static_js_files = [
   "file_manager/externs/exif_entry.js",
   "file_manager/externs/files_app_entry_interfaces.js",
   "file_manager/externs/foreground_window.js",
+  "file_manager/externs/metadata_model.js",
   "file_manager/externs/metadata_worker_window.js",
   "file_manager/externs/progress_center_panel.js",
   "file_manager/externs/volume_info.js",
