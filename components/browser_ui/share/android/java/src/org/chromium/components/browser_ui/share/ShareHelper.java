@@ -22,7 +22,6 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -160,8 +159,7 @@ public class ShareHelper {
         }
 
         public static boolean isSupported() {
-            return !sForceCustomChooserForTesting
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
+            return !sForceCustomChooserForTesting;
         }
 
         public static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
