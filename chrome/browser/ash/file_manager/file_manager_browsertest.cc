@@ -1782,17 +1782,25 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Search, /* search.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("searchDownloadsWithResults"),
-                      TestCase("searchDownloadsWithNoResults"),
-                      TestCase("searchDownloadsClearSearchKeyDown"),
-                      TestCase("searchDownloadsClearSearch"),
-                      TestCase("searchHidingViaTab"),
-                      TestCase("searchHidingTextEntryField"),
-                      TestCase("searchButtonToggles"),
-                      TestCase("searchOptions").EnableSearchV2()
-                      // TODO(b/189173190): Enable
-                      // TestCase("searchQueryLaunchParam")
-                      ));
+    ::testing::Values(
+        TestCase("searchDownloadsWithResults"),
+        TestCase("searchDownloadsWithResults").EnableSearchV2(),
+        TestCase("searchDownloadsWithNoResults"),
+        TestCase("searchDownloadsWithNoResults").EnableSearchV2(),
+        TestCase("searchDownloadsClearSearchKeyDown"),
+        TestCase("searchDownloadsClearSearchKeyDown").EnableSearchV2(),
+        TestCase("searchDownloadsClearSearch"),
+        TestCase("searchDownloadsClearSearch").EnableSearchV2(),
+        TestCase("searchHidingViaTab"),
+        TestCase("searchHidingViaTab").EnableSearchV2(),
+        TestCase("searchHidingTextEntryField"),
+        TestCase("searchHidingTextEntryField").EnableSearchV2(),
+        TestCase("searchButtonToggles"),
+        TestCase("searchButtonToggles").EnableSearchV2(),
+        TestCase("searchOptions").EnableSearchV2()
+        // TODO(b/189173190): Enable
+        // TestCase("searchQueryLaunchParam")
+        ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */
