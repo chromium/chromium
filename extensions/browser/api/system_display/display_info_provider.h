@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/common/api/system_display.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
@@ -22,18 +22,6 @@ class Screen;
 }
 
 namespace extensions {
-
-namespace api {
-namespace system_display {
-struct Bounds;
-struct DisplayLayout;
-struct DisplayProperties;
-struct DisplayUnitInfo;
-struct Insets;
-struct MirrorModeInfo;
-struct TouchCalibrationPairQuad;
-}  // namespace system_display
-}  // namespace api
 
 // Implementation class for chrome.system.display extension API
 // (system_display_api.cc). Callbacks that provide an error string use an

@@ -5,8 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
-#include "base/debug/leak_annotations.h"
+#include "base/functional/bind.h"
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,7 +21,6 @@
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/display/screen.h"
 
 namespace extensions {
 

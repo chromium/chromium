@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/system_display.h"
 
 namespace extensions {
 
@@ -42,11 +42,12 @@ class SystemDisplayGetInfoFunction : public SystemDisplayFunction {
   DECLARE_EXTENSION_FUNCTION("system.display.getInfo", SYSTEM_DISPLAY_GETINFO)
 
  protected:
-  ~SystemDisplayGetInfoFunction() override {}
+  ~SystemDisplayGetInfoFunction() override = default;
 
   ResponseAction Run() override;
 
-  void Response(DisplayInfoProvider::DisplayUnitInfoList all_displays_info);
+  void Response(
+      std::vector<api::system_display::DisplayUnitInfo> all_displays_info);
 };
 
 class SystemDisplayGetDisplayLayoutFunction
@@ -56,11 +57,11 @@ class SystemDisplayGetDisplayLayoutFunction
                              SYSTEM_DISPLAY_GETDISPLAYLAYOUT)
 
  protected:
-  ~SystemDisplayGetDisplayLayoutFunction() override {}
+  ~SystemDisplayGetDisplayLayoutFunction() override = default;
   ResponseAction Run() override;
   bool ShouldRestrictToKioskAndWebUI() override;
 
-  void Response(DisplayInfoProvider::DisplayLayoutList display_layout);
+  void Response(std::vector<api::system_display::DisplayLayout> display_layout);
 };
 
 class SystemDisplaySetDisplayPropertiesFunction
@@ -70,7 +71,7 @@ class SystemDisplaySetDisplayPropertiesFunction
                              SYSTEM_DISPLAY_SETDISPLAYPROPERTIES)
 
  protected:
-  ~SystemDisplaySetDisplayPropertiesFunction() override {}
+  ~SystemDisplaySetDisplayPropertiesFunction() override = default;
   ResponseAction Run() override;
 
   void Response(absl::optional<std::string> error);
@@ -83,7 +84,7 @@ class SystemDisplaySetDisplayLayoutFunction
                              SYSTEM_DISPLAY_SETDISPLAYLAYOUT)
 
  protected:
-  ~SystemDisplaySetDisplayLayoutFunction() override {}
+  ~SystemDisplaySetDisplayLayoutFunction() override = default;
   ResponseAction Run() override;
 
   void Response(absl::optional<std::string> error);
@@ -96,7 +97,7 @@ class SystemDisplayEnableUnifiedDesktopFunction
                              SYSTEM_DISPLAY_ENABLEUNIFIEDDESKTOP)
 
  protected:
-  ~SystemDisplayEnableUnifiedDesktopFunction() override {}
+  ~SystemDisplayEnableUnifiedDesktopFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -107,7 +108,7 @@ class SystemDisplayOverscanCalibrationStartFunction
                              SYSTEM_DISPLAY_OVERSCANCALIBRATIONSTART)
 
  protected:
-  ~SystemDisplayOverscanCalibrationStartFunction() override {}
+  ~SystemDisplayOverscanCalibrationStartFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -118,7 +119,7 @@ class SystemDisplayOverscanCalibrationAdjustFunction
                              SYSTEM_DISPLAY_OVERSCANCALIBRATIONADJUST)
 
  protected:
-  ~SystemDisplayOverscanCalibrationAdjustFunction() override {}
+  ~SystemDisplayOverscanCalibrationAdjustFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -129,7 +130,7 @@ class SystemDisplayOverscanCalibrationResetFunction
                              SYSTEM_DISPLAY_OVERSCANCALIBRATIONRESET)
 
  protected:
-  ~SystemDisplayOverscanCalibrationResetFunction() override {}
+  ~SystemDisplayOverscanCalibrationResetFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -140,7 +141,7 @@ class SystemDisplayOverscanCalibrationCompleteFunction
                              SYSTEM_DISPLAY_OVERSCANCALIBRATIONCOMPLETE)
 
  protected:
-  ~SystemDisplayOverscanCalibrationCompleteFunction() override {}
+  ~SystemDisplayOverscanCalibrationCompleteFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -151,7 +152,7 @@ class SystemDisplayShowNativeTouchCalibrationFunction
                              SYSTEM_DISPLAY_SHOWNATIVETOUCHCALIBRATION)
 
  protected:
-  ~SystemDisplayShowNativeTouchCalibrationFunction() override {}
+  ~SystemDisplayShowNativeTouchCalibrationFunction() override = default;
   ResponseAction Run() override;
 
   void OnCalibrationComplete(absl::optional<std::string> error);
@@ -164,7 +165,7 @@ class SystemDisplayStartCustomTouchCalibrationFunction
                              SYSTEM_DISPLAY_STARTCUSTOMTOUCHCALIBRATION)
 
  protected:
-  ~SystemDisplayStartCustomTouchCalibrationFunction() override {}
+  ~SystemDisplayStartCustomTouchCalibrationFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -175,7 +176,7 @@ class SystemDisplayCompleteCustomTouchCalibrationFunction
                              SYSTEM_DISPLAY_COMPLETECUSTOMTOUCHCALIBRATION)
 
  protected:
-  ~SystemDisplayCompleteCustomTouchCalibrationFunction() override {}
+  ~SystemDisplayCompleteCustomTouchCalibrationFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -186,7 +187,7 @@ class SystemDisplayClearTouchCalibrationFunction
                              SYSTEM_DISPLAY_CLEARTOUCHCALIBRATION)
 
  protected:
-  ~SystemDisplayClearTouchCalibrationFunction() override {}
+  ~SystemDisplayClearTouchCalibrationFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -197,7 +198,7 @@ class SystemDisplaySetMirrorModeFunction
                              SYSTEM_DISPLAY_SETMIRRORMODE)
 
  protected:
-  ~SystemDisplaySetMirrorModeFunction() override {}
+  ~SystemDisplaySetMirrorModeFunction() override = default;
   ResponseAction Run() override;
 
   void Response(absl::optional<std::string> error);

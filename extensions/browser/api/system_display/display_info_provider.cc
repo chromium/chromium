@@ -4,13 +4,12 @@
 
 #include "extensions/browser/api/system_display/display_info_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/common/api/system_display.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 

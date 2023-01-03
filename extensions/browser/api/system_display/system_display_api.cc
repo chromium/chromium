@@ -9,12 +9,12 @@
 #include <set>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "extensions/common/api/system_display.h"
+#include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -51,12 +51,12 @@ class OverscanTracker {
                             const std::string& id);
   static void RemoveObserver(content::WebContents* web_contents);
 
-  OverscanTracker() {}
+  OverscanTracker() = default;
 
   OverscanTracker(const OverscanTracker&) = delete;
   OverscanTracker& operator=(const OverscanTracker&) = delete;
 
-  ~OverscanTracker() {}
+  ~OverscanTracker() = default;
 
  private:
   class OverscanWebObserver;
@@ -79,7 +79,7 @@ class OverscanTracker::OverscanWebObserver
   OverscanWebObserver(const OverscanWebObserver&) = delete;
   OverscanWebObserver& operator=(const OverscanWebObserver&) = delete;
 
-  ~OverscanWebObserver() override {}
+  ~OverscanWebObserver() override = default;
 
   // WebContentsObserver
   void RenderFrameDeleted(
@@ -230,7 +230,7 @@ ExtensionFunction::ResponseAction SystemDisplayGetInfoFunction::Run() {
 }
 
 void SystemDisplayGetInfoFunction::Response(
-    DisplayInfoProvider::DisplayUnitInfoList all_displays_info) {
+    std::vector<api::system_display::DisplayUnitInfo> all_displays_info) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (ShouldRestrictEdidInformation(*this)) {
     for (auto& display_info : all_displays_info)
@@ -249,7 +249,7 @@ ExtensionFunction::ResponseAction SystemDisplayGetDisplayLayoutFunction::Run() {
 }
 
 void SystemDisplayGetDisplayLayoutFunction::Response(
-    DisplayInfoProvider::DisplayLayoutList display_layout) {
+    std::vector<api::system_display::DisplayLayout> display_layout) {
   return Respond(
       ArgumentList(display::GetDisplayLayout::Results::Create(display_layout)));
 }
