@@ -956,6 +956,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}"
+    units="milliwatts" expires_after="2023-03-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Battery discharge in milliwatts, example: - Battery charge at the beginning
+    of the interval: 4000 mWh; - Battery charge at the end of the interval: 3990
+    mWh; - Discharge: (4000-3990) = 10 mWh per minute - Reported value: 600 mW.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    Clients with a coarse battery discharge granularity (&gt;17 mWh) are
+    excluded.
+
+    This is recorded for {UsageScenario}.
+
+    This contains {IntervalType}.
+  </summary>
+  <token key="UsageScenario" variants="UsageScenario"/>
+  <token key="IntervalType" variants="IntervalType"/>
+</histogram>
+
+<histogram
     name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}"
     units="hundredth of percent" expires_after="2023-03-31">
   <owner>etiennep@chromium.org</owner>
@@ -1732,6 +1758,24 @@ chromium-metrics-reviews@google.com.
     <variant name="Browser"/>
     <variant name="Renderer"/>
   </token>
+</histogram>
+
+<histogram name="Power.HasPreciseBatteryDischargeGranularity" enum="Boolean"
+    expires_after="2023-03-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records whether or not the reporting client has a battery discharge
+    granularity less or equal to 17 mWh, which is the threshold to report the
+    Power.BatteryDischargeRatePreciseMilliwatts histogram.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    Only Recorded on Windows.
+  </summary>
 </histogram>
 
 <histogram name="Power.HibernateAttemptsBeforeCancel" units="units"

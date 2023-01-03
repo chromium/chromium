@@ -47,6 +47,12 @@ struct BatteryDischarge {
   // Discharge rate in milliwatts, calculated using the used capacity instead of
   // the current capacity.
   absl::optional<int64_t> alt_rate_milliwatts;
+#if BUILDFLAG(IS_WIN)
+  // Discharge rate in milliwatts, if the client's battery discharge granularity
+  // is at most 17 mWh. Calculated using the used capacity instead of the
+  // current capacity.
+  absl::optional<int64_t> rate_milliwatts_with_precise_granularity;
+#endif  // BUILDFLAG(IS_WIN)
   // Discharge rate in hundredth of a percent per minute.
   absl::optional<int64_t> rate_relative;
 };
