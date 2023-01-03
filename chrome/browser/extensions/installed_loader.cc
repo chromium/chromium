@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -52,6 +53,10 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 
@@ -408,20 +413,50 @@ void InstalledLoader::RecordExtensionsMetricsForTesting() {
   RecordExtensionsMetrics();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+bool InstalledLoader::ProfileCanUseNonComponentExtensions(
+    const Profile* profile,
+    ash::ProfileHelper* profile_helper) {
+  if (!profile || !profile_helper ||
+      !ash::ProfileHelper::IsUserProfile(profile)) {
+    return false;
+  }
+
+  const user_manager::User* user = profile_helper->GetUserByProfile(profile);
+  if (!user) {
+    return false;
+  }
+
+  // ChromeOS has special irregular profiles that must also be filtered
+  // out in addition to `ProfileHelper::IsUserProfile()`. `IsUserProfile()`
+  // includes guest and public users (which cannot use non-component
+  // extensions) so instead only look for those user types that can use them.
+  switch (user->GetType()) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+      return true;
+
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::NUM_USER_TYPES:
+      return false;
+  }
+}
+#else
 // static
 bool InstalledLoader::ProfileCanUseNonComponentExtensions(
     const Profile* profile) {
   if (!profile) {
     return false;
   }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   return profile->IsRegularProfile();
-#else
-  // TODO(crbug.com/1383740): Expand to CrOS.
-  return false;
-#endif
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/1163038): Separate out Webstore/Offstore metrics.
 void InstalledLoader::RecordExtensionsMetrics() {

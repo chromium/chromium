@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/installed_loader.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/permissions_updater.h"
@@ -13,6 +14,18 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using testing::NiceMock;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -58,6 +71,41 @@ struct HostPermissionsMetricsTestParams {
   RequestScope request_scope = RequestScope::kNone;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class MockProfileHelper : public ash::ProfileHelper {
+ public:
+  MOCK_METHOD(const user_manager::User*,
+              GetUserByProfile,
+              (const Profile* profile),
+              (const, override));
+  MOCK_METHOD(user_manager::User*,
+              GetUserByProfile,
+              (Profile * profile),
+              (const, override));
+  MOCK_METHOD(base::FilePath, GetActiveUserProfileDir, (), ());
+  MOCK_METHOD(void, Initialize, (), ());
+  MOCK_METHOD(void, FlushProfile, (Profile * profile), ());
+  MOCK_METHOD(void,
+              SetProfileToUserMappingForTesting,
+              (user_manager::User * user),
+              ());
+  MOCK_METHOD(void,
+              SetUserToProfileMappingForTesting,
+              (const user_manager::User* user, Profile* profile),
+              ());
+  MOCK_METHOD(Profile*,
+              GetProfileByAccountId,
+              (const AccountId& account_id),
+              ());
+  MOCK_METHOD(Profile*, GetProfileByUser, (const user_manager::User* user), ());
+  MOCK_METHOD(void,
+              RemoveUserFromListForTesting,
+              (const AccountId& account_id),
+              ());
+};
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
@@ -78,6 +126,33 @@ class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
                                 mojom::ManifestLocation location);
 
   void RunHostPermissionsMetricsTest(HostPermissionsMetricsTestParams params);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set an expectation on the profile helper and expect a return from the
+  // `ProfileCanUseNonComponentExtensions` method.
+  void MockAndRunProfileCanUseNonComponentExtensionsTest(
+      const user_manager::User* fake_user,
+      bool expected_return);
+
+  ash::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
+  NiceMock<MockProfileHelper>* profile_helper() { return &mock_profile_helper; }
+
+ protected:
+  const AccountId account_id_ =
+      AccountId::FromUserEmailGaiaId("test-user@testdomain.com", "1234567890");
+  NiceMock<MockProfileHelper> mock_profile_helper;
+
+ private:
+  // Setting up a fake user manager seems excessive for a unit test
+  // as opposed to mocking, but it seems you cannot create a
+  // `user_manager::User` without it (or a real impl).
+  ash::FakeChromeUserManager* fake_user_manager_ =
+      new ash::FakeChromeUserManager();
+  // Tears down the FakeUserManager singleton on destruction.
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_ =
+      std::make_unique<user_manager::ScopedUserManager>(
+          base::WrapUnique(fake_user_manager_));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 const Extension* InstalledLoaderUnitTest::AddExtension(
@@ -138,6 +213,22 @@ void InstalledLoaderUnitTest::RunHostPermissionsMetricsTest(
       break;
   }
 }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+void InstalledLoaderUnitTest::MockAndRunProfileCanUseNonComponentExtensionsTest(
+    const user_manager::User* fake_user,
+    bool expected_return) {
+  ON_CALL(testing::Const(*profile_helper()),
+          GetUserByProfile(testing::An<const Profile*>()))
+      .WillByDefault(testing::Return(fake_user));
+
+  InstalledLoader loader(service());
+  // testing_profile() defaults to a regular profile.
+  EXPECT_EQ(expected_return, loader.ProfileCanUseNonComponentExtensions(
+                                 (testing_profile()), profile_helper()));
+  testing::Mock::VerifyAndClear(profile_helper());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(InstalledLoaderUnitTest,
        RuntimeHostPermissions_Metrics_HasWithheldHosts_False) {
@@ -433,13 +524,95 @@ TEST_F(InstalledLoaderUnitTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1383740): Expand to CrOS.
 TEST_F(InstalledLoaderUnitTest,
        ChromeOS_ProfileCanUseNonComponentExtensions_RegularProfile) {
-  InstalledLoader loader(service());
-  // testing_profile() defaults to a regular profile.
-  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(testing_profile()));
+  const user_manager::User* user = user_manager()->AddUser(account_id_);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, true);
 }
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCanUseNonComponentExtensions_ChildProfile) {
+  const user_manager::User* user = user_manager()->AddChildUser(account_id_);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, true);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCanUseNonComponentExtensions_ActiveDirectoryProfile) {
+  const AccountId account_id(AccountId::AdFromUserEmailObjGuid(
+      "activedirectory@gmail.com", "obj-guid"));
+  const user_manager::User* user =
+      user_manager()->AddActiveDirectoryUser(account_id);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, true);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_GuestProfile) {
+  const user_manager::User* user = user_manager()->AddGuestUser();
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+}
+
+// TODO(crbug.com/1383740): Test a signin, lockscreen, or lockscreen app
+// profile. `FakeChromeUserManager` doesn't have one currently. Worst case can
+// mock `Profile` path.
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_NotUserProfile) {}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_KioskAppProfile) {
+  const user_manager::User* user = user_manager()->AddKioskAppUser(account_id_);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_WebKioskAppProfile) {
+  const user_manager::User* user =
+      user_manager()->AddWebKioskAppUser(account_id_);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_ArcKioskAppProfile) {
+  const user_manager::User* user =
+      user_manager()->AddArcKioskAppUser(account_id_);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_PublicProfile) {
+  const user_manager::User* user =
+      user_manager()->AddPublicAccountUser(account_id_);
+  ASSERT_TRUE(user);
+
+  MockAndRunProfileCanUseNonComponentExtensionsTest(user, false);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCannotUseNonComponentExtensions_NoUserInProfile) {
+  MockAndRunProfileCanUseNonComponentExtensionsTest(nullptr, false);
+}
+
+TEST_F(
+    InstalledLoaderUnitTest,
+    ChromeOS_ProfileCannotUseNonComponentExtensions_NoProfileHelperProvided) {
+  InstalledLoader loader(service());
+  EXPECT_FALSE(
+      loader.ProfileCanUseNonComponentExtensions(testing_profile(), nullptr));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
