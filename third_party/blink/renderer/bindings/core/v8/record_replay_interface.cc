@@ -2659,20 +2659,36 @@ const char* gReactDevtoolsScript = R""""(
 
 (() => {
 
-const hook = {
+const stubFiberRoots = {};
+
+const stubHook = {
   supportsFiber: true,
   inject,
   onCommitFiberUnmount,
   onCommitFiberRoot,
   onPostCommitFiberRoot,
-  renderers: [],
+  renderers: new Map(),
 };
 
+
+function stubGetFiberRoots(rendererID) {
+  const roots = stubFiberRoots;
+
+  if (!roots[rendererID]) {
+    roots[rendererID] = new Set();
+  }
+
+  return roots[rendererID];
+}
+
+window.__REACT_DEVTOOLS_SAVED_RENDERERS__ = [];
+window.__REACT_DEVTOOLS_STUB_FIBER_ROOTS = stubFiberRoots;
+
 Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
-  configurable: false,
+  configurable: true,
   enumerable: false,
   get() {
-    return hook;
+    return stubHook;
   }
 });
 
@@ -2681,6 +2697,7 @@ let uidCounter = 0;
 function inject(renderer) {
   const id = ++uidCounter;
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook", "inject");
+  window.__REACT_DEVTOOLS_SAVED_RENDERERS__.push(renderer);
   return id;
 }
 
@@ -2689,6 +2706,17 @@ function onCommitFiberUnmount(rendererID, fiber) {
 }
 
 function onCommitFiberRoot(rendererID, root, priorityLevel) {
+  const mountedRoots = stubGetFiberRoots(rendererID);
+  const current = root.current;
+  const isKnownRoot = mountedRoots.has(root);
+  const isUnmounting = current.memoizedState == null || current.memoizedState.element == null; // Keep track of mounted roots so we can hydrate when DevTools connect.
+
+  if (!isKnownRoot && !isUnmounting) {
+    mountedRoots.add(root);
+  } else if (isKnownRoot && isUnmounting) {
+    mountedRoots.delete(root);
+  }
+  
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook", "commit-fiber-root");
 }
 
