@@ -1803,8 +1803,8 @@ extern const char kWebGpuDeveloperFeaturesDescription[];
 extern const char kWebPaymentsExperimentalFeaturesName[];
 extern const char kWebPaymentsExperimentalFeaturesDescription[];
 
-extern const char kWebPaymentAPICSPName[];
-extern const char kWebPaymentAPICSPDescription[];
+extern const char kIgnoreCSPInWebPaymentAPIName[];
+extern const char kIgnoreCSPInWebPaymentAPIDescription[];
 
 extern const char kClearIdentityInCanMakePaymentEventName[];
 extern const char kClearIdentityInCanMakePaymentEventDescription[];

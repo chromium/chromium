@@ -1036,11 +1036,6 @@ BASE_FEATURE(kServiceWorkerPaymentApps,
              "ServiceWorkerPaymentApps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable connect-src CSP directive for the Web Payment API.
-BASE_FEATURE(kWebPaymentAPICSP,
-             "WebPaymentAPICSP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use this feature to experiment terminating a service worker when it doesn't
 // control any clients: https://crbug.com/1043845.
 BASE_FEATURE(kServiceWorkerTerminationOnNoControllee,
@@ -1536,8 +1531,9 @@ bool ShouldEnableVideoCaptureService() {
 }
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-  if (!ShouldEnableVideoCaptureService())
+  if (!ShouldEnableVideoCaptureService()) {
     return VideoCaptureServiceConfiguration::kDisabled;
+  }
 
 // On ChromeOS the service must run in the browser process, because parts of the
 // code depend on global objects that are only available in the Browser process.
@@ -1546,8 +1542,9 @@ VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #else
 #if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
     return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
+  }
 #endif
   return base::FeatureList::IsEnabled(
              features::kRunVideoCaptureServiceInBrowserProcess)

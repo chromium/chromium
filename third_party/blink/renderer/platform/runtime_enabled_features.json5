@@ -1519,6 +1519,14 @@
       status: "stable",
     },
     {
+      name: "IgnoreCSPInWebPaymentAPI",
+      base_feature: "IgnoreCSPInWebPaymentAPI",
+      origin_trial_feature_name: "IgnoreCSPInWebPaymentAPI",
+      origin_trial_allows_third_party: true,
+      public: true,
+      status: "stable",
+    },
+    {
       name: "ImeVerticalFlag",
       status: "stable",
       base_feature: "ImeVerticalFlag",
@@ -3200,12 +3208,6 @@
       depends_on: ["WebOTP"],
       public: true,
       status: "stable",
-    },
-    {
-      name: "WebPaymentAPICSP",
-      origin_trial_feature_name: "WebPaymentAPICSP",
-      origin_trial_allows_third_party: true,
-      public: true,
     },
     // WebShare is enabled by default on Android.
     {

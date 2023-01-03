@@ -4104,6 +4104,11 @@
     "expiry_milestone":120
   },
   {
+    "name": "ignore-csp-in-web-payment-api",
+    "owners": [ "rouslan", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr", "zmo" ],
     // A debugging flag intended for end-users where there may not be any other
@@ -6997,11 +7002,6 @@
     "name": "web-otp-backend",
     "owners": [ "yigu" ],
     "expiry_milestone": 114
-  },
-  {
-    "name": "web-payment-api-csp",
-    "owners": [ "rouslan", "web-payments-team@google.com" ],
-    "expiry_milestone": 115
   },
   {
     "name": "web-share",

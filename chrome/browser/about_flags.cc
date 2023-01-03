@@ -4881,9 +4881,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebPaymentsExperimentalFeaturesName,
      flag_descriptions::kWebPaymentsExperimentalFeaturesDescription, kOsAll,
      FEATURE_VALUE_TYPE(payments::features::kWebPaymentsExperimentalFeatures)},
-    {"web-payment-api-csp", flag_descriptions::kWebPaymentAPICSPName,
-     flag_descriptions::kWebPaymentAPICSPDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebPaymentAPICSP)},
+    {"ignore-csp-in-web-payment-api",
+     flag_descriptions::kIgnoreCSPInWebPaymentAPIName,
+     flag_descriptions::kIgnoreCSPInWebPaymentAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kIgnoreCSPInWebPaymentAPI)},
     {"clear-identity-in-can-make-payment",
      flag_descriptions::kClearIdentityInCanMakePaymentEventName,
      flag_descriptions::kClearIdentityInCanMakePaymentEventDescription, kOsAll,
@@ -9513,8 +9514,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (flags::IsFlagExpired(storage, entry.internal_name))
+  if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;
+  }
 
   return false;
 }
@@ -9522,8 +9524,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
                             base::CommandLine* command_line,
                             flags_ui::SentinelsMode sentinels) {
-  if (command_line->HasSwitch(switches::kNoExperiments))
+  if (command_line->HasSwitch(switches::kNoExperiments)) {
     return;
+  }
 
   FlagsStateSingleton::GetFlagsState()->ConvertFlagsToSwitches(
       flags_storage, command_line, sentinels, switches::kEnableFeatures,
@@ -9623,8 +9626,9 @@ std::vector<FeatureEntry>* GetEntriesForTesting() {
 
 void SetFeatureEntries(const std::vector<FeatureEntry>& entries) {
   CHECK(GetEntriesForTesting()->empty());  // IN-TEST
-  for (const auto& entry : entries)
+  for (const auto& entry : entries) {
     GetEntriesForTesting()->push_back(entry);  // IN-TEST
+  }
   FlagsStateSingleton::GetInstance()->RebuildState(
       *GetEntriesForTesting());  // IN-TEST
 }
@@ -9641,8 +9645,9 @@ ScopedFeatureEntries::~ScopedFeatureEntries() {
 }
 
 base::span<const FeatureEntry> GetFeatureEntries() {
-  if (!GetEntriesForTesting()->empty())
+  if (!GetEntriesForTesting()->empty()) {
     return base::span<FeatureEntry>(*GetEntriesForTesting());
+  }
   return base::make_span(kFeatureEntries, std::size(kFeatureEntries));
 }
 

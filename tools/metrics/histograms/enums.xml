@@ -59211,6 +59211,7 @@ from previous Chrome versions.
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
+  <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
   <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
@@ -63039,6 +63040,7 @@ from previous Chrome versions.
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>
+  <int value="1309807376" label="IgnoreCSPInWebPaymentAPI:enabled"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
   <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>
   <int value="1311443340" label="DriveFsChromeNetworking:enabled"/>

@@ -144,12 +144,13 @@ struct TypeConverter<PaymentOptionsPtr, blink::PaymentOptions> {
     output->request_payer_phone = input.requestPayerPhone();
     output->request_shipping = input.requestShipping();
 
-    if (input.shippingType() == "delivery")
+    if (input.shippingType() == "delivery") {
       output->shipping_type = PaymentShippingType::DELIVERY;
-    else if (input.shippingType() == "pickup")
+    } else if (input.shippingType() == "pickup") {
       output->shipping_type = PaymentShippingType::PICKUP;
-    else
+    } else {
       output->shipping_type = PaymentShippingType::SHIPPING;
+    }
 
     return output;
   }
@@ -278,8 +279,9 @@ bool RequestingOnlyAppStoreBillingMethods(
   DCHECK(!method_data.empty());
   const WTF::HashSet<String> billing_methods = GetAppStoreBillingMethods();
   for (const auto& method : method_data) {
-    if (!billing_methods.Contains(method->supported_method))
+    if (!billing_methods.Contains(method->supported_method)) {
       return false;
+    }
   }
   return true;
 }
@@ -298,8 +300,9 @@ void ValidateAndConvertDisplayItems(
   for (PaymentItem* item : input) {
     ValidateShippingOptionOrPaymentItem(item, item_names, execution_context,
                                         exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
     output.push_back(payments::mojom::blink::PaymentItem::From(*item));
   }
 }
@@ -324,8 +327,9 @@ void ValidateAndConvertShippingOptions(
   for (PaymentShippingOption* option : input) {
     ValidateShippingOptionOrPaymentItem(option, "shippingOptions",
                                         execution_context, exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
 
     DCHECK(option->hasId());
     if (option->id().length() > PaymentRequest::kMaxStringLength) {
@@ -348,8 +352,9 @@ void ValidateAndConvertShippingOptions(
       return;
     }
 
-    if (option->selected())
+    if (option->selected()) {
       shipping_option_output = option->id();
+    }
 
     unique_ids.insert(option->id());
 
@@ -365,8 +370,9 @@ void ValidateAndConvertTotal(const PaymentItem* input,
                              ExceptionState& exception_state) {
   ValidateShippingOptionOrPaymentItem(input, item_name, execution_context,
                                       exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
   if (input->amount()->value()[0] == '-') {
     exception_state.ThrowTypeError("Total amount value should be non-negative");
@@ -384,11 +390,13 @@ void SetAndroidPayMethodData(v8::Isolate* isolate,
   AndroidPayMethodData* android_pay =
       NativeValueTraits<AndroidPayMethodData>::NativeValue(
           isolate, input.V8Value(), exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
-  if (android_pay->hasEnvironment() && android_pay->environment() == "TEST")
+  if (android_pay->hasEnvironment() && android_pay->environment() == "TEST") {
     output->environment = payments::mojom::blink::AndroidPayEnvironment::TEST;
+  }
 
   // 0 means the merchant did not specify or it was an invalid value
   output->min_google_play_services_version = 0;
@@ -404,8 +412,9 @@ void SetAndroidPayMethodData(v8::Isolate* isolate,
 
   // 0 means the merchant did not specify or it was an invalid value
   output->api_version = 0;
-  if (android_pay->hasApiVersion())
+  if (android_pay->hasApiVersion()) {
     output->api_version = android_pay->apiVersion();
+  }
 }
 
 void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
@@ -416,8 +425,9 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   PaymentsValidators::ValidateAndStringifyObject(
       execution_context.GetIsolate(), input, output->stringified_data,
       exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
   // Serialize payment method specific data to be sent to the payment apps. The
   // payment apps are responsible for validating and processing their method
@@ -426,8 +436,9 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
       supported_method == kAndroidPayMethod) {
     SetAndroidPayMethodData(execution_context.GetIsolate(), input, output,
                             exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       exception_state.ClearException();
+    }
   }
 
   // Parse method data to avoid parsing JSON in the browser.
@@ -458,8 +469,9 @@ void ValidateAndConvertPaymentDetailsModifiers(
       ValidateAndConvertTotal(modifier->total(), "modifier total",
                               output.back()->total, execution_context,
                               exception_state);
-      if (exception_state.HadException())
+      if (exception_state.HadException()) {
         return;
+      }
     }
 
     if (modifier->hasAdditionalDisplayItems()) {
@@ -467,8 +479,9 @@ void ValidateAndConvertPaymentDetailsModifiers(
                                      "additional display items in modifier",
                                      output.back()->additional_display_items,
                                      execution_context, exception_state);
-      if (exception_state.HadException())
+      if (exception_state.HadException()) {
         return;
+      }
     }
 
     if (!PaymentsValidators::IsValidMethodFormat(modifier->supportedMethod())) {
@@ -502,8 +515,9 @@ void ValidateAndConvertPaymentDetailsBase(const PaymentDetailsBase* input,
     ValidateAndConvertDisplayItems(input->displayItems(), "display items",
                                    *output->display_items, execution_context,
                                    exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
   }
 
   // If requestShipping is specified and there are shipping options to validate,
@@ -513,8 +527,9 @@ void ValidateAndConvertPaymentDetailsBase(const PaymentDetailsBase* input,
     ValidateAndConvertShippingOptions(
         input->shippingOptions(), *output->shipping_options,
         shipping_option_output, execution_context, exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
   } else {
     shipping_option_output = String();
   }
@@ -568,8 +583,9 @@ void ValidateAndConvertPaymentDetailsInit(const PaymentDetailsInit* input,
     }
     ValidateAndConvertTotal(input->total(), "total", output->total,
                             execution_context, exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
   }
 
   ValidateAndConvertPaymentDetailsBase(input, options, output,
@@ -587,8 +603,9 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
   ValidateAndConvertPaymentDetailsBase(input, options, output,
                                        shipping_option_output,
                                        execution_context, exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   if (input->hasTotal()) {
     if (ignore_total) {
       output->total =
@@ -596,8 +613,9 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
     } else {
       ValidateAndConvertTotal(input->total(), "total", output->total,
                               execution_context, exception_state);
-      if (exception_state.HadException())
+      if (exception_state.HadException()) {
         return;
+      }
     }
   }
 
@@ -643,7 +661,7 @@ bool CSPAllowsConnectToSource(const KURL& url,
                               bool did_follow_redirect,
                               ExecutionContext& context) {
   const bool enforce_csp =
-      RuntimeEnabledFeatures::WebPaymentAPICSPEnabled(&context);
+      !RuntimeEnabledFeatures::IgnoreCSPInWebPaymentAPIEnabled(&context);
 
   if (context.GetContentSecurityPolicy()->AllowConnectToSource(
           url, url_before_redirects,
@@ -654,8 +672,9 @@ bool CSPAllowsConnectToSource(const KURL& url,
     return true;  // Allow request.
   }
 
-  if (enforce_csp)
+  if (enforce_csp) {
     return false;  // Block request.
+  }
 
   // CSP has been bypassed, so warn web developers that CSP bypass has been
   // deprecated and will be removed.
@@ -738,8 +757,9 @@ void ValidateAndConvertPaymentMethodData(
       StringifyAndParseMethodSpecificData(
           execution_context, payment_method_data->supportedMethod(),
           payment_method_data->data(), output.back(), exception_state);
-      if (exception_state.HadException())
+      if (exception_state.HadException()) {
         continue;
+      }
     } else {
       output.back()->stringified_data = "";
     }
@@ -752,8 +772,9 @@ bool AllowedToUsePaymentRequest(ExecutionContext* execution_context) {
 
   // Note: PaymentRequest is only exposed to Window and not workers.
   // 1. If |document| has no browsing context, then return false.
-  if (execution_context->IsContextDestroyed())
+  if (execution_context->IsContextDestroyed()) {
     return false;
+  }
 
   // 2. If Permissions Policy is enabled, return the policy for "payment"
   // feature.
@@ -1157,8 +1178,9 @@ void PaymentRequest::OnUpdatePaymentDetails(
     return;
   }
 
-  if (!options_->requestShipping())
+  if (!options_->requestShipping()) {
     validated_details->shipping_options = absl::nullopt;
+  }
 
   if (is_waiting_for_show_promise_to_resolve_) {
     is_waiting_for_show_promise_to_resolve_ = false;
@@ -1177,10 +1199,12 @@ void PaymentRequest::OnUpdatePaymentDetails(
 }
 
 void PaymentRequest::OnUpdatePaymentDetailsFailure(const String& error) {
-  if (!payment_provider_.is_bound())
+  if (!payment_provider_.is_bound()) {
     return;
-  if (update_payment_details_timer_.IsActive())
+  }
+  if (update_payment_details_timer_.IsActive()) {
     update_payment_details_timer_.Stop();
+  }
   ScriptPromiseResolver* resolver = GetPendingAcceptPromiseResolver();
   if (resolver) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1282,8 +1306,9 @@ PaymentRequest::PaymentRequest(
   ValidateAndConvertPaymentMethodData(method_data, options_,
                                       validated_method_data, method_names_,
                                       *GetExecutionContext(), exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
   ignore_total_ =
       RuntimeEnabledFeatures::DigitalGoodsEnabled(GetExecutionContext()) &&
@@ -1291,8 +1316,9 @@ PaymentRequest::PaymentRequest(
   ValidateAndConvertPaymentDetailsInit(details, options_, validated_details,
                                        shipping_option_, ignore_total_,
                                        *GetExecutionContext(), exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
   const WTF::HashSet<String> billing_methods = GetAppStoreBillingMethods();
   for (const PaymentMethodDataPtr& data : validated_method_data) {
@@ -1616,8 +1642,9 @@ void PaymentRequest::OnAbort(bool aborted_successfully) {
 void PaymentRequest::OnCanMakePayment(CanMakePaymentQueryResult result) {
   // TODO(https://crbug.com/891371): Understand how the resolver could be null
   // here and prevent it.
-  if (!can_make_payment_resolver_)
+  if (!can_make_payment_resolver_) {
     return;
+  }
 
   switch (result) {
     case CanMakePaymentQueryResult::CAN_MAKE_PAYMENT:
@@ -1635,8 +1662,9 @@ void PaymentRequest::OnHasEnrolledInstrument(
     HasEnrolledInstrumentQueryResult result) {
   // TODO(https://crbug.com/891371): Understand how the resolver could be null
   // here and prevent it.
-  if (!has_enrolled_instrument_resolver_)
+  if (!has_enrolled_instrument_resolver_) {
     return;
+  }
 
   switch (result) {
     case HasEnrolledInstrumentQueryResult::WARNING_HAS_ENROLLED_INSTRUMENT:
@@ -1708,8 +1736,9 @@ void PaymentRequest::ClearResolversAndCloseMojoConnection() {
   abort_resolver_.Clear();
   can_make_payment_resolver_.Clear();
   has_enrolled_instrument_resolver_.Clear();
-  if (client_receiver_.is_bound())
+  if (client_receiver_.is_bound()) {
     client_receiver_.reset();
+  }
   payment_provider_.reset();
 }
 
