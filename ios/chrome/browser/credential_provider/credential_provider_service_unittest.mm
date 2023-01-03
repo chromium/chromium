@@ -246,7 +246,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
                                 .validationIdentifier];
   }));
 
-  auth_service_->SignOut(signin_metrics::SIGNOUT_TEST,
+  auth_service_->SignOut(signin_metrics::ProfileSignout::kTest,
                          /*force_clear_browsing_data=*/false, nil);
 
   credential_provider_service_->OnPrimaryAccountChanged(

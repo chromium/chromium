@@ -192,7 +192,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -202,8 +202,8 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   EXPECT_TRUE(manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin).IsEmpty());
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
-                      .sign_out = signin_metrics::SIGNOUT_TEST,
-                      .turn_off_sync = signin_metrics::SIGNOUT_TEST});
+                      .sign_out = signin_metrics::ProfileSignout::kTest,
+                      .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 
   // Should not be persisted anymore
   ShutDownManager();
@@ -232,12 +232,12 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   EXPECT_EQ(main_account_id,
             manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
-                      .sign_out = signin_metrics::SIGNOUT_TEST,
-                      .turn_off_sync = signin_metrics::SIGNOUT_TEST});
+                      .sign_out = signin_metrics::ProfileSignout::kTest,
+                      .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 
   // Tokens are revoked.
   EXPECT_EQ(1, num_successful_signouts_);
@@ -262,7 +262,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
 
   signin_client()->set_is_clear_primary_account_allowed(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -271,7 +271,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
 
   signin_client()->set_is_clear_primary_account_allowed(
       SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -280,14 +280,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
 
   signin_client()->set_is_clear_primary_account_allowed(
       SigninClient::SignoutDecision::ALLOW);
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
-                      .sign_out = signin_metrics::SIGNOUT_TEST,
-                      .turn_off_sync = signin_metrics::SIGNOUT_TEST});
+                      .sign_out = signin_metrics::ProfileSignout::kTest,
+                      .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 }
 
 TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
@@ -307,18 +307,18 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
 
   signin_client()->set_is_clear_primary_account_allowed(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN});
 
   signin_client()->set_is_clear_primary_account_allowed(
       SigninClient::SignoutDecision::ALLOW);
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
-                      .sign_out = signin_metrics::SIGNOUT_TEST});
+                      .sign_out = signin_metrics::ProfileSignout::kTest});
 }
 #endif
 
@@ -340,11 +340,11 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
 
   signin_client()->set_is_clear_primary_account_allowed(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  manager_->RevokeSyncConsent(signin_metrics::SIGNOUT_TEST,
+  manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest,
                               signin_metrics::SignoutDelete::kIgnoreMetric);
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
-                      .turn_off_sync = signin_metrics::SIGNOUT_TEST});
+                      .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 
   // Unconsented primary account not changed.
   EXPECT_EQ(1, num_unconsented_account_changed_);
@@ -354,12 +354,12 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
-                      .turn_off_sync = signin_metrics::SIGNOUT_TEST});
+                      .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 #endif
 }
 
@@ -376,7 +376,7 @@ TEST_F(PrimaryAccountManagerTest, NoopSignOutDoesNotNotifyObservers) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-  manager_->RevokeSyncConsent(signin_metrics::SIGNOUT_TEST,
+  manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest,
                               signin_metrics::SignoutDelete::kIgnoreMetric);
 
   // Since there was no sync consent, observers shouldn't be notified.
@@ -615,7 +615,7 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
                                   AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-  manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::SIGNOUT_TEST,
+  manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest,
                               signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -633,7 +633,7 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
                                   AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::SIGNOUT_TEST,
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));

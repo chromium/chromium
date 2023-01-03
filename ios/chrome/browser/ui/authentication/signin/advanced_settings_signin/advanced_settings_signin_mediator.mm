@@ -82,9 +82,9 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
 - (void)revertToSigninState:(IdentitySigninState)originalState {
   switch (originalState) {
     case IdentitySigninStateSignedOut: {
-      self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                          /*force_clear_browsing_data=*/false,
-                                          nil);
+      self.authenticationService->SignOut(
+          signin_metrics::ProfileSignout::kAbortSignin,
+          /*force_clear_browsing_data=*/false, nil);
       break;
     }
     case IdentitySigninStateSignedInWithSyncDisabled: {

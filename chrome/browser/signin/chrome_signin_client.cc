@@ -85,24 +85,22 @@ namespace {
 // introducing a cross-platform SigninManager.
 signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // Allowed, because data has not been synced yet.
-    signin_metrics::ProfileSignout::ABORT_SIGNIN,
+    signin_metrics::ProfileSignout::kAbortSignin,
     // Allowed, because only used on Android and the primary account must be
     // cleared when the account is removed from device
-    signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
-    // Allowed to force finish the account id migration.
-    signin_metrics::ACCOUNT_ID_MIGRATION,
+    signin_metrics::ProfileSignout::kAccountRemovedFromDevice,
     // Allowed, for tests.
-    signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
+    signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
     // Allowed, because access to this entry point is controlled to only be
     // enabled if the user may turn off sync.
-    signin_metrics::ProfileSignout::USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
+    signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings,
     // Allowed, because the dialog offers the option to the user to sign out.
     // Note that the dialog is only shown on iOS and isn't planned to be shown
     // on the other platforms since they already support user policies (no need
     // for a notification in that case). Still, the metric is added to the
     // kAlwaysAllowedSignoutSources for coherence.
     signin_metrics::ProfileSignout::
-        USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
+        kUserClickedSignoutFromUserPolicyNotificationDialog,
 };
 
 SigninClient::SignoutDecision UserSignoutSettingToSignoutDecision(
@@ -213,42 +211,32 @@ void ChromeSigninClient::PreSignOut(
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // `signout_source_metric` is `signin_metrics::ABORT_SIGNIN` if the user
-  // declines sync in the signin process. In case the user accepts the managed
-  // account but declines sync, we should keep the window open.
+  // `signout_source_metric` is `signin_metrics::ProfileSignout::kAbortSignin`
+  // if the user declines sync in the signin process. In case the user accepts
+  // the managed account but declines sync, we should keep the window open.
   bool user_declines_sync_after_consenting_to_management =
-      signout_source_metric == signin_metrics::ABORT_SIGNIN &&
+      signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin &&
       chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   // These sign out won't remove the policy cache, keep the window opened.
   bool keep_window_opened =
       signout_source_metric ==
-          signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED ||
-      signout_source_metric == signin_metrics::SERVER_FORCED_DISABLE ||
-      signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED ||
+          signin_metrics::ProfileSignout::kGoogleServiceNamePatternChanged ||
+      signout_source_metric ==
+          signin_metrics::ProfileSignout::kServerForcedDisable ||
+      signout_source_metric == signin_metrics::ProfileSignout::kPrefChanged ||
       user_declines_sync_after_consenting_to_management;
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
       !profile_->IsGuestSession() && !profile_->IsChild() &&
       !keep_window_opened) {
-    if (signout_source_metric ==
-        signin_metrics::SIGNIN_PREF_CHANGED_DURING_SIGNIN) {
-      // SIGNIN_PREF_CHANGED_DURING_SIGNIN will be triggered when
-      // IdentityManager is initialized before window opening, there is no need
-      // to close window. Call OnCloseBrowsersSuccess to continue sign out and
-      // show UserManager afterwards.
-      should_display_user_manager_ = false;  // Don't show UserManager twice.
-      OnCloseBrowsersSuccess(signout_source_metric, profile_->GetPath());
-    } else {
-      BrowserList::CloseAllBrowsersWithProfile(
-          profile_,
-          base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
-                              base::Unretained(this), signout_source_metric),
-          base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
-                              base::Unretained(this)),
-          signout_source_metric == signin_metrics::ABORT_SIGNIN ||
-              signout_source_metric ==
-                  signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN ||
-              signout_source_metric == signin_metrics::TRANSFER_CREDENTIALS);
-    }
+    BrowserList::CloseAllBrowsersWithProfile(
+        profile_,
+        base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
+                            base::Unretained(this), signout_source_metric),
+        base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
+                            base::Unretained(this)),
+        signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
+            signout_source_metric == signin_metrics::ProfileSignout::
+                                         kAuthenticationFailedWithForceSignin);
   } else {
 #else
   {

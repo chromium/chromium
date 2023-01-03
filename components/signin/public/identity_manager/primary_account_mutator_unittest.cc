@@ -190,7 +190,7 @@ void RunRevokeConsentTest(
   switch (action) {
     case RevokeConsentAction::kRevokeSyncConsent:
       primary_account_mutator->RevokeSyncConsent(
-          signin_metrics::SIGNOUT_TEST,
+          signin_metrics::ProfileSignout::kTest,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
     case RevokeConsentAction::kClearPrimaryAccount:
@@ -198,7 +198,7 @@ void RunRevokeConsentTest(
       NOTREACHED();
 #else
       primary_account_mutator->ClearPrimaryAccount(
-          signin_metrics::SIGNOUT_TEST,
+          signin_metrics::ProfileSignout::kTest,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
 #endif
@@ -447,7 +447,7 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
   EXPECT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(primary_account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::ProfileSignout::kTest,
       signin_metrics::SignoutDelete::kIgnoreMetric));
 }
 

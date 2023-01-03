@@ -199,7 +199,7 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
 
 TEST_F(ChromeSigninClientSignoutTest, SignOut) {
   signin_metrics::ProfileSignout source_metric =
-      signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS;
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
   signin_metrics::SignoutDelete delete_metric =
       signin_metrics::SignoutDelete::kIgnoreMetric;
 
@@ -219,7 +219,7 @@ TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
   CreateClient(browser()->profile());
 
   signin_metrics::ProfileSignout source_metric =
-      signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS;
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
   signin_metrics::SignoutDelete delete_metric =
       signin_metrics::SignoutDelete::kIgnoreMetric;
 
@@ -250,47 +250,32 @@ bool IsAlwaysAllowedSignoutSources(
     signin_metrics::ProfileSignout signout_source) {
   switch (signout_source) {
     // NOTE: SIGNOUT_TEST == SIGNOUT_PREF_CHANGED.
-    case signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED:
-    case signin_metrics::ProfileSignout::GOOGLE_SERVICE_NAME_PATTERN_CHANGED:
-    case signin_metrics::ProfileSignout::SIGNIN_PREF_CHANGED_DURING_SIGNIN:
-    case signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS:
-    case signin_metrics::ProfileSignout::SERVER_FORCED_DISABLE:
-    case signin_metrics::ProfileSignout::TRANSFER_CREDENTIALS:
+    case signin_metrics::ProfileSignout::kPrefChanged:
+    case signin_metrics::ProfileSignout::kGoogleServiceNamePatternChanged:
+    case signin_metrics::ProfileSignout::kUserClickedSignoutSettings:
+    case signin_metrics::ProfileSignout::kServerForcedDisable:
+    case signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin:
+    case signin_metrics::ProfileSignout::kSigninNotAllowedOnProfileInit:
+    case signin_metrics::ProfileSignout::kSigninRetriggeredFromWebSignin:
     case signin_metrics::ProfileSignout::
-        AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN:
-    case signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT:
-    case signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN:
+        kUserClickedSignoutFromClearBrowsingDataPage:
     case signin_metrics::ProfileSignout::
-        USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE:
-    case signin_metrics::ProfileSignout::
-        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE:
-    case signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES:
-    case signin_metrics::ProfileSignout::GAIA_COOKIE_UPDATED:
-    case signin_metrics::ProfileSignout::ACCOUNT_RECONCILOR_RECONCILE:
-    // There's no special-casing for these in ChromeSigninClient, as they only
-    // happen when there's no sync account and policies aren't enforced.
-    // PrimaryAccountManager won't actually invoke PreSignOut in this case,
-    // thus it is fine for ChromeSigninClient to not have any special-casing.
-    case signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK:
-    case signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU:
-    case signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED:
+        kIosAccountRemovedFromDeviceAfterRestore:
+    case signin_metrics::ProfileSignout::kUserDeletedAccountCookies:
+    case signin_metrics::ProfileSignout::kGaiaCookieUpdated:
+    case signin_metrics::ProfileSignout::kAccountReconcilorReconcile:
+    case signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu:
+    case signin_metrics::ProfileSignout::kAccountEmailUpdated:
       return false;
 
-    case signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE:
+    case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
     // Allow signout because data has not been synced yet.
-    case signin_metrics::ProfileSignout::ABORT_SIGNIN:
+    case signin_metrics::ProfileSignout::kAbortSignin:
     // Allow signout for tests that want to force it.
-    case signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST:
-    // Allowed to force finish the account id migration.
-    case signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION:
+    case signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest:
+    case signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings:
     case signin_metrics::ProfileSignout::
-        USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS:
-    case signin_metrics::ProfileSignout::
-        USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG:
-      return true;
-
-    case signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS:
-      NOTREACHED();
+        kUserClickedSignoutFromUserPolicyNotificationDialog:
       return true;
   }
 }
@@ -407,38 +392,34 @@ TEST_P(ChromeSigninClientSignoutSourceTest, RevokeSyncDisallowed) {
 #endif
 
 const signin_metrics::ProfileSignout kSignoutSources[] = {
-    signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-    signin_metrics::ProfileSignout::GOOGLE_SERVICE_NAME_PATTERN_CHANGED,
-    signin_metrics::ProfileSignout::SIGNIN_PREF_CHANGED_DURING_SIGNIN,
-    signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS,
-    signin_metrics::ProfileSignout::ABORT_SIGNIN,
-    signin_metrics::ProfileSignout::SERVER_FORCED_DISABLE,
-    signin_metrics::ProfileSignout::TRANSFER_CREDENTIALS,
-    signin_metrics::ProfileSignout::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-    signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
-    signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
-    signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
-    signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
-    signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
-    signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION,
+    signin_metrics::ProfileSignout::kPrefChanged,
+    signin_metrics::ProfileSignout::kGoogleServiceNamePatternChanged,
+    signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+    signin_metrics::ProfileSignout::kAbortSignin,
+    signin_metrics::ProfileSignout::kServerForcedDisable,
+    signin_metrics::ProfileSignout::kAuthenticationFailedWithForceSignin,
+    signin_metrics::ProfileSignout::kAccountRemovedFromDevice,
+    signin_metrics::ProfileSignout::kSigninNotAllowedOnProfileInit,
+    signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
+    signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
+    signin_metrics::ProfileSignout::kIosAccountRemovedFromDeviceAfterRestore,
+    signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings,
+    signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+    signin_metrics::ProfileSignout::kSigninRetriggeredFromWebSignin,
     signin_metrics::ProfileSignout::
-        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
-    signin_metrics::ProfileSignout::USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
-    signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU,
-    signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN,
+        kUserClickedSignoutFromUserPolicyNotificationDialog,
+    signin_metrics::ProfileSignout::kAccountEmailUpdated,
     signin_metrics::ProfileSignout::
-        USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
-    signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED,
-    signin_metrics::ProfileSignout::
-        USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
-    signin_metrics::ProfileSignout::GAIA_COOKIE_UPDATED,
-    signin_metrics::ProfileSignout::ACCOUNT_RECONCILOR_RECONCILE,
+        kUserClickedSignoutFromClearBrowsingDataPage,
+    signin_metrics::ProfileSignout::kGaiaCookieUpdated,
+    signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
-const int kNumberOfObsoleteSignoutSources = 1;
+const int kNumberOfObsoleteSignoutSources = 5;
 static_assert(std::size(kSignoutSources) + kNumberOfObsoleteSignoutSources ==
-                  signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
+                  static_cast<int>(signin_metrics::ProfileSignout::kMaxValue) +
+                      1,
               "kSignoutSources should enumerate all ProfileSignout values that "
               "are not obsolete");
 

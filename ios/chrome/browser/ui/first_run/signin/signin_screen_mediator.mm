@@ -158,9 +158,9 @@
     // without completed the FRE. And the user starts Chrome again.
     // See crbug.com/1312449.
     // TODO(crbug.com/1314012): Need test for this case.
-    self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                        /*force_clear_browsing_data=*/false,
-                                        startSignInCompletion);
+    self.authenticationService->SignOut(
+        signin_metrics::ProfileSignout::kAbortSignin,
+        /*force_clear_browsing_data=*/false, startSignInCompletion);
     return;
   }
   startSignInCompletion();
@@ -186,9 +186,9 @@
       completion();
     }
   };
-  self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                      /*force_clear_browsing_data=*/false,
-                                      signOutCompletion);
+  self.authenticationService->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, signOutCompletion);
 }
 
 - (void)userAttemptedToSignin {

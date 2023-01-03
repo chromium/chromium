@@ -83,7 +83,7 @@
       chrome_test_util::GetOriginalBrowserState();
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  authentication_service->SignOut(signin_metrics::SIGNOUT_TEST,
+  authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
                                   /*force_clear_browsing_data=*/false, nil);
 }
 

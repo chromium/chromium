@@ -35,7 +35,7 @@ class PrefService;
 class ProfileOAuth2TokenService;
 
 namespace signin_metrics {
-enum ProfileSignout : int;
+enum class ProfileSignout;
 enum class SignoutDelete;
 }  // namespace signin_metrics
 

@@ -555,7 +555,7 @@ bool AuthenticationService::HandleMDMNotification(id<SystemIdentity> identity,
       // account can be blocked, this will clear the associated browsing data.
       if ([identity isEqual:weak_ptr->GetPrimaryIdentity(
                                 signin::ConsentLevel::kSignin)]) {
-        weak_ptr->SignOut(signin_metrics::ABORT_SIGNIN,
+        weak_ptr->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                           /*force_clear_browsing_data=*/false, nil);
       }
     }
@@ -627,15 +627,15 @@ void AuthenticationService::HandleForgottenIdentity(
   signin_metrics::ProfileSignout signout_source;
   if (account_filtered_out) {
     // Account filtered out by enterprise policy.
-    signout_source = signin_metrics::SIGNOUT_PREF_CHANGED;
+    signout_source = signin_metrics::ProfileSignout::kPrefChanged;
   } else if (device_restore) {
     // Account removed from the device after a device restore.
-    signout_source =
-        signin_metrics::IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE;
+    signout_source = signin_metrics::ProfileSignout::
+        kIosAccountRemovedFromDeviceAfterRestore;
   } else {
     // Account removed from the device by another app or the token being
     // invalid.
-    signout_source = signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE;
+    signout_source = signin_metrics::ProfileSignout::kAccountRemovedFromDevice;
   }
 
   // Store the pre-device-restore identity in-memory in order to prompt user

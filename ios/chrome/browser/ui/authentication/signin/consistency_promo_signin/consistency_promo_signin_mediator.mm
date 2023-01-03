@@ -201,10 +201,11 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
       break;
   }
   __weak __typeof(self) weakSelf = self;
-  self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN, false, ^() {
-    [weakSelf.delegate consistencyPromoSigninMediator:weakSelf
-                                       errorDidHappen:error];
-  });
+  self.authenticationService->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin, false, ^() {
+        [weakSelf.delegate consistencyPromoSigninMediator:weakSelf
+                                           errorDidHappen:error];
+      });
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

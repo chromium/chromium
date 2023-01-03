@@ -295,7 +295,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       // This error means that the Sync engine failed to initialize. Shutdown
       // Sync engine by revoking sync consent.
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-          signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+          signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       // Re-enable sync with the same primary account.
@@ -365,8 +365,9 @@ void ProfileMenuView::OnSignoutButtonClicked() {
   CHECK(!browser()->profile()->IsMainProfile());
   IdentityManagerFactory::GetForProfile(browser()->profile())
       ->GetPrimaryAccountMutator()
-      ->ClearPrimaryAccount(signin_metrics::USER_CLICKED_SIGNOUT_PROFILE_MENU,
-                            signin_metrics::SignoutDelete::kIgnoreMetric);
+      ->ClearPrimaryAccount(
+          signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+          signin_metrics::SignoutDelete::kIgnoreMetric);
 #endif
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)

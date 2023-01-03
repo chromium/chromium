@@ -613,7 +613,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                          browser:_browser
                             rect:itemView.frame
                             view:itemView
-                      withSource:signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS];
+                      withSource:signin_metrics::ProfileSignout::
+                                     kUserClickedSignoutSettings];
   __weak AccountsTableViewController* weakSelf = self;
   self.signoutCoordinator.completion = ^(BOOL success) {
     [weakSelf.signoutCoordinator stop];

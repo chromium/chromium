@@ -10,7 +10,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_metrics {
-enum ProfileSignout : int;
+enum class ProfileSignout;
 enum class SignoutDelete;
 }  // namespace signin_metrics
 

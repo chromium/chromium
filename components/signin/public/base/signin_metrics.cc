@@ -124,7 +124,7 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 }
 
 void LogSigninReason(Reason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", reason);
+  base::UmaHistogramEnumeration("Signin.SigninReason", reason);
 }
 
 void LogSyncOptInStarted(AccessPoint access_point) {
@@ -156,8 +156,7 @@ void LogSigninAccountReconciliationDuration(base::TimeDelta duration,
 }
 
 void LogSignout(ProfileSignout source_metric, SignoutDelete delete_metric) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SignoutProfile", source_metric,
-                            NUM_PROFILE_SIGNOUT_METRICS);
+  base::UmaHistogramEnumeration("Signin.SignoutProfile", source_metric);
   if (delete_metric != SignoutDelete::kIgnoreMetric) {
     UMA_HISTOGRAM_BOOLEAN(
         "Signin.SignoutDeleteProfile",

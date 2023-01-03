@@ -289,7 +289,7 @@ public class SigninManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
 
             // Run test.
-            mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+            mSigninManager.signOut(SignoutReason.TEST);
 
             // Check the account is signed out
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
@@ -313,7 +313,7 @@ public class SigninManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
 
             // Run test.
-            mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+            mSigninManager.signOut(SignoutReason.TEST);
 
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         });
@@ -336,7 +336,7 @@ public class SigninManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
 
             // Run test.
-            mSigninManager.revokeSyncConsent(SignoutReason.SIGNOUT_TEST, null, false);
+            mSigninManager.revokeSyncConsent(SignoutReason.TEST, null, false);
 
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));

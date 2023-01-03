@@ -871,14 +871,14 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         // On mobile, fully sign out the user.
         account_mutator->ClearPrimaryAccount(
-            signin_metrics::SERVER_FORCED_DISABLE,
+            signin_metrics::ProfileSignout::kServerForcedDisable,
             signin_metrics::SignoutDelete::kIgnoreMetric);
 #else
         // Note: On some platforms, revoking the sync consent will also clear
         // the primary account as transitioning from ConsentLevel::kSync to
         // ConsentLevel::kSignin is not supported.
         account_mutator->RevokeSyncConsent(
-            signin_metrics::SERVER_FORCED_DISABLE,
+            signin_metrics::ProfileSignout::kServerForcedDisable,
             signin_metrics::SignoutDelete::kIgnoreMetric);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       }

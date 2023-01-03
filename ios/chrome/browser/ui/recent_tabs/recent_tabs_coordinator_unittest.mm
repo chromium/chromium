@@ -156,7 +156,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
       // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
       DCHECK(account_mutator);
       account_mutator->ClearPrimaryAccount(
-          signin_metrics::SIGNOUT_TEST,
+          signin_metrics::ProfileSignout::kTest,
           signin_metrics::SignoutDelete::kIgnoreMetric);
     }
 

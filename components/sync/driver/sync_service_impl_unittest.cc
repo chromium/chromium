@@ -534,7 +534,7 @@ TEST_F(SyncServiceImplTest, SignOutDisablesSyncTransportAndSyncFeature) {
       identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
   account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::ProfileSignout::kTest,
       signin_metrics::SignoutDelete::kIgnoreMetric);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
@@ -562,7 +562,7 @@ TEST_F(SyncServiceImplTest,
       identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
   account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::ProfileSignout::kTest,
       signin_metrics::SignoutDelete::kIgnoreMetric);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
@@ -749,7 +749,7 @@ TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
   DCHECK(account_mutator);
 
   account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::ProfileSignout::kTest,
       signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_TRUE(service()->GetAccessTokenForTest().empty());
 }

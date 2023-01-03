@@ -202,7 +202,8 @@ using signin_metrics::PromoAction;
                          browser:self.browser
                             rect:targetRect
                             view:self.viewController.view
-                      withSource:signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS];
+                      withSource:signin_metrics::ProfileSignout::
+                                     kUserClickedSignoutSettings];
   self.signoutActionSheetCoordinator.delegate = self;
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator.completion = ^(BOOL success) {

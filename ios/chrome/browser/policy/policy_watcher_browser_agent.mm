@@ -115,13 +115,12 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
           weak_factory_.GetWeakPtr();
       // Sign the user out, but keep synced data (bookmarks, passwords, etc)
       // locally to be consistent with the policy's behavior on other platforms.
-      auth_service_->SignOut(
-          signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-          /*force_clear_browsing_data=*/false, ^{
-            if (weak_ptr) {
-              weak_ptr->OnSignOutComplete();
-            }
-          });
+      auth_service_->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
+                             /*force_clear_browsing_data=*/false, ^{
+                               if (weak_ptr) {
+                                 weak_ptr->OnSignOutComplete();
+                               }
+                             });
     }
 
     for (auto& observer : observers_) {

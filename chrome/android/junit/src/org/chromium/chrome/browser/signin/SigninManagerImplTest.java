@@ -230,13 +230,12 @@ public class SigninManagerImplTest {
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
         // Trigger the sign out flow!
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
 
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator)
-                .clearPrimaryAccount(eq(SignoutReason.SIGNOUT_TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
 
         // Sign-out should only clear the profile when the user is managed.
         inOrder.verify(mNativeMock).wipeProfileData(eq(NATIVE_SIGNIN_MANAGER), any());
@@ -248,13 +247,12 @@ public class SigninManagerImplTest {
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
         // Trigger the sign out flow!
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
 
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator)
-                .clearPrimaryAccount(eq(SignoutReason.SIGNOUT_TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
 
         // Sign-out should only clear the profile when the user is managed.
         inOrder.verify(mNativeMock).wipeProfileData(eq(NATIVE_SIGNIN_MANAGER), any());
@@ -263,13 +261,12 @@ public class SigninManagerImplTest {
 
     @Test
     public void signOutNonSyncingAccountFromJavaWithNullDomain() {
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
 
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator)
-                .clearPrimaryAccount(eq(SignoutReason.SIGNOUT_TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
 
         // Sign-out should only clear the service worker cache when the user is neither managed or
         // syncing.
@@ -284,13 +281,12 @@ public class SigninManagerImplTest {
                      eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
 
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator)
-                .clearPrimaryAccount(eq(SignoutReason.SIGNOUT_TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
 
         // Sign-out should only clear the service worker cache when the user has decided not to
         // wipe data.
@@ -311,7 +307,7 @@ public class SigninManagerImplTest {
                      eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
 
         ArgumentCaptor<Runnable> callback = ArgumentCaptor.forClass(Runnable.class);
         verify(mNativeMock)
@@ -331,13 +327,12 @@ public class SigninManagerImplTest {
                      eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST, null, true);
+        mSigninManager.signOut(SignoutReason.TEST, null, true);
 
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator)
-                .clearPrimaryAccount(eq(SignoutReason.SIGNOUT_TEST), anyInt());
+        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST), anyInt());
 
         // Sign-out should only clear the profile when the user is syncing and has decided to
         // wipe data.
@@ -356,13 +351,12 @@ public class SigninManagerImplTest {
                      eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager.revokeSyncConsent(SignoutReason.SIGNOUT_TEST, callback, false);
+        mSigninManager.revokeSyncConsent(SignoutReason.TEST, callback, false);
 
         // The primary account should be cleared *before* clearing any account data.
         // For more information see crbug.com/589028.
         InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator)
-                .revokeSyncConsent(eq(SignoutReason.SIGNOUT_TEST), anyInt());
+        inOrder.verify(mIdentityMutator).revokeSyncConsent(eq(SignoutReason.TEST), anyInt());
 
         // Disabling sync should only clear the service worker cache when the user is neither
         // managed or syncing.
@@ -434,7 +428,7 @@ public class SigninManagerImplTest {
                 .when(mIdentityMutator)
                 .clearPrimaryAccount(anyInt(), anyInt());
 
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
         assertEquals(0, callCount.get());
@@ -509,7 +503,7 @@ public class SigninManagerImplTest {
                 .thenReturn(ACCOUNT_INFO);
         assertTrue(mSigninManager.isSignOutAllowed());
 
-        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+        mSigninManager.signOut(SignoutReason.TEST);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mSignInStateObserver).onSignOutAllowedChanged();
         assertFalse(mSigninManager.isSignOutAllowed());

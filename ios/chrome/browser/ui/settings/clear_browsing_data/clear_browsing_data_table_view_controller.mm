@@ -566,8 +566,8 @@
     // An action is already in progress, ignore user's request.
     return;
   }
-  signin_metrics::ProfileSignout signout_source_metric =
-      signin_metrics::USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE;
+  signin_metrics::ProfileSignout signout_source_metric = signin_metrics::
+      ProfileSignout::kUserClickedSignoutFromClearBrowsingDataPage;
   _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser

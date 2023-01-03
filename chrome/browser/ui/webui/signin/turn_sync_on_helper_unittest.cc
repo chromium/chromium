@@ -681,12 +681,12 @@ class TurnSyncOnHelperTest : public testing::Test {
             Bucket(kAccessPoint, expected.sync_settings_opened ? 1 : 0)));
 
     EXPECT_THAT(histogram_tester_->GetAllSamples("Signin.SignOut.Completed"),
-                BucketsAre(Bucket(signin_metrics::ProfileSignout::SIGNOUT_TEST,
+                BucketsAre(Bucket(signin_metrics::ProfileSignout::kTest,
                                   expected.sign_out ? 1 : 0)));
 
     EXPECT_THAT(
         histogram_tester_->GetAllSamples("Signin.SyncTurnOff.Completed"),
-        BucketsAre(Bucket(signin_metrics::ProfileSignout::SIGNOUT_TEST,
+        BucketsAre(Bucket(signin_metrics::ProfileSignout::kTest,
                           expected.sync_turn_off ? 1 : 0)));
 
     // Reset the tester so that these histograms don't need to be taken into

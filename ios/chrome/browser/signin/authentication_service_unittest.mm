@@ -486,8 +486,9 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(0), user_info);
 
-  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
-                                    /*force_clear_browsing_data=*/false, nil);
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
@@ -504,8 +505,9 @@ TEST_F(AuthenticationServiceTest,
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(0), user_info);
 
-  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
-                                    /*force_clear_browsing_data=*/true, nil);
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/true, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -525,8 +527,9 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(2), user_info);
 
-  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
-                                    /*force_clear_browsing_data=*/false, nil);
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
@@ -548,8 +551,9 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(2), user_info);
 
-  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
-                                    /*force_clear_browsing_data=*/false, nil);
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
@@ -569,8 +573,9 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOutAndClearBrowsingData) {
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(2), user_info);
 
-  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
-                                    /*force_clear_browsing_data=*/true, nil);
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/true, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);

@@ -142,7 +142,7 @@ class UserSigninMediatorTest : public PlatformTest {
     OCMExpect([performer_mock_ signOutBrowserState:browser_state_.get()])
         .andDo(^(NSInvocation*) {
           authentication_service()->SignOut(
-              signin_metrics::ProfileSignout::SIGNOUT_TEST, false, ^{
+              signin_metrics::ProfileSignout::kTest, false, ^{
                 [authentication_flow_ didSignOut];
               });
         });

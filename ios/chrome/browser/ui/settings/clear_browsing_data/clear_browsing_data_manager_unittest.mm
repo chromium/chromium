@@ -329,7 +329,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignOut(signin_metrics::ABORT_SIGNIN,
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 
   [manager_ loadModel:model_];
@@ -372,7 +372,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignOut(signin_metrics::ABORT_SIGNIN,
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 
   // Set DSE to one from "prepoulated list".
@@ -440,7 +440,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignOut(signin_metrics::ABORT_SIGNIN,
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 
   // Set DSE to a be fully custom.

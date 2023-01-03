@@ -127,7 +127,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 - (void)signOutBrowserState:(ChromeBrowserState*)browserState {
   __weak __typeof(_delegate) weakDelegate = _delegate;
   AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignOut(signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+      ->SignOut(signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
                 /*force_clear_browsing_data=*/false, ^{
                   [weakDelegate didSignOut];
                 });
@@ -135,7 +135,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 - (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState {
   AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignOut(signin_metrics::ABORT_SIGNIN,
+      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 }
 

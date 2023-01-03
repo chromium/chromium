@@ -83,8 +83,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                               rect:view_controller_.view.frame
                               view:view_controller_.view
-                        withSource:signin_metrics::
-                                       USER_CLICKED_SIGNOUT_SETTINGS];
+                        withSource:signin_metrics::ProfileSignout::
+                                       kUserClickedSignoutSettings];
     signout_coordinator_.completion = ^(BOOL success) {
     };
     return signout_coordinator_;

@@ -257,7 +257,8 @@
 - (void)didSignoutFromNotification:(AlertCoordinator*)alertCoordinator {
   __weak __typeof(self) weakSelf = self;
   self.authService->SignOut(
-      signin_metrics::USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
+      signin_metrics::ProfileSignout::
+          kUserClickedSignoutFromUserPolicyNotificationDialog,
       false, ^{
         [weakSelf alertControllerDidComplete:alertCoordinator];
       });

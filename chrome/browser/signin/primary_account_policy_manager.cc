@@ -178,7 +178,7 @@ PrimaryAccountPolicyManager::~PrimaryAccountPolicyManager() = default;
 
 void PrimaryAccountPolicyManager::Initialize() {
   EnsurePrimaryAccountAllowedForProfile(
-      profile_, signin_metrics::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT);
+      profile_, signin_metrics::ProfileSignout::kSigninNotAllowedOnProfileInit);
 
   signin_allowed_.Init(
       prefs::kSigninAllowed, profile_->GetPrefs(),
@@ -201,12 +201,13 @@ void PrimaryAccountPolicyManager::Shutdown() {
 
 void PrimaryAccountPolicyManager::OnGoogleServicesUsernamePatternChanged() {
   EnsurePrimaryAccountAllowedForProfile(
-      profile_, signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED);
+      profile_,
+      signin_metrics::ProfileSignout::kGoogleServiceNamePatternChanged);
 }
 
 void PrimaryAccountPolicyManager::OnSigninAllowedPrefChanged() {
-  EnsurePrimaryAccountAllowedForProfile(profile_,
-                                        signin_metrics::SIGNOUT_PREF_CHANGED);
+  EnsurePrimaryAccountAllowedForProfile(
+      profile_, signin_metrics::ProfileSignout::kPrefChanged);
 }
 
 void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(

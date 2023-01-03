@@ -363,7 +363,7 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     // When the user has an unrecoverable error, they first have to sign out and
     // then sign in again.
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
         signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 
@@ -626,7 +626,7 @@ void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
              ->IsRevokeSyncConsentAllowed());
 
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-      signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       signin_metrics::SignoutDelete::kIgnoreMetric);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -699,11 +699,13 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   if (is_syncing && !is_clear_primary_account_allowed) {
     DCHECK(signout_setting->IsRevokeSyncConsentAllowed());
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+        delete_metric);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+        delete_metric);
 #else
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
@@ -723,7 +725,8 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
     // This operation may delete the current browser that owns |this| if force
     // signin is enabled (see https://crbug.com/1153120).
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+        signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+        delete_metric);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
@@ -813,7 +816,7 @@ void PeopleHandler::CloseSyncSetup() {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(
-                    signin_metrics::ABORT_SIGNIN,
+                    signin_metrics::ProfileSignout::kAbortSignin,
                     signin_metrics::SignoutDelete::kIgnoreMetric);
           }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

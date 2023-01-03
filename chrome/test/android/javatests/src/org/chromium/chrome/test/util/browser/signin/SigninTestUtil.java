@@ -138,7 +138,7 @@ public final class SigninTestUtil {
     }
 
     static void signOut() {
-        signOut(SignoutReason.SIGNOUT_TEST);
+        signOut(SignoutReason.TEST);
     }
 
     static void forceSignOut() {

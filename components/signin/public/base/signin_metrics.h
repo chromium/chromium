@@ -20,69 +20,70 @@ namespace signin_metrics {
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SignoutReason
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum ProfileSignout : int {
+enum class ProfileSignout {
   // The value used within unit tests.
-  SIGNOUT_TEST = 0,
+  kTest = 0,
   // The preference or policy controlling if signin is valid has changed.
-  SIGNOUT_PREF_CHANGED = 0,
+  kPrefChanged = 0,
   // The valid pattern for signing in to the Google service changed.
-  GOOGLE_SERVICE_NAME_PATTERN_CHANGED = 1,
+  kGoogleServiceNamePatternChanged = 1,
   // The preference or policy controlling if signin is valid changed during
   // the signin process.
-  SIGNIN_PREF_CHANGED_DURING_SIGNIN = 2,
+  // Deprecated: kSigninPrefChangedDuringSignin = 2,
   // User clicked to signout from the settings page.
-  USER_CLICKED_SIGNOUT_SETTINGS = 3,
+  kUserClickedSignoutSettings = 3,
   // The signin process was aborted, but signin had succeeded, so signout. This
   // may be due to a server response, policy definition or user action.
-  ABORT_SIGNIN = 4,
+  kAbortSignin = 4,
   // The sync server caused the profile to be signed out.
-  SERVER_FORCED_DISABLE = 5,
-  // The credentials are being transfered to a new profile, so the old one is
+  kServerForcedDisable = 5,
+  // The credentials are being transferred to a new profile, so the old one is
   // signed out.
-  TRANSFER_CREDENTIALS = 6,
+  // Deprecated: kTransferCredentials = 6,
   // Signed out because credentials are invalid and force-sign-in is enabled.
-  AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN = 7,
+  kAuthenticationFailedWithForceSignin = 7,
   // The user disables sync from the DICE UI.
   // Deprecated: USER_TUNED_OFF_SYNC_FROM_DICE_UI = 8,
   // Signout forced because the account was removed from the device.
-  ACCOUNT_REMOVED_FROM_DEVICE = 9,
+  kAccountRemovedFromDevice = 9,
   // Signin is no longer allowed when the profile is initialized.
-  SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT = 10,
+  kSigninNotAllowedOnProfileInit = 10,
   // Sign out is forced allowed. Only used for tests.
-  FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST = 11,
+  kForceSignoutAlwaysAllowedForTest = 11,
   // User cleared account cookies when there's no sync consent, which has caused
   // sign out.
-  USER_DELETED_ACCOUNT_COOKIES = 12,
+  kUserDeletedAccountCookies = 12,
   // Signout triggered by MobileIdentityConsistency rollback.
-  MOBILE_IDENTITY_CONSISTENCY_ROLLBACK = 13,
+  // Deprecated: kMobileIdentityConsistencyRollback = 13,
   // Sign-out when the account id migration to Gaia ID did not finish,
-  ACCOUNT_ID_MIGRATION = 14,
+  // Deprecated: kAccountIdMigration = 14,
   // iOS Specific. Sign-out forced because the account was removed from the
   // device after a device restore.
-  IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE = 15,
+  kIosAccountRemovedFromDeviceAfterRestore = 15,
   // User clicked to 'Turn off sync' from the settings page.
   // Currently only available for Android Unicorn users.
-  USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS = 16,
+  kUserClickedRevokeSyncConsentSettings = 16,
   // User clicked to signout from the settings page.
-  USER_CLICKED_SIGNOUT_PROFILE_MENU = 17,
+  kUserClickedSignoutProfileMenu = 17,
   // User retriggered signin from the Android web sign-in bottomsheet.
-  SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN = 18,
+  kSigninRetriggeredFromWebSignin = 18,
   // User clicked on sign-out from the notification dialog for User Policy. The
   // notification informs the user that from now on user policies may be
   // effective on their browser if they Sync with their managed account. The
   // user has the option to sign out to avoid user policies.
-  USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG = 19,
+  kUserClickedSignoutFromUserPolicyNotificationDialog = 19,
   // The email address of the primary account on the device was updated,
   // triggering an automatic signout followed by signin.
-  ACCOUNT_EMAIL_UPDATED = 20,
+  kAccountEmailUpdated = 20,
   // User clicked on sign-out from the clear browsing data page.
-  USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE = 21,
+  kUserClickedSignoutFromClearBrowsingDataPage = 21,
   // Profile Signout during reconciliation triggered by a Gaia cookie update.
-  GAIA_COOKIE_UPDATED = 22,
+  kGaiaCookieUpdated = 22,
   // Profile Signout during reconciliation.
-  ACCOUNT_RECONCILOR_RECONCILE = 23,
+  kAccountReconcilorReconcile = 23,
+
   // Keep this as the last enum.
-  NUM_PROFILE_SIGNOUT_METRICS,
+  kMaxValue = kAccountReconcilorReconcile
 };
 
 // Enum values used for use with "AutoLogin.Reverse" histograms.

@@ -161,7 +161,8 @@ TEST_F(UnifiedConsentMediatorTest,
   GetAuthenticationService()->SignIn(identity3_);
   [mediator_ start];
   ASSERT_EQ(identity3_, mediator_.selectedIdentity);
-  GetAuthenticationService()->SignOut(signin_metrics::SIGNOUT_TEST, false, nil);
+  GetAuthenticationService()->SignOut(signin_metrics::ProfileSignout::kTest,
+                                      false, nil);
   GetIdentityService()->ForgetIdentity(identity3_, nil);
 
   ASSERT_EQ(identity1_, mediator_.selectedIdentity);

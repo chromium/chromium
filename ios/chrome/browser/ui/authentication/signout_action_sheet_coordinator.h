@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 
 namespace signin_metrics {
-enum ProfileSignout : int;
+enum class ProfileSignout;
 }  // namespace signin_metrics
 
 class Browser;

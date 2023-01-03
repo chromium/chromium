@@ -59,8 +59,7 @@ void LogPrimaryAccountChangeMetrics(
           event_source));
       base::UmaHistogramEnumeration(
           "Signin.SignOut.Completed",
-          absl::get<signin_metrics::ProfileSignout>(event_source),
-          signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS);
+          absl::get<signin_metrics::ProfileSignout>(event_source));
       break;
   }
 
@@ -82,8 +81,7 @@ void LogPrimaryAccountChangeMetrics(
           event_source));
       base::UmaHistogramEnumeration(
           "Signin.SyncTurnOff.Completed",
-          absl::get<signin_metrics::ProfileSignout>(event_source),
-          signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS);
+          absl::get<signin_metrics::ProfileSignout>(event_source));
       break;
   }
 }

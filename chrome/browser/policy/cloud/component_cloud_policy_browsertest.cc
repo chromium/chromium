@@ -234,7 +234,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
         IdentityManagerFactory::GetForProfile(browser()->profile())
             ->GetPrimaryAccountMutator();
     primary_account_mutator->ClearPrimaryAccount(
-        signin_metrics::SIGNOUT_TEST,
+        signin_metrics::ProfileSignout::kTest,
         signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 #endif

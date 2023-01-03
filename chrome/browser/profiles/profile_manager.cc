@@ -1874,10 +1874,11 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
           !entry->CanBeManaged()) {
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
-            base::BindOnce(
-                &ClearPrimaryAccountForProfile, profile->GetWeakPtr(),
-                signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-                signin_metrics::SignoutDelete::kIgnoreMetric));
+            base::BindOnce(&ClearPrimaryAccountForProfile,
+                           profile->GetWeakPtr(),
+                           signin_metrics::ProfileSignout::
+                               kAuthenticationFailedWithForceSignin,
+                           signin_metrics::SignoutDelete::kIgnoreMetric));
       }
 #endif
       return;

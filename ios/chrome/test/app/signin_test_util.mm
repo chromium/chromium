@@ -81,7 +81,7 @@ void SignOutAndClearIdentities() {
         AuthenticationServiceFactory::GetForBrowserState(browser_state);
     if (authentication_service->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
-      authentication_service->SignOut(signin_metrics::SIGNOUT_TEST,
+      authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
                                       /*force_clear_browsing_data=*/true, nil);
     }
 

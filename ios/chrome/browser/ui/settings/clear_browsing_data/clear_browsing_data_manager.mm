@@ -730,7 +730,7 @@ static NSDictionary* imageNamesByItemTypes = @{
     DCHECK(authenticationService);
     if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
       authenticationService->SignOut(
-          signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
+          signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
           /*force_clear_browsing_data=*/false, nil);
     }
   }

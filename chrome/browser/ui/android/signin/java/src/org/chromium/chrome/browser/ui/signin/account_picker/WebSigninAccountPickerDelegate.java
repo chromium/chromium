@@ -62,7 +62,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             // if user retries the sign-in from the error screen, we need to sign out the user
             // first before signing in again.
             destroyWebSigninBridge();
-            mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN);
+            mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED_FROM_WEB_SIGNIN);
         }
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
             mWebSigninBridge =
