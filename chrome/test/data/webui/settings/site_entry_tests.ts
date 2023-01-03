@@ -578,6 +578,33 @@ suite('SiteEntry', function() {
     assertEquals('More actions for foo.com', moreActionsButton!.ariaLabel);
   });
 
+  test(
+      'first party set more actions menu removed when filtered by fps owner',
+      function() {
+        // Set site group with first party set information.
+        const fooSiteGroup = JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+        fooSiteGroup.fpsOwner = 'foo.com';
+        fooSiteGroup.fpsNumMembers = 1;
+        fooSiteGroup.fpsEnterpriseManaged = false;
+        testElement.siteGroup = fooSiteGroup;
+        testElement.isFpsFiltered = false;
+        flush();
+
+        // Assert more actions button is visible and remove site button is
+        // hidden at the beginning of the test when no filter is applied.
+        assertTrue(isChildVisible(testElement, '#fpsOverflowMenuButton'));
+        assertFalse(isChildVisible(testElement, '#removeSiteButton'));
+
+        // Change `isFpsFiltered` state to true to test icon change.
+        testElement.isFpsFiltered = true;
+        flush();
+
+        // Assert more actions button hidden and replaced with remove site
+        // button.
+        assertFalse(isChildVisible(testElement, '#fpsOverflowMenuButton'));
+        assertTrue(isChildVisible(testElement, '#removeSiteButton'));
+      });
+
   test('extension site group is shown correctly', async function() {
     const extensionSiteGroup =
         JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));

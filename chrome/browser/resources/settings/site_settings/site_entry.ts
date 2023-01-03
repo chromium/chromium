@@ -96,6 +96,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
       fpsEnterprisePref_: Object,
 
       /**
+       * Whether site entry is shown with a first party set filter search.
+       */
+      isFpsFiltered: Boolean,
+
+      /**
        * The position of this site-entry in its parent list.
        */
       listIndex: {
@@ -149,6 +154,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private displayName_: string;
   private cookieString_: string;
   private fpsMembershipLabel_: string;
+  isFpsFiltered: boolean;
   listIndex: number;
   private overallUsageString_: string;
   private originUsages_: string[];
@@ -333,9 +339,17 @@ export class SiteEntryElement extends SiteEntryElementBase {
     });
   }
 
-
   private isFpsMember_(): boolean {
-    return this.siteGroup.fpsOwner !== undefined;
+    return !!this.siteGroup && this.siteGroup.fpsOwner !== undefined;
+  }
+
+  /**
+   * Evaluates whether the three dot menu should be shown for the site entry.
+   * @returns True if site group is a first party set member and filter by
+   * first party set owner is not applied.
+   */
+  private shouldShowOverflowMenu(): boolean {
+    return this.isFpsMember_() && !this.isFpsFiltered;
   }
 
   /**
@@ -397,7 +411,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
     const isCurrentlyFocused = this.isFocused;
     afterNextRender(this, () => {
       if (isCurrentlyFocused) {
-        (this.isFpsMember_() ?
+        (this.shouldShowOverflowMenu() ?
              this.$$<CrIconButtonElement>('#fpsOverflowMenuButton') :
              this.$$<CrIconButtonElement>('#removeSiteButton'))!.focus();
       }

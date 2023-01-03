@@ -297,7 +297,7 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupMap: Map<string, SiteGroup>, searchQuery: string): SiteGroup[] {
     const result = [];
     for (const [_etldPlus1, siteGroup] of siteGroupMap) {
-      if (this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX)) {
+      if (this.isFpsFiltered_()) {
         const fpsOwnerFilter =
             this.filter.substring(this.filter.indexOf(':') + 1);
         // Checking `siteGroup.fpsOwner` to ensure that we're not matching with
@@ -452,8 +452,8 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   private shouldShowFpsLearnMore_(): boolean {
-    return this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX) &&
-        this.filteredList_ && this.filteredList_.length > 0;
+    return this.isFpsFiltered_() && this.filteredList_ &&
+        this.filteredList_.length > 0;
   }
 
   private onShowRelatedSites_() {
@@ -558,6 +558,14 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private isFiltered_(): boolean {
     return this.filter !== '';
+  }
+
+  /**
+   * Checks if a first party set search filter is applied.
+   * @return True if filter starts with `FPS_RELATED_SEARCH_PREFIX`.
+   */
+  private isFpsFiltered_(): boolean {
+    return this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX);
   }
 
   private getFpsLearnMoreLabel_() {
@@ -827,7 +835,7 @@ export class AllSitesElement extends AllSitesElementBase {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const installed = anyAppsInstalled ? 'Installed' : '';
     this.recordUserAction_([...scopes, installed, 'Confirm']);
-    if (this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX)) {
+    if (this.isFpsFiltered_()) {
       this.browserProxy.recordAction(AllSitesAction2.DELETE_FOR_ENTIRE_FPS);
     }
     for (let index = this.filteredList_.length - 1; index >= 0; index--) {

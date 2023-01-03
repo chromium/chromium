@@ -95,7 +95,8 @@
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned">
-          <template is="dom-if" if="[[isFpsMember_(siteGroup.fpsOwner)]]">
+          <template is="dom-if" if=
+              "[[shouldShowOverflowMenu(siteGroup.fpsOwner, isFpsFiltered)]]">
             <div class="separator"></div>
             <cr-icon-button class="icon-more-vert"
                 id="fpsOverflowMenuButton"
@@ -105,7 +106,8 @@
                 aria-label$="[[getMoreActionsLabel_(siteGroup)]]">
             </cr-icon-button>
           </template>
-          <template is="dom-if" if="[[!isFpsMember_(siteGroup.fpsOwner)]]">
+          <template is="dom-if" if=
+              "[[!shouldShowOverflowMenu(siteGroup.fpsOwner, isFpsFiltered)]]">
             <div class="separator"></div>
             <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
                 title$=
