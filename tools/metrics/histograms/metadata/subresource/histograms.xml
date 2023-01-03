@@ -579,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="2023-04-30">
+    expires_after="2023-07-02">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
