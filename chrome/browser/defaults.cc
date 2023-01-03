@@ -25,11 +25,11 @@ const bool kShowExitMenuItem = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const bool kShowUpgradeMenuItem = false;
 const bool kShowImportOnBookmarkBar = false;
-const bool kAlwaysOpenIncognitoWindow = true;
+const bool kAlwaysOpenIncognitoBrowserIfStartedWithIncognitoSwitch = true;
 #else
 const bool kShowUpgradeMenuItem = true;
 const bool kShowImportOnBookmarkBar = true;
-const bool kAlwaysOpenIncognitoWindow = false;
+const bool kAlwaysOpenIncognitoBrowserIfStartedWithIncognitoSwitch = false;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

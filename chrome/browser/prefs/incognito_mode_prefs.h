@@ -58,9 +58,14 @@ class IncognitoModePrefs {
   // and *out_value is set to ENABLED.
   static bool IntToAvailability(int in_value, Availability* out_value);
 
-  // Returns true if the browser should start in incognito mode.
+  // Returns true if the initial browser should start in incognito mode.
   static bool ShouldLaunchIncognito(const base::CommandLine& command_line,
                                     const PrefService* prefs);
+
+  // Returns true if subsequent browsers should be opened in incognito mode.
+  static bool ShouldOpenSubsequentBrowsersInIncognito(
+      const base::CommandLine& command_line,
+      const PrefService* prefs);
 
   // Returns true if |profile| can open a new Browser. This checks the incognito
   // availability policies and verifies if the |profile| type is allowed to
@@ -88,6 +93,14 @@ class IncognitoModePrefs {
   // to do - such as when checking for FORCED state).
   static Availability GetAvailabilityInternal(const PrefService* pref_service,
                                               GetAvailabilityMode mode);
+
+  // Internal version of ShouldLaunchIncognito() and
+  // ShouldOpenSubsequentBrowsersInIncognito() that specifies whether it is for
+  // subsequent browsers or not.
+  static bool ShouldLaunchIncognitoInternal(
+      const base::CommandLine& command_line,
+      const PrefService* prefs,
+      const bool for_subsequent_browsers);
 };
 
 #endif  // CHROME_BROWSER_PREFS_INCOGNITO_MODE_PREFS_H_

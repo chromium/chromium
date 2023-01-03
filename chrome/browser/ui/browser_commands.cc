@@ -492,9 +492,8 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
       off_the_record = false;
     }
   } else if (profile->IsGuestSession() ||
-             (browser_defaults::kAlwaysOpenIncognitoWindow &&
-              IncognitoModePrefs::ShouldLaunchIncognito(
-                  *base::CommandLine::ForCurrentProcess(), prefs))) {
+             IncognitoModePrefs::ShouldOpenSubsequentBrowsersInIncognito(
+                 *base::CommandLine::ForCurrentProcess(), prefs)) {
     off_the_record = true;
   }
 

@@ -342,7 +342,8 @@ const char kHideCrashRestoreBubble[] = "hide-crash-restore-bubble";
 // http://google.com.
 const char kHomePage[] = "homepage";
 
-// Causes the browser to launch directly in incognito mode.
+// Causes the initial browser opened to be in incognito mode. Further browsers
+// may or may not be in incognito mode; see `IncognitoModePrefs`.
 const char kIncognito[] = "incognito";
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

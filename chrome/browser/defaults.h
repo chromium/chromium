@@ -25,8 +25,9 @@ extern const bool kShowHelpMenuItemIcon;
 // bookmarks?
 extern const bool kShowImportOnBookmarkBar;
 
-// Should always open incognito windows when started with --incognito switch?
-extern const bool kAlwaysOpenIncognitoWindow;
+// If true, redefines `--incognito` switch to cause all browsers to be in
+// incognito mode rather than just the initial browser.
+extern const bool kAlwaysOpenIncognitoBrowserIfStartedWithIncognitoSwitch;
 
 // Indicates whether session restore should always create a new
 // tabbed browser. This is true every where except on ChromeOS
