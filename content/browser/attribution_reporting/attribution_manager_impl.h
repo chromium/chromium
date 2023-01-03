@@ -208,7 +208,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                            bool is_debug_report,
                            ReportSentCallback callback);
   void OnReportSent(base::OnceClosure done,
-                    AttributionReport report,
+                    const AttributionReport&,
                     SendResult info);
   void AssembleAggregatableReport(AttributionReport report,
                                   bool is_debug_report,
@@ -235,8 +235,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::Type report_type);
-  void NotifyReportSent(bool is_debug_report, AttributionReport, SendResult);
-  void NotifyDebugReportSent(AttributionDebugReport, int status);
+  void NotifyReportSent(bool is_debug_report,
+                        const AttributionReport&,
+                        SendResult);
+  void NotifyDebugReportSent(const AttributionDebugReport&, int status);
 
   bool IsReportAllowed(const AttributionReport&) const;
 

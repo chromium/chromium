@@ -145,7 +145,7 @@ void AttributionReportNetworkSender::SendReport(GURL url,
 }
 
 void AttributionReportNetworkSender::OnReportSent(
-    AttributionReport report,
+    const AttributionReport& report,
     bool is_debug_report,
     ReportSentCallback sent_callback,
     UrlLoaderList::iterator it,
@@ -229,9 +229,8 @@ void AttributionReportNetworkSender::OnReportSent(
                           : SendResult::Status::kFailure);
 
   std::move(sent_callback)
-      .Run(std::move(report),
-           SendResult(report_status, net_error,
-                      headers ? headers->response_code() : 0));
+      .Run(report, SendResult(report_status, net_error,
+                              headers ? headers->response_code() : 0));
 }
 
 void AttributionReportNetworkSender::OnDebugReportSent(

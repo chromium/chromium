@@ -66,7 +66,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
                   UrlLoaderCallback callback);
 
   // Called when headers are available for a sent report.
-  void OnReportSent(AttributionReport report,
+  void OnReportSent(const AttributionReport&,
                     bool is_debug_report,
                     ReportSentCallback sent_callback,
                     UrlLoaderList::iterator it,

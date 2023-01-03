@@ -95,7 +95,8 @@ class AttributionReportNetworkSenderTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  base::MockCallback<base::OnceCallback<void(AttributionReport, SendResult)>>
+  base::MockCallback<
+      base::OnceCallback<void(const AttributionReport&, SendResult)>>
       callback_;
 
   // Unique ptr so it can be reset during testing.

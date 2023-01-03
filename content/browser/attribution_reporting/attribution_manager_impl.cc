@@ -896,7 +896,7 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
 }
 
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
-                                          AttributionReport report,
+                                          const AttributionReport& report,
                                           SendResult info) {
   // If there was a transient failure, and another attempt is allowed,
   // update the report's DB state to reflect that. Otherwise, delete the report
@@ -947,18 +947,18 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   if (info.status == SendResult::Status::kSent)
     LogMetricsOnReportSent(report);
 
-  NotifyReportSent(/*is_debug_report=*/false, std::move(report), info);
+  NotifyReportSent(/*is_debug_report=*/false, report, info);
 }
 
 void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,
-                                              AttributionReport report,
+                                              const AttributionReport& report,
                                               SendResult info) {
   for (auto& observer : observers_)
     observer.OnReportSent(report, /*is_debug_report=*/is_debug_report, info);
 }
 
 void AttributionManagerImpl::NotifyDebugReportSent(
-    const AttributionDebugReport report,
+    const AttributionDebugReport& report,
     const int status) {
   // Use the same time for all observers.
   const base::Time time = base::Time::Now();
