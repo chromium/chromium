@@ -959,7 +959,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPage) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramDomContentLoaded, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramLoad, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstPaint, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramParseDuration, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramParseBlockedOnScriptLoad, 1);
   histogram_tester_->ExpectTotalCount(
@@ -997,7 +996,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramDomContentLoaded, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramLoad, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstPaint, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramParseDuration, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramParseBlockedOnScriptLoad, 1);
   histogram_tester_->ExpectTotalCount(

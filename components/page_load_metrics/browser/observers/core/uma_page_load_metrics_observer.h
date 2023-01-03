@@ -32,8 +32,6 @@ extern const char kHistogramFirstInputDelay[];
 extern const char kHistogramFirstInputTimestamp[];
 extern const char kHistogramFirstInputDelay4[];
 extern const char kHistogramFirstInputTimestamp4[];
-extern const char kHistogramLongestInputDelay[];
-extern const char kHistogramLongestInputTimestamp[];
 extern const char kHistogramFirstPaint[];
 extern const char kHistogramFirstImagePaint[];
 extern const char kHistogramDomContentLoaded[];
@@ -44,7 +42,6 @@ extern const char kHistogramLargestContentfulPaintContentType[];
 extern const char kHistogramLargestContentfulPaintMainFrame[];
 extern const char kHistogramLargestContentfulPaintMainFrameContentType[];
 extern const char kHistogramLargestContentfulPaintCrossSiteSubFrame[];
-extern const char kHistogramParseDuration[];
 extern const char kHistogramParseBlockedOnScriptLoad[];
 extern const char kHistogramParseBlockedOnScriptExecution[];
 
@@ -73,9 +70,6 @@ extern const char kHistogramResourceLoadTimePrefix[];
 extern const char kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint[];
 extern const char kHistogramFirstEligibleToPaint[];
 extern const char kHistogramFirstEligibleToPaintToFirstPaint[];
-
-extern const char kHistogramFirstNonScrollInputAfterFirstPaint[];
-extern const char kHistogramFirstScrollInputAfterFirstPaint[];
 
 extern const char kHistogramPageLoadTotalBytes[];
 extern const char kHistogramPageLoadNetworkBytes[];
@@ -262,9 +256,6 @@ class UmaPageLoadMetricsObserver
   // The CPU usage attributed to this page.
   base::TimeDelta total_cpu_usage_;
   base::TimeDelta foreground_cpu_usage_;
-
-  // Size of the redirect chain, which excludes the first URL.
-  int redirect_chain_size_;
 
   base::TimeTicks first_paint_;
 

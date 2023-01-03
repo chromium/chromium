@@ -2160,28 +2160,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.InteractiveTiming.LongestInputDelay4" units="ms"
-    expires_after="M97">
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures longest Input Delay, the longest duration between the hardware
-    timestamp and the start of event processing on the main thread for the
-    meaningful input per navigation. Excludes scrolls.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.InteractiveTiming.LongestInputTimestamp4" units="ms"
-    expires_after="M97">
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    The duration between navigation start and the hardware timestamp of the
-    meaningful input with longest queuing delay per navigation. Excludes
-    scrolls.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.InteractiveTiming.NumInteractions{Bfcache}"
     units="Count" expires_after="2023-03-24">
   <owner>sullivan@chromium.org</owner>
@@ -2620,15 +2598,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Navigation.RedirectChainLength" units="urls"
-    expires_after="M77">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    The number of URLs in the redirect chain for this navigation. This excludes
-    the first URL.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
     expires_after="2023-05-07">
   <owner>bmcquade@chromium.org</owner>
@@ -2673,16 +2642,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from a background tab being switched to the foreground to
     the time the first contentful paint is performed, for main frame documents.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.PaintTiming.ForegroundToFirstPaint" units="ms"
-    expires_after="2020-08-14">
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the time from a background tab being switched to the foreground to
-    the time the first paint is performed, for main frame documents.
   </summary>
 </histogram>
 
@@ -2907,31 +2866,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time that the HTML parser spent blocked on the load of scripts,
     for main frame documents that finished parsing.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.ParseTiming.ParseBlockedOnScriptLoadFromDocumentWrite"
-    units="ms" expires_after="M81">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the time that the HTML parser spent blocked on the load of scripts
-    inserted from document.write, for main frame documents that finished
-    parsing.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.ParseTiming.ParseDuration" units="ms"
-    expires_after="2021-10-09">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the time that the HTML parser was active, for main frame documents
-    that finished parsing.
-
-    Warning: this histogram was expired after M81 and brought back 2021-04-13;
-    data may be missing.
   </summary>
 </histogram>
 

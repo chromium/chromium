@@ -212,9 +212,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, SingleMetricAfterCommit) {
       internal::kHistogramDomContentLoaded, 0);
   tester()->histogram_tester().ExpectTotalCount(internal::kHistogramLoad, 0);
   tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramParseDuration,
-      (parse_stop - parse_start).InMilliseconds(), 1);
-  tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramParseBlockedOnScriptLoad,
       parse_script_load_duration.InMilliseconds(), 1);
   tester()->histogram_tester().ExpectBucketCount(
@@ -1221,28 +1218,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
               testing::ElementsAre(base::Bucket(5, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   internal::kHistogramFirstInputTimestamp),
-              testing::ElementsAre(base::Bucket(4780, 1)));
-}
-
-TEST_P(UmaPageLoadMetricsObserverTest, LongestInputDelayAndTimestamp) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.interactive_timing->longest_input_delay = base::Milliseconds(5);
-  // Pick a value that lines up with a histogram bucket.
-  timing.interactive_timing->longest_input_timestamp = base::Milliseconds(4780);
-  PopulateRequiredTimingFields(&timing);
-
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  tester()->SimulateTimingUpdate(timing);
-  // Navigate again to force histogram recording.
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  internal::kHistogramLongestInputDelay),
-              testing::ElementsAre(base::Bucket(5, 1)));
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  internal::kHistogramLongestInputTimestamp),
               testing::ElementsAre(base::Bucket(4780, 1)));
 }
 

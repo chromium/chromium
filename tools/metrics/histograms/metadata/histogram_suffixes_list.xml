@@ -3631,10 +3631,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoad"/>
   <affected-histogram
-      name="PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoadFromDocumentWrite"/>
-  <affected-histogram
-      name="PageLoad.Clients.DocWrite.Block.ParseTiming.ParseDuration"/>
-  <affected-histogram
       name="PageLoad.Clients.MultiTabLoading.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
   <affected-histogram
       name="PageLoad.Clients.MultiTabLoading.DocumentTiming.NavigationToLoadEventFired"/>
@@ -3654,9 +3650,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram
-      name="PageLoad.ParseTiming.ParseBlockedOnScriptLoadFromDocumentWrite"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsAfterPaint" separator=".">
@@ -3709,7 +3702,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsDocWrite" separator="."
@@ -3727,9 +3719,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.ParseTiming.ParseBlockedOnScriptExecutionFromDocumentWrite"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram
-      name="PageLoad.ParseTiming.ParseBlockedOnScriptLoadFromDocumentWrite"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsFromGoogleSearch" separator="."
@@ -3756,7 +3745,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsLoadingPredictor2"
@@ -3821,7 +3809,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsProtocol" separator="."
@@ -3858,7 +3845,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
-  <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsScheme" separator="."
