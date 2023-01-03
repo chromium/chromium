@@ -127,7 +127,6 @@
       # Disabling MSan tests since linux-chromeos chrome crashes on MSan build.
       # TODO(crbug.com/1376064): Re-enable.
       'Linux ChromiumOS MSan Tests',
-      'Linux ChromiumOS MSan Focal',
     ]
   },
   'aura_unittests amd64-generic': {
@@ -900,16 +899,6 @@
         'swarming': {
           'shards': 60,
         },
-      },
-      'Linux ChromiumOS MSan Focal': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 40,
-        },
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
-        ],
       },
       'Linux ChromiumOS MSan Tests': {
         # These are very slow on the Chrome OS MSAN trybot, most likely because browser_tests on cros has ~40% more tests. Also, these tests
@@ -2282,7 +2271,6 @@
       # Can't run on MSAN because gl_unittests_ozone uses the hardware driver,
       # which isn't instrumented.
       'Linux ChromiumOS MSan Tests',
-      'Linux ChromiumOS MSan Focal',
     ],
   },
   'gold_common_pytype': {
@@ -2437,13 +2425,6 @@
         'swarming': {
           'shards': 6,
           'quickrun_shards': 12,
-        },
-      },
-      'Linux ChromiumOS MSan Focal': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 5,
         },
       },
       'Linux ChromiumOS MSan Tests': {
@@ -3202,7 +3183,6 @@
       # The face and barcode detection tests fail on the Mac Pros.
       'Mac Pro FYI Release (AMD)',
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
-      'Linux ChromiumOS MSan Focal',
       'Linux MSan Tests',  # https://crbug.com/831676
     ],
     'replacements': {

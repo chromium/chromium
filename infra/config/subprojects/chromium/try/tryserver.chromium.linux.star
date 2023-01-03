@@ -458,17 +458,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_chromium_chromeos_msan_focal",
-    mirrors = [
-        "ci/Linux ChromiumOS MSan Focal",
-    ],
-    os = os.LINUX_FOCAL,
-    execution_timeout = 16 * time.hour,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux_chromium_chromeos_msan_rel_ng",
     mirrors = [
         "ci/Linux ChromiumOS MSan Builder",
@@ -478,6 +467,7 @@ try_.builder(
     ssd = True,
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    os = os.LINUX_FOCAL,
 )
 
 try_.builder(
