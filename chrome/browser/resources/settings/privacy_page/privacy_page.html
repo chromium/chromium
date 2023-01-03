@@ -48,11 +48,23 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
-            class="hr" label="$i18n{cookiePageTitle}"
-            sub-label="[[cookieSettingDescription_]]"
-            on-click="onCookiesClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+          <cr-link-row id="thirdPartyCookiesLinkRow"
+              start-icon="settings:cookie"
+              class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
+              sub-label="[[cookieSettingDescription_]]"
+              on-click="onCookiesClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[!isPrivacySandboxSettings4_]]">
+          <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
+              class="hr" label="$i18n{cookiePageTitle}"
+              sub-label="[[cookieSettingDescription_]]"
+              on-click="onCookiesClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
         <template is="dom-if" if=
             "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
           <cr-link-row id="privacySandboxLinkRow"
@@ -277,12 +289,12 @@
       </template>
       <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
         <template is="dom-if" route-path="/cookies">
-          <!-- TODO(crbug/1378703): Update strings. -->
-          <settings-subpage id="cookies" page-title="$i18n{privacyPageTitle}"
+          <settings-subpage id="cookies"
+              page-title="$i18n{thirdPartyCookiesLinkRowLabel}"
               learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}"
-              associated-control="[[$$('#cookiesLinkRow')]]">
+              associated-control="[[$$('#thirdPartyCookiesLinkRow')]]">
             <settings-cookies-page prefs="{{prefs}}"
                 focus-config="[[focusConfig_]]"
                 search-term="[[searchFilter_]]">
