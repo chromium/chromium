@@ -2170,6 +2170,21 @@
             ]
         }
     ],
+    "CacheIsNavigationSameSite": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheIsNavigationSameSite"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheTransparency": [
         {
             "platforms": [
