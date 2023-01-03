@@ -853,8 +853,9 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
       }
       case NGFragmentItem::kGeneratedText:
       case NGFragmentItem::kText: {
-        if (outline_type == NGOutlineType::kDontIncludeBlockVisualOverflow)
+        if (!ShouldIncludeBlockVisualOverflow(outline_type)) {
           break;
+        }
         PhysicalRect rect = item.RectInContainerFragment();
         if (UNLIKELY(text_combine))
           rect = text_combine->AdjustRectForBoundingBox(rect);
