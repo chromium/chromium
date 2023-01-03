@@ -483,6 +483,10 @@ const char kDeviceUnaffiliatedCrostiniAllowed[] =
 // device.
 const char kPluginVmAllowed[] = "cros.device.plugin_vm_allowed";
 
+// A boolean pref that indicates whether Borealis is allowed to run on this
+// device.
+const char kBorealisAllowedForDevice[] = "cros.device.borealis_allowed";
+
 // An enum pref specifying the case when device needs to reboot on user sign
 // out.
 const char kDeviceRebootOnUserSignout[] = "cros.device.reboot_on_user_signout";
