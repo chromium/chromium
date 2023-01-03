@@ -316,6 +316,9 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
+crbug.com/1404705 conformance/context/context-release-upon-reload.html [ RetryOnFailure ]
+crbug.com/1404705 conformance/context/context-release-with-workers.html [ RetryOnFailure ]
+
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
