@@ -633,12 +633,12 @@
   {
     "name": "biometric-authentication-for-filling",
     "owners": ["vsemeniuk@google.com", "vasilii"],
-    "expiry_milestone": 111
+    "expiry_milestone": 117
   },
   {
     "name": "biometric-authentication-in-settings",
     "owners": ["vsemeniuk@google.com", "vasilii"],
-    "expiry_milestone": 111
+    "expiry_milestone": 117
   },
   {
     "name": "biometric-reauth-password-filling",
@@ -3745,7 +3745,7 @@
   {
     "name": "filling-across-affiliated-websites",
     "owners": [ "vsemeniuk@google.com", "vasilii" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 117
   },
   {
     "name": "float-window",
