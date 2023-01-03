@@ -353,33 +353,9 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, SafeImage());
 }
 
-// Tests UI for Safe Browsing row in Safety Check settings with one of the
-// Enhanced Protection features enabled.
+// Tests UI for Safe Browsing row in Safety Check settings.
 TEST_F(SafetyCheckMediatorTest,
        SafeBrowsingSafeUIStandardAndEnhancedProtection) {
-  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
-  [mediator_ reconfigureSafeBrowsingCheckItem];
-  EXPECT_NSEQ(
-      mediator_.safeBrowsingCheckItem.detailText,
-      GetNSString(
-          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
-  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, SafeImage());
-
-  mediator_.enhancedSafeBrowsingPreference.value = false;
-  [mediator_ reconfigureSafeBrowsingCheckItem];
-  EXPECT_NSEQ(
-      mediator_.safeBrowsingCheckItem.detailText,
-      GetNSString(
-          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
-  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage, SafeImage());
-}
-
-// TODO(crbug.com/1348254): Consolidate with other test when feature is
-// launched.
-// Tests UI for Safe Browsing row in Safety Check settings with Enhanced
-// Protection features enabled.
-TEST_F(SafetyCheckMediatorTest,
-       SafeBrowsingSafeUIStandardAndEnhancedProtectionPhase2IOS) {
   // Check UI when Safe Browsing protection choice is "Enhanced Protection".
   mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
   [mediator_ reconfigureSafeBrowsingCheckItem];
