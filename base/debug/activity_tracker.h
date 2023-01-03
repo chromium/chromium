@@ -546,7 +546,7 @@ class BASE_EXPORT ActivityUserData {
 
     StringPiece name;                 // The "key" of the record.
     ValueType type;                   // The type of the value.
-    raw_ptr<void> memory;             // Where the "value" is held.
+    base::span<char> memory;          // Where the "value" is held.
     raw_ptr<std::atomic<uint16_t>>
         size_ptr;                     // Address of the actual size of value.
     size_t extent;                    // The total storage of the value,
