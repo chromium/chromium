@@ -27,17 +27,20 @@ build_webui("build") {
   mojom_folder = "$root_gen_dir/mojom-webui"
   attribution_reporting_component_folder = "components/attribution_reporting"
   attribution_reporting_content_folder = "content/browser/attribution_reporting"
+  network_folder = "services/network/public/mojom"
 
   mojo_files = [
     "$mojom_folder/$attribution_reporting_component_folder/source_registration_error.mojom-webui.js",
     "$mojom_folder/$attribution_reporting_content_folder/attribution_internals.mojom-webui.js",
     "$mojom_folder/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.js",
+    "$mojom_folder/$network_folder/schemeful_site.mojom-webui.js",
   ]
 
   mojo_files_deps = [
     "//$attribution_reporting_component_folder:mojom_js__generator",
     "//$attribution_reporting_content_folder:internals_mojo_bindings_js__generator",
     "//$attribution_reporting_content_folder:mojo_bindings_js__generator",
+    "//$network_folder:mojom_schemeful_site_js__generator",
   ]
 
   grit_output_dir = "$root_gen_dir/content"

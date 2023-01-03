@@ -266,6 +266,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetSourceEventId(std::numeric_limits<uint64_t>::max())
               .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
               .SetDebugKey(19)
+              .SetDestinationOrigins({
+                  *SuitableOrigin::Create(GURL("https://x.a.test")),
+                  *SuitableOrigin::Create(GURL("https://y.a.test")),
+                  *SuitableOrigin::Create(GURL("https://z.b.test")),
+              })
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
               .SetSourceType(AttributionSourceType::kEvent)
@@ -308,6 +313,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
       if (table.children.length === 7 &&
+          table.children[0].children[3]?.children[0]?.children.length === 2 &&
+          table.children[0].children[3]?.children[0]?.children[0]?.innerText === 'https://a.test' &&
+          table.children[0].children[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
+          table.children[1].children[3]?.innerText === 'https://conversion.test' &&
           table.children[0].children[0]?.innerText === $1 &&
           table.children[0].children[9]?.innerText === 'Navigation' &&
           table.children[1].children[9]?.innerText === 'Event' &&

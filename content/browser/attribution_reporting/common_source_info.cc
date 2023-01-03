@@ -150,12 +150,16 @@ net::SchemefulSite CommonSourceInfo::SourceSite() const {
   return net::SchemefulSite(source_origin_);
 }
 
-base::Value CommonSourceInfo::SerializeDestinationSites() const {
+base::flat_set<net::SchemefulSite> CommonSourceInfo::DestinationSites() const {
   base::flat_set<net::SchemefulSite> sites;
   for (const auto& destination : destination_origins_) {
     sites.insert(net::SchemefulSite(destination));
   }
+  return sites;
+}
 
+base::Value CommonSourceInfo::SerializeDestinationSites() const {
+  base::flat_set<net::SchemefulSite> sites = DestinationSites();
   if (sites.size() == 1) {
     return base::Value(sites.begin()->Serialize());
   }

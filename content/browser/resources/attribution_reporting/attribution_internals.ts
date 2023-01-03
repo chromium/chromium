@@ -80,13 +80,20 @@ class CodeColumn<T> extends ValueColumn<T, string> {
 }
 
 class ListColumn<T, V> extends ValueColumn<T, V[]> {
-  constructor(header: string, getValue: (p: T) => V[]) {
+  constructor(
+      header: string, getValue: (p: T) => V[],
+      private readonly flatten: boolean = false) {
     super(header, getValue, /*comparable=*/ false);
   }
 
   override render(td: HTMLElement, row: T) {
     const values = this.getValue(row);
     if (values.length === 0) {
+      return;
+    }
+
+    if (this.flatten && values.length === 1) {
+      td.innerText = `${values[0]}`;
       return;
     }
 
@@ -249,7 +256,7 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
 class Source {
   sourceEventId: bigint;
   sourceOrigin: string;
-  attributionDestination: string;
+  destinations: string[];
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
@@ -269,7 +276,8 @@ class Source {
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
     this.sourceOrigin = originToText(mojo.sourceOrigin);
-    this.attributionDestination = mojo.attributionDestination;
+    this.destinations =
+        mojo.destinations.map(d => originToText(d.siteAsOrigin));
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
@@ -310,8 +318,8 @@ class SourceTableModel extends TableModel<Source> {
           new ValueColumn<Source, string>('Status', (e) => e.status),
           new ValueColumn<Source, string>(
               'Source Origin', (e) => e.sourceOrigin),
-          new ValueColumn<Source, string>(
-              'Destination', (e) => e.attributionDestination),
+          new ListColumn<Source, string>(
+              'Destinations', (e) => e.destinations, /*flatten=*/ true),
           new ValueColumn<Source, string>(
               'Reporting Origin', (e) => e.reportingOrigin),
           new DateColumn<Source>(

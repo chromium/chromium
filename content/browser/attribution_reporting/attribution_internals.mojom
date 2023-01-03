@@ -6,6 +6,7 @@ module attribution_internals.mojom;
 
 import "components/attribution_reporting/source_registration_error.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -98,8 +99,7 @@ union SourceDebugKey {
 struct WebUISource {
   uint64 source_event_id;
   url.mojom.Origin source_origin;
-  // Replace SchemefulSite with string if this struct is ever reused elsewhere.
-  string attribution_destination;
+  array<network.mojom.SchemefulSite> destinations;
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;

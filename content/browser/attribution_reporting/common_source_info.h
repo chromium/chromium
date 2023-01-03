@@ -130,6 +130,8 @@ class CONTENT_EXPORT CommonSourceInfo {
   // that we avoid unnecessary copies of `destination_origin_`.
   net::SchemefulSite DestinationSite() const;
 
+  base::flat_set<net::SchemefulSite> DestinationSites() const;
+
   // Returns the schemeful site of |source_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so

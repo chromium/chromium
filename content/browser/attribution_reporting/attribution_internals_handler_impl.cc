@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -83,7 +84,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
 
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), source.source_origin(),
-      source.DestinationSite().Serialize(), source.reporting_origin(),
+      source.DestinationSites().extract(), source.reporting_origin(),
       source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.event_report_window_time().ToJsTime(),
       source.aggregatable_report_window_time().ToJsTime(), source.source_type(),
