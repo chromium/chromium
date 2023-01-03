@@ -2125,7 +2125,7 @@ void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
   if (!IsAnonymous())  // For anonymous blocks, the children add outline rects.
     rects.emplace_back(additional_offset, Size());
 
-  if (ShouldIncludeBlockVisualOverflow(include_block_overflows) &&
+  if (include_block_overflows == NGOutlineType::kIncludeBlockVisualOverflow &&
       !HasNonVisibleOverflow() && !HasControlClip()) {
     AddOutlineRectsForNormalChildren(rects, additional_offset,
                                      include_block_overflows);

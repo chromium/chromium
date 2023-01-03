@@ -9,19 +9,9 @@ namespace blink {
 
 // Outline styles
 enum class NGOutlineType {
-  kDontIncludeBlockVisualOverflow,       // Standard outline
-  kIncludeBlockVisualOverflow,           // Focus outline
-  kIncludeBlockVisualOverflowForAnchor,  // Focus outline for anchor
+  kDontIncludeBlockVisualOverflow,  // Standard outline
+  kIncludeBlockVisualOverflow,      // Focus outline
 };
-
-inline bool ShouldIncludeBlockVisualOverflow(NGOutlineType type) {
-  return type == NGOutlineType::kIncludeBlockVisualOverflow ||
-         type == NGOutlineType::kIncludeBlockVisualOverflowForAnchor;
-}
-
-inline bool ShouldIncludeBlockVisualOverflowForAnchorOnly(NGOutlineType type) {
-  return type == NGOutlineType::kIncludeBlockVisualOverflowForAnchor;
-}
 
 }  // namespace blink
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  document.getElementById('target').style.outline = 'red auto thin';
+}
+onload = runRepaintAndPixelTest;
+</script>
+<div style="height: 50px">
+Result repaint rects should cover the whole focus ring.
+</div>
+<div id="target" style="position: absolute; backface-visibility: hidden; width: 200px; height: 200px; background-color: yellow">
+    <div style="transform: rotate(90deg); position: absolute; top: 100px; left: 100px; background-color: blue; width: 300px; height: 300px">
+        <div style="position: absolute; top: 100px; left: 40px; background-color: green; width: 400px; height: 100px"></div>
+    </div>
+</div>
