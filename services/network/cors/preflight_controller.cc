@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -316,7 +317,7 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     bool tainted,
     PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
     const mojom::ClientSecurityStatePtr& client_security_state,
-    mojom::DevToolsObserver* devtools_observer,
+    base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
     absl::optional<CorsErrorStatus>* detected_error_status) {
   DCHECK(detected_error_status);
 
@@ -344,11 +345,12 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
 
     // We only report these errors as warnings when they are suppressed, since
     // `CorsURLLoader` already reports them otherwise.
-    if (devtools_observer) {
-      devtools_observer->OnCorsError(
-          original_request.devtools_request_id,
-          original_request.request_initiator, client_security_state.Clone(),
-          original_request.url, *status, /*is_warning=*/true);
+    if (devtools_observer && *devtools_observer) {
+      (*devtools_observer)
+          ->OnCorsError(original_request.devtools_request_id,
+                        original_request.request_initiator,
+                        client_security_state.Clone(), original_request.url,
+                        *status, /*is_warning=*/true);
     }
 
     base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
@@ -403,7 +405,7 @@ class PreflightController::PreflightLoader final {
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const net::NetworkIsolationKey& network_isolation_key,
       mojom::ClientSecurityStatePtr client_security_state,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
       const net::NetLogWithSource net_log,
       bool acam_preflight_spec_conformant)
       : controller_(controller),
@@ -423,14 +425,15 @@ class PreflightController::PreflightLoader final {
     auto preflight_request =
         CreatePreflightRequest(request, tainted, net_log, devtools_request_id_);
 
-    if (devtools_observer_) {
+    if (devtools_observer_ && *devtools_observer_) {
       DCHECK(devtools_request_id_);
       network::mojom::URLRequestDevToolsInfoPtr request_info =
           network::ExtractDevToolsInfo(*preflight_request);
-      devtools_observer_->OnCorsPreflightRequest(
-          *devtools_request_id_, preflight_request->headers,
-          std::move(request_info), original_request_.url,
-          original_request_.devtools_request_id.value_or(""));
+      (*devtools_observer_)
+          ->OnCorsPreflightRequest(
+              *devtools_request_id_, preflight_request->headers,
+              std::move(request_info), original_request_.url,
+              original_request_.devtools_request_id.value_or(""));
     }
     loader_ =
         SimpleURLLoader::Create(std::move(preflight_request), annotation_tag);
@@ -474,11 +477,12 @@ class PreflightController::PreflightLoader final {
   void HandleRedirect(const net::RedirectInfo& redirect_info,
                       const network::mojom::URLResponseHead& response_head,
                       std::vector<std::string>* to_be_removed_headers) {
-    if (devtools_observer_) {
+    if (devtools_observer_ && *devtools_observer_) {
       DCHECK(devtools_request_id_);
-      devtools_observer_->OnCorsPreflightRequestCompleted(
-          *devtools_request_id_,
-          network::URLLoaderCompletionStatus(net::ERR_INVALID_REDIRECT));
+      (*devtools_observer_)
+          ->OnCorsPreflightRequestCompleted(
+              *devtools_request_id_,
+              network::URLLoaderCompletionStatus(net::ERR_INVALID_REDIRECT));
     }
 
     std::move(completion_callback_)
@@ -492,14 +496,18 @@ class PreflightController::PreflightLoader final {
 
   void HandleResponseHeader(const GURL& final_url,
                             const mojom::URLResponseHead& head) {
-    if (devtools_observer_) {
+    if (devtools_observer_ && *devtools_observer_) {
       DCHECK(devtools_request_id_);
       mojom::URLResponseHeadDevToolsInfoPtr head_info =
           ExtractDevToolsInfo(head);
-      devtools_observer_->OnCorsPreflightResponse(
-          *devtools_request_id_, original_request_.url, std::move(head_info));
-      devtools_observer_->OnCorsPreflightRequestCompleted(
-          *devtools_request_id_, network::URLLoaderCompletionStatus(net::OK));
+      (*devtools_observer_)
+          ->OnCorsPreflightResponse(*devtools_request_id_,
+                                    original_request_.url,
+                                    std::move(head_info));
+      (*devtools_observer_)
+          ->OnCorsPreflightRequestCompleted(
+              *devtools_request_id_,
+              network::URLLoaderCompletionStatus(net::OK));
     }
 
     absl::optional<CorsErrorStatus> detected_error_status;
@@ -507,8 +515,7 @@ class PreflightController::PreflightLoader final {
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
         final_url, head, original_request_, tainted_,
         private_network_access_behavior_, client_security_state_,
-        devtools_observer_ ? devtools_observer_.get() : nullptr,
-        &detected_error_status);
+        devtools_observer_, &detected_error_status);
 
     if (result) {
       // Only log if there is a result to log.
@@ -546,10 +553,12 @@ class PreflightController::PreflightLoader final {
       // As HandleResponseHeader() isn't called due to a request failure, such
       // as unknown hosts. unreachable remote, reset by peer, and so on, we
       // still hold `completion_callback_` to invoke.
-      if (devtools_observer_) {
+      if (devtools_observer_ && *devtools_observer_) {
         DCHECK(devtools_request_id_);
-        devtools_observer_->OnCorsPreflightRequestCompleted(
-            *devtools_request_id_, network::URLLoaderCompletionStatus(error));
+        (*devtools_observer_)
+            ->OnCorsPreflightRequestCompleted(
+                *devtools_request_id_,
+                network::URLLoaderCompletionStatus(error));
       }
       std::move(completion_callback_)
           .Run(error,
@@ -581,7 +590,7 @@ class PreflightController::PreflightLoader final {
   absl::optional<base::UnguessableToken> devtools_request_id_;
   const net::NetworkIsolationKey network_isolation_key_;
   const mojom::ClientSecurityStatePtr client_security_state_;
-  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+  base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer_;
   const net::NetLogWithSource net_log_;
   const bool acam_preflight_spec_conformant_;
 };
@@ -607,11 +616,13 @@ PreflightController::CreatePreflightResultForTesting(
     bool tainted,
     PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
     absl::optional<CorsErrorStatus>* detected_error_status) {
-  return CreatePreflightResult(final_url, head, original_request, tainted,
-                               private_network_access_behavior,
-                               /*client_security_state=*/nullptr,
-                               /*devtools_observer=*/nullptr,
-                               detected_error_status);
+  return CreatePreflightResult(
+      final_url, head, original_request, tainted,
+      private_network_access_behavior,
+      /*client_security_state=*/nullptr,
+      /*devtools_observer=*/
+      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(),
+      detected_error_status);
 }
 
 // static
@@ -644,7 +655,7 @@ void PreflightController::PerformPreflightCheck(
     mojom::URLLoaderFactory* loader_factory,
     const net::IsolationInfo& isolation_info,
     mojom::ClientSecurityStatePtr client_security_state,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+    base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
     const net::NetLogWithSource& net_log,
     bool acam_preflight_spec_conformant) {
   DCHECK(request.request_initiator);
@@ -669,7 +680,7 @@ void PreflightController::PerformPreflightCheck(
       this, std::move(callback), request, with_trusted_header_client,
       non_wildcard_request_headers_support, private_network_access_behavior,
       tainted, annotation_tag, network_isolation_key,
-      std::move(client_security_state), std::move(devtools_observer), net_log,
+      std::move(client_security_state), devtools_observer, net_log,
       acam_preflight_spec_conformant));
   (*emplaced_pair.first)->Request(loader_factory);
 }

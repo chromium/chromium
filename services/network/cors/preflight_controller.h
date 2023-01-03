@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -114,7 +115,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       mojom::URLLoaderFactory* loader_factory,
       const net::IsolationInfo& isolation_info,
       mojom::ClientSecurityStatePtr client_security_state,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
       const net::NetLogWithSource& net_log,
       bool acam_preflight_spec_conformant);
 

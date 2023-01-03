@@ -315,6 +315,7 @@ CorsURLLoader::CorsURLLoader(
       factory_client_security_state_(factory_client_security_state),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       devtools_observer_(std::move(devtools_observer)),
+      weak_devtools_observer_factory_(&devtools_observer_),
       // CORS preflight related events are logged in a series of URL_REQUEST
       // logs.
       net_log_(net::NetLogWithSource::Make(net::NetLog::Get(),
@@ -776,14 +777,6 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
-  // Clone the devtools observer only if the original request has a
-  // |devtools_request_id|.
-  mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
-  if (devtools_observer_ && request_.devtools_request_id) {
-    devtools_observer_->Clone(
-        devtools_observer.InitWithNewPipeAndPassReceiver());
-  }
-
   // Since we're doing a preflight, we won't reuse the original request. Cancel
   // it now to free up the socket.
   network_loader_.reset();
@@ -798,7 +791,7 @@ void CorsURLLoader::StartRequest() {
       GetPrivateNetworkAccessPreflightBehavior(), tainted_,
       net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
-      std::move(devtools_observer), net_log_,
+      weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
       context_->acam_preflight_spec_conformant());
 }
 

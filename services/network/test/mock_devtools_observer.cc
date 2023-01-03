@@ -105,6 +105,13 @@ void MockDevToolsObserver::OnCorsError(
     const GURL& url,
     const network::CorsErrorStatus& status,
     bool is_warning) {
+  // Ignoring kUnexpectedPrivateNetworkAccess because the request will be
+  // restarted with a preflight and we care more about the CORS error that comes
+  // thereafter.
+  if (status.cors_error == mojom::CorsError::kUnexpectedPrivateNetworkAccess) {
+    return;
+  }
+
   OnCorsErrorParams params;
   params.devtools_request_id = devtools_request_id;
   params.initiator_origin = initiator_origin;

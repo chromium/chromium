@@ -308,6 +308,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   bool sending_pna_only_warning_preflight_ = false;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+  base::WeakPtrFactory<mojo::Remote<mojom::DevToolsObserver>>
+      weak_devtools_observer_factory_;
 
   net::NetLogWithSource net_log_;
 
