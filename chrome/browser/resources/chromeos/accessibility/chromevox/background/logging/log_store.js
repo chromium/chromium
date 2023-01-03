@@ -11,6 +11,9 @@ import {BridgeHelper} from '../../common/bridge_helper.js';
 import {BaseLog, LogType, TextLog, TreeLog} from '../../common/log_types.js';
 import {TreeDumper} from '../../common/tree_dumper.js';
 
+const Action = BridgeConstants.LogStore.Action;
+const TARGET = BridgeConstants.LogStore.TARGET;
+
 export class LogStore {
   constructor() {
     /**
@@ -133,12 +136,9 @@ export class LogStore {
     LogStore.instance = new LogStore();
 
     BridgeHelper.registerHandler(
-        BridgeConstants.LogStore.TARGET,
-        BridgeConstants.LogStore.Action.CLEAR_LOG,
-        () => LogStore.instance.clearLog());
+        TARGET, Action.CLEAR_LOG, () => LogStore.instance.clearLog());
     BridgeHelper.registerHandler(
-        BridgeConstants.LogStore.TARGET,
-        BridgeConstants.LogStore.Action.GET_LOGS,
+        TARGET, Action.GET_LOGS,
         () => LogStore.instance.getLogs().map(log => log.serialize()));
   }
 }

@@ -16,7 +16,8 @@ import {LogStore} from './log_store.js';
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
-const Constants = BridgeConstants.EventStreamLogger;
+const Action = BridgeConstants.EventStreamLogger.Action;
+const TARGET = BridgeConstants.EventStreamLogger.TARGET;
 
 export class EventStreamLogger {
   constructor(node) {
@@ -83,7 +84,7 @@ export class EventStreamLogger {
           LocalStorage.get('enableEventStreamLogging'));
 
       BridgeHelper.registerHandler(
-          Constants.TARGET, Constants.Action.NOTIFY_EVENT_STREAM_FILTER_CHANGED,
+          TARGET, Action.NOTIFY_EVENT_STREAM_FILTER_CHANGED,
           (name, enabled) =>
               EventStreamLogger.instance.notifyEventStreamFilterChanged(
                   name, enabled));

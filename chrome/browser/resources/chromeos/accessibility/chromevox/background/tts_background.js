@@ -22,6 +22,9 @@ import {CompositeTts} from './composite_tts.js';
 import {ConsoleTts} from './console_tts.js';
 import {PhoneticData} from './phonetic_data.js';
 
+const Action = BridgeConstants.TtsBackground.Action;
+const TARGET = BridgeConstants.TtsBackground.TARGET;
+
 /** This class broadly handles TTS within the background context. */
 export class TtsBackground {
   static init() {
@@ -34,16 +37,13 @@ export class TtsBackground {
     ChromeVox.tts = TtsBackground.composite;
 
     BridgeHelper.registerHandler(
-        BridgeConstants.TtsBackground.TARGET,
-        BridgeConstants.TtsBackground.Action.UPDATE_PUNCTUATION_ECHO,
+        TARGET, Action.UPDATE_PUNCTUATION_ECHO,
         echo => TtsBackground.primary.updatePunctuationEcho(echo));
     BridgeHelper.registerHandler(
-        BridgeConstants.TtsBackground.TARGET,
-        BridgeConstants.TtsBackground.Action.GET_CURRENT_VOICE,
+        TARGET, Action.GET_CURRENT_VOICE,
         () => TtsBackground.primary.currentVoice);
     BridgeHelper.registerHandler(
-        BridgeConstants.TtsBackground.TARGET,
-        BridgeConstants.TtsBackground.Action.SPEAK,
+        TARGET, Action.SPEAK,
         (textString, queue, properties) =>
             TtsBackground.composite.speak(textString, queue, properties));
   }

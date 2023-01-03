@@ -17,6 +17,9 @@ import {QueueMode} from '../common/tts_types.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {Output} from './output/output.js';
 
+const Action = BridgeConstants.UserActionMonitor.Action;
+const TARGET = BridgeConstants.UserActionMonitor.TARGET;
+
 /**
  * The types of actions we want to monitor.
  * @enum {string}
@@ -369,20 +372,15 @@ UserActionMonitor.Action = class {
 UserActionMonitor.instance;
 
 BridgeHelper.registerHandler(
-    BridgeConstants.UserActionMonitor.TARGET,
-    BridgeConstants.UserActionMonitor.Action.CREATE,
+    TARGET, Action.CREATE,
     actions =>
         new Promise(resolve => UserActionMonitor.create(actions, resolve)));
 BridgeHelper.registerHandler(
-    BridgeConstants.UserActionMonitor.TARGET,
-    BridgeConstants.UserActionMonitor.Action.DESTROY,
-    () => UserActionMonitor.destroy());
-BridgeHelper.registerHandler(
-    BridgeConstants.UserActionMonitor.TARGET,
-    BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, evt => {
-      if (!UserActionMonitor.instance) {
-        // Continue propagating.
-        return true;
-      }
-      return UserActionMonitor.instance.onKeyDown(evt);
-    });
+    TARGET, Action.DESTROY, () => UserActionMonitor.destroy());
+BridgeHelper.registerHandler(TARGET, Action.ON_KEY_DOWN, evt => {
+  if (!UserActionMonitor.instance) {
+    // Continue propagating.
+    return true;
+  }
+  return UserActionMonitor.instance.onKeyDown(evt);
+});

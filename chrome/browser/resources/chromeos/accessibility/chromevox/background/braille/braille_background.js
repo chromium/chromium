@@ -20,6 +20,9 @@ import {BrailleInterface} from './braille_interface.js';
 import {BrailleKeyEventRewriter} from './braille_key_event_rewriter.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 
+const Action = BridgeConstants.BrailleBackground.Action;
+const TARGET = BridgeConstants.BrailleBackground.TARGET;
+
 /** @implements {BrailleInterface} */
 export class BrailleBackground {
   /**
@@ -62,16 +65,14 @@ export class BrailleBackground {
     BrailleBackground.instance = new BrailleBackground();
 
     BridgeHelper.registerHandler(
-        BridgeConstants.BrailleBackground.TARGET,
-        BridgeConstants.BrailleBackground.Action.BACK_TRANSLATE,
+        TARGET, Action.BACK_TRANSLATE,
         cells => new Promise(resolve => {
           BrailleBackground.instance.getTranslatorManager()
               .getDefaultTranslator()
               .backTranslate(cells, resolve);
         }));
     BridgeHelper.registerHandler(
-        BridgeConstants.BrailleBackground.TARGET,
-        BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
+        TARGET, Action.REFRESH_BRAILLE_TABLE,
         brailleTable =>
             BrailleBackground.instance.getTranslatorManager().refresh(
                 brailleTable));

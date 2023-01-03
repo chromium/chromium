@@ -25,7 +25,8 @@ import {PanelNodeMenuBackground} from './panel_node_menu_background.js';
 import {PanelTabMenuBackground} from './panel_tab_menu_background.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
-const Constants = BridgeConstants.PanelBackground;
+const TARGET = BridgeConstants.PanelBackground.TARGET;
+const Action = BridgeConstants.PanelBackground.Action;
 
 /** @implements {ISearchHandler} */
 export class PanelBackground {
@@ -48,54 +49,52 @@ export class PanelBackground {
     ChromeVoxState.addObserver(PanelBackground.stateObserver_);
 
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.CLEAR_SAVED_NODE,
+        TARGET, Action.CLEAR_SAVED_NODE,
         () => PanelBackground.instance.clearSavedNode_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.CREATE_ALL_NODE_MENU_BACKGROUNDS,
+        TARGET, Action.CREATE_ALL_NODE_MENU_BACKGROUNDS,
         opt_activateMenuTitle =>
             PanelBackground.instance.createAllNodeMenuBackgrounds_(
                 opt_activateMenuTitle));
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.CREATE_NEW_I_SEARCH,
+        TARGET, Action.CREATE_NEW_I_SEARCH,
         () => PanelBackground.instance.createNewISearch_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.DESTROY_I_SEARCH,
+        TARGET, Action.DESTROY_I_SEARCH,
         () => PanelBackground.instance.destroyISearch_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.FOCUS_TAB,
+        TARGET, Action.FOCUS_TAB,
         (windowId, tabId) => PanelTabMenuBackground.focusTab(windowId, tabId));
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.GET_ACTIONS_FOR_CURRENT_NODE,
+        TARGET, Action.GET_ACTIONS_FOR_CURRENT_NODE,
         () => PanelBackground.instance.getActionsForCurrentNode_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.GET_TAB_MENU_DATA,
+        TARGET, Action.GET_TAB_MENU_DATA,
         () => PanelTabMenuBackground.getTabMenuData());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.INCREMENTAL_SEARCH,
+        TARGET, Action.INCREMENTAL_SEARCH,
         (searchStr, dir, opt_nextObject) =>
             PanelBackground.instance.incrementalSearch_(
                 searchStr, dir, opt_nextObject));
     BridgeHelper.registerHandler(
-        Constants.TARGET,
-        Constants.Action.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
+        TARGET, Action.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
         actionId => PanelBackground.instance.performCustomActionOnCurrentNode_(
             actionId));
     BridgeHelper.registerHandler(
-        Constants.TARGET,
-        Constants.Action.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
+        TARGET, Action.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
         action => PanelBackground.instance.performStandardActionOnCurrentNode_(
             action));
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.SAVE_CURRENT_NODE,
+        TARGET, Action.SAVE_CURRENT_NODE,
         () => PanelBackground.instance.saveCurrentNode_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.SET_PANEL_COLLAPSE_WATCHER,
+        TARGET, Action.SET_PANEL_COLLAPSE_WATCHER,
         () => PanelBackground.instance.setPanelCollapseWatcher_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.SET_RANGE_TO_I_SEARCH_NODE,
+        TARGET, Action.SET_RANGE_TO_I_SEARCH_NODE,
         () => PanelBackground.instance.setRangeToISearchNode_());
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.WAIT_FOR_PANEL_COLLAPSE,
+        TARGET, Action.WAIT_FOR_PANEL_COLLAPSE,
         () => PanelBackground.instance.waitForPanelCollapse_());
   }
 
