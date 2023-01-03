@@ -1704,7 +1704,7 @@ bool AttributionStorageSql::AdjustOfflineReportTimes(sql::StatementID id,
                                                      base::Time now) {
   sql::Statement statement(db_->GetCachedStatement(id, sql));
   statement.BindTime(0, now + min_delay);
-  statement.BindInt64(1, 1 + (max_delay - min_delay).InMicroseconds());
+  statement.BindTimeDelta(1, max_delay - min_delay + base::Microseconds(1));
   statement.BindTime(2, now);
   return statement.Run();
 }
