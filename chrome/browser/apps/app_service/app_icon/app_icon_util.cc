@@ -19,6 +19,8 @@ constexpr char kIcon[] = "icons";
 // Template for the icon name.
 constexpr char kIconNameTemplate[] = "%d.png";
 constexpr char kMaskableIconNameTemplate[] = "mask_%d.png";
+constexpr char kForegroundIconNameTemplate[] = "foreground_%d.png";
+constexpr char kBackgroundIconNameTemplate[] = "background_%d.png";
 
 }  // namespace
 
@@ -34,6 +36,28 @@ base::FilePath GetIconPath(const base::FilePath& base_path,
       is_maskable_icon
           ? base::StringPrintf(kMaskableIconNameTemplate, icon_size_in_px)
           : base::StringPrintf(kIconNameTemplate, icon_size_in_px);
+  return base_path.AppendASCII(kAppService)
+      .AppendASCII(kIcon)
+      .AppendASCII(app_id)
+      .AppendASCII(icon_file_name);
+}
+
+base::FilePath GetForegroundIconPath(const base::FilePath& base_path,
+                                     const std::string& app_id,
+                                     int32_t icon_size_in_px) {
+  auto icon_file_name =
+      base::StringPrintf(kForegroundIconNameTemplate, icon_size_in_px);
+  return base_path.AppendASCII(kAppService)
+      .AppendASCII(kIcon)
+      .AppendASCII(app_id)
+      .AppendASCII(icon_file_name);
+}
+
+base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
+                                     const std::string& app_id,
+                                     int32_t icon_size_in_px) {
+  auto icon_file_name =
+      base::StringPrintf(kBackgroundIconNameTemplate, icon_size_in_px);
   return base_path.AppendASCII(kAppService)
       .AppendASCII(kIcon)
       .AppendASCII(app_id)

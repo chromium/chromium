@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
@@ -14,23 +15,47 @@
 
 namespace {
 
-void WriteIconFile(const base::FilePath& base_path,
-                   const std::string& app_id,
-                   int32_t icon_size_in_px,
-                   bool is_maskable_icon,
-                   const std::vector<uint8_t>& icon_data) {
-  if (icon_data.empty()) {
-    return;
+bool WriteIconFiles(const base::FilePath& base_path,
+                    const std::string& app_id,
+                    int32_t icon_size_in_px,
+                    apps::IconValuePtr iv) {
+  if (!iv || iv->icon_type != apps::IconType::kCompressed) {
+    return false;
   }
 
-  const auto icon_path =
-      apps::GetIconPath(base_path, app_id, icon_size_in_px, is_maskable_icon);
+  if (!iv->foreground_icon_png_data.empty() &&
+      !iv->background_icon_png_data.empty()) {
+    // For the adaptive icon, write the foreground and background icon data to
+    // the local files.
+    const auto foreground_icon_path =
+        apps::GetForegroundIconPath(base_path, app_id, icon_size_in_px);
+    const auto background_icon_path =
+        apps::GetBackgroundIconPath(base_path, app_id, icon_size_in_px);
+    if (!base::CreateDirectory(foreground_icon_path.DirName()) ||
+        !base::CreateDirectory(background_icon_path.DirName())) {
+      return false;
+    }
+
+    auto foreground_icon_data = base::make_span(
+        &iv->foreground_icon_png_data[0], iv->foreground_icon_png_data.size());
+    auto background_icon_data = base::make_span(
+        &iv->background_icon_png_data[0], iv->background_icon_png_data.size());
+    return base::WriteFile(foreground_icon_path, foreground_icon_data) &&
+           base::WriteFile(background_icon_path, background_icon_data);
+  }
+
+  if (iv->compressed.empty()) {
+    return false;
+  }
+
+  const auto icon_path = apps::GetIconPath(base_path, app_id, icon_size_in_px,
+                                           iv->is_maskable_icon);
   if (!base::CreateDirectory(icon_path.DirName())) {
-    return;
+    return false;
   }
 
-  base::WriteFile(icon_path, reinterpret_cast<const char*>(&icon_data[0]),
-                  icon_data.size());
+  auto icon_data = base::make_span(&iv->compressed[0], iv->compressed.size());
+  return base::WriteFile(icon_path, icon_data);
 }
 
 }  // namespace
@@ -113,7 +138,9 @@ void AppIconWriter::OnIconLoad(const std::string& app_id,
     return;
   }
 
-  if (!iv || iv->icon_type != IconType::kCompressed || iv->compressed.empty()) {
+  if (!iv || iv->icon_type != IconType::kCompressed ||
+      (iv->compressed.empty() && iv->foreground_icon_png_data.empty() &&
+       iv->background_icon_png_data.empty())) {
     for (auto& callback : it->second.callbacks) {
       std::move(callback).Run(false);
     }
@@ -121,23 +148,21 @@ void AppIconWriter::OnIconLoad(const std::string& app_id,
     return;
   }
 
-  std::vector<uint8_t> icon_data = iv->compressed;
-  bool is_maskable_icon = iv->is_maskable_icon;
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
-          &WriteIconFile, profile_->GetPath(), app_id,
+          &WriteIconFiles, profile_->GetPath(), app_id,
           apps_util::ConvertDipToPxForScale(size_in_dip, scale_factor),
-          is_maskable_icon, std::move(icon_data)),
+          std::move(iv)),
       base::BindOnce(&AppIconWriter::OnWriteIconFile,
                      weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
-                     scale_factor, std::move(iv)));
+                     scale_factor));
 }
 
 void AppIconWriter::OnWriteIconFile(const std::string& app_id,
                                     int32_t size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
-                                    IconValuePtr iv) {
+                                    bool ret) {
   auto it = pending_results_.find(Key(app_id, size_in_dip));
   if (it == pending_results_.end()) {
     return;
@@ -153,7 +178,7 @@ void AppIconWriter::OnWriteIconFile(const std::string& app_id,
   // call callbacks to return the result, and remove the icon request from
   // `pending_results_`.
   for (auto& callback : it->second.callbacks) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(ret);
   }
 
   pending_results_.erase(it);

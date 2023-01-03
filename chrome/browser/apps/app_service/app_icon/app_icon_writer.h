@@ -97,7 +97,7 @@ class AppIconWriter {
   void OnWriteIconFile(const std::string& app_id,
                        int32_t size_in_dip,
                        ui::ResourceScaleFactor scale_factor,
-                       IconValuePtr iv);
+                       bool ret);
 
   const raw_ptr<Profile> profile_;
 

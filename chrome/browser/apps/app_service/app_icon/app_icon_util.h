@@ -64,12 +64,24 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
   return a;
 }
 
-// Constructs path to an app icon file for the given `app_id` and
+// Constructs the path to an app icon file for the given `app_id` and
 // `icon_size_in_px`.
 base::FilePath GetIconPath(const base::FilePath& base_path,
                            const std::string& app_id,
                            int32_t icon_size_in_px,
                            bool is_maskable_icon);
+
+// Constructs the path to an app foreground icon file for the given `app_id` and
+// `icon_size_in_px`.
+base::FilePath GetForegroundIconPath(const base::FilePath& base_path,
+                                     const std::string& app_id,
+                                     int32_t icon_size_in_px);
+
+// Constructs the path to an app background icon file for the given `app_id` and
+// `icon_size_in_px`.
+base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
+                                     const std::string& app_id,
+                                     int32_t icon_size_in_px);
 
 // Reads one single icon file for the given `app_id` and `icon_size_in_px`, and
 // returns the compressed icon. If there is a maskable icon file, reads the
