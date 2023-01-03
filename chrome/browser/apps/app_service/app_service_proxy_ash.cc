@@ -725,7 +725,7 @@ void AppServiceProxyAsh::OnIconRead(AppType app_type,
     }
 
     icon_writer_.InstallIcon(
-        publisher, app_id, size_in_dip, icon_effects, icon_type,
+        publisher, app_id, size_in_dip,
         base::BindOnce(&AppServiceProxyAsh::OnIconInstalled,
                        weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
                        icon_effects, icon_type, std::move(callback)));

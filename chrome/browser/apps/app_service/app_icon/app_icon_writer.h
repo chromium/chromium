@@ -23,8 +23,6 @@ namespace apps {
 class AppPublisher;
 
 // AppIconWriter writes app icons to the icon image files in the local disk.
-//
-// TODO(crbug.com/1380608): Implement the icon writing function.
 class AppIconWriter {
  public:
   explicit AppIconWriter(Profile* profile);
@@ -38,8 +36,6 @@ class AppIconWriter {
   void InstallIcon(AppPublisher* publisher,
                    const std::string& app_id,
                    int32_t size_in_dip,
-                   IconEffects icon_effects,
-                   IconType icon_type,
                    base::OnceCallback<void(bool)> callback);
 
  private:
@@ -47,10 +43,7 @@ class AppIconWriter {
   // it can be the "K" in a "map<K, V>".
   class Key {
    public:
-    Key(const std::string& app_id,
-        int32_t size_in_dip,
-        IconEffects icon_effects,
-        IconType icon_type);
+    Key(const std::string& app_id, int32_t size_in_dip);
 
     Key(const Key&) = delete;
     Key& operator=(const Key&) = delete;
@@ -64,8 +57,6 @@ class AppIconWriter {
 
     std::string app_id_;
     int32_t size_in_dip_;
-    IconEffects icon_effects_;
-    IconType icon_type_;
   };
 
   // Contains the scale factors and the callback for the compressed app icon
@@ -81,22 +72,30 @@ class AppIconWriter {
     PendingResult(PendingResult&&);
     PendingResult& operator=(PendingResult&&);
 
+    // The requested scale factors for the icon requests with `app_id` and
+    // `size_in_dip`.
     std::set<ui::ResourceScaleFactor> scale_factors;
+
+    // The finished icon requested for scale factors. E.g. the icon data for the
+    // scale factor(k100Percent) has been fetched, and saved in the icon file,
+    // and the icon data for the scale factor(k200Percent) has not been fetched.
+    // Then we have:
+    // scale_factors = {k100Percent, k200Percent}
+    // complete_scale_factors = {k100Percent}
+    std::set<ui::ResourceScaleFactor> complete_scale_factors;
+
+    // The callbacks for the icon requests with `app_id` and `size_in_dip`.
     std::vector<base::OnceCallback<void(bool)>> callbacks;
   };
 
   // Saves the compressed icon data in `iv` to the local disk.
   void OnIconLoad(const std::string& app_id,
                   int32_t size_in_dip,
-                  IconEffects icon_effects,
-                  IconType icon_type,
                   ui::ResourceScaleFactor scale_factor,
                   IconValuePtr iv);
 
   void OnWriteIconFile(const std::string& app_id,
                        int32_t size_in_dip,
-                       IconEffects icon_effects,
-                       IconType icon_type,
                        ui::ResourceScaleFactor scale_factor,
                        IconValuePtr iv);
 

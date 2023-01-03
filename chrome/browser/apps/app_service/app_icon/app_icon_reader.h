@@ -22,8 +22,6 @@ class AppIconDecoder;
 
 // AppIconReader reads app icons from the icon image files in the local
 // disk and provides an ImageSkia for UI code to use.
-//
-// TODO(crbug.com/1380608): Implement the icon reading function.
 class AppIconReader {
  public:
   explicit AppIconReader(Profile* profile);

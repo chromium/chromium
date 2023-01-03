@@ -1021,6 +1021,28 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
     return result.Take();
   }
 
+  // Call LoadIconFromIconKey twice with icon_key1 and icon_key2, to verify the
+  // icon loading process can handle the icon loading request multiple times
+  // with the different icon keys.
+  std::vector<apps::IconValuePtr> MultipleLoadIconFromIconKeys(
+      const std::string& app_id,
+      const IconKey& icon_key1,
+      const IconKey& icon_key2,
+      IconType icon_type) {
+    base::test::TestFuture<std::vector<apps::IconValuePtr>> result;
+    auto barrier_callback =
+        base::BarrierCallback<apps::IconValuePtr>(2, result.GetCallback());
+
+    app_service_proxy().LoadIconFromIconKey(
+        AppType::kWeb, app_id, icon_key1, icon_type, kSizeInDip,
+        /*allow_placeholder_icon=*/false, barrier_callback);
+    app_service_proxy().LoadIconFromIconKey(
+        AppType::kWeb, app_id, icon_key2, icon_type, kSizeInDip,
+        /*allow_placeholder_icon=*/false, barrier_callback);
+
+    return result.Take();
+  }
+
   AppServiceProxy& app_service_proxy() { return *proxy_; }
 
  private:
@@ -1064,6 +1086,95 @@ TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconData) {
   icon_key.icon_effects = apps::IconEffects::kRoundCorners;
   VerifyCompressedIcon(
       src_data, *LoadIconFromIconKey(app_id, icon_key, IconType::kCompressed));
+}
+
+// Verify AppIconWriter when write icon files multiple times for compressed
+// icons with icon effects and without icon effects separately.
+TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconDatasSeparately) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const float scale1 = 1.0;
+  const float scale2 = 2.0;
+  const int kIconSize1 = kSizeInDip * scale1;
+  const int kIconSize2 = kSizeInDip * scale2;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
+                                           {2.0, kIconSize2}};
+
+  std::vector<uint8_t> src_data1;
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
+                               apps::IconEffects::kNone, sizes_px,
+                               scale_to_size_in_px, scale1, src_data1);
+
+  std::vector<uint8_t> src_data2;
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
+                               apps::IconEffects::kRoundCorners, sizes_px,
+                               scale_to_size_in_px, scale1, src_data2);
+
+  // Verify the icon reading and writing function in AppService for the
+  // compressed icon without icon effects.
+  VerifyCompressedIcon(src_data1, *LoadIconFromIconKey(app_id, IconKey(),
+                                                       IconType::kCompressed));
+
+  // Verify the icon reading and writing function in AppService for the
+  // compressed icon with icon effects.
+  IconKey icon_key;
+  icon_key.icon_effects = apps::IconEffects::kRoundCorners;
+  VerifyCompressedIcon(
+      src_data2, *LoadIconFromIconKey(app_id, icon_key, IconType::kCompressed));
+}
+
+// Verify AppIconWriter when write icon files multiple times for compressed
+// icons with icon effects and without icon effects at the same time.
+TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconDatas) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const float scale1 = 1.0;
+  const float scale2 = 2.0;
+  const int kIconSize1 = kSizeInDip * scale1;
+  const int kIconSize2 = kSizeInDip * scale2;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
+                                           {2.0, kIconSize2}};
+
+  std::vector<uint8_t> src_data1;
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
+                               apps::IconEffects::kNone, sizes_px,
+                               scale_to_size_in_px, scale1, src_data1);
+
+  std::vector<uint8_t> src_data2;
+  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
+                               apps::IconEffects::kRoundCorners, sizes_px,
+                               scale_to_size_in_px, scale1, src_data2);
+
+  // Verify the icon reading and writing function in AppService at the same time
+  // for the compressed icons with and without icon effects.
+  IconKey icon_key;
+  icon_key.icon_effects = apps::IconEffects::kRoundCorners;
+  auto ret = MultipleLoadIconFromIconKeys(app_id, IconKey(), icon_key,
+                                          IconType::kCompressed);
+
+  ASSERT_EQ(2U, ret.size());
+  VerifyCompressedIcon(src_data1, *ret[0]);
+  VerifyCompressedIcon(src_data2, *ret[1]);
 }
 
 TEST_F(AppServiceWebAppIconTest, GetNonMaskableStandardIconData) {
