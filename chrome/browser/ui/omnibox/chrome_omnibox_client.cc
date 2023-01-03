@@ -78,9 +78,10 @@
 
 using predictors::AutocompleteActionPredictor;
 
-ChromeOmniboxClient::ChromeOmniboxClient(OmniboxEditController* controller,
-                                         Profile* profile)
-    : controller_(static_cast<ChromeOmniboxEditController*>(controller)),
+ChromeOmniboxClient::ChromeOmniboxClient(
+    ChromeOmniboxEditController* controller,
+    Profile* profile)
+    : controller_(controller),
       profile_(profile),
       scheme_classifier_(profile),
       favicon_cache_(FaviconServiceFactory::GetForProfile(

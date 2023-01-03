@@ -25,6 +25,14 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #endif
 
+ChromeOmniboxEditController::ChromeOmniboxEditController(
+    Browser* browser,
+    Profile* profile,
+    CommandUpdater* command_updater)
+    : browser_(browser), profile_(profile), command_updater_(command_updater) {}
+
+ChromeOmniboxEditController::~ChromeOmniboxEditController() = default;
+
 void ChromeOmniboxEditController::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
@@ -71,17 +79,3 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
 void ChromeOmniboxEditController::OnInputInProgress(bool in_progress) {
   UpdateWithoutTabRestore();
 }
-
-content::WebContents* ChromeOmniboxEditController::GetWebContents() {
-  return nullptr;
-}
-
-void ChromeOmniboxEditController::UpdateWithoutTabRestore() {}
-
-ChromeOmniboxEditController::ChromeOmniboxEditController(
-    Browser* browser,
-    Profile* profile,
-    CommandUpdater* command_updater)
-    : browser_(browser), profile_(profile), command_updater_(command_updater) {}
-
-ChromeOmniboxEditController::~ChromeOmniboxEditController() {}

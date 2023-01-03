@@ -21,12 +21,12 @@
 
 class ChromeOmniboxEditController;
 class GURL;
-class OmniboxEditController;
 class Profile;
 
 class ChromeOmniboxClient : public OmniboxClient {
  public:
-  ChromeOmniboxClient(OmniboxEditController* controller, Profile* profile);
+  ChromeOmniboxClient(ChromeOmniboxEditController* controller,
+                      Profile* profile);
 
   ChromeOmniboxClient(const ChromeOmniboxClient&) = delete;
   ChromeOmniboxClient& operator=(const ChromeOmniboxClient&) = delete;
