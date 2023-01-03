@@ -2242,13 +2242,12 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  // Process any relation attributes that can affect ax objects already created.
-
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
   if (AXObject::HasARIAOwns(element))
     HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
 
+  // Process any relation attributes that can affect ax objects already created.
   MaybeNewRelationTarget(*node, Get(node));
 
   // Even if the node or parent are ignored, an ancestor may need to include
@@ -2256,7 +2255,7 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   // must be called. It handles ignored logic, ensuring that the first ancestor
   // that should have this as a child will be updated.
   ChildrenChangedWithCleanLayout(
-      Get(LayoutTreeBuilderTraversal::Parent(*node)));
+      GetOrCreate(LayoutTreeBuilderTraversal::Parent(*node)));
 
   // If an image map area is added, we need to update children on the image.
   if (IsA<HTMLAreaElement>(node))

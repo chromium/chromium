@@ -126,6 +126,9 @@ crbug.com/1159730 accessibility/inline-text-box-next-on-line.html [ Failure ]
 crbug.com/591099 accessibility/listitem-presentation-inherited.html [ Failure ]
 crbug.com/591099 accessibility/presentation-owned-elements.html [ Failure ]
 crbug.com/591099 accessibility/role-attribute.html [ Failure ]
+# Broken by CL:4027071: Stable ids for AXObjects with DOM nodes.
+# However, this edge case only crashes in the old layout code, so leaving as expectations:
+accessibility/details-summary-crash.html [ Crash ]
 
 ### editing/pasteboard/
 crbug.com/591099 editing/pasteboard/mathml-sanitizer-bypass.html [ Failure ]

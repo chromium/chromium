@@ -7,6 +7,12 @@
 
 <script>
 async_test((t) => {
+    // Will track all notifications except for 'MarkDirty' -- MarkDirty is a
+    // catch-all notification that tells the serializer to re-serialize
+    // a particular node. The number of MarkDirty notifications can
+    // change as we optimize or fix issues with stale nodes. It doesn't
+    // make sense to assert test failures based on specific numbers of
+    // MarkDirty notifications.
     window.selectNotificationCount = 0;
     window.sliderNotificationCount = 0;
     window.globalNotificationCount = 0;
@@ -22,9 +28,6 @@ async_test((t) => {
       ["Blur", new Map([
         ["select", 1],
       ])],
-      ["MarkDirty", new Map([
-        ["select", 1],
-      ])],
       ["ValueChanged", new Map([
         ["slider", 1],
       ])],
@@ -38,15 +41,14 @@ async_test((t) => {
       ["Blur", new Map([
         ["AXRole: AXComboBoxSelect", 1],
       ])],
-      ["MarkDirty", new Map([
-        ["AXRole: AXComboBoxSelect", 1],
-      ])],
       ["ValueChanged", new Map([
         ["AXRole: AXSlider", 1],
       ])],
     ]);
 
     let HandleElementNotification = function(notification, element_key) {
+      if (notification == 'MarkDirty')
+        return;
       assert_true(expected_element_notifications.has(notification));
       let element_map = expected_element_notifications.get(notification);
       assert_true(element_map.has(element_key));
@@ -63,6 +65,8 @@ async_test((t) => {
     };
 
     let HandleGlobalNotification = function(notification, role_key) {
+      if (notification == 'MarkDirty')
+        return;
       assert_true(expected_global_notifications.has(notification));
       let role_map = expected_global_notifications.get(notification);
       assert_true(role_map.has(role_key));
@@ -79,28 +83,36 @@ async_test((t) => {
     };
 
     select.addNotificationListener(t.step_func(function(notification) {
+      if (notification == 'MarkDirty')
+        return;
       selectNotificationCount++;
       console.log("got " + notification + " on select");
       HandleElementNotification(notification, "select");
     }));
 
     slider.addNotificationListener(t.step_func(function(notification) {
+      if (notification == 'MarkDirty')
+        return;
       sliderNotificationCount++;
       console.log("got " + notification + " on slider");
       HandleElementNotification(notification, "slider");
     }));
 
     accessibilityController.addNotificationListener(t.step_func(function(element, notification) {
+      if (notification == 'MarkDirty')
+        return;
       if (element.isEqual(slider) || element.isEqual(select)) {
         globalNotificationCount++;
         console.log("got " + notification + " on global");
         HandleGlobalNotification(notification, element.role);
+      } else {
+        console.log('Got unexpected ' + notification + ' notification on ' + element.role);
       }
       if (expected_element_notifications.size == 0 &&
         expected_global_notifications.size === 0) {
-        assert_equals(selectNotificationCount, 3);
+        assert_equals(selectNotificationCount, 2);
         assert_equals(sliderNotificationCount, 2);
-        assert_equals(globalNotificationCount, 5);
+        assert_equals(globalNotificationCount, 4);
         accessibilityController.removeNotificationListener();
         select.removeNotificationListener();
         slider.removeNotificationListener();
