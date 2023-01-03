@@ -27,8 +27,6 @@
 #error "This file requires ARC support."
 #endif
 
-using PriceNotificationItems = NSMutableArray<PriceNotificationsTableViewItem*>;
-
 namespace {
 
 const CGFloat kVerticalTableViewSectionSpacing = 30;
@@ -57,42 +55,29 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // The boolean indicates whether there exists an item on the current site is
 // already tracked or the item is already being price tracked.
 @property(nonatomic, assign) BOOL itemOnCurrentSiteIsTracked;
-// The array of trackable items offered on the current site.
-@property(nonatomic, strong) PriceNotificationItems* trackableItems;
-// The array of items that the user is tracking.
-@property(nonatomic, strong) PriceNotificationItems* trackedItems;
 
 @end
 
-@implementation PriceNotificationsTableViewController
+@implementation PriceNotificationsTableViewController {
+  // The boolean indicates whether the user has Price tracking item
+  // subscriptions displayed on the UI.
+  BOOL _hasTrackedItems;
+}
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
-  // TODO(crbug.com/1362349) This array will be dynamically populated in a
-  // future CL.
-  _trackedItems = [NSMutableArray array];
-
-  self.title =
-      l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE);
-  [self createTableViewHeader];
+  [self initializeTableViewModelIfNeeded];
 
   self.tableView.accessibilityIdentifier =
       kPriceNotificationsTableViewIdentifier;
   self.tableView.estimatedSectionHeaderHeight = kSectionHeaderHeight;
   self.tableView.estimatedRowHeight = 100;
-}
 
-#pragma mark - ChromeTableViewController
-
-- (void)loadModel {
-  [super loadModel];
-  [self loadItemsFromArray:self.trackableItems
-                 toSection:SectionIdentifierTrackableItemsOnCurrentSite];
-  [self loadItemsFromArray:self.trackedItems
-                 toSection:SectionIdentifierTrackedItems];
+  self.title =
+      l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE);
+  [self createTableViewHeader];
 }
 
 #pragma mark - UITableViewDelegate
@@ -106,13 +91,52 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
        currentlyTracking:(BOOL)currentlyTracking {
-  self.trackableItems = trackableItem ? [[NSMutableArray alloc]
-                                            initWithObjects:trackableItem, nil]
-                                      : [[NSMutableArray alloc] init];
+  [self initializeTableViewModelIfNeeded];
   self.itemOnCurrentSiteIsTracked = currentlyTracking;
+  [self.tableViewModel
+                     setHeader:
+                         [self createHeaderForSectionIndex:
+                                   SectionIdentifierTrackableItemsOnCurrentSite
+                                                   isEmpty:!trackableItem]
+      forSectionWithIdentifier:SectionIdentifierTrackableItemsOnCurrentSite];
 
-  [self loadModel];
-  [self.tableView reloadData];
+  if (trackableItem && !currentlyTracking) {
+    [self addItem:trackableItem
+        toSection:SectionIdentifierTrackableItemsOnCurrentSite];
+  }
+
+  if (!self.viewIfLoaded.window) {
+    return;
+  }
+
+  [self.tableView
+        reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1)]
+      withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (void)addTrackedItem:(PriceNotificationsTableViewItem*)trackedItem {
+  [self initializeTableViewModelIfNeeded];
+  TableViewModel* model = self.tableViewModel;
+  BOOL shouldReloadSection = NO;
+
+  if (!_hasTrackedItems) {
+    [model setHeader:
+               [self createHeaderForSectionIndex:SectionIdentifierTrackedItems
+                                         isEmpty:NO]
+        forSectionWithIdentifier:SectionIdentifierTrackedItems];
+    shouldReloadSection = YES;
+  }
+
+  _hasTrackedItems = YES;
+  [self addItem:trackedItem toSection:SectionIdentifierTrackedItems];
+
+  if (!self.viewIfLoaded.window || !shouldReloadSection) {
+    return;
+  }
+
+  [self.tableView
+        reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(1, 1)]
+      withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)didStartPriceTrackingForItem:
@@ -120,12 +144,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
   SectionIdentifier trackableSectionID =
       SectionIdentifierTrackableItemsOnCurrentSite;
-  SectionIdentifier trackedSectionID = SectionIdentifierTrackedItems;
 
   // This code removes the price trackable item from the trackable section and
   // adds it to the tracked section at the beginning of the list. It assumes
   // that there exists only one trackable item per page.
-  NSIndexPath* trackableItemIndexPath = [model indexPathForItem:trackableItem];
   [model removeItemWithType:ItemTypeListItem
       fromSectionWithIdentifier:trackableSectionID
                         atIndex:0];
@@ -133,18 +155,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
                                              isEmpty:YES]
       forSectionWithIdentifier:trackableSectionID];
-  [model insertItem:trackableItem
-      inSectionWithIdentifier:trackedSectionID
-                      atIndex:0];
-  [model setHeader:[self createHeaderForSectionIndex:trackedSectionID
-                                             isEmpty:NO]
-      forSectionWithIdentifier:trackedSectionID];
-  [self.trackedItems addObject:trackableItem];
 
-  NSRange range = NSMakeRange(trackableItemIndexPath.section, 2);
-  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
-  [self.tableView reloadSections:indexSet
-                withRowAnimation:UITableViewRowAnimationNone];
+  [self.tableView
+        reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1)]
+      withRowAnimation:UITableViewRowAnimationAutomatic];
+
+  [self addTrackedItem:trackableItem];
 }
 
 #pragma mark - PriceNotificationsTableViewCellDelegate
@@ -159,26 +175,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - Item Loading Helpers
 
-// Adds `items` to self.tableViewModel for the section designated by
-// `sectionID`.
-- (void)loadItemsFromArray:(PriceNotificationItems*)items
-                 toSection:(SectionIdentifier)sectionID {
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:sectionID];
+// Adds an item to `sectionID` and displays it to the UI.
+- (void)addItem:(PriceNotificationsTableViewItem*)item
+      toSection:(SectionIdentifier)sectionID {
+  DCHECK(item);
+  item.type = ItemTypeListItem;
+  item.delegate = self;
+  [self.tableViewModel insertItem:item
+          inSectionWithIdentifier:sectionID
+                          atIndex:0];
 
-  BOOL isItemsEmpty = !items.count;
-  [model setHeader:[self createHeaderForSectionIndex:sectionID
-                                             isEmpty:isItemsEmpty]
-      forSectionWithIdentifier:sectionID];
-  if (isItemsEmpty) {
+  if (!self.viewIfLoaded.window) {
     return;
   }
 
-  for (PriceNotificationsTableViewItem* item in items) {
-    item.type = ItemTypeListItem;
-    item.delegate = self;
-    [model addItem:item toSectionWithIdentifier:sectionID];
-  }
+  [self.tableView
+      insertRowsAtIndexPaths:@[ [self.tableViewModel indexPathForItem:item] ]
+            withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 // Returns a TableViewHeaderFooterItem that displays the title for the section
@@ -212,6 +225,30 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   }
 
   return header;
+}
+
+// Constructs the TableViewModel's sections and section headers and initializes
+// their values in accordance with the desired default empty state.
+- (void)initializeTableViewModelIfNeeded {
+  if (self.tableViewModel) {
+    return;
+  }
+
+  [super loadModel];
+  SectionIdentifier trackableSectionID =
+      SectionIdentifierTrackableItemsOnCurrentSite;
+  SectionIdentifier trackedSectionID = SectionIdentifierTrackedItems;
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:trackableSectionID];
+  [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
+                                             isEmpty:YES]
+      forSectionWithIdentifier:trackableSectionID];
+
+  [model addSectionWithIdentifier:trackedSectionID];
+  [model setHeader:[self createHeaderForSectionIndex:trackedSectionID
+                                             isEmpty:YES]
+      forSectionWithIdentifier:trackedSectionID];
 }
 
 // Creates, configures, and sets a UIView to the TableViewControllers's

@@ -18,6 +18,10 @@
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
        currentlyTracking:(BOOL)currentlyTracking;
 
+// Adds and displays an item to the UI that the user has chosen to price track
+// across sites.
+- (void)addTrackedItem:(PriceNotificationsTableViewItem*)trackedItem;
+
 // In the event that the trackable item was successfully subscribed to, this
 // function moves the trackable item from its current section to the tracked
 // section.

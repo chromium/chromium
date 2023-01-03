@@ -69,6 +69,7 @@ using PriceNotificationItems =
 
   _consumer = consumer;
   [self fetchTrackableItemDataAtSite:self.webState->GetVisibleURL()];
+  [self fetchTrackedItems];
 }
 
 #pragma mark - PriceNotificationsMutator
@@ -138,13 +139,9 @@ using PriceNotificationItems =
   }
 
   PriceNotificationsTableViewItem* item =
-      [[PriceNotificationsTableViewItem alloc] initWithType:0];
-  item.title = base::SysUTF8ToNSString(productInfo->title);
-  item.entryURL = URL;
-  item.currentPrice = nil;
-  item.previousPrice = [self formatPrice:productInfo];
-  item.tracking = NO;
-
+      [self createPriceNotificationTableViewItem:NO
+                                 fromProductInfo:productInfo
+                                           atURL:URL];
   [self.consumer setTrackableItem:item currentlyTracking:NO];
 
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
@@ -173,13 +170,22 @@ using PriceNotificationItems =
 }
 
 // Creates a localized price string.
-- (NSString*)formatPrice:
-    (const absl::optional<commerce::ProductInfo>&)productInfo {
+- (NSString*)extractFormattedCurrentPrice:(BOOL)forCurrentPrice
+                          fromProductInfo:
+                              (const absl::optional<commerce::ProductInfo>&)
+                                  productInfo {
   if (!productInfo) {
     return nil;
   }
 
-  float price = productInfo->amount_micros / commerce::kToMicroCurrency;
+  if (!forCurrentPrice && !productInfo->previous_amount_micros) {
+    return nil;
+  }
+
+  int64_t amountMicro = forCurrentPrice
+                            ? productInfo->amount_micros
+                            : productInfo->previous_amount_micros.value();
+  float price = amountMicro / commerce::kToMicroCurrency;
   std::unique_ptr<payments::CurrencyFormatter> formatter =
       std::make_unique<payments::CurrencyFormatter>(productInfo->currency_code,
                                                     productInfo->country_code);
@@ -200,6 +206,75 @@ using PriceNotificationItems =
 
   // TODO(crbug.com/1400738) Implement UX flow in the event an error occurs when
   // a user attempts to track an item.
+}
+
+// This function fetches the product data for the items the user has subscribed
+// to and populates the data into the Price Notifications UI.
+- (void)fetchTrackedItems {
+  std::vector<const bookmarks::BookmarkNode*> subscribedItems =
+      commerce::GetAllPriceTrackedBookmarks(self.bookmarkModel);
+  std::vector<int64_t> bookmarkIDs;
+  for (const bookmarks::BookmarkNode* bookmark : subscribedItems) {
+    bookmarkIDs.push_back(bookmark->id());
+  }
+
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  self.shoppingService->GetUpdatedProductInfoForBookmarks(
+      bookmarkIDs,
+      base::BindRepeating(^(const int64_t bookmarkID, const GURL& productURL,
+                            absl::optional<commerce::ProductInfo> productInfo) {
+        [weakSelf addTrackedItem:productInfo fromSite:productURL];
+      }));
+}
+
+// Creates a `PriceNotificationsTableViewItem` object and sends the newly
+// created object to the Price Notifications UI.
+- (void)addTrackedItem:(const absl::optional<commerce::ProductInfo>&)productInfo
+              fromSite:(const GURL&)URL {
+  if (!productInfo) {
+    return;
+  }
+
+  PriceNotificationsTableViewItem* item =
+      [self createPriceNotificationTableViewItem:YES
+                                 fromProductInfo:productInfo
+                                           atURL:URL];
+  [self.consumer addTrackedItem:item];
+
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  // Fetches the current item's trackable image.
+  _imageFetcher->FetchImageData(
+      productInfo->image_url,
+      base::BindOnce(^(const std::string& imageData,
+                       const image_fetcher::RequestMetadata& metadata) {
+        [weakSelf updateItem:item withImage:imageData];
+      }),
+      NO_TRAFFIC_ANNOTATION_YET);
+}
+
+// Creates and initializes the values of a new PriceNotificationTableViewItem
+// based on the given `productInfo` object.
+- (PriceNotificationsTableViewItem*)
+    createPriceNotificationTableViewItem:(BOOL)forTrackedItem
+                         fromProductInfo:
+                             (const absl::optional<commerce::ProductInfo>&)
+                                 productInfo
+                                   atURL:(const GURL&)URL {
+  PriceNotificationsTableViewItem* item =
+      [[PriceNotificationsTableViewItem alloc] initWithType:0];
+  item.title = base::SysUTF8ToNSString(productInfo->title);
+  item.entryURL = URL;
+  item.tracking = forTrackedItem;
+  item.currentPrice = [self extractFormattedCurrentPrice:YES
+                                         fromProductInfo:productInfo];
+  item.previousPrice = [self extractFormattedCurrentPrice:NO
+                                          fromProductInfo:productInfo];
+  if (!item.previousPrice) {
+    item.previousPrice = item.currentPrice;
+    item.currentPrice = nil;
+  }
+
+  return item;
 }
 
 @end
