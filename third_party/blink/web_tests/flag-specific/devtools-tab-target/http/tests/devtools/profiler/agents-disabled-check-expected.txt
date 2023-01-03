@@ -1,0 +1,29 @@
+Test that if a profiler is working all the agents are disabled.
+
+--> SDK.targetManager.suspendAllTargets();
+frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":false,"flatten":true}}
+frontend: {"id":<number>,"method":"DOM.disable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"CSS.disable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":0},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.disable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":false,"flatten":true},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.setShowGridOverlays","params":{"gridNodeHighlightConfigs":[]},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.setShowFlexOverlays","params":{"flexNodeHighlightConfigs":[]},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.setShowScrollSnapOverlays","params":{"scrollSnapHighlightConfigs":[]},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.setShowContainerQueryOverlays","params":{"containerQueryHighlightConfigs":[]},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.setShowIsolatedElements","params":{"isolatedElementHighlightConfigs":[]},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Debugger.disable","params":{},"sessionId":<string>}
+
+--> SDK.targetManager.resumeAllTargets();
+frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":true,"flatten":true}}
+frontend: {"id":<number>,"method":"DOM.enable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"CSS.enable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Debugger.enable","params":{"maxScriptsCacheSize":100000000},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Debugger.setPauseOnExceptions","params":{"state":"none"},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":32},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.enable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Overlay.setShowViewportSizeOnResize","params":{"show":true},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":true,"flatten":true},"sessionId":<string>}
+
+--> done
+

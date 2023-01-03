@@ -1,0 +1,18 @@
+Tests that targets are created for oopif iframes.
+
+
+Targets before navigate
+Main
+Tab
+
+Targets after navigate
+Main
+Tab
+iframe.html
+inner-iframe.html
+inner-iframe.html
+
+Targets on about:blank
+Main
+Tab
+

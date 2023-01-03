@@ -8,6 +8,10 @@
     "args": ["--enable-features=PartitionAllocDanglingPtr:mode/crash"]
   },
   {
+    "name": "devtools-tab-target",
+    "args": ["--content-shell-devtools-tab-target"]
+  },
+  {
     "name": "disable-layout-ng",
     "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"]
   },

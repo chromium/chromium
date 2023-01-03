@@ -1,0 +1,7 @@
+Tests the way service worker manager manages targets.
+
+Target added: Tab; type: tab
+Target added: Main; type: frame
+Target added: service-worker-empty.js; type: service-worker
+Target removed: service-worker-empty.js; type: service-worker
+

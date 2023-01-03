@@ -1666,13 +1666,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "devtools-tab-target",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/devtools/extensions", "http/tests/devtools/tracing", "http/tests/devtools/coverage"],
-    "args": ["--content-shell-devtools-tab-target"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "split-user-media-queues",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

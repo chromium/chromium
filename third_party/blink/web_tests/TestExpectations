@@ -6703,8 +6703,8 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cr
 crbug.com/1345601 external/wpt/priority-hints/iframe-attr-fetchpriority.tentative.html [ Failure ]
 
 # Sheriff 2022-11-31
-crbug.com/1383527 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
-crbug.com/1385483 [ Linux ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
+crbug.com/1383527 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
+crbug.com/1385483 [ Linux ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
 # Sheriff 2022-11-15
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
