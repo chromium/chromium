@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 
@@ -197,6 +198,7 @@ class Server {
 
   using PendingRead2 = std::pair<Read2RequestProto, Read2Callback>;
   using PendingWrite2 = std::pair<Write2RequestProto, Write2Callback>;
+  using PendingOp = absl::variant<PendingRead2, PendingWrite2>;
 
   struct FuseFileMapEntry {
     FuseFileMapEntry(scoped_refptr<storage::FileSystemContext> fs_context_arg,
@@ -208,15 +210,16 @@ class Server {
 
     void DoRead2(const Read2RequestProto& request, Read2Callback callback);
     void DoWrite2(const Write2RequestProto& request, Write2Callback callback);
+    void Do(PendingOp& op,
+            base::WeakPtr<Server> weak_ptr_server,
+            uint64_t fuse_handle);
 
     const scoped_refptr<storage::FileSystemContext> fs_context_;
     const bool readable_;
     const bool writable_;
 
-    bool has_in_flight_read_ = false;
-    bool has_in_flight_write_ = false;
-    base::circular_deque<PendingRead2> pending_reads_;
-    base::circular_deque<PendingWrite2> pending_writes_;
+    bool has_in_flight_op_ = false;
+    base::circular_deque<PendingOp> pending_ops_;
 
     base::SequenceBound<ReadWriter> seqbnd_read_writer_;
   };

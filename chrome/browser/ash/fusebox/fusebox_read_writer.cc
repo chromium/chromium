@@ -76,6 +76,7 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
                       int64_t length,
                       Read2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(!is_in_flight_);
 
   // See if we can re-use the previous storage::FileStreamReader.
   std::unique_ptr<storage::FileStreamReader> fs_reader;
@@ -105,6 +106,7 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
   // storage::FileStreamReader would get destroyed at the end of this function.
   auto* saved_fs_reader = fs_reader.get();
 
+  is_in_flight_ = true;
   auto pair = base::SplitOnceCallback(base::BindOnce(
       &ReadWriter::OnRead, weak_ptr_factory_.GetWeakPtr(), std::move(callback),
       fs_context, std::move(fs_reader), buffer, offset));
@@ -117,6 +119,7 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
 }
 
 void ReadWriter::OnRead(
+    base::WeakPtr<ReadWriter> weak_ptr,
     Read2Callback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
     std::unique_ptr<storage::FileStreamReader> fs_reader,
@@ -125,12 +128,24 @@ void ReadWriter::OnRead(
     int length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    Read2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EBUSY);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  DCHECK(self->is_in_flight_);
+  self->is_in_flight_ = false;
+
   if (length >= 0) {
-    fs_reader_ = std::move(fs_reader);
-    read_offset_ = offset + length;
+    self->fs_reader_ = std::move(fs_reader);
+    self->read_offset_ = offset + length;
   } else {
-    fs_reader_.reset();
-    read_offset_ = -1;
+    self->fs_reader_.reset();
+    self->read_offset_ = -1;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -144,6 +159,7 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
                        int length,
                        Write2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(!is_in_flight_);
 
   // See if we can re-use the previous storage::FileStreamWriter.
   std::unique_ptr<storage::FileStreamWriter> fs_writer;
@@ -167,6 +183,7 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   // storage::FileStreamWriter would get destroyed at the end of this function.
   auto* saved_fs_writer = fs_writer.get();
 
+  is_in_flight_ = true;
   auto pair = base::SplitOnceCallback(base::BindOnce(
       &ReadWriter::OnWrite, weak_ptr_factory_.GetWeakPtr(), std::move(callback),
       fs_context, std::move(fs_writer), buffer, offset));
@@ -179,6 +196,7 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
 }
 
 void ReadWriter::OnWrite(
+    base::WeakPtr<ReadWriter> weak_ptr,
     Write2Callback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
@@ -187,12 +205,24 @@ void ReadWriter::OnWrite(
     int length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    Write2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EBUSY);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  DCHECK(self->is_in_flight_);
+  self->is_in_flight_ = false;
+
   if (length >= 0) {
-    fs_writer_ = std::move(fs_writer);
-    write_offset_ = offset + length;
+    self->fs_writer_ = std::move(fs_writer);
+    self->write_offset_ = offset + length;
   } else {
-    fs_writer_.reset();
-    write_offset_ = -1;
+    self->fs_writer_.reset();
+    self->write_offset_ = -1;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(

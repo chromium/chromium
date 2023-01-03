@@ -454,6 +454,24 @@ void Server::FuseFileMapEntry::DoWrite2(const Write2RequestProto& request,
                 static_cast<int>(request.data().size()), std::move(callback));
 }
 
+void Server::FuseFileMapEntry::Do(PendingOp& op,
+                                  base::WeakPtr<Server> weak_ptr_server,
+                                  uint64_t fuse_handle) {
+  if (absl::holds_alternative<PendingRead2>(op)) {
+    PendingRead2& pending = absl::get<PendingRead2>(op);
+    DoRead2(pending.first,
+            base::BindOnce(&Server::OnRead2, weak_ptr_server, fuse_handle,
+                           std::move(pending.second)));
+  } else if (absl::holds_alternative<PendingWrite2>(op)) {
+    PendingWrite2& pending = absl::get<PendingWrite2>(op);
+    DoWrite2(pending.first,
+             base::BindOnce(&Server::OnWrite2, weak_ptr_server, fuse_handle,
+                            std::move(pending.second)));
+  } else {
+    NOTREACHED();
+  }
+}
+
 Server::PrefixMapEntry::PrefixMapEntry(std::string fs_url_prefix_arg,
                                        bool read_only_arg)
     : fs_url_prefix(fs_url_prefix_arg), read_only(read_only_arg) {}
@@ -605,28 +623,26 @@ void Server::Close2(const Close2RequestProto& request_proto,
     return;
   }
   FuseFileMapEntry& entry = iter->second;
-  base::circular_deque<PendingRead2> pending_reads =
-      std::move(entry.pending_reads_);
-  base::circular_deque<PendingWrite2> pending_writes =
-      std::move(entry.pending_writes_);
+  base::circular_deque<PendingOp> pending_ops = std::move(entry.pending_ops_);
 
   fuse_file_map_.erase(iter);
 
   Close2ResponseProto response_proto;
   std::move(callback).Run(response_proto);
 
-  if (!pending_reads.empty()) {
-    Read2ResponseProto read2_response_proto;
-    read2_response_proto.set_posix_error_code(EBUSY);
-    for (auto& pending_read : pending_reads) {
-      std::move(pending_read.second).Run(read2_response_proto);
-    }
-  }
-  if (!pending_writes.empty()) {
-    Write2ResponseProto write2_esponse_proto;
-    write2_esponse_proto.set_posix_error_code(EBUSY);
-    for (auto& pending_read : pending_writes) {
-      std::move(pending_read.second).Run(write2_esponse_proto);
+  for (auto& pending_op : pending_ops) {
+    if (absl::holds_alternative<PendingRead2>(pending_op)) {
+      Read2ResponseProto read2_response_proto;
+      read2_response_proto.set_posix_error_code(EBUSY);
+      std::move(absl::get<PendingRead2>(pending_op).second)
+          .Run(read2_response_proto);
+    } else if (absl::holds_alternative<PendingWrite2>(pending_op)) {
+      Write2ResponseProto write2_response_proto;
+      write2_response_proto.set_posix_error_code(EBUSY);
+      std::move(absl::get<PendingWrite2>(pending_op).second)
+          .Run(write2_response_proto);
+    } else {
+      NOTREACHED();
     }
   }
 }
@@ -766,12 +782,12 @@ void Server::Read2(const Read2RequestProto& request_proto,
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
     return;
-  } else if (iter->second.has_in_flight_read_) {
-    iter->second.pending_reads_.emplace_back(request_proto,
-                                             std::move(callback));
+  } else if (iter->second.has_in_flight_op_) {
+    iter->second.pending_ops_.emplace_back(
+        PendingRead2(request_proto, std::move(callback)));
     return;
   }
-  iter->second.has_in_flight_read_ = true;
+  iter->second.has_in_flight_op_ = true;
   iter->second.DoRead2(
       request_proto,
       base::BindOnce(&Server::OnRead2, weak_ptr_factory_.GetWeakPtr(),
@@ -1013,12 +1029,12 @@ void Server::Write2(const Write2RequestProto& request_proto,
     response_proto.set_posix_error_code(EMSGSIZE);
     std::move(callback).Run(response_proto);
     return;
-  } else if (iter->second.has_in_flight_write_) {
-    iter->second.pending_writes_.emplace_back(request_proto,
-                                              std::move(callback));
+  } else if (iter->second.has_in_flight_op_) {
+    iter->second.pending_ops_.emplace_back(
+        PendingWrite2(request_proto, std::move(callback)));
     return;
   }
-  iter->second.has_in_flight_write_ = true;
+  iter->second.has_in_flight_op_ = true;
   iter->second.DoWrite2(
       request_proto,
       base::BindOnce(&Server::OnWrite2, weak_ptr_factory_.GetWeakPtr(),
@@ -1140,19 +1156,17 @@ void Server::OnRead2(uint64_t fuse_handle,
     return;
   }
   FuseFileMapEntry& entry = iter->second;
-  entry.has_in_flight_read_ = false;
+  entry.has_in_flight_op_ = false;
 
   std::move(callback).Run(std::move(response_proto));
 
-  if (entry.pending_reads_.empty()) {
+  if (entry.pending_ops_.empty()) {
     return;
   }
-  PendingRead2 pending = std::move(entry.pending_reads_.front());
-  entry.pending_reads_.pop_front();
-  entry.has_in_flight_read_ = true;
-  entry.DoRead2(pending.first,
-                base::BindOnce(&Server::OnRead2, weak_ptr_factory_.GetWeakPtr(),
-                               fuse_handle, std::move(pending.second)));
+  PendingOp pending_op = std::move(entry.pending_ops_.front());
+  entry.pending_ops_.pop_front();
+  entry.has_in_flight_op_ = true;
+  entry.Do(pending_op, weak_ptr_factory_.GetWeakPtr(), fuse_handle);
 }
 
 void Server::OnReadDirectory(
@@ -1200,20 +1214,17 @@ void Server::OnWrite2(uint64_t fuse_handle,
     return;
   }
   FuseFileMapEntry& entry = iter->second;
-  entry.has_in_flight_write_ = false;
+  entry.has_in_flight_op_ = false;
 
   std::move(callback).Run(std::move(response_proto));
 
-  if (entry.pending_writes_.empty()) {
+  if (entry.pending_ops_.empty()) {
     return;
   }
-  PendingWrite2 pending = std::move(entry.pending_writes_.front());
-  entry.pending_writes_.pop_front();
-  entry.has_in_flight_write_ = true;
-  entry.DoWrite2(
-      pending.first,
-      base::BindOnce(&Server::OnWrite2, weak_ptr_factory_.GetWeakPtr(),
-                     fuse_handle, std::move(pending.second)));
+  PendingOp pending_op = std::move(entry.pending_ops_.front());
+  entry.pending_ops_.pop_front();
+  entry.has_in_flight_op_ = true;
+  entry.Do(pending_op, weak_ptr_factory_.GetWeakPtr(), fuse_handle);
 }
 
 void Server::EraseFuseFileMapEntry(uint64_t fuse_handle) {

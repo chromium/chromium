@@ -26,8 +26,13 @@ namespace fusebox {
 // the Painter" quadratic performance. See
 // https://wiki.c2.com/?ShlemielThePainter
 //
-// Each ReadWriter instance lives entirely on the I/O thread. When its owner
-// lives on a different thread, wrap the ReadWriter in a base::SequenceBound.
+// Each ReadWriter instance lives entirely on the I/O thread, but its owner
+// (and the callbacks) must live on the UI thread (and wrap the ReadWriter in a
+// base::SequenceBound).
+//
+// The owner is also responsible for ensuring that only one operation is in
+// flight at any one time. "An operation" starts with a Read or Write call and
+// ends just before the corresponding callback is run.
 class ReadWriter {
  public:
   using Read2Callback =
@@ -50,19 +55,24 @@ class ReadWriter {
              Write2Callback callback);
 
  private:
-  void OnRead(Read2Callback callback,
-              scoped_refptr<storage::FileSystemContext> fs_context,
-              std::unique_ptr<storage::FileStreamReader> fs_reader,
-              scoped_refptr<net::IOBuffer> buffer,
-              int64_t offset,
-              int length);
+  // The OnXxx methods are static (but take a WeakPtr) so that the callback
+  // will run even if the WeakPtr is invalidated.
 
-  void OnWrite(Write2Callback callback,
-               scoped_refptr<storage::FileSystemContext> fs_context,
-               std::unique_ptr<storage::FileStreamWriter> fs_writer,
-               scoped_refptr<net::IOBuffer> buffer,
-               int64_t offset,
-               int length);
+  static void OnRead(base::WeakPtr<ReadWriter> weak_ptr,
+                     Read2Callback callback,
+                     scoped_refptr<storage::FileSystemContext> fs_context,
+                     std::unique_ptr<storage::FileStreamReader> fs_reader,
+                     scoped_refptr<net::IOBuffer> buffer,
+                     int64_t offset,
+                     int length);
+
+  static void OnWrite(base::WeakPtr<ReadWriter> weak_ptr,
+                      Write2Callback callback,
+                      scoped_refptr<storage::FileSystemContext> fs_context,
+                      std::unique_ptr<storage::FileStreamWriter> fs_writer,
+                      scoped_refptr<net::IOBuffer> buffer,
+                      int64_t offset,
+                      int length);
 
   const storage::FileSystemURL fs_url_;
 
@@ -75,6 +85,8 @@ class ReadWriter {
   int64_t write_offset_ = -1;
 
   // TODO(b/255703917): snapshot management.
+
+  bool is_in_flight_ = false;
 
   base::WeakPtrFactory<ReadWriter> weak_ptr_factory_{this};
 };
