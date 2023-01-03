@@ -81,7 +81,8 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_cdp_subscribeToAllCdpEvents_cdpEventReceived(websocket, context_id):
+async def test_cdp_subscribeToAllCdpEvents_cdpEventReceived(
+        websocket, context_id):
     await subscribe(websocket, "cdp")
 
     command_result = await execute_command(websocket, {

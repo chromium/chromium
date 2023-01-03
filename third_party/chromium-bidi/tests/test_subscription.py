@@ -98,14 +98,16 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
-    recursive_compare({
-        "method": "browsingContext.contextCreated",
-        "params": {
-            "context": any_string,
-            "url": "about:blank",
-            "children": None,
-            "parent": context_id}
-    }, resp)
+    recursive_compare(
+        {
+            "method": "browsingContext.contextCreated",
+            "params": {
+                "context": any_string,
+                "url": "about:blank",
+                "children": None,
+                "parent": context_id
+            }
+        }, resp)
 
 
 @pytest.mark.asyncio

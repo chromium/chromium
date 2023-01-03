@@ -450,11 +450,16 @@ async def test_serialization_node(websocket, context_id):
         {
             "type": "node",
             "value": {
-                "nodeType": 1,
-                "backendNodeId": any_value,
-                "localName": "div",
-                "namespaceURI": "http://www.w3.org/1999/xhtml",
-                "childNodeCount": 2,
+                "nodeType":
+                1,
+                "backendNodeId":
+                any_value,
+                "localName":
+                "div",
+                "namespaceURI":
+                "http://www.w3.org/1999/xhtml",
+                "childNodeCount":
+                2,
                 "attributes": {
                     "some_attr_name": "some_attr_value"
                 },

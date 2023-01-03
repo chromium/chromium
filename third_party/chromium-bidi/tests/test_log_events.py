@@ -19,7 +19,8 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_log_subscribeToAllLogEvents_logEventReceived(websocket, context_id):
+async def test_log_subscribeToAllLogEvents_logEventReceived(
+        websocket, context_id):
     await subscribe(websocket, "log")
     # Send command.
     await send_JSON_command(
@@ -38,7 +39,8 @@ async def test_log_subscribeToAllLogEvents_logEventReceived(websocket, context_i
 
 
 @pytest.mark.asyncio
-async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(websocket, context_id):
+async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
+        websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
     # Send command.
     await send_JSON_command(

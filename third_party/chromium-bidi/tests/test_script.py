@@ -973,7 +973,8 @@ async def test_scriptGetRealms(websocket, context_id):
         "method": "browsingContext.close",
         "params": {
             "context": context_id
-        }})
+        }
+    })
 
     result = await execute_command(websocket, {
         "method": "script.getRealms",
@@ -981,9 +982,7 @@ async def test_scriptGetRealms(websocket, context_id):
     })
 
     # Assert no more realms existed.
-    recursive_compare({
-        "realms": []
-    }, result)
+    recursive_compare({"realms": []}, result)
 
 
 @pytest.mark.asyncio
