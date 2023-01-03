@@ -95,6 +95,8 @@ class CrosAudioConfigImplTest : public testing::Test {
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     cras_audio_handler_->SetPrefHandlerForTesting(audio_pref_handler_);
     cros_audio_config_ = std::make_unique<CrosAudioConfigImpl>();
+    ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+        /*switch_on=*/false);
   }
 
   void TearDown() override {
@@ -137,6 +139,32 @@ class CrosAudioConfigImplTest : public testing::Test {
       case mojom::MuteState::kMutedByPolicy:
         // Calling this method does not alert AudioSystemPropertiesObserver.
         audio_pref_handler_->SetAudioOutputAllowedValue(false);
+        break;
+      case mojom::MuteState::kMutedExternally:
+        NOTREACHED() << "Output audio does not support kMutedExternally.";
+        break;
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetInputMuteState(mojom::MuteState mute_state, bool switch_on = false) {
+    switch (mute_state) {
+      case mojom::MuteState::kMutedByUser:
+        cras_audio_handler_->SetMuteForDevice(
+            cras_audio_handler_->GetPrimaryActiveInputNode(),
+            /*mute_on=*/true);
+        break;
+      case mojom::MuteState::kNotMuted:
+        cras_audio_handler_->SetMuteForDevice(
+            cras_audio_handler_->GetPrimaryActiveInputNode(),
+            /*mute_on=*/false);
+        break;
+      case mojom::MuteState::kMutedByPolicy:
+        NOTREACHED() << "Input audio does not support kMutedByPolicy.";
+        break;
+      case mojom::MuteState::kMutedExternally:
+        ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+            switch_on);
         break;
     }
     base::RunLoop().RunUntilIdle();
@@ -516,6 +544,36 @@ TEST_F(CrosAudioConfigImplTest, SetActiveInputDevice) {
   ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
                   ->input_devices[1]
                   ->is_active);
+}
+
+TEST_F(CrosAudioConfigImplTest, HandleInputMuteState) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  SetAudioNodes({kInternalSpeaker, kMicJack});
+  ASSERT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  SetInputMuteState(mojom::MuteState::kMutedByUser);
+  ASSERT_EQ(
+      mojom::MuteState::kMutedByUser,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  SetInputMuteState(mojom::MuteState::kNotMuted);
+  ASSERT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  // Simulate turning physical switch on.
+  SetInputMuteState(mojom::MuteState::kMutedExternally, true);
+  ASSERT_EQ(
+      mojom::MuteState::kMutedExternally,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  // Simulate turning physical switch off.
+  SetInputMuteState(mojom::MuteState::kMutedExternally, false);
+  ASSERT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
 }
 
 }  // namespace ash::audio_config

@@ -101,6 +101,20 @@ void CrosAudioConfigImpl::GetAudioDevices(
   }
 }
 
+mojom::MuteState CrosAudioConfigImpl::GetInputMuteState() const {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  if (audio_handler->input_muted_by_microphone_mute_switch() &&
+      audio_handler->IsInputMuted()) {
+    return mojom::MuteState::kMutedExternally;
+  }
+
+  if (audio_handler->IsInputMuted()) {
+    return mojom::MuteState::kMutedByUser;
+  }
+
+  return mojom::MuteState::kNotMuted;
+}
+
 void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   audio_handler->SetOutputVolumePercent(volume);
@@ -146,6 +160,17 @@ void CrosAudioConfigImpl::OnActiveOutputNodeChanged() {
 }
 
 void CrosAudioConfigImpl::OnActiveInputNodeChanged() {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnInputMutedByMicrophoneMuteSwitchChanged(
+    bool muted) {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 

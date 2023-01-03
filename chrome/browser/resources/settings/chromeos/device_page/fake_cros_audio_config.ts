@@ -79,7 +79,6 @@ export const fakeBluetoothMic: AudioDevice = {
 // handle audio input.
 export interface FakeAudioSystemProperties extends AudioSystemPropertiesMojom {
   inputDevices: AudioDevice[];
-  inputMuteState: MuteState;
   inputVolumePercent: number;
 }
 

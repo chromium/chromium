@@ -34,7 +34,10 @@ enum MuteState {
   kMutedByUser,
 
   // The device is muted by the device policy.
-  kMutedByPolicy
+  kMutedByPolicy,
+
+  // The device is muted by physical switch.
+  kMutedExternally
 };
 
 // Represents a user's audio device.
@@ -71,6 +74,9 @@ struct AudioSystemProperties {
   // List of input devices. UI surfaces should display devices in the order
   // indicated by this array.
   array<AudioDevice> input_devices;
+
+  // The mute state of the active input device.
+  MuteState input_mute_state;
 };
 
 // Observer for changes to audio system properties.

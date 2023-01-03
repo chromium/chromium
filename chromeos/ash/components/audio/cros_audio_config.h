@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfig
   virtual void GetAudioDevices(
       std::vector<mojom::AudioDevicePtr>* output_devices_out,
       std::vector<mojom::AudioDevicePtr>* input_devices_out) const = 0;
+  virtual mojom::MuteState GetInputMuteState() const = 0;
 
  private:
   // mojom::CrosAudioConfig:
