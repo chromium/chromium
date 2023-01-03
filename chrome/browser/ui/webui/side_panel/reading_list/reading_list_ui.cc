@@ -138,8 +138,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
 
   source->AddBoolean("readAnythingEnabled", features::IsReadAnythingEnabled());
-  source->AddBoolean("unifiedSidePanel",
-                     base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
+  source->AddBoolean("unifiedSidePanel", true);
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
@@ -158,13 +157,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  const int resource =
-      !base::FeatureList::IsEnabled(features::kUnifiedSidePanel)
-          ? IDR_SIDE_PANEL_SIDE_PANEL_HTML
-          : IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML;
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
-      resource);
+      IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 }

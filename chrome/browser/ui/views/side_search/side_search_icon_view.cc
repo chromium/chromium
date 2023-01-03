@@ -134,13 +134,9 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   if (!browser_view)
     return;
 
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    browser_view->side_panel_coordinator()->Show(
-        SidePanelEntry::Id::kSideSearch,
-        SidePanelUtil::SidePanelOpenTrigger::kSideSearchPageAction);
-  } else {
-    browser_view->side_search_controller()->ToggleSidePanel();
-  }
+  browser_view->side_panel_coordinator()->Show(
+      SidePanelEntry::Id::kSideSearch,
+      SidePanelUtil::SidePanelOpenTrigger::kSideSearchPageAction);
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
       browser_->profile());
   if (tracker)

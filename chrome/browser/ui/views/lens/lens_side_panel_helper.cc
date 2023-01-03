@@ -55,15 +55,8 @@ GURL CreateURLForNewTab(const GURL& original_url) {
 
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params) {
-  if (base::FeatureList::IsEnabled(::features::kUnifiedSidePanel)) {
-    LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->RegisterEntryAndShow(url_params);
-  } else {
-    // This code path should never be reachable, since Unified Side Panel is
-    // enabled by default with no option to turn it off after M111. However,
-    // until the flag is cleaned up, keep this in for robustness.
-    browser->OpenURL(url_params);
-  }
+  LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
+      ->RegisterEntryAndShow(url_params);
 }
 
 views::Widget* OpenLensRegionSearchInstructions(

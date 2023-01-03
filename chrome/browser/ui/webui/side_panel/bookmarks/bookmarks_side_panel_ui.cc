@@ -102,8 +102,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       "bookmarksDragAndDropEnabled",
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
 
-  source->AddBoolean("unifiedSidePanel",
-                     base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
+  source->AddBoolean("unifiedSidePanel", true);
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());

@@ -190,8 +190,6 @@ BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
 
 BASE_DECLARE_FEATURE(kTopChromeWebUIUsesSpareRenderer);
 
-BASE_DECLARE_FEATURE(kUnifiedSidePanel);
-
 BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);

@@ -12,12 +12,6 @@
 namespace page_info {
 
 bool IsMoreAboutThisSiteFeatureEnabled() {
-#if !BUILDFLAG(IS_ANDROID)
-  // MoreAbout may only be enabled when the side panel is on.
-  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    return false;
-#endif
-
   if (!page_info::IsAboutThisSiteFeatureEnabled(
           g_browser_process->GetApplicationLocale())) {
     return false;

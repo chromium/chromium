@@ -7,16 +7,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/web_contents.h"
 
 // static
 bool UserNotesController::IsUserNotesSupported(Profile* profile) {
-  return user_notes::IsUserNotesEnabled() &&
-         base::FeatureList::IsEnabled(features::kUnifiedSidePanel) &&
-         !profile->IsGuestSession();
+  return user_notes::IsUserNotesEnabled() && !profile->IsGuestSession();
 }
 
 // static

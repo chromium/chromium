@@ -295,10 +295,6 @@ BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
              "TopChromeWebUIUsesSpareRenderer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUnifiedSidePanel,
-             "UnifiedSidePanel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
 BASE_FEATURE(kWebUIBubblePerProfilePersistence,

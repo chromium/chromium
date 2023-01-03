@@ -932,8 +932,7 @@ void PopulateChromeWebUIFrameBinders(
           render_frame_host->GetProcess()->GetBrowserContext());
   if (history_clusters_service &&
       history_clusters_service->IsJourneysEnabled()) {
-    if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
-        base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
       RegisterWebUIControllerInterfaceBinder<
           history_clusters::mojom::PageHandler, HistoryUI,
           HistoryClustersSidePanelUI>(map);
@@ -998,20 +997,12 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       reading_list::mojom::PageHandlerFactory, ReadingListUI>(map);
-
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::BookmarksPageHandlerFactory, BookmarksSidePanelUI>(
-        map);
-    RegisterWebUIControllerInterfaceBinder<
-        shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI>(
-        map);
-  } else {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::BookmarksPageHandlerFactory, ReadingListUI>(map);
-    RegisterWebUIControllerInterfaceBinder<
-        shopping_list::mojom::ShoppingListHandlerFactory, ReadingListUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      side_panel::mojom::BookmarksPageHandlerFactory, BookmarksSidePanelUI>(
+      map);
+  RegisterWebUIControllerInterfaceBinder<
+      shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI>(
+      map);
 
   if (customize_chrome::IsSidePanelEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
@@ -1026,13 +1017,8 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   if (features::IsReadAnythingEnabled()) {
-    if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-      RegisterWebUIControllerInterfaceBinder<
-          read_anything::mojom::PageHandlerFactory, ReadAnythingUI>(map);
-    } else {
-      RegisterWebUIControllerInterfaceBinder<
-          read_anything::mojom::PageHandlerFactory, ReadingListUI>(map);
-    }
+    RegisterWebUIControllerInterfaceBinder<
+        read_anything::mojom::PageHandlerFactory, ReadAnythingUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,

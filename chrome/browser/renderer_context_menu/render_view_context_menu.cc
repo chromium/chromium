@@ -1023,8 +1023,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendLinkToTextItems();
   }
 
-  if (user_notes::IsUserNotesEnabled() &&
-      base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+  if (user_notes::IsUserNotesEnabled()) {
     AppendUserNotesItems();
   }
 
@@ -3310,7 +3309,6 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 
 bool RenderViewContextMenu::IsAddANoteEnabled() const {
   DCHECK(user_notes::IsUserNotesEnabled());
-  DCHECK(base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host)

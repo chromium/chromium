@@ -405,9 +405,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                          zoom::GetPresetZoomFactorsAsJSON());
   html_source->AddBoolean("showReaderModeOption",
                           dom_distiller::OfferReaderModeInSettings());
-  html_source->AddBoolean(
-      "showSidePanelOptions",
-      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
+  html_source->AddBoolean("showSidePanelOptions", true);
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

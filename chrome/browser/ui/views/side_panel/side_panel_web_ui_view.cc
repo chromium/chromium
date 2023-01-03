@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -37,23 +36,6 @@ SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
 
 void SidePanelWebUIView::SetVisible(bool visible) {
   views::WebView::SetVisible(visible);
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    return;
-  base::RecordAction(
-      base::UserMetricsAction(visible ? "SidePanel.Show" : "SidePanel.Hide"));
-  auto* browser_window = BrowserWindow::FindBrowserWindowWithWebContents(
-      contents_wrapper_->web_contents());
-  if (!visible || !browser_window)
-    return;
-  // Record usage for side panel promo.
-  feature_engagement::TrackerFactory::GetForBrowserContext(
-      Profile::FromBrowserContext(
-          contents_wrapper_->web_contents()->GetBrowserContext()))
-      ->NotifyEvent("side_panel_shown");
-
-  // Close IPH for side panel if shown.
-  browser_window->CloseFeaturePromo(
-      feature_engagement::kIPHReadingListInSidePanelFeature);
 }
 
 SidePanelWebUIView::~SidePanelWebUIView() = default;
@@ -70,8 +52,6 @@ void SidePanelWebUIView::ViewHierarchyChanged(
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
-  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    RequestFocus();
   if (on_show_cb_)
     on_show_cb_.Run();
 }

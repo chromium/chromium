@@ -936,18 +936,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   right_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
 
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
-        prefs::kSidePanelHorizontalAlignment);
-    unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-        this,
-        is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
-    left_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
-    side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
-  } else {
-    unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-  }
+  const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kSidePanelHorizontalAlignment);
+  unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+      this, is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
+  left_aligned_side_panel_separator_ =
+      AddChildView(std::make_unique<ContentsSeparator>());
+  side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
 
   if (side_search::IsEnabledForBrowser(browser_.get()) &&
       !side_search::ShouldUseUnifiedSidePanel()) {

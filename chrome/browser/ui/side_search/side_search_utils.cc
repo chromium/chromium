@@ -131,13 +131,11 @@ bool IsSearchWebInSidePanelSupported(const Browser* browser) {
   return IsEnabledForBrowser(browser) &&
          IsDSESupportEnabled(browser->profile()) &&
          default_provider->IsSideSearchSupported() &&
-         base::FeatureList::IsEnabled(features::kSearchWebInSidePanel) &&
-         base::FeatureList::IsEnabled(features::kUnifiedSidePanel);
+         base::FeatureList::IsEnabled(features::kSearchWebInSidePanel);
 }
 
 bool ShouldUseUnifiedSidePanel() {
-  return base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
-         base::FeatureList::IsEnabled(features::kUnifiedSidePanel);
+  return base::FeatureList::IsEnabled(features::kSideSearchDSESupport);
 }
 
 }  // namespace side_search

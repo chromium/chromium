@@ -34,14 +34,13 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
           std::make_unique<DotBoundsUpdater>(dot_indicator_, image())),
       reading_list_model_(
           ReadingListModelFactory::GetForBrowserContext(browser_->profile())) {
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    pref_change_registrar_.Init(browser_->profile()->GetPrefs());
+  pref_change_registrar_.Init(browser_->profile()->GetPrefs());
 
-    pref_change_registrar_.Add(
-        prefs::kSidePanelHorizontalAlignment,
-        base::BindRepeating(&SidePanelToolbarButton::UpdateToolbarButtonIcon,
-                            base::Unretained(this)));
-  }
+  pref_change_registrar_.Add(
+      prefs::kSidePanelHorizontalAlignment,
+      base::BindRepeating(&SidePanelToolbarButton::UpdateToolbarButtonIcon,
+                          base::Unretained(this)));
+
   UpdateToolbarButtonIcon();
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -76,12 +75,7 @@ void SidePanelToolbarButton::DotBoundsUpdater::OnViewBoundsChanged(
 }
 
 void SidePanelToolbarButton::ReadingListModelLoaded(
-    const ReadingListModel* model) {
-  if (model->unseen_size() &&
-      !base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    dot_indicator_->Show();
-  }
-}
+    const ReadingListModel* model) {}
 
 void SidePanelToolbarButton::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
@@ -92,17 +86,7 @@ void SidePanelToolbarButton::ReadingListModelBeingDeleted(
 }
 
 void SidePanelToolbarButton::ReadingListDidApplyChanges(
-    ReadingListModel* model) {
-  // Unified side panel does not use the blue dot.
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    return;
-
-  if (!side_panel_webview_ && reading_list_model_->unseen_size() > 0) {
-    dot_indicator_->Show();
-  } else {
-    dot_indicator_->Hide();
-  }
-}
+    ReadingListModel* model) {}
 
 void SidePanelToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =

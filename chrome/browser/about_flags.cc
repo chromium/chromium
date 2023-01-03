@@ -5685,11 +5685,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelWebViewDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelWebView)},
 
-    {flag_descriptions::kUnifiedSidePanelFlagId,
-     flag_descriptions::kUnifiedSidePanelName,
-     flag_descriptions::kUnifiedSidePanelDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kUnifiedSidePanel)},
-
     {"tab-outlines-in-low-contrast-themes",
      flag_descriptions::kTabOutlinesInLowContrastThemesName,
      flag_descriptions::kTabOutlinesInLowContrastThemesDescription, kOsDesktop,

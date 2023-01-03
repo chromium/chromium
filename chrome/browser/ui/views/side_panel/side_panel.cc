@@ -168,18 +168,14 @@ SidePanel::SidePanel(BrowserView* browser_view,
       resize_area_(
           AddChildView(std::make_unique<views::SidePanelResizeArea>(this))),
       horizontal_alignment_(horizontal_alignment) {
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
+  pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
-    // base::Unretained is safe since the side panel must be attached to some
-    // BrowserView. Deleting BrowserView will also delete the SidePanel.
-    pref_change_registrar_.Add(
-        prefs::kSidePanelHorizontalAlignment,
-        base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
-                            base::Unretained(browser_view)));
-  } else {
-    resize_area_->SetVisible(false);
-  }
+  // base::Unretained is safe since the side panel must be attached to some
+  // BrowserView. Deleting BrowserView will also delete the SidePanel.
+  pref_change_registrar_.Add(
+      prefs::kSidePanelHorizontalAlignment,
+      base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
+                          base::Unretained(browser_view)));
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
