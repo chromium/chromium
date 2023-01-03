@@ -45,6 +45,10 @@
        <include name="IDR_IO_COM_GAMEHIVECORP_TAPTITANS2" file="com.gamehivecorp.taptitans2.json" type="BINDATA" />
        <include name="IDR_IO_COM_ODDROK_POWERHOVER" file="com.oddrok.powerhover.json" type="BINDATA" />
        <include name="IDR_IO_COM_ROBTOPX_GEOMETRYJUMPLITE" file="com.robtopx.geometryjumplite.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ROBTOPX_GEOMETRYDASHWORLD" file="com.robtopx.geometrydashworld.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ROBTOPX_GEOMETRYDASHMELTDOWN" file="com.robtopx.geometrydashmeltdown.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ROBTOPX_GEOMETRYDASHSUBZERO" file="com.robtopx.geometrydashsubzero.json" type="BINDATA" />
+       <include name="IDR_IO_COM_KITKAGAMES_FALLBUDDIES" file="com.kitkagames.fallbuddies.json" type="BINDATA" />
     </includes>
   </release>
 </grit>

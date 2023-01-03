@@ -50,6 +50,10 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
       {"com.gamehivecorp.taptitans2", IDR_IO_COM_GAMEHIVECORP_TAPTITANS2},
       {"com.oddrok.powerhover", IDR_IO_COM_ODDROK_POWERHOVER},
       {"com.robtopx.geometryjumplite", IDR_IO_COM_ROBTOPX_GEOMETRYJUMPLITE},
+      {"com.robtopx.geometrydashworld", IDR_IO_COM_ROBTOPX_GEOMETRYDASHWORLD},
+      {"com.robtopx.geometrydashmeltdown", IDR_IO_COM_ROBTOPX_GEOMETRYDASHMELTDOWN},
+      {"com.robtopx.geometrydashsubzero", IDR_IO_COM_ROBTOPX_GEOMETRYDASHSUBZERO},
+      {"com.kitkagames.fallbuddies", IDR_IO_COM_KITKAGAMES_FALLBUDDIES},
   };
 
   auto it = resource_id_map.find(package_name);

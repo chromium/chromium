@@ -19,40 +19,26 @@
             0
           ],
           "anchor_to_target": [
-            0.5140772,
-            0.73645204
+            0.8825215,
+            0.7912037
           ]
         }
       ]
-    },
+    }
+  ],
+  "move": [
     {
       "id": 1,
       "input_sources": [
         "keyboard"
       ],
-      "name": "add flag",
-      "key": "KeyG",
-      "location": [
-        {
-          "type": "position",
-          "anchor": [
-            0,
-            0
-          ],
-          "anchor_to_target": [
-            0.447341,
-            0.8707735
-          ]
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "input_sources": [
-        "keyboard"
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD"
       ],
-      "name": "remove flag",
-      "key": "KeyH",
       "location": [
         {
           "type": "position",
@@ -61,8 +47,8 @@
             0
           ],
           "anchor_to_target": [
-            0.5654327,
-            0.8707735
+            0.13623339,
+            0.67638886
           ]
         }
       ]
