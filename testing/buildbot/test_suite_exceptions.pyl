@@ -3664,6 +3664,21 @@
           '--git-revision': '${got_cr_revision}',
         },
       },
+      'Linux V8 FYI Release - pointer compression (NVIDIA)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Mac V8 FYI Release (Intel)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Win V8 FYI Release (NVIDIA)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
     },
   },
   'wayland_client_perftests': {
@@ -3694,11 +3709,23 @@
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
     ],
   },
+  'webgl2_conformance_d3d11_passthrough_tests': {
+    'remove_from': [
+      # Removed from V8 builder since WebGL 1 should provide reasonable
+      # upstream test coverage without the capacity hit from WebGL 2.
+      'Win V8 FYI Release (NVIDIA)',
+    ],
+  },
   'webgl2_conformance_gl_passthrough_tests': {
     'remove_from': [
+      # Removed from V8 builders since WebGL 1 should provide reasonable
+      # upstream test coverage without the capacity hit from WebGL 2.
+      'Linux V8 FYI Release (NVIDIA)',
+      'Linux V8 FYI Release - pointer compression (NVIDIA)',
       # Not enough capacity on Mac AMD https://crbug.com/1375306.
       'Mac FYI Retina ASAN (AMD)',
       'Mac FYI Retina Release (AMD)',
+      'Mac V8 FYI Release (Intel)',
       'mac-angle-chromium-amd',
     ],
   },
@@ -3731,6 +3758,9 @@
       'Mac FYI Retina ASAN (AMD)',
       # Not enough capacity.
       'Mac FYI Retina Release (NVIDIA)',
+      # Removed from V8 builders since WebGL 1 should provide reasonable
+      # upstream test coverage without the capacity hit from WebGL 2.
+      'Mac V8 FYI Release (Intel)',
     ],
     'modifications': {
       'Mac FYI ASAN (Intel)': {
