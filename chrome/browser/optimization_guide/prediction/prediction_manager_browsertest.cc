@@ -320,8 +320,8 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
 }
 
 // TODO(crbug.com/1402697): Flaky on linux-chromeos-chrome bot.
-// TODO(crbug.com/1402228): Also flaky on Win-ASAN bot.
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/1402228): Also flaky on ASAN bots.
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER)
 #define MAYBE_PredictionModelFetchFailed DISABLED_PredictionModelFetchFailed
 #else
 #define MAYBE_PredictionModelFetchFailed PredictionModelFetchFailed
