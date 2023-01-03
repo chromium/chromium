@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_callback_glue.SupportLibWebViewContentsClientAdapter;
@@ -96,11 +95,9 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             if (mSupportLibClient.isFeatureAvailable(Features.SHOULD_OVERRIDE_WITH_REDIRECTS)) {
                 result = mSupportLibClient.shouldOverrideUrlLoading(
                         mWebView, new WebResourceRequestAdapter(request));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                result = ApiHelperForN.shouldOverrideUrlLoading(
-                        mWebViewClient, mWebView, new WebResourceRequestAdapter(request));
             } else {
-                result = mWebViewClient.shouldOverrideUrlLoading(mWebView, request.url);
+                result = mWebViewClient.shouldOverrideUrlLoading(
+                        mWebView, new WebResourceRequestAdapter(request));
             }
             if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading result=" + result);
 

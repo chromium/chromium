@@ -8,7 +8,6 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 
 import com.android.webview.chromium.WebViewLibraryPreloader;
 
@@ -112,9 +111,7 @@ public class WebViewApkApplication extends Application {
             controller.registerActions(NonembeddedSafeModeActionsList.sList);
         }
 
-        // Limit to N+ since external services were added in N.
-        if (!LibraryLoader.getInstance().isLoadedByZygote()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (!LibraryLoader.getInstance().isLoadedByZygote()) {
             LibraryLoader.getInstance().setNativeLibraryPreloader(new WebViewLibraryPreloader());
         }
     }

@@ -12,7 +12,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
@@ -300,8 +299,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.options_menu_switch_provider
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (item.getItemId() == R.id.options_menu_switch_provider) {
             logMenuSelection(MenuChoice.SWITCH_PROVIDER);
             SafeIntentUtils.startActivityOrShowError(this,
                     new Intent(Settings.ACTION_WEBVIEW_SETTINGS),

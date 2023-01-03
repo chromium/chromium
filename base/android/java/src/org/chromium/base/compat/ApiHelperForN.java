@@ -6,8 +6,6 @@ package org.chromium.base.compat;
 
 import android.app.Activity;
 import android.app.Notification;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
@@ -20,9 +18,6 @@ import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.RemoteViews;
 
 import androidx.annotation.RequiresApi;
@@ -35,20 +30,6 @@ import androidx.annotation.RequiresApi;
 @RequiresApi(Build.VERSION_CODES.N)
 public final class ApiHelperForN {
     private ApiHelperForN() {}
-
-    /**
-     * See {@link WebViewClient#shouldOverrideUrlLoading(WebView, WebResourceRequest)}, which was
-     * added in N.
-     */
-    public static boolean shouldOverrideUrlLoading(
-            WebViewClient webViewClient, WebView webView, WebResourceRequest request) {
-        return webViewClient.shouldOverrideUrlLoading(webView, request);
-    }
-
-    /** See {@link JobScheduler#getPendingJob(int)}. */
-    public static JobInfo getPendingJob(JobScheduler scheduler, int jobId) {
-        return scheduler.getPendingJob(jobId);
-    }
 
     /** See {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)}. */
     public static boolean startDragAndDrop(View view, ClipData data,
