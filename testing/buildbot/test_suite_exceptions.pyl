@@ -1789,7 +1789,7 @@
       },
       'linux-chromeos-rel': {
         'swarming': {
-          'shards': 3,
+          'shards': 6,
         },
       },
       'linux-code-coverage': {
@@ -2510,6 +2510,11 @@
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 6,
+        },
+      },
+      'linux-chromeos-rel': {
+        'swarming': {
+          'shards': 5,
         },
       },
       'linux-code-coverage': {
@@ -3313,6 +3318,11 @@
       'linux-chromeos-code-coverage': {
         'swarming': {
           'shards': 4,
+        },
+      },
+      'linux-chromeos-rel': {
+        'swarming': {
+          'shards': 2,
         },
       },
       'linux-code-coverage': {
