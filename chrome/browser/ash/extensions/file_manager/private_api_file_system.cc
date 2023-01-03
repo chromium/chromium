@@ -433,8 +433,6 @@ ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
   const FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(GURL(url));
   if (file_system_url.path().empty()) {
-    auto result_list = std::make_unique<base::ListValue>();
-    result_list->Append(false);
     return RespondNow(Error("Invalid URL"));
   }
 
