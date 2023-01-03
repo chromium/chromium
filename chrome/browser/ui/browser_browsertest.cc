@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogDefersNavigationCommit) {
     EXPECT_TRUE(handle->IsWaitingToCommit());
   }
 
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
 // Test for crbug.com/297289.  Ensure that modal dialogs are closed when a
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RendererCrossProcessNavCancelsDialogs) {
   EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
 
   // Let the navigation to url2 finish and dismiss the dialog.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 
   // Make sure input events still work in the renderer process.
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DownloadDoesntDismissDialog) {
 
   // Let the url2 response finish and become a download, without dismissing the
   // dialog.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
   download_waiter->WaitForFinished();
 

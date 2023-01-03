@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, NonCommitURLNavigation) {
 
   // Since the navigation did not commit, the last committed URL becomes the
   // visible URL again, so the starred state should be restored.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(manager.was_committed());
   EXPECT_TRUE(bookmark_observer.is_starred());
 }
