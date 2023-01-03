@@ -42,7 +42,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.BatterySaver.SettingsChangeMode"
-    enum="BatterySaverModeState" expires_after="2023-04-30">
+    enum="BatterySaverModeState" expires_after="2023-07-02">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.BubbleAction"
-    enum="HighEfficiencyBubbleActionType" expires_after="2023-04-30">
+    enum="HighEfficiencyBubbleActionType" expires_after="2023-07-02">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -90,7 +90,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.HighEfficiency.SettingsChangeExceptionList"
-    enum="HighEfficiencyModeExceptionListAction" expires_after="2023-04-30">
+    enum="HighEfficiencyModeExceptionListAction" expires_after="2023-07-02">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -102,7 +102,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode"
-    enum="BooleanEnabled" expires_after="2023-04-30">
+    enum="BooleanEnabled" expires_after="2023-07-02">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
