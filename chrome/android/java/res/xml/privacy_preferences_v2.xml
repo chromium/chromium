@@ -26,6 +26,11 @@ found in the LICENSE file.
         android:title="@string/third_party_cookies_page_title"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <Preference
+        android:key="privacy_sandbox"
+        android:title="@string/ad_privacy_link_row_label"
+        android:summary="@string/ad_privacy_link_row_sub_label"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4" />
+    <Preference
         android:key="do_not_track"
         android:title="@string/do_not_track_title"
         android:fragment="org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings" />
@@ -34,11 +39,6 @@ found in the LICENSE file.
         android:title="@string/preload_pages_title"
         android:summary="@string/preload_pages_summary"
         android:fragment="org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment" />
-    <Preference
-        android:key="privacy_sandbox"
-        android:title="@string/ad_privacy_link_row_label"
-        android:summary="@string/ad_privacy_link_row_sub_label"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4" />
     <org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference
         android:key="incognito_lock"
         android:title="@string/settings_incognito_tab_lock_title"
