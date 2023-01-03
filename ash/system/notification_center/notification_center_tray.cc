@@ -10,10 +10,12 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_container.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/message_center/message_center.h"
@@ -58,6 +60,10 @@ void NotificationCenterTray::OnSystemTrayVisibilityChanged(
 
 bool NotificationCenterTray::IsBubbleShown() const {
   return !!bubble_;
+}
+
+std::u16string NotificationCenterTray::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME);
 }
 
 std::u16string NotificationCenterTray::GetAccessibleNameForTray() {

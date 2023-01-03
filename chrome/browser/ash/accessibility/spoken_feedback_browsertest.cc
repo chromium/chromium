@@ -22,8 +22,10 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/bind.h"
@@ -341,6 +343,46 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm_.ExpectSpeech("Swipe two fingers left");
   sm_.ExpectSpeech("Escape");
   sm_.ExpectSpeech("Stopping Learn Mode");
+
+  sm_.Replay();
+}
+
+class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
+ protected:
+  NotificationCenterSpokenFeedbackTest() {
+    feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kQsRevampWip}, {});
+  }
+  ~NotificationCenterSpokenFeedbackTest() override = default;
+
+  NotificationCenterTestApi* test_api() {
+    if (!test_api_) {
+      test_api_ = std::make_unique<NotificationCenterTestApi>(
+          StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+              ->notification_center_tray());
+    }
+    return test_api_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<NotificationCenterTestApi> test_api_;
+};
+
+// Tests that clicking the notification center tray does not crash when spoken
+// feedback is enabled.
+IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
+  // Enable spoken feedback and add a notification to ensure the tray is
+  // visible.
+  EnableChromeVox();
+  test_api()->AddNotification();
+  ASSERT_TRUE(test_api()->IsTrayShown());
+
+  // Click on the tray and verify the bubble shows up.
+  test_api()->ToggleBubble();
+  EXPECT_TRUE(test_api()->GetWidget()->IsActive());
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+  sm_.ExpectSpeech("Notification Center");
 
   sm_.Replay();
 }

@@ -46,6 +46,7 @@ class ASH_EXPORT NotificationCenterTray
   bool IsBubbleShown() const;
 
   // TrayBackgroundView:
+  std::u16string GetAccessibleNameForBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;

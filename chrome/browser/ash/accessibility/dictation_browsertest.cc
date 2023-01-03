@@ -10,6 +10,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_test_helper.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_set.h"
@@ -2146,5 +2149,70 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
   SendFinalResultAndWait("unselect");
   WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
 }
+
+class NotificationCenterDictationTest : public DictationTest {
+ public:
+  NotificationCenterDictationTest() = default;
+  NotificationCenterDictationTest(const NotificationCenterDictationTest&) =
+      delete;
+  NotificationCenterDictationTest& operator=(
+      const NotificationCenterDictationTest&) = delete;
+  ~NotificationCenterDictationTest() override = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationTest::SetUpCommandLine(command_line);
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.emplace_back(features::kQsRevamp);
+    enabled_features.emplace_back(features::kQsRevampWip);
+    scoped_feature_list_.InitWithFeatures(
+        enabled_features, std::vector<base::test::FeatureRef>());
+  }
+
+  void SetUpOnMainThread() override {
+    DictationTest::SetUpOnMainThread();
+    ToggleDictationWithKeystroke();
+    WaitForRecognitionStarted();
+  }
+
+  void TearDownOnMainThread() override {
+    ToggleDictationWithKeystroke();
+    WaitForRecognitionStopped();
+    DictationTest::TearDownOnMainThread();
+  }
+
+  NotificationCenterTestApi* test_api() {
+    if (!test_api_) {
+      test_api_ = std::make_unique<NotificationCenterTestApi>(
+          StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+              ->notification_center_tray());
+    }
+    return test_api_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<NotificationCenterTestApi> test_api_;
+};
+
+// Tests that clicking the notification center tray does not crash when
+// dictation is enabled.
+IN_PROC_BROWSER_TEST_P(NotificationCenterDictationTest, OpenBubble) {
+  // Add a notification to ensure the tray is visible.
+  test_api()->AddNotification();
+  ASSERT_TRUE(test_api()->IsTrayShown());
+
+  // Click on the tray and verify the bubble shows up.
+  test_api()->ToggleBubble();
+  EXPECT_TRUE(test_api()->GetWidget()->IsActive());
+  EXPECT_TRUE(test_api()->IsBubbleShown());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkTextArea,
+    NotificationCenterDictationTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
 
 }  // namespace ash
