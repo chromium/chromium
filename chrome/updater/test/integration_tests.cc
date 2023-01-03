@@ -950,7 +950,7 @@ TEST_F(IntegrationTest, InstallDataIndex) {
 }
 
 TEST_F(IntegrationTest, MigrateLegacyUpdater) {
-  SetupFakeLegacyUpdaterData();
+  ASSERT_NO_FATAL_FAILURE(SetupFakeLegacyUpdaterData());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdaterDataMigrated());
