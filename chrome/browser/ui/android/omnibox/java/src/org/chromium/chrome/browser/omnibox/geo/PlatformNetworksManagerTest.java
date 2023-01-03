@@ -274,7 +274,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetConnectedCell_allPermissionsDenied() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         allPermissionsDenied();
         VisibleCell visibleCell =
                 PlatformNetworksManager.getConnectedCell(mContext, mTelephonyManager);
@@ -289,7 +289,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetAllVisibleCells_allPermissionsDenied() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         allPermissionsDenied();
         PlatformNetworksManager.getAllVisibleCells(
                 mContext, mTelephonyManager, mVisibleCellCallback);
@@ -326,7 +326,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetConnectedWifi_allPermissionsDenied() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         allPermissionsDenied();
         VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(UNKNOWN_VISIBLE_WIFI, visibleWifi);
@@ -335,8 +335,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetConnectedWifi_locationGrantedWifiDenied() {
-        ReflectionHelpers.setStaticField(
-                Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.LOLLIPOP);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         locationGrantedWifiDenied();
         VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(CONNECTED_WIFI, visibleWifi);
@@ -346,8 +345,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetConnectedWifi_locationGrantedWifiDenied_noWifiInfo() {
-        ReflectionHelpers.setStaticField(
-                Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.LOLLIPOP);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         locationGrantedWifiDenied();
         when(mNetworkStateChangedIntent.getParcelableExtra(eq(WifiManager.EXTRA_WIFI_INFO)))
                 .thenReturn(null);
@@ -359,7 +357,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetConnectedWifi_locationDeniedWifiGranted() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         locationDeniedWifiGranted();
         VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(UNKNOWN_VISIBLE_WIFI, visibleWifi);
@@ -387,7 +385,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetAllVisibleWifis_allPermissionsDenied() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         allPermissionsDenied();
         Set<VisibleWifi> visibleWifis =
                 PlatformNetworksManager.getAllVisibleWifis(mContext, mWifiManager);
@@ -397,7 +395,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetAllVisibleWifis_locationGrantedWifiDenied() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         locationGrantedWifiDenied();
         Set<VisibleWifi> visibleWifis =
                 PlatformNetworksManager.getAllVisibleWifis(mContext, mWifiManager);
@@ -407,7 +405,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetAllVisibleWifis_locationDeniedWifiGranted() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.P);
         locationDeniedWifiGranted();
         Set<VisibleWifi> visibleWifis =
                 PlatformNetworksManager.getAllVisibleWifis(mContext, mWifiManager);
