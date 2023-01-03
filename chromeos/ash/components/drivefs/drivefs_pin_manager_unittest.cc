@@ -217,7 +217,7 @@ TEST_F(DriveFsPinManagerTest, OnFreeDiskSpaceFailingShouldNotSearchDrive) {
 
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(0);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
-  EXPECT_CALL(mock_callback, Run(SetupError::kErrorCalculatingFreeDiskSpace))
+  EXPECT_CALL(mock_callback, Run(SetupError::kCannotCalculateFreeSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
@@ -239,7 +239,7 @@ TEST_F(DriveFsPinManagerTest, DriveReturningAnErrorShouldFail) {
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_FAILED)));
-  EXPECT_CALL(mock_callback, Run(SetupError::kErrorRetrievingSearchResults))
+  EXPECT_CALL(mock_callback, Run(SetupError::kCannotRetrieveSearchResults))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
@@ -260,7 +260,7 @@ TEST_F(DriveFsPinManagerTest, DriveReturnedSuccessButInvalidResultsShouldFail) {
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       .WillOnce(Return(drive::FileError::FILE_ERROR_OK));
-  EXPECT_CALL(mock_callback, Run(SetupError::kErrorResultsReturnedInvalid))
+  EXPECT_CALL(mock_callback, Run(SetupError::kCannotRetrieveSearchResults))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
@@ -286,7 +286,7 @@ TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)));
-  EXPECT_CALL(mock_callback, Run(SetupError::kErrorNotEnoughFreeSpace))
+  EXPECT_CALL(mock_callback, Run(SetupError::kNotEnoughSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
@@ -319,7 +319,7 @@ TEST_F(DriveFsPinManagerTest,
       // operations being mock failed.
       .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)));
-  EXPECT_CALL(mock_callback, Run(SetupError::kErrorFailedToPinItem))
+  EXPECT_CALL(mock_callback, Run(SetupError::kCannotPinItem))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(*mock_free_disk_space, AmountOfFreeDiskSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
@@ -569,9 +569,9 @@ TEST_F(DriveFsPinManagerTest,
   status->item_events.at(0)->bytes_transferred = 10;
   EXPECT_CALL(
       mock_pin_observer,
-      OnSetupProgress(AllOf(Field(&SetupProgress::pinned_disk_space, 10),
-                            Field(&SetupProgress::stage,
-                                  SetupStage::kCalculatedRequiredDiskSpace))))
+      OnSetupProgress(AllOf(
+          Field(&SetupProgress::pinned_disk_space, 10),
+          Field(&SetupProgress::stage, SetupStage::kCalculatedRequiredSpace))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
   manager->OnSyncingStatusUpdate(*status);
@@ -594,9 +594,9 @@ TEST_F(DriveFsPinManagerTest,
                              mojom::ItemEvent::State::kCompleted);
   status->item_events.at(0)->bytes_transferred = 128;
   EXPECT_CALL(mock_pin_observer,
-              OnSetupProgress(AllOf(
-                  Field(&SetupProgress::pinned_disk_space, 128),
-                  Field(&SetupProgress::stage, SetupStage::kFinishedSetup))))
+              OnSetupProgress(
+                  AllOf(Field(&SetupProgress::pinned_disk_space, 128),
+                        Field(&SetupProgress::stage, SetupStage::kFinished))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
   manager->OnSyncingStatusUpdate(*status);

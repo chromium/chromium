@@ -43,17 +43,14 @@ extern const base::TimeDelta kPeriodicRemovalInterval;
 // Errors that are returned via the completion callback that indicate either
 // which stage the failure was at or whether the initial setup was a success.
 enum class SetupError {
-  kSuccess = 0,
-  kManagerDisabled = 1,
-  kErrorCalculatingFreeDiskSpace = 2,
-  kErrorRetrievingSearchResults = 3,
-  kErrorResultsReturnedInvalid = 4,
-  kErrorNotEnoughFreeSpace = 5,
-  kErrorRetrievingSearchResultsForPinning = 6,
-  kErrorResultsReturnedInvalidForPinning = 7,
-  kErrorFailedToPinItem = 8,
-  kErrorSearchQueryNotBound = 9,
-  kErrorManagerStopped = 10,
+  kSuccess,
+  kManagerDisabled,
+  kManagerStopped,
+  kCannotCalculateFreeSpace,
+  kCannotRetrieveSearchResults,
+  kCannotPinItem,
+  kNotEnoughSpace,
+  kSearchQueryNotBound,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
@@ -65,11 +62,11 @@ std::ostream& operator<<(std::ostream& out, SetupError error);
 // through.
 enum class SetupStage {
   kError = -1,
-  kNotStarted = 0,
-  kStarted = 1,
-  kCalculatedFreeLocalDiskSpace = 2,
-  kCalculatedRequiredDiskSpace = 3,
-  kFinishedSetup = 4,
+  kNotStarted,
+  kStarted,
+  kCalculatedFreeSpace,
+  kCalculatedRequiredSpace,
+  kFinished,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
@@ -114,7 +111,7 @@ struct SetupProgress {
 struct ManagerState {
   SetupProgress progress;
 
-  bool SetupInProgress();
+  bool SetupInProgress() const;
 };
 
 // Observe the setup progress via subscribing as an observer on the
@@ -139,13 +136,11 @@ class DriveFsBulkPinObserver {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     : public DriveFsHostObserver {
  public:
-  DriveFsPinManager(bool enabled,
-                    const base::FilePath& profile_path,
-                    mojom::DriveFs* drivefs_interface);
-  DriveFsPinManager(bool enabled,
-                    const base::FilePath& profile_path,
-                    mojom::DriveFs* drivefs_interface,
-                    std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space);
+  DriveFsPinManager(
+      bool enabled,
+      const base::FilePath& profile_path,
+      mojom::DriveFs* drivefs_interface,
+      std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space = nullptr);
 
   DriveFsPinManager(const DriveFsPinManager&) = delete;
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
@@ -287,18 +282,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // Report progress to all the observers.
   void NotifyProgress();
 
-  // Denotes whether the feature is enabled. if the feature is disabled no setup
+  // Denotes whether the feature is enabled. If the feature is disabled no setup
   // nor monitoring occurs.
   bool enabled_ = false;
 
   base::OnceCallback<void(SetupError)> complete_callback_;
-  std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space_;
+  const std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space_;
 
   ManagerState state_;
   base::ObserverList<DriveFsBulkPinObserver>::Unchecked observers_;
 
-  base::FilePath profile_path_;
-  raw_ptr<mojom::DriveFs> drivefs_interface_;
+  const base::FilePath profile_path_;
+  const raw_ptr<mojom::DriveFs> drivefs_interface_;
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
 

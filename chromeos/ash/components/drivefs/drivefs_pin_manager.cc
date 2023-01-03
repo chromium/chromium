@@ -105,15 +105,12 @@ std::ostream& operator<<(std::ostream& out, const SetupError error) {
     return out << #s;
     PRINT(Success)
     PRINT(ManagerDisabled)
-    PRINT(ErrorCalculatingFreeDiskSpace)
-    PRINT(ErrorRetrievingSearchResults)
-    PRINT(ErrorResultsReturnedInvalid)
-    PRINT(ErrorNotEnoughFreeSpace)
-    PRINT(ErrorRetrievingSearchResultsForPinning)
-    PRINT(ErrorResultsReturnedInvalidForPinning)
-    PRINT(ErrorFailedToPinItem)
-    PRINT(ErrorSearchQueryNotBound)
-    PRINT(ErrorManagerStopped)
+    PRINT(ManagerStopped)
+    PRINT(CannotCalculateFreeSpace)
+    PRINT(CannotRetrieveSearchResults)
+    PRINT(CannotPinItem)
+    PRINT(NotEnoughSpace)
+    PRINT(SearchQueryNotBound)
 #undef PRINT
   }
 
@@ -132,9 +129,9 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
     PRINT(Error)
     PRINT(NotStarted)
     PRINT(Started)
-    PRINT(CalculatedFreeLocalDiskSpace)
-    PRINT(CalculatedRequiredDiskSpace)
-    PRINT(FinishedSetup)
+    PRINT(CalculatedFreeSpace)
+    PRINT(CalculatedRequiredSpace)
+    PRINT(Finished)
 #undef PRINT
   }
 
@@ -171,7 +168,7 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
 
 int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     const std::string& path,
-    int64_t total_bytes) {
+    const int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto it = in_progress_items_.find(path);
   if (it == in_progress_items_.end()) {
@@ -232,32 +229,26 @@ DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
   return unstarted_items;
 }
 
-bool ManagerState::SetupInProgress() {
-  return progress.stage != SetupStage::kFinishedSetup &&
+bool ManagerState::SetupInProgress() const {
+  return progress.stage != SetupStage::kFinished &&
          progress.stage != SetupStage::kError &&
          progress.stage != SetupStage::kNotStarted;
 }
-
-DriveFsPinManager::DriveFsPinManager(bool enabled,
-                                     const base::FilePath& profile_path,
-                                     mojom::DriveFs* drivefs_interface)
-    : enabled_(enabled),
-      free_disk_space_(std::make_unique<FreeDiskSpaceImpl>()),
-      profile_path_(profile_path),  // The GCache directory is located in the
-                                    // users profile path.
-      drivefs_interface_(drivefs_interface),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-      syncing_items_(
-          base::SequenceBound<InProgressSyncingItems>{task_runner_}) {}
 
 DriveFsPinManager::DriveFsPinManager(
     bool enabled,
     const base::FilePath& profile_path,
     mojom::DriveFs* drivefs_interface,
     std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space)
-    : DriveFsPinManager(enabled, profile_path, drivefs_interface) {
-  free_disk_space_ = std::move(free_disk_space);
-}
+    : enabled_(enabled),
+      free_disk_space_(free_disk_space ? std::move(free_disk_space)
+                                       : std::make_unique<FreeDiskSpaceImpl>()),
+      profile_path_(profile_path),  // The GCache directory is located in the
+                                    // users profile path.
+      drivefs_interface_(drivefs_interface),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+      syncing_items_(
+          base::SequenceBound<InProgressSyncingItems>{task_runner_}) {}
 
 DriveFsPinManager::~DriveFsPinManager() = default;
 
@@ -286,24 +277,21 @@ void DriveFsPinManager::Start(
 }
 
 void DriveFsPinManager::Stop() {
-  Complete(SetupError::kErrorManagerStopped);
+  Complete(SetupError::kManagerStopped);
 }
 
-void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
-  if (free_space == -1) {
+void DriveFsPinManager::OnFreeDiskSpaceRetrieved(const int64_t free_space) {
+  if (free_space < 0) {
     LOG(ERROR) << "Cannot calculate free space";
-    std::move(complete_callback_)
-        .Run(SetupError::kErrorCalculatingFreeDiskSpace);
-    return;
+    return Complete(SetupError::kCannotCalculateFreeSpace);
   }
 
-  state_.progress.stage = SetupStage::kCalculatedFreeLocalDiskSpace;
+  VLOG(2) << "Free space: " << HumanReadableSize(free_space);
+  state_.progress.stage = SetupStage::kCalculatedFreeSpace;
   state_.progress.available_disk_space = free_space;
   NotifyProgress();
 
-  VLOG(1) << "Starting to search for items to calculate required space";
-  VLOG(2) << "Free space: "
-          << HumanReadableSize(state_.progress.available_disk_space);
+  VLOG(1) << "Enumerating items to calculate required space...";
   mojom::QueryParametersPtr query = CreateMyDriveQuery();
   drivefs_interface_->StartSearchQuery(
       search_query_.BindNewPipeAndPassReceiver(), std::move(query));
@@ -315,16 +303,9 @@ void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
 void DriveFsPinManager::OnSearchResultForSizeCalculation(
     const drive::FileError error,
     const absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
-  if (error != drive::FILE_ERROR_OK) {
+  if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files for size calculation: " << error;
-    Complete(SetupError::kErrorRetrievingSearchResults);
-    return;
-  }
-
-  if (!items.has_value()) {
-    LOG(ERROR) << "Invalid item list";
-    Complete(SetupError::kErrorResultsReturnedInvalid);
-    return;
+    return Complete(SetupError::kCannotRetrieveSearchResults);
   }
 
   if (items->empty()) {
@@ -334,8 +315,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
             << HumanReadableSize(state_.progress.required_disk_space);
     VLOG(1) << "Free space: "
             << HumanReadableSize(state_.progress.available_disk_space);
-    StartBatchPinning();
-    return;
+    return StartBatchPinning();
   }
 
   VLOG(2) << "Iterating over " << items->size()
@@ -361,13 +341,11 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
                << HumanReadableSize(state_.progress.required_disk_space)
                << ", Free = "
                << HumanReadableSize(state_.progress.available_disk_space);
-    Complete(SetupError::kErrorNotEnoughFreeSpace);
-    return;
+    return Complete(SetupError::kNotEnoughSpace);
   }
 
   if (!search_query_.is_bound()) {
-    Complete(SetupError::kErrorSearchQueryNotBound);
-    return;
+    return Complete(SetupError::kSearchQueryNotBound);
   }
 
   NotifyProgress();
@@ -378,9 +356,14 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 
 void DriveFsPinManager::Complete(const SetupError error) {
   state_.progress.error = error;
-  state_.progress.stage = error == SetupError::kSuccess
-                              ? SetupStage::kFinishedSetup
-                              : SetupStage::kError;
+  if (error == SetupError::kSuccess) {
+    VLOG(1) << "Finished with success";
+    state_.progress.stage = SetupStage::kFinished;
+  } else {
+    LOG(ERROR) << "Finished with error: " << error;
+    state_.progress.stage = SetupStage::kError;
+  }
+
   NotifyProgress();
   weak_ptr_factory_.InvalidateWeakPtrs();
   search_query_.reset();
@@ -393,12 +376,11 @@ void DriveFsPinManager::StartBatchPinning() {
   // Restart the search query.
   search_query_.reset();
 
-  state_.progress.stage = SetupStage::kCalculatedRequiredDiskSpace;
+  state_.progress.stage = SetupStage::kCalculatedRequiredSpace;
   NotifyProgress();
 
-  mojom::QueryParametersPtr query = CreateMyDriveQuery();
   drivefs_interface_->StartSearchQuery(
-      search_query_.BindNewPipeAndPassReceiver(), std::move(query));
+      search_query_.BindNewPipeAndPassReceiver(), CreateMyDriveQuery());
   search_query_->GetNextPage(
       base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -413,18 +395,11 @@ void DriveFsPinManager::StartBatchPinning() {
 }
 
 void DriveFsPinManager::OnSearchResultsForPinning(
-    drive::FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
-  if (error != drive::FILE_ERROR_OK) {
+    const drive::FileError error,
+    const absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+  if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files to pin: " << error;
-    Complete(SetupError::kErrorRetrievingSearchResultsForPinning);
-    return;
-  }
-
-  if (!items.has_value()) {
-    LOG(ERROR) << "Invalid item list";
-    Complete(SetupError::kErrorResultsReturnedInvalidForPinning);
-    return;
+    return Complete(SetupError::kCannotRetrieveSearchResults);
   }
 
   if (items->empty()) {
@@ -433,11 +408,10 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     if (state_.progress.error_count > 0) {
       LOG(ERROR) << "There were " << state_.progress.error_count
                  << " errors while pinning files";
-      Complete(SetupError::kErrorFailedToPinItem);
-    } else {
-      Complete(SetupError::kSuccess);
+      return Complete(SetupError::kCannotPinItem);
     }
-    return;
+
+    return Complete(SetupError::kSuccess);
   }
 
   // TODO(b/259454320): Free disk space should be retrieved here and after the
@@ -467,8 +441,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
   }
 
   if (!search_query_.is_bound()) {
-    Complete(SetupError::kErrorSearchQueryNotBound);
-    return;
+    return Complete(SetupError::kSearchQueryNotBound);
   }
 
   VLOG(1) << "All items in current batch are already pinned";
@@ -533,8 +506,7 @@ void DriveFsPinManager::ReportTotalBytesTransferred(
 
 void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
   if (!search_query_.is_bound()) {
-    Complete(SetupError::kErrorSearchQueryNotBound);
-    return;
+    return Complete(SetupError::kSearchQueryNotBound);
   }
 
   if (remaining_items == 0) {
