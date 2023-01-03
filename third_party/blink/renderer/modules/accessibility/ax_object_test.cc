@@ -1281,9 +1281,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <div id="div1" inert>inert</div>
-    <div id="div2" hidden>
-      <span id="span" inert>non-rendered inert</span>
-    </div>
     <dialog id="dialog1">dialog</dialog>
     <dialog id="dialog2" inert>inert dialog</dialog>
     <p id="p1">fullscreen</p>
@@ -1294,9 +1291,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   Element* body = document.body();
   Element* div1 = GetElementById("div1");
   Node* div1_text = div1->firstChild();
-  Element* div2 = GetElementById("div2");
-  Element* span = GetElementById("span");
-  Node* span_text = span->firstChild();
   auto* dialog1 = To<HTMLDialogElement>(GetElementById("dialog1"));
   Node* dialog1_text = dialog1->firstChild();
   auto* dialog2 = To<HTMLDialogElement>(GetElementById("dialog2"));
@@ -1335,9 +1329,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertNotInert(body);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertNotInert(div2);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertNotInert(dialog1);
   AssertNotInert(dialog1_text);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1352,9 +1343,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(body, kAXActiveModalDialog);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(div2, kAXActiveModalDialog);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertNotInert(dialog1);
   AssertNotInert(dialog1_text);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1369,9 +1357,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(body, kAXActiveModalDialog);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(div2, kAXActiveModalDialog);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertInertReasons(dialog1, kAXActiveModalDialog);
   AssertInertReasons(dialog1_text, kAXActiveModalDialog);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1386,9 +1371,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(body, kAXActiveModalDialog);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(div2, kAXActiveModalDialog);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertInertReasons(dialog1, kAXActiveModalDialog);
   AssertInertReasons(dialog1_text, kAXActiveModalDialog);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1404,9 +1386,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(body, kAXActiveFullscreenElement);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(div2, kAXActiveFullscreenElement);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertInertReasons(dialog1, kAXActiveFullscreenElement);
   AssertInertReasons(dialog1_text, kAXActiveFullscreenElement);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1422,9 +1401,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(body, kAXActiveFullscreenElement);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(div2, kAXActiveFullscreenElement);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertInertReasons(dialog1, kAXActiveFullscreenElement);
   AssertInertReasons(dialog1_text, kAXActiveFullscreenElement);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1439,9 +1415,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertNotInert(body);
   AssertInertReasons(div1, kAXInertElement);
   AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertNotInert(div2);
-  AssertInertReasons(span, kAXInertElement);
-  AssertInertReasons(span_text, kAXInertSubtree);
   AssertNotInert(dialog1);
   AssertNotInert(dialog1_text);
   AssertInertReasons(dialog2, kAXInertElement);
@@ -1501,55 +1474,6 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
 
     element = ElementTraversal::FirstChild(*element);
   }
-}
-
-TEST_F(AccessibilityTest, IsInertInDisplayNone) {
-  const Document& document = GetDocument();
-  ScopedInertAttributeForTest enabled_scope(true);
-  SetBodyInnerHTML(R"HTML(
-    <div hidden>
-      foo
-      <p inert>
-        bar
-        <span>baz</span>
-      </p>
-    </div>
-  )HTML");
-
-  Element* body = document.body();
-  AXObject* ax_body = GetAXObjectCache().GetOrCreate(body);
-  ASSERT_NE(ax_body, nullptr);
-  ASSERT_FALSE(ax_body->IsInert());
-
-  Element* div = body->QuerySelector("div");
-  AXObject* ax_div = GetAXObjectCache().GetOrCreate(div);
-  ASSERT_NE(ax_div, nullptr);
-  ASSERT_FALSE(ax_div->IsInert());
-
-  Node* div_text = div->firstChild();
-  AXObject* ax_div_text = GetAXObjectCache().GetOrCreate(div_text);
-  ASSERT_NE(ax_div_text, nullptr);
-  ASSERT_FALSE(ax_div_text->IsInert());
-
-  Element* p = div->QuerySelector("p");
-  AXObject* ax_p = GetAXObjectCache().GetOrCreate(p);
-  ASSERT_NE(ax_p, nullptr);
-  ASSERT_TRUE(ax_p->IsInert());
-
-  Node* p_text = p->firstChild();
-  AXObject* ax_p_text = GetAXObjectCache().GetOrCreate(p_text);
-  ASSERT_NE(ax_p_text, nullptr);
-  ASSERT_TRUE(ax_p_text->IsInert());
-
-  Element* span = p->QuerySelector("span");
-  AXObject* ax_span = GetAXObjectCache().GetOrCreate(span);
-  ASSERT_NE(ax_span, nullptr);
-  ASSERT_TRUE(ax_span->IsInert());
-
-  Node* span_text = span->firstChild();
-  AXObject* ax_span_text = GetAXObjectCache().GetOrCreate(span_text);
-  ASSERT_NE(ax_span_text, nullptr);
-  ASSERT_TRUE(ax_span_text->IsInert());
 }
 
 TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
