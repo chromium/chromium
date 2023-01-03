@@ -80,7 +80,6 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   absl::optional<bool> installable_;
   base::Value::List debug_log_;
   bool waiting_for_worker_;
-  bool promotable_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
   base::OnceClosure promotable_quit_closure_;
