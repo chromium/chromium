@@ -62,6 +62,9 @@ def main():
                                                      parsed_scripts,
                                                      coverage_file_path)
 
+            logging.info('Excluding uninteresting lines from coverage')
+            javascript_merger.exclude_uninteresting_lines(coverage_file_path)
+
             report_dir = os.path.join(params.task_output_dir, 'js_report_dir')
             logging.info('Creating lcov report at %s', report_dir)
             javascript_merger.generate_coverage_reports(

@@ -565,6 +565,89 @@ class MergeJSLibTest(unittest.TestCase):
         finally:
             shutil.rmtree(scripts_dir)
 
+    def test_uninteresting_lines_are_excluded(self):
+        """This contrived istanbul coverage file represents the coverage from
+        the following example file:
+        """
+        example_test_file = """// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import './iframe.js';
+export const add = (a, b) => a + b;
+"""
+
+        test_istanbul_file = """{
+"%s":{
+  "path":"%s",
+  "all":false,
+  "statementMap":{
+    "1":{"start":{"line":1,"column":0},"end":{"line":1,"column":38}},
+    "2":{"start":{"line":2,"column":0},"end":{"line":2,"column":73}},
+    "3":{"start":{"line":3,"column":0},"end":{"line":3,"column":29}},
+    "4":{"start":{"line":4,"column":0},"end":{"line":4,"column":0}},
+    "5":{"start":{"line":5,"column":0},"end":{"line":5,"column":21}},
+    "6":{"start":{"line":6,"column":0},"end":{"line":6,"column":35}}
+  },
+  "s":{
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1,
+    "6": 1
+  }
+}
+        }"""
+
+        expected_output_file = """{
+            "%s": {
+                "path": "%s",
+                "all": false,
+                "statementMap": {
+                    "6": {
+                        "start": {
+                            "line": 6,
+                            "column": 0
+                        },
+                        "end": {
+                            "line": 6,
+                            "column": 35
+                        }
+                    }
+                },
+                "s": {
+                    "6": 1
+                }
+            }
+        }"""
+
+        try:
+            test_dir = tempfile.mkdtemp()
+            file_path = os.path.join(test_dir, 'coverage.json')
+            example_test_file_path = os.path.join(test_dir, 'fileA.js')
+            expected_output = json.loads(
+                expected_output_file %
+                (example_test_file_path, example_test_file_path))
+
+            # Set up the tests files so that exclusions can be performed.
+            with open(file_path, 'w') as f:
+                f.write(test_istanbul_file %
+                        (example_test_file_path, example_test_file_path))
+            with open(example_test_file_path, 'w') as f:
+                f.write(example_test_file)
+
+            # Perform the exclusion.
+            merger.exclude_uninteresting_lines(file_path)
+
+            # Assert the final `coverage.json` file matches the expected output.
+            with open(file_path, 'rb') as f:
+                coverage_json = json.load(f)
+                self.assertEqual(coverage_json, expected_output)
+
+        finally:
+            shutil.rmtree(test_dir)
+
 
 if __name__ == '__main__':
     unittest.main()

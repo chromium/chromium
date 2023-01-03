@@ -370,6 +370,64 @@ def write_parsed_scripts(task_output_dir, source_dir=_SRC_PATH):
     return output_dir
 
 
+def exclude_uninteresting_lines(coverage_file_path):
+    """Removes lines from Istanbul coverage reports that correspond to lines in
+  the source file that are empty. These lines provide no additional coverage
+  information and in fact inflate the coverage metrics.
+
+  Args:
+    coverage_file_path (str): The path to the merged coverage.json file.
+  """
+    with open(coverage_file_path, 'r+') as f:
+        coverage = json.load(f)
+
+        def exclude_line(coverage_map, key):
+            """Exclude an individual line from the coverage map. This relies on
+            the key 'statementMap' which maintains a map of statements to lines
+            as well as the key 's' which contains the invocation counts of each
+            line.
+            """
+            del coverage_map['statementMap'][key]
+            del coverage_map['s'][key]
+
+        for file_path in coverage:
+            istanbul_coverage = coverage[file_path]
+            lines = []
+            with open(file_path) as fd:
+                lines = fd.readlines()
+
+            # Force list of the keys to allow removal of items whilst iterating.
+            for key in list(istanbul_coverage['statementMap']):
+                statement_map = istanbul_coverage['statementMap'][key]
+                line_num = statement_map['start']['line']
+
+                assert statement_map['start']['line'] == statement_map['end'][
+                    'line']
+
+                line_contents = lines[line_num - 1].strip()
+
+                # Exclude empty lines
+                if line_contents == '':
+                    exclude_line(istanbul_coverage, key)
+                    continue
+
+                # Exclude lines that start with a full line comment.
+                # e.g. // comment.
+                if line_contents.startswith('//'):
+                    exclude_line(istanbul_coverage, key)
+                    continue
+
+                # Exclude any lines that start with an import statement.
+                if line_contents.startswith('import '):
+                    exclude_line(istanbul_coverage, key)
+                    continue
+
+        # Overwrite the current coverage file with new contents.
+        f.seek(0)
+        f.truncate()
+        json.dump(coverage, f)
+
+
 def get_raw_coverage_dirs(task_output_dir):
     """Returns a list of directories containing raw v8 coverage.
 
