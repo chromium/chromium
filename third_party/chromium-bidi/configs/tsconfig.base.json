@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "composite": true,
+    "declaration": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,
+    "noImplicitReturns": true,
     "noImplicitThis": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
@@ -20,8 +23,6 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "target": "ESNext",
-    "useUnknownInCatchVariables": true,
-    "declaration": true,
-    "composite": true
+    "useUnknownInCatchVariables": true
   }
 }

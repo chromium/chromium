@@ -97,7 +97,7 @@ export class BidiServerRunner {
         );
         response.writeHead(404);
       }
-      response.end();
+      return response.end();
     });
     server.listen(bidiPort, function () {
       console.log(`Server is listening on port ${bidiPort}`);
