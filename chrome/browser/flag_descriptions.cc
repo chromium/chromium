@@ -3396,12 +3396,6 @@ const char kAndroidSurfaceControlDescription[] =
     " DisplayCompositor on Android. This feature is only available on "
     " android Q+ devices";
 
-const char kAssistantIntentPageUrlName[] =
-    "Include page URL in Assistant intent";
-const char kAssistantIntentPageUrlDescription[] =
-    "Include the current page's URL in the Assistant voice transcription "
-    "intent.";
-
 const char kAssistantIntentTranslateInfoName[] =
     "Translate info in Assistant intent";
 const char kAssistantIntentTranslateInfoDescription[] =

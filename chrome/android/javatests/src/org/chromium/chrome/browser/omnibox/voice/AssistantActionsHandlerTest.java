@@ -15,7 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
 
@@ -162,126 +161,6 @@ public class AssistantActionsHandlerTest {
 
     @Test
     @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_ToolbarButtonIncludesPageUrlForPersonalizedVoiceSearch() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        RecognitionTestHelper.disableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
-
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-
-        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
-        Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
-        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_INTENT_USER_EMAIL,
-                RecognitionTestHelper.DEFAULT_USER_EMAIL);
-        verify(mIntent).putExtra(
-                VoiceRecognitionHandler.EXTRA_PAGE_URL, RecognitionTestHelper.DEFAULT_URL);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_OmitPageUrlForNonPersonalizedVoiceSearch() {
-        RecognitionTestHelper.enableFeatures(mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL,
-                ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-
-        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
-        Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
-        verify(mIntent, never())
-                .putExtra(
-                        VoiceRecognitionHandler.EXTRA_PAGE_URL, RecognitionTestHelper.DEFAULT_URL);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_OmitPageUrlWhenAssistantVoiceSearchDisabled() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-
-        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_OmitPageUrlForNonToolbar() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.NTP);
-
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_OmitPageUrlForIncognito() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        doReturn(true).when(mTab).isIncognito();
-
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_OmitPageUrlForInternalPages() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        GURL url = new GURL("chrome://version");
-        doReturn(url).when(mTab).getUrl();
-
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_OmitPageUrlForNonHttp() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        GURL url = new GURL("ftp://example.org/");
-        doReturn(url).when(mTab).getUrl();
-
-        RecognitionTestHelper.startVoiceRecognition(
-                mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
-    }
-
-    @Test
-    @SmallTest
     @Feature("AssistantIntentTranslateInfo")
     public void testStartVoiceRecognition_ToolbarButtonIncludesTranslateInfo() {
         RecognitionTestHelper.enableFeatures(mFeatures,
@@ -299,8 +178,6 @@ public class AssistantActionsHandlerTest {
         verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, "fr");
         verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE, "de");
         verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE, "ja");
-        verify(mIntent).putExtra(
-                VoiceRecognitionHandler.EXTRA_PAGE_URL, RecognitionTestHelper.DEFAULT_URL);
     }
 
     @Test
@@ -348,7 +225,6 @@ public class AssistantActionsHandlerTest {
                         eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
         verify(mIntent, never())
                 .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
     }
 
     @Test
@@ -399,7 +275,6 @@ public class AssistantActionsHandlerTest {
                         eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
         verify(mIntent, never())
                 .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
     }
 
     @Test
@@ -426,7 +301,6 @@ public class AssistantActionsHandlerTest {
                         eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
         verify(mIntent, never())
                 .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
-        verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
     }
 
     @Test
@@ -449,70 +323,12 @@ public class AssistantActionsHandlerTest {
         verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE, "de");
         verify(mIntent, never())
                 .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
-        verify(mIntent).putExtra(
-                VoiceRecognitionHandler.EXTRA_PAGE_URL, RecognitionTestHelper.DEFAULT_URL);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testCallback_nonTranscriptionAction() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(VoiceRecognitionHandler.EXTRA_ACTION_PERFORMED, "TRANSLATE");
-
-            mWindowAndroid.setVoiceResults(bundle);
-            RecognitionTestHelper.startVoiceRecognition(
-                    mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-            Assert.assertEquals(
-                    VoiceInteractionSource.TOOLBAR, mHandler.getVoiceSearchStartEventSource());
-            Assert.assertEquals(
-                    VoiceInteractionSource.TOOLBAR, mHandler.getVoiceSearchFinishEventSource());
-            Assert.assertEquals(
-                    AssistantActionPerformed.TRANSLATE, mHandler.getAssistantActionPerformed());
-            Assert.assertEquals(
-                    VoiceInteractionSource.TOOLBAR, mHandler.getAssistantActionPerformedSource());
-            Assert.assertEquals(1,
-                    mHistograms.getHistogramTotalCount("VoiceInteraction.QueryDuration.Android"));
-            Assert.assertEquals(1,
-                    mHistograms.getHistogramTotalCount("VoiceInteraction.QueryDuration.Android"));
-        });
-    }
-
-    @Test
-    @SmallTest
-    @Feature("AssistantIntentPageUrl")
-    public void testCallback_defaultToTranscription() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        RecognitionTestHelper.disableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWindowAndroid.setVoiceResults(RecognitionTestHelper.createDummyBundle(
-                    "testing", VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD));
-            RecognitionTestHelper.startVoiceRecognition(
-                    mPermissionDelegate, mHandler, VoiceInteractionSource.TOOLBAR);
-            Assert.assertEquals(
-                    AssistantActionPerformed.TRANSCRIPTION, mHandler.getAssistantActionPerformed());
-            Assert.assertEquals(
-                    VoiceInteractionSource.TOOLBAR, mHandler.getAssistantActionPerformedSource());
-            Assert.assertTrue(mHandler.getVoiceSearchResult());
-            RecognitionTestHelper.assertVoiceResultsAreEqual(
-                    mAutocompleteCoordinator.getAutocompleteVoiceResults(),
-                    new String[] {"testing"},
-                    new float[] {
-                            VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD});
-        });
     }
 
     @Test
     @SmallTest
     @Feature("AssistantIntentPageUrl")
     public void testCallback_pageUrlExtraDisabled() {
-        RecognitionTestHelper.disableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid.setVoiceResults(RecognitionTestHelper.createDummyBundle(
                     "testing", VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD));
@@ -528,8 +344,6 @@ public class AssistantActionsHandlerTest {
     @Test
     @SmallTest
     public void testRecordSuccessMetrics_noActionMetrics() {
-        RecognitionTestHelper.disableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
         mHandler.setQueryStartTimeForTesting(100L);
         mHandler.recordSuccessMetrics(VoiceInteractionSource.OMNIBOX, VoiceIntentTarget.ASSISTANT,
                 AssistantActionPerformed.TRANSCRIPTION);
@@ -545,33 +359,5 @@ public class AssistantActionsHandlerTest {
         Assert.assertEquals(0,
                 mHistograms.getHistogramTotalCount(
                         "VoiceInteraction.QueryDuration.Android.Transcription"));
-    }
-
-    @Test
-    @SmallTest
-    public void testRecordSuccessMetrics_splitActionMetrics() {
-        RecognitionTestHelper.enableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
-        RecognitionTestHelper.disableFeatures(
-                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
-        mHandler.setQueryStartTimeForTesting(100L);
-        mHandler.recordSuccessMetrics(VoiceInteractionSource.OMNIBOX, VoiceIntentTarget.ASSISTANT,
-                AssistantActionPerformed.TRANSLATE);
-        Assert.assertEquals(
-                VoiceInteractionSource.OMNIBOX, mHandler.getVoiceSearchFinishEventSource());
-        Assert.assertEquals(
-                VoiceIntentTarget.ASSISTANT, mHandler.getVoiceSearchFinishEventTarget());
-        Assert.assertEquals(
-                AssistantActionPerformed.TRANSLATE, mHandler.getAssistantActionPerformed());
-        Assert.assertEquals(
-                VoiceInteractionSource.OMNIBOX, mHandler.getAssistantActionPerformedSource());
-        Assert.assertEquals(
-                1, mHistograms.getHistogramTotalCount("VoiceInteraction.QueryDuration.Android"));
-        Assert.assertEquals(0,
-                mHistograms.getHistogramTotalCount(
-                        "VoiceInteraction.QueryDuration.Android.Transcription"));
-        Assert.assertEquals(1,
-                mHistograms.getHistogramTotalCount(
-                        "VoiceInteraction.QueryDuration.Android.Translate"));
     }
 }

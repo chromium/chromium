@@ -166,7 +166,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAssistantConsentSimplifiedText,
     &kAssistantConsentV2,
     &kAssistantIntentExperimentId,
-    &kAssistantIntentPageUrl,
     &kAssistantIntentTranslateInfo,
     &kAssistantNonPersonalizedVoiceSearch,
     &kAppMenuMobileSiteOption,
@@ -447,10 +446,6 @@ BASE_FEATURE(kAssistantConsentV2,
 
 BASE_FEATURE(kAssistantIntentExperimentId,
              "AssistantIntentExperimentId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantIntentPageUrl,
-             "AssistantIntentPageUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAssistantIntentTranslateInfo,

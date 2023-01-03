@@ -197,7 +197,6 @@ public abstract class ChromeFeatureList {
     public static final String ASSISTANT_CONSENT_SIMPLIFIED_TEXT = "AssistantConsentSimplifiedText";
     public static final String ASSISTANT_CONSENT_V2 = "AssistantConsentV2";
     public static final String ASSISTANT_INTENT_EXPERIMENT_ID = "AssistantIntentExperimentId";
-    public static final String ASSISTANT_INTENT_PAGE_URL = "AssistantIntentPageUrl";
     public static final String ASSISTANT_INTENT_TRANSLATE_INFO = "AssistantIntentTranslateInfo";
     public static final String ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH =
             "AssistantNonPersonalizedVoiceSearch";

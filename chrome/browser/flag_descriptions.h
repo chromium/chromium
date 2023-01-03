@@ -1942,9 +1942,6 @@ extern const char kAndroidMediaPickerSupportDescription[];
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 
-extern const char kAssistantIntentPageUrlName[];
-extern const char kAssistantIntentPageUrlDescription[];
-
 extern const char kAssistantIntentTranslateInfoName[];
 extern const char kAssistantIntentTranslateInfoDescription[];
 

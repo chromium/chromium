@@ -40,7 +40,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -639,13 +638,6 @@ public class RecognitionTestHelper {
                 @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
             mFinishSource = source;
             mFinishTarget = target;
-        }
-
-        @Override
-        protected void recordAssistantActionPerformed(
-                @VoiceInteractionSource int source, @AssistantActionPerformed int action) {
-            mActionPerformedSource = source;
-            mActionPerformed = action;
         }
 
         @Override

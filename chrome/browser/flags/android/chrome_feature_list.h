@@ -23,7 +23,6 @@ BASE_DECLARE_FEATURE(kAndroidSearchEngineChoiceNotification);
 BASE_DECLARE_FEATURE(kAssistantConsentSimplifiedText);
 BASE_DECLARE_FEATURE(kAssistantConsentV2);
 BASE_DECLARE_FEATURE(kAssistantIntentExperimentId);
-BASE_DECLARE_FEATURE(kAssistantIntentPageUrl);
 BASE_DECLARE_FEATURE(kAssistantIntentTranslateInfo);
 BASE_DECLARE_FEATURE(kAssistantNonPersonalizedVoiceSearch);
 BASE_DECLARE_FEATURE(kAppMenuMobileSiteOption);
