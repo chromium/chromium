@@ -315,12 +315,19 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public boolean isSyncingUrlsWithKeystorePassphrase() {
+    public boolean isSyncingUnencryptedUrls() {
         return isEngineInitialized()
                 && (getActiveDataTypes().contains(ModelType.TYPED_URLS)
                         || getActiveDataTypes().contains(ModelType.HISTORY))
                 && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
                         || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
+    }
+
+    // TODO(crbug/1396310): Delete once Clank is no longer calling it.
+    @Deprecated
+    @Override
+    public boolean isSyncingUrlsWithKeystorePassphrase() {
+        return isSyncingUnencryptedUrls();
     }
 
     @VisibleForTesting

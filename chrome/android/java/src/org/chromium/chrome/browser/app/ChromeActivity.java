@@ -1077,7 +1077,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         final SyncService syncService = SyncService.get();
 
-        if (syncService != null && syncService.isSyncingUrlsWithKeystorePassphrase()) {
+        if (syncService != null && syncService.isSyncingUnencryptedUrls()) {
             ContextReporter.SelectionReporter controller =
                     getContextualSearchManagerSupplier().hasValue() ? new ContextReporter.SelectionReporter() {
                         @Override

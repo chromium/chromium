@@ -48,11 +48,11 @@ public class SyncTest {
     private static final String TAG = "SyncTest";
 
     /**
-     * Waits until {@link SyncService#isSyncingUrlsWithKeystorePassphrase} returns desired value.
+     * Waits until {@link SyncService#isSyncingUnencryptedUrls} returns desired value.
      */
-    private void waitForIsSyncingUrlsWithKeystorePassphrase(boolean desiredValue) {
+    private void waitForIsSyncingUnencryptedUrls(boolean desiredValue) {
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mSyncTestRule.getSyncService().isSyncingUrlsWithKeystorePassphrase(),
+            Criteria.checkThat(mSyncTestRule.getSyncService().isSyncingUnencryptedUrls(),
                     Matchers.is(desiredValue));
         }, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
     }
@@ -116,7 +116,7 @@ public class SyncTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testIsSyncingUrlsWithKeystorePassphraseWhileUsingKeystorePassphrase() {
+    public void testIsSyncingUnencryptedUrlsWhileUsingKeystorePassphrase() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         // By default Sync is being setup with KEYSTORE_PASSPHRASE and all types enabled.
         CriteriaHelper.pollUiThread(()
@@ -124,50 +124,50 @@ public class SyncTest {
                         == PassphraseType.KEYSTORE_PASSPHRASE,
                 "Timed out checking getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE",
                 SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
-        waitForIsSyncingUrlsWithKeystorePassphrase(true);
+        waitForIsSyncingUnencryptedUrls(true);
 
-        // isSyncingUrlsWithKeystorePassphrase() should return false when history is disabled.
+        // isSyncingUnencryptedUrls() should return false when history is disabled.
         mSyncTestRule.disableDataType(UserSelectableType.HISTORY);
-        waitForIsSyncingUrlsWithKeystorePassphrase(false);
+        waitForIsSyncingUnencryptedUrls(false);
 
-        // Now enable only history datatypes and verify that isSyncingUrlsWithKeystorePassphrase()
-        // returns true again.
+        // Now enable only history datatypes and verify that isSyncingUnencryptedUrls() returns true
+        // again.
         mSyncTestRule.setSelectedTypes(
                 false, new HashSet<>(Arrays.asList(UserSelectableType.HISTORY)));
-        waitForIsSyncingUrlsWithKeystorePassphrase(true);
+        waitForIsSyncingUnencryptedUrls(true);
     }
 
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testIsSyncingUrlsWithKeystorePassphraseWhileUsingTrustedVaultPassprhase() {
+    public void testIsSyncingUnencryptedUrlsWhileUsingTrustedVaultPassprhase() {
         mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(new byte[] {1, 2, 3, 4});
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
-        // Although not reflected in the name, isSyncingUrlsWithKeystorePassphrase() should treat
-        // TRUSTED_VAULT_PASSPHRASE in exactly the same way as KEYSTORE_PASSPHRASE.
+        // isSyncingUnencryptedUrls() should treat TRUSTED_VAULT_PASSPHRASE in exactly the same way
+        // as KEYSTORE_PASSPHRASE.
         CriteriaHelper.pollUiThread(()
                                             -> mSyncTestRule.getSyncService().getPassphraseType()
                         == PassphraseType.TRUSTED_VAULT_PASSPHRASE,
                 "Timed out checking getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE",
                 SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
-        waitForIsSyncingUrlsWithKeystorePassphrase(true);
+        waitForIsSyncingUnencryptedUrls(true);
 
-        // isSyncingUrlsWithKeystorePassphrase() should return false when history is disabled.
+        // isSyncingUnencryptedUrls() should return false when history is disabled.
         mSyncTestRule.disableDataType(UserSelectableType.HISTORY);
-        waitForIsSyncingUrlsWithKeystorePassphrase(false);
+        waitForIsSyncingUnencryptedUrls(false);
 
-        // Now enable only history datatypes and verify that isSyncingUrlsWithKeystorePassphrase()
-        // returns true again.
+        // Now enable only history datatypes and verify that isSyncingUnencryptedUrls() returns true
+        // again.
         mSyncTestRule.setSelectedTypes(
                 false, new HashSet<>(Arrays.asList(UserSelectableType.HISTORY)));
-        waitForIsSyncingUrlsWithKeystorePassphrase(true);
+        waitForIsSyncingUnencryptedUrls(true);
     }
 
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testIsSyncingUrlsWithKeystorePassphraseWhileUsingCustomPassphrase() {
+    public void testIsSyncingUnencryptedUrlsWhileUsingCustomPassphrase() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.encryptWithPassphrase("passphrase");
         CriteriaHelper.pollUiThread(()
@@ -176,8 +176,8 @@ public class SyncTest {
                 "Timed out checking getPassphraseType() == PassphraseType.CUSTOM_PASSPHRASE",
                 SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
 
-        // isSyncingUrlsWithKeystorePassphrase() should return false with CUSTOM_PASSPHRASE no
-        // matter which datatypes are enabled.
-        waitForIsSyncingUrlsWithKeystorePassphrase(false);
+        // isSyncingUnencryptedUrls() should return false with CUSTOM_PASSPHRASE no matter which
+        // datatypes are enabled.
+        waitForIsSyncingUnencryptedUrls(false);
     }
 }
