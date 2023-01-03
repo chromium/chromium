@@ -10,3 +10,9 @@ include_rules = [
   "+services/network/public/cpp/optional_trust_token_params.h",
   "+third_party/blink/renderer/platform/mojo",
 ]
+
+specific_include_rules = {
+  "resource_request.cc": [
+    "+net/base/request_priority.h",
+  ]
+}

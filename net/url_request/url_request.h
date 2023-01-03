@@ -697,10 +697,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Returns the priority level for this request.
   RequestPriority priority() const { return priority_; }
 
+  // Returns the incremental loading priority flag for this request.
+  bool priority_incremental() const { return priority_incremental_; }
+
   // Sets the priority level for this request and any related
   // jobs. Must not change the priority to anything other than
   // MAXIMUM_PRIORITY if the IGNORE_LIMITS load flag is set.
   void SetPriority(RequestPriority priority);
+
+  // Sets the incremental priority flag for this request.
+  void SetPriorityIncremental(bool priority_incremental);
 
   void set_received_response_content_length(int64_t received_content_length) {
     received_response_content_length_ = received_content_length;
@@ -1018,6 +1024,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // ClientSocketPool use this to determine which URLRequest to
   // allocate sockets to first.
   RequestPriority priority_;
+
+  // The incremental flag for this request that indicates if it should be
+  // loaded concurrently with other resources of the same priority for
+  // protocols that support HTTP extensible priorities (RFC 9218).
+  // Currently only used in HTTP/3.
+  bool priority_incremental_ = kDefaultPriorityIncremental;
 
   // If |calling_delegate_| is true, the event type of the delegate being
   // called.

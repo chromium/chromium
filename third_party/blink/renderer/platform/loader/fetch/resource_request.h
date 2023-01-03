@@ -244,6 +244,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   bool IsConditional() const;
 
+  // Incremental property of HTTP Extensible Priorities which specifies that
+  // responses can be delivered concurrently if they are the same priority on
+  // a connection that supports multiplexing (HTTP/3 primarily).
+  // https://www.rfc-editor.org/rfc/rfc9218
+  bool PriorityIncremental() const;
+  void SetPriorityIncremental(bool);
+
   // Whether the associated ResourceHandleClient needs to be notified of
   // upload progress made for that resource.
   bool ReportUploadProgress() const { return report_upload_progress_; }
@@ -572,6 +579,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool download_to_cache_only_ : 1;
   bool site_for_cookies_set_ : 1;
   bool is_form_submission_ : 1;
+  bool priority_incremental_ : 1;
   ResourceLoadPriority initial_priority_;
   ResourceLoadPriority priority_;
   int intra_priority_value_;

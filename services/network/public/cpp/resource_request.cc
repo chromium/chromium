@@ -217,6 +217,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          load_flags == request.load_flags &&
          resource_type == request.resource_type &&
          priority == request.priority &&
+         priority_incremental == request.priority_incremental &&
          devtools_stack_id == request.devtools_stack_id &&
          cors_preflight_policy == request.cors_preflight_policy &&
          originated_from_service_worker ==

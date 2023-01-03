@@ -313,6 +313,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
                          .GetLoadFlagsForWebUrlRequest();
   dest->recursive_prefetch_token = src.RecursivePrefetchToken();
   dest->priority = WebURLRequest::ConvertToNetPriority(src.Priority());
+  dest->priority_incremental = src.PriorityIncremental();
   dest->cors_preflight_policy = src.CorsPreflightPolicy();
   dest->skip_service_worker = src.GetSkipServiceWorker();
   dest->mode = src.GetMode();

@@ -39,6 +39,16 @@ enum RequestPrioritySize {
   NUM_PRIORITIES = MAXIMUM_PRIORITY + 1,
 };
 
+// Default value to use for the incremental loading flag as part of HTTP
+// extensible priorities (RFC 9218). Currently used for HTTP/3.
+//
+// This default is the value that works best in most cases that the networking
+// code supports (simultaneous requests are loaded concurrently and don't block
+// one another).
+//
+// This is independent from the spec default for the protocol, which is false.
+const bool kDefaultPriorityIncremental = true;
+
 NET_EXPORT const char* RequestPriorityToString(RequestPriority priority);
 
 }  // namespace net

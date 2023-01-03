@@ -1358,6 +1358,33 @@ TEST_F(ResourceFetcherTest, DeprioritizeSubframe) {
   }
 }
 
+TEST_F(ResourceFetcherTest, PriorityIncremental) {
+  auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
+  auto* fetcher = CreateFetcher(properties);
+
+  // Check all of the resource types that are NOT supposed to be loaded
+  // incrementally
+  ResourceType res_not_incremental[] = {
+      ResourceType::kCSSStyleSheet, ResourceType::kScript, ResourceType::kFont,
+      ResourceType::kXSLStyleSheet, ResourceType::kManifest};
+  for (auto& res_type : res_not_incremental) {
+    const bool incremental = fetcher->ShouldLoadIncrementalForTesting(res_type);
+    EXPECT_EQ(incremental, false);
+  }
+
+  // Check all of the resource types that ARE supposed to be loaded
+  // incrementally
+  ResourceType res_incremental[] = {
+      ResourceType::kImage,       ResourceType::kRaw,
+      ResourceType::kSVGDocument, ResourceType::kLinkPrefetch,
+      ResourceType::kTextTrack,   ResourceType::kAudio,
+      ResourceType::kVideo,       ResourceType::kSpeculationRules};
+  for (auto& res_type : res_incremental) {
+    const bool incremental = fetcher->ShouldLoadIncrementalForTesting(res_type);
+    EXPECT_EQ(incremental, true);
+  }
+}
+
 TEST_F(ResourceFetcherTest, Detach) {
   DetachableResourceFetcherProperties& properties =
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();

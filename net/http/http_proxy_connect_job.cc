@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "http_proxy_client_socket.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
@@ -691,10 +692,12 @@ int HttpProxyConnectJob::DoQuicProxyCreateStreamComplete(int result) {
   std::unique_ptr<QuicChromiumClientStream::Handle> quic_stream =
       quic_session_->ReleaseStream();
 
-  spdy::SpdyPriority spdy_priority =
-      ConvertRequestPriorityToQuicPriority(kH2QuicTunnelPriority);
-  spdy::SpdyStreamPrecedence precedence(spdy_priority);
-  quic_stream->SetPriority(precedence);
+  uint8_t urgency = ConvertRequestPriorityToQuicPriority(kH2QuicTunnelPriority);
+  bool incremental = quic::QuicStreamPriority::kDefaultIncremental;
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    incremental = kDefaultPriorityIncremental;
+  }
+  quic_stream->SetPriority(quic::QuicStreamPriority{urgency, incremental});
 
   transport_socket_ = std::make_unique<QuicProxyClientSocket>(
       std::move(quic_stream), std::move(quic_session_),

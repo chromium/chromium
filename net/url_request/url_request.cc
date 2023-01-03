@@ -1029,6 +1029,10 @@ void URLRequest::SetPriority(RequestPriority priority) {
     job_->SetPriority(priority_);
 }
 
+void URLRequest::SetPriorityIncremental(bool priority_incremental) {
+  priority_incremental_ = priority_incremental;
+}
+
 void URLRequest::NotifyAuthRequired(
     std::unique_ptr<AuthChallengeInfo> auth_info) {
   DCHECK_EQ(OK, status_);

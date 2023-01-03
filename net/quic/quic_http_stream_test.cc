@@ -17,10 +17,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
@@ -98,6 +100,7 @@ const uint16_t kDefaultServerPort = 443;
 struct TestParams {
   quic::ParsedQuicVersion version;
   bool client_headers_include_h2_stream_dependency;
+  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -105,7 +108,9 @@ std::string PrintToString(const TestParams& p) {
   return base::StrCat(
       {ParsedQuicVersionToString(p.version), "_",
        (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency"});
+       "Dependency", "_",
+       (p.enable_quic_priority_incremental_support ? "" : "No"),
+       "Incremental"});
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -113,8 +118,10 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version, false, false});
+    params.push_back(TestParams{version, false, true});
+    params.push_back(TestParams{version, true, false});
+    params.push_back(TestParams{version, true, true});
   }
   return params;
 }
@@ -283,7 +290,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       &clock_,
                       kDefaultServerHostName,
                       quic::Perspective::IS_CLIENT,
-                      client_headers_include_h2_stream_dependency_),
+                      client_headers_include_h2_stream_dependency_,
+                      true),
         server_maker_(version_,
                       connection_id_,
                       &clock_,
@@ -291,6 +299,9 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       quic::Perspective::IS_SERVER,
                       false),
         printer_(version_) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kPriorityIncremental,
+        GetParam().enable_quic_priority_incremental_support);
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic::QuicEnableVersion(version_);
     IPAddress ip(192, 0, 2, 33);
@@ -663,6 +674,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   const quic::ParsedQuicVersion version_;
   const bool client_headers_include_h2_stream_dependency_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   NetLogWithSource net_log_with_source_{
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};

@@ -702,6 +702,7 @@ URLLoader::URLLoader(
   }
 
   url_request_->SetLoadFlags(request_load_flags);
+  url_request_->SetPriorityIncremental(request.priority_incremental);
   SetRequestCredentials(request.url);
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(

@@ -257,6 +257,13 @@ struct URLRequest {
   // The priority of this request determined by Blink.
   RequestPriority priority;
 
+  // True if the request can be downloaded in parallel with other requests of
+  // an equivalent priority for servers that support HTTP Extensible
+  // Prioritization on multiplexed connections (RFC 9218).
+  // Maps directly to the "incremental" parameter of priority.
+  // https://www.rfc-editor.org/rfc/rfc9218.html#name-incremental
+  bool priority_incremental;
+
   // A policy to decide if CORS-preflight fetch should be performed.
   CorsPreflightPolicy cors_preflight_policy;
 

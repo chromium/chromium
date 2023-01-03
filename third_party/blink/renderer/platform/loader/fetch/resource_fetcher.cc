@@ -513,6 +513,28 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   return priority;
 }
 
+// This method simply takes in information about a ResourceRequest, and returns
+// if the resource should be loaded in parallel (incremental) or sequentially
+// for protocols that support multiplexing and HTTP extensible priorities
+// (RFC 9218).
+// Most content types can be operated on with partial data (document parsing,
+// images, media, etc) but a few need to be complete before they can be
+// processed.
+bool ResourceFetcher::ShouldLoadIncremental(ResourceType type) const {
+  switch (type) {
+    case ResourceType::kCSSStyleSheet:
+    case ResourceType::kScript:
+    case ResourceType::kFont:
+    case ResourceType::kXSLStyleSheet:
+    case ResourceType::kManifest:
+      return false;
+    default:
+      return true;
+  }
+  NOTREACHED();
+  return true;
+}
+
 ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
     : properties_(*init.properties),
       context_(init.context),
@@ -933,6 +955,7 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
   resource_request.SetPriority(computed_load_priority);
+  resource_request.SetPriorityIncremental(ShouldLoadIncremental(resource_type));
   resource_request.SetRenderBlockingBehavior(
       params.GetRenderBlockingBehavior());
 
@@ -2401,6 +2424,8 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
     resource_request.SetPriority(ComputeLoadPriority(
         resource->GetType(), resource_request, ResourcePriority::kNotVisible));
   }
+  resource_request.SetPriorityIncremental(
+      ShouldLoadIncremental(resource->GetType()));
   resource_request.SetReferrerString(Referrer::NoReferrer());
   resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   resource_request.SetInspectorId(CreateUniqueIdentifier());

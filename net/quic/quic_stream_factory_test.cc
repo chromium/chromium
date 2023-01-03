@@ -122,6 +122,7 @@ const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 struct TestParams {
   quic::ParsedQuicVersion version;
   bool client_headers_include_h2_stream_dependency;
+  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -129,7 +130,9 @@ std::string PrintToString(const TestParams& p) {
   return base::StrCat(
       {ParsedQuicVersionToString(p.version), "_",
        (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency"});
+       "Dependency", "_",
+       (p.enable_quic_priority_incremental_support ? "" : "No"),
+       "Incremental"});
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -137,8 +140,10 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-      params.push_back(TestParams{version, false});
-      params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version, false, false});
+    params.push_back(TestParams{version, false, true});
+    params.push_back(TestParams{version, true, false});
+    params.push_back(TestParams{version, true, true});
   }
   return params;
 }
@@ -202,7 +207,8 @@ class TestPortMigrationSocketFactory : public MockClientSocketFactory {
 class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
   QuicStreamFactoryTestBase(quic::ParsedQuicVersion version,
-                            bool client_headers_include_h2_stream_dependency)
+                            bool client_headers_include_h2_stream_dependency,
+                            bool enable_quic_priority_incremental_support)
       : host_resolver_(std::make_unique<MockHostResolver>(
             /*default_result=*/MockHostResolverBase::RuleResolver::
                 GetLocalhostResult())),
@@ -216,7 +222,8 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       context_.clock(),
                       kDefaultServerHostName,
                       quic::Perspective::IS_CLIENT,
-                      client_headers_include_h2_stream_dependency),
+                      client_headers_include_h2_stream_dependency,
+                      true),
         server_maker_(version_,
                       quic::QuicUtils::CreateRandomConnectionId(
                           context_.random_generator()),
@@ -237,6 +244,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
         quic_params_(context_.params()) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kPriorityIncremental,
+        enable_quic_priority_incremental_support);
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic_params_->headers_include_h2_stream_dependency =
         client_headers_include_h2_stream_dependency;
@@ -968,6 +978,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   NetErrorDetails net_error_details_;
 
   raw_ptr<QuicParams> quic_params_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
@@ -976,7 +987,8 @@ class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
   QuicStreamFactoryTest()
       : QuicStreamFactoryTestBase(
             GetParam().version,
-            GetParam().client_headers_include_h2_stream_dependency) {}
+            GetParam().client_headers_include_h2_stream_dependency,
+            GetParam().enable_quic_priority_incremental_support) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -1339,7 +1351,7 @@ TEST_P(QuicStreamFactoryTest, CachedInitialRttWithNetworkAnonymizationKey) {
         version_,
         quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
         context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
-        quic_params_->headers_include_h2_stream_dependency);
+        quic_params_->headers_include_h2_stream_dependency, true);
 
     MockQuicData socket_data(version_);
     socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -1572,7 +1584,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
         version_,
         quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
         context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
-        quic_params_->headers_include_h2_stream_dependency);
+        quic_params_->headers_include_h2_stream_dependency, true);
 
     MockQuicData socket_data(version_);
     socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -8028,13 +8040,20 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams2(
                             GetNthClientInitiatedBidirectionalStreamId(1),
                             /*should_include_version=*/false,
                             /*fin=*/true);
+  std::vector<uint64_t> original_packet_numbers = {1};
+  uint64_t retransmit_frame_count = 0;
+  if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+    original_packet_numbers.push_back(2);
+    retransmit_frame_count = 2;
+  }
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
-                       /*original_packet_numbers=*/{1}, packet_number++,
+                       original_packet_numbers, packet_number++,
                        /*include_version=*/false,
                        GetNthClientInitiatedBidirectionalStreamId(1),
                        quic::QUIC_STREAM_CANCELLED, GetQpackDecoderStreamId(),
-                       StreamCancellationQpackDecoderInstruction(1)));
+                       StreamCancellationQpackDecoderInstruction(1),
+                       retransmit_frame_count));
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakePingPacket(packet_number++,
                                                 /*include_version=*/false));
@@ -8191,13 +8210,20 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorNonMigratableStream(
                               GetNthClientInitiatedBidirectionalStreamId(0),
                               /*should_include_version=*/false,
                               /*fin=*/true);
+    std::vector<uint64_t> original_packet_numbers = {1};
+    uint64_t retransmit_frame_count = 0;
+    if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+      original_packet_numbers.push_back(2);
+      retransmit_frame_count = 2;
+    }
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
-                         /*original_packet_numbers=*/{1}, packet_num++,
+                         original_packet_numbers, packet_num++,
                          /*include_version=*/false,
                          GetNthClientInitiatedBidirectionalStreamId(0),
                          quic::QUIC_STREAM_CANCELLED, GetQpackDecoderStreamId(),
-                         StreamCancellationQpackDecoderInstruction(0)));
+                         StreamCancellationQpackDecoderInstruction(0),
+                         retransmit_frame_count));
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++,
                                                   /*include_version=*/false));
@@ -12582,6 +12608,7 @@ struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
   bool client_headers_include_h2_stream_dependency;
+  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -12601,7 +12628,9 @@ std::string PrintToString(const PoolingTestParams& p) {
   return base::StrCat(
       {ParsedQuicVersionToString(p.version), "_", destination_string, "_",
        (p.client_headers_include_h2_stream_dependency ? "" : "No"),
-       "Dependency"});
+       "Dependency", "_",
+       (p.enable_quic_priority_incremental_support ? "" : "No"),
+       "Incremental"});
 }
 
 std::vector<PoolingTestParams> GetPoolingTestParams() {
@@ -12609,12 +12638,18 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true});
-    params.push_back(PoolingTestParams{version, DIFFERENT, false});
-    params.push_back(PoolingTestParams{version, DIFFERENT, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true, true});
+    params.push_back(PoolingTestParams{version, DIFFERENT, false, false});
+    params.push_back(PoolingTestParams{version, DIFFERENT, false, true});
+    params.push_back(PoolingTestParams{version, DIFFERENT, true, false});
+    params.push_back(PoolingTestParams{version, DIFFERENT, true, true});
   }
   return params;
 }
@@ -12628,7 +12663,8 @@ class QuicStreamFactoryWithDestinationTest
   QuicStreamFactoryWithDestinationTest()
       : QuicStreamFactoryTestBase(
             GetParam().version,
-            GetParam().client_headers_include_h2_stream_dependency),
+            GetParam().client_headers_include_h2_stream_dependency,
+            GetParam().enable_quic_priority_incremental_support),
         destination_type_(GetParam().destination_type),
         hanging_read_(SYNCHRONOUS, ERR_IO_PENDING, 0) {}
 
@@ -15192,7 +15228,8 @@ class QuicStreamFactoryDnsAliasPoolingTest
   QuicStreamFactoryDnsAliasPoolingTest()
       : QuicStreamFactoryTestBase(
             GetParam().version,
-            GetParam().client_headers_include_h2_stream_dependency),
+            GetParam().client_headers_include_h2_stream_dependency,
+            true),
         use_dns_aliases_(GetParam().use_dns_aliases),
         dns_aliases1_(GetParam().dns_aliases1),
         dns_aliases2_(GetParam().dns_aliases2),

@@ -13,6 +13,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_headers.h"
 #include "net/socket/socket_tag.h"
@@ -61,6 +62,11 @@ struct NET_EXPORT HttpRequestInfo {
 
   // Any load flags (see load_flags.h).
   int load_flags = 0;
+
+  // Flag that indicates if the request should be loaded concurrently with
+  // other requests of the same priority when using a protocol that supports
+  // HTTP extensible priorities (RFC 9218). Currently only HTTP/3.
+  bool priority_incremental = kDefaultPriorityIncremental;
 
   // If enabled, then request must be sent over connection that cannot be
   // tracked by the server (e.g. without channel id).

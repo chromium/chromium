@@ -44,12 +44,18 @@ class QuicTestPacketMaker {
   // stream id set to the |parent_stream_id| param of MakeRequestHeaders...().
   // Otherwise, headers are constructed with the exclusive flag set to false and
   // the parent stream ID set to 0 (ignoring the |parent_stream_id| param).
+  //
+  // |client_priority_uses_incremental| affects the output of any method that
+  // includes HTTP3 priority data. The protocol default is to omit the
+  // incremental flag in the priority data but HTTP streams may enable it
+  // if the feature kPriorityIncremental is enabled.
   QuicTestPacketMaker(quic::ParsedQuicVersion version,
                       quic::QuicConnectionId connection_id,
                       const quic::QuicClock* clock,
                       const std::string& host,
                       quic::Perspective perspective,
-                      bool client_headers_include_h2_stream_dependency);
+                      bool client_headers_include_h2_stream_dependency,
+                      bool client_priority_uses_incremental = false);
 
   QuicTestPacketMaker(const QuicTestPacketMaker&) = delete;
   QuicTestPacketMaker& operator=(const QuicTestPacketMaker&) = delete;
@@ -154,7 +160,8 @@ class QuicTestPacketMaker {
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data);
+      absl::string_view data,
+      uint64_t retransmit_frame_count = 0);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
@@ -355,7 +362,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      spdy::SpdyPriority priority,
+      spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
@@ -368,10 +375,11 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      spdy::SpdyPriority priority,
+      spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
-      size_t* spdy_headers_frame_length);
+      size_t* spdy_headers_frame_length,
+      bool should_include_priority_frame = true);
 
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeRetransmissionAndRequestHeadersPacket(
@@ -380,7 +388,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      spdy::SpdyPriority priority,
+      spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length);
@@ -390,7 +398,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      spdy::SpdyPriority priority,
+      spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
@@ -427,7 +435,7 @@ class QuicTestPacketMaker {
       bool should_include_version,
       quic::QuicStreamId id,
       quic::QuicStreamId parent_stream_id,
-      spdy::SpdyPriority priority);
+      spdy::SpdyPriority spdy_priority);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndPriorityPacket(
       uint64_t packet_number,
@@ -436,7 +444,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId id,
       quic::QuicStreamId parent_stream_id,
-      spdy::SpdyPriority priority);
+      spdy::SpdyPriority spdy_priority);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeMultiplePriorityFramesPacket(
       uint64_t packet_number,
@@ -467,7 +475,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       quic::QuicStreamId id,
-      spdy::SpdyPriority priority);
+      spdy::SpdyPriority spdy_priority);
 
   std::unique_ptr<quic::QuicEncryptedPacket> MakeStatelessResetPacket();
 
@@ -565,7 +573,7 @@ class QuicTestPacketMaker {
   spdy::SpdySerializedFrame MakeSpdyHeadersFrame(
       quic::QuicStreamId stream_id,
       bool fin,
-      spdy::SpdyPriority priority,
+      spdy::SpdyPriority spdy_priority,
       spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id);
 
@@ -583,11 +591,12 @@ class QuicTestPacketMaker {
   quic::QuicStreamId GetHeadersStreamId() const;
 
   std::string GenerateHttp3SettingsData();
-  std::string GenerateHttp3PriorityData(spdy::SpdyPriority priority,
+  std::string GenerateHttp3PriorityData(spdy::SpdyPriority spdy_priority,
                                         quic::QuicStreamId stream_id);
   std::string GenerateHttp3GreaseData();
 
   void MaybeAddHttp3SettingsFrames();
+  bool MaybeCoalesceStreamFrame(const quic::QuicFrame& frame);
 
   // Parameters used throughout the lifetime of the class.
   quic::ParsedQuicVersion version_;
@@ -607,6 +616,9 @@ class QuicTestPacketMaker {
   // If true, generated request headers will include non-default HTTP2 stream
   // dependency info.
   bool client_headers_include_h2_stream_dependency_;
+
+  // The value of incremental flag in generated priority headers.
+  bool client_priority_uses_incremental_;
 
   // Save a copy of stream frame data that QuicStreamFrame objects can refer to.
   std::vector<std::unique_ptr<std::string>> saved_stream_data_;

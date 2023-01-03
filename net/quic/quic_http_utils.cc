@@ -27,11 +27,12 @@ RequestPriority ConvertQuicPriorityToRequestPriority(
 
 base::Value QuicRequestNetLogParams(quic::QuicStreamId stream_id,
                                     const spdy::Http2HeaderBlock* headers,
-                                    spdy::SpdyPriority priority,
+                                    quic::QuicStreamPriority priority,
                                     NetLogCaptureMode capture_mode) {
   base::Value dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
   DCHECK(dict.is_dict());
-  dict.GetDict().Set("quic_priority", static_cast<int>(priority));
+  dict.GetDict().Set("quic_priority_urgency", priority.urgency);
+  dict.GetDict().Set("quic_priority_incremental", priority.incremental);
   dict.GetDict().Set("quic_stream_id", static_cast<int>(stream_id));
   return dict;
 }

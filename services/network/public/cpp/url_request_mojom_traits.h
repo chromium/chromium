@@ -214,6 +214,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.priority;
   }
+  static bool priority_incremental(const network::ResourceRequest& request) {
+    return request.priority_incremental;
+  }
   static network::mojom::CorsPreflightPolicy cors_preflight_policy(
       const network::ResourceRequest& request) {
     return request.cors_preflight_policy;

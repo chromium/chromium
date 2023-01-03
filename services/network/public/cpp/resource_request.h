@@ -139,6 +139,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // frames are considered a kSubframe for ResourceType.
   int resource_type = 0;
   net::RequestPriority priority = net::IDLE;
+  bool priority_incremental = net::kDefaultPriorityIncremental;
   mojom::CorsPreflightPolicy cors_preflight_policy =
       mojom::CorsPreflightPolicy::kConsiderPreflight;
   bool originated_from_service_worker = false;

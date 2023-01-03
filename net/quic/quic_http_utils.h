@@ -10,6 +10,7 @@
 #include "net/base/request_priority.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_stream_priority.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
@@ -28,7 +29,7 @@ ConvertQuicPriorityToRequestPriority(spdy::SpdyPriority priority);
 NET_EXPORT base::Value QuicRequestNetLogParams(
     quic::QuicStreamId stream_id,
     const spdy::Http2HeaderBlock* headers,
-    spdy::SpdyPriority priority,
+    quic::QuicStreamPriority priority,
     NetLogCaptureMode capture_mode);
 
 // Converts a spdy::Http2HeaderBlock and stream into NetLog event parameters.

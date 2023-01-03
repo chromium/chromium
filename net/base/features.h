@@ -390,6 +390,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kBlockNewForbiddenHeaders);
 NET_EXPORT BASE_DECLARE_FEATURE(kPlatformKeyProbeSHA256);
 #endif
 
+// Enable support for HTTP extensible priorities (RFC 9218)
+// https://crbug.com/1362031
+NET_EXPORT BASE_DECLARE_FEATURE(kPriorityIncremental);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

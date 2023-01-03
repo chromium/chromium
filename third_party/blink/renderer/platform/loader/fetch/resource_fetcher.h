@@ -308,6 +308,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                render_blocking_behavior, is_link_preload);
   }
 
+  bool ShouldLoadIncrementalForTesting(ResourceType type) {
+    return ShouldLoadIncremental(type);
+  }
+
   void SetThrottleOptionOverride(
       ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override) {
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
@@ -362,6 +366,7 @@ class PLATFORM_EXPORT ResourceFetcher
           FetchParameters::SpeculativePreloadType::kNotSpeculative,
       RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
       bool is_link_preload = false);
+  bool ShouldLoadIncremental(ResourceType type) const;
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to

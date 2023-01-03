@@ -199,6 +199,7 @@ bool StructTraits<
       data.update_first_party_url_on_redirect();
   out->load_flags = data.load_flags();
   out->resource_type = data.resource_type();
+  out->priority_incremental = data.priority_incremental();
   out->originated_from_service_worker = data.originated_from_service_worker();
   out->skip_service_worker = data.skip_service_worker();
   out->corb_detachable = data.corb_detachable();
