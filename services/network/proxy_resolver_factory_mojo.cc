@@ -108,9 +108,9 @@ class ClientMixin : public ClientInterface {
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           client) override {
     if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS) {
-      my_ip_address_impl_ex_->AddRequest(std::move(client));
-    } else if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX) {
       my_ip_address_impl_->AddRequest(std::move(client));
+    } else if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX) {
+      my_ip_address_impl_ex_->AddRequest(std::move(client));
     } else {
       bool is_ex = operation == net::ProxyResolveDnsOperation::DNS_RESOLVE_EX;
       // Request was for dnsResolve() or dnsResolveEx().
