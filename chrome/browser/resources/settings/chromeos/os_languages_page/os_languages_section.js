@@ -22,15 +22,14 @@ import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
-import {Router} from '../router.js';
 import {routes} from '../os_route.js';
+import {Router} from '../router.js';
 
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {getTemplate} from './os_languages_section.html.js';
-
 
 // The IME ID for the Accessibility Common extension used by Dictation.
 /** @type {string} */

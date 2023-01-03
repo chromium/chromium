@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+/**
+ * @fileoverview constants related to input method options.
+ */
 
-import {loadTimeData} from '../../i18n_setup.js';
-import {Route} from '../router.js';
+import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import {routes} from '../os_route.js';
+import {Route} from '../router.js';
 
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
 import {JAPANESE_INPUT_MODE, JAPANESE_KEYMAP_STYLE, JAPANESE_PUNCTUATION_STYLE, JAPANESE_SECTION_SHORTCUT, JAPANESE_SHIFT_KEY_MODE_STYLE, JAPANESE_SPACE_INPUT_STYLE, JAPANESE_SYMBOL_STYLE} from './input_method_types.js';
 
-
-/**
- * @fileoverview constants related to input method options.
- */
 /**
  * The prefix string shared by all first party input method ID.
  * @private @const

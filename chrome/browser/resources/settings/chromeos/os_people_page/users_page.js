@@ -18,9 +18,9 @@ import './users_add_user_dialog.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';

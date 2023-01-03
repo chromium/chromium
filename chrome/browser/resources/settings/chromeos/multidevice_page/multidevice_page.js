@@ -17,20 +17,20 @@ import './multidevice_notification_access_setup_dialog.js';
 import './multidevice_permissions_setup_dialog.js';
 import './multidevice_subpage.js';
 
+import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../router.js';
 import {NearbyShareSettingsBehavior, NearbyShareSettingsBehaviorInterface} from '../../shared/nearby_share_settings_behavior.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {Route, Router} from '../router.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';

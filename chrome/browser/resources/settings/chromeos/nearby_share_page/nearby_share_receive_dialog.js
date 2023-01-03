@@ -30,9 +30,9 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';

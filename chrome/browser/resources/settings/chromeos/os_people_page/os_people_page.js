@@ -32,9 +32,9 @@ import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_pictur
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';

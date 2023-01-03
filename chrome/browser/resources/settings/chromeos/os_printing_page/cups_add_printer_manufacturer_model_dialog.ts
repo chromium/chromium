@@ -15,9 +15,8 @@ import './cups_printer_dialog_error.js';
 import './cups_printer_shared.css.js';
 import './cups_printers_browser_proxy.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
 
 import {getTemplate} from './cups_add_printer_manufacturer_model_dialog.html.js';
 import {getBaseName, getErrorText, isPPDInfoValid} from './cups_printer_dialog_util.js';

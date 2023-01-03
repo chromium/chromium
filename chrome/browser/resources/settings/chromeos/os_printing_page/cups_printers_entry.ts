@@ -12,9 +12,8 @@ import '../../settings_shared.css.js';
 import './cups_printer_types.js';
 
 import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers_entry.html.js';
