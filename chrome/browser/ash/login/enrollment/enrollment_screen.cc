@@ -266,13 +266,15 @@ void EnrollmentScreen::UpdateFlowType() {
   if (!view_)
     return;
   if (features::IsLicensePackagedOobeFlowEnabled() &&
-      config_.license_type == policy::LicenseType::kEnterprise) {
+      config_.license_type == policy::LicenseType::kEnterprise &&
+      config_.is_license_packaged_with_device) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterpriseLicense);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
     return;
   }
   if (features::IsEducationEnrollmentOobeFlowEnabled() &&
-      config_.license_type == policy::LicenseType::kEducation) {
+      config_.license_type == policy::LicenseType::kEducation &&
+      config_.is_license_packaged_with_device) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEducationLicense);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
     return;
