@@ -9,7 +9,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 
 namespace gl {
-class GLImageEGL;
+class GLImageNativePixmap;
 }
 
 namespace gpu {
@@ -42,7 +42,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
   GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
-  void CreateEGLImage();
+  void CreateGLImageNativePixmap();
 
  private:
   // SharedImageBacking:
@@ -78,7 +78,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   GLFormatDesc format_desc_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
-  scoped_refptr<gl::GLImageEGL> image_egl_;
+  scoped_refptr<gl::GLImageNativePixmap> gl_image_native_pixmap_;
 };
 
 }  // namespace gpu

@@ -387,8 +387,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
-    if (!image_egl_) {
-      CreateEGLImage();
+    if (!gl_image_native_pixmap_) {
+      CreateGLImageNativePixmap();
     }
     std::unique_ptr<GLTextureImageRepresentationBase> texture;
     if (IsPassthrough()) {
@@ -464,18 +464,19 @@ void GLTextureImageBacking::InitializeGLTexture(
   }
 }
 
-void GLTextureImageBacking::CreateEGLImage() {
+void GLTextureImageBacking::CreateGLImageNativePixmap() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
   SharedContextState* shared_context_state = factory()->GetSharedContextState();
   ui::ScopedMakeCurrent smc(shared_context_state->context(),
                             shared_context_state->surface());
-  image_egl_ = gl::GLImageNativePixmap::CreateFromTexture(
+  gl_image_native_pixmap_ = gl::GLImageNativePixmap::CreateFromTexture(
       size(), ToBufferFormat(format()), GetGLServiceId());
   if (passthrough_texture_) {
     passthrough_texture_->SetLevelImage(passthrough_texture_->target(), 0,
-                                        image_egl_.get());
+                                        gl_image_native_pixmap_.get());
   } else if (texture_) {
-    texture_->SetLevelImage(texture_->target(), 0, image_egl_.get(),
+    texture_->SetLevelImage(texture_->target(), 0,
+                            gl_image_native_pixmap_.get(),
                             gles2::Texture::ImageState::BOUND);
   }
 #endif

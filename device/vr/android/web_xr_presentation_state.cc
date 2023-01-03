@@ -13,7 +13,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image_egl.h"
 
 namespace device {
 

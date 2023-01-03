@@ -216,13 +216,6 @@ component("gl") {
       "shared_gl_fence_egl.h",
     ]
 
-    if (!is_android) {
-      sources += [
-        "gl_image_egl.cc",
-        "gl_image_egl.h",
-      ]
-    }
-
     if (enable_vulkan) {
       sources += [
         "gl_angle_util_vulkan.cc",

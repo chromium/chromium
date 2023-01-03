@@ -7,16 +7,20 @@
 
 #include <stdint.h>
 
+#include <EGL/eglplatform.h>
+
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_image_egl.h"
+#include "ui/gl/gl_image.h"
 
 namespace gl {
 
-class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
+class GL_EXPORT GLImageNativePixmap : public GLImage {
  public:
   // Create an EGLImage from a given NativePixmap.
   static scoped_refptr<GLImageNativePixmap> Create(
@@ -49,6 +53,10 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
   }
 
   // Overridden from GLImage:
+  gfx::Size GetSize() override;
+  void* GetEGLImage() const override;
+  bool BindTexImage(unsigned target) override;
+  void ReleaseTexImage(unsigned target) override {}
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -64,10 +72,27 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
                       gfx::BufferFormat format,
                       gfx::BufferPlane plane);
   // Create an EGLImage from a given NativePixmap.
-  bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
+  bool InitializeFromNativePixmap(scoped_refptr<gfx::NativePixmap> pixmap);
   // Create an EGLImage from a given GL texture.
   bool InitializeFromTexture(uint32_t texture_id);
 
+  // Same semantic as specified for eglCreateImageKHR. There two main usages:
+  // 1- When using the |target| EGL_GL_TEXTURE_2D_KHR it is required to pass
+  // a valid |context|. This allows to create an EGLImage from a GL texture.
+  // Then this EGLImage can be converted to an external resource to be shared
+  // with other client APIs.
+  // 2- When using the |target| EGL_NATIVE_PIXMAP_KHR or EGL_LINUX_DMA_BUF_EXT
+  // it is required to pass EGL_NO_CONTEXT. This allows to create an EGLImage
+  // from an external resource. Then this EGLImage can be converted to a GL
+  // texture.
+  bool Initialize(void* context /* EGLContext */,
+                  unsigned target /* EGLenum */,
+                  void* buffer /* EGLClientBuffer */,
+                  const EGLint* attrs);
+
+  raw_ptr<void, DanglingUntriaged> egl_image_ /* EGLImageKHR */;
+  const gfx::Size size_;
+  THREAD_CHECKER(thread_checker_);
   gfx::BufferFormat format_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   gfx::BufferPlane plane_;
