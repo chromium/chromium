@@ -428,6 +428,20 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("\"attested_device_id\"=\"5CD045B0DZ-\"",
             RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ-\""));
 
+  // Valid PSM identifiers.
+  EXPECT_EQ("PSM id: <PSM ID: 1>", RedactCustomPatterns("PSM id: ABCZ/123xx"));
+  EXPECT_EQ("psm: <PSM ID: 2>", RedactCustomPatterns("psm: ABC123F2/123xx"));
+  EXPECT_EQ("PsM: <PSM ID: 3>", RedactCustomPatterns("PsM: abcf6677/123xx"));
+  EXPECT_EQ("PSM determination successful. Identifier <PSM ID: 4> not present.",
+            RedactCustomPatterns("PSM determination successful. Identifier "
+                                 "JTFE/223PE6015195 not present."));
+  // Wrong number of brand code characters.
+  EXPECT_EQ("PSM: ABC/123xx", RedactCustomPatterns("PSM: ABC/123xx"));
+  // Non-hex brand code.
+  EXPECT_EQ("PSM: zefg0000/123xx", RedactCustomPatterns("PSM: zefg0000/123xx"));
+  // No mention of PSM prior to identifier, e.g. in unrelated paths.
+  EXPECT_EQ("/root/123xx", RedactCustomPatterns("/root/123xx"));
+
   EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));
   EXPECT_EQ("gaia_id='<GAIA: 2>'", RedactCustomPatterns("gaia_id='987654321'"));

@@ -45,7 +45,7 @@ enum class PIIType {
   kUIHierarchyWindowTitles,
   // URLs that can appear in logs.
   kURL,
-  // Serial numbers.
+  // Serial numbers, which also includes PSM identifiers.
   kSerial,
   // SSID (Service Set Identifier) of wifi networks can be detected in the logs
   // provided by wpa_supplicant and shill. BSSID (Basic Service Set Identifier)

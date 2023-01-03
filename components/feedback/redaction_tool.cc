@@ -97,6 +97,12 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // appear first or last
     {"Serial", "(\"attested_device_id\"=\")([^-][0-9a-zA-Z-]+[^-])(\")",
      PIIType::kSerial},
+    // PSM identifier is a 4-character brand code, which can be encoded as 8 hex
+    // digits, followed by a slash ('/') and a serial number.
+    {"PSM ID",
+     "(?i)(PSM.*\\b)((?:[a-z]{4}|[0-9a-f]{8})\\/"
+     "[0-9a-z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)",
+     PIIType::kSerial},
 
     // GAIA IDs
     {"GAIA", R"xxx((\"?\bgaia_id\"?[=:]['\"])(\d+)(\b['\"]))xxx",
