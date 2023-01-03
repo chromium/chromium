@@ -1676,6 +1676,9 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   void DisableFurtherFragmentation() {
+    if (!HasBlockFragmentation()) {
+      return;
+    }
     DCHECK(rare_data_);
     rare_data_->block_direction_fragmentation_type = kFragmentNone;
     rare_data_->is_block_fragmentation_forced_off = true;
