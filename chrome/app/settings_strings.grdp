@@ -1953,7 +1953,7 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION" translateable="false" desc="Section description for the blocked sites list in the FLEDGE preferences page.">
     Vivamus ultrices libero purus, quis gravida risus tristique eu. Integer nunc mi, feugiat a pharetra et.
   </message>
-  <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMTPY" translateable="false" desc="Section description for the blocked sites list when there are no blocked sites in the FLEDGE preferences page.">
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the blocked sites list when there are no blocked sites in the FLEDGE preferences page.">
     Vivamus non urna sit amet turpis euismod semper. Phasellus sodales turpis ipsum.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" translateable="false" desc="Footer with more information at the bottom of the FLEDGE preferences page.">
