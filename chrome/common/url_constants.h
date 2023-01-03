@@ -156,6 +156,9 @@ extern const char kExtensionControlledSettingLearnMoreURL[];
 // URL used to indicate that an extension resource load request was invalid.
 extern const char kExtensionInvalidRequestURL[];
 
+// "Learn more" URL for first party sets.
+extern const char kFirstPartySetsLearnMoreURL[];
+
 // Url to a blogpost about Flash deprecation.
 extern const char kFlashDeprecationLearnMoreURL[];
 

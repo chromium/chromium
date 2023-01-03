@@ -1790,6 +1790,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("cookiesSettingsHelpCenterURL",
                          chrome::kCookiesSettingsHelpCenterURL);
 
+  html_source->AddString("firstPartySetsLearnMoreURL",
+                         chrome::kFirstPartySetsLearnMoreURL);
+
   html_source->AddString("safeBrowsingHelpCenterURL",
                          chrome::kSafeBrowsingHelpCenterURL);
 
