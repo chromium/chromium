@@ -2813,7 +2813,7 @@ void StoragePartitionImpl::SetNetworkContextForTesting(
   network_context_.Bind(std::move(network_context_remote));
 }
 
-base::WeakPtr<StoragePartition> StoragePartitionImpl::GetWeakPtr() {
+base::WeakPtr<StoragePartitionImpl> StoragePartitionImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

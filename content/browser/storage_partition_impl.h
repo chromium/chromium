@@ -243,7 +243,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   void ResetAttributionManagerForTesting(
       base::OnceCallback<void(bool)> callback) override;
 
-  base::WeakPtr<StoragePartition> GetWeakPtr();
+  base::WeakPtr<StoragePartitionImpl> GetWeakPtr();
   BackgroundFetchContext* GetBackgroundFetchContext();
   PaymentAppContextImpl* GetPaymentAppContext();
   BroadcastChannelService* GetBroadcastChannelService();

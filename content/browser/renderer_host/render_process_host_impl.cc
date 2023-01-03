@@ -1516,7 +1516,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 ),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       browser_context_(browser_context),
-      storage_partition_impl_(storage_partition_impl),
+      storage_partition_impl_(storage_partition_impl->GetWeakPtr()),
       sudden_termination_allowed_(true),
       is_blocked_(false),
       flags_(flags),
@@ -1912,7 +1912,7 @@ void RenderProcessHostImpl::CreateMessageFilters() {
 #if BUILDFLAG(ENABLE_PPAPI)
   pepper_renderer_connection_ = base::MakeRefCounted<PepperRendererConnection>(
       GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
-      storage_partition_impl_);
+      GetStoragePartition());
   AddFilter(pepper_renderer_connection_.get());
 #endif
 
@@ -3184,7 +3184,11 @@ bool RenderProcessHostImpl::IsPdf() {
 }
 
 StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
-  return storage_partition_impl_;
+  // TODO(https://crbug.com/1382971): Remove the `CHECK` after the ad-hoc
+  // debugging is no longer needed to investigate the bug.
+  CHECK(!!storage_partition_impl_);
+
+  return storage_partition_impl_.get();
 }
 
 static void AppendCompositorCommandLineFlags(base::CommandLine* command_line) {
@@ -3769,7 +3773,7 @@ BrowserContext* RenderProcessHostImpl::GetBrowserContext() {
 
 bool RenderProcessHostImpl::InSameStoragePartition(
     StoragePartition* partition) {
-  return storage_partition_impl_ == partition;
+  return GetStoragePartition() == partition;
 }
 
 int RenderProcessHostImpl::GetID() const {

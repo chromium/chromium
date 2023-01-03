@@ -3749,7 +3749,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // crashed, since using
   // SiteInstance::GetProcess()/GetOrCreateAgentSchedulingGroupHost() has the
   // side effect of creating the process again if it is gone.
-  const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
+  //
+  // TODO(https://crbug.com/1382971): Change back to `raw_ref` after the ad-hoc
+  // debugging is no longer needed to investigate the bug.
+  const base::SafeRef<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // Reference to the whole frame tree that this RenderFrameHost belongs to.
   // Allows this RenderFrameHost to add and remove nodes in response to

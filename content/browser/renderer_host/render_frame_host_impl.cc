@@ -1455,7 +1455,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       delegate_(delegate),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
       agent_scheduling_group_(
-          site_instance_->GetOrCreateAgentSchedulingGroup()),
+          site_instance_->GetOrCreateAgentSchedulingGroup().GetSafeRef()),
       frame_tree_(frame_tree),
       frame_tree_node_(frame_tree_node),
       owner_(frame_tree_node),
@@ -5732,6 +5732,11 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
       isolated_worlds_requiring_separate_url_loader_factory_.empty()) {
     return;
   }
+
+  // TODO(https://crbug.com/1382971): Remove the crash key logging after the
+  // ad-hoc bug investigation is no longer needed.
+  SCOPED_CRASH_KEY_STRING256("rfhi-uslf", "frame->ToDebugString",
+                             ToDebugString());
 
   // The `subresource_loader_factories_config` of the new factories might need
   // to depend on the pending (rather than the last committed) navigation,
