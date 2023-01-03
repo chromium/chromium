@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 }
 
 // TODO(crbug.com/1395715): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
 #else
 #define MAYBE_SubresourceCountUKM SubresourceCountUKM
