@@ -28202,6 +28202,8 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <description>
     User removed a site that was previously in their allowed sites list.
+    TODO(crbug.com/1378703): Deprecate this action in favor of
+    Settings.PrivacySandbox.Fledge.SiteRemoved after the feature is launched.
   </description>
 </action>
 
@@ -28210,6 +28212,8 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
+    TODO(crbug.com/1378703): Deprecate this action in favor of
+    Settings.PrivacySandbox.Topics.TopicRemoved after the feature is launched.
   </description>
 </action>
 
@@ -28296,8 +28300,8 @@ should be able to be added at any place in this file.
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
-    User opened the blocked sites subpage, by clicking on the pref in the Fledge
-    settings page.
+    User opened the blocked sites section, by clicking on the button in the
+    Topics settings page.
   </description>
 </action>
 
@@ -28314,6 +28318,15 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <description>
     User enables the privacy sandbox Fledge API in the Fledge settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.LearnMoreClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened the learn more about fledge section, by clicking on the button
+    in the Fledge settings page.
   </description>
 </action>
 
@@ -28453,6 +28466,8 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <description>
     User added back a site that was previously in their removed sites list.
+    TODO(crbug.com/1378703): Deprecate this action in favor of
+    Settings.PrivacySandbox.Fledge.SiteAdded after the feature is launched.
   </description>
 </action>
 
@@ -28461,6 +28476,8 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <description>
     User added back a topic that was previously in their removed topics list.
+    TODO(crbug.com/1378703): Deprecate this action in favor of
+    Settings.PrivacySandbox.Topics.TopicAdded after the feature is launched.
   </description>
 </action>
 
@@ -28474,7 +28491,7 @@ should be able to be added at any place in this file.
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>
-    User opened the blocked Topics subpage, by clicking on the pref in the
+    User opened the blocked Topics section, by clicking on the button in the
     Topics settings page.
   </description>
 </action>
@@ -28492,6 +28509,15 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <description>
     User enables the privacy sandbox Topics API in the Topics settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.LearnMoreClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened the learn more about topics section, by clicking on the button
+    in the Topics settings page.
   </description>
 </action>
 

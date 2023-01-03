@@ -10,6 +10,7 @@ import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_li
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
@@ -49,6 +50,9 @@ export class SettingsPrivacySandboxPageElement extends
     };
   }
 
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
   private computePrivacySandboxTopicsSublabel_(): string {
     const enabled = this.getPref('privacy_sandbox.m1.topics_enabled').value;
     return this.i18n(
@@ -72,14 +76,20 @@ export class SettingsPrivacySandboxPageElement extends
   }
 
   private onPrivacySandboxTopicsClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Topics.Opened');
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
   }
 
   private onPrivacySandboxFledgeClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Fledge.Opened');
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_FLEDGE);
   }
 
   private onPrivacySandboxAdMeasurementClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.AdMeasurement.Opened');
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
   }
 }

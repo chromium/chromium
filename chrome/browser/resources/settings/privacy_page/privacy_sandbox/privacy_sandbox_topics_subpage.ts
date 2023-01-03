@@ -16,6 +16,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
@@ -84,6 +85,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       blockedTopicsExpanded_: {
         type: Boolean,
         value: false,
+        observer: 'onBlockedTopicsExpanded_',
       },
     };
   }
@@ -95,6 +97,8 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private blockedTopicsExpanded_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -139,7 +143,16 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
             'topicsPageBlockedTopicsDescription');
   }
 
+  private onToggleChange_(e: Event) {
+    const target = e.target as SettingsToggleButtonElement;
+    this.metricsBrowserProxy_.recordAction(
+        target.checked ? 'Settings.PrivacySandbox.Topics.Enabled' :
+                         'Settings.PrivacySandbox.Topics.Disabled');
+  }
+
   private onLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Topics.LearnMoreClicked');
     this.isLearnMoreDialogOpen_ = true;
   }
 
@@ -175,7 +188,17 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     // versa.
     this.privacySandboxBrowserProxy_.setTopicAllowed(
         interest.topic!, /*allowed=*/ interest.removed);
-    // TODO(b/263853353): Record metrics for changed topics.
+
+    this.metricsBrowserProxy_.recordAction(
+        interest.removed ? 'Settings.PrivacySandbox.Topics.TopicAdded' :
+                           'Settings.PrivacySandbox.Topics.TopicRemoved');
+  }
+
+  private onBlockedTopicsExpanded_() {
+    if (this.blockedTopicsExpanded_) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Topics.BlockedTopicsOpened');
+    }
   }
 }
 

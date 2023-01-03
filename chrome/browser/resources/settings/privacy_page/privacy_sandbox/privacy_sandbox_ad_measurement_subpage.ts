@@ -9,6 +9,7 @@ import '../../settings_shared.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './privacy_sandbox_ad_measurement_subpage.html.js';
@@ -42,6 +43,16 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
         notify: true,
       },
     };
+  }
+
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
+  private onToggleChange_(e: Event) {
+    const target = e.target as SettingsToggleButtonElement;
+    this.metricsBrowserProxy_.recordAction(
+        target.checked ? 'Settings.PrivacySandbox.AdMeasurement.Enabled' :
+                         'Settings.PrivacySandbox.AdMeasurement.Disabled');
   }
 }
 

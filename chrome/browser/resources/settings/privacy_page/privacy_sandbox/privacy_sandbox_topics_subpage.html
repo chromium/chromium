@@ -66,7 +66,8 @@
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
     label="$i18n{topicsPageToggleLabel}"
-    sub-label="$i18n{topicsPageToggleSubLabel}">
+    sub-label="$i18n{topicsPageToggleSubLabel}"
+    on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
 <template is="dom-if" if="[[!isTopicsPrefManaged_(
     prefs.privacy_sandbox.m1.topics_enabled.enforcement)]]" restamp>

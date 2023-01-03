@@ -14,6 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
@@ -82,6 +83,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
       blockedSitesExpanded_: {
         type: Boolean,
         value: false,
+        observer: 'onBlockedSitesExpanded_',
       },
     };
   }
@@ -93,6 +95,8 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
   private blockedSitesExpanded_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -127,7 +131,16 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
             'fledgePageBlockedSitesDescription');
   }
 
+  private onToggleChange_(e: Event) {
+    const target = e.target as SettingsToggleButtonElement;
+    this.metricsBrowserProxy_.recordAction(
+        target.checked ? 'Settings.PrivacySandbox.Fledge.Enabled' :
+                         'Settings.PrivacySandbox.Fledge.Disabled');
+  }
+
   private onLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Fledge.LearnMoreClicked');
     this.isLearnMoreDialogOpen_ = true;
   }
 
@@ -138,6 +151,16 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
       // dialog was opened.
       this.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')?.focus();
     });
+  }
+
+  // TODO(crbug.com/1378703): Record metrics when blocking/unblocking sites.
+  // Record a metric when expanding "More sites" section.
+
+  private onBlockedSitesExpanded_() {
+    if (this.blockedSitesExpanded_) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Fledge.BlockedSitesOpened');
+    }
   }
 }
 
