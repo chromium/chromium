@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -707,6 +708,13 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
     if (create_data->focused)
       focused = *create_data->focused;
+
+    // Record the window height and width to determine if we
+    // can set a mininimum value for them (crbug.com/1369103).
+    UMA_HISTOGRAM_COUNTS_1000("Extensions.CreateWindowWidth",
+                              window_bounds.width());
+    UMA_HISTOGRAM_COUNTS_1000("Extensions.CreateWindowHeight",
+                              window_bounds.height());
   }
 
   // Create a new BrowserWindow if possible.

@@ -532,6 +532,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.CreateWindowHeight" units="pixels"
+    expires_after="2023-03-31">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>Height of the window created via chrome.windows.create.</summary>
+</histogram>
+
+<histogram name="Extensions.CreateWindowWidth" units="pixels"
+    expires_after="2023-03-31">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>Width of the window created via chrome.windows.create.</summary>
+</histogram>
+
 <histogram name="Extensions.Database.Database.Restore"
     enum="LevelDBDatabaseCorruptionRestoreValue" expires_after="M85">
   <owner>cmumford@chromium.org</owner>
