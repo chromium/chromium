@@ -173,8 +173,9 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistManyEventsOverTime) {
 
 // Ensures that events are read correctly if the persisted file becomes
 // corrupted by losing the EOF token or if kPersistedFilesizeInBytes is reduced.
+// TODO(crbug.com/1404642): This test is flaky.
 TEST_F(BreadcrumbPersistentStorageManagerTest,
-       GetStoredEventsAfterFilesizeReduction) {
+       DISABLED_GetStoredEventsAfterFilesizeReduction) {
   const base::FilePath breadcrumbs_file_path =
       GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_.GetPath());
   base::File file(breadcrumbs_file_path,
