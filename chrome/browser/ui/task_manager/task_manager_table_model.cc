@@ -311,7 +311,6 @@ TaskManagerTableModel::TaskManagerTableModel(TableViewDelegate* delegate)
     : TaskManagerObserver(base::Milliseconds(kRefreshTimeMS),
                           REFRESH_TYPE_NONE),
       table_view_delegate_(delegate),
-      columns_settings_(new base::DictionaryValue),
       table_model_observer_(nullptr),
       stringifier_(new TaskManagerValuesStringifier),
 #if BUILDFLAG(ENABLE_NACL)
@@ -843,7 +842,7 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
 
     // If the above FindBoolPath() fails, the |col_visibility| remains at the
     // default visibility.
-    columns_settings_->SetBoolPath(col_id_key, col_visibility);
+    columns_settings_.SetByDottedPath(col_id_key, col_visibility);
     table_view_delegate_->SetColumnVisibility(col_id, col_visibility);
     UpdateRefreshTypes(col_id, col_visibility);
 
@@ -864,7 +863,7 @@ void TaskManagerTableModel::StoreColumnsSettings() {
   ScopedDictPrefUpdate dict_update(local_state,
                                    prefs::kTaskManagerColumnVisibility);
 
-  for (const auto item : columns_settings_->GetDict()) {
+  for (const auto item : columns_settings_) {
     dict_update->SetByDottedPath(item.first, item.second.Clone());
   }
 
@@ -882,8 +881,8 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 void TaskManagerTableModel::ToggleColumnVisibility(int column_id) {
   bool new_visibility = !table_view_delegate_->IsColumnVisible(column_id);
   table_view_delegate_->SetColumnVisibility(column_id, new_visibility);
-  columns_settings_->SetBoolPath(GetColumnIdAsString(column_id),
-                                 new_visibility);
+  columns_settings_.SetByDottedPath(GetColumnIdAsString(column_id),
+                                    new_visibility);
   UpdateRefreshTypes(column_id, new_visibility);
 }
 

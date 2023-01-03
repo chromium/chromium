@@ -43,14 +43,14 @@ class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
   void AddOmniboxKeyword(extensions::ExtensionBuilder* builder,
                          const std::string& keyword) {
     using ManifestKeys = extensions::api::omnibox::ManifestKeys;
-    auto info = std::make_unique<base::DictionaryValue>();
-    info->SetStringKey(ManifestKeys::Omnibox::kKeyword, keyword);
+    base::Value::Dict info;
+    info.Set(ManifestKeys::Omnibox::kKeyword, keyword);
     builder->SetManifestKey(ManifestKeys::kOmnibox, std::move(info));
   }
 
   void AddRegularAction(extensions::ExtensionBuilder* builder) {
     builder->SetManifestKey(extensions::manifest_keys::kAction,
-                            std::make_unique<base::DictionaryValue>());
+                            base::Value::Dict());
   }
 
   void AddBrowserActionKeyBinding(extensions::ExtensionBuilder* builder,

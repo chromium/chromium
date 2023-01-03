@@ -185,14 +185,13 @@ const std::string BuildRequestBody(
     return std::string();
 
   // Builds request body:
-  base::DictionaryValue root;
+  base::Value::Dict root;
   base::Value::Dict contentHints;
   contentHints.Set(kDriveRequestIndexableTextKey, indexable_text);
-  root.SetKey(kDriveRequestContentHintsKey,
-              base::Value(std::move(contentHints)));
+  root.Set(kDriveRequestContentHintsKey, std::move(contentHints));
 
   std::string request_body;
-  base::JSONWriter::Write(root, &request_body);
+  base::JSONWriter::Write(std::move(root), &request_body);
 
   return request_body;
 }

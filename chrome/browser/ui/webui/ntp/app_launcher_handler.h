@@ -126,9 +126,6 @@ class AppLauncherHandler
   // Create a dictionary value for the given web app.
   base::Value::Dict GetWebAppInfo(const web_app::AppId& app_id);
 
-  // Populate the given dictionary with the web store promo content.
-  void FillPromoDictionary(base::DictionaryValue* value);
-
   // Handles the "launchApp" message with unused |args|.
   void HandleGetApps(const base::Value::List& args);
 

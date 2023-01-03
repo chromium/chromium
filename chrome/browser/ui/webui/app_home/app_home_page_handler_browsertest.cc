@@ -200,18 +200,17 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
   }
 
   scoped_refptr<const extensions::Extension> InstallTestExtensionApp() {
-    base::DictionaryValue manifest;
-    manifest.SetString(extensions::manifest_keys::kName, kTestAppName);
-    manifest.SetString(extensions::manifest_keys::kVersion, "0.0.0.0");
-    manifest.SetString(extensions::manifest_keys::kApp, "true");
-    manifest.SetString(extensions::manifest_keys::kPlatformAppBackgroundPage,
-                       std::string());
+    base::Value::Dict manifest;
+    manifest.SetByDottedPath(extensions::manifest_keys::kName, kTestAppName);
+    manifest.SetByDottedPath(extensions::manifest_keys::kVersion, "0.0.0.0");
+    manifest.SetByDottedPath(
+        extensions::manifest_keys::kPlatformAppBackgroundPage, std::string());
 
     std::string error;
     scoped_refptr<extensions::Extension> extension =
         extensions::Extension::Create(
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
-            manifest.GetDict(), 0, &error);
+            manifest, 0, &error);
 
     extension_service()->AddExtension(extension.get());
     return extension;

@@ -122,11 +122,12 @@ class MobileDataNotificationsTest : public testing::Test {
     device_test->ClearDevices();
     device_test->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                            "stub_cellular_device1");
-    base::DictionaryValue home_provider;
-    home_provider.SetStringKey("name", "Cellular1_Provider");
-    home_provider.SetStringKey("country", "us");
+    base::Value::Dict home_provider;
+    home_provider.Set("name", "Cellular1_Provider");
+    home_provider.Set("country", "us");
     device_test->SetDeviceProperty(kCellularDevicePath,
-                                   shill::kHomeProviderProperty, home_provider,
+                                   shill::kHomeProviderProperty,
+                                   base::Value(std::move(home_provider)),
                                    /*notify_changed=*/true);
 
     // Create a cellular network and activate it.
