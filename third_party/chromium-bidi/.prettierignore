@@ -1,6 +1,5 @@
 examples/*.html
+lib/
 src/.build
 tests/__pycache__
 wpt/
-lib/
-

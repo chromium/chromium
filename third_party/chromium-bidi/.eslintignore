@@ -1,9 +1,10 @@
+__pycache__
 .build
-lib
 .cache
 .idea
-__pycache__
-logs/
-chromium-bidi.iml
-node_modules/
 chromium-bidi-*
+chromium-bidi.iml
+lib
+logs/
+node_modules/
+wptreport.json
