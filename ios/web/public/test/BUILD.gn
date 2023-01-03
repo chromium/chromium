@@ -135,7 +135,7 @@ source_set("util") {
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
-    "//ios/web/public:public",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
@@ -151,8 +151,6 @@ source_set("util") {
   sources = [
     "error_test_util.h",
     "error_test_util.mm",
-    "js_test_storage_util.h",
-    "js_test_storage_util.mm",
     "js_test_util.h",
     "js_test_util.mm",
     "navigation_test_util.h",
