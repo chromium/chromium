@@ -167,10 +167,11 @@ void WebApkIconHasher::OnSimpleLoaderComplete(
     return;
   }
 
-  // If it's an SVG file, decode the image using Blink's image decoder.
+  // If it's an SVG or WEBP file, decode the image using Blink's image decoder.
   auto simple_url_loader = std::move(simple_url_loader_);
   if (simple_url_loader->ResponseInfo() &&
-      simple_url_loader->ResponseInfo()->mime_type == "image/svg+xml") {
+      (simple_url_loader->ResponseInfo()->mime_type == "image/svg+xml" ||
+       simple_url_loader->ResponseInfo()->mime_type == "image/webp")) {
     if (!web_contents) {
       RunCallback({});
       return;

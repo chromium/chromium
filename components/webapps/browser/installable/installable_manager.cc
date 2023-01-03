@@ -130,10 +130,7 @@ struct ImageTypeDetails {
 constexpr ImageTypeDetails kSupportedImageTypes[] = {
     {".png", "image/png"},
     {".svg", "image/svg+xml"},
-// TODO(https://crbug.com/466958): Add WebP support for Android.
-#if !BUILDFLAG(IS_ANDROID)
     {".webp", "image/webp"},
-#endif
 };
 
 bool IsIconTypeSupported(const blink::Manifest::ImageResource& icon) {
