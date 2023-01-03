@@ -55,11 +55,17 @@ void AudioOutputDevice::Initialize(const AudioParameters& params,
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioOutputDevice::InitializeOnIOThread, this, params,
-                     base::UnsafeDanglingUntriaged(callback)));
+                     // The lifecycle of `callback` is controlled by the owner
+                     // who is responsible for calling Stop before deallocating
+                     // it. InitializeOnIOThread verifies this before using
+                     // callback and we would not want to try to persist the
+                     // object here as it would break the ownership model.
+                     base::UnsafeDangling(callback)));
 }
 
-void AudioOutputDevice::InitializeOnIOThread(const AudioParameters& params,
-                                             RenderCallback* callback) {
+void AudioOutputDevice::InitializeOnIOThread(
+    const AudioParameters& params,
+    MayBeDangling<RenderCallback> callback) {
   DCHECK(!callback_) << "Calling Initialize() twice?";
   DCHECK(params.IsValid());
   DVLOG(1) << __func__ << ": " << params.AsHumanReadableString();
