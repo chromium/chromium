@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksApiProxyImpl, getDisplayedList, Store} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, getDisplayedList, SelectFolderAction, StartSearchAction, Store} from 'chrome://bookmarks/bookmarks.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -10,10 +11,9 @@ import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-router>', function() {
-  let store;
-  let router;
+  let store: TestStore;
 
-  function navigateTo(route) {
+  function navigateTo(route: string) {
     window.history.replaceState({}, '', route);
     window.dispatchEvent(new CustomEvent('location-changed'));
   }
@@ -30,21 +30,23 @@ suite('<bookmarks-router>', function() {
     });
     store.replaceSingleton();
 
-    router = document.createElement('bookmarks-router');
+    const router = document.createElement('bookmarks-router');
     replaceBody(router);
     return flushTasks();
   });
 
   test('search updates from route', function() {
     navigateTo('/?q=bleep');
-    assertEquals('start-search', store.lastAction.name);
-    assertEquals('bleep', store.lastAction.term);
+    const action = store.lastAction as StartSearchAction;
+    assertEquals('start-search', action.name);
+    assertEquals('bleep', action.term);
   });
 
   test('selected folder updates from route', function() {
     navigateTo('/?id=2');
-    assertEquals('select-folder', store.lastAction.name);
-    assertEquals('2', store.lastAction.id);
+    const action = store.lastAction as SelectFolderAction;
+    assertEquals('select-folder', action.name);
+    assertEquals('2', action.id);
   });
 
   test('route updates from ID', async function() {
@@ -61,14 +63,14 @@ suite('<bookmarks-router>', function() {
   });
 
   test('route updates from search', async function() {
-    store.data.search = {term: 'bloop'};
+    store.data.search.term = 'bloop';
     store.notifyObservers();
     await flushTasks();
 
     assertEquals('chrome://bookmarks/?q=bloop', window.location.href);
 
     // Ensure that the route doesn't change when the search finishes.
-    store.data.selectedFolder = null;
+    store.data.selectedFolder = '';
     store.notifyObservers();
     await flushTasks();
     assertEquals('chrome://bookmarks/?q=bloop', window.location.href);
@@ -77,13 +79,14 @@ suite('<bookmarks-router>', function() {
   test('bookmarks bar selected with empty route', function() {
     navigateTo('/?id=2');
     navigateTo('/');
-    assertEquals('select-folder', store.lastAction.name);
-    assertEquals('1', store.lastAction.id);
+    const action = store.lastAction as SelectFolderAction;
+    assertEquals('select-folder', action.name);
+    assertEquals('1', action.id);
   });
 });
 
 suite('URL preload', function() {
-  let testBookmarksApiProxy;
+  let testBookmarksApiProxy: TestBookmarksApiProxy;
 
   setup(function() {
     testBookmarksApiProxy = new TestBookmarksApiProxy();
@@ -94,9 +97,9 @@ suite('URL preload', function() {
    * Reset the page state with a <bookmarks-app> and a clean Store, with the
    * given |url| to trigger routing initialization code.
    */
-  function setupWithUrl(url) {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-    Store.setInstance(undefined);
+  function setupWithUrl(url: string) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    Store.setInstance(new Store());
     window.history.replaceState({}, '', url);
 
     testBookmarksApiProxy.setGetTree([
@@ -122,7 +125,7 @@ suite('URL preload', function() {
   }
 
   test('loading a search URL performs a search', async function() {
-    testBookmarksApiProxy.setSearchResponse(['11']);
+    testBookmarksApiProxy.setSearchResponse([createItem('11')]);
     await setupWithUrl('/?q=testQuery');
     const lastQuery = await testBookmarksApiProxy.whenCalled('search');
     assertEquals('testQuery', lastQuery);

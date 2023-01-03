@@ -4,7 +4,7 @@
 
 import './app.js';
 
-export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, SelectFolderAction, selectItem, SelectItemsAction, setSearchResults, setSearchTerm, updateAnchor} from './actions.js';
+export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, SelectFolderAction, selectItem, SelectItemsAction, setSearchResults, setSearchTerm, StartSearchAction, updateAnchor} from './actions.js';
 export {BookmarksAppElement} from './app.js';
 export {BookmarksApiProxy, BookmarksApiProxyImpl, Query} from './bookmarks_api_proxy.js';
 export {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
