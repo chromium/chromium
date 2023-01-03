@@ -2280,11 +2280,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-family-info-feedback",
-    "owners": ["fernandex", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 110
-  },
-  {
       "name": "enable-favicon-passwords",
       "owners": [ "veronguyen", "gambard" ],
       "expiry_milestone": 105
