@@ -134,10 +134,25 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
                                                kMainContainerMargins);
       }
       return mobile_network_list_view_;
+    case NetworkType::kAll:
+    case NetworkType::kEthernet:
+      if (!first_list_view_) {
+        first_list_view_ = scroll_content()->AddChildView(
+            std::make_unique<RoundedContainer>());
+        first_list_view_->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::TLBR(0, 0, 6, 0));
+      }
+      return first_list_view_;
     default:
       return scroll_content();
   }
   NOTREACHED();
+}
+
+void NetworkDetailedNetworkViewImpl::ReorderFirstListView(size_t index) {
+  if (first_list_view_) {
+    scroll_content()->ReorderChildView(first_list_view_, index);
+  }
 }
 
 void NetworkDetailedNetworkViewImpl::ReorderNetworkTopContainer(size_t index) {
@@ -161,6 +176,13 @@ void NetworkDetailedNetworkViewImpl::ReorderMobileTopContainer(size_t index) {
 void NetworkDetailedNetworkViewImpl::ReorderMobileListView(size_t index) {
   if (mobile_network_list_view_) {
     scroll_content()->ReorderChildView(mobile_network_list_view_, index);
+  }
+}
+
+void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
+  if (first_list_view_ && first_list_view_->children().empty()) {
+    scroll_content()->RemoveChildViewT(first_list_view_);
+    first_list_view_ = nullptr;
   }
 }
 

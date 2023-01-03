@@ -50,10 +50,12 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
   void UpdateScanningBarVisibility(bool visible) override;
+  void ReorderFirstListView(size_t index) override {}
   void ReorderNetworkTopContainer(size_t index) override {}
   void ReorderNetworkListView(size_t index) override {}
   void ReorderMobileTopContainer(size_t index) override {}
   void ReorderMobileListView(size_t index) override {}
+  void MaybeRemoveFirstListView() override {}
 
   // ViewClickListener:
   void OnViewClicked(views::View* view) override;

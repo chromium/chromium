@@ -49,19 +49,23 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   void UpdateScanningBarVisibility(bool visible) override;
   views::View* GetNetworkList(
       chromeos::network_config::mojom::NetworkType type) override;
+  void ReorderFirstListView(size_t index) override;
   void ReorderNetworkTopContainer(size_t index) override;
   void ReorderNetworkListView(size_t index) override;
   void ReorderMobileTopContainer(size_t index) override;
   void ReorderMobileListView(size_t index) override;
+  void MaybeRemoveFirstListView() override;
 
   // NetworkListNetworkHeaderView::Delegate:
   void OnMobileToggleClicked(bool new_state) override;
   void OnWifiToggleClicked(bool new_state) override;
 
-  // Owned by views hierarchy. These are the containers to carry the mobile
-  // header, mobile network entries, wifi header, and wifi network entries.
-  // These containers are only used and added to the `network_list_` when the
-  // `features::IsQsRevampEnabled()` is true.
+  // Owned by the views hierarchy. These are the containers to carry the warning
+  // message, the ethernet entry, the mobile header, mobile network entries,
+  // wifi header, and wifi network entries. These containers are only used and
+  // added to the `network_list_` when the `features::IsQsRevampEnabled()` is
+  // true.
+  RoundedContainer* first_list_view_ = nullptr;
   RoundedContainer* mobile_top_container_ = nullptr;
   RoundedContainer* mobile_network_list_view_ = nullptr;
   RoundedContainer* wifi_top_container_ = nullptr;

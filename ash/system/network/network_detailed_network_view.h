@@ -88,10 +88,14 @@ class ASH_EXPORT NetworkDetailedNetworkView {
       chromeos::network_config::mojom::NetworkType type) = 0;
 
   // Reorder the container or list view based on the index.
+  virtual void ReorderFirstListView(size_t index) = 0;
   virtual void ReorderNetworkTopContainer(size_t index) = 0;
   virtual void ReorderNetworkListView(size_t index) = 0;
   virtual void ReorderMobileTopContainer(size_t index) = 0;
   virtual void ReorderMobileListView(size_t index) = 0;
+
+  // Remove the first list view if there's no child views in it.
+  virtual void MaybeRemoveFirstListView() = 0;
 
  protected:
   explicit NetworkDetailedNetworkView(Delegate* delegate);

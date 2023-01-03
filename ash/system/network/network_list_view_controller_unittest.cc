@@ -16,6 +16,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/fake_cros_network_config.h"
+#include "ash/system/network/network_detailed_network_view_impl.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -471,8 +472,8 @@ class NetworkListViewControllerTest : public AshTestBase,
  private:
   template <class T>
   T FindViewById(int id) {
-    return static_cast<T>(
-        network_list(NetworkType::kAll)->GetViewByID(static_cast<int>(id)));
+    return static_cast<T>(network_detailed_network_view_.get()->GetViewByID(
+        static_cast<int>(id)));
   }
 
   ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {

@@ -184,7 +184,7 @@ void NetworkListViewControllerImpl::GetNetworkStateList() {
 void NetworkListViewControllerImpl::OnGetNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> networks) {
   // Indicates the current position a view will be added to in
-  // NetworkDetailedNetworkView scroll list.
+  // `NetworkDetailedNetworkView` scroll list.
   size_t index = 0;
 
   // Store current views in `previous_network_views`, views which have
@@ -197,13 +197,34 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
 
   UpdateNetworkTypeExistence(networks);
 
-  // Show a warning that the connection might be monitored if connected to a VPN
-  // or if the default network has a proxy installed.
-  index = ShowConnectionWarningIfNetworkMonitored(index);
+  if (features::IsQsRevampEnabled()) {
+    network_detailed_network_view()->ReorderFirstListView(index++);
 
-  // Show Ethernet section first.
-  index = CreateItemViewsIfMissingAndReorder(NetworkType::kEthernet, index,
-                                             networks, &previous_network_views);
+    // If `QsRevamp` is enabled, the warning message entry and the ethernet
+    // entry are placed in the `network_detailed_network_view()`'s
+    // `first_list_view_`. Here this index is used to indicate the current
+    // position a entry will be added to or reordered in the `first_list_view_`.
+    size_t first_list_item_index = 0;
+
+    // Show a warning that the connection might be monitored if connected to a
+    // VPN or if the default network has a proxy installed.
+    first_list_item_index =
+        ShowConnectionWarningIfNetworkMonitored(first_list_item_index);
+
+    // Show Ethernet section first.
+    first_list_item_index = CreateItemViewsIfMissingAndReorder(
+        NetworkType::kEthernet, first_list_item_index, networks,
+        &previous_network_views);
+
+  } else {
+    // Show a warning that the connection might be monitored if connected to a
+    // VPN or if the default network has a proxy installed.
+    index = ShowConnectionWarningIfNetworkMonitored(index);
+
+    // Show Ethernet section first.
+    index = CreateItemViewsIfMissingAndReorder(
+        NetworkType::kEthernet, index, networks, &previous_network_views);
+  }
 
   if (ShouldMobileDataSectionBeShown()) {
     // Add separator if mobile section is not the first view child, else
@@ -393,6 +414,7 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
         ->ReorderChildView(connection_warning_, index++);
   } else if (connected_vpn_guid_.empty() && !using_proxy) {
     HideConnectionWarning();
+    network_detailed_network_view()->MaybeRemoveFirstListView();
   }
 
   return index;
