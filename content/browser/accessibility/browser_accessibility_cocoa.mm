@@ -1602,8 +1602,12 @@ bool content::IsNSRange(id value) {
       _owner->manager()
           ->GetManagerForRootFrame()
           ->ToBrowserAccessibilityManagerMac();
-  CHECK(root_manager) << "There should always be a root manager whenever an "
-                         "object is instanceActive.";
+  if (!root_manager) {
+    // TODO(crbug.com/1350583) Find out why this happens -- there should always
+    // be a root manager whenever an object is instanceActive. This used to be a
+    // CHECK() but caused too many crashes, with unknown cause.
+    return nil;
+  }
   CHECK(root_manager->GetParentView());
   return root_manager->GetWindow();  // Can be null for inactive tabs.
 }
