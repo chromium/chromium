@@ -26,6 +26,7 @@ import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {cast, castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {getImage} from '../icon.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -41,11 +42,9 @@ const SettingsKerberosAccountsElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          I18nMixinInterface & WebUiListenerMixinInterface &
-          RouteObserverMixinInterface,
-    };
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
+    Constructor<PolymerElement&DeepLinkingBehaviorInterface&I18nMixinInterface&
+                WebUiListenerMixinInterface&RouteObserverMixinInterface>;
 
 class SettingsKerberosAccountsElement extends
     SettingsKerberosAccountsElementBase {

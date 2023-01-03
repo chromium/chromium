@@ -37,6 +37,7 @@ import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -68,12 +69,11 @@ const OsSettingsAppsPageElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteObserverMixin(PrefsMixin(
-            AppManagementStoreMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & AppManagementStoreMixinInterface &
-          I18nMixinInterface & PrefsMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
-    };
+        RouteObserverMixin(
+            PrefsMixin(AppManagementStoreMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&AppManagementStoreMixinInterface&
+                I18nMixinInterface&PrefsMixinInterface&
+                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
 
 class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   static get is() {

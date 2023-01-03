@@ -26,6 +26,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -66,11 +67,10 @@ const SettingsSwitchAccessSubpageElementBase =
     mixinBehaviors(
         [DeepLinkingBehavior],
         PrefsMixin(RouteObserverMixin(
-            WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteObserverMixinInterface &
-          PrefsMixinInterface & DeepLinkingBehaviorInterface,
-    };
+            WebUiListenerMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                RouteObserverMixinInterface&PrefsMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsSwitchAccessSubpageElement extends
     SettingsSwitchAccessSubpageElementBase {

@@ -29,6 +29,7 @@ import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_con
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './cups_edit_printer_dialog.html.js';
@@ -51,10 +52,9 @@ enum DialogActions {
 const METRICS_KEYWORD = 'Printing.CUPS.EditDialog';
 
 const SettingsCupsEditPrinterDialogElementBase =
-    mixinBehaviors([NetworkListenerBehavior], I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface &
-          NetworkListenerBehaviorInterface,
-    };
+    mixinBehaviors([NetworkListenerBehavior], I18nMixin(PolymerElement)) as
+    Constructor<PolymerElement&I18nMixinInterface&
+                NetworkListenerBehaviorInterface>;
 
 class SettingsCupsEditPrinterDialogElement extends
     SettingsCupsEditPrinterDialogElementBase {

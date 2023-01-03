@@ -27,6 +27,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -49,11 +50,10 @@ const SettingsDetailedBuildInfoBase =
           DeepLinkingBehavior,
         ],
         RouteObserverMixin(
-            PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement))))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          I18nMixinInterface & PrefsMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
-    };
+            PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement))))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&I18nMixinInterface&
+                PrefsMixinInterface&RouteObserverMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
   static get is() {

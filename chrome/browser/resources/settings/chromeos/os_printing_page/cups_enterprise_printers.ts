@@ -23,6 +23,7 @@ import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resource
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 
 import {getTemplate} from './cups_enterprise_printers.html.js';
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
@@ -51,10 +52,9 @@ const SettingsCupsEnterprisePrintersElementBase =
         [
           CupsPrintersEntryListBehavior,
         ],
-        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as {
-      new (): PolymerElement & CupsPrintersEntryListBehaviorInterface &
-          ListPropertyUpdateMixinInterface & WebUiListenerMixinInterface,
-    };
+        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as
+    Constructor<PolymerElement&CupsPrintersEntryListBehaviorInterface&
+                ListPropertyUpdateMixinInterface&WebUiListenerMixinInterface>;
 
 class SettingsCupsEnterprisePrintersElement extends
     SettingsCupsEnterprisePrintersElementBase {

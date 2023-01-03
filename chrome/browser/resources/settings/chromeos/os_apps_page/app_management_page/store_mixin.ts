@@ -10,9 +10,9 @@
 import {StoreClient, StoreClientInterface} from 'chrome://resources/ash/common/store/store_client.js';
 import {dedupingMixin, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppManagementPageState, AppManagementStore} from './store.js';
+import {Constructor} from '../../common/types.js';
 
-type Constructor<T> = new (...args: any[]) => T;
+import {AppManagementPageState, AppManagementStore} from './store.js';
 
 type ValueGetterFn<T = any> = (state: T) => any;
 type WatchFn = (localProperty: string, valueGetter: ValueGetterFn) => void;

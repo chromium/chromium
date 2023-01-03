@@ -11,19 +11,17 @@
 import '../../icons.html.js';
 import '../../settings_shared.css.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './per_device_touchpad.html.js';
 
 const SettingsPerDeviceTouchpadElementBase =
-    RouteObserverMixin(I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface & RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 class SettingsPerDeviceTouchpadElement extends
     SettingsPerDeviceTouchpadElementBase {

@@ -10,6 +10,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Constructor} from '../common/types.js';
+
 import {getDisplayApi} from './device_page_browser_proxy.js';
 import {DragMixin, DragMixinInterface, Position} from './drag_mixin.js';
 
@@ -17,8 +19,6 @@ import Bounds = chrome.system.display.Bounds;
 import DisplayLayout = chrome.system.display.DisplayLayout;
 import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 import LayoutPosition = chrome.system.display.LayoutPosition;
-
-type Constructor<T> = new (...args: any[]) => T;
 
 export {Position};
 

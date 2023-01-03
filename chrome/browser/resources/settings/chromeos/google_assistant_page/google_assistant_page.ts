@@ -24,6 +24,7 @@ import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {cast, castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -69,11 +70,10 @@ const SettingsGoogleAssistantPageElementBase =
           DeepLinkingBehavior,
         ],
         RouteObserverMixin(
-            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & PrefsMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
-    };
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                PrefsMixinInterface&RouteObserverMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsGoogleAssistantPageElement extends
     SettingsGoogleAssistantPageElementBase {

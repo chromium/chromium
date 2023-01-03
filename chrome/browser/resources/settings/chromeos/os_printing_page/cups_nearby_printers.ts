@@ -17,6 +17,7 @@ import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome:
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Constructor} from '../common/types.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './cups_nearby_printers.html.js';
@@ -30,10 +31,9 @@ const SettingsCupsNearbyPrintersElementBase =
         [
           CupsPrintersEntryListBehavior,
         ],
-        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as {
-      new (): PolymerElement & CupsPrintersEntryListBehaviorInterface &
-          ListPropertyUpdateMixinInterface & WebUiListenerMixinInterface,
-    };
+        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as
+    Constructor<PolymerElement&CupsPrintersEntryListBehaviorInterface&
+                ListPropertyUpdateMixinInterface&WebUiListenerMixinInterface>;
 
 export class SettingsCupsNearbyPrintersElement extends
     SettingsCupsNearbyPrintersElementBase {

@@ -23,6 +23,7 @@ import {FocusConfig} from '../../focus_config.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -49,10 +50,9 @@ enum ModifierKey {
 const SettingsKeyboardElementBase =
     mixinBehaviors(
         [DeepLinkingBehavior],
-        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
-    };
+        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&
+                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
 
 class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   static get is() {

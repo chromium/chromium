@@ -21,6 +21,7 @@ import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';
@@ -88,11 +89,10 @@ const SettingsSelectToSpeakSubpageElementBase =
           DeepLinkingBehavior,
         ],
         RouteOriginMixin(
-            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & PrefsMixinInterface &
-          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
-    };
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                PrefsMixinInterface&RouteOriginMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsSelectToSpeakSubpageElement extends
     SettingsSelectToSpeakSubpageElementBase {

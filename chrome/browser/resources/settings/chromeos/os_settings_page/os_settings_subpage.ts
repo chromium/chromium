@@ -27,6 +27,7 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polym
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {Constructor} from '../common/types.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
@@ -42,10 +43,9 @@ export interface OsSettingsSubpageElement {
 const OsSettingsSubpageElementBase =
     mixinBehaviors(
         [IronResizableBehavior],
-        RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface &
-          RouteObserverMixinInterface,
-    };
+        RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as
+    Constructor<PolymerElement&FindShortcutMixinInterface&I18nMixinInterface&
+                RouteObserverMixinInterface>;
 
 export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   static get is() {

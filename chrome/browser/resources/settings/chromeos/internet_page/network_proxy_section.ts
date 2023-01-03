@@ -32,6 +32,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -56,11 +57,9 @@ const NetworkProxySectionElementBase =
         [
           CrPolicyNetworkBehaviorMojo,
         ],
-        PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & PrefsMixinInterface &
-          CrPolicyNetworkBehaviorMojoInterface,
-    };
+        PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement)))) as
+    Constructor<PolymerElement&I18nMixinInterface&RouteObserverMixinInterface&
+                PrefsMixinInterface&CrPolicyNetworkBehaviorMojoInterface>;
 
 class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get is() {

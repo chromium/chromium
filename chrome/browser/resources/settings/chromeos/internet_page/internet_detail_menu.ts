@@ -23,6 +23,7 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resource
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -39,10 +40,10 @@ interface SettingsInternetDetailMenuElement {
 const SettingsInternetDetailMenuElementBase =
     mixinBehaviors(
         [ESimManagerListenerBehavior, DeepLinkingBehavior],
-        RouteObserverMixin(PolymerElement)) as {
-      new (): PolymerElement & RouteObserverMixinInterface &
-          ESimManagerListenerBehaviorInterface & DeepLinkingBehaviorInterface,
-    };
+        RouteObserverMixin(PolymerElement)) as
+    Constructor<PolymerElement&RouteObserverMixinInterface&
+                ESimManagerListenerBehaviorInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsInternetDetailMenuElement extends
     SettingsInternetDetailMenuElementBase {

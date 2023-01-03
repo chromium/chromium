@@ -16,6 +16,7 @@ import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resource
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {equalContainerId} from '../guest_os/guest_os_container_select.js';
@@ -29,10 +30,9 @@ import {getTemplate} from './crostini_export_import.html.js';
 const SettingsCrostiniExportImportElementBase =
     mixinBehaviors(
         [DeepLinkingBehavior],
-        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          RouteObserverMixinInterface & WebUiListenerMixinInterface,
-    };
+        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as
+    Constructor<PolymerElement&DeepLinkingBehaviorInterface&
+                RouteObserverMixinInterface&WebUiListenerMixinInterface>;
 
 class SettingsCrostiniExportImportElement extends
     SettingsCrostiniExportImportElementBase {

@@ -16,6 +16,7 @@ import './smb_shares_page.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -25,10 +26,8 @@ import {getTemplate} from './os_files_page.html.js';
 
 const OsSettingsFilesPageElementBase =
     mixinBehaviors([DeepLinkingBehavior], RouteObserverMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & RouteObserverMixinInterface &
-          DeepLinkingBehaviorInterface,
-    };
+    Constructor<PolymerElement&RouteObserverMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   static get is() {

@@ -268,6 +268,7 @@ foreach(f, css_files) {
 
 non_web_component_files = [
   "chromeos/assert_extras.ts",
+  "chromeos/common/types.ts",
   "chromeos/crostini_page/crostini_browser_proxy.ts",
   "chromeos/crostini_page/crostini_shared_usb_devices.ts",
   "chromeos/date_time_page/date_time_types.ts",

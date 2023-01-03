@@ -52,6 +52,7 @@ import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {assertExists, castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
@@ -72,12 +73,12 @@ const SettingsInternetDetailPageElementBase =
           DeepLinkingBehavior,
         ],
         PrefsMixin(RouteObserverMixin(
-            WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteObserverMixinInterface &
-          PrefsMixinInterface & NetworkListenerBehaviorInterface &
-          CrPolicyNetworkBehaviorMojoInterface & DeepLinkingBehaviorInterface,
-    };
+            WebUiListenerMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                RouteObserverMixinInterface&PrefsMixinInterface&
+                NetworkListenerBehaviorInterface&
+                CrPolicyNetworkBehaviorMojoInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsInternetDetailPageElement extends
     SettingsInternetDetailPageElementBase {

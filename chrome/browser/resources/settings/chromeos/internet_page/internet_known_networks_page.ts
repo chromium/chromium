@@ -26,6 +26,7 @@ import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {assertExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -47,12 +48,10 @@ const SettingsInternetKnownNetworksPageElementBase =
           NetworkListenerBehavior,
           CrPolicyNetworkBehaviorMojo,
         ],
-        RouteObserverMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingBehaviorInterface &
-          NetworkListenerBehaviorInterface &
-          CrPolicyNetworkBehaviorMojoInterface,
-    };
+        RouteObserverMixin(I18nMixin(PolymerElement))) as
+    Constructor<PolymerElement&I18nMixinInterface&RouteObserverMixinInterface&
+                DeepLinkingBehaviorInterface&NetworkListenerBehaviorInterface&
+                CrPolicyNetworkBehaviorMojoInterface>;
 
 class SettingsInternetKnownNetworksPageElement extends
     SettingsInternetKnownNetworksPageElementBase {

@@ -38,6 +38,7 @@ import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/ser
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
 import {MultiDeviceFeatureState, MultiDevicePageContentData} from '../multidevice_page/multidevice_constants.js';
 
@@ -52,10 +53,9 @@ declare global {
 const CellularNetworksListElementBase =
     mixinBehaviors(
         [ESimManagerListenerBehavior],
-        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & ESimManagerListenerBehaviorInterface,
-    };
+        WebUiListenerMixin(I18nMixin(PolymerElement))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                ESimManagerListenerBehaviorInterface>;
 
 class CellularNetworksListElement extends CellularNetworksListElementBase {
   static get is() {

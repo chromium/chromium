@@ -26,6 +26,7 @@ import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -49,11 +50,9 @@ const SettingsCrostiniSubpageElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          PrefsMixinInterface & RouteOriginMixinInterface &
-          DeepLinkingBehaviorInterface,
-    };
+        RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&PrefsMixinInterface&
+                RouteOriginMixinInterface&DeepLinkingBehaviorInterface>;
 
 class SettingsCrostiniSubpageElement extends
     SettingsCrostiniSubpageElementBase {

@@ -6,6 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from './assert_extras.js';
+import {Constructor} from './common/types.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
@@ -70,8 +71,6 @@ const VALID_TRANSITIONS = new Map([
   [RouteState.SUBPAGE, ALL_STATES],
   [RouteState.TOP_LEVEL, ALL_STATES],
 ]);
-
-type Constructor<T> = new (...args: any[]) => T;
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;

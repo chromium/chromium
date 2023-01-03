@@ -23,6 +23,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -51,11 +52,9 @@ const SettingsPowerElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteObserverMixinInterface &
-          DeepLinkingBehaviorInterface,
-    };
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
 
 class SettingsPowerElement extends SettingsPowerElementBase {
   static get is() {

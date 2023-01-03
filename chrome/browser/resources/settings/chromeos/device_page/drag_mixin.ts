@@ -11,6 +11,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 
 export interface Position {
   x: number;
@@ -27,8 +28,6 @@ enum DragType {
 }
 
 type DragCallback = (id: string, amount: Position|null) => void;
-
-type Constructor<T> = new (...args: any[]) => T;
 
 export interface DragMixinInterface {
   dragId: string;

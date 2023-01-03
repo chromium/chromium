@@ -28,15 +28,15 @@ import {GlobalPolicy, VpnType} from 'chrome://resources/mojo/chromeos/services/n
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Constructor} from '../common/types.js';
+
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 import {getTemplate} from './network_summary_item.html.js';
 
 const NetworkSummaryItemElementBase =
     mixinBehaviors([CrPolicyNetworkBehaviorMojo], I18nMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & I18nMixinInterface &
-          CrPolicyNetworkBehaviorMojoInterface,
-    };
+    Constructor<PolymerElement&I18nMixinInterface&
+                CrPolicyNetworkBehaviorMojoInterface>;
 
 export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   static get is() {

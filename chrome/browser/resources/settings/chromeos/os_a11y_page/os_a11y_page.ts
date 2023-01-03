@@ -29,6 +29,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
@@ -46,11 +47,9 @@ interface OsSettingsA11yPageElement {
 const OsSettingsA11yPageElementBase =
     mixinBehaviors(
         [DeepLinkingBehavior],
-        RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          PrefsMixinInterface & RouteOriginMixinInterface &
-          DeepLinkingBehaviorInterface,
-    };
+        RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&PrefsMixinInterface&
+                RouteOriginMixinInterface&DeepLinkingBehaviorInterface>;
 
 class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   static get is() {

@@ -19,6 +19,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
@@ -34,11 +35,10 @@ const SettingsTextToSpeechPageElementBase =
           DeepLinkingBehavior,
         ],
         RouteOriginMixin(
-            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & PrefsMixinInterface &
-          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
-    };
+            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                PrefsMixinInterface&RouteOriginMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsTextToSpeechPageElement extends
     SettingsTextToSpeechPageElementBase {

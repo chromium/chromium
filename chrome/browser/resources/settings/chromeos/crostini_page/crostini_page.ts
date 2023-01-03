@@ -33,6 +33,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -47,11 +48,10 @@ const SettingsCrostiniPageElementBase =
           DeepLinkingBehavior,
         ],
         PrefsMixin(RouteObserverMixin(
-            I18nMixin(WebUiListenerMixin(PolymerElement))))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          I18nMixinInterface & RouteObserverMixinInterface &
-          PrefsMixinInterface & DeepLinkingBehaviorInterface,
-    };
+            I18nMixin(WebUiListenerMixin(PolymerElement))))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&I18nMixinInterface&
+                RouteObserverMixinInterface&PrefsMixinInterface&
+                DeepLinkingBehaviorInterface>;
 
 class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
   static get is() {

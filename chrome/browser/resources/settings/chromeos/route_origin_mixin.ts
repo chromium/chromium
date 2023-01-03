@@ -7,10 +7,9 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from './assert_extras.js';
+import {Constructor} from './common/types.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
 import {Route, Router} from './router.js';
-
-type Constructor<T> = new (...args: any[]) => T;
 
 export interface RouteOriginMixinInterface extends RouteObserverMixinInterface {
   addFocusConfig(route: Route|undefined, value: string): void;

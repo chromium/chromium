@@ -11,6 +11,7 @@ import './cups_printers_browser_proxy.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -25,10 +26,9 @@ const OsSettingsPrintingPageElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteObserverMixin(PolymerElement)) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          RouteObserverMixinInterface,
-    };
+        RouteObserverMixin(PolymerElement)) as
+    Constructor<PolymerElement&DeepLinkingBehaviorInterface&
+                RouteObserverMixinInterface>;
 
 class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
   static get is(): string {

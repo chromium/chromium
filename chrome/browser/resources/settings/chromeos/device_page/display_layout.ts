@@ -16,6 +16,7 @@ import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resiza
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {getTemplate} from './display_layout.html.js';
@@ -50,9 +51,8 @@ interface DisplayLayoutElement {
 }
 
 const DisplayLayoutElementBase =
-    mixinBehaviors([IronResizableBehavior], LayoutMixin(PolymerElement)) as {
-      new (): PolymerElement & LayoutMixinInterface,
-    };
+    mixinBehaviors([IronResizableBehavior], LayoutMixin(PolymerElement)) as
+    Constructor<PolymerElement&LayoutMixinInterface>;
 
 class DisplayLayoutElement extends DisplayLayoutElementBase {
   static get is() {

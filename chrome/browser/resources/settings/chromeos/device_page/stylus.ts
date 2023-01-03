@@ -21,6 +21,7 @@ import {microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/poly
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {assertExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
@@ -41,10 +42,8 @@ const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
 
 const SettingsStylusElementBase =
     mixinBehaviors([DeepLinkingBehavior], RouteObserverMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          RouteObserverMixinInterface,
-    };
+    Constructor<PolymerElement&DeepLinkingBehaviorInterface&
+                RouteObserverMixinInterface>;
 
 class SettingsStylusElement extends SettingsStylusElementBase {
   static get is() {

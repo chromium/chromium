@@ -23,6 +23,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
@@ -35,11 +36,9 @@ const SettingsDisplayAndMagnificationElementBase =
         [
           DeepLinkingBehavior,
         ],
-        RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteOriginMixinInterface &
-          DeepLinkingBehaviorInterface,
-    };
+        RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                RouteOriginMixinInterface&DeepLinkingBehaviorInterface>;
 
 class SettingsDisplayAndMagnificationElement extends
     SettingsDisplayAndMagnificationElementBase {

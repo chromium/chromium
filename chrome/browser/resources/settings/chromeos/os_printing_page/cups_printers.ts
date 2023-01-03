@@ -44,10 +44,11 @@ import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../router.js';
+import {Constructor} from '../common/types.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {Route} from '../router.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers.html.js';
@@ -60,13 +61,11 @@ const SettingsCupsPrintersElementBase =
         [
           DeepLinkingBehavior,
           NetworkListenerBehavior,
-          RouteObserverBehavior,
         ],
-        WebUiListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          NetworkListenerBehaviorInterface & RouteObserverBehaviorInterface &
-          WebUiListenerMixinInterface,
-    };
+        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&
+                RouteObserverMixinInterface&DeepLinkingBehaviorInterface&
+                NetworkListenerBehaviorInterface>;
 
 interface SettingsCupsPrintersElement {
   $: {
