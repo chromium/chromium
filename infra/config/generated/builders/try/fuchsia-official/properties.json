@@ -22,7 +22,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "fuchsia_x64"
+                  "fuchsia_x64",
+                  "checkout_pgo_profiles"
                 ],
                 "config": "chromium"
               }

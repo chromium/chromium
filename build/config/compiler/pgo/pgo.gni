@@ -24,7 +24,7 @@ declare_args() {
       # TODO(crbug.com/1336055): Update this now-outdated condition with regard
       # to chromecast and determine whether chromeos_is_browser_only is
       # obsolete.
-      (is_high_end_android || is_win || is_mac ||
+      (is_high_end_android || is_win || is_mac || is_fuchsia ||
        (is_linux && !is_castos && !chromeos_is_browser_only))) {
     chrome_pgo_phase = 2
   }
