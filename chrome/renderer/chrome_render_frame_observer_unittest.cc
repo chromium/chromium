@@ -22,6 +22,10 @@ class ChromeRenderFrameObserverTest : public testing::Test {
     return ChromeRenderFrameObserver::NeedsEncodeImage(image_extension,
                                                        image_format);
   }
+
+  bool IsAnimatedWebp(const std::vector<uint8_t> image_data) {
+    return ChromeRenderFrameObserver::IsAnimatedWebp(image_data);
+  }
 };
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -122,4 +126,46 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
   EXPECT_TRUE(NeedsEncodeImage(
       /* image_extension */ ".webp",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
+}
+
+TEST_F(ChromeRenderFrameObserverTest,
+       IsAnimatedWebp_HeaderTooSmall_ReturnsFalse) {
+  // First 10 bytes taken from a real animated webp image.
+  const std::vector<uint8_t> broken_image_data{82, 73, 70, 70, 228,
+                                               26, 0,  0,  87};
+  EXPECT_FALSE(IsAnimatedWebp(broken_image_data));
+}
+
+TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_StaticWebp_ReturnsFalse) {
+  // First 75 bytes taken from a real animated webp image.
+  const std::vector<uint8_t> static_webp_image_data{
+      82,  73,  70,  70,  88,  59,  1,   0,   87,  69,  66,  80,  86,
+      80,  56,  32,  76,  59,  1,   0,   208, 98,  5,   157, 1,   42,
+      0,   4,   64,  2,   62,  109, 50,  148, 71,  36,  35,  34,  38,
+      166, 86,  124, 72,  208, 13,  137, 103, 106, 155, 24,  53,  233,
+      164, 233, 87,  115, 20,  237, 92,  128, 131, 202, 189, 198, 245,
+      91,  174, 63,  84,  114, 136, 231, 31,  212, 255};
+  EXPECT_FALSE(IsAnimatedWebp(static_webp_image_data));
+}
+
+TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_Jpeg_ReturnsFalse) {
+  // First 75 bytes taken from a real jpeg image.
+  const std::vector<uint8_t> jpeg_image_data{
+      255, 216, 255, 224, 0,  16,  74,  70,  73,  70, 0,  1,  1,  1,   0,
+      72,  0,   72,  0,   0,  255, 226, 12,  88,  73, 67, 67, 95, 80,  82,
+      79,  70,  73,  76,  69, 0,   1,   1,   0,   0,  12, 72, 76, 105, 110,
+      111, 2,   16,  0,   0,  109, 110, 116, 114, 82, 71, 66, 32, 88,  89,
+      90,  32,  7,   206, 0,  2,   0,   9,   0,   6,  0,  49, 0,  0,   97};
+  EXPECT_FALSE(IsAnimatedWebp(jpeg_image_data));
+}
+
+TEST_F(ChromeRenderFrameObserverTest, IsAnimatedWebp_AnimatedWebp_ReturnsTrue) {
+  // First 75 bytes taken from a real animated webp image.
+  const std::vector<uint8_t> animated_webp_image_data{
+      82, 73, 70, 70, 228, 26, 0, 0, 87,  69,  66,  80,  86,  80,  56,
+      88, 10, 0,  0,  0,   18, 0, 0, 0,   219, 1,   0,   23,  1,   0,
+      65, 78, 73, 77, 6,   0,  0, 0, 255, 255, 255, 255, 0,   0,   65,
+      78, 77, 70, 20, 2,   0,  0, 0, 0,   0,   0,   0,   0,   219, 1,
+      0,  23, 1,  0,  60,  0,  0, 3, 86,  80,  56,  76,  251, 1,   0};
+  EXPECT_TRUE(IsAnimatedWebp(animated_webp_image_data));
 }

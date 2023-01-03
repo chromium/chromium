@@ -96,6 +96,7 @@ include_rules = [
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/metrics_proto",
   "+third_party/widevine/cdm/buildflags.h",
+  "+third_party/libwebp/src/src/webp/decode.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
   "+ui/gfx/geometry/size_f.h",
 ]

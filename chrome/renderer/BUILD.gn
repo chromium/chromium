@@ -208,6 +208,7 @@ static_library("renderer") {
     "//third_party/blink/public:scaled_resources",
     "//third_party/blink/public/strings",
     "//third_party/icu",
+    "//third_party/libwebp",
     "//third_party/re2",
     "//third_party/widevine/cdm:buildflags",
     "//ui/surface",

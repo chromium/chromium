@@ -135,6 +135,10 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   static bool NeedsEncodeImage(const std::string& image_extension,
                                chrome::mojom::ImageFormat image_format);
 
+  // Check if the image is an animated Webp image by looking for animation
+  // feature flag
+  static bool IsAnimatedWebp(const std::vector<uint8_t>& image_data);
+
   // Have the same lifetime as us.
   translate::TranslateAgent* translate_agent_;
   optimization_guide::PageTextAgent* page_text_agent_;
