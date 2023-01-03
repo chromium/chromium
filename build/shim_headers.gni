@@ -28,8 +28,10 @@ template("shim_headers") {
     }
     args += invoker.headers
 
-    outputs = process_file_template(invoker.headers,
-                                    "${shim_headers_path}/{{source_file_part}}")
+    outputs = []
+    foreach(h, invoker.headers) {
+      outputs += [ shim_headers_path + "/" + rebase_path(invoker.root_path,"//") + "/" + h ]
+    }
   }
 
   group(target_name) {
