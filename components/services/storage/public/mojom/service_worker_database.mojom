@@ -68,8 +68,6 @@ struct ServiceWorkerRegistrationData {
   // Not populated until the registration is stored into database.
   int64 resources_total_size_bytes = 0;
 
-  // TODO(crbug.com/1177199): merge COEP to policy container
-  network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   blink.mojom.PolicyContainerPolicies? policy_container_policies;
 
   // The type of the frame that registered this service worker, which is used

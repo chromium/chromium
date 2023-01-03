@@ -142,12 +142,11 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       ip_address_space(policies.ip_address_space),
       content_security_policies(
           mojo::Clone(policies.content_security_policies)),
+      cross_origin_embedder_policy(policies.cross_origin_embedder_policy),
       sandbox_flags(policies.sandbox_flags),
       is_credentialless(policies.is_credentialless),
       can_navigate_top_without_user_gesture(
-          policies.can_navigate_top_without_user_gesture) {
-  cross_origin_embedder_policy.value = policies.cross_origin_embedder_policy;
-}
+          policies.can_navigate_top_without_user_gesture) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
     const GURL& url,
@@ -200,7 +199,7 @@ void PolicyContainerPolicies::AddContentSecurityPolicies(
 blink::mojom::PolicyContainerPoliciesPtr
 PolicyContainerPolicies::ToMojoPolicyContainerPolicies() const {
   return blink::mojom::PolicyContainerPolicies::New(
-      cross_origin_embedder_policy.value, referrer_policy,
+      cross_origin_embedder_policy, referrer_policy,
       mojo::Clone(content_security_policies), is_credentialless, sandbox_flags,
       ip_address_space, can_navigate_top_without_user_gesture);
 }

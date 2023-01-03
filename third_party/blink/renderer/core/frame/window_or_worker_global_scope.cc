@@ -233,7 +233,7 @@ String WindowOrWorkerGlobalScope::crossOriginEmbedderPolicy(
   const PolicyContainer* policy_container =
       execution_context.GetPolicyContainer();
   CHECK(policy_container);
-  switch (policy_container->GetPolicies().cross_origin_embedder_policy) {
+  switch (policy_container->GetPolicies().cross_origin_embedder_policy.value) {
     case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
       return "unsafe-none";
     case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:

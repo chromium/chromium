@@ -89,18 +89,9 @@ void VerifyRegistrationData(const RegistrationData& expected,
   EXPECT_EQ(expected.resources_total_size_bytes,
             actual.resources_total_size_bytes);
   EXPECT_EQ(expected.script_response_time, actual.script_response_time);
-  EXPECT_EQ(expected.cross_origin_embedder_policy,
-            actual.cross_origin_embedder_policy);
   EXPECT_EQ(expected.ancestor_frame_type, actual.ancestor_frame_type);
-  if (expected.policy_container_policies) {
-    EXPECT_EQ(expected.policy_container_policies,
-              actual.policy_container_policies);
-  } else {
-    // Null policy container policies will be read as default policies because
-    // there's always going to be a default Cross Origin Embedder Policy
-    EXPECT_EQ(blink::mojom::PolicyContainerPolicies::New(),
-              actual.policy_container_policies);
-  }
+  EXPECT_EQ(expected.policy_container_policies,
+            actual.policy_container_policies);
 }
 
 void VerifyResourceRecords(const std::vector<ResourceRecordPtr>& expected,
@@ -590,12 +581,9 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
   data1.script_response_time = base::Time::FromJsTime(0);
-  data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   data1.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
-  data1.policy_container_policies->cross_origin_embedder_policy =
-      data1.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -619,12 +607,11 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
   data2.script_response_time = base::Time::FromJsTime(42);
-  data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
   data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
   data2.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data2.policy_container_policies->cross_origin_embedder_policy =
-      data2.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyRequireCorp();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -648,11 +635,10 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
   data3.script_response_time = base::Time::FromJsTime(420);
-  data3.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
   data3.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data3.policy_container_policies->cross_origin_embedder_policy =
-      data3.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyNone();
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -667,12 +653,10 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
   data4.script_response_time = base::Time::FromJsTime(4200);
-  data4.cross_origin_embedder_policy =
-      CrossOriginEmbedderPolicyCredentialless();
   data4.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data4.policy_container_policies->cross_origin_embedder_policy =
-      data4.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources4;
   resources4.push_back(CreateResource(4, data4.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -718,12 +702,11 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
-  data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   data1.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data1.policy_container_policies->cross_origin_embedder_policy =
-      data1.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyNone();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -738,12 +721,11 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
   data2.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
-  data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
   data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
   data2.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data2.policy_container_policies->cross_origin_embedder_policy =
-      data2.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyRequireCorp();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -757,12 +739,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
-  data3.cross_origin_embedder_policy =
-      CrossOriginEmbedderPolicyCredentialless();
   data3.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data3.policy_container_policies->cross_origin_embedder_policy =
-      data3.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -798,13 +778,11 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data5.script = URL(origin5, "/script5.js");
   data5.version_id = 5000;
   data5.resources_total_size_bytes = 500;
-  data5.cross_origin_embedder_policy =
-      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources5;
   data5.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data5.policy_container_policies->cross_origin_embedder_policy =
-      data5.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyCredentialless();
   resources5.push_back(CreateResource(5, data5.script, 500));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data5, resources5, &deleted_version));
@@ -819,12 +797,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data6.script = URL(origin6, "/script6.js");
   data6.version_id = 6000;
   data6.resources_total_size_bytes = 600;
-  data6.cross_origin_embedder_policy =
-      CrossOriginEmbedderPolicyCredentialless();
   data6.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data6.policy_container_policies->cross_origin_embedder_policy =
-      data6.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources6;
   resources6.push_back(CreateResource(6, data6.script, 600));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -844,12 +820,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data7.script = URL(origin7, "/script7.js");
   data7.version_id = 7000;
   data7.resources_total_size_bytes = 700;
-  data7.cross_origin_embedder_policy =
-      CrossOriginEmbedderPolicyCredentialless();
   data7.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data7.policy_container_policies->cross_origin_embedder_policy =
-      data7.cross_origin_embedder_policy.value;
+      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources7;
   resources7.push_back(CreateResource(7, data7.script, 700));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -2635,10 +2609,9 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     data.script = URL(origin, "/script.js");
     data.version_id = 456;
     data.resources_total_size_bytes = 100;
-    data.cross_origin_embedder_policy = policy;
     data.policy_container_policies =
         blink::mojom::PolicyContainerPolicies::New();
-    data.policy_container_policies->cross_origin_embedder_policy = policy.value;
+    data.policy_container_policies->cross_origin_embedder_policy = policy;
     std::vector<ResourceRecordPtr> resources;
     resources.push_back(CreateResource(1, data.script, 100));
 
@@ -2724,12 +2697,12 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
   std::string value;
   ASSERT_TRUE(data.SerializeToString(&value));
 
-  // Parse the serialized data. The policy is kNone if it's not set.
+  // Parse the serialized data. The policy container policies will be null if
+  // neither COEP nor policy container is set.
   RegistrationDataPtr registration;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ParseRegistrationData(value, key, &registration));
-  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-            registration->cross_origin_embedder_policy.value);
+  EXPECT_FALSE(registration->policy_container_policies);
 }
 
 const network::mojom::WebSandboxFlags kWebSandboxFlags[] = {
@@ -2775,8 +2748,6 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
         data.version_id = 456;
         data.resources_total_size_bytes = 100;
         data.policy_container_policies = std::move(policies);
-        data.cross_origin_embedder_policy.value =
-            data.policy_container_policies->cross_origin_embedder_policy;
         std::vector<ResourceRecordPtr> resources;
         resources.push_back(CreateResource(1, data.script, 100));
 
@@ -2809,7 +2780,7 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
              network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
          }) {
-      policies->cross_origin_embedder_policy = value;
+      policies->cross_origin_embedder_policy.value = value;
       store_and_restore(policies->Clone());
     }
   }
@@ -3026,7 +2997,8 @@ TEST(ServiceWorkerDatabaseTest, FetchHandlerTypeStoreRestore) {
         data.version_id = 456;
         data.fetch_handler_type = type;
         data.resources_total_size_bytes = 100;
-        data.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+        data.policy_container_policies =
+            blink::mojom::PolicyContainerPolicies::New();
         std::vector<ResourceRecordPtr> resources;
         resources.push_back(CreateResource(1, data.script, 100));
 

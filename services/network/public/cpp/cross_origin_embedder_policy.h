@@ -21,6 +21,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_CROSS_ORIGIN)
   ~CrossOriginEmbedderPolicy();
   CrossOriginEmbedderPolicy(const CrossOriginEmbedderPolicy&);
   CrossOriginEmbedderPolicy(CrossOriginEmbedderPolicy&&);
+  explicit CrossOriginEmbedderPolicy(mojom::CrossOriginEmbedderPolicyValue);
   CrossOriginEmbedderPolicy& operator=(const CrossOriginEmbedderPolicy&);
   CrossOriginEmbedderPolicy& operator=(CrossOriginEmbedderPolicy&&);
   bool operator==(const CrossOriginEmbedderPolicy&) const;

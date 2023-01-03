@@ -13,6 +13,9 @@ CrossOriginEmbedderPolicy::CrossOriginEmbedderPolicy(
 CrossOriginEmbedderPolicy::CrossOriginEmbedderPolicy(
     CrossOriginEmbedderPolicy&& src) = default;
 CrossOriginEmbedderPolicy::~CrossOriginEmbedderPolicy() = default;
+CrossOriginEmbedderPolicy::CrossOriginEmbedderPolicy(
+    mojom::CrossOriginEmbedderPolicyValue value)
+    : value(value) {}
 
 CrossOriginEmbedderPolicy& CrossOriginEmbedderPolicy::operator=(
     const CrossOriginEmbedderPolicy& src) = default;

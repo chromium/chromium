@@ -15,8 +15,7 @@ import "services/network/public/mojom/web_sandbox_flags.mojom";
 // except for referrer_policy and content_security_policies which might be
 // updated through meta tags (see PolicyContainerHost).
 struct PolicyContainerPolicies {
-  network.mojom.CrossOriginEmbedderPolicyValue cross_origin_embedder_policy =
-    network.mojom.CrossOriginEmbedderPolicyValue.kNone;
+  network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   network.mojom.ReferrerPolicy referrer_policy =
     network.mojom.ReferrerPolicy.kDefault;
   array<network.mojom.ContentSecurityPolicy> content_security_policies;

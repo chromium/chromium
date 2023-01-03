@@ -16,7 +16,8 @@ namespace blink {
 TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
   MockPolicyContainerHost host;
   auto policies = mojom::blink::PolicyContainerPolicies::New(
-      network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
+      network::CrossOriginEmbedderPolicy(
+          network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone),
       network::mojom::blink::ReferrerPolicy::kNever,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
@@ -32,7 +33,8 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
 TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   MockPolicyContainerHost host;
   auto policies = mojom::blink::PolicyContainerPolicies::New(
-      network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
+      network::CrossOriginEmbedderPolicy(
+          network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone),
       network::mojom::blink::ReferrerPolicy::kAlways,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,

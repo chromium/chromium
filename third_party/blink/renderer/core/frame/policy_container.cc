@@ -33,10 +33,12 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
     std::unique_ptr<WebPolicyContainer> container) {
   if (!container)
     return nullptr;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  cross_origin_embedder_policy.value =
+      container->policies.cross_origin_embedder_policy;
   mojom::blink::PolicyContainerPoliciesPtr policies =
       mojom::blink::PolicyContainerPolicies::New(
-          container->policies.cross_origin_embedder_policy,
-          container->policies.referrer_policy,
+          cross_origin_embedder_policy, container->policies.referrer_policy,
           ConvertToMojoBlink(
               std::move(container->policies.content_security_policies)),
           container->policies.is_credentialless,
