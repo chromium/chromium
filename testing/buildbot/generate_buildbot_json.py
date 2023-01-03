@@ -556,6 +556,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     arr = self.merge_command_line_args(arr, '--enable-features=', ',')
     arr = self.merge_command_line_args(arr, '--extra-browser-args=', ' ')
     arr = self.merge_command_line_args(arr, '--test-launcher-filter-file=', ';')
+    arr = self.merge_command_line_args(arr, '--extra-app-args=', ',')
     return arr
 
   def substitute_magic_args(self, test_config, tester_name, tester_config):
