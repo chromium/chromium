@@ -53,15 +53,15 @@ CookieStoreManager::~CookieStoreManager() {
 
 void CookieStoreManager::BindReceiver(
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
-    const url::Origin& origin) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+  if (!network::IsOriginPotentiallyTrustworthy(storage_key.origin())) {
     mojo::ReportBadMessage("Cookie Store access from an insecure origin");
     return;
   }
 
-  receivers_.Add(std::make_unique<CookieStoreHost>(this, origin),
+  receivers_.Add(std::make_unique<CookieStoreHost>(this, storage_key),
                  std::move(receiver));
 }
 
@@ -151,7 +151,7 @@ void CookieStoreManager::DidLoadAllSubscriptions(
 
 void CookieStoreManager::AddSubscriptions(
     int64_t service_worker_registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     std::vector<blink::mojom::CookieChangeSubscriptionPtr> mojo_subscriptions,
     mojo::ReportBadMessageCallback bad_message_callback,
     blink::mojom::CookieStore::AddSubscriptionsCallback callback) {
@@ -160,8 +160,9 @@ void CookieStoreManager::AddSubscriptions(
   if (!done_loading_subscriptions_) {
     subscriptions_loaded_callbacks_.push_back(base::BindOnce(
         &CookieStoreManager::AddSubscriptions, weak_factory_.GetWeakPtr(),
-        service_worker_registration_id, origin, std::move(mojo_subscriptions),
-        std::move(bad_message_callback), std::move(callback)));
+        service_worker_registration_id, storage_key,
+        std::move(mojo_subscriptions), std::move(bad_message_callback),
+        std::move(callback)));
     return;
   }
 
@@ -189,7 +190,7 @@ void CookieStoreManager::AddSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
+  if (!(storage_key == service_worker_registration->key())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -240,13 +241,13 @@ void CookieStoreManager::AddSubscriptions(
 
   ActivateSubscriptions(
       base::make_span(subscriptions).subspan(old_subscriptions_size));
-  StoreSubscriptions(service_worker_registration_id, origin.GetURL(),
-                     subscriptions, std::move(callback));
+  StoreSubscriptions(service_worker_registration_id, storage_key, subscriptions,
+                     std::move(callback));
 }
 
 void CookieStoreManager::RemoveSubscriptions(
     int64_t service_worker_registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     std::vector<blink::mojom::CookieChangeSubscriptionPtr> mojo_subscriptions,
     mojo::ReportBadMessageCallback bad_message_callback,
     blink::mojom::CookieStore::RemoveSubscriptionsCallback callback) {
@@ -255,8 +256,9 @@ void CookieStoreManager::RemoveSubscriptions(
   if (!done_loading_subscriptions_) {
     subscriptions_loaded_callbacks_.push_back(base::BindOnce(
         &CookieStoreManager::RemoveSubscriptions, weak_factory_.GetWeakPtr(),
-        service_worker_registration_id, origin, std::move(mojo_subscriptions),
-        std::move(bad_message_callback), std::move(callback)));
+        service_worker_registration_id, storage_key,
+        std::move(mojo_subscriptions), std::move(bad_message_callback),
+        std::move(callback)));
     return;
   }
 
@@ -284,7 +286,7 @@ void CookieStoreManager::RemoveSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
+  if (!(storage_key == service_worker_registration->key())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -344,7 +346,7 @@ void CookieStoreManager::RemoveSubscriptions(
   // StoreSubscriptions() needs to be called before updating
   // |subscriptions_by_registration_|, because the update may delete the vector
   // holding the subscriptions.
-  StoreSubscriptions(service_worker_registration_id, origin.GetURL(),
+  StoreSubscriptions(service_worker_registration_id, storage_key,
                      live_subscriptions, std::move(callback));
   if (live_subscriptions.empty()) {
     subscriptions_by_registration_.erase(all_subscriptions_it);
@@ -355,7 +357,7 @@ void CookieStoreManager::RemoveSubscriptions(
 
 void CookieStoreManager::GetSubscriptions(
     int64_t service_worker_registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::ReportBadMessageCallback bad_message_callback,
     blink::mojom::CookieStore::GetSubscriptionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -363,8 +365,8 @@ void CookieStoreManager::GetSubscriptions(
   if (!done_loading_subscriptions_) {
     subscriptions_loaded_callbacks_.push_back(base::BindOnce(
         &CookieStoreManager::GetSubscriptions, weak_factory_.GetWeakPtr(),
-        service_worker_registration_id, origin, std::move(bad_message_callback),
-        std::move(callback)));
+        service_worker_registration_id, storage_key,
+        std::move(bad_message_callback), std::move(callback)));
     return;
   }
 
@@ -389,7 +391,7 @@ void CookieStoreManager::GetSubscriptions(
   }
 #endif  // DCHECK_IS_ON()
 
-  if (!origin.IsSameOriginWith(first_url)) {
+  if (!storage_key.origin().IsSameOriginWith(first_url)) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(
         std::vector<blink::mojom::CookieChangeSubscriptionPtr>(), false);
@@ -402,7 +404,7 @@ void CookieStoreManager::GetSubscriptions(
 
 void CookieStoreManager::StoreSubscriptions(
     int64_t service_worker_registration_id,
-    const GURL& service_worker_origin,
+    const blink::StorageKey& storage_key,
     const std::vector<std::unique_ptr<CookieChangeSubscription>>& subscriptions,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -425,11 +427,8 @@ void CookieStoreManager::StoreSubscriptions(
   DCHECK(!subscriptions_data.empty())
       << "Failed to create cookie change subscriptions protobuf";
 
-  // TODO(crbug.com/1199077): Update this when CookieStoreManager
-  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id,
-      blink::StorageKey(url::Origin::Create(service_worker_origin)),
+      service_worker_registration_id, storage_key,
       std::vector<std::pair<std::string, std::string>>(
           {{registration_user_data_key_, subscriptions_data}}),
       base::BindOnce(
@@ -627,7 +626,8 @@ void CookieStoreManager::BindReceiverForFrame(
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
   storage_partition->GetCookieStoreManager()->BindReceiver(
-      std::move(receiver), render_frame_host->GetLastCommittedOrigin());
+      std::move(receiver),
+      blink::StorageKey(render_frame_host->GetLastCommittedOrigin()));
 }
 
 // static
@@ -642,8 +642,8 @@ void CookieStoreManager::BindReceiverForWorker(
 
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
-  storage_partition->GetCookieStoreManager()->BindReceiver(
-      std::move(receiver), info.storage_key.origin());
+  storage_partition->GetCookieStoreManager()->BindReceiver(std::move(receiver),
+                                                           info.storage_key);
 }
 
 void CookieStoreManager::DispatchChangeEvent(

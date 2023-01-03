@@ -368,19 +368,19 @@ class CookieStoreManagerTest
 
     cookie_store_manager_->BindReceiver(
         example_service_remote_.BindNewPipeAndPassReceiver(),
-        url::Origin::Create(GURL(kExampleScope)));
+        blink::StorageKey::CreateFromStringForTesting(kExampleScope));
     example_service_ =
         std::make_unique<CookieStoreSync>(example_service_remote_.get());
 
     cookie_store_manager_->BindReceiver(
         google_service_remote_.BindNewPipeAndPassReceiver(),
-        url::Origin::Create(GURL(kGoogleScope)));
+        blink::StorageKey::CreateFromStringForTesting(kGoogleScope));
     google_service_ =
         std::make_unique<CookieStoreSync>(google_service_remote_.get());
 
     cookie_store_manager_->BindReceiver(
         legacy_service_remote_.BindNewPipeAndPassReceiver(),
-        url::Origin::Create(GURL(kLegacyScope)));
+        blink::StorageKey::CreateFromStringForTesting(kLegacyScope));
     legacy_service_ =
         std::make_unique<CookieStoreSync>(legacy_service_remote_.get());
 
@@ -1768,7 +1768,7 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
 
   cookie_store_manager_->BindReceiver(
       untrustworthy_service_remote.BindNewPipeAndPassReceiver(),
-      url::Origin::Create(GURL("http://insecure.com")));
+      blink::StorageKey::CreateFromStringForTesting("http://insecure.com"));
 
   untrustworthy_service_remote.FlushForTesting();
   EXPECT_FALSE(untrustworthy_service_remote.is_connected());

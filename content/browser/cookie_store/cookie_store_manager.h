@@ -69,7 +69,7 @@ class CONTENT_EXPORT CookieStoreManager
   // This is called when service workers use the Cookie Store API to subscribe
   // to cookie changes or obtain the list of cookie changes.
   void BindReceiver(mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
-                    const url::Origin& origin);
+                    const blink::StorageKey& storage_key);
 
   // Starts loading the on-disk subscription data.
   //
@@ -88,19 +88,19 @@ class CONTENT_EXPORT CookieStoreManager
   // blink::mojom::CookieStore implementation
   void AddSubscriptions(
       int64_t service_worker_registration_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       std::vector<blink::mojom::CookieChangeSubscriptionPtr> mojo_subscriptions,
       mojo::ReportBadMessageCallback bad_message_callback,
       blink::mojom::CookieStore::AddSubscriptionsCallback callback);
   void RemoveSubscriptions(
       int64_t service_worker_registration_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       std::vector<blink::mojom::CookieChangeSubscriptionPtr> mojo_subscriptions,
       mojo::ReportBadMessageCallback bad_message_callback,
       blink::mojom::CookieStore::RemoveSubscriptionsCallback callback);
   void GetSubscriptions(
       int64_t service_worker_registration_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::ReportBadMessageCallback bad_message_callback,
       blink::mojom::CookieStore::GetSubscriptionsCallback callback);
 
@@ -141,7 +141,7 @@ class CONTENT_EXPORT CookieStoreManager
   // Updates on-disk subscription data for a registration.
   void StoreSubscriptions(
       int64_t service_worker_registration_id,
-      const GURL& service_worker_origin,
+      const blink::StorageKey& storage_key,
       const std::vector<std::unique_ptr<CookieChangeSubscription>>&
           subscriptions,
       base::OnceCallback<void(bool)> callback);

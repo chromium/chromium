@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -27,7 +27,8 @@ class CookieStoreManager;
 // because they call into CookieStoreManager directly.
 class CookieStoreHost : public blink::mojom::CookieStore {
  public:
-  CookieStoreHost(CookieStoreManager* manager, const url::Origin& origin);
+  CookieStoreHost(CookieStoreManager* manager,
+                  const blink::StorageKey& storage_key);
 
   CookieStoreHost(const CookieStoreHost&) = delete;
   CookieStoreHost& operator=(const CookieStoreHost&) = delete;
@@ -51,7 +52,7 @@ class CookieStoreHost : public blink::mojom::CookieStore {
   // mojo::UniqueReceiverSet.
   const raw_ptr<CookieStoreManager> manager_;
 
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
 
   // Instances of this class are currently bound to the IO thread, because they
   // call ServiceWorkerContextWrapper methods that are restricted to the IO
