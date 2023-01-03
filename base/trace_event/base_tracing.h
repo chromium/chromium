@@ -20,12 +20,13 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"  // nogncheck
 #include "base/trace_event/memory_dump_manager.h"         // nogncheck
 #include "base/trace_event/memory_dump_provider.h"        // nogncheck
-#include "base/trace_event/task_execution_macros.h"       // nogncheck
 #include "base/trace_event/trace_event.h"                 // nogncheck
 #include "base/trace_event/traced_value.h"                // nogncheck
 #include "base/trace_event/typed_macros.h"                // nogncheck
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"  // nogncheck
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"  // nogncheck
+#include "third_party/perfetto/protos/perfetto/trace/track_event/log_message.pbzero.h"  // nogncheck
+#include "third_party/perfetto/protos/perfetto/trace/track_event/task_execution.pbzero.h"  // nogncheck
 #else  // BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/trace_event_stub.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)

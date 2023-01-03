@@ -1746,8 +1746,10 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   background_tracing_helper.WaitForTracingEnabled();
 
   // Add track event with blocked args.
-  TRACE_LOG_MESSAGE("test_file.cc",
-                    base::StringPiece("My Password is xyzpasswow"), 100);
+  TRACE_EVENT_INSTANT("log", "LogMessage", [&](perfetto::EventContext ctx) {
+    ctx.event()->set_log_message()->set_body_iid(
+        base::trace_event::InternedLogMessage::Get(&ctx, std::string("test")));
+  });
 
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
 
@@ -1800,8 +1802,10 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   background_tracing_helper.WaitForTracingEnabled();
 
   // Add track event with blocked args.
-  TRACE_LOG_MESSAGE("test_file.cc",
-                    base::StringPiece("My Password is xyzpasswow"), 100);
+  TRACE_EVENT_INSTANT("log", "LogMessage", [&](perfetto::EventContext ctx) {
+    ctx.event()->set_log_message()->set_body_iid(
+        base::trace_event::InternedLogMessage::Get(&ctx, std::string("test")));
+  });
 
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
 

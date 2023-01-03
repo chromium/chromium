@@ -510,6 +510,18 @@ std::string BuildCrashString(const char* file,
   return base::StringPrintf("%s:%d: %s", file, line, message_without_prefix);
 }
 
+// Invokes macro to record trace event when a log message is emitted.
+void traceLogMessage(const char* file, int line, const std::string& message) {
+  TRACE_EVENT_INSTANT("log", "LogMessage", [&](perfetto::EventContext ctx) {
+    perfetto::protos::pbzero::LogMessage* log = ctx.event()->set_log_message();
+    log->set_source_location_iid(base::trace_event::InternedSourceLocation::Get(
+        &ctx, base::trace_event::TraceSourceLocation(/*function_name=*/nullptr,
+                                                     file, line)));
+    log->set_body_iid(
+        base::trace_event::InternedLogMessage::Get(&ctx, message));
+  });
+}
+
 }  // namespace
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -736,8 +748,9 @@ LogMessage::~LogMessage() {
 #endif
   stream_ << std::endl;
   std::string str_newline(stream_.str());
-  TRACE_LOG_MESSAGE(
-      file_, base::StringPiece(str_newline).substr(message_start_), line_);
+  traceLogMessage(
+      file_, line_,
+      std::string(base::StringPiece(str_newline).substr(message_start_)));
 
   if (severity_ == LOGGING_FATAL)
     SetLogFatalCrashKey(this);
