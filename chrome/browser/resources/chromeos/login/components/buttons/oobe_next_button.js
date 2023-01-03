@@ -41,7 +41,7 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
-import '../oobe_icons.m.js';
+import '../oobe_icons.html.js';
 
 import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {$} from 'chrome://resources/ash/common/util.js';
-// #import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-// #import {assert} from 'chrome://resources/ash/common/assert.js';
-// clang-format on
+import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {$} from 'chrome://resources/ash/common/util.js';
 
 /**
  * @fileoverview Common testing utils methods used for OOBE tast tests.
@@ -478,9 +476,9 @@ class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
    */
   enterManualPasswords(password) {
     this.passwordInput.typeInto(password);
-    Polymer.RenderStatus.afterNextRender(assert(this.element()), () => {
+    afterNextRender(assert(this.element()), () => {
       this.confirmPasswordInput.typeInto(password);
-      Polymer.RenderStatus.afterNextRender(assert(this.element()), () => {
+      afterNextRender(assert(this.element()), () => {
         this.clickNext();
       });
     });
@@ -804,7 +802,7 @@ class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
   }
 }
 
-class OobeApiProvider {
+export class OobeApiProvider {
   constructor() {
     this.screens = {
       HIDDetectionScreen: new HIDDetectionScreenTester(),

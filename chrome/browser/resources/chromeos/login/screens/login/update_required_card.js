@@ -8,13 +8,13 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/oobe_icons.m.js';
+import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {sanitizeInnerHtml} from '//resources/ash/common/parse_html_subset.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {sanitizeInnerHtml} from '//resources/ash/common/parse_html_subset.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';

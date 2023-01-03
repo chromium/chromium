@@ -6,13 +6,13 @@
  * @fileoverview Root element of the OOBE UI Debugger.
  */
 
-// #import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-// #import {loadTimeData} from '../i18n_setup.js';
-// #import {Oobe} from '../cr_ui.js'
-// #import {$} from 'chrome://resources/ash/common/util.js';
-// #import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
+import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {MessageType, ProblemType} from 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
+import {$} from 'chrome://resources/ash/common/util.js';
 
-// #import {MessageType, ProblemType} from 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
+import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
+import {Oobe} from '../cr_ui.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 const createAssistantData = (isMinor) => {
   const data = {};
@@ -77,7 +77,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
   return zippy;
 };
 
-cr.define('cr.ui.login.debug', function() {
   const DEBUG_BUTTON_STYLE = `
       height:20px;
       width:120px;
@@ -1641,7 +1640,7 @@ cr.define('cr.ui.login.debug', function() {
       // change to OOBE UI. However, more complex scenarios might want to
       // override this behavior.
       this.postCallback_ = function() {
-        cr.ui.login.debug.DebuggerUI.getInstance().hideDebugUI();
+        DebuggerUI.getInstance().hideDebugUI();
       };
     }
 
@@ -1687,7 +1686,7 @@ cr.define('cr.ui.login.debug', function() {
     }
   }
 
-  /* #export */ class DebuggerUI {
+  export class DebuggerUI {
     constructor() {
       this.debuggerVisible_ = false;
       /** Element with Debugger UI */
@@ -1977,8 +1976,8 @@ cr.define('cr.ui.login.debug', function() {
       this.currentScreenId_ = screenId;
       this.lastScreenState_ = stateId;
       /** @suppress {visibility} */
-      const displayManager = cr.ui.Oobe.instance_;
-      cr.ui.Oobe.instance_.showScreen({id: screen.id, data: data});
+      const displayManager = Oobe.instance_;
+      Oobe.instance_.showScreen({id: screen.id, data: data});
       if (state.trigger) {
         state.trigger(displayManager.currentScreen);
       }
@@ -1992,7 +1991,7 @@ cr.define('cr.ui.login.debug', function() {
       this.knownScreens = [];
       this.screenButtons = {};
       /** @suppress {visibility} */
-      for (var id of cr.ui.Oobe.instance_.screens_) {
+      for (var id of Oobe.instance_.screens_) {
         if (id in this.screenMap) {
           const screenDef = this.screenMap[id];
           const screenElement = $(id);
@@ -2063,7 +2062,7 @@ cr.define('cr.ui.login.debug', function() {
         this.createScreensList();
       }
       /** @suppress {visibility} */
-      const displayManager = cr.ui.Oobe.instance_;
+      const displayManager = Oobe.instance_;
       if (this.stateCachedFor_) {
         this.screenButtons[this.stateCachedFor_].element.classList.remove(
             'debug-button-selected');
@@ -2157,11 +2156,4 @@ cr.define('cr.ui.login.debug', function() {
     }
   }
 
-  cr.addSingletonGetter(DebuggerUI);
-
-  // #cr_define_end
-  // Export
-  return {
-    DebuggerUI: DebuggerUI,
-  };
-});
+  addSingletonGetter(DebuggerUI);

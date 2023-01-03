@@ -6,22 +6,19 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
-  deps = [ ":test_api.m" ]
+  deps = [ ":test_api" ]
 }
 
-js_library("test_api.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/test_api/test_api.m.js" ]
+js_library("test_api") {
   deps = [
     "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:util",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_modulizer("modulize") {
-  input_files = [
-    "test_api.js",
-    "no_test_api.js",
-  ]
+# Copy existing files to output directory.
+copy("copy_js") {
+  sources = [ "test_api.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

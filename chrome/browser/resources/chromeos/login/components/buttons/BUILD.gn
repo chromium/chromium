@@ -4,7 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../../oobe_auto_imports.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true

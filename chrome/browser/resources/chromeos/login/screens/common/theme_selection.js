@@ -9,7 +9,7 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
-import '../../components/oobe_icons.m.js';
+import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';

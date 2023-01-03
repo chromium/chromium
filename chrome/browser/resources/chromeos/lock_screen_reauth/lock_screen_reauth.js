@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './components/buttons/oobe_text_button.js';
-import './components/oobe_icons.m.js';
+import './components/oobe_icons.html.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';

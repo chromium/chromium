@@ -8,7 +8,7 @@
 
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/oobe_icons.m.js';
+import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';

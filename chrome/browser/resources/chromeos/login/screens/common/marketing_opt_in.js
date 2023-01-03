@@ -11,7 +11,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../components/oobe_cr_lottie.js';
-import '../../components/oobe_icons.m.js';
+import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 

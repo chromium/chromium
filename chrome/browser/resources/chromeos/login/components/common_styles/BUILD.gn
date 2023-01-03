@@ -4,13 +4,12 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
-    ":oobe_common_styles.css",
     ":cr_card_radio_group_styles.css",
+    ":oobe_common_styles.css",
     ":oobe_dialog_host_styles.css",
     ":oobe_flex_layout_styles.css",
   ]

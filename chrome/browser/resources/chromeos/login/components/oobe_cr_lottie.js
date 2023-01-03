@@ -8,7 +8,7 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lottie/cr_lottie.js';
-import './oobe_icons.m.js';
+import './oobe_icons.html.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -5,7 +5,20 @@
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+
+group("web_components") {
+  public_deps = [
+    ":html_wrapper_files",
+    ":web_components_local",
+    "./behaviors:copy_js",
+    "./buttons:copy_js",
+    "./buttons:web_components",
+    "./common_styles:css_wrapper_files",
+    "./dialogs:web_components",
+    "./oobe_vars:css_wrapper_files",
+  ]
+}
 
 group("closure_compile") {
   deps = [
@@ -32,8 +45,8 @@ group("closure_compile") {
     ":oobe_carousel",
     ":oobe_cr_lottie",
     ":oobe_i18n_dropdown",
-    ":oobe_icons.m",
-    ":oobe_network_icons.m",
+    ":oobe_icons.html",
+    ":oobe_network_icons.html",
     ":oobe_screens_list",
     ":oobe_select",
     ":oobe_slide",
@@ -43,15 +56,6 @@ group("closure_compile") {
     ":throbber_notice",
     ":web_view_helper",
     ":web_view_loader",
-  ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    # Local targets
-    ":oobe_icons_module",
-    ":oobe_icons_module",
-    ":oobe_network_icons_module",
   ]
 }
 
@@ -157,10 +161,10 @@ js_library("oobe_apps_list") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_icons.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.m.js" ]
+js_library("oobe_icons.html") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.html.js" ]
   deps = []
-  extra_deps = [ ":oobe_icons_module" ]
+  extra_deps = [ ":html_wrapper_files" ]
 }
 
 js_library("oobe_i18n_dropdown") {
@@ -192,10 +196,10 @@ js_library("oobe_cr_lottie") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_network_icons.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_network_icons.m.js" ]
+js_library("oobe_network_icons.html") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_network_icons.html.js" ]
   deps = []
-  extra_deps = [ ":oobe_network_icons_module" ]
+  extra_deps = [ ":html_wrapper_files" ]
 }
 
 js_library("oobe_screens_list") {
@@ -263,18 +267,6 @@ js_library("web_view_loader") {
   extra_deps = [ ":copy_js" ]
 }
 
-polymer_modulizer("oobe_icons") {
-  js_file = "oobe_icons.m.js"
-  html_file = "oobe_icons.html"
-  html_type = "iron-iconset"
-}
-
-polymer_modulizer("oobe_network_icons") {
-  js_file = "oobe_network_icons.m.js"
-  html_file = "oobe_network_icons.html"
-  html_type = "iron-iconset"
-}
-
 # Copy existing files to output directory for closure compilation.
 copy("copy_js") {
   sources = [
@@ -289,7 +281,15 @@ copy("copy_js") {
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-html_to_js("web_components") {
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "oobe_icons.html",
+    "oobe_network_icons.html",
+  ]
+  use_js = true
+}
+
+html_to_js("web_components_local") {
   js_files = [
     "gaia_button.js",
     "gaia_dialog.js",

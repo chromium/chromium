@@ -8,7 +8,7 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/oobe_icons.m.js';
+import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';

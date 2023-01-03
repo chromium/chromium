@@ -163,13 +163,13 @@ constexpr char kArcPlaystoreCSSPath[] = "arc_support/playstore.css";
 constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
-constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
+constexpr char kDebuggerMJSPath[] = "debug/debug.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
-constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
+constexpr char kTestAPIJsMPath[] = "test_api/test_api.js";
 
 // Components
-constexpr char kOobeCustomVarsCssJsM[] =
+constexpr char kOobeCustomVarsCssJs[] =
     "components/oobe_vars/oobe_custom_vars.css.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -239,29 +239,25 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
 
 void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool enable_debugger = command_line->HasSwitch(switches::kShowOobeDevOverlay);
+  const bool enabled = command_line->HasSwitch(switches::kShowOobeDevOverlay);
   // Enable for ChromeOS-on-linux for developers and test images.
-  if (enable_debugger && base::SysInfo::IsRunningOnChromeOS()) {
+  if (enabled && base::SysInfo::IsRunningOnChromeOS()) {
     LOG(WARNING) << "OOBE Debug overlay can only be used on test images";
     base::SysInfo::CrashIfChromeOSNonTestImage();
   }
 
-  if (enable_debugger) {
-    source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_M_JS);
-  } else {
-    // Serve empty files under all resource paths.
-    source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
-  }
+  source->AddResourcePath(kDebuggerMJSPath, enabled ?
+                                            IDR_OOBE_DEBUGGER_JS :
+                                            IDR_OOBE_DEBUGGER_STUB_JS);
 }
 
 void AddTestAPIResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool enable_test_api = command_line->HasSwitch(switches::kEnableOobeTestAPI);
-  if (enable_test_api) {
-    source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_M_JS);
-  } else {
-    source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_STUB_M_JS);
-  }
+  const bool enabled = command_line->HasSwitch(switches::kEnableOobeTestAPI);
+
+  source->AddResourcePath(kTestAPIJsMPath, enabled ?
+                                           IDR_OOBE_TEST_API_JS :
+                                           IDR_OOBE_TEST_API_STUB_JS);
 }
 
 // Creates a WebUIDataSource for chrome://oobe
@@ -611,11 +607,11 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
 
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     source->AddResourcePath(
-        kOobeCustomVarsCssJsM,
-        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS);
+        kOobeCustomVarsCssJs,
+        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);
   } else {
-    source->AddResourcePath(kOobeCustomVarsCssJsM,
-                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS);
+    source->AddResourcePath(kOobeCustomVarsCssJs,
+                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_JS);
   }
 
   source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);

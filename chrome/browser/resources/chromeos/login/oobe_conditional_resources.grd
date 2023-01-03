@@ -13,20 +13,19 @@
 
       <!-- Resources that are dynamically chosen to be served in runtime -->
       <!-- OOBE Custom CSS Variables -->
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS" use_base_dir="false" type="chrome_html"
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_JS" use_base_dir="false" type="chrome_html"
                file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/components/oobe_vars/oobe_custom_vars.css.js" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS" use_base_dir="false" type="chrome_html"
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_JS" use_base_dir="false" type="chrome_html"
                file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/components/oobe_vars/oobe_custom_vars_remora.css.js" />
 
       <!-- OOBE Test API -->
-      <include name="IDR_OOBE_TEST_API_M_JS" use_base_dir="false" type="chrome_html"
-               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/test_api.m.js" />
-      <include name="IDR_OOBE_TEST_API_STUB_M_JS" use_base_dir="false" type="chrome_html"
-               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/no_test_api.m.js" />
+      <include name="IDR_OOBE_TEST_API_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/test_api.js" />
+      <include name="IDR_OOBE_TEST_API_STUB_JS" file="test_api/no_test_api.js" type="chrome_html" />
 
       <!-- OOBE Debugger -->
-      <include name="IDR_OOBE_DEBUGGER_M_JS" use_base_dir="false" type="chrome_html"
-               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/debug/debug.m.js" />
+      <include name="IDR_OOBE_DEBUGGER_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/debug/debug.js" />
       <include name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" type="chrome_html" />
 
     </includes>
