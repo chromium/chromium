@@ -39,7 +39,7 @@ namespace {
 const char kAddThirdPartyVpnMessage[] = "addThirdPartyVpn";
 const char kConfigureThirdPartyVpnMessage[] = "configureThirdPartyVpn";
 const char kShowCarrierAccountDetail[] = "showCarrierAccountDetail";
-const char kShowCellularSetupUI[] = "showCellularSetupUI";
+const char kShowCellularSetupUI[] = "showCellularSetupUi";
 const char kShowPortalSignin[] = "showPortalSignin";
 const char kRequestGmsCoreNotificationsDisabledDeviceNames[] =
     "requestGmsCoreNotificationsDisabledDeviceNames";

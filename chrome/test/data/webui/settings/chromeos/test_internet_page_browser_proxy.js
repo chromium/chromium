@@ -12,7 +12,7 @@ export class TestInternetPageBrowserProxy extends TestBrowserProxy {
     super([
       'showCarrierAccountDetail',
       'showPortalSignin',
-      'showCellularSetupUI',
+      'showCellularSetupUi',
       'configureThirdPartyVpn',
       'addThirdPartyVpn',
       'requestGmsCoreNotificationsDisabledDeviceNames',
@@ -31,8 +31,8 @@ export class TestInternetPageBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  showCellularSetupUI(guid) {
-    this.methodCalled('showCellularSetupUI');
+  showCellularSetupUi(guid) {
+    this.methodCalled('showCellularSetupUi');
   }
 
   /** @override */

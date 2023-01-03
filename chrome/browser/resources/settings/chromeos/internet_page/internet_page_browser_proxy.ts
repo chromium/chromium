@@ -4,41 +4,35 @@
 
 /** @fileoverview A helper object used for Internet page. */
 
-import {addWebUIListener} from 'chrome://resources/ash/common/cr.m.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 
-/** @interface */
-export class InternetPageBrowserProxy {
+export interface InternetPageBrowserProxy {
   /**
    * Shows the account details page of a cellular network.
-   * @param {string} guid
    */
-  showCarrierAccountDetail(guid) {}
+  showCarrierAccountDetail(guid: string): void;
 
   /**
    * Shows the Cellular activation UI.
-   * @param {string} guid
    */
-  showCellularSetupUI(guid) {}
+  showCellularSetupUi(guid: string): void;
 
   /**
    * Shows the Portal Signin.
-   * @param {string} guid
    */
-  showPortalSignin(guid) {}
+  showPortalSignin(guid: string): void;
 
   /**
    * Shows configuration for external VPNs. Includes ThirdParty (extension
    * configured) VPNs, and Arc VPNs.
-   * @param {string} guid
    */
-  configureThirdPartyVpn(guid) {}
+  configureThirdPartyVpn(guid: string): void;
 
   /**
    * Sends an add VPN request to the external VPN provider (ThirdParty VPN
    * extension or Arc VPN provider app).
-   * @param {string} appId
    */
-  addThirdPartyVpn(appId) {}
+  addThirdPartyVpn(appId: string): void;
 
   /**
    * Requests that Chrome send the list of devices whose "Google Play
@@ -46,67 +40,55 @@ export class InternetPageBrowserProxy {
    * to utilize Instant Tethering). The names will be provided via
    * setGmsCoreNotificationsDisabledDeviceNamesCallback().
    */
-  requestGmsCoreNotificationsDisabledDeviceNames() {}
+  requestGmsCoreNotificationsDisabledDeviceNames(): void;
 
   /**
    * Sets the callback to be used to receive the list of devices whose "Google
    * Play Services" notifications are disabled. |callback| is invoked with an
    * array of the names of these devices; note that if no devices have this
    * property, the provided list of device names is empty.
-   * @param {function(!Array<string>):void} callback
    */
-  setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {}
+  setGmsCoreNotificationsDisabledDeviceNamesCallback(
+      callback: (deviceNames: string[]) => void): void;
 }
 
-/** @type {?InternetPageBrowserProxy} */
-let instance = null;
+let instance: InternetPageBrowserProxy|null = null;
 
-/**
- * @implements {InternetPageBrowserProxy}
- */
-export class InternetPageBrowserProxyImpl {
-  /** @return {!InternetPageBrowserProxy} */
-  static getInstance() {
+export class InternetPageBrowserProxyImpl implements InternetPageBrowserProxy {
+  static getInstance(): InternetPageBrowserProxy {
     return instance || (instance = new InternetPageBrowserProxyImpl());
   }
 
-  /** @param {!InternetPageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: InternetPageBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  showCarrierAccountDetail(guid) {
+  showCarrierAccountDetail(guid: string): void {
     chrome.send('showCarrierAccountDetail', [guid]);
   }
 
-  /** @override */
-  showCellularSetupUI(guid) {
-    chrome.send('showCellularSetupUI', [guid]);
+  showCellularSetupUi(guid: string): void {
+    chrome.send('showCellularSetupUi', [guid]);
   }
 
-  /** @override */
-  showPortalSignin(guid) {
+  showPortalSignin(guid: string): void {
     chrome.send('showPortalSignin', [guid]);
   }
 
-  /** @override */
-  configureThirdPartyVpn(guid) {
+  configureThirdPartyVpn(guid: string): void {
     chrome.send('configureThirdPartyVpn', [guid]);
   }
 
-  /** @override */
-  addThirdPartyVpn(appId) {
+  addThirdPartyVpn(appId: string): void {
     chrome.send('addThirdPartyVpn', [appId]);
   }
 
-  /** @override */
-  requestGmsCoreNotificationsDisabledDeviceNames() {
+  requestGmsCoreNotificationsDisabledDeviceNames(): void {
     chrome.send('requestGmsCoreNotificationsDisabledDeviceNames');
   }
 
-  /** @override */
-  setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {
-    addWebUIListener('sendGmsCoreNotificationsDisabledDeviceNames', callback);
+  setGmsCoreNotificationsDisabledDeviceNamesCallback(
+      callback: (deviceNames: string[]) => void) {
+    addWebUiListener('sendGmsCoreNotificationsDisabledDeviceNames', callback);
   }
 }

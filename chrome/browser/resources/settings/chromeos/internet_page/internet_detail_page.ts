@@ -1606,7 +1606,7 @@ class SettingsInternetDetailPageElement extends
   }
 
   private onActivateTap_(): void {
-    this.browserProxy_.showCellularSetupUI(this.guid);
+    this.browserProxy_.showCellularSetupUi(this.guid);
   }
 
   private onConfigureTap_(): void {

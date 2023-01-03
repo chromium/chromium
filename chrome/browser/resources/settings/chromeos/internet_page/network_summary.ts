@@ -30,7 +30,7 @@ const NetworkSummaryElementBase =
     mixinBehaviors([NetworkListenerBehavior], PolymerElement) as
     Constructor<PolymerElement&NetworkListenerBehaviorInterface>;
 
-class NetworkSummaryElement extends NetworkSummaryElementBase {
+export class NetworkSummaryElement extends NetworkSummaryElementBase {
   static get is() {
     return 'network-summary' as const;
   }

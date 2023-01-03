@@ -174,7 +174,7 @@ export class Router {
     /** @private {boolean}*/
     this.initializeRouteFromUrlCalled_ = false;
 
-    /** @private {!Set} */
+    /** @private {!Set<Object>} */
     this.routeObservers_ = new Set();
   }
 

@@ -33,118 +33,94 @@ import './network_summary.js';
 import './esim_rename_dialog.js';
 import './esim_remove_profile_dialog.js';
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {HotspotInfo} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {ApnSubpageElement} from './apn_subpage.js';
+import {InternetConfigElement} from './internet_config.js';
+import {getTemplate} from './internet_page.html.js';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
-// TODO(crbug/1315757) The following type definitions are only needed for
-// Closure compiler and can be removed when this file is converted to TS.
-/**
- * @constructor
- * @extends {HTMLElement}
- */
-function NetworkSummaryItemElement() {}
-/** @return {?CrToggleElement} */
-NetworkSummaryItemElement.prototype.getDeviceEnabledToggle = function() {};
-
-/**
- * @constructor
- * @extends {HTMLElement}
- */
-function NetworkSummaryElement() {}
-/**
- * @param {?NetworkType} networkType
- * @return {?NetworkSummaryItemElement}
- */
-NetworkSummaryElement.prototype.getNetworkRow = function(networkType) {};
-
-/**
- * @constructor
- * @extends {HTMLElement}
- */
-function InternetConfigElement() {}
-/** @type {string} */
-InternetConfigElement.prototype.guid;
-/** @type {string} */
-InternetConfigElement.prototype.name;
-/** @type {boolean} */
-InternetConfigElement.prototype.showConnect;
-/** @type {string} */
-InternetConfigElement.prototype.type;
-InternetConfigElement.prototype.open = function() {};
-
-/**
- * @constructor
- * @extends {HTMLElement}
- */
-function ApnSubpageElement() {}
-ApnSubpageElement.prototype.openApnDetailDialogInCreateMode = function() {};
-
-/** @type {number} */
 const ESIM_PROFILE_LIMIT = 5;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {NetworkListenerBehaviorInterface}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsInternetPageElementBase = mixinBehaviors(
-    [
-      NetworkListenerBehavior,
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+declare global {
+  interface HTMLElementEventMap {
+    'device-enabled-toggled':
+        CustomEvent<{enabled: boolean, type: NetworkType}>;
+    'network-connect': CustomEvent<{
+      networkState: OncMojo.NetworkStateProperties,
+      bypassConnectionDialog: boolean|undefined,
+    }>;
+    'show-cellular-setup': CustomEvent<{pageName: CellularSetupPageName}>;
+    'show-config':
+        CustomEvent<{type: string, guid: string|null, name: string|null}>;
+    'show-detail': CustomEvent<OncMojo.NetworkStateProperties>;
+    'show-error-toast': CustomEvent<string>;
+    'show-esim-profile-rename-dialog':
+        CustomEvent<{networkState: NetworkStateProperties}>;
+    'show-esim-remove-profile-dialog':
+        CustomEvent<{networkState: NetworkStateProperties}>;
+    'show-known-networks': CustomEvent<NetworkType>;
+    'show-networks': CustomEvent<NetworkType>;
+  }
+}
 
-/** @polymer */
+interface SettingsInternetPageElement {
+  $: {
+    errorToast: CrToastElement,
+  };
+}
+
+const SettingsInternetPageElementBase =
+    mixinBehaviors(
+        [
+          NetworkListenerBehavior,
+          DeepLinkingBehavior,
+        ],
+        PrefsMixin(RouteObserverMixin(
+            WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & RouteObserverMixinInterface &
+          PrefsMixinInterface & NetworkListenerBehaviorInterface &
+          DeepLinkingBehaviorInterface,
+    };
+
 class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   static get is() {
-    return 'settings-internet-page';
+    return 'settings-internet-page' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * The device state for each network device type, keyed by NetworkType.
        * Set by network-summary.
-       * @type {!Object<!OncMojo.DeviceStateProperties>|undefined}
-       * @private
        */
       deviceStates: {
         type: Object,
@@ -154,7 +130,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Highest priority connected network or null. Set by network-summary.
-       * @type {?OncMojo.NetworkStateProperties|undefined}
        */
       defaultNetwork: {
         type: Object,
@@ -163,7 +138,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Hotspot information. Set by network-summary.
-       * @type {!HotspotInfo|undefined}
        */
       hotspotInfo: {
         type: Object,
@@ -172,27 +146,21 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Set by internet-subpage. Controls spinner visibility in subpage header.
-       * @private
        */
       showSpinner_: Boolean,
 
       /**
        * The network type for the networks subpage when shown.
-       * @type {NetworkType}
-       * @private
        */
       subpageType_: Number,
 
       /**
        * The network type for the known networks subpage when shown.
-       * @type {NetworkType}
-       * @private
        */
       knownNetworksType_: Number,
 
       /**
        * Whether the 'Add connection' section is expanded.
-       * @private
        */
       addConnectionExpanded_: {
         type: Boolean,
@@ -201,19 +169,16 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * True if VPN is prohibited by policy.
-       * @private {boolean}
        */
       vpnIsProhibited_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!GlobalPolicy|undefined} */
       globalPolicy_: Object,
 
       /**
        * Whether a managed network is available in the visible network list.
-       * @private {boolean}
        */
       managedNetworkAvailable: {
         type: Boolean,
@@ -222,8 +187,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * List of third party (Extension + Arc) VPN providers.
-       * @type {!Array<!VpnProvider>}
-       * @private
        */
       vpnProviders_: {
         type: Array,
@@ -232,15 +195,11 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         },
       },
 
-      /** @private {boolean} */
       showInternetConfig_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private
-       */
       isApnRevampEnabled_: {
         type: Boolean,
         value() {
@@ -252,14 +211,12 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       /**
        * Page name, if defined, indicating that the next deviceStates update
        * should call attemptShowCellularSetupDialog_().
-       * @private {CellularSetupPageName|null}
        */
       pendingShowCellularSetupDialogAttemptPageName_: {
         type: String,
         value: null,
       },
 
-      /** @private {boolean} */
       showCellularSetupDialog_: {
         type: Boolean,
         value: false,
@@ -267,29 +224,24 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Name of cellular setup dialog page.
-       * @private {!CellularSetupPageName|null}
        */
       cellularSetupDialogPageName_: String,
 
-      /** @private {boolean} */
       hasActiveCellularNetwork_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       isConnectedToNonCellularNetwork_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showESimProfileRenameDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showESimRemoveProfileDialog_: {
         type: Boolean,
         value: false,
@@ -298,14 +250,12 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       /**
        * Flag, if true, indicating that the next deviceStates update
        * should set showSimLockDialog_ to true.
-       * @private
        */
       pendingShowSimLockDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showSimLockDialog_: {
         type: Boolean,
         value: false,
@@ -313,14 +263,12 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * eSIM network used in internet detail menu.
-       * @private {NetworkStateProperties}
        */
       eSimNetworkState_: {
         type: Object,
         value: '',
       },
 
-      /** @private {!Map<string, Element>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -330,7 +278,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -340,7 +287,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         ]),
       },
 
-      /** @private */
       errorToastMessage_: {
         type: String,
         value: '',
@@ -348,7 +294,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Return true if hotspot feature flag is enabled.
-       * @private
        */
       isHotspotFeatureEnabled_: {
         type: Boolean,
@@ -367,96 +312,88 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     };
   }
 
-  /** @override */
+  defaultNetwork: OncMojo.NetworkStateProperties|null|undefined;
+  deviceStates: Record<string, OncMojo.DeviceStateProperties>|undefined;
+  hotspotInfo: HotspotInfo|undefined;
+  managedNetworkAvailable: boolean;
+  private addConnectionExpanded_: boolean;
+  private browserProxy_: InternetPageBrowserProxy;
+  private cellularSetupDialogPageName_: CellularSetupPageName|null;
+  private detailType_: NetworkType|undefined;
+  private errorToastMessage_: string;
+  private eSimNetworkState_: NetworkStateProperties;
+  private focusConfig_: Map<string, HTMLElement>;
+  private globalPolicy_: GlobalPolicy|undefined;
+  private hasActiveCellularNetwork_: boolean;
+  private isApnRevampEnabled_: boolean;
+  private isConnectedToNonCellularNetwork_: boolean;
+  private isCreateCustomApnButtonDisabled_: boolean;
+  private isHotspotFeatureEnabled_: boolean;
+  private knownNetworksType_: NetworkType;
+  private networkConfig_: CrosNetworkConfigRemote;
+  private pendingShowCellularSetupDialogAttemptPageName_: CellularSetupPageName|
+      null;
+  private pendingShowSimLockDialog_: boolean;
+  private showCellularSetupDialog_: boolean;
+  private showESimProfileRenameDialog_: boolean;
+  private showESimRemoveProfileDialog_: boolean;
+  private showInternetConfig_: boolean;
+  private showSimLockDialog_: boolean;
+  private showSpinner_: boolean;
+  private subpageType_: NetworkType;
+  private vpnIsProhibited_: boolean;
+  private vpnProviders_: VpnProvider[];
+
   constructor() {
     super();
 
     /**
      * Type of last detail page visited
-     * @private {NetworkType|undefined}
      */
     this.detailType_ = undefined;
 
-    /** @private  {!InternetPageBrowserProxy} */
     this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
 
-    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('device-enabled-toggled', (event) => {
-      this.onDeviceEnabledToggled_(
-          /**
-           * @type {!CustomEvent<!{
-           *     enabled: boolean,
-           *     type: NetworkType
-           * }>}
-           */
-          (event));
+      this.onDeviceEnabledToggled_(event);
     });
     this.addEventListener('network-connect', (event) => {
-      this.onNetworkConnect_(
-          /**
-           * @type {!CustomEvent<!{
-           *     networkState: !OncMojo.NetworkStateProperties,
-           *     bypassConnectionDialog: (boolean|undefined)
-           * }>}
-           */
-          (event));
+      this.onNetworkConnect_(event);
     });
     this.addEventListener('show-cellular-setup', (event) => {
       this.onShowCellularSetupDialog_(event);
     });
     this.addEventListener('show-config', (event) => {
-      this.onShowConfig_(
-          /**
-             @type {!CustomEvent<!{type: string, guid: ?string, name:
-                 ?string}>}
-           */
-          (event));
+      this.onShowConfig_(event);
     });
     this.addEventListener('show-detail', (event) => {
-      this.onShowDetail_(
-          /** @type {!CustomEvent<!OncMojo.NetworkStateProperties>} */ (event));
+      this.onShowDetail_(event);
     });
     this.addEventListener('show-known-networks', (event) => {
-      this.onShowKnownNetworks_(
-          /** @type {!CustomEvent<NetworkType>} */
-          (event));
+      this.onShowKnownNetworks_(event);
     });
     this.addEventListener('show-networks', (event) => {
-      this.onShowNetworks_(
-          /** @type {!CustomEvent<NetworkType>} */
-          (event));
+      this.onShowNetworks_(event);
     });
     this.addEventListener('show-esim-profile-rename-dialog', (event) => {
-      this.onShowESimProfileRenameDialog_(
-          /**
-                   @type {!CustomEvent<!{networkState:
-                       NetworkStateProperties}>}
-                     */
-          (event));
+      this.onShowEsimProfileRenameDialog_(event);
     });
     this.addEventListener('show-esim-remove-profile-dialog', (event) => {
-      this.onShowESimRemoveProfileDialog_(
-          /**
-             @type {!CustomEvent<!{networkState:
-                 NetworkStateProperties}>}
-               */
-          (event));
+      this.onShowEsimRemoveProfileDialog_(event);
     });
     this.addEventListener('show-error-toast', (event) => {
-      this.onShowErrorToast_(
-          /** @type {!CustomEvent<string>} */ (event));
+      this.onShowErrorToast_(event);
     });
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.onPoliciesApplied(/*userhash=*/ '');
@@ -466,12 +403,10 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!Setting} settingId
-   * @return {boolean}
    */
-  beforeDeepLinkAttempt(settingId) {
+  override beforeDeepLinkAttempt(settingId: Setting): boolean {
     // Manually show the deep links for settings nested within elements.
-    let networkType = null;
+    let networkType: NetworkType|null = null;
     if (settingId === Setting.kWifiOnOff) {
       networkType = NetworkType.kWiFi;
     } else if (settingId === Setting.kMobileOnOff) {
@@ -479,9 +414,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     }
 
     afterNextRender(this, () => {
-      const networkRow = /** @type {NetworkSummaryElement} */ (
-                             this.shadowRoot.querySelector('network-summary'))
-                             .getNetworkRow(networkType);
+      const networkRow =
+          this.shadowRoot!.querySelector('network-summary')!.getNetworkRow(
+              networkType!);
       if (networkRow) {
         const toggleEl = networkRow.getDeviceEnabledToggle();
         if (toggleEl) {
@@ -497,11 +432,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * RouteObserverBehavior
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   * @protected
    */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route, oldRoute?: Route): void {
     if (route === routes.INTERNET_NETWORKS) {
       // Handle direct navigation to the networks page,
       // e.g. chrome://settings/internet/networks?type=WiFi
@@ -552,27 +484,26 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     }
 
     // Focus the subpage arrow where appropriate.
-    let element;
+    let element: HTMLElement|null = null;
     if (route === routes.INTERNET_NETWORKS) {
       // iron-list makes the correct timing to focus an item in the list
       // very complicated, and the item may not exist, so just focus the
       // entire list for now.
       const subPage =
-          this.shadowRoot.querySelector('settings-internet-subpage');
+          this.shadowRoot!.querySelector('settings-internet-subpage');
       if (subPage) {
-        element = subPage.shadowRoot.querySelector('#networkList');
+        element = subPage.shadowRoot!.querySelector('#networkList');
       }
     } else if (this.detailType_ !== undefined) {
       const rowForDetailType =
-          /** @type {NetworkSummaryElement} */ (
-              this.shadowRoot.querySelector('network-summary'))
-              .getNetworkRow(this.detailType_);
+          this.shadowRoot!.querySelector('network-summary')!.getNetworkRow(
+              this.detailType_);
 
       // Note: It is possible that the row is no longer present in the DOM
       // (e.g., when a Cellular dongle is unplugged or when Instant Tethering
       // becomes unavailable due to the Bluetooth controller disconnecting).
       if (rowForDetailType) {
-        element = rowForDetailType.shadowRoot.querySelector('.subpage-arrow');
+        element = rowForDetailType.shadowRoot!.querySelector('.subpage-arrow');
       }
     }
 
@@ -584,74 +515,57 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /** NetworkListenerBehavior override */
-  onNetworkStateListChanged() {
+  override onNetworkStateListChanged(): void {
     hasActiveCellularNetwork().then((hasActive) => {
       this.hasActiveCellularNetwork_ = hasActive;
     });
     this.updateIsConnectedToNonCellularNetwork_();
   }
 
-  onVpnProvidersChanged() {
-    this.networkConfig_.getVpnProviders().then(response => {
-      const providers = response.providers;
-      providers.sort(this.compareVpnProviders_);
-      this.vpnProviders_ = providers;
-    });
+  override async onVpnProvidersChanged(): Promise<void> {
+    const response = await this.networkConfig_.getVpnProviders();
+    const providers = response.providers;
+    providers.sort(this.compareVpnProviders_);
+    this.vpnProviders_ = providers;
   }
 
-  /** @param {string} userhash */
-  onPoliciesApplied(userhash) {
-    this.networkConfig_.getGlobalPolicy().then(response => {
-      this.globalPolicy_ = response.result;
-    });
+  override async onPoliciesApplied(_userhash: string): Promise<void> {
+    const response = await this.networkConfig_.getGlobalPolicy();
+    this.globalPolicy_ = response.result;
   }
 
-  /**
-   * @return {!Promise<boolean>}
-   * @private
-   */
-  updateIsConnectedToNonCellularNetwork_() {
-    return isConnectedToNonCellularNetwork().then((isConnected) => {
-      this.isConnectedToNonCellularNetwork_ = isConnected;
-      return isConnected;
-    });
+  private async updateIsConnectedToNonCellularNetwork_(): Promise<boolean> {
+    const isConnected = await isConnectedToNonCellularNetwork();
+    this.isConnectedToNonCellularNetwork_ = isConnected;
+    return isConnected;
   }
 
   /**
    * Event triggered by a device state enabled toggle.
-   * @param {!CustomEvent<!{
-   *     enabled: boolean,
-   *     type: NetworkType
-   * }>} event
-   * @private
    */
-  onDeviceEnabledToggled_(event) {
+  private onDeviceEnabledToggled_(
+      event: CustomEvent<{enabled: boolean, type: NetworkType}>): void {
     this.networkConfig_.setNetworkTypeEnabledState(
         event.detail.type, event.detail.enabled);
     recordSettingChange();
   }
 
-  /**
-   * @param {!CustomEvent<!{type: string, guid: ?string, name: ?string}>} event
-   * @private
-   */
-  onShowConfig_(event) {
+  private onShowConfig_(
+      event: CustomEvent<{type: string, guid: string|null, name: string|null}>):
+      void {
     const type = OncMojo.getNetworkTypeFromString(event.detail.type);
     if (!event.detail.guid) {
       // New configuration
-      this.showConfig_(true /* configAndConnect */, type);
+      this.showConfig_(/* configAndConnect= */ true, type);
     } else {
       this.showConfig_(
-          false /* configAndConnect */, type, event.detail.guid,
+          /* configAndConnect= */ false, type, event.detail.guid,
           event.detail.name);
     }
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onShowCellularSetupDialog_(event) {
+  private onShowCellularSetupDialog_(
+      event: CustomEvent<{pageName: CellularSetupPageName}>): void {
     this.attemptShowCellularSetupDialog_(event.detail.pageName);
   }
 
@@ -659,10 +573,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * Opens the cellular setup dialog if pageName is PSIM_FLOW_UI, or if pageName
    * is ESIM_FLOW_UI and isConnectedToNonCellularNetwork_ is true. If
    * isConnectedToNonCellularNetwork_ is false, shows an error toast.
-   * @param {CellularSetupPageName} pageName
-   * @private
    */
-  attemptShowCellularSetupDialog_(pageName) {
+  private attemptShowCellularSetupDialog_(pageName: CellularSetupPageName):
+      void {
     const cellularDeviceState =
         this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
     if (!cellularDeviceState ||
@@ -675,64 +588,47 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       this.showCellularSetupDialog_ = true;
       this.cellularSetupDialogPageName_ = pageName;
     } else {
-      this.attemptShowESimSetupDialog_();
+      this.attemptShowEsimSetupDialog_();
     }
   }
 
-  /** @private */
-  async attemptShowESimSetupDialog_() {
+  private async attemptShowEsimSetupDialog_(): Promise<void> {
     const numProfiles = await getNumESimProfiles();
     if (numProfiles >= ESIM_PROFILE_LIMIT) {
       this.showErrorToast_(
           this.i18n('eSimProfileLimitReachedErrorToast', ESIM_PROFILE_LIMIT));
       return;
     }
+
     // isConnectedToNonCellularNetwork_ may
     // not be fetched yet if the page just opened, fetch it
     // explicitly.
-    this.updateIsConnectedToNonCellularNetwork_().then(
-        ((isConnected) => {
-          this.showCellularSetupDialog_ =
-              isConnected || loadTimeData.getBoolean('bypassConnectivityCheck');
-          if (!this.showCellularSetupDialog_) {
-            this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
-            return;
-          }
-          this.cellularSetupDialogPageName_ =
-              CellularSetupPageName.ESIM_FLOW_UI;
-        }).bind(this));
+    const isConnected = await this.updateIsConnectedToNonCellularNetwork_();
+    this.showCellularSetupDialog_ =
+        isConnected || loadTimeData.getBoolean('bypassConnectivityCheck');
+    if (!this.showCellularSetupDialog_) {
+      this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
+      return;
+    }
+    this.cellularSetupDialogPageName_ = CellularSetupPageName.ESIM_FLOW_UI;
   }
 
-  /**
-   * @param {!CustomEvent<string>} event
-   * @private
-   */
-  onShowErrorToast_(event) {
+  private onShowErrorToast_(event: CustomEvent<string>): void {
     this.showErrorToast_(event.detail);
   }
 
-  /**
-   * @param {string} message
-   * @private
-   */
-  showErrorToast_(message) {
+  private showErrorToast_(message: string): void {
     this.errorToastMessage_ = message;
     this.$.errorToast.show();
   }
 
-  /** @private */
-  onCloseCellularSetupDialog_() {
+  private onCloseCellularSetupDialog_(): void {
     this.showCellularSetupDialog_ = false;
   }
 
-  /**
-   * @param {boolean} configAndConnect
-   * @param {NetworkType} type
-   * @param {?string=} opt_guid
-   * @param {?string=} opt_name
-   * @private
-   */
-  showConfig_(configAndConnect, type, opt_guid, opt_name) {
+  private showConfig_(
+      configAndConnect: boolean, type: NetworkType, guid?: string|null,
+      name?: string|null): void {
     assert(type !== NetworkType.kCellular && type !== NetworkType.kTether);
     if (this.showInternetConfig_) {
       return;
@@ -741,27 +637,22 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // Async call to ensure dialog is stamped.
     setTimeout(() => {
       const configDialog =
-          /** @type {!InternetConfigElement} */ (
-              this.shadowRoot.querySelector('#configDialog'));
-      assert(!!configDialog);
+          castExists(this.shadowRoot!.querySelector<InternetConfigElement>(
+              '#configDialog'));
       configDialog.type = OncMojo.getNetworkTypeString(type);
-      configDialog.guid = opt_guid || '';
-      configDialog.name = opt_name || '';
+      configDialog.guid = guid || '';
+      configDialog.name = name || '';
       configDialog.showConnect = configAndConnect;
       configDialog.open();
     });
   }
 
-  /** @private */
-  onInternetConfigClose_() {
+  private onInternetConfigClose_(): void {
     this.showInternetConfig_ = false;
   }
 
-  /**
-   * @param {!CustomEvent<!OncMojo.NetworkStateProperties>} event
-   * @private
-   */
-  onShowDetail_(event) {
+  private onShowDetail_(event: CustomEvent<OncMojo.NetworkStateProperties>):
+      void {
     const networkState = event.detail;
     this.detailType_ = networkState.type;
     const params = new URLSearchParams();
@@ -771,49 +662,31 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
   }
 
-  /**
-   * @param {!CustomEvent<!{networkState:
-   *     NetworkStateProperties}>} event
-   * @private
-   */
-  onShowESimProfileRenameDialog_(event) {
+  private onShowEsimProfileRenameDialog_(
+      event: CustomEvent<{networkState: NetworkStateProperties}>): void {
     this.eSimNetworkState_ = event.detail.networkState;
     this.showESimProfileRenameDialog_ = true;
   }
 
-  /** @private */
-  onCloseESimProfileRenameDialog_() {
+  private onCloseEsimProfileRenameDialog_(): void {
     this.showESimProfileRenameDialog_ = false;
   }
 
-  /**
-   * @param {!CustomEvent<!{networkState:
-   *     NetworkStateProperties}>} event
-   * @private
-   */
-  onShowESimRemoveProfileDialog_(event) {
+  private onShowEsimRemoveProfileDialog_(
+      event: CustomEvent<{networkState: NetworkStateProperties}>): void {
     this.eSimNetworkState_ = event.detail.networkState;
     this.showESimRemoveProfileDialog_ = true;
   }
 
-  /** @private */
-  onCloseESimRemoveProfileDialog_() {
+  private onCloseEsimRemoveProfileDialog_(): void {
     this.showESimRemoveProfileDialog_ = false;
   }
 
-  /**
-   * @param {!CustomEvent<NetworkType>} event
-   * @private
-   */
-  onShowNetworks_(event) {
+  private onShowNetworks_(event: CustomEvent<NetworkType>): void {
     this.showNetworksSubpage_(event.detail);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getNetworksPageTitle_() {
+  private getNetworksPageTitle_(): string {
     // The shared Cellular/Tether subpage is referred to as "Mobile".
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
@@ -825,40 +698,32 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         'OncType' + OncMojo.getNetworkTypeString(this.subpageType_));
   }
 
-  /**
-   * @param {NetworkType} subpageType
-   * @param {!Object<!OncMojo.DeviceStateProperties>|undefined} deviceStates
-   * @return {!OncMojo.DeviceStateProperties|undefined}
-   * @private
-   */
-  getDeviceState_(subpageType, deviceStates) {
+  private getDeviceState_(
+      subpageType: NetworkType,
+      deviceStates: Record<string, OncMojo.DeviceStateProperties>|
+      undefined): OncMojo.DeviceStateProperties|undefined {
     if (subpageType === undefined) {
       return undefined;
     }
     // If both Tether and Cellular are enabled, use the Cellular device state
     // when directly navigating to the Tether page.
     if (subpageType === NetworkType.kTether &&
-        this.deviceStates[NetworkType.kCellular]) {
+        this.deviceStates![NetworkType.kCellular]) {
       subpageType = NetworkType.kCellular;
     }
-    return deviceStates[subpageType];
+    return deviceStates![subpageType];
   }
 
-  /**
-   * @param {!Object<!OncMojo.DeviceStateProperties>|undefined} deviceStates
-   * @return {!OncMojo.DeviceStateProperties|undefined}
-   * @private
-   */
-  getTetherDeviceState_(deviceStates) {
-    return deviceStates[NetworkType.kTether];
+  private getTetherDeviceState_(
+      deviceStates: Record<string, OncMojo.DeviceStateProperties>|
+      undefined): OncMojo.DeviceStateProperties|undefined {
+    return deviceStates![NetworkType.kTether];
   }
 
-  /**
-   * @param {!OncMojo.DeviceStateProperties|undefined} newValue
-   * @param {!OncMojo.DeviceStateProperties|undefined} oldValue
-   * @private
-   */
-  onDeviceStatesChanged_(newValue, oldValue) {
+  private onDeviceStatesChanged_(
+      newValue: Record<string, OncMojo.DeviceStateProperties>|undefined,
+      _oldValue: Record<string, OncMojo.DeviceStateProperties>|
+      undefined): void {
     const wifiDeviceState = this.getDeviceState_(NetworkType.kWiFi, newValue);
     let managedNetworkAvailable = false;
     if (wifiDeviceState) {
@@ -869,6 +734,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       this.managedNetworkAvailable = managedNetworkAvailable;
     }
 
+    assert(this.deviceStates);
     const vpn = this.deviceStates[NetworkType.kVPN];
     this.vpnIsProhibited_ =
         !!vpn && vpn.deviceState === DeviceStateType.kProhibited;
@@ -879,7 +745,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       // if visible, displays controls which are no longer functional. If this
       // case occurs, close the details page.
       const detailPage =
-          this.shadowRoot.querySelector('settings-internet-detail-page');
+          this.shadowRoot!.querySelector('settings-internet-detail-page');
       if (detailPage) {
         detailPage.close();
       }
@@ -897,11 +763,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     }
   }
 
-  /**
-   * @param {!CustomEvent<NetworkType>} event
-   * @private
-   */
-  onShowKnownNetworks_(event) {
+  private onShowKnownNetworks_(event: CustomEvent<NetworkType>): void {
     const type = event.detail;
     this.detailType_ = type;
     this.knownNetworksType_ = type;
@@ -910,33 +772,23 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
   }
 
-  /** @private */
-  onAddWiFiTap_() {
+  private onAddWiFiTap_(): void {
     this.showConfig_(true /* configAndConnect */, NetworkType.kWiFi);
   }
 
-  /** @private */
-  onAddVPNTap_() {
+  private onAddVpnTap_(): void {
     if (!this.vpnIsProhibited_) {
       this.showConfig_(true /* configAndConnect */, NetworkType.kVPN);
     }
   }
 
-  /**
-   * @param {!{model: !{item: !VpnProvider}}} event
-   * @private
-   */
-  onAddThirdPartyVpnTap_(event) {
+  private onAddThirdPartyVpnTap_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
     recordSettingChange();
   }
 
-  /**
-   * @param {NetworkType} type
-   * @private
-   */
-  showNetworksSubpage_(type) {
+  private showNetworksSubpage_(type: NetworkType): void {
     this.detailType_ = type;
     const params = new URLSearchParams();
     params.append('type', OncMojo.getNetworkTypeString(type));
@@ -944,12 +796,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
   }
 
-  /**
-   * @param {!VpnProvider} vpnProvider1
-   * @param {!VpnProvider} vpnProvider2
-   * @return {number}
-   */
-  compareVpnProviders_(vpnProvider1, vpnProvider2) {
+  private compareVpnProviders_(
+      vpnProvider1: VpnProvider, vpnProvider2: VpnProvider): number {
     // Show Extension VPNs before Arc VPNs.
     if (vpnProvider1.type < vpnProvider2.type) {
       return -1;
@@ -969,35 +817,22 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     return 0;
   }
 
-  /**
-   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
-   * @return {boolean}
-   * @private
-   */
-  wifiIsEnabled_(deviceStates) {
+  private wifiIsEnabled_(deviceStates: OncMojo.DeviceStateProperties[]):
+      boolean {
     const wifi = deviceStates[NetworkType.kWiFi];
     return !!wifi && wifi.deviceState === DeviceStateType.kEnabled;
   }
 
-  /**
-   * @param {!GlobalPolicy} globalPolicy
-   * @param {boolean} managedNetworkAvailable
-   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
-   * @return {boolean}
-   * @private
-   */
-  shouldShowAddWiFiRow_(globalPolicy, managedNetworkAvailable, deviceStates) {
+  private shouldShowAddWiFiRow_(
+      globalPolicy: GlobalPolicy, managedNetworkAvailable: boolean,
+      deviceStates: OncMojo.DeviceStateProperties[]): boolean {
     return this.allowAddWiFiConnection_(
                globalPolicy, managedNetworkAvailable) &&
         this.wifiIsEnabled_(deviceStates);
   }
 
-  /**
-   * @param {!GlobalPolicy} globalPolicy
-   * @param {boolean} managedNetworkAvailable
-   * @return {boolean}
-   */
-  allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable) {
+  private allowAddWiFiConnection_(
+      globalPolicy: GlobalPolicy, managedNetworkAvailable: boolean): boolean {
     if (!globalPolicy) {
       return true;
     }
@@ -1007,42 +842,32 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
          !managedNetworkAvailable);
   }
 
-  /**
-   * @param {!GlobalPolicy} globalPolicy
-   * @param {boolean} managedNetworkAvailable
-   * @return {boolean}
-   */
-  allowAddConnection_(globalPolicy, managedNetworkAvailable) {
+  private allowAddConnection_(
+      globalPolicy: GlobalPolicy, managedNetworkAvailable: boolean): boolean {
     if (!this.vpnIsProhibited_) {
       return true;
     }
     return this.allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable);
   }
 
-  /**
-   * @param {!VpnProvider} provider
-   * @return {string}
-   */
-  getAddThirdPartyVpnLabel_(provider) {
+  private getAddThirdPartyVpnLabel_(provider: VpnProvider): string {
     return this.i18n('internetAddThirdPartyVPN', provider.providerName || '');
   }
 
   /**
    * Handles UI requests to connect to a network.
    * TODO(stevenjb): Handle Cellular activation, etc.
-   * @param {!CustomEvent<!{
-   *     networkState: !OncMojo.NetworkStateProperties,
-   *     bypassConnectionDialog: (boolean|undefined)
-   * }>} event
-   * @private
    */
-  onNetworkConnect_(event) {
+  private async onNetworkConnect_(event: CustomEvent<{
+    networkState: OncMojo.NetworkStateProperties,
+    bypassConnectionDialog: boolean|undefined,
+  }>): Promise<void> {
     const networkState = event.detail.networkState;
     const type = networkState.type;
     const displayName = OncMojo.getNetworkStateDisplayName(networkState);
 
     if (!event.detail.bypassConnectionDialog && type === NetworkType.kTether &&
-        !networkState.typeState.tether.hasConnectedToHost) {
+        !networkState.typeState.tether!.hasConnectedToHost) {
       const params = new URLSearchParams();
       params.append('guid', networkState.guid);
       params.append('type', OncMojo.getNetworkTypeString(type));
@@ -1061,47 +886,50 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       return;
     }
 
-    this.networkConfig_.startConnect(networkState.guid).then(response => {
-      switch (response.result) {
-        case StartConnectResult.kSuccess:
-          return;
-        case StartConnectResult.kInvalidGuid:
-        case StartConnectResult.kInvalidState:
-        case StartConnectResult.kCanceled:
-          // TODO(stevenjb/khorimoto): Consider handling these cases.
-          return;
-        case StartConnectResult.kNotConfigured:
-          if (OncMojo.networkTypeHasConfigurationFlow(type)) {
-            this.showConfig_(
-                true /* configAndConnect */, type, networkState.guid,
-                displayName);
-          }
-          return;
-        case StartConnectResult.kBlocked:
-          // This shouldn't happen, the UI should prevent this, fall through and
-          // show the error.
-        case StartConnectResult.kUnknown:
-          console.warn(
-              'startConnect failed for: ' + networkState.guid +
-              ' Error: ' + response.message);
-          return;
-      }
-      assertNotReached();
-    });
+    const response = await this.networkConfig_.startConnect(networkState.guid);
+    switch (response.result) {
+      case StartConnectResult.kSuccess:
+        return;
+      case StartConnectResult.kInvalidGuid:
+      case StartConnectResult.kInvalidState:
+      case StartConnectResult.kCanceled:
+        // TODO(stevenjb/khorimoto): Consider handling these cases.
+        return;
+      case StartConnectResult.kNotConfigured:
+        if (OncMojo.networkTypeHasConfigurationFlow(type)) {
+          this.showConfig_(
+              true /* configAndConnect */, type, networkState.guid,
+              displayName);
+        }
+        return;
+      case StartConnectResult.kBlocked:
+        // This shouldn't happen, the UI should prevent this, fall through and
+        // show the error.
+      case StartConnectResult.kUnknown:
+        console.warn(
+            'startConnect failed for: ' + networkState.guid +
+            ' Error: ' + response.message);
+        return;
+    }
+    assertNotReached();
   }
 
   /**
    * Handles UI requests to add new APN.
-   * @private
    */
-  onCreateCustomApnClicked_() {
+  private onCreateCustomApnClicked_(): void {
     if (this.isCreateCustomApnButtonDisabled_) {
       return;
     }
-    const apnSubpage = /** @type {ApnSubpageElement} */ (
-        this.shadowRoot.querySelector('#apnSubpage'));
-    assert(!!apnSubpage);
+    const apnSubpage = castExists(
+        this.shadowRoot!.querySelector<ApnSubpageElement>('#apnSubpage'));
     apnSubpage.openApnDetailDialogInCreateMode();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsInternetPageElement.is]: SettingsInternetPageElement;
   }
 }
 

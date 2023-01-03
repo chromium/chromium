@@ -68,7 +68,7 @@
             </div>
           </template>
           <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
-              on-click="onAddVPNTap_">
+              on-click="onAddVpnTap_">
             <div class="start settings-box-text"
                 id="add-vpn-label" aria-hidden="true">
               $i18n{internetAddVPN}
@@ -203,7 +203,7 @@
 
 <template is="dom-if" if="[[showESimProfileRenameDialog_]]" restamp>
   <esim-rename-dialog id="esimRenameDialog"
-      on-close="onCloseESimProfileRenameDialog_"
+      on-close="onCloseEsimProfileRenameDialog_"
       network-state="[[eSimNetworkState_]]"
       show-cellular-disconnect-warning="[[hasActiveCellularNetwork_]]">
   </esim-rename-dialog>
@@ -211,7 +211,7 @@
 
 <template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
   <esim-remove-profile-dialog id="esimRemoveProfileDialog"
-      on-close="onCloseESimRemoveProfileDialog_"
+      on-close="onCloseEsimRemoveProfileDialog_"
       on-show-error-toast="onShowErrorToast_"
       network-state="[[eSimNetworkState_]]"
       show-cellular-disconnect-warning="[[hasActiveCellularNetwork_]]">
