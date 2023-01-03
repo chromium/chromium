@@ -35,7 +35,6 @@ class SidePanelWebUIView : public views::WebView,
   ~SidePanelWebUIView() override;
 
   // views::WebView:
-  void SetVisible(bool visible) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 

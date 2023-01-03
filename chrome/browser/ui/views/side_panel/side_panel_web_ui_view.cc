@@ -34,10 +34,6 @@ SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
   SetWebContents(contents_wrapper_->web_contents());
 }
 
-void SidePanelWebUIView::SetVisible(bool visible) {
-  views::WebView::SetVisible(visible);
-}
-
 SidePanelWebUIView::~SidePanelWebUIView() = default;
 
 void SidePanelWebUIView::ViewHierarchyChanged(
