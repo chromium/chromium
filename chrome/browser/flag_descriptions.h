@@ -2145,9 +2145,6 @@ extern const char kPageInfoStoreInfoDescription[];
 extern const char kPersistShareHubOnAppSwitchName[];
 extern const char kPersistShareHubOnAppSwitchDescription[];
 
-extern const char kPhotoPickerVideoSupportName[];
-extern const char kPhotoPickerVideoSupportDescription[];
-
 extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];
 extern const char kQueryTilesNTPName[];

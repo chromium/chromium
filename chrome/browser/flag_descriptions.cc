@@ -3739,10 +3739,6 @@ const char kPersistShareHubOnAppSwitchName[] = "Persist sharing hub";
 const char kPersistShareHubOnAppSwitchDescription[] =
     "Persist the sharing hub across app pauses/resumes.";
 
-const char kPhotoPickerVideoSupportName[] = "Photo Picker Video Support";
-const char kPhotoPickerVideoSupportDescription[] =
-    "Enables video files to be shown in the Photo Picker dialog";
-
 const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";

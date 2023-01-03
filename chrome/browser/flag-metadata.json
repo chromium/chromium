@@ -5512,11 +5512,6 @@
     "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 100
   },
-  {
-    "name": "photo-picker-video-support",
-    "owners": [ "finnur" ],
-    "expiry_milestone": 110
-  },
     {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],

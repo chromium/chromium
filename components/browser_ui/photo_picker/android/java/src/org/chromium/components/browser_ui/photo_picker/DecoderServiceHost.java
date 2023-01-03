@@ -49,9 +49,6 @@ public class DecoderServiceHost
     // A tag for logging error messages.
     private static final String TAG = "ImageDecoderHost";
 
-    // The feature param for determining whether the PhotoPicker should animate thumbnails.
-    private static final String FEATURE_PARAM_ANIMATE_THUMBNAILS = "animate_thumbnails";
-
     // The current context.
     private final Context mContext;
 
@@ -81,9 +78,6 @@ public class DecoderServiceHost
 
     // The number of io failures during video decoding, per batch.
     private int mFailedVideoDecodesUnknown;
-
-    // Whether animated thumbnails should be generated for video clips.
-    private boolean mAnimatedThumbnailsSupported;
 
     // A worker task for asynchronously handling video decode requests.
     private DecodeVideoTask mWorkerTask;
@@ -245,9 +239,6 @@ public class DecoderServiceHost
         }
         mContext = context;
         mContentResolver = mContext.getContentResolver();
-        mAnimatedThumbnailsSupported =
-                PhotoPickerFeatures.PHOTO_PICKER_VIDEO_SUPPORT.getFieldTrialParamByFeatureAsBoolean(
-                        FEATURE_PARAM_ANIMATE_THUMBNAILS, false);
     }
 
     /**
@@ -284,15 +275,6 @@ public class DecoderServiceHost
         DecoderServiceParams params = new DecoderServiceParams(
                 uri, width, fullWidth, fileType, /*firstFrame=*/true, callback);
         mPendingRequests.add(params);
-
-        if (params.mFileType == PickerBitmap.TileTypes.VIDEO && mAnimatedThumbnailsSupported) {
-            // Decoding requests for videos are requests for first frames only. Add another
-            // low-priority request for decoding the rest of the frames.
-            DecoderServiceParams lowPriorityRequest =
-                    new DecoderServiceParams(params.mUri, params.mWidth, params.mFullWidth,
-                            params.mFileType, /*firstFrame=*/false, params.mCallback);
-            mPendingRequests.add(lowPriorityRequest);
-        }
 
         if (mProcessingRequest == null) dispatchNextDecodeRequest();
     }
@@ -604,10 +586,5 @@ public class DecoderServiceHost
     @VisibleForTesting
     public static void setStatusCallback(DecoderStatusCallback callback) {
         sStatusCallbackForTesting = callback;
-    }
-
-    @VisibleForTesting
-    void setAnimatedThumbnailsSupportedForTesting(boolean supported) {
-        mAnimatedThumbnailsSupported = supported;
     }
 }

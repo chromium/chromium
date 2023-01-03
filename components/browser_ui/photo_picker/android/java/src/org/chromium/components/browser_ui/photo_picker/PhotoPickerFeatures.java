@@ -14,13 +14,10 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("photo_picker::features")
 public class PhotoPickerFeatures extends Features {
     public static final String ANDROID_MEDIA_PICKER_SUPPORT_NAME = "AndroidMediaPickerSupport";
-    public static final String PHOTO_PICKER_VIDEO_SUPPORT_NAME = "PhotoPickerVideoSupport";
 
     // This list must be kept in sync with kFeaturesExposedToJava in native.
     public static final PhotoPickerFeatures ANDROID_MEDIA_PICKER_SUPPORT =
             new PhotoPickerFeatures(0, ANDROID_MEDIA_PICKER_SUPPORT_NAME);
-    public static final PhotoPickerFeatures PHOTO_PICKER_VIDEO_SUPPORT =
-            new PhotoPickerFeatures(1, PHOTO_PICKER_VIDEO_SUPPORT_NAME);
 
     private final int mOrdinal;
 

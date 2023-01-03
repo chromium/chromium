@@ -2463,15 +2463,6 @@ const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
      std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails[] = {
-        {"animate_thumbnails", "true"}};
-const FeatureEntry::FeatureVariation
-    kPhotoPickerVideoSupportFeatureVariations[] = {
-        {"(with animated thumbnails)",
-         kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails,
-         std::size(kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails),
-         nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
@@ -7156,13 +7147,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRecoverFromNeverSaveAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          password_manager::features::kRecoverFromNeverSaveAndroid)},
-    {"photo-picker-video-support",
-     flag_descriptions::kPhotoPickerVideoSupportName,
-     flag_descriptions::kPhotoPickerVideoSupportDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         photo_picker::features::kPhotoPickerVideoSupport,
-         kPhotoPickerVideoSupportFeatureVariations,
-         "PhotoPickerVideoSupportFeatureVariations")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"full-user-agent", flag_descriptions::kFullUserAgentName,

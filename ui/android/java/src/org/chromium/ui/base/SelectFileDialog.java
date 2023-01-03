@@ -1247,8 +1247,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     private static boolean photoPickerSupportsVideo() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
-        if (!shouldShowPhotoPicker()) return false;
-        return sPhotoPickerDelegate.supportsVideos();
+        return shouldShowPhotoPicker();
     }
 
     private static boolean preferAndroidMediaPicker() {

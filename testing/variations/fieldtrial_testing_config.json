@@ -215,24 +215,6 @@
             ]
         }
     ],
-    "AndroidMediaPickerVideoSupport": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "animate_thumbnails": "false"
-                    },
-                    "enable_features": [
-                        "PhotoPickerVideoSupport"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMessagesPWAInstall": [
         {
             "platforms": [
