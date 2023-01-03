@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -18,33 +17,16 @@ namespace apps {
 RemoteApps::RemoteApps(AppServiceProxy* proxy, Delegate* delegate)
     : AppPublisher(proxy), profile_(proxy->profile()), delegate_(delegate) {
   DCHECK(delegate);
-
-  mojo::Remote<mojom::AppService>& app_service = proxy->AppService();
-  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
-      !app_service.is_bound()) {
-    return;
-  }
-
-  PublisherBase::Initialize(app_service, mojom::AppType::kRemote);
 }
 
 RemoteApps::~RemoteApps() = default;
 
 void RemoteApps::AddApp(const ash::RemoteAppsModel::AppInfo& info) {
-  mojom::AppPtr mojom_app = Convert(info);
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
   auto app = CreateApp(info);
   AppPublisher::Publish(std::move(app));
 }
 
 void RemoteApps::UpdateAppIcon(const std::string& app_id) {
-  mojom::AppPtr mojom_app = mojom::App::New();
-  mojom_app->app_type = mojom::AppType::kRemote;
-  mojom_app->app_id = app_id;
-  mojom_app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
   auto app = std::make_unique<App>(AppType::kRemote, app_id);
   app->icon_key =
       std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
@@ -52,12 +34,6 @@ void RemoteApps::UpdateAppIcon(const std::string& app_id) {
 }
 
 void RemoteApps::DeleteApp(const std::string& app_id) {
-  mojom::AppPtr mojom_app = mojom::App::New();
-  mojom_app->app_type = mojom::AppType::kRemote;
-  mojom_app->app_id = app_id;
-  mojom_app->readiness = mojom::Readiness::kUninstalledByUser;
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
   auto app = std::make_unique<App>(AppType::kRemote, app_id);
   app->readiness = Readiness::kUninstalledByUser;
   AppPublisher::Publish(std::move(app));
@@ -75,21 +51,6 @@ AppPtr RemoteApps::CreateApp(const ash::RemoteAppsModel::AppInfo& info) {
   app->show_in_shelf = false;
   app->handles_intents = true;
   app->allow_uninstall = false;
-  return app;
-}
-
-apps::mojom::AppPtr RemoteApps::Convert(
-    const ash::RemoteAppsModel::AppInfo& info) {
-  apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      mojom::AppType::kRemote, info.id, mojom::Readiness::kReady, info.name,
-      mojom::InstallReason::kUser);
-  app->show_in_launcher = mojom::OptionalBool::kTrue;
-  app->show_in_management = mojom::OptionalBool::kFalse;
-  app->show_in_search = mojom::OptionalBool::kTrue;
-  app->show_in_shelf = mojom::OptionalBool::kFalse;
-  app->allow_uninstall = mojom::OptionalBool::kFalse;
-  app->handles_intents = mojom::OptionalBool::kTrue;
-  app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
   return app;
 }
 
@@ -151,21 +112,6 @@ void RemoteApps::GetMenuModel(const std::string& app_id,
                               int64_t display_id,
                               base::OnceCallback<void(MenuItems)> callback) {
   std::move(callback).Run(delegate_->GetMenuModel(app_id));
-}
-
-void RemoteApps::Connect(
-    mojo::PendingRemote<mojom::Subscriber> subscriber_remote,
-    mojom::ConnectOptionsPtr opts) {
-  mojo::Remote<mojom::Subscriber> subscriber(std::move(subscriber_remote));
-
-  std::vector<mojom::AppPtr> apps;
-  for (const auto& entry : delegate_->GetApps()) {
-    apps.push_back(Convert(entry.second));
-  }
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kRemote,
-                     true /* should_notify_initialized */);
-
-  subscribers_.Add(std::move(subscriber));
 }
 
 }  // namespace apps

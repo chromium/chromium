@@ -18,9 +18,6 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -38,11 +35,7 @@ struct AppLaunchParams;
 // An app publisher (in the App Service sense) of Remote apps.
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
-class RemoteApps : public apps::PublisherBase, public AppPublisher {
+class RemoteApps : public AppPublisher {
  public:
   // Delegate which handles calls to get the properties of the app and also
   // handles launching of the app.
@@ -79,8 +72,6 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
 
   AppPtr CreateApp(const ash::RemoteAppsModel::AppInfo& info);
 
-  apps::mojom::AppPtr Convert(const ash::RemoteAppsModel::AppInfo& info);
-
   void Initialize();
 
   // apps::AppPublisher overrides.
@@ -101,13 +92,8 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  // apps::PublisherBase:
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
-
   Profile* const profile_;
   Delegate* const delegate_;
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 };
 
