@@ -25,7 +25,8 @@ class ValidatingAuthenticator : public Authenticator {
     ERROR_INVALID_CREDENTIALS,
     ERROR_INVALID_ACCOUNT,
     ERROR_REJECTED_BY_USER,
-    ERROR_TOO_MANY_CONNECTIONS
+    ERROR_TOO_MANY_CONNECTIONS,
+    ERROR_UNAUTHORIZED_ACCOUNT
   };
 
   typedef base::OnceCallback<void(Result validation_result)> ResultCallback;

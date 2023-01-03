@@ -551,6 +551,7 @@ enum ProtocolErrorCode {
   kAuthzPolicyCheckFailed = 17,
   kDisallowedByPolicy = 18,
   kLocationAuthzPolicyCheckFailed = 19,
+  kUnauthorizedAccount = 20,
 };
 
 // Provides the desktop integration process with a mechanism for controlling the

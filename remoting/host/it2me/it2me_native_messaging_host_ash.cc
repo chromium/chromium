@@ -142,6 +142,9 @@ void It2MeNativeMessageHostAsh::Connect(
   message.Set(kCurtainLocalUserSession,
               ShouldCurtainLocalUserSession(*params, enterprise_params));
   message.Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
+  if (params->authorized_helper.has_value()) {
+    message.Set(kAuthorizedHelper, *params->authorized_helper);
+  }
 
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);

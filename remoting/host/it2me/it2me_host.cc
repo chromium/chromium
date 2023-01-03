@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "components/webrtc/thread_wrapper.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -122,6 +123,10 @@ void It2MeHost::set_is_enterprise_session(bool is_enterprise_session) {
 #endif
 }
 
+void It2MeHost::set_authorized_helper(const std::string& authorized_helper) {
+  authorized_helper_ = authorized_helper;
+}
+
 void It2MeHost::Connect(
     std::unique_ptr<ChromotingHostContext> host_context,
     base::Value::Dict policies,
@@ -223,7 +228,7 @@ void It2MeHost::ConnectOnNetworkThread(
   // Request registration of the host for support.
   register_request_ = std::move(connection_context->register_request);
   register_request_->StartRequest(
-      signal_strategy_.get(), host_key_pair_,
+      signal_strategy_.get(), host_key_pair_, authorized_helper_,
       base::BindOnce(&It2MeHost::OnReceivedSupportID, base::Unretained(this)));
 
   HOST_LOG << "NAT traversal enabled: " << nat_traversal_enabled_;
@@ -692,6 +697,17 @@ void It2MeHost::ValidateConnectionDetails(
       DisconnectOnNetworkThread();
       return;
     }
+  }
+
+  if (!authorized_helper_.empty() &&
+      !gaia::AreEmailsSame(authorized_helper_, client_username)) {
+    LOG(ERROR) << "Rejecting connection request from (" << client_username
+               << ") as it does not match the authorized_helper ("
+               << authorized_helper_ << ")";
+    std::move(result_callback)
+        .Run(ValidationResult::ERROR_UNAUTHORIZED_ACCOUNT);
+    DisconnectOnNetworkThread();
+    return;
   }
 
   // If we receive valid connection details multiple times, then we don't know

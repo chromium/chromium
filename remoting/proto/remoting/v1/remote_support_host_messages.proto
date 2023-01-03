@@ -37,6 +37,11 @@ message RegisterSupportHostRequest {
 
   // Operating system version of the host.
   optional string host_os_version = 6;
+
+  // The email address of the account which is authorized to connect to this
+  // host. Only authorized accounts can make a successful GetSupportHostRequest.
+  // If this field isn't set, then anyone can call GetSupportHost for this host.
+  optional string authorized_helper = 7;
 }
 
 // The response to a RegisterSupportHostRequest.

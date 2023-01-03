@@ -84,6 +84,7 @@ source_set("common") {
     "//components/policy:policy_code_generate",
     "//components/webrtc:thread_wrapper",
     "//extensions/browser/api/messaging:native_messaging",
+    "//google_apis:google_apis",
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
@@ -147,6 +148,7 @@ if (is_chromeos) {
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
         "//extensions/browser/api/messaging:native_messaging",
+        "//google_apis:google_apis",
         "//remoting/host/native_messaging",
         "//remoting/protocol:errors",
       ]

@@ -58,7 +58,8 @@ void RemoteSupportHostAsh::StartSession(
 // static
 mojom::SupportHostDetailsPtr RemoteSupportHostAsh::GetHostDetails() {
   return mojom::SupportHostDetails::New(
-      STRINGIZE(VERSION), std::vector<std::string>({kFeatureAccessTokenAuth}));
+      STRINGIZE(VERSION), std::vector<std::string>({kFeatureAccessTokenAuth,
+                                                    kFeatureAuthorizedHelper}));
 }
 
 void RemoteSupportHostAsh::OnSessionDisconnected() {

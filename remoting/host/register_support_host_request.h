@@ -41,6 +41,7 @@ class RegisterSupportHostRequest {
 
   virtual void StartRequest(SignalStrategy* signal_strategy,
                             scoped_refptr<RsaKeyPair> key_pair,
+                            const std::string& authorized_helper,
                             RegisterCallback callback) = 0;
 };
 

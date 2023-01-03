@@ -106,6 +106,10 @@ void ValidatingAuthenticator::OnValidateComplete(base::OnceClosure callback,
     case Result::ERROR_REJECTED_BY_USER:
       rejection_reason_ = RejectionReason::REJECTED_BY_USER;
       break;
+
+    case Result::ERROR_UNAUTHORIZED_ACCOUNT:
+      rejection_reason_ = RejectionReason::UNAUTHORIZED_ACCOUNT;
+      break;
   }
 
   state_ = Authenticator::REJECTED;

@@ -137,6 +137,7 @@ RemotingRegisterSupportHostRequest::~RemotingRegisterSupportHostRequest() {
 void RemotingRegisterSupportHostRequest::StartRequest(
     SignalStrategy* signal_strategy,
     scoped_refptr<RsaKeyPair> key_pair,
+    const std::string& authorized_helper,
     RegisterCallback callback) {
   DCHECK_EQ(State::NOT_STARTED, state_);
   DCHECK(signal_strategy);
@@ -145,6 +146,7 @@ void RemotingRegisterSupportHostRequest::StartRequest(
   signal_strategy_ = signal_strategy;
   key_pair_ = key_pair;
   callback_ = std::move(callback);
+  authorized_helper_ = authorized_helper;
 
   signal_strategy_->AddListener(this);
 }
@@ -182,6 +184,10 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
   request->set_host_version(STRINGIZE(VERSION));
   request->set_host_os_name(GetHostOperatingSystemName());
   request->set_host_os_version(GetHostOperatingSystemVersion());
+
+  if (!authorized_helper_.empty()) {
+    request->set_authorized_helper(authorized_helper_);
+  }
 
   register_host_client_->RegisterSupportHost(
       std::move(request),

@@ -78,6 +78,8 @@ ErrorCode AuthRejectionReasonToErrorCode(
       return AUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
       return LOCATION_AUTHZ_POLICY_CHECK_FAILED;
+    case Authenticator::RejectionReason::UNAUTHORIZED_ACCOUNT:
+      return UNAUTHORIZED_ACCOUNT;
   }
 }
 

@@ -133,6 +133,10 @@ class CrdHostDelegate::CrdHostSession
     // Note the oauth token must be prefixed with 'oauth2:', or it will be
     // rejected by the CRD host.
     result->oauth_access_token = "oauth2:" + parameters_.oauth_token;
+
+    // TODO(joedow): Set the |authorized_helper| field once it is provided by
+    // the admin console and available in |parameters_|.
+
     return result;
   }
 

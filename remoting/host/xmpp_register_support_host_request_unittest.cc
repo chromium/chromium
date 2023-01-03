@@ -45,6 +45,7 @@ namespace {
 const char kTestBotJid[] = "remotingunittest@bot.talk.google.com";
 const char kTestJid[] = "User@gmail.com/chromotingABC123";
 const char kTestJidNormalized[] = "user@gmail.com/chromotingABC123";
+const char kTestAuthorizedHelper[] = "helpful_dude@chromoting.com";
 const char kSupportId[] = "AB4RF3";
 const char kSupportIdLifetime[] = "300";
 const char kStanzaId[] = "123";
@@ -79,12 +80,14 @@ class XmppRegisterSupportHostRequestTest : public testing::Test {
   MockSignalStrategy signal_strategy_;
   base::ObserverList<SignalStrategy::Listener, true> signal_strategy_listeners_;
   scoped_refptr<RsaKeyPair> key_pair_;
+  std::string authorized_helper_;
   base::MockCallback<RegisterSupportHostRequest::RegisterCallback> callback_;
 };
 
 TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
-  request->StartRequest(&signal_strategy_, key_pair_, callback_.Get());
+  request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
+                        callback_.Get());
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
   EXPECT_CALL(signal_strategy_, SendStanzaPtr(NotNull()))
       .WillOnce(DoAll(DeleteArg<0>(), Return(true)));
@@ -103,7 +106,8 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   int64_t start_time = static_cast<int64_t>(base::Time::Now().ToDoubleT());
 
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
-  request->StartRequest(&signal_strategy_, key_pair_, callback_.Get());
+  request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
+                        callback_.Get());
 
   XmlElement* sent_iq = nullptr;
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
@@ -149,6 +153,10 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
       QName(kChromotingXmlNamespace, "host-os-version"));
   EXPECT_EQ(GetHostOperatingSystemVersion(), host_os_version->BodyText());
 
+  XmlElement* authorized_helper = stanza->FirstElement()->FirstNamed(
+      QName(kChromotingXmlNamespace, "authorized-helper"));
+  EXPECT_EQ(authorized_helper, nullptr);
+
   scoped_refptr<RsaKeyPair> key_pair = RsaKeyPair::FromString(kTestRsaKeyPair);
   ASSERT_TRUE(key_pair.get());
 
@@ -186,6 +194,31 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   EXPECT_EQ(1, consumed);
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(XmppRegisterSupportHostRequestTest, AuthorizedHelper) {
+  authorized_helper_ = kTestAuthorizedHelper;
+
+  auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
+  request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
+                        callback_.Get());
+
+  XmlElement* sent_iq = nullptr;
+  EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
+  EXPECT_CALL(signal_strategy_, SendStanzaPtr(NotNull()))
+      .WillOnce(DoAll(SaveArg<0>(&sent_iq), Return(true)));
+
+  request->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
+  task_environment_.RunUntilIdle();
+
+  std::unique_ptr<XmlElement> stanza(sent_iq);
+  ASSERT_NE(stanza, nullptr);
+
+  // Other fields are verified in the Send test case.
+
+  XmlElement* authorized_helper = stanza->FirstElement()->FirstNamed(
+      QName(kChromotingXmlNamespace, "authorized-helper"));
+  EXPECT_EQ(authorized_helper_, authorized_helper->BodyText());
 }
 
 }  // namespace remoting

@@ -41,6 +41,7 @@ const char kSignatureTimeAttr[] = "time";
 const char kHostVersionTag[] = "host-version";
 const char kHostOsNameTag[] = "host-os-name";
 const char kHostOsVersionTag[] = "host-os-version";
+const char kAuthorizedHelperTag[] = "authorized-helper";
 
 // Strings used to parse responses received from the bot.
 const char kRegisterQueryResultTag[] = "register-support-host-result";
@@ -63,6 +64,7 @@ XmppRegisterSupportHostRequest::~XmppRegisterSupportHostRequest() {
 void XmppRegisterSupportHostRequest::StartRequest(
     SignalStrategy* signal_strategy,
     scoped_refptr<RsaKeyPair> key_pair,
+    const std::string& authorized_helper,
     RegisterCallback callback) {
   DCHECK(signal_strategy);
   DCHECK(key_pair.get());
@@ -71,6 +73,7 @@ void XmppRegisterSupportHostRequest::StartRequest(
   key_pair_ = key_pair;
   callback_ = std::move(callback);
   signal_strategy_->AddListener(this);
+  authorized_helper_ = authorized_helper;
   iq_sender_ = std::make_unique<IqSender>(signal_strategy_);
 }
 
@@ -137,6 +140,14 @@ XmppRegisterSupportHostRequest::CreateRegistrationRequest(
       QName(kChromotingXmlNamespace, kHostOsVersionTag));
   host_os_version->AddText(GetHostOperatingSystemVersion());
   query->AddElement(host_os_version.release());
+
+  // Add authorized helper if one was provided.
+  if (!authorized_helper_.empty()) {
+    auto authorized_helper = std::make_unique<XmlElement>(
+        QName(kChromotingXmlNamespace, kAuthorizedHelperTag));
+    authorized_helper->AddText(authorized_helper_);
+    query->AddElement(authorized_helper.release());
+  }
 
   return query;
 }

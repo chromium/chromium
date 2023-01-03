@@ -219,6 +219,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   absl::optional<bool> is_enterprise_session_;
   absl::optional<bool> terminate_upon_input_;
   absl::optional<bool> enable_curtaining_;
+  absl::optional<std::string> authorized_helper_;
 
   // Stores the last nat traversal policy value received.
   bool last_nat_traversal_enabled_value_ = false;
@@ -372,6 +373,10 @@ void It2MeHostTest::StartHost() {
     // curtain_local_user_session should only be run on ChromeOS.
     it2me_host_->set_enable_curtaining(enable_curtaining_.value());
   }
+  if (authorized_helper_.has_value()) {
+    it2me_host_->set_authorized_helper(authorized_helper_.value());
+  }
+
   auto create_connection_context = base::BindOnce(
       [](std::unique_ptr<SignalStrategy> signal_strategy,
          ChromotingHostContext* host_context) {
@@ -752,6 +757,25 @@ TEST_F(It2MeHostTest, ConnectionValidationClientDomainListPolicyNoMatch) {
   StartHost();
   RunValidationCallback(kTestClientJid);
   ASSERT_EQ(ValidationResult::ERROR_INVALID_ACCOUNT, validation_result_);
+  RunUntilStateChanged(It2MeHostState::kDisconnected);
+  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
+}
+
+TEST_F(It2MeHostTest, AuthorizedHelperCanConnect) {
+  authorized_helper_ = kTestUserName;
+  StartHost();
+  RunValidationCallback(kTestClientJid);
+  ASSERT_EQ(ValidationResult::SUCCESS, validation_result_);
+  ASSERT_EQ(It2MeHostState::kConnecting, last_host_state_);
+  ShutdownHost();
+  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
+}
+
+TEST_F(It2MeHostTest, UnauthorizedHelperIsRejected) {
+  authorized_helper_ = kTestUserName;
+  StartHost();
+  RunValidationCallback(kTestClientJid2);
+  ASSERT_EQ(ValidationResult::ERROR_UNAUTHORIZED_ACCOUNT, validation_result_);
   RunUntilStateChanged(It2MeHostState::kDisconnected);
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }

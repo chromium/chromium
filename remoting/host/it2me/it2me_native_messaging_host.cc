@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -81,6 +82,15 @@ void PolicyErrorCallback(
     remoting::PolicyWatcher::PolicyErrorCallback callback) {
   DCHECK(callback);
   task_runner->PostTask(FROM_HERE, callback);
+}
+
+// This function checks the email address provided to see if it is properly
+// formatted. It does not validate the username or domain sections.
+// TODO(joedow): Move to a shared location.
+bool IsValidEmailAddress(const std::string& email) {
+  return base::SplitString(email, "@", base::KEEP_WHITESPACE,
+                           base::SPLIT_WANT_ALL)
+             .size() == 2U;
 }
 
 }  // namespace
@@ -175,6 +185,7 @@ void It2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
   base::Value::List features;
   features.Append(kFeatureAccessTokenAuth);
   features.Append(kFeatureDelegatedSignaling);
+  features.Append(kFeatureAuthorizedHelper);
 
   ProcessNativeMessageHelloResponse(response, std::move(features));
   SendMessageToClient(std::move(response));
@@ -231,7 +242,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
       message.FindBool(kUseSignalingProxy).value_or(false);
 
   std::string username;
-  std::string* username_from_message = message.FindString(kUserName);
+  const std::string* username_from_message = message.FindString(kUserName);
   if (username_from_message) {
     username = *username_from_message;
   }
@@ -250,9 +261,19 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   bool is_enterprise_admin_user =
       message.FindBool(kIsEnterpriseAdminUser).value_or(false);
 
+  std::string authorized_helper;
+  const std::string* authorized_helper_value =
+      message.FindString(kAuthorizedHelper);
+  if (authorized_helper_value) {
+    authorized_helper = *authorized_helper_value;
+    if (!IsValidEmailAddress(authorized_helper)) {
+      LOG(ERROR) << "Invalid authorized_helper value: " << authorized_helper;
+      SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+      return;
+    }
+  }
+
   It2MeHost::CreateDeferredConnectContext create_connection_context;
-  std::unique_ptr<RegisterSupportHostRequest> register_host_request;
-  std::unique_ptr<LogToServer> log_to_server;
   if (use_signaling_proxy) {
     if (username.empty()) {
       // Allow unauthenticated users for the delegated signal strategy case.
@@ -337,6 +358,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   // Create the It2Me host and start connecting. Note that disabling dialogs is
   // only supported on ChromeOS.
   it2me_host_ = factory_->CreateIt2MeHost();
+  it2me_host_->set_authorized_helper(authorized_helper);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   it2me_host_->set_enable_dialogs(!suppress_user_dialogs);
   it2me_host_->set_enable_notifications(!suppress_notifications);
@@ -395,7 +417,7 @@ void It2MeNativeMessagingHost::ProcessIncomingIq(base::Value::Dict message,
     return;
   }
 
-  std::string* iq = message.FindString(kIq);
+  const std::string* iq = message.FindString(kIq);
   if (!iq) {
     LOG(ERROR) << "Invalid incomingIq() data.";
     return;

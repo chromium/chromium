@@ -8,6 +8,7 @@ namespace remoting {
 
 const char kFeatureAccessTokenAuth[] = "accessTokenAuth";
 const char kFeatureDelegatedSignaling[] = "delegatedSignaling";
+const char kFeatureAuthorizedHelper[] = "authorizedHelper";
 
 const char kConnectMessage[] = "connect";
 const char kUserName[] = "userName";
@@ -22,6 +23,7 @@ const char kTerminateUponInput[] = "terminateUponInput";
 const char kUseElevatedHost[] = "useElevatedHost";
 const char kUseSignalingProxy[] = "useSignalingProxy";
 const char kIceConfig[] = "iceConfig";
+const char kAuthorizedHelper[] = "authorizedHelper";
 const char kConnectResponse[] = "connectResponse";
 
 const char kHostStateChangedMessage[] = "hostStateChanged";

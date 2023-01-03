@@ -49,6 +49,7 @@ class RemotingRegisterSupportHostRequest final
   // RegisterSupportHostRequest implementation.
   void StartRequest(SignalStrategy* signal_strategy,
                     scoped_refptr<RsaKeyPair> key_pair,
+                    const std::string& authorized_helper,
                     RegisterCallback callback) override;
 
  private:
@@ -94,6 +95,7 @@ class RemotingRegisterSupportHostRequest final
   RegisterCallback callback_;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
   std::unique_ptr<RegisterSupportHostClient> register_host_client_;
+  std::string authorized_helper_;
 
   State state_ = State::NOT_STARTED;
 };

@@ -109,6 +109,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   void set_is_enterprise_session(bool is_enterprise_session);
   bool is_enterprise_session() const { return is_enterprise_session_; }
 
+  // If set, only |authorized_helper| will be allowed to connect to this host.
+  void set_authorized_helper(const std::string& authorized_helper);
+  const std::string& authorized_helper() const { return authorized_helper_; }
+
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
       std::unique_ptr<ChromotingHostContext> context,
@@ -223,6 +227,11 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Indicates whether the session was initiated via the RemoteCommand infra.
   // This is by administrators to connect to managed enterprise devices.
   bool is_enterprise_session_ = false;
+
+  // Only the username stored in |authorized_helper_| will be allowed to connect
+  // to this host instance, if set. Note: setting this value does not override
+  // any applicable Enterprise policies or other constraints.
+  std::string authorized_helper_;
 
   // The client and host domain policy setting.
   std::vector<std::string> required_client_domain_list_;

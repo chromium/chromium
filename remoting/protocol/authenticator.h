@@ -85,6 +85,10 @@ class Authenticator {
     // The client is not authorized to connect to this device based on their
     // current location due to a policy defined by the third party auth service.
     LOCATION_AUTHZ_POLICY_CHECK_FAILED,
+
+    // The remote user is not authorized to access this machine. This is a
+    // generic authz error and is not related to third-party auth.
+    UNAUTHORIZED_ACCOUNT,
   };
 
   // Callback used for layered Authenticator implementations, particularly

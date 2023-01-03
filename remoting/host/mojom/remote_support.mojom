@@ -42,7 +42,7 @@ enum StartSupportSessionError {
 
 // The parameters required to start a remote support session.
 //
-// Next version: 2
+// Next version: 3
 [Stable]
 struct SupportSessionParams {
   // Gaia username of the user requesting the connection.
@@ -70,6 +70,12 @@ struct SupportSessionParams {
   // initiated connections using the RemoteCommand infrastructure.
   [EnableIf=is_chromeos, MinVersion=1]
   bool curtain_local_user_session = false;
+
+  // If set, the support host instance will only accept connection requests from
+  // the account (username) specified in this field. If not set, then any user
+  // with the access code is allowed to connect.
+  [MinVersion=2]
+  string? authorized_helper;
 };
 
 // Represents the state of the remote support host NAT device policies.
