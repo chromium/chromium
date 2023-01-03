@@ -17,6 +17,8 @@
 
 namespace ash {
 
+class CrOSNextDefaultDeskButton;
+class CrOSNextDeskIconButton;
 class DesksBarScrollViewLayout;
 class DeskBarHoverObserver;
 class DeskDragProxy;
@@ -79,6 +81,14 @@ class ASH_EXPORT DesksBarView : public views::View,
   ExpandedDesksBarButton* expanded_state_library_button() const {
     return expanded_state_library_button_;
   }
+
+  CrOSNextDefaultDeskButton* default_desk_button() const {
+    return default_desk_button_;
+  }
+
+  CrOSNextDeskIconButton* new_desk_button() const { return new_desk_button_; }
+
+  CrOSNextDeskIconButton* library_button() const { return library_button_; }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
 
@@ -197,10 +207,22 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the ExpandedDesksBarButton on the desk bar's state.
   void UpdateDeskButtonsVisibility();
 
+  // Udates the visibility of the `default_desk_button_` and
+  // `vertical_dots_button_` on the desks bar's state.
+  // TODO(conniekxu): Remove `UpdateDeskButtonsVisibility`, replace it with this
+  // function, and rename this function by removing the prefix CrOSNext.
+  void UpdateDeskButtonsVisibilityCrOSNext();
+
   // Updates the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled, the user has any saved desks and the
   // state of the desks bar.
   void UpdateLibraryButtonVisibility();
+
+  // Updates the visibility of the saved desk library button based on whether
+  // the saved desk feature is enabled and the user has any saved desks.
+  // TODO(conniekxu): Remove `UpdateLibraryButtonVisibility`, replace it with
+  // this function, and rename this function by removing the prefix CrOSNext.
+  void UpdateLibraryButtonVisibilityCrOSNext();
 
   // Returns the mini_view associated with `desk` or nullptr if no mini_view
   // has been created for it yet.
@@ -307,6 +329,16 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Buttons to show the saved desk grid.
   ZeroStateIconButton* zero_state_library_button_ = nullptr;
   ExpandedDesksBarButton* expanded_state_library_button_ = nullptr;
+
+  // Buttons for the CrOS Next updated UI. They're added behind the feature flag
+  // Jellyroll.
+  // TODO(conniekxu): After CrOS Next is launched, replace
+  // `zero_state_default_desk_button_`, `zero_state_default_desk_button_`,
+  // `expanded_state_new_desk_button_`, `zero_state_library_button_` and
+  // `expanded_state_library_button_` with the buttons below.
+  CrOSNextDefaultDeskButton* default_desk_button_ = nullptr;
+  CrOSNextDeskIconButton* new_desk_button_ = nullptr;
+  CrOSNextDeskIconButton* library_button_ = nullptr;
 
   ScrollArrowButton* left_scroll_button_ = nullptr;
   ScrollArrowButton* right_scroll_button_ = nullptr;

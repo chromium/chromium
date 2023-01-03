@@ -34,6 +34,8 @@ CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
   SetAccessibleName(text);
   SetTooltipText(text);
 

@@ -34,7 +34,7 @@ constexpr int kZeroStateButtonHeight = 28;
 
 constexpr int kZeroStateButtonWidth = 28;
 
-constexpr int kExpandedStateButtonWidth = 44;
+constexpr int kExpandedStateButtonWidth = 36;
 
 constexpr int kDefaultButtonHorizontalPadding = 16;
 
