@@ -5448,7 +5448,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_RestoreThenNavigateHasSSLState) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationManager observer(tab, url1);
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
-  observer.WaitForNavigationFinished();
+  ASSERT_TRUE(observer.WaitForNavigationFinished());
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 }
 
@@ -5536,8 +5536,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ClientRedirectSSLState) {
   tab->GetController().LoadURL(url, content::Referrer(),
                                ui::PAGE_TRANSITION_LINK, std::string());
 
-  navigation_observer_https.WaitForNavigationFinished();
-  navigation_observer_http.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_observer_https.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_observer_http.WaitForNavigationFinished());
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ssl_test_util::CheckUnauthenticatedState(tab, AuthState::NONE);
@@ -5577,8 +5577,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ClientRedirectToMixedContentSSLState) {
   tab->GetController().LoadURL(url, content::Referrer(),
                                ui::PAGE_TRANSITION_LINK, std::string());
 
-  navigation_manager_redirect.WaitForNavigationFinished();
-  navigation_manager_final_url.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager_redirect.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_manager_final_url.WaitForNavigationFinished());
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ssl_test_util::CheckSecurityState(tab, CertError::NONE,
