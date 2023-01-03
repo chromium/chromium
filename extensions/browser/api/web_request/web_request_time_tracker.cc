@@ -129,7 +129,7 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
           listener_time);
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Extensions.WebRequest."
-          "BeforeRequestListenerEvaluationTimeInMicroseconds"
+          "BeforeRequestListenerEvaluationTimeInMicroseconds."
           "WebRequestOnly",
           listener_time, base::Microseconds(1), base::Seconds(30),
           kBucketCount);
@@ -140,7 +140,7 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
           listener_time);
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Extensions.WebRequest."
-          "BeforeRequestListenerEvaluationTimeInMicroseconds"
+          "BeforeRequestListenerEvaluationTimeInMicroseconds."
           "WebRequestAndDeclarativeNetRequest",
           listener_time, base::Microseconds(1), base::Seconds(30),
           kBucketCount);
