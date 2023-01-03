@@ -261,11 +261,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // SERVICE_WORKER_FAILED if any did not succeed.
   void DeleteForStorageKey(const blink::StorageKey& key,
                            StatusCallback callback);
-  // TODO(crbug.com/1199077): Delete this overload when ServiceWorkerQuotaClient
-  // and storage::mojom::QuotaClient support StorageKey.
-  void DeleteForOrigin(const url::Origin& origin, StatusCallback callback) {
-    DeleteForStorageKey(blink::StorageKey(origin), std::move(callback));
-  }
 
   // Performs internal storage cleanup. Operations to the storage in the past
   // (e.g. deletion) are usually recorded in disk for a certain period until
