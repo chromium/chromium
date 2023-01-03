@@ -321,6 +321,13 @@
     'focus-ring': {
       light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
-    }
+    },
+    'shadow': {
+      light: '$cros.ref.neutral30',
+      dark: '$cros.ref.neutral0',
+    },
+    /* When the button is pressed, we layer the ripple color on top of the hover color to form the pressed color, that's what blend() does here. */
+    'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
+    'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',
   },
 }
