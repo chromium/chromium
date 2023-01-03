@@ -6868,7 +6868,6 @@
           'SIM_IPHONE_8_16_1',
           'SIM_IPAD_AIR_3RD_GEN_16_1',
           'SIM_IPAD_PRO_3RD_GEN_15_5',
-          'SIM_IPAD_PRO_3RD_GEN_16_1',
         ]
       },
       'ios_screen_size_dependent_tests': {
@@ -6920,6 +6919,7 @@
           'SIM_IPHONE_7_14_5',
           'SIM_IPAD_AIR_2_14_5',
           'SIM_IPHONE_X_14_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_1',
         ]
       },
       'ios_eg2_cq_tests': {
