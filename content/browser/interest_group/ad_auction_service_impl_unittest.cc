@@ -5860,8 +5860,9 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
 // Permissions policy feature join-ad-interest-group is disabled by default for
 // cross site iframes under restricted permissions policy, so interest group
 // APIs should not work, and result in the pipe being closed.
+// TODO(crbug.com/1404806): Flaky on all platforms
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
-       APICallsFromCrossSiteIFrame) {
+       DISABLED_APICallsFromCrossSiteIFrame) {
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})", kOriginStringC,
