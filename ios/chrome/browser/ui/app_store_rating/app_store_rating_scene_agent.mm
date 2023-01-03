@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
@@ -113,8 +114,10 @@
 // Calls the PromosManager to request iOS displays the
 // App Store Rating prompt to the user.
 - (void)requestPromoDisplay {
-  if (!_promosManager)
+  if (!_promosManager || !GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kAppStoreRatingPolicyEnabled)) {
     return;
+  }
   _promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::AppStoreRating);
 }

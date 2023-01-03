@@ -1306,6 +1306,8 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
       base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel) : @2,
 
       base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled) : @YES,
+
+      base::SysUTF8ToNSString(policy::key::kAppStoreRatingEnabled) : @NO,
     }];
   }
 
