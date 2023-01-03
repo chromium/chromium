@@ -290,7 +290,13 @@ std::string SerializeFilterData(
 }
 
 absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
-    const std::string& string) {
+    sql::Statement& stmt,
+    int col) {
+  std::string string;
+  if (!stmt.ColumnBlobAsString(col, &string)) {
+    return absl::nullopt;
+  }
+
   proto::AttributionFilterData msg;
   if (!msg.ParseFromString(string)) {
     return absl::nullopt;
@@ -338,7 +344,12 @@ std::string SerializeAggregationKeys(
 }
 
 absl::optional<attribution_reporting::AggregationKeys>
-DeserializeAggregationKeys(const std::string& str) {
+DeserializeAggregationKeys(sql::Statement& stmt, int col) {
+  std::string str;
+  if (!stmt.ColumnBlobAsString(col, &str)) {
+    return absl::nullopt;
+  }
+
   proto::AttributionAggregatableSource msg;
   if (!msg.ParseFromString(str)) {
     return absl::nullopt;
@@ -431,7 +442,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
   absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
-      DeserializeAggregationKeys(statement.ColumnString(col++));
+      DeserializeAggregationKeys(statement, col++);
 
   // TODO: Enforce remaining expiry/report_window/time invariants from
   // CommonSource.
@@ -443,7 +454,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   }
 
   absl::optional<attribution_reporting::FilterData> filter_data =
-      DeserializeFilterData(statement.ColumnString(col++));
+      DeserializeFilterData(statement, col++);
   if (!filter_data) {
     return absl::nullopt;
   }
