@@ -63,15 +63,8 @@ class CONTENT_EXPORT SessionMetricsHelper
   explicit SessionMetricsHelper(content::WebContents* contents);
 
   // WebContentsObserver
-  void MediaStartedPlaying(const MediaPlayerInfo& media_info,
-                           const content::MediaPlayerId&) override;
-  void MediaStoppedPlaying(
-      const MediaPlayerInfo& media_info,
-      const content::MediaPlayerId&,
-      WebContentsObserver::MediaStoppedReason reason) override;
   void PrimaryPageChanged(content::Page& page) override;
 
-  std::unique_ptr<SessionTimer> session_video_timer_;
   std::unique_ptr<SessionTimer> session_timer_;
 
   std::unique_ptr<WebXRSessionTracker> webxr_immersive_session_tracker_;
@@ -81,9 +74,6 @@ class CONTENT_EXPORT SessionMetricsHelper
   // |StopAndRecordInlineSession|.
   std::unordered_map<size_t, std::unique_ptr<WebXRSessionTracker>>
       webxr_inline_session_trackers_;
-
-  int num_videos_playing_ = 0;
-  int num_session_video_playback_ = 0;
 };
 
 }  // namespace content
