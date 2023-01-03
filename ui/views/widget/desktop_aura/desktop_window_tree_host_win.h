@@ -38,10 +38,6 @@ class DesktopDragDropClientWin;
 class HWNDMessageHandler;
 class NonClientFrameView;
 
-namespace corewm {
-class TooltipWin;
-}
-
 namespace test {
 class DesktopWindowTreeHostWinTestApi;
 }
@@ -251,9 +247,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleInputLanguageChange(DWORD character_set,
                                  HKL input_language_id) override;
   void HandlePaintAccelerated(const gfx::Rect& invalid_rect) override;
-  bool HandleTooltipNotify(int w_param,
-                           NMHDR* l_param,
-                           LRESULT* l_result) override;
   void HandleMenuLoop(bool in_menu_loop) override;
   bool PreHandleMSG(UINT message,
                     WPARAM w_param,
@@ -325,10 +318,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window should have the frame removed.
   bool remove_standard_frame_;
-
-  // Owned by TooltipController, but we need to forward events to it so we keep
-  // a reference.
-  raw_ptr<corewm::TooltipWin> tooltip_;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

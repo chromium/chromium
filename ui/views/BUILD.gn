@@ -716,12 +716,10 @@ component("views") {
       "accessibility/ax_widget_obj_wrapper.h",
       "accessibility/ax_window_obj_wrapper.h",
       "controls/native/native_view_host_aura.h",
-      "corewm/cursor_height_provider_win.h",
       "corewm/tooltip.h",
       "corewm/tooltip_aura.h",
       "corewm/tooltip_controller.h",
       "corewm/tooltip_state_manager.h",
-      "corewm/tooltip_win.h",
       "event_monitor_aura.h",
       "native_window_tracker_aura.h",
       "touchui/touch_selection_controller_impl.h",
@@ -765,12 +763,6 @@ component("views") {
       "widget/tooltip_manager_aura.cc",
       "widget/window_reorderer.cc",
     ]
-    if (is_win) {
-      sources += [
-        "corewm/cursor_height_provider_win.cc",
-        "corewm/tooltip_win.cc",
-      ]
-    }
     if (!is_chromeos_ash) {
       sources += [
         "accessibility/views_ax_tree_manager.cc",

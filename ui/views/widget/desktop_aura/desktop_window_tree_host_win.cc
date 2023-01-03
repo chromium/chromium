@@ -16,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/client/aura_constants.h"
@@ -45,7 +44,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/path_win.h"
 #include "ui/views/corewm/tooltip_aura.h"
-#include "ui/views/corewm/tooltip_win.h"
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
@@ -135,8 +133,7 @@ DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
       drag_drop_client_(nullptr),
       should_animate_window_close_(false),
       pending_close_(false),
-      has_non_client_view_(false),
-      tooltip_(nullptr) {}
+      has_non_client_view_(false) {}
 
 DesktopWindowTreeHostWin::~DesktopWindowTreeHostWin() {
   desktop_native_widget_aura_->OnDesktopWindowTreeHostDestroyed(this);
@@ -228,14 +225,7 @@ void DesktopWindowTreeHostWin::OnActiveWindowChanged(bool active) {}
 void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
 
 std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
-  bool force_legacy_tooltips =
-      (base::win::GetVersion() < base::win::Version::WIN8);
-  if (!force_legacy_tooltips)
-    return std::make_unique<corewm::TooltipAura>();
-
-  DCHECK(!tooltip_);
-  tooltip_ = new corewm::TooltipWin(GetAcceleratedWidget());
-  return base::WrapUnique(tooltip_.get());
+  return std::make_unique<corewm::TooltipAura>();
 }
 
 std::unique_ptr<aura::client::DragDropClient>
@@ -1154,12 +1144,6 @@ void DesktopWindowTreeHostWin::HandlePaintAccelerated(
     const gfx::Rect& invalid_rect) {
   if (compositor())
     compositor()->ScheduleRedrawRect(invalid_rect);
-}
-
-bool DesktopWindowTreeHostWin::HandleTooltipNotify(int w_param,
-                                                   NMHDR* l_param,
-                                                   LRESULT* l_result) {
-  return tooltip_ && tooltip_->HandleNotify(w_param, l_param, l_result);
 }
 
 void DesktopWindowTreeHostWin::HandleMenuLoop(bool in_menu_loop) {

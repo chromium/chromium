@@ -29,7 +29,6 @@
 #include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_window_handle_event_info.pbzero.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -2127,12 +2126,6 @@ LRESULT HWNDMessageHandler::OnPointerActivate(UINT message,
 LRESULT HWNDMessageHandler::OnPointerEvent(UINT message,
                                            WPARAM w_param,
                                            LPARAM l_param) {
-  // WM_POINTER is not supported on Windows 7.
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    SetMsgHandled(FALSE);
-    return -1;
-  }
-
   UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
   using GetPointerTypeFn = BOOL(WINAPI*)(UINT32, POINTER_INPUT_TYPE*);
   POINTER_INPUT_TYPE pointer_type;
@@ -2529,12 +2522,6 @@ LRESULT HWNDMessageHandler::OnNCUAHDrawFrame(UINT message,
   return 0;
 }
 
-LRESULT HWNDMessageHandler::OnNotify(int w_param, NMHDR* l_param) {
-  LRESULT l_result = 0;
-  SetMsgHandled(delegate_->HandleTooltipNotify(w_param, l_param, &l_result));
-  return l_result;
-}
-
 void HWNDMessageHandler::OnPaint(HDC dc) {
   // Call BeginPaint()/EndPaint() around the paint handling, as that seems
   // to do more to actually validate the window's drawing region. This only
@@ -2834,18 +2821,6 @@ LRESULT HWNDMessageHandler::OnTouchEvent(UINT message,
       POINT point;
       point.x = TOUCH_COORD_TO_PIXEL(input[i].x);
       point.y = TOUCH_COORD_TO_PIXEL(input[i].y);
-
-      if (base::win::GetVersion() == base::win::Version::WIN7) {
-        // Windows 7 sends touch events for touches in the non-client area,
-        // whereas Windows 8 does not. In order to unify the behaviour, always
-        // ignore touch events in the non-client area.
-        LPARAM l_param_ht = MAKELPARAM(point.x, point.y);
-        LRESULT hittest = SendMessage(hwnd(), WM_NCHITTEST, 0, l_param_ht);
-
-        if (hittest != HTCLIENT)
-          return 0;
-      }
-
       ScreenToClient(hwnd(), &point);
 
       last_touch_or_pen_message_time_ = ::GetMessageTime();

@@ -450,7 +450,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     CR_MSG_WM_NCCREATE(OnNCCreate)
     CR_MSG_WM_NCHITTEST(OnNCHitTest)
     CR_MSG_WM_NCPAINT(OnNCPaint)
-    CR_MSG_WM_NOTIFY(OnNotify)
     CR_MSG_WM_PAINT(OnPaint)
     CR_MSG_WM_SETFOCUS(OnSetFocus)
     CR_MSG_WM_SETICON(OnSetIcon)
@@ -508,7 +507,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void OnNCPaint(HRGN rgn);
   LRESULT OnNCUAHDrawCaption(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnNCUAHDrawFrame(UINT message, WPARAM w_param, LPARAM l_param);
-  LRESULT OnNotify(int w_param, NMHDR* l_param);
   void OnPaint(HDC dc);
   LRESULT OnReflectedMessage(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnScrollMessage(UINT message, WPARAM w_param, LPARAM l_param);

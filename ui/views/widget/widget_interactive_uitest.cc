@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/input_method.h"
@@ -464,11 +463,6 @@ class TouchEventHandler : public ui::EventHandler {
 
 // TODO(dtapuska): Disabled due to it being flaky crbug.com/817531
 TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
-  // ui_controls::SendTouchEvents which uses InjectTouchInput API only works
-  // on Windows 8 and up.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   View* focusable_view = new View;
   focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
