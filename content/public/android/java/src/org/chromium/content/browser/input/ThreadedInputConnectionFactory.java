@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.input;
 
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.View;
@@ -129,8 +128,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
 
         // https://crbug.com/820756
         final String htcMailPackageId = "com.htc.android.mail";
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N
-                || htcMailPackageId.equals(view.getContext().getPackageName())) {
+        if (htcMailPackageId.equals(view.getContext().getPackageName())) {
             // IMM can internally ignore subsequent activation requests, e.g., by checking
             // mServedConnecting.
             if (mCheckInvalidator != null) mCheckInvalidator.invalidate();

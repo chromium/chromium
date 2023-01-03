@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.picker;
 
-import android.os.Build;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 
@@ -65,22 +64,6 @@ public class DateDialogNormalizer {
 
     private static void setLimits(DatePicker picker, long currentMillisForPicker,
             long minMillisForPicker, long maxMillisForPicker) {
-        // On Lollipop only (not KitKat or Marshmallow), DatePicker has terrible performance for
-        // large date ranges. This causes problems when the min or max date isn't set in HTML, in
-        // which case these values default to the min and max possible values for the JavaScript
-        // Date object (1CE and 275760CE). As a workaround, limit the date range to 5000 years
-        // before and after the current date. In practice, this doesn't limit users since scrolling
-        // through 5000 years in the DatePicker is highly impractical anyway. See
-        // http://crbug.com/441060
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
-                || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
-            final long maxRangeMillis = 5000L * 365 * 24 * 60 * 60 * 1000;
-            minMillisForPicker = Math.max(minMillisForPicker,
-                    currentMillisForPicker - maxRangeMillis);
-            maxMillisForPicker = Math.min(maxMillisForPicker,
-                    currentMillisForPicker + maxRangeMillis);
-        }
-
         // On KitKat and earlier, DatePicker requires the minDate is always less than maxDate, even
         // during the process of setting those values (eek), so set them in an order that preserves
         // this invariant throughout.

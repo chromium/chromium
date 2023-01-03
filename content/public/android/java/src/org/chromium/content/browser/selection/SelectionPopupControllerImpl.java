@@ -663,7 +663,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         // ActionMode#invalidate() won't be able to re-layout the floating
         // action mode menu items according to the new rotation. So Chrome
         // has to re-create the action mode.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isActionModeValid()) {
+        if (isActionModeValid()) {
             hidePopupsAndPreserveSelection();
             showActionModeOrClearOnFailure();
         }
@@ -877,8 +877,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     @VisibleForTesting
     /* package */ void initializeTextProcessingMenu(Menu menu) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-                || !isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
+        if (!isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
             return;
         }
 
@@ -1126,7 +1125,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     private void processText(Intent intent) {
         RecordUserAction.record("MobileActionMode.ProcessTextIntent");
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
         // Use MAX_SHARE_QUERY_LENGTH for the Intent 100k limitation.
         String query = sanitizeQuery(getSelectedText(), MAX_SHARE_QUERY_LENGTH);
