@@ -111,8 +111,7 @@ void CannedDatabaseHelper::StartFetching(FetchCallback callback) {
     result.emplace_back(blink::StorageKey(origin), 0, base::Time());
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 void CannedDatabaseHelper::DeleteDatabase(const url::Origin& origin) {

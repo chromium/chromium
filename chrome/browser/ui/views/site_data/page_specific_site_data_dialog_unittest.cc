@@ -4,20 +4,46 @@
 
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browsing_data/content/fake_browsing_data_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
+#include "components/page_info/core/features.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
+using StorageType =
+    content_settings::mojom::ContentSettingsManager::StorageType;
+
 const char kCurrentUrl[] = "https://google.com";
 const char kThirdPartyUrl[] = "https://youtube.com";
 const char kExampleUrl[] = "https://example.com";
+
+void ValidateAllowedUnpartitionedSites(
+    test::PageSpecificSiteDataDialogTestApi* delegate,
+    const std::vector<GURL>& expected_sites_in_order) {
+  auto sites = delegate->GetAllSites();
+  ASSERT_EQ(sites.size(), expected_sites_in_order.size());
+
+  // All sites should be allowed and not fully partitioned.
+  for (auto& site : sites) {
+    EXPECT_EQ(site.setting, CONTENT_SETTING_ALLOW);
+    EXPECT_FALSE(site.is_fully_partitioned);
+  }
+
+  // Hosts should match in order.
+  EXPECT_TRUE(
+      base::ranges::equal(sites, expected_sites_in_order,
+                          [](const auto& site, const auto& expected_site) {
+                            return site.origin.host() == expected_site.host();
+                          }));
+}
 
 }  // namespace
 
@@ -40,12 +66,16 @@ class PageSpecificSiteDataDialogUnitTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    feature_list_.InitAndEnableFeature(page_info::kPageSpecificSiteDataDialog);
     NavigateAndCommit(GURL(kCurrentUrl));
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PageSpecificSiteDataDialogUnitTest, CookieAccessed) {
@@ -79,18 +109,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, CookieAccessed) {
 
   auto delegate =
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
-  auto sites = delegate->GetAllSites();
-  ASSERT_EQ(sites.size(), 2u);
-
-  auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kCurrentUrl).host());
-  EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(first_site.is_fully_partitioned, false);
-
-  auto second_site = sites[1];
-  EXPECT_EQ(second_site.origin.host(), GURL(kThirdPartyUrl).host());
-  EXPECT_EQ(second_site.setting, CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(second_site.is_fully_partitioned, false);
+  ValidateAllowedUnpartitionedSites(delegate.get(),
+                                    {GURL(kCurrentUrl), GURL(kThirdPartyUrl)});
 }
 
 TEST_F(PageSpecificSiteDataDialogUnitTest, TrustTokenAccessed) {
@@ -341,3 +361,49 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveMixedModelData) {
     EXPECT_THAT(sites, testing::UnorderedElementsAreArray(expected_sites));
   }
 }
+
+TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
+  // Verify that site data access through CookiesTreeModel is correctly
+  // displayed in the dialog.
+  auto* content_settings = GetContentSettings();
+
+  content_settings->OnServiceWorkerAccessed(
+      GURL(kCurrentUrl), content::AllowServiceWorkerResult::Yes());
+  content_settings->OnServiceWorkerAccessed(
+      GURL(kThirdPartyUrl), content::AllowServiceWorkerResult::Yes());
+
+  auto delegate =
+      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
+
+  ValidateAllowedUnpartitionedSites(delegate.get(),
+                                    {GURL(kCurrentUrl), GURL(kThirdPartyUrl)});
+}
+
+class PageSpecificSiteDataDialogStorageUnitTest
+    : public PageSpecificSiteDataDialogUnitTest,
+      public testing::WithParamInterface<StorageType> {};
+
+TEST_P(PageSpecificSiteDataDialogStorageUnitTest, StorageAccessed) {
+  // Verify that storage access through CookiesTreeModel is correctly
+  // displayed in the dialog.
+  auto* content_settings = GetContentSettings();
+
+  content_settings->OnStorageAccessed(GetParam(), GURL(kCurrentUrl),
+                                      /*blocked_by_policy=*/false);
+  content_settings->OnStorageAccessed(GetParam(), GURL(kThirdPartyUrl),
+                                      /*blocked_by_policy=*/false);
+
+  auto delegate =
+      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
+  ValidateAllowedUnpartitionedSites(delegate.get(),
+                                    {GURL(kCurrentUrl), GURL(kThirdPartyUrl)});
+}
+
+INSTANTIATE_TEST_SUITE_P(PageSpecificSiteDataDialogStorageUnitTestInstance,
+                         PageSpecificSiteDataDialogStorageUnitTest,
+                         testing::Values(StorageType::DATABASE,
+                                         StorageType::LOCAL_STORAGE,
+                                         StorageType::SESSION_STORAGE,
+                                         StorageType::FILE_SYSTEM,
+                                         StorageType::INDEXED_DB,
+                                         StorageType::CACHE));

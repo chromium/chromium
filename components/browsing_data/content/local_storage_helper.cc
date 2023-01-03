@@ -141,8 +141,7 @@ void CannedLocalStorageHelper::StartFetchingInternal(FetchCallback callback) {
   for (const auto& storage_key : non_empty_pending_storage_keys_)
     result.emplace_back(storage_key, 0, base::Time());
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 void CannedLocalStorageHelper::StartFetching(FetchCallback callback) {

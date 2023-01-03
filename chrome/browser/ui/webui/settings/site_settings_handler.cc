@@ -2147,7 +2147,7 @@ void SiteSettingsHandler::TreeNodesRemoved(ui::TreeModel* model,
 void SiteSettingsHandler::TreeNodeChanged(ui::TreeModel* model,
                                           ui::TreeModelNode* node) {}
 
-void SiteSettingsHandler::TreeModelEndBatch(CookiesTreeModel* model) {
+void SiteSettingsHandler::TreeModelEndBatchDeprecated(CookiesTreeModel* model) {
   ModelBuilt();
 }
 

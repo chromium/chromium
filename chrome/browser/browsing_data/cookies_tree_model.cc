@@ -1709,7 +1709,7 @@ void CookiesTreeModel::NotifyObserverBeginBatch() {
   // Only notify the model once if we're batching in a nested manner.
   if (batches_started_++ == 0) {
     for (Observer& observer : cookies_observer_list_)
-      observer.TreeModelBeginBatch(this);
+      observer.TreeModelBeginBatchDeprecated(this);
   }
 }
 
@@ -1724,7 +1724,7 @@ void CookiesTreeModel::MaybeNotifyBatchesEnded() {
   if (batches_ended_ == batches_started_ &&
       batches_seen_ == batches_expected_) {
     for (Observer& observer : cookies_observer_list_)
-      observer.TreeModelEndBatch(this);
+      observer.TreeModelEndBatchDeprecated(this);
     SetBatchExpectation(0, true);
   }
 }

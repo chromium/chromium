@@ -12,4 +12,7 @@ include_rules = [
   "+net/cookies",
   "+third_party/blink/public",
   "+components/privacy_sandbox",
+
+  # TODO(crbug.com/1404234) Remove when async canned helper logic is removed.
+  "+components/page_info/core",
 ]

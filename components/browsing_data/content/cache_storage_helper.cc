@@ -104,8 +104,7 @@ void CannedCacheStorageHelper::StartFetching(FetchCallback callback) {
     result.emplace_back(storage_key, 0, base::Time());
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 void CannedCacheStorageHelper::DeleteCacheStorage(
