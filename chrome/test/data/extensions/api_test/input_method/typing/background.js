@@ -20,11 +20,6 @@ class TestEnv {
         (_, surroundingInfo) => {
           this.surroundingText = surroundingInfo.text;
         });
-
-    chrome.inputMethodPrivate.onCompositionBoundsChanged.addListener(
-        (_, boundsList) => {
-          this.compositionBounds = boundsList;
-        });
   }
 
   getContextID() {

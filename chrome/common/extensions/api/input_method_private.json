@@ -633,36 +633,6 @@
           }
         ]
       }, {
-        "name": "onCompositionBoundsChanged",
-        "type": "function",
-        "description": "Fired when the composition bounds or cursor bounds are changed.",
-        "parameters": [
-          {
-            "name": "firstBounds",
-            "type": "object",
-            "description": "The bounds information for the first character in composition.",
-            "properties": {
-              "x": {"type": "integer"},
-              "y": {"type": "integer"},
-              "w": {"type": "integer"},
-              "h": {"type": "integer"}
-            }
-          }, {
-            "name": "boundsList",
-            "type": "array",
-            "description": "List of bounds information.",
-            "items": {
-              "type": "object",
-              "properties": {
-                "x": {"type": "integer"},
-                "y": {"type": "integer"},
-                "w": {"type": "integer"},
-                "h": {"type": "integer"}
-              }
-            }
-          }
-        ]
-      }, {
         "name": "onDictionaryLoaded",
         "type": "function",
         "description": "Fired when the custom spelling dictionary is loaded.",

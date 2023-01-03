@@ -952,11 +952,6 @@ void NativeInputMethodEngineObserver::OnDeactivated(
   ime_base_observer_->OnDeactivated(engine_id);
 }
 
-void NativeInputMethodEngineObserver::OnCompositionBoundsChanged(
-    const std::vector<gfx::Rect>& bounds) {
-  ime_base_observer_->OnCompositionBoundsChanged(bounds);
-}
-
 void NativeInputMethodEngineObserver::OnCaretBoundsChanged(
     const gfx::Rect& caret_bounds) {
   ime_base_observer_->OnCaretBoundsChanged(caret_bounds);

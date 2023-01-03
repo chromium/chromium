@@ -47,8 +47,7 @@ enum CallsBitmap {
   DEACTIVATED = 2U,
   ONFOCUS = 4U,
   ONBLUR = 8U,
-  ONCOMPOSITIONBOUNDSCHANGED = 16U,
-  RESET = 32U
+  RESET = 16U
 };
 
 void InitInputMethod() {
@@ -104,11 +103,6 @@ class TestObserver : public StubInputMethodEngineObserver {
                   TextInputMethod::KeyEventDoneCallback callback) override {
     std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
   }
-  void OnCompositionBoundsChanged(
-      const std::vector<gfx::Rect>& bounds) override {
-    calls_bitmap_ |= ONCOMPOSITIONBOUNDSCHANGED;
-  }
-
   void OnReset(const std::string& engine_id) override {
     calls_bitmap_ |= RESET;
     engine_id_ = engine_id;
@@ -339,13 +333,6 @@ TEST_F(InputMethodEngineTest, TestInvalidCompositionReturnsFalse) {
       false);
   EXPECT_EQ(engine_->SetComposition(context, "test", 0, 6, 0, segments, &error),
             false);
-}
-
-TEST_F(InputMethodEngineTest, TestCompositionBoundsChanged) {
-  CreateEngine(true);
-  // Enable/disable with focus.
-  engine_->SetCompositionBounds({gfx::Rect()});
-  EXPECT_EQ(ONCOMPOSITIONBOUNDSCHANGED, observer_->GetCallsBitmapAndReset());
 }
 
 // See https://crbug.com/980437.

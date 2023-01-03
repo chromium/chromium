@@ -211,12 +211,6 @@ InputMethodPrivate.prototype = {
 InputMethodPrivate.prototype.onChanged;
 
 /**
- * Fired when the composition bounds or cursor bounds are changed.
- * @type {!ChromeEvent}
- */
-InputMethodPrivate.prototype.onCompositionBoundsChanged;
-
-/**
  * Fired when the custom spelling dictionary is loaded.
  * @type {!ChromeEvent}
  */

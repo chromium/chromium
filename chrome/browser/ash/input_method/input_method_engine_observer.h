@@ -70,10 +70,6 @@ class InputMethodEngineObserver {
   // Called when the IME is no longer active.
   virtual void OnDeactivated(const std::string& engine_id) = 0;
 
-  // Called when composition bounds are changed.
-  virtual void OnCompositionBoundsChanged(
-      const std::vector<gfx::Rect>& bounds) = 0;
-
   // Called when the caret bounds change.
   virtual void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) = 0;
 
