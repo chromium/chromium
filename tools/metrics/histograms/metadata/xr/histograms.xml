@@ -65,16 +65,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="XR.WebXR.ReferenceSpace.Succeeded" enum="XRReferenceSpaceType"
-    expires_after="2023-02-12">
-  <owner>alcooper@chromium.org</owner>
-  <owner>xr-dev@chromium.org</owner>
-  <summary>
-    Records which reference spaces are successfully created when the promise
-    returned by XRSession.requestReferenceSpace() is resolved.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

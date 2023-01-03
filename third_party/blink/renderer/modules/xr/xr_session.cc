@@ -624,9 +624,6 @@ ScriptPromise XRSession::requestReferenceSpace(
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve(reference_space);
 
-  UMA_HISTOGRAM_ENUMERATION("XR.WebXR.ReferenceSpace.Succeeded",
-                            requested_type);
-
   return promise;
 }
 
