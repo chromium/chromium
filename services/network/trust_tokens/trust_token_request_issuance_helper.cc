@@ -136,6 +136,8 @@ void TrustTokenRequestIssuanceHelper::Begin(
     return;
   }
 
+  token_store_->RecordIssuance(*issuer_);
+
   if (custom_key_commitment_) {
     mojom::TrustTokenKeyCommitmentResultPtr keys =
         TrustTokenKeyCommitmentParser().Parse(*custom_key_commitment_);

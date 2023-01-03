@@ -28,6 +28,7 @@
 #include "services/network/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/operating_system_matching.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
+#include "services/network/trust_tokens/proto/storage.pb.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
@@ -44,6 +45,7 @@ using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::ReturnNull;
@@ -51,9 +53,15 @@ using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
-using TrustTokenRequestIssuanceHelperTest = TrustTokenRequestHelperTest;
 using UnblindedTokens =
     TrustTokenRequestIssuanceHelper::Cryptographer::UnblindedTokens;
+
+class TrustTokenRequestIssuanceHelperTest : public TrustTokenRequestHelperTest {
+ public:
+  explicit TrustTokenRequestIssuanceHelperTest()
+      : TrustTokenRequestHelperTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 // FixedKeyCommitmentGetter returns the provided commitment result when
 // |Get| is called by the tested code.
@@ -92,6 +100,55 @@ class MockCryptographer
   MOCK_METHOD1(
       ConfirmIssuance,
       std::unique_ptr<UnblindedTokens>(base::StringPiece response_header));
+};
+
+class MockExpiryDelegate : public TrustTokenStore::RecordExpiryDelegate {
+ public:
+  MOCK_METHOD3(IsRecordExpired,
+               bool(const TrustTokenRedemptionRecord&,
+                    const base::TimeDelta&,
+                    const SuitableTrustTokenOrigin&));
+};
+
+class MockTrustTokenPersister : public TrustTokenPersister {
+ public:
+  MOCK_METHOD1(GetIssuerConfig,
+               std::unique_ptr<TrustTokenIssuerConfig>(
+                   (const SuitableTrustTokenOrigin& issuer)));
+  MOCK_METHOD1(GetToplevelConfig,
+               std::unique_ptr<TrustTokenToplevelConfig>(
+                   const SuitableTrustTokenOrigin& toplevel));
+  MOCK_METHOD2(GetIssuerToplevelPairConfig,
+               std::unique_ptr<TrustTokenIssuerToplevelPairConfig>(
+                   const SuitableTrustTokenOrigin& issuer,
+                   const SuitableTrustTokenOrigin& toplevel));
+  MOCK_METHOD2(SetIssuerConfig,
+               void(const SuitableTrustTokenOrigin& issuer,
+                    std::unique_ptr<TrustTokenIssuerConfig> config));
+  MOCK_METHOD2(SetToplevelConfig,
+               void(const SuitableTrustTokenOrigin& toplevel,
+                    std::unique_ptr<TrustTokenToplevelConfig> config));
+  MOCK_METHOD3(
+      SetIssuerToplevelPairConfig,
+      void(const SuitableTrustTokenOrigin& issuer,
+           const SuitableTrustTokenOrigin& toplevel,
+           std::unique_ptr<TrustTokenIssuerToplevelPairConfig> config));
+  MOCK_METHOD2(DeleteIssuerConfig,
+               bool(PSTKeyMatcher key_matcher, PSTTimeMatcher time_matcher));
+  MOCK_METHOD1(DeleteToplevelConfig, bool(PSTKeyMatcher key_matcher));
+  MOCK_METHOD2(DeleteIssuerToplevelPairConfig,
+               bool(PSTKeyMatcher key_matcher, PSTTimeMatcher time_matcher));
+  MOCK_METHOD0(GetStoredTrustTokenCounts,
+               base::flat_map<SuitableTrustTokenOrigin, int>());
+};
+
+class MockTrustTokenStore : public TrustTokenStore {
+ public:
+  MockTrustTokenStore(std::unique_ptr<TrustTokenPersister> p,
+                      std::unique_ptr<RecordExpiryDelegate> ed)
+      : TrustTokenStore(std::move(p), std::move(ed)) {}
+
+  MOCK_METHOD1(RecordIssuance, void(const SuitableTrustTokenOrigin& issuer));
 };
 
 // Returns a key commitment result with reasonable values for all parameters.
@@ -1031,6 +1088,76 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomIssuerStoresObtainedTokens) {
   EXPECT_THAT(
       store->RetrieveMatchingTokens(goodissuer, std::move(match_all_keys)),
       ElementsAre(Property(&TrustToken::body, "a signed, unblinded token")));
+}
+
+// Check that the last issuance time is recorded for a given issuer.
+TEST_F(TrustTokenRequestIssuanceHelperTest, RecordsIssuanceTime) {
+  std::unique_ptr<MockTrustTokenPersister> mock_persister =
+      std::make_unique<MockTrustTokenPersister>();
+  std::unique_ptr<MockExpiryDelegate> mock_delegate =
+      std::make_unique<MockExpiryDelegate>();
+  std::unique_ptr<MockTrustTokenStore> mock_store =
+      std::make_unique<MockTrustTokenStore>(std::move(mock_persister),
+                                            std::move(mock_delegate));
+  // Make sure we are recording the issuance time when we execute begin.
+  EXPECT_CALL(*mock_store, RecordIssuance(_)).Times(1);
+
+  SuitableTrustTokenOrigin issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, BeginIssuance(_))
+      .WillOnce(
+          Return(std::string("this string contains some blinded tokens")));
+
+  TrustTokenRequestIssuanceHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      mock_store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      absl::nullopt, std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(issuer);
+
+  ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+}
+
+// Check that the issuance time is updated after it is recorded
+// a second time.
+TEST_F(TrustTokenRequestIssuanceHelperTest, UpdatesIssuanceTime) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  SuitableTrustTokenOrigin issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  // Record a token issuance, and advance the clock 1 second. Last issuance
+  // should be 1 second ago.
+  store->RecordIssuance(issuer);
+  auto delta = base::Seconds(1);
+  env_.AdvanceClock(delta);
+  EXPECT_THAT(store->TimeSinceLastIssuance(issuer), Optional(delta));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, BeginIssuance(_))
+      .WillOnce(
+          Return(std::string("this string contains some blinded tokens")));
+
+  TrustTokenRequestIssuanceHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      absl::nullopt, std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(issuer);
+
+  ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // Ensure the issuance time was updated (0 seconds since last issuance).
+  EXPECT_THAT(store->TimeSinceLastIssuance(issuer), Optional(base::Seconds(0)));
 }
 
 }  // namespace network
