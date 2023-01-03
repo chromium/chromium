@@ -235,8 +235,11 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTe
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
 # finder:group-end
 
-# WebGL drawingBufferStorage does not work on Pixel 4 yet.
-crbug.com/1230619 [ android-pixel-4 ] TraceTest_WebGLFloat [ Failure ]
+# WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23 or Lacros FYI
+# x64 Release (Intel) yet.
+crbug.com/1230619 [ android android-pixel-4 ] TraceTest_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-SM-A235M ] TraceTest_WebGLFloat [ Failure ]
+crbug.com/1230619 [ linux intel display-server-wayland  ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
 crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
