@@ -74,8 +74,8 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   // Candidates are arranged per |orientation|.
   void UpdateCandidates(const ui::CandidateWindow& candidate_window);
 
-  void SetCursorBounds(const gfx::Rect& cursor_bounds,
-                       const gfx::Rect& composition_head);
+  void SetCursorAndCompositionBounds(const gfx::Rect& cursor_bounds,
+                                     const gfx::Rect& composition_bounds);
 
  private:
   friend class CandidateWindowViewTest;

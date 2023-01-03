@@ -284,16 +284,18 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
 
   const gfx::Rect caret_rect = client->GetCaretBounds();
 
-  gfx::Rect composition_head;
+  gfx::Rect composition_bounds;
   if (client->HasCompositionText())
-    client->GetCompositionCharacterBounds(0, &composition_head);
+    client->GetCompositionCharacterBounds(0, &composition_bounds);
 
   // Pepper doesn't support composition bounds, so fall back to caret bounds to
   // avoid a bad user experience (the IME window moved to upper left corner).
-  if (composition_head.IsEmpty())
-    composition_head = caret_rect;
+  if (composition_bounds.IsEmpty()) {
+    composition_bounds = caret_rect;
+  }
   if (candidate_window)
-    candidate_window->SetCursorBounds(caret_rect, composition_head);
+    candidate_window->SetCursorAndCompositionBounds(caret_rect,
+                                                    composition_bounds);
 
   if (assistive_window) {
     Bounds bounds;

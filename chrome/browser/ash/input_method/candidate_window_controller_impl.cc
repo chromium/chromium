@@ -45,7 +45,8 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
       ash::kShellWindowId_MenuContainer);
   candidate_window_view_ = new ui::ime::CandidateWindowView(parent);
   candidate_window_view_->AddObserver(this);
-  candidate_window_view_->SetCursorBounds(cursor_bounds_, composition_head_);
+  candidate_window_view_->SetCursorAndCompositionBounds(cursor_bounds_,
+                                                        composition_bounds_);
   views::Widget* widget = candidate_window_view_->InitWidget();
   widget->AddObserver(this);
   widget->Show();
@@ -60,9 +61,9 @@ void CandidateWindowControllerImpl::Hide() {
     infolist_window_->HideImmediately();
 }
 
-void CandidateWindowControllerImpl::SetCursorBounds(
+void CandidateWindowControllerImpl::SetCursorAndCompositionBounds(
     const gfx::Rect& cursor_bounds,
-    const gfx::Rect& composition_head) {
+    const gfx::Rect& composition_bounds) {
   // A workaround for http://crosbug.com/6460. We should ignore very short Y
   // move to prevent the window from shaking up and down.
   const int kKeepPositionThreshold = 2;  // px
@@ -78,11 +79,12 @@ void CandidateWindowControllerImpl::SetCursorBounds(
   }
 
   cursor_bounds_ = cursor_bounds;
-  composition_head_ = composition_head;
+  composition_bounds_ = composition_bounds;
 
   // Remember the cursor bounds.
   if (candidate_window_view_)
-    candidate_window_view_->SetCursorBounds(cursor_bounds, composition_head);
+    candidate_window_view_->SetCursorAndCompositionBounds(cursor_bounds,
+                                                          composition_bounds);
 }
 
 gfx::Rect CandidateWindowControllerImpl::GetCursorBounds() const {

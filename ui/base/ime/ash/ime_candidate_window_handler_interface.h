@@ -40,11 +40,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMECandidateWindowHandlerInterface {
                                  uint32_t cursor_pos,
                                  bool visible) = 0;
 
-  // Called when the application changes its caret bounds.
-  virtual void SetCursorBounds(const gfx::Rect& cursor_bounds,
-                               const gfx::Rect& composition_head) = 0;
+  // Called when the application changes its caret or composition bounds.
+  virtual void SetCursorAndCompositionBounds(
+      const gfx::Rect& cursor_bounds,
+      const gfx::Rect& composition_bounds) = 0;
 
-  // Gets the cursor bounds that was set by |SetCursorBounds| method.
+  // Gets the cursor bounds that was set by |SetCursorAndCompositionBounds|
+  // method.
   virtual gfx::Rect GetCursorBounds() const = 0;
 
   // Called when the text field's focus state is changed.

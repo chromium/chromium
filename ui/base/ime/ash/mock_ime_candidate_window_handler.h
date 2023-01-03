@@ -36,12 +36,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMECandidateWindowHandler
   void UpdatePreeditText(const std::u16string& text,
                          uint32_t cursor_pos,
                          bool visible) override;
-  void SetCursorBounds(const gfx::Rect& cursor_bounds,
-                       const gfx::Rect& composition_head) override;
+  void SetCursorAndCompositionBounds(
+      const gfx::Rect& cursor_bounds,
+      const gfx::Rect& composition_bounds) override;
   gfx::Rect GetCursorBounds() const override;
 
-  int set_cursor_bounds_call_count() const {
-    return set_cursor_bounds_call_count_;
+  int set_cursor_and_composition_bounds_call_count() const {
+    return set_cursor_and_composition_bounds_call_count_;
   }
 
   int update_lookup_table_call_count() const {
@@ -55,7 +56,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMECandidateWindowHandler
   void Reset();
 
  private:
-  int set_cursor_bounds_call_count_;
+  int set_cursor_and_composition_bounds_call_count_;
   int update_lookup_table_call_count_;
   UpdateLookupTableArg last_update_lookup_table_arg_;
 };

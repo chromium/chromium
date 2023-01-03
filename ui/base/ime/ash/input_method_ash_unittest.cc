@@ -461,8 +461,8 @@ TEST_F(InputMethodAshTest, Focus_Text) {
   input_method_ash_->OnTextInputTypeChanged(this);
   // Since a form has focus, IBusClient::Focus() should be called.
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
-  EXPECT_EQ(1,
-            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(1, mock_ime_candidate_window_handler_
+                   ->set_cursor_and_composition_bounds_call_count());
   // ui::TextInputClient::OnInputMethodChanged() should be called when
   // `InputMethodAsh` connects/disconnects to/from ibus-daemon and the
   // current text input type is not NONE.
@@ -561,22 +561,22 @@ TEST_F(InputMethodAshTest, Focus_Scenario) {
 TEST_F(InputMethodAshTest, OnCaretBoundsChanged) {
   input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
-  EXPECT_EQ(1,
-            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(1, mock_ime_candidate_window_handler_
+                   ->set_cursor_and_composition_bounds_call_count());
   caret_bounds_ = gfx::Rect(1, 2, 3, 4);
   input_method_ash_->OnCaretBoundsChanged(this);
-  EXPECT_EQ(2,
-            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(2, mock_ime_candidate_window_handler_
+                   ->set_cursor_and_composition_bounds_call_count());
   caret_bounds_ = gfx::Rect(0, 2, 3, 4);
   input_method_ash_->OnCaretBoundsChanged(this);
-  EXPECT_EQ(3,
-            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(3, mock_ime_candidate_window_handler_
+                   ->set_cursor_and_composition_bounds_call_count());
   caret_bounds_ = gfx::Rect(0, 2, 3, 4);  // unchanged
   input_method_ash_->OnCaretBoundsChanged(this);
   // Current InputMethodAsh implementation performs the IPC
   // regardless of the bounds are changed or not.
-  EXPECT_EQ(4,
-            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(4, mock_ime_candidate_window_handler_
+                   ->set_cursor_and_composition_bounds_call_count());
 }
 
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_NoAttribute) {
