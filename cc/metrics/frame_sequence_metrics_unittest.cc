@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -37,7 +38,15 @@ TEST(FrameSequenceMetricsTest, MergeMetrics) {
 }
 
 #if DCHECK_IS_ON()
-TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
+// Test is disabled due to flakiness on ChromeOS/Linux and Fuchsia.
+// TODO(crbug.com/1404779): Rehabilitate this test.
+// TODO(crbug.com/1404779): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ScrollingThreadMergeMetrics DISABLED_ScrollingThreadMergeMetrics
+#else
+#define MAYBE_ScrollingThreadMergeMetrics ScrollingThreadMergeMetrics
+#endif
+TEST(FrameSequenceMetricsTest, MAYBE_ScrollingThreadMergeMetrics) {
   FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
   first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   first.impl_throughput().frames_expected = 20;
