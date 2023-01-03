@@ -1570,7 +1570,6 @@ crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.
 # Tests failing only on certain platforms.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
-crbug.com/1395443 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
 
 # Additonal presentation-markup failures
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-2.html [ Failure ]
@@ -3061,7 +3060,6 @@ crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_requestAnimationFrame_ge
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_sameObject.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_visibilityState.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/webxr/xrStationaryReferenceSpace_floorlevel_updates.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrViewerPose_views_sameObject.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_make-read-only.https.window.html [ Timeout ]
@@ -3885,7 +3883,6 @@ crbug.com/667560 http/tests/devtools/elements/styles-4/inline-style-sourcemap.js
 crbug.com/783154 [ Mac ] media/controls/doubletap-to-jump-backwards.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac ] media/controls/doubletap-to-jump-forwards.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac ] media/controls/doubletap-to-jump-forwards-too-short.html [ Crash Failure Pass Timeout ]
-crbug.com/783154 [ Mac ] media/controls/doubletap-on-play-button.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac ] media/controls/click-anywhere-to-play-pause.html [ Crash Failure Pass Timeout ]
 
