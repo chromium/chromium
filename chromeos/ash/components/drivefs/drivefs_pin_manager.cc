@@ -170,6 +170,8 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     const std::string& path,
     const int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(total_bytes, 0) << " for '" << path << "'";
+
   const auto it = in_progress_items_.find(path);
   if (it == in_progress_items_.end()) {
     // TODO(b/261530520): Items can end up in this flow when a removal is
@@ -177,10 +179,17 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     // In this case, gracefully degrade by responding with the total bytes
     // transferred. This should ideally fail as all syncing operations should be
     // identified as they affect disk space.
+    LOG(ERROR) << "Cannot remove '" << path << "'";
     return total_bytes_transferred_;
   }
 
-  total_bytes_transferred_ += total_bytes - it->second.transferred;
+  DCHECK_EQ(it->first, path);
+  const Progress& progress = it->second;
+  LOG_IF(ERROR, progress.transferred > total_bytes)
+      << "Progress went backwards from "
+      << HumanReadableSize(progress.transferred) << " to "
+      << HumanReadableSize(total_bytes) << " for '" << path << "'";
+  total_bytes_transferred_ += total_bytes - progress.transferred;
   in_progress_items_.erase(it);
   return total_bytes_transferred_;
 }
@@ -190,6 +199,15 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     int64_t bytes_transferred,
     int64_t bytes_to_transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(bytes_to_transfer, 0) << " for '" << path << "'";
+
+  if (bytes_transferred < 0) {
+    LOG(ERROR) << "Negative bytes_transferred = "
+               << HumanReadableSize(bytes_transferred) << " for '" << path
+               << "'";
+    return total_bytes_transferred_;
+  }
+
   const auto it = in_progress_items_.find(path);
   if (it == in_progress_items_.end()) {
     // TODO(b/261530520): Items can end up in this flow when an update is
@@ -197,11 +215,19 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     // In this case, gracefully degrade by responding with the total bytes
     // transferred. This should ideally fail as all syncing operations should be
     // identified as they affect disk space.
+    LOG(ERROR) << "Cannot update '" << path << "' with bytes_transferred = "
+               << HumanReadableSize(bytes_transferred)
+               << " and bytes_to_transfer = "
+               << HumanReadableSize(bytes_to_transfer);
     return total_bytes_transferred_;
   }
 
   DCHECK_EQ(it->first, path);
   Progress& progress = it->second;
+  LOG_IF(ERROR, progress.transferred > bytes_transferred)
+      << "Progress went backwards from "
+      << HumanReadableSize(progress.transferred) << " to "
+      << HumanReadableSize(bytes_transferred) << " for '" << path << "'";
   total_bytes_transferred_ += bytes_transferred - progress.transferred;
   progress.transferred = bytes_transferred;
   progress.total = bytes_to_transfer;
@@ -324,11 +350,18 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     DCHECK(item);
     DCHECK(item->metadata);
 
+    VLOG(2) << "path: '" << item->path
+            << "', size: " << HumanReadableSize(item->metadata->size)
+            << ", pinned: " << item->metadata->pinned
+            << ", available_offline: " << item->metadata->available_offline;
     if (item->metadata->pinned) {
       VLOG(2) << "Skipped '" << item->path << "': Already pinned";
       continue;
     }
 
+    DCHECK_GE(item->metadata->size, 0)
+        << "Negative size " << HumanReadableSize(item->metadata->size)
+        << "for '" << item->path << "'";
     state_.progress.required_disk_space += item->metadata->size;
   }
 
@@ -429,6 +462,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
       continue;
     }
 
+    VLOG(2) << "Pinning '" << path << "'...";
     drivefs_interface_->SetPinned(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
@@ -459,6 +493,7 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
     return;
   }
 
+  VLOG(2) << "Pinned '" << path << "'";
   syncing_items_.AsyncCall(&InProgressSyncingItems::AddItem).WithArgs(path);
 }
 
@@ -500,6 +535,10 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
 
 void DriveFsPinManager::ReportTotalBytesTransferred(
     int64_t total_bytes_transferred) {
+  LOG_IF(ERROR, state_.progress.pinned_disk_space > total_bytes_transferred)
+      << "Pinned space went backwards from "
+      << HumanReadableSize(state_.progress.pinned_disk_space) << " to "
+      << HumanReadableSize(total_bytes_transferred);
   state_.progress.pinned_disk_space = total_bytes_transferred;
   NotifyProgress();
 }
@@ -526,10 +565,15 @@ void DriveFsPinManager::OnError(const mojom::DriveError& error) {
 }
 
 void DriveFsPinManager::NotifyProgress() {
-  VLOG_IF(2, !observers_.empty()) << "Notifying progress to list of observers";
-  for (auto& observer : observers_) {
+  if (observers_.empty()) {
+    return;
+  }
+
+  VLOG(2) << "Notifying observers...";
+  for (DriveFsBulkPinObserver& observer : observers_) {
     observer.OnSetupProgress(state_.progress);
   }
+  VLOG(2) << "Notified observers";
 }
 
 void DriveFsPinManager::AddObserver(DriveFsBulkPinObserver* observer) {
@@ -584,9 +628,14 @@ void DriveFsPinManager::OnMetadataRetrieved(
   }
 
   DCHECK(metadata);
+  VLOG(2) << "Got metadata of path: '" << path
+          << "', size: " << HumanReadableSize(metadata->size)
+          << ", pinned: " << metadata->pinned
+          << ", available_offline: " << metadata->available_offline;
+
   if (metadata->available_offline || metadata->size == 0) {
     VLOG_IF(2, metadata->available_offline)
-        << "Skipped '" << path << "': Already pinned";
+        << "Skipped '" << path << "': Already available offline";
     VLOG_IF(2, metadata->size == 0) << "Skipped '" << path << "': Empty file";
     syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
         .WithArgs(std::move(path), metadata->size)
