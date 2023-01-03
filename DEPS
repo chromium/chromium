@@ -744,14 +744,8 @@ deps = {
   },
 
   'src/chrome/test/data/password/captured_sites': {
-    'packages': [
-      {
-        'package': 'chromium/chrome/test/data/password/captured_sites',
-        'version': '9wov5BqIgpBX5S5_U8V_kKNw0tPVWNdPf9ESRYF16R8C',
-      }
-    ],
+    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/password.git' + '@' + '78d725fdd5d4b247272228d8baa7438ce9400379',
     'condition': 'checkout_chromium_password_manager_test_dependencies',
-    'dep_type': 'cipd',
   },
 
   'src/chrome/test/data/perf/canvas_bench':
