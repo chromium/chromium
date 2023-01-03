@@ -65,10 +65,9 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) void InitializeMTESupportIfNeeded();
 // They are designed to be callable without taking a branch. They are initially
 // set to no-op functions in tagging.cc, but can be replaced with MTE-capable
 // ones through InitializeMTEIfNeeded(). This is conceptually similar to an
-// ifunc (but less secure) - we do it this way for now because the CrazyLinker
-// (needed for supporting old Android versions) doesn't support them. Initial
-// solution should be good enough for fuzzing/debug, ideally needs fixing for
-// async deployment on end-user devices.
+// IFUNC, even though less secure. These function pointers were introduced to
+// support older Android releases. With the removal of support for Android M,
+// it became possible to use IFUNC instead.
 // TODO(bartekn): void* -> uintptr_t
 using RemaskPtrInternalFn = void*(void* ptr);
 using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
