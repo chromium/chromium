@@ -11,7 +11,6 @@
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace ash {
 
@@ -37,6 +36,8 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void IsIncognitoTextField(IsIncognitoTextFieldCallback callback) override;
   void GetFeatureList(GetFeatureListCallback callback) override;
   void GetCategories(GetCategoriesCallback callback) override;
+  void GetFeaturedGifs(const absl::optional<std::string>& pos,
+                       GetFeaturedGifsCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;
@@ -46,6 +47,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   bool incognito_mode_;
   bool no_text_field_;
   GifTenorApiFetcher gif_tenor_api_fetcher_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 }  // namespace ash

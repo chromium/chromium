@@ -15,6 +15,23 @@ export interface EmojiPickerApiProxy {
   getFeatureList(): Promise<{featureList: number[]}>;
 
   getCategories(): Promise<{categories: GifSubcategoryData[]}>;
+
+  getFeaturedGifs(pos?: string): Promise<{featured: Results}>;
+}
+
+interface Gif {
+  url: {gif: string, gifpreview: string};
+  previewDims: {
+    // dimensions of the gif preview for the height balancing algorithm
+    width: number,
+    height: number,
+  };
+  contentDescription: string;  // for user accessibility features
+}
+
+export interface Results {
+  next: string;
+  results: Gif[];
 }
 
 // https://developers.google.com/tenor/guides/response-objects-and-errors#category-object
@@ -23,6 +40,25 @@ declare interface CategoryObject {
   path: string;        // the search url to request
   image: string;       // a url to the category's example GIF
   name: string;        // category name
+}
+
+// https://developers.google.com/tenor/guides/response-objects-and-errors#media-object
+declare interface MediaObject {
+  url: string;       // a url to the media source
+  dims: number[];    // width and height of the media in pixels
+  duration: number;  // the time in seconds for one loop of the content
+  size: number;      // size of the file in bytes
+}
+
+// https://developers.google.com/tenor/guides/response-objects-and-errors#response-object
+declare interface ResponseObject {
+  id: string;  // tenor result identifier
+  media_formats: {
+    gif: MediaObject,
+    mediumgif: MediaObject,
+  };
+  content_description: string;  // a textual description of the content for user
+                                // accessibility features
 }
 
 export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
@@ -58,6 +94,26 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     return {
       categories: JSON.parse(categories)
                       .tags.map((tag: CategoryObject) => ({name: tag.name})),
+    };
+  }
+
+  /** @override */
+  async getFeaturedGifs(pos?: string): Promise<{featured: Results}> {
+    const {featured} = await this.handler.getFeaturedGifs(pos || null);
+    const trending = JSON.parse(featured);
+    return {
+      featured: {
+        next: trending.next,
+        results: trending.results.map((response: ResponseObject) => {
+          const {gif, mediumgif} = response.media_formats;
+          const [width, height] = mediumgif.dims;
+          return {
+            url: {gif: gif.url, gifpreview: mediumgif.url},
+            preview_dims: {width, height},
+            content_description: response.content_description,
+          };
+        }),
+      },
     };
   }
 

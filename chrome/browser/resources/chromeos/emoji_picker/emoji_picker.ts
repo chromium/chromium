@@ -239,18 +239,6 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-spacing': constants.EMOJI_SPACING_PX,
     });
 
-    if (this.gifSupport) {
-      const dataUrl = EmojiPicker.configs().dataUrls.gif[0];
-      const categories: GifSubcategoryData[] = dataUrl ?
-          (await this.fetchOrderingData<GifSubcategoryData[]>(dataUrl)) :
-          (await this.apiProxy.getCategories()).categories;
-      const categoryTabs = {
-        ...CATEGORY_TABS,
-        gif: categories,
-      };
-      this.allCategoryTabs = gifCategoryTabs(categoryTabs);
-    }
-
     // Update UI and relevant features based on the initial data.
     this.updateCategoryData(
         // If we don't have 1 data URL, a crash probably isn't a bad idea
@@ -883,7 +871,27 @@ export class EmojiPicker extends PolymerElement {
     });
   }
 
-  onCategoryButtonClick(newCategory: CategoryEnum) {
+  async onCategoryButtonClick(newCategory: CategoryEnum) {
+    // Only run this once when the user first clicks the GIF section in the
+    // emoji picker, to do this check whether the gif categories have been
+    // inserted into allCategoryTabs
+    if (newCategory === CategoryEnum.GIF &&
+        this.allCategoryTabs.every(
+            (subCategoryData) =>
+                subCategoryData.category !== CategoryEnum.GIF)) {
+      const dataUrl = EmojiPicker.configs().dataUrls.gif[0];
+      // Fetch the mock json data for categories in tests instead of the
+      // real tenor API
+      const categories: GifSubcategoryData[] = dataUrl ?
+          (await this.fetchOrderingData<GifSubcategoryData[]>(dataUrl)) :
+          (await this.apiProxy.getCategories()).categories;
+      const categoryTabs = {
+        ...CATEGORY_TABS,
+        gif: categories,
+      };
+      this.allCategoryTabs = gifCategoryTabs(categoryTabs);
+    }
+
     this.set('category', newCategory);
     this.set('pagination', 1);
     if (this.getSearchContainer()?.searchNotEmpty()) {

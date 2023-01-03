@@ -55,4 +55,26 @@ interface PageHandler {
   //   }[]
   // }
   GetCategories() => (string categories);
+
+  // Returns a string in JSON format containing a list of the current global
+  // featured GIFs fetched from the tenor API (https://tenor.googleapis.com).
+  // JSON response format is shown below.
+  // {
+  //   next: string,
+  //   results: {
+  //     id: string, // tenor result identifier
+  //     content_description: string, // a textual description of the content
+  //     media_formats: {
+  //       gif: {
+  //         url: string, // a url to the media source
+  //         dims: int[], width and height of the media in pixels
+  //       }
+  //       mediumgif: {
+  //         url: string, // a url to the media source
+  //         dims: int[], width and height of the media in pixels
+  //       }
+  //     },
+  //   }[]
+  // }
+  GetFeaturedGifs(string? pos) => (string featured);
 };

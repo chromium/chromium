@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {deepQuerySelector} from './emoji_picker_test_util.js';
+import {deepQuerySelector, timeout, waitForCondition} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
@@ -95,7 +95,7 @@ export function GifTestSuite(category) {
 
     test(
         category + ' category button should be active after clicking at it.',
-        () => {
+        async () => {
           const allCategoryButtons =
               Array
                   .from(
@@ -105,8 +105,9 @@ export function GifTestSuite(category) {
                   .map(item => item.shadowRoot.querySelector('cr-icon-button'));
           const categoryButton = allCategoryButtons[categoryIndex];
           categoryButton.click();
-          flush();
-          assertTrue(isCategoryButtonActive(categoryButton));
+          await waitForCondition(
+              () => isCategoryButtonActive(categoryButton),
+              'gif section failed to be active', 5000);
           allCategoryButtons.forEach((categoryButtonItem, index) => {
             if (index !== categoryIndex) {
               assertFalse(isCategoryButtonActive(categoryButtonItem));

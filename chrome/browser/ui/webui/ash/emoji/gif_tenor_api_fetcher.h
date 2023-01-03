@@ -19,13 +19,23 @@ class GifTenorApiFetcher {
 
   ~GifTenorApiFetcher();
 
-  // Fetch tenor API categories endpoint
+  // Fetch tenor API Categories endpoint
   void FetchCategories(
       emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
-      Profile* profile);
+      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   void FetchCategoriesResponseHandler(
       emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
+      std::unique_ptr<EndpointResponse> response);
+
+  // Fetch tenor API Featured endpoint
+  void FetchFeaturedGifs(
+      emoji_picker::mojom::PageHandler::GetFeaturedGifsCallback callback,
+      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const absl::optional<std::string>& pos);
+
+  void FetchFeaturedGifsResponseHandler(
+      emoji_picker::mojom::PageHandler::GetFeaturedGifsCallback callback,
       std::unique_ptr<EndpointResponse> response);
 
  private:
