@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_menu_actions_data_source.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_actions_data_source.h"
 
 class Browser;
 @protocol TabCollectionConsumer;

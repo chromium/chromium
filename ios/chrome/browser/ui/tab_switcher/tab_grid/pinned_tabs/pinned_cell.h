@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 
 // A cell for the pinned tabs view. Contains an icon, title, snapshot.
 @interface PinnedCell : TabCell

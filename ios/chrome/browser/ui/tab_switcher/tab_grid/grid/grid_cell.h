@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
 
 @class GridCell;

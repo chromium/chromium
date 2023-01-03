@@ -17,7 +17,6 @@ source_set("tab_grid") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":tab_context_menu",
     ":tab_grid_paging",
     ":tab_grid_ui",
     "grid:grid_ui",
@@ -72,6 +71,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/browser/ui/thumb_strip",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
@@ -134,7 +134,6 @@ source_set("tab_grid_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":tab_context_menu",
     ":tab_grid_paging",
     ":tab_grid_ui_constants",
     "grid:grid_ui",
@@ -165,6 +164,7 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:pinned_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/thumb_strip",
@@ -175,33 +175,6 @@ source_set("tab_grid_ui") {
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
     "//ui/base",
-  ]
-}
-
-source_set("tab_context_menu") {
-  sources = [
-    "tab_cell.h",
-    "tab_cell.mm",
-    "tab_context_menu_helper.h",
-    "tab_context_menu_helper.mm",
-    "tab_context_menu_provider.h",
-    "tab_item.h",
-    "tab_item.mm",
-    "tab_menu_actions_data_source.h",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [
-    "//base",
-    "//components/bookmarks/common",
-    "//components/prefs",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/ui/menu",
-    "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
-    "//ios/chrome/browser/ui/ntp:util",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:features",
   ]
 }
 
