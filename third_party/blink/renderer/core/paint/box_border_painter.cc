@@ -124,21 +124,21 @@ inline bool BorderStylesRequireMiter(BoxSide side,
   return BorderStyleHasUnmatchedColorsAtCorner(style, side, adjacent_side);
 }
 
-void SetToRightSideRect(gfx::RectF& rect, float edge_width) {
+void SetToRightSideRect(gfx::Rect& rect, int edge_width) {
   rect.set_x(rect.right() - edge_width);
   rect.set_width(edge_width);
 }
 
-void SetToBottomSideRect(gfx::RectF& rect, float edge_width) {
+void SetToBottomSideRect(gfx::Rect& rect, int edge_width) {
   rect.set_y(rect.bottom() - edge_width);
   rect.set_height(edge_width);
 }
 
-gfx::RectF CalculateSideRect(const FloatRoundedRect& outer_border,
-                             const BorderEdge& edge,
-                             BoxSide side) {
-  gfx::RectF side_rect = outer_border.Rect();
-  float width = edge.Width();
+gfx::Rect CalculateSideRect(const FloatRoundedRect& outer_border,
+                            const BorderEdge& edge,
+                            BoxSide side) {
+  gfx::Rect side_rect = gfx::ToRoundedRect(outer_border.Rect());
+  int width = edge.Width();
 
   switch (side) {
     case BoxSide::kTop:
@@ -246,13 +246,12 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
 }
 
 void DrawSolidBorderRect(GraphicsContext& context,
-                         const gfx::RectF& border_rect,
-                         float border_width,
+                         const gfx::Rect& border_rect,
+                         int border_width,
                          const Color& color,
                          const AutoDarkMode& auto_dark_mode) {
-  gfx::RectF stroke_rect = border_rect;
-  border_width = floorf(border_width);
-  stroke_rect.Outset(-border_width / 2);
+  gfx::RectF stroke_rect(border_rect);
+  stroke_rect.Outset(-border_width / 2.f);
 
   bool was_antialias = context.ShouldAntialias();
   if (!was_antialias)
@@ -424,6 +423,19 @@ void DrawDashedOrDottedBoxSide(GraphicsContext& context,
   }
 }
 
+void DrawLineForBoxSide(GraphicsContext& context,
+                        int x1,
+                        int y1,
+                        int x2,
+                        int y2,
+                        BoxSide side,
+                        Color color,
+                        EBorderStyle style,
+                        int adjacent_width1,
+                        int adjacent_width2,
+                        bool antialias,
+                        const AutoDarkMode& auto_dark_mode);
+
 void DrawDoubleBoxSide(GraphicsContext& context,
                        int x1,
                        int y1,
@@ -432,7 +444,7 @@ void DrawDoubleBoxSide(GraphicsContext& context,
                        int length,
                        BoxSide side,
                        Color color,
-                       float thickness,
+                       int thickness,
                        int adjacent_width1,
                        int adjacent_width2,
                        bool antialias,
@@ -479,58 +491,56 @@ void DrawDoubleBoxSide(GraphicsContext& context,
 
   switch (side) {
     case BoxSide::kTop:
-      BoxBorderPainter::DrawLineForBoxSide(
+      DrawLineForBoxSide(
           context, x1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0), y1,
           x2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0),
           y1 + third_of_thickness, side, color, EBorderStyle::kSolid,
           adjacent1_big_third, adjacent2_big_third, antialias, auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1 + std::max((adjacent_width1 * 2 + 1) / 3, 0),
-          y2 - third_of_thickness,
-          x2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), y2, side, color,
-          EBorderStyle::kSolid, adjacent1_big_third, adjacent2_big_third,
-          antialias, auto_dark_mode);
+      DrawLineForBoxSide(context,
+                         x1 + std::max((adjacent_width1 * 2 + 1) / 3, 0),
+                         y2 - third_of_thickness,
+                         x2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), y2,
+                         side, color, EBorderStyle::kSolid, adjacent1_big_third,
+                         adjacent2_big_third, antialias, auto_dark_mode);
       break;
     case BoxSide::kLeft:
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1, y1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0),
-          x1 + third_of_thickness,
-          y2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), side, color,
-          EBorderStyle::kSolid, adjacent1_big_third, adjacent2_big_third,
-          antialias, auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x2 - third_of_thickness,
-          y1 + std::max((adjacent_width1 * 2 + 1) / 3, 0), x2,
-          y2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), side, color,
-          EBorderStyle::kSolid, adjacent1_big_third, adjacent2_big_third,
-          antialias, auto_dark_mode);
+      DrawLineForBoxSide(context, x1,
+                         y1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0),
+                         x1 + third_of_thickness,
+                         y2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), side,
+                         color, EBorderStyle::kSolid, adjacent1_big_third,
+                         adjacent2_big_third, antialias, auto_dark_mode);
+      DrawLineForBoxSide(context, x2 - third_of_thickness,
+                         y1 + std::max((adjacent_width1 * 2 + 1) / 3, 0), x2,
+                         y2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), side,
+                         color, EBorderStyle::kSolid, adjacent1_big_third,
+                         adjacent2_big_third, antialias, auto_dark_mode);
       break;
     case BoxSide::kBottom:
-      BoxBorderPainter::DrawLineForBoxSide(
+      DrawLineForBoxSide(
           context, x1 + std::max((adjacent_width1 * 2 + 1) / 3, 0), y1,
           x2 - std::max((adjacent_width2 * 2 + 1) / 3, 0),
           y1 + third_of_thickness, side, color, EBorderStyle::kSolid,
           adjacent1_big_third, adjacent2_big_third, antialias, auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0),
-          y2 - third_of_thickness,
-          x2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), y2, side, color,
-          EBorderStyle::kSolid, adjacent1_big_third, adjacent2_big_third,
-          antialias, auto_dark_mode);
+      DrawLineForBoxSide(context,
+                         x1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0),
+                         y2 - third_of_thickness,
+                         x2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), y2,
+                         side, color, EBorderStyle::kSolid, adjacent1_big_third,
+                         adjacent2_big_third, antialias, auto_dark_mode);
       break;
     case BoxSide::kRight:
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1, y1 + std::max((adjacent_width1 * 2 + 1) / 3, 0),
-          x1 + third_of_thickness,
-          y2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), side, color,
-          EBorderStyle::kSolid, adjacent1_big_third, adjacent2_big_third,
-          antialias, auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x2 - third_of_thickness,
-          y1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0), x2,
-          y2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), side, color,
-          EBorderStyle::kSolid, adjacent1_big_third, adjacent2_big_third,
-          antialias, auto_dark_mode);
+      DrawLineForBoxSide(context, x1,
+                         y1 + std::max((adjacent_width1 * 2 + 1) / 3, 0),
+                         x1 + third_of_thickness,
+                         y2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), side,
+                         color, EBorderStyle::kSolid, adjacent1_big_third,
+                         adjacent2_big_third, antialias, auto_dark_mode);
+      DrawLineForBoxSide(context, x2 - third_of_thickness,
+                         y1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0), x2,
+                         y2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), side,
+                         color, EBorderStyle::kSolid, adjacent1_big_third,
+                         adjacent2_big_third, antialias, auto_dark_mode);
       break;
     default:
       break;
@@ -566,49 +576,47 @@ void DrawRidgeOrGrooveBoxSide(GraphicsContext& context,
 
   switch (side) {
     case BoxSide::kTop:
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1 + std::max(-adjacent_width1, 0) / 2, y1,
-          x2 - std::max(-adjacent_width2, 0) / 2, (y1 + y2 + 1) / 2, side,
-          color, s1, adjacent1_big_half, adjacent2_big_half, antialias,
-          auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
+      DrawLineForBoxSide(context, x1 + std::max(-adjacent_width1, 0) / 2, y1,
+                         x2 - std::max(-adjacent_width2, 0) / 2,
+                         (y1 + y2 + 1) / 2, side, color, s1, adjacent1_big_half,
+                         adjacent2_big_half, antialias, auto_dark_mode);
+      DrawLineForBoxSide(
           context, x1 + std::max(adjacent_width1 + 1, 0) / 2, (y1 + y2 + 1) / 2,
           x2 - std::max(adjacent_width2 + 1, 0) / 2, y2, side, color, s2,
           adjacent_width1 / 2, adjacent_width2 / 2, antialias, auto_dark_mode);
       break;
     case BoxSide::kLeft:
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1, y1 + std::max(-adjacent_width1, 0) / 2,
-          (x1 + x2 + 1) / 2, y2 - std::max(-adjacent_width2, 0) / 2, side,
-          color, s1, adjacent1_big_half, adjacent2_big_half, antialias,
-          auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
+      DrawLineForBoxSide(context, x1, y1 + std::max(-adjacent_width1, 0) / 2,
+                         (x1 + x2 + 1) / 2,
+                         y2 - std::max(-adjacent_width2, 0) / 2, side, color,
+                         s1, adjacent1_big_half, adjacent2_big_half, antialias,
+                         auto_dark_mode);
+      DrawLineForBoxSide(
           context, (x1 + x2 + 1) / 2, y1 + std::max(adjacent_width1 + 1, 0) / 2,
           x2, y2 - std::max(adjacent_width2 + 1, 0) / 2, side, color, s2,
           adjacent_width1 / 2, adjacent_width2 / 2, antialias, auto_dark_mode);
       break;
     case BoxSide::kBottom:
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1 + std::max(adjacent_width1, 0) / 2, y1,
-          x2 - std::max(adjacent_width2, 0) / 2, (y1 + y2 + 1) / 2, side, color,
-          s2, adjacent1_big_half, adjacent2_big_half, antialias,
-          auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, x1 + std::max(-adjacent_width1 + 1, 0) / 2,
-          (y1 + y2 + 1) / 2, x2 - std::max(-adjacent_width2 + 1, 0) / 2, y2,
-          side, color, s1, adjacent_width1 / 2, adjacent_width2 / 2, antialias,
-          auto_dark_mode);
+      DrawLineForBoxSide(context, x1 + std::max(adjacent_width1, 0) / 2, y1,
+                         x2 - std::max(adjacent_width2, 0) / 2,
+                         (y1 + y2 + 1) / 2, side, color, s2, adjacent1_big_half,
+                         adjacent2_big_half, antialias, auto_dark_mode);
+      DrawLineForBoxSide(context, x1 + std::max(-adjacent_width1 + 1, 0) / 2,
+                         (y1 + y2 + 1) / 2,
+                         x2 - std::max(-adjacent_width2 + 1, 0) / 2, y2, side,
+                         color, s1, adjacent_width1 / 2, adjacent_width2 / 2,
+                         antialias, auto_dark_mode);
       break;
     case BoxSide::kRight:
-      BoxBorderPainter::DrawLineForBoxSide(
+      DrawLineForBoxSide(
           context, x1, y1 + std::max(adjacent_width1, 0) / 2, (x1 + x2 + 1) / 2,
           y2 - std::max(adjacent_width2, 0) / 2, side, color, s2,
           adjacent1_big_half, adjacent2_big_half, antialias, auto_dark_mode);
-      BoxBorderPainter::DrawLineForBoxSide(
-          context, (x1 + x2 + 1) / 2,
-          y1 + std::max(-adjacent_width1 + 1, 0) / 2, x2,
-          y2 - std::max(-adjacent_width2 + 1, 0) / 2, side, color, s1,
-          adjacent_width1 / 2, adjacent_width2 / 2, antialias, auto_dark_mode);
+      DrawLineForBoxSide(context, (x1 + x2 + 1) / 2,
+                         y1 + std::max(-adjacent_width1 + 1, 0) / 2, x2,
+                         y2 - std::max(-adjacent_width2 + 1, 0) / 2, side,
+                         color, s1, adjacent_width1 / 2, adjacent_width2 / 2,
+                         antialias, auto_dark_mode);
       break;
   }
 }
@@ -688,6 +696,77 @@ void DrawSolidBoxSide(GraphicsContext& context,
   FillQuad(context, quad, color, antialias, auto_dark_mode);
 }
 
+void DrawLineForBoxSide(GraphicsContext& context,
+                        int x1,
+                        int y1,
+                        int x2,
+                        int y2,
+                        BoxSide side,
+                        Color color,
+                        EBorderStyle style,
+                        int adjacent_width1,
+                        int adjacent_width2,
+                        bool antialias,
+                        const AutoDarkMode& auto_dark_mode) {
+  int thickness;
+  int length;
+  if (side == BoxSide::kTop || side == BoxSide::kBottom) {
+    thickness = y2 - y1;
+    length = x2 - x1;
+  } else {
+    thickness = x2 - x1;
+    length = y2 - y1;
+  }
+
+  // We would like this check to be an ASSERT as we don't want to draw empty
+  // borders. However nothing guarantees that the following recursive calls to
+  // DrawLineForBoxSide() will have positive thickness and length.
+  if (length <= 0 || thickness <= 0) {
+    return;
+  }
+
+  style = BorderEdge::EffectiveStyle(style, thickness);
+
+  switch (style) {
+    case EBorderStyle::kNone:
+    case EBorderStyle::kHidden:
+      return;
+    case EBorderStyle::kDotted:
+    case EBorderStyle::kDashed:
+      DrawDashedOrDottedBoxSide(context, x1, y1, x2, y2, side, color, thickness,
+                                style, antialias, auto_dark_mode);
+      break;
+    case EBorderStyle::kDouble:
+      DrawDoubleBoxSide(context, x1, y1, x2, y2, length, side, color, thickness,
+                        adjacent_width1, adjacent_width2, antialias,
+                        auto_dark_mode);
+      break;
+    case EBorderStyle::kRidge:
+    case EBorderStyle::kGroove:
+      DrawRidgeOrGrooveBoxSide(context, x1, y1, x2, y2, side, color, style,
+                               adjacent_width1, adjacent_width2, antialias,
+                               auto_dark_mode);
+      break;
+    case EBorderStyle::kInset:
+      // FIXME: Maybe we should lighten the colors on one side like Firefox.
+      // https://bugs.webkit.org/show_bug.cgi?id=58608
+      if (side == BoxSide::kTop || side == BoxSide::kLeft) {
+        color = color.Dark();
+      }
+      [[fallthrough]];
+    case EBorderStyle::kOutset:
+      if (style == EBorderStyle::kOutset &&
+          (side == BoxSide::kBottom || side == BoxSide::kRight)) {
+        color = color.Dark();
+      }
+      [[fallthrough]];
+    case EBorderStyle::kSolid:
+      DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
+                       adjacent_width2, antialias, auto_dark_mode);
+      break;
+  }
+}
+
 void FindIntersection(const gfx::PointF& p1,
                       const gfx::PointF& p2,
                       const gfx::PointF& d1,
@@ -736,8 +815,8 @@ struct BoxBorderPainter::ComplexBorderInfo {
                 const BorderEdge& edge_a = border_painter.Edge(a);
                 const BorderEdge& edge_b = border_painter.Edge(b);
 
-                const unsigned alpha_a = edge_a.color.Alpha();
-                const unsigned alpha_b = edge_b.color.Alpha();
+                const unsigned alpha_a = edge_a.GetColor().Alpha();
+                const unsigned alpha_b = edge_b.GetColor().Alpha();
                 if (alpha_a != alpha_b)
                   return alpha_a < alpha_b;
 
@@ -770,7 +849,7 @@ struct BoxBorderPainter::ComplexBorderInfo {
     unsigned current_alpha = 0;
     for (BoxSide side : sorted_sides) {
       const BorderEdge& edge = border_painter.Edge(side);
-      const unsigned edge_alpha = edge.color.Alpha();
+      const unsigned edge_alpha = edge.GetColor().Alpha();
 
       DCHECK_GT(edge_alpha, 0u);
       DCHECK_GE(edge_alpha, current_alpha);
@@ -795,7 +874,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   DCHECK(FirstEdge().BorderStyle() == EBorderStyle::kDouble);
   DCHECK(visible_edge_set_ == kAllBorderEdges);
 
-  const Color color = FirstEdge().color;
+  const Color& color = FirstEdge().GetColor();
 
   // When painting outlines, we ignore outer/inner radii.
   const auto force_rectangular = !outer_.IsRounded() && !inner_.IsRounded();
@@ -836,13 +915,13 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
     if (FirstEdge().BorderStyle() == EBorderStyle::kSolid) {
       if (is_uniform_width_ && !outer_.IsRounded()) {
         // 4-side, solid, uniform-width, rectangular border => one drawRect()
-        DrawSolidBorderRect(context_, outer_.Rect(), FirstEdge().Width(),
-                            FirstEdge().color,
+        DrawSolidBorderRect(context_, gfx::ToRoundedRect(outer_.Rect()),
+                            FirstEdge().Width(), FirstEdge().GetColor(),
                             PaintAutoDarkMode(style_, element_role_));
       } else {
         // 4-side, solid border => one drawDRRect()
         DrawBleedAdjustedDRRect(context_, bleed_avoidance_, outer_, inner_,
-                                FirstEdge().color,
+                                FirstEdge().GetColor(),
                                 PaintAutoDarkMode(style_, element_role_));
       }
     } else {
@@ -866,11 +945,12 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
     for (auto side :
          {BoxSide::kTop, BoxSide::kRight, BoxSide::kBottom, BoxSide::kLeft}) {
       const BorderEdge& curr_edge = Edge(side);
-      if (curr_edge.ShouldRender())
-        path.AddRect(CalculateSideRect(outer_, curr_edge, side));
+      if (curr_edge.ShouldRender()) {
+        path.AddRect(gfx::RectF(CalculateSideRect(outer_, curr_edge, side)));
+      }
     }
 
-    context_.SetFillColor(FirstEdge().color);
+    context_.SetFillColor(FirstEdge().GetColor());
     context_.FillPath(path, PaintAutoDarkMode(style_, element_role_));
     return true;
   }
@@ -973,12 +1053,12 @@ void BoxBorderPainter::ComputeBorderProperties() {
       continue;
     }
 
-    DCHECK_GT(edge.color.Alpha(), 0);
+    DCHECK_GT(edge.GetColor().Alpha(), 0);
 
     visible_edge_count_++;
     visible_edge_set_ |= EdgeFlagForSide(static_cast<BoxSide>(i));
 
-    has_alpha_ |= edge.color.HasAlpha();
+    has_alpha_ |= edge.GetColor().HasAlpha();
 
     if (visible_edge_count_ == 1) {
       first_visible_edge_ = i;
@@ -988,7 +1068,7 @@ void BoxBorderPainter::ComputeBorderProperties() {
     is_uniform_style_ &=
         edge.BorderStyle() == edges_[first_visible_edge_].BorderStyle();
     is_uniform_width_ &= edge.Width() == edges_[first_visible_edge_].Width();
-    is_uniform_color_ &= edge.color == edges_[first_visible_edge_].color;
+    is_uniform_color_ &= edge.SharesColorWith(edges_[first_visible_edge_]);
   }
 }
 
@@ -1126,10 +1206,10 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
                                  BorderEdgeFlags completed_edges) const {
   const BorderEdge& edge = Edge(side);
   DCHECK(edge.ShouldRender());
-  const Color color(edge.color.Red(), edge.color.Green(), edge.color.Blue(),
-                    alpha);
+  const Color color(edge.GetColor().Red(), edge.GetColor().Green(),
+                    edge.GetColor().Blue(), alpha);
 
-  gfx::RectF side_rect = outer_.Rect();
+  gfx::Rect side_rect = gfx::ToRoundedRect(outer_.Rect());
   const Path* path = nullptr;
 
   // TODO(fmalita): find a way to consolidate these without sacrificing
@@ -1140,10 +1220,11 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
                           BorderWillArcInnerEdge(inner_.GetRadii().TopLeft(),
                                                  inner_.GetRadii().TopRight()));
-      if (use_path)
+      if (use_path) {
         path = &border_info.rounded_border_path;
-      else
-        side_rect.set_height(floorf(edge.Width()));
+      } else {
+        side_rect.set_height(edge.Width());
+      }
 
       PaintOneBorderSide(side_rect, BoxSide::kTop, BoxSide::kLeft,
                          BoxSide::kRight, path, color, completed_edges);
@@ -1154,10 +1235,11 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
                       (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
                        BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                               inner_.GetRadii().BottomRight()));
-      if (use_path)
+      if (use_path) {
         path = &border_info.rounded_border_path;
-      else
-        SetToBottomSideRect(side_rect, floorf(edge.Width()));
+      } else {
+        SetToBottomSideRect(side_rect, edge.Width());
+      }
 
       PaintOneBorderSide(side_rect, BoxSide::kBottom, BoxSide::kLeft,
                          BoxSide::kRight, path, color, completed_edges);
@@ -1168,10 +1250,11 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
                           BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                                  inner_.GetRadii().TopLeft()));
-      if (use_path)
+      if (use_path) {
         path = &border_info.rounded_border_path;
-      else
-        side_rect.set_width(floorf(edge.Width()));
+      } else {
+        side_rect.set_width(edge.Width());
+      }
 
       PaintOneBorderSide(side_rect, BoxSide::kLeft, BoxSide::kTop,
                          BoxSide::kBottom, path, color, completed_edges);
@@ -1182,10 +1265,11 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
                       (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
                        BorderWillArcInnerEdge(inner_.GetRadii().BottomRight(),
                                               inner_.GetRadii().TopRight()));
-      if (use_path)
+      if (use_path) {
         path = &border_info.rounded_border_path;
-      else
-        SetToRightSideRect(side_rect, floorf(edge.Width()));
+      } else {
+        SetToRightSideRect(side_rect, edge.Width());
+      }
 
       PaintOneBorderSide(side_rect, BoxSide::kRight, BoxSide::kTop,
                          BoxSide::kBottom, path, color, completed_edges);
@@ -1203,8 +1287,9 @@ BoxBorderPainter::MiterType BoxBorderPainter::ComputeMiter(
   const BorderEdge& adjacent_edge = Edge(adjacent_side);
 
   // No miters for missing edges.
-  if (!adjacent_edge.is_present)
+  if (!adjacent_edge.UsedWidth()) {
     return kNoMiter;
+  }
 
   // The adjacent edge will overdraw this corner, resulting in a correct miter.
   if (WillOverdraw(adjacent_side, adjacent_edge.BorderStyle(), completed_edges))
@@ -1241,7 +1326,7 @@ bool BoxBorderPainter::MitersRequireClipping(MiterType miter1,
 }
 
 void BoxBorderPainter::PaintOneBorderSide(
-    const gfx::RectF& side_rect,
+    const gfx::Rect& side_rect,
     BoxSide side,
     BoxSide adjacent_side1,
     BoxSide adjacent_side2,
@@ -1264,7 +1349,7 @@ void BoxBorderPainter::PaintOneBorderSide(
       ClipBorderSidePolygon(side, miter1, miter2);
     else
       ClipBorderSideForComplexInnerPath(side);
-    float stroke_thickness =
+    int stroke_thickness =
         std::max(std::max(edge_to_render.Width(), adjacent_edge1.Width()),
                  adjacent_edge2.Width());
     DrawBoxSideFromPath(*path, edge_to_render.Width(), stroke_thickness, side,
@@ -1285,23 +1370,24 @@ void BoxBorderPainter::PaintOneBorderSide(
     DrawLineForBoxSide(
         context_, side_rect.x(), side_rect.y(), side_rect.right(),
         side_rect.bottom(), side, color, edge_to_render.BorderStyle(),
-        miter1 != kNoMiter ? floorf(adjacent_edge1.Width()) : 0,
-        miter2 != kNoMiter ? floorf(adjacent_edge2.Width()) : 0,
+        miter1 != kNoMiter ? adjacent_edge1.Width() : 0,
+        miter2 != kNoMiter ? adjacent_edge2.Width() : 0,
         /*antialias*/ true, PaintAutoDarkMode(style_, element_role_));
   }
 }
 
 void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
-                                           float border_thickness,
-                                           float stroke_thickness,
+                                           int border_thickness,
+                                           int stroke_thickness,
                                            BoxSide side,
                                            Color color,
                                            EBorderStyle border_style) const {
   if (border_thickness <= 0)
     return;
 
-  if (border_style == EBorderStyle::kDouble && border_thickness < 3)
-    border_style = EBorderStyle::kSolid;
+  // The caller should have adjusted border_style.
+  DCHECK_EQ(border_style,
+            BorderEdge::EffectiveStyle(border_style, border_thickness));
 
   switch (border_style) {
     case EBorderStyle::kNone:
@@ -1344,8 +1430,8 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
 }
 
 void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
-    float border_thickness,
-    float stroke_thickness,
+    int border_thickness,
+    int stroke_thickness,
     Color color,
     EBorderStyle border_style) const {
   // Convert the path to be down the middle of the dots or dashes.
@@ -1381,7 +1467,7 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
 
 void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
     const Path& border_path,
-    float border_thickness) const {
+    int border_thickness) const {
   context_.SetStrokeThickness(border_thickness);
   context_.SetStrokeStyle(kDottedStroke);
   context_.SetLineCap(kRoundCap);
@@ -1392,12 +1478,11 @@ void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
                       border_path.length(), border_thickness);
 }
 
-void BoxBorderPainter::DrawDoubleBoxSideFromPath(
-    const Path& border_path,
-    float border_thickness,
-    float stroke_thickness,
-    BoxSide side,
-    Color color) const {
+void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
+                                                 int border_thickness,
+                                                 int stroke_thickness,
+                                                 BoxSide side,
+                                                 Color color) const {
   // Draw inner border line
   {
     GraphicsContextStateSaver state_saver(context_);
@@ -1438,8 +1523,8 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(
 
 void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
     const Path& border_path,
-    float border_thickness,
-    float stroke_thickness,
+    int border_thickness,
+    int stroke_thickness,
     BoxSide side,
     Color color,
     EBorderStyle border_style) const {
@@ -1468,10 +1553,10 @@ void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
                       color, s2);
 }
 
-gfx::RectF BoxBorderPainter::CalculateSideRectIncludingInner(
+gfx::Rect BoxBorderPainter::CalculateSideRectIncludingInner(
     BoxSide side) const {
-  gfx::RectF side_rect = outer_.Rect();
-  float width;
+  gfx::Rect side_rect = gfx::ToRoundedRect(outer_.Rect());
+  int width;
 
   switch (side) {
     case BoxSide::kTop:
@@ -1792,73 +1877,15 @@ bool BoxBorderPainter::ColorsMatchAtCorner(BoxSide side,
                                                 adjacent_side);
 }
 
-void BoxBorderPainter::DrawLineForBoxSide(GraphicsContext& context,
-                                          float x1,
-                                          float y1,
-                                          float x2,
-                                          float y2,
-                                          BoxSide side,
-                                          Color color,
-                                          EBorderStyle style,
-                                          int adjacent_width1,
-                                          int adjacent_width2,
-                                          bool antialias,
-                                          const AutoDarkMode& auto_dark_mode) {
-  float thickness;
-  float length;
-  if (side == BoxSide::kTop || side == BoxSide::kBottom) {
-    thickness = y2 - y1;
-    length = x2 - x1;
-  } else {
-    thickness = x2 - x1;
-    length = y2 - y1;
-  }
-
-  // We would like this check to be an ASSERT as we don't want to draw empty
-  // borders. However nothing guarantees that the following recursive calls to
-  // DrawLineForBoxSide() will have positive thickness and length.
-  if (length <= 0 || thickness <= 0)
-    return;
-
-  if (style == EBorderStyle::kDouble && thickness < 3)
-    style = EBorderStyle::kSolid;
-
-  switch (style) {
-    case EBorderStyle::kNone:
-    case EBorderStyle::kHidden:
-      return;
-    case EBorderStyle::kDotted:
-    case EBorderStyle::kDashed:
-      DrawDashedOrDottedBoxSide(context, x1, y1, x2, y2, side, color, thickness,
-                                style, antialias, auto_dark_mode);
-      break;
-    case EBorderStyle::kDouble:
-      DrawDoubleBoxSide(context, x1, y1, x2, y2, length, side, color, thickness,
-                        adjacent_width1, adjacent_width2, antialias,
-                        auto_dark_mode);
-      break;
-    case EBorderStyle::kRidge:
-    case EBorderStyle::kGroove:
-      DrawRidgeOrGrooveBoxSide(context, x1, y1, x2, y2, side, color, style,
-                               adjacent_width1, adjacent_width2, antialias,
-                               auto_dark_mode);
-      break;
-    case EBorderStyle::kInset:
-      // FIXME: Maybe we should lighten the colors on one side like Firefox.
-      // https://bugs.webkit.org/show_bug.cgi?id=58608
-      if (side == BoxSide::kTop || side == BoxSide::kLeft)
-        color = color.Dark();
-      [[fallthrough]];
-    case EBorderStyle::kOutset:
-      if (style == EBorderStyle::kOutset &&
-          (side == BoxSide::kBottom || side == BoxSide::kRight))
-        color = color.Dark();
-      [[fallthrough]];
-    case EBorderStyle::kSolid:
-      DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
-                       adjacent_width2, antialias, auto_dark_mode);
-      break;
-  }
+void BoxBorderPainter::DrawBoxSide(GraphicsContext& context,
+                                   const gfx::Rect& snapped_edge_rect,
+                                   BoxSide side,
+                                   Color color,
+                                   EBorderStyle style,
+                                   const AutoDarkMode& auto_dark_mode) {
+  DrawLineForBoxSide(context, snapped_edge_rect.x(), snapped_edge_rect.y(),
+                     snapped_edge_rect.right(), snapped_edge_rect.bottom(),
+                     side, color, style, 0, 0, true, auto_dark_mode);
 }
 
 }  // namespace blink

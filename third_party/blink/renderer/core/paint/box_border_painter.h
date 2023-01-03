@@ -47,28 +47,7 @@ class BoxBorderPainter {
                           BoxSide side,
                           Color color,
                           EBorderStyle style,
-                          const AutoDarkMode& auto_dark_mode) {
-    DrawLineForBoxSide(context, snapped_edge_rect.x(), snapped_edge_rect.y(),
-                       snapped_edge_rect.right(), snapped_edge_rect.bottom(),
-                       side, color, style, 0, 0, true, auto_dark_mode);
-  }
-
-  // TODO(crbug.com/1201762): The float parameters are truncated to int in the
-  // function, which implicitly snaps to whole pixels perhaps unexpectedly. To
-  // avoid the problem, we should use the above function which requires the
-  // caller to snap to whole pixels explicitly.
-  static void DrawLineForBoxSide(GraphicsContext&,
-                                 float x1,
-                                 float y1,
-                                 float x2,
-                                 float y2,
-                                 BoxSide,
-                                 Color,
-                                 EBorderStyle,
-                                 int adjacent_edge_width1,
-                                 int adjacent_edge_width2,
-                                 bool antialias,
-                                 const AutoDarkMode& auto_dark_mode);
+                          const AutoDarkMode& auto_dark_mode);
 
  private:
   // For PaintBorder().
@@ -102,7 +81,7 @@ class BoxBorderPainter {
                  BoxSide,
                  unsigned alpha,
                  BorderEdgeFlags) const;
-  void PaintOneBorderSide(const gfx::RectF& side_rect,
+  void PaintOneBorderSide(const gfx::Rect& side_rect,
                           BoxSide,
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
@@ -113,29 +92,29 @@ class BoxBorderPainter {
   void DrawDoubleBorder() const;
 
   void DrawBoxSideFromPath(const Path&,
-                           float thickness,
-                           float draw_thickness,
+                           int thickness,
+                           int draw_thickness,
                            BoxSide,
                            Color,
                            EBorderStyle) const;
-  void DrawDashedDottedBoxSideFromPath(float thickness,
-                                       float draw_thickness,
+  void DrawDashedDottedBoxSideFromPath(int thickness,
+                                       int draw_thickness,
                                        Color,
                                        EBorderStyle) const;
-  void DrawWideDottedBoxSideFromPath(const Path&, float thickness) const;
+  void DrawWideDottedBoxSideFromPath(const Path&, int thickness) const;
   void DrawDoubleBoxSideFromPath(const Path&,
-                                 float thickness,
-                                 float draw_thickness,
+                                 int thickness,
+                                 int draw_thickness,
                                  BoxSide,
                                  Color) const;
   void DrawRidgeGrooveBoxSideFromPath(const Path&,
-                                      float thickness,
-                                      float draw_thickness,
+                                      int thickness,
+                                      int draw_thickness,
                                       BoxSide,
                                       Color,
                                       EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
-  gfx::RectF CalculateSideRectIncludingInner(BoxSide) const;
+  gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
   void ClipBorderSideForComplexInnerPath(BoxSide) const;
 
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;

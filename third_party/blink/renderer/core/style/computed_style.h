@@ -82,7 +82,7 @@ namespace blink {
 using std::max;
 
 class AppliedTextDecoration;
-struct BorderEdge;
+class BorderEdge;
 class ContentData;
 class CounterDirectives;
 class CSSAnimationData;

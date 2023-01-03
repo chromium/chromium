@@ -11,48 +11,50 @@
 
 namespace blink {
 
-struct BorderEdge {
+class BorderEdge {
   STACK_ALLOCATED();
 
  public:
-  BorderEdge(float edge_width,
+  BorderEdge(int edge_width,
              const Color& edge_color,
              EBorderStyle edge_style,
              bool edge_is_present = true);
   BorderEdge();
+
+  static EBorderStyle EffectiveStyle(EBorderStyle style, int width);
 
   bool HasVisibleColorAndStyle() const;
   bool ShouldRender() const;
   bool PresentButInvisible() const;
   bool ObscuresBackgroundEdge() const;
   bool ObscuresBackground() const;
-  float UsedWidth() const;
+  int UsedWidth() const;
 
   bool SharesColorWith(const BorderEdge& other) const;
 
-  EBorderStyle BorderStyle() const { return static_cast<EBorderStyle>(style); }
+  EBorderStyle BorderStyle() const { return style_; }
 
   enum DoubleBorderStripe {
     kDoubleBorderStripeOuter,
     kDoubleBorderStripeInner
   };
 
-  float GetDoubleBorderStripeWidth(DoubleBorderStripe) const;
+  int GetDoubleBorderStripeWidth(DoubleBorderStripe) const;
 
-  float Width() const { return width_; }
+  int Width() const { return width_; }
+  const Color& GetColor() const { return color_; }
 
-  void ClampWidth(float width) {
+  void ClampWidth(int width) {
     if (width_ > width) {
       width_ = width;
     }
   }
 
-  Color color;
-  bool is_present;
-
  private:
-  unsigned style : 4;  // EBorderStyle
-  float width_;
+  Color color_;
+  bool is_present_;
+  EBorderStyle style_;
+  int width_;
 };
 
 }  // namespace blink

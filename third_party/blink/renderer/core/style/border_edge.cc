@@ -8,29 +8,31 @@
 
 namespace blink {
 
-BorderEdge::BorderEdge(float edge_width,
+BorderEdge::BorderEdge(int edge_width,
                        const Color& edge_color,
                        EBorderStyle edge_style,
                        bool edge_is_present)
-    : color(edge_color),
-      is_present(edge_is_present),
-      style(static_cast<unsigned>(edge_style)),
-      width_(edge_width) {
-  if (style == static_cast<unsigned>(EBorderStyle::kDouble) && edge_width < 3) {
-    style = static_cast<unsigned>(EBorderStyle::kSolid);
+    : color_(edge_color),
+      is_present_(edge_is_present),
+      style_(EffectiveStyle(edge_style, edge_width)),
+      width_(edge_width) {}
+
+BorderEdge::BorderEdge() : is_present_(false), style_(EBorderStyle::kHidden) {}
+
+// static
+EBorderStyle BorderEdge::EffectiveStyle(EBorderStyle style, int width) {
+  if (style == EBorderStyle::kDouble && width < 3) {
+    return EBorderStyle::kSolid;
   }
+  return style;
 }
 
-BorderEdge::BorderEdge()
-    : is_present(false), style(static_cast<unsigned>(EBorderStyle::kHidden)) {}
-
 bool BorderEdge::HasVisibleColorAndStyle() const {
-  return style > static_cast<unsigned>(EBorderStyle::kHidden) &&
-         color.Alpha() > 0;
+  return style_ > EBorderStyle::kHidden && color_.Alpha() > 0;
 }
 
 bool BorderEdge::ShouldRender() const {
-  return is_present && width_ && HasVisibleColorAndStyle();
+  return is_present_ && width_ && HasVisibleColorAndStyle();
 }
 
 bool BorderEdge::PresentButInvisible() const {
@@ -38,13 +40,11 @@ bool BorderEdge::PresentButInvisible() const {
 }
 
 bool BorderEdge::ObscuresBackgroundEdge() const {
-  if (!is_present || color.HasAlpha() ||
-      style == static_cast<unsigned>(EBorderStyle::kHidden)) {
+  if (!is_present_ || color_.HasAlpha() || style_ == EBorderStyle::kHidden) {
     return false;
   }
 
-  if (style == static_cast<unsigned>(EBorderStyle::kDotted) ||
-      style == static_cast<unsigned>(EBorderStyle::kDashed)) {
+  if (style_ == EBorderStyle::kDotted || style_ == EBorderStyle::kDashed) {
     return false;
   }
 
@@ -52,34 +52,33 @@ bool BorderEdge::ObscuresBackgroundEdge() const {
 }
 
 bool BorderEdge::ObscuresBackground() const {
-  if (!is_present || color.HasAlpha() ||
-      style == static_cast<unsigned>(EBorderStyle::kHidden)) {
+  if (!is_present_ || color_.HasAlpha() || style_ == EBorderStyle::kHidden) {
     return false;
   }
 
-  if (style == static_cast<unsigned>(EBorderStyle::kDotted) ||
-      style == static_cast<unsigned>(EBorderStyle::kDashed) ||
-      style == static_cast<unsigned>(EBorderStyle::kDouble)) {
+  if (style_ == EBorderStyle::kDotted || style_ == EBorderStyle::kDashed ||
+      style_ == EBorderStyle::kDouble) {
     return false;
   }
 
   return true;
 }
 
-float BorderEdge::UsedWidth() const {
-  return is_present ? width_ : 0;
+int BorderEdge::UsedWidth() const {
+  return is_present_ ? width_ : 0;
 }
 
-float BorderEdge::GetDoubleBorderStripeWidth(DoubleBorderStripe stripe) const {
+int BorderEdge::GetDoubleBorderStripeWidth(DoubleBorderStripe stripe) const {
   DCHECK(stripe == kDoubleBorderStripeOuter ||
          stripe == kDoubleBorderStripeInner);
 
-  return roundf(stripe == kDoubleBorderStripeOuter ? UsedWidth() / 3
-                                                   : (UsedWidth() * 2) / 3);
+  return roundf(stripe == kDoubleBorderStripeOuter
+                    ? UsedWidth() / 3.0f
+                    : (UsedWidth() * 2.0f) / 3.0f);
 }
 
 bool BorderEdge::SharesColorWith(const BorderEdge& other) const {
-  return color == other.color;
+  return color_ == other.color_;
 }
 
 }  // namespace blink

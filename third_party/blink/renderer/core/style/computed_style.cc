@@ -2292,23 +2292,25 @@ LayoutRectOutsets ComputedStyle::BoxDecorationOutsets() const {
 
 void ComputedStyle::GetBorderEdgeInfo(BorderEdge edges[],
                                       PhysicalBoxSides sides_to_include) const {
-  edges[static_cast<unsigned>(BoxSide::kTop)] = BorderEdge(
-      BorderTopWidth(), VisitedDependentColor(GetCSSPropertyBorderTopColor()),
-      BorderTopStyle(), sides_to_include.top);
+  edges[static_cast<unsigned>(BoxSide::kTop)] =
+      BorderEdge(BorderTopWidth().ToInt(),
+                 VisitedDependentColor(GetCSSPropertyBorderTopColor()),
+                 BorderTopStyle(), sides_to_include.top);
 
   edges[static_cast<unsigned>(BoxSide::kRight)] =
-      BorderEdge(BorderRightWidth(),
+      BorderEdge(BorderRightWidth().ToInt(),
                  VisitedDependentColor(GetCSSPropertyBorderRightColor()),
                  BorderRightStyle(), sides_to_include.right);
 
   edges[static_cast<unsigned>(BoxSide::kBottom)] =
-      BorderEdge(BorderBottomWidth(),
+      BorderEdge(BorderBottomWidth().ToInt(),
                  VisitedDependentColor(GetCSSPropertyBorderBottomColor()),
                  BorderBottomStyle(), sides_to_include.bottom);
 
-  edges[static_cast<unsigned>(BoxSide::kLeft)] = BorderEdge(
-      BorderLeftWidth(), VisitedDependentColor(GetCSSPropertyBorderLeftColor()),
-      BorderLeftStyle(), sides_to_include.left);
+  edges[static_cast<unsigned>(BoxSide::kLeft)] =
+      BorderEdge(BorderLeftWidth().ToInt(),
+                 VisitedDependentColor(GetCSSPropertyBorderLeftColor()),
+                 BorderLeftStyle(), sides_to_include.left);
 }
 
 void ComputedStyle::CopyChildDependentFlagsFrom(const ComputedStyle& other) {
