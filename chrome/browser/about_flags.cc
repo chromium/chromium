@@ -9105,10 +9105,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAccessHandleAllSyncSurfaceDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kSyncAccessHandleAllSyncSurface)},
 
-    {"webauthn-conditional-ui", flag_descriptions::kWebAuthnConditionalUIName,
-     flag_descriptions::kWebAuthnConditionalUIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebAuthConditionalUI)},
-
     {"webauthn-new-desktop-ui", flag_descriptions::kWebAuthnNewDesktopUIName,
      flag_descriptions::kWebAuthnNewDesktopUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kWebAuthnNewDiscoverableCredentialsUi)},

@@ -57,9 +57,6 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     prefs_->registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
     prefs_->SetString(prefs::kPasswordProtectionChangePasswordURL,
                       kEnterpriseURL);
-
-    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
-        .WillByDefault(testing::Return(false));
   }
 
   FakePasswordManagerClient(const FakePasswordManagerClient&) = delete;

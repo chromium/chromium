@@ -59,6 +59,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillUploadContents;
 using autofill::FieldPropertiesFlags;
@@ -463,8 +464,8 @@ class PasswordFormManagerTest : public testing::Test,
         .WillByDefault(Return(url::Origin::Create(observed_form_.url)));
     ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
-    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
-        .WillByDefault(Return(false));
+    ON_CALL(webauthn_credentials_delegate_, GetWebAuthnSuggestions)
+        .WillByDefault(ReturnRef(webauthn_suggestions_));
 
     fetcher_ = std::make_unique<FakeFormFetcher>();
     fetcher_->Fetch();
@@ -490,6 +491,7 @@ class PasswordFormManagerTest : public testing::Test,
   MockPasswordManagerClient client_;
   MockPasswordManagerDriver driver_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions_;
 
   // Define |fetcher_| before |form_manager_|, because the former needs to
   // outlive the latter.

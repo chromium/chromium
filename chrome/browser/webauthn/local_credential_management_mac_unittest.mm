@@ -6,10 +6,8 @@
 
 #include "chrome/browser/webauthn/local_credential_management_mac.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
@@ -39,27 +37,7 @@ class LocalCredentialManagementTest : public testing::Test {
   device::fido::mac::ScopedFakeKeychain keychain_{
       config_.keychain_access_group};
   device::fido::mac::TouchIdCredentialStore store_{config_};
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kWebAuthConditionalUI};
 };
-
-class WebAuthConditionalUIFlagOffTest : public LocalCredentialManagementTest {
- protected:
-  WebAuthConditionalUIFlagOffTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(features::kWebAuthConditionalUI);
-  }
-};
-
-TEST_F(WebAuthConditionalUIFlagOffTest, FeatureFlagOff) {
-  device::test::TestCallbackReceiver<bool> callback;
-  auto credential = store_.CreateCredential(
-      kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
-  EXPECT_TRUE(credential);
-  local_cred_man_.HasCredentials(callback.callback());
-  callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
-}
 
 TEST_F(LocalCredentialManagementTest, NoCredentials) {
   device::test::TestCallbackReceiver<bool> callback;

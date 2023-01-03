@@ -178,7 +178,7 @@ PasswordFormManager::PasswordFormManager(
 
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
-    if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
+    if (delegate) {
       delegate->RetrieveWebAuthnSuggestions(
           async_predictions_waiter_.CreateClosure());
     }
@@ -734,7 +734,7 @@ void PasswordFormManager::OnTimeout() {
 bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
   WebAuthnCredentialsDelegate* delegate =
       client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
-  if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
+  if (delegate) {
     return delegate->GetWebAuthnSuggestions().has_value();
   }
   return false;

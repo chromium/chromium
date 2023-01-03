@@ -32,7 +32,6 @@ class ChromeWebAuthnCredentialsDelegate
       const ChromeWebAuthnCredentialsDelegate&) = delete;
 
   // password_manager::WebAuthnCredentialsDelegate:
-  bool IsWebAuthnAutofillEnabled() const override;
   void LaunchWebAuthnFlow() override;
   void SelectWebAuthnCredential(std::string backend_id) override;
   const absl::optional<std::vector<autofill::Suggestion>>&

@@ -139,8 +139,6 @@ class TouchToFillControllerAutofillTest : public testing::Test {
         std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
     ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate_.get()));
-    ON_CALL(*webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
-        .WillByDefault(Return(false));
 
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kBiometricTouchToFill);
@@ -686,9 +684,6 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
       std::make_unique<MockTouchToFillView>();
   MockTouchToFillView* weak_view = mock_view.get();
   touch_to_fill_controller().set_view(std::move(mock_view));
-
-  ON_CALL(*webauthn_credentials_delegate(), IsWebAuthnAutofillEnabled)
-      .WillByDefault(Return(true));
 
   TouchToFillWebAuthnCredential credential(
       TouchToFillWebAuthnCredential::Username(u"alice@example.com"),

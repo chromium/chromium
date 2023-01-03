@@ -5,14 +5,12 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 
 #include "base/base64.h"
-#include "base/callback.h"
-#include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,10 +30,6 @@ ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
 
 ChromeWebAuthnCredentialsDelegate::~ChromeWebAuthnCredentialsDelegate() =
     default;
-
-bool ChromeWebAuthnCredentialsDelegate::IsWebAuthnAutofillEnabled() const {
-  return base::FeatureList::IsEnabled(features::kWebAuthConditionalUI);
-}
 
 void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
 #if !BUILDFLAG(IS_ANDROID)

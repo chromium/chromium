@@ -29,7 +29,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -281,8 +280,6 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kWebAuthConditionalUI};
   std::unique_ptr<Observer> observer_;
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
 };

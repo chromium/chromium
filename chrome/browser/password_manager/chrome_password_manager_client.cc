@@ -468,7 +468,7 @@ void ChromePasswordManagerClient::ShowTouchToFill(
     autofill::mojom::SubmissionReadinessState submission_readiness) {
   std::vector<TouchToFillWebAuthnCredential> webauthn_credentials;
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
-  if (webauthn_delegate && webauthn_delegate->IsWebAuthnAutofillEnabled()) {
+  if (webauthn_delegate) {
     const absl::optional<std::vector<autofill::Suggestion>>& suggestions =
         webauthn_delegate->GetWebAuthnSuggestions();
     if (suggestions.has_value()) {

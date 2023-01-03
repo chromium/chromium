@@ -363,10 +363,8 @@ void BrowserProcessImpl::Init() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
-    components::WebAuthnClientAndroid::SetClient(
-        std::make_unique<ChromeWebAuthnClientAndroid>());
-  }
+  components::WebAuthnClientAndroid::SetClient(
+      std::make_unique<ChromeWebAuthnClientAndroid>());
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

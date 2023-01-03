@@ -7014,11 +7014,6 @@
     "expiry_milestone": 113
   },
   {
-    "name": "webauthn-conditional-ui",
-    "owners": [ "chrome-webauthn@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "webauthn-new-desktop-ui",
     "owners": [
       "chrome-webauthn@google.com"

@@ -234,9 +234,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kInsecureOrigin;
   } else if (IsFillOnAccountSelectFeatureEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kFoasFeature;
-  } else if (observed_form.accepts_webauthn_credentials &&
-             client->GetWebAuthnCredentialsDelegateForDriver(driver)
-                 ->IsWebAuthnAutofillEnabled()) {
+  } else if (observed_form.accepts_webauthn_credentials) {
     wait_for_username_reason =
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
   }

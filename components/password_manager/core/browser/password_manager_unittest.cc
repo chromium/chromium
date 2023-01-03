@@ -159,8 +159,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
     ON_CALL(*this, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
-    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
-        .WillByDefault(Return(false));
+    ON_CALL(webauthn_credentials_delegate_, GetWebAuthnSuggestions)
+        .WillByDefault(ReturnRef(webauthn_suggestions_));
   }
 
   MOCK_METHOD(bool,
@@ -266,6 +266,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   mutable FakeNetworkContext network_context_;
   testing::NiceMock<MockStoreResultFilter> filter_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions_;
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {

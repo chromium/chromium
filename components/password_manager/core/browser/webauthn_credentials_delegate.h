@@ -20,9 +20,6 @@ class WebAuthnCredentialsDelegate {
  public:
   virtual ~WebAuthnCredentialsDelegate() = default;
 
-  // Returns true if integration between WebAuthn and Autofill is enabled.
-  virtual bool IsWebAuthnAutofillEnabled() const = 0;
-
   // Launches the normal WebAuthn flow that lets users use their phones or
   // security keys to sign-in.
   virtual void LaunchWebAuthnFlow() = 0;

@@ -7,12 +7,10 @@
 #include "chrome/browser/webauthn/local_credential_management_win.h"
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/win/fake_webauthn_api.h"
@@ -27,8 +25,7 @@ constexpr uint8_t kCredId[] = {1, 2, 3, 4};
 
 class LocalCredentialManagementTest : public testing::Test {
  protected:
-  LocalCredentialManagementTest()
-      : scoped_feature_list_(features::kWebAuthConditionalUI) {}
+  LocalCredentialManagementTest() = default;
 
   void SetUp() override { api_.set_supports_silent_discovery(true); }
 
@@ -57,7 +54,6 @@ class LocalCredentialManagementTest : public testing::Test {
   TestingProfile profile_;
   device::FakeWinWebAuthnApi api_;
   LocalCredentialManagementWin local_cred_man_{&api_, &profile_};
-  const base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(LocalCredentialManagementTest, NoSupport) {

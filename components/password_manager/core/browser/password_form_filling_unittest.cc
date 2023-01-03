@@ -136,8 +136,6 @@ class PasswordFormFillingTest : public testing::Test {
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(client_, GetPasswordFeatureManager)
         .WillByDefault(Return(&feature_manager_));
-    ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
-        .WillByDefault(Return(false));
   }
 
  protected:
@@ -286,38 +284,9 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
-  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
-  observed_form_.accepts_webauthn_credentials = true;
-  for (bool webauthn_autofill_enabled : {false, true}) {
-    PasswordFormFillData fill_data;
-    EXPECT_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
-        .WillOnce(Return(&webauthn_credentials_delegate));
-    EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
-        .WillOnce(Return(webauthn_autofill_enabled));
-    EXPECT_CALL(driver_, SetPasswordFillData(_))
-        .WillOnce(SaveArg<0>(&fill_data));
-    EXPECT_CALL(client_, PasswordWasAutofilled);
-    LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
-        &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
-        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
-        /*webauthn_suggestions_available=*/false);
-    if (webauthn_autofill_enabled) {
-      EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
-    } else {
-      EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
-    }
-  }
-}
-
 TEST_F(PasswordFormFillingTest, FillWithOnlyWebAuthnCredentials) {
-  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
   observed_form_.accepts_webauthn_credentials = true;
 
-  EXPECT_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
-      .WillOnce(Return(&webauthn_credentials_delegate));
-  EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
-      .WillOnce(Return(true));
   EXPECT_CALL(client_, PasswordWasAutofilled);
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,

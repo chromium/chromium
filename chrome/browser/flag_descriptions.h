@@ -1812,9 +1812,6 @@ extern const char kClearIdentityInCanMakePaymentEventDescription[];
 extern const char kAppStoreBillingDebugName[];
 extern const char kAppStoreBillingDebugDescription[];
 
-extern const char kWebAuthnConditionalUIName[];
-extern const char kWebAuthnConditionalUIDescription[];
-
 extern const char kWebAuthnNewDesktopUIName[];
 extern const char kWebAuthnNewDesktopUIDescription[];
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/webauthn/local_credential_management_win.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -14,7 +13,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
-#include "content/public/common/content_features.h"
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/webauthn_api.h"
 
@@ -122,8 +120,7 @@ void LocalCredentialManagementWin::HasCredentials(
     base::OnceCallback<void(bool)> callback) {
   absl::optional<bool> result;
 
-  if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery() ||
-      !base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
+  if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery()) {
     result = false;
   } else if (profile_->GetPrefs()->GetBoolean(kHasPlatformCredentialsPref)) {
     result = true;

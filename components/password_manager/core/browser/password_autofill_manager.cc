@@ -721,8 +721,7 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_);
   absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions;
-  if (show_webauthn_credentials && delegate &&
-      delegate->IsWebAuthnAutofillEnabled()) {
+  if (show_webauthn_credentials && delegate) {
     webauthn_suggestions = delegate->GetWebAuthnSuggestions();
   }
   if (webauthn_suggestions.has_value()) {

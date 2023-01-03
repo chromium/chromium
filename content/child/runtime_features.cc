@@ -325,7 +325,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"TrustedTypesFromLiteral", features::kTrustedTypesFromLiteral},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
-          {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"WGIGamepadTriggerRumble",
            features::kEnableWindowsGamingInputDataFetcher},
           {"UserAgentFull", blink::features::kFullUserAgent},
