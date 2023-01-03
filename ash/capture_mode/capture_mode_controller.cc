@@ -105,6 +105,13 @@ constexpr char kUsesDefaultCapturePathPrefName[] =
 // in such a way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowCameraNudge[] = "ash.capture_mode.can_show_camera_nudge";
 
+// The name of a boolean pref that determines whether we can show the demo tools
+// user nudge. When this pref is false, it means that we showed the nudge at
+// some point and the user interacted with the capture mode session UI in such a
+// way that the nudge no longer needs to be displayed again.
+constexpr char kCanShowDemoToolsNudge[] =
+    "ash.capture_mode.can_show_demo_tools_nudge";
+
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
   BUTTON_EDIT = 0,
@@ -453,7 +460,10 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                  /*default_value=*/base::FilePath());
   registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
                                 /*default_value=*/false);
-  registry->RegisterBooleanPref(kCanShowCameraNudge, /*default_value=*/true);
+  registry->RegisterBooleanPref(features::AreCaptureModeDemoToolsEnabled()
+                                    ? kCanShowDemoToolsNudge
+                                    : kCanShowCameraNudge,
+                                /*default_value=*/true);
 }
 
 bool CaptureModeController::IsActive() const {
@@ -561,11 +571,16 @@ bool CaptureModeController::CanShowUserNudge() const {
 
   auto* pref_service = session_controller->GetActivePrefService();
   DCHECK(pref_service);
-  return pref_service->GetBoolean(kCanShowCameraNudge);
+  return pref_service->GetBoolean(features::AreCaptureModeDemoToolsEnabled()
+                                      ? kCanShowDemoToolsNudge
+                                      : kCanShowCameraNudge);
 }
 
 void CaptureModeController::DisableUserNudgeForever() {
-  GetActiveUserPrefService()->SetBoolean(kCanShowCameraNudge, false);
+  GetActiveUserPrefService()->SetBoolean(
+      features::AreCaptureModeDemoToolsEnabled() ? kCanShowDemoToolsNudge
+                                                 : kCanShowCameraNudge,
+      false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {

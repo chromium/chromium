@@ -8,6 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -41,10 +42,14 @@ constexpr base::TimeDelta kDelayToDismissToast = base::Seconds(6);
 
 std::u16string GetCaptureToastLabelOnToastType(
     CaptureToastType capture_toast_type) {
+  const int nudge_message_id =
+      features::AreCaptureModeDemoToolsEnabled()
+          ? IDS_ASH_SCREEN_CAPTURE_SHOW_DEMO_TOOLS_USER_NUDGE
+          : IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE;
   const int message_id =
       capture_toast_type == CaptureToastType::kCameraPreview
           ? IDS_ASH_SCREEN_CAPTURE_SURFACE_TOO_SMALL_USER_NUDGE
-          : IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE;
+          : nudge_message_id;
   return l10n_util::GetStringUTF16(message_id);
 }
 
