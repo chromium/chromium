@@ -814,6 +814,10 @@
     "dependencies": ["manifest:system_indicator"],
     "contexts": ["blessed_extension"]
   },
+  "systemLog": {
+    "dependencies": ["permission:systemLog"],
+    "contexts": ["blessed_extension"]
+  },
   "systemPrivate": {
     "dependencies": ["permission:systemPrivate"],
     "contexts": ["blessed_extension"]

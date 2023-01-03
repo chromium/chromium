@@ -93,6 +93,7 @@ if (is_chromeos) {
     "platform_keys.idl",
     "quick_unlock_private.idl",
     "shared_storage_private.idl",
+    "system_log.idl",
     "vpn_provider.idl",
     "wallpaper.json",
     "wm_desks_private.idl",

@@ -1,0 +1,12 @@
+{
+  "name": "System Log API test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "API tests for System Log extensions API",
+  "background": {
+    "service_worker": "test.js"
+  },
+  "permissions": [
+    "systemLog"
+  ]
+}

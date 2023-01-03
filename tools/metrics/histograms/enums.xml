@@ -35504,6 +35504,7 @@ Called by update_extension_histograms.py.-->
   <int value="1746" label="PDFVIEWERPRIVATE_ISALLOWEDLOCALFILEACCESS"/>
   <int value="1747" label="DECLARATIVENETREQUEST_UPDATESTATICRULES"/>
   <int value="1748" label="FILEMANAGERPRIVATEINTERNAL_SEARCHFILES"/>
+  <int value="1749" label="SYSTEMLOG_ADD"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -36139,6 +36140,7 @@ Called by update_extension_permission.py.-->
   <int value="243" label="kWebRequestAuthProvider"/>
   <int value="244" label="kChromeOSTelemetryNetworkInformation"/>
   <int value="245" label="kPdfViewerPrivate"/>
+  <int value="246" label="kSystemLog"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

@@ -94,6 +94,7 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
       {"logTypeSerialText", IDS_DEVICE_LOG_TYPE_SERIAL},
       {"logTypeCameraText", IDS_DEVICE_LOG_TYPE_CAMERA},
       {"logTypeGeolocationText", IDS_DEVICE_LOG_TYPE_GEOLOCATION},
+      {"logTypeExtensionsText", IDS_DEVICE_LOG_TYPE_EXTENSIONS},
       {"logEntryFormat", IDS_DEVICE_LOG_ENTRY},
   };
   html->AddLocalizedStrings(kStrings);

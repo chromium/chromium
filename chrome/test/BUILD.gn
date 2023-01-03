@@ -3264,6 +3264,7 @@ if (!is_android) {
           "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_apitest.cc",
           "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
+          "../browser/chromeos/extensions/system_log/system_log_apitest.cc",
           "../browser/chromeos/extensions/wallpaper_apitest.cc",
           "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
