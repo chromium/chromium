@@ -35,6 +35,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     aggregator_.reset();
   }
 
+  int64_t source_id() const { return source_id_; }
+
   LocalFrameUkmAggregator& aggregator() {
     CHECK(aggregator_);
     return *aggregator_;
@@ -42,10 +44,18 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
   ukm::TestUkmRecorder& recorder() { return recorder_; }
 
-  void ResetAggregator() { aggregator_.reset(); }
+  void ResetAggregator() {
+    if (aggregator_) {
+      aggregator_->TransmitFinalSample(source_id(), &recorder(),
+                                       /* is_for_main_frame */ true);
+      aggregator_.reset();
+    }
+  }
+
   void RestartAggregator() {
-    aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
-        ukm::UkmRecorder::GetNewSourceID(), &recorder_, true);
+    source_id_ = ukm::UkmRecorder::GetNewSourceID();
+    aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>();
+    // ukm::UkmRecorder::GetNewSourceID(), &recorder_, true);
     aggregator_->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   }
 
@@ -181,7 +191,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       test_task_runner_->FastForwardBy(
           base::Milliseconds(millisecond_per_step));
     }
-    aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+    aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers,
+                                         source_id(), &recorder());
   }
 
   void SimulatePreFrame(unsigned millisecond_per_step) {
@@ -205,7 +216,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
     aggregator().BeginMainFrame();
     aggregator().RecordForcedLayoutSample(reason, start_time, end_time);
-    aggregator().RecordEndOfFrameMetrics(start_time, end_time, 0);
+    aggregator().RecordEndOfFrameMetrics(start_time, end_time, 0, source_id(),
+                                         &recorder());
     ResetAggregator();
 
     EXPECT_EQ(recorder().entries_count(), expected_num_entries);
@@ -245,6 +257,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
  private:
+  int64_t source_id_;
   scoped_refptr<LocalFrameUkmAggregator> aggregator_;
   ukm::TestUkmRecorder recorder_;
 };
@@ -610,7 +623,8 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
   }
-  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers, source_id(),
+                                       &recorder());
   histogram_tester.ExpectUniqueSample("Blink.Layout.UpdateTime.PreFCP", 1000,
                                       1);
   histogram_tester.ExpectUniqueSample(
@@ -628,7 +642,8 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
   }
-  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers, source_id(),
+                                       &recorder());
   histogram_tester.ExpectUniqueSample("Blink.Layout.UpdateTime.PreFCP", 1000,
                                       2);
   histogram_tester.ExpectUniqueSample(
@@ -646,7 +661,8 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
     test_task_runner_->FastForwardBy(base::Milliseconds(1));
   }
-  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers, source_id(),
+                                       &recorder());
   histogram_tester.ExpectUniqueSample("Blink.Layout.UpdateTime.PreFCP", 1000,
                                       3);
   histogram_tester.ExpectUniqueSample(
@@ -714,8 +730,10 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     // Simulate the first contentful paint in the main frame.
     document.View()->GetUkmAggregator()->BeginMainFrame();
     PaintTiming::From(GetDocument()).MarkFirstContentfulPaint();
+    Document* root_document = LocalFrameRoot().GetFrame()->GetDocument();
     document.View()->GetUkmAggregator()->RecordEndOfFrameMetrics(
-        base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+        base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0,
+        root_document->UkmSourceID(), root_document->UkmRecorder());
 
     target1->setAttribute(html_names::kStyleAttr, "width: 60px");
     Compositor().BeginFrame();

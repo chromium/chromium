@@ -33,10 +33,6 @@ enum class DocumentUpdateReason;
 // SCOPED_UMA_AND_UKM_TIMER macro combined with
 // LocalFrameView::RecordEndOfFrameMetrics.
 //
-// It takes the following constructor parameters:
-// - source_id: UKM Source ID associated with the events.
-// - recorder: UkmRecorder which will handle the events
-//
 // The aggregator manages all of the UKM and UMA names for LocalFrameView.
 // It constructs and takes ownership of the UMA counters when constructed
 // itself. We do this to localize all UMA and UKM metrics in one place, so
@@ -262,9 +258,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     int64_t metric_index_ = -1;
   };
 
-  LocalFrameUkmAggregator(int64_t source_id,
-                          ukm::UkmRecorder*,
-                          bool is_for_main_frame_local_frame_root);
+  LocalFrameUkmAggregator();
   LocalFrameUkmAggregator(const LocalFrameUkmAggregator&) = delete;
   LocalFrameUkmAggregator& operator=(const LocalFrameUkmAggregator&) = delete;
   ~LocalFrameUkmAggregator();
@@ -285,7 +279,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // trackers, telling us the reasons for requesting a BeginMainFrame.
   void RecordEndOfFrameMetrics(base::TimeTicks start,
                                base::TimeTicks end,
-                               cc::ActiveFrameSequenceTrackers trackers);
+                               cc::ActiveFrameSequenceTrackers trackers,
+                               int64_t source_id,
+                               ukm::UkmRecorder* recorder);
 
   // Record a sample for a sub-metric. This should only be used when
   // a ScopedUkmHierarchicalTimer cannot be used (such as when the timed
@@ -336,6 +332,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
   void OnCommitRequested();
 
+  void TransmitFinalSample(int64_t source_id,
+                           ukm::UkmRecorder* recorder,
+                           bool is_for_main_frame);
+
   base::TimeTicks LastFrameRequestTimeForTest() const {
     return last_frame_request_timestamp_for_test_;
   }
@@ -375,11 +375,11 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Reports the current sample to the UKM system. Called on the first main
   // frame update after First Contentful Paint and at destruction. Also resets
   // the frame count.
-  void ReportUpdateTimeEvent();
+  void ReportUpdateTimeEvent(int64_t source_id, ukm::UkmRecorder* recorder);
 
   // Reports the Blink.PageLoad to the UKM system. Called on the first main
   // frame after First Contentful Paint.
-  void ReportPreFCPEvent();
+  void ReportPreFCPEvent(int64_t source_id, ukm::UkmRecorder* recorder);
 
   // To test event sampling. Controls whether we update the current sample
   // on the next frame, or do not. Values persist until explicitly changed.
@@ -396,9 +396,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
     intersection_observer_sample_period_ = period;
   }
 
-  // UKM system data
-  const int64_t source_id_;
-  ukm::UkmRecorder* const recorder_;
   const base::TickClock* clock_;
 
   // Event and metric data
@@ -446,9 +443,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
   absl::optional<base::TimeTicks> animation_request_timestamp_;
   absl::optional<base::TimeTicks> request_timestamp_for_current_frame_;
   base::TimeTicks last_frame_request_timestamp_for_test_;
-
-  // True if the local frame root that instantiated this is the main frame.
-  bool is_for_main_frame_ = false;
 };
 
 }  // namespace blink
