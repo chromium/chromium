@@ -101,6 +101,8 @@ String PermissionNameToString(PermissionName name) {
       return "local_fonts";
     case PermissionName::DISPLAY_CAPTURE:
       return "display_capture";
+    case PermissionName::TOP_LEVEL_STORAGE_ACCESS:
+      return "top-level-storage-access";
   }
   NOTREACHED();
   return "unknown";
@@ -273,6 +275,15 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
       return nullptr;
     }
     return CreatePermissionDescriptor(PermissionName::STORAGE_ACCESS);
+  }
+  if (name == "top-level-storage-access") {
+    if (!RuntimeEnabledFeatures::StorageAccessAPIEnabled() ||
+        !RuntimeEnabledFeatures::StorageAccessAPIForOriginExtensionEnabled()) {
+      exception_state.ThrowTypeError(
+          "The requestStorageAccessForOrigin API is not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::TOP_LEVEL_STORAGE_ACCESS);
   }
   if (name == "window-placement") {
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);

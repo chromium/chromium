@@ -54,6 +54,10 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
       return blink::scheduler::WebSchedulerTrackedFeature::
           kRequestedBackgroundWorkPermission;
     case PermissionType::STORAGE_ACCESS_GRANT:
+    // These two permissions are in the process of being split; they share logic
+    // for now. TODO(crbug.com/1385156): split and consolidate as much as
+    // possible.
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return blink::scheduler::WebSchedulerTrackedFeature::
           kRequestedStorageAccessGrant;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:

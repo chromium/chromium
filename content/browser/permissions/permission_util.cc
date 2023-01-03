@@ -42,14 +42,16 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
 
 bool PermissionUtil::IsDomainOverride(
     const PermissionDescriptorPtr& descriptor) {
-  return descriptor->extension && descriptor->extension->is_storage_access();
+  return descriptor->extension &&
+         descriptor->extension->is_top_level_storage_access();
 }
 
 url::Origin PermissionUtil::ExtractDomainOverride(
     const PermissionDescriptorPtr& descriptor) {
-  const blink::mojom::StorageAccessPermissionDescriptorPtr&
-      override_descriptor = descriptor->extension->get_storage_access();
-  return override_descriptor->siteOverride;
+  const blink::mojom::TopLevelStorageAccessPermissionDescriptorPtr&
+      override_descriptor =
+          descriptor->extension->get_top_level_storage_access();
+  return override_descriptor->requestedOrigin;
 }
 
 bool PermissionUtil::ValidateDomainOverride(

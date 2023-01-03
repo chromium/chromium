@@ -340,6 +340,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::VR:
       case PermissionType::AR:
       case PermissionType::STORAGE_ACCESS_GRANT:
+      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
@@ -576,6 +577,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::VR:
       case PermissionType::AR:
       case PermissionType::STORAGE_ACCESS_GRANT:
+      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:

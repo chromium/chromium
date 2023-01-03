@@ -177,6 +177,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // called from UI, so we don't need a representation JS string.
     {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
     {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr},
+    {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

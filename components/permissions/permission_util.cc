@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
@@ -145,6 +146,10 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
       *out = PermissionType::AR;
       break;
     case ContentSettingsType::STORAGE_ACCESS:
+    // These two permissions are in the process of being split; they share logic
+    // for now. TODO(crbug.com/1385156): split and consolidate as much as
+    // possible.
+    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       *out = PermissionType::STORAGE_ACCESS_GRANT;
       break;
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
@@ -279,6 +284,10 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
     case PermissionType::AR:
       return ContentSettingsType::AR;
     case PermissionType::STORAGE_ACCESS_GRANT:
+    // These two permissions are in the process of being split; they share logic
+    // for now. TODO(crbug.com/1385156): split and consolidate as much as
+    // possible.
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return ContentSettingsType::STORAGE_ACCESS;
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;

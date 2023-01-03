@@ -36,6 +36,7 @@ enum PermissionName {
     "storage-access",
     "window-placement",
     "local-fonts",
+    "top-level-storage-access",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

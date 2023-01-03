@@ -307,6 +307,10 @@ enum class ContentSettingsType : int32_t {
   // feature.
   REVOKED_UNUSED_SITE_PERMISSIONS,
 
+  // Similar to STORAGE_ACCESS, but applicable at the page-level rather than
+  // being specific to a frame.
+  TOP_LEVEL_STORAGE_ACCESS,
+
   NUM_TYPES,
 };
 

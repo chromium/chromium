@@ -31,6 +31,7 @@ enum PermissionName {
   WINDOW_MANAGEMENT,
   LOCAL_FONTS,
   DISPLAY_CAPTURE,
+  TOP_LEVEL_STORAGE_ACCESS,
 };
 
 struct MidiPermissionDescriptor {
@@ -48,11 +49,11 @@ struct CameraDevicePermissionDescriptor {
   bool panTiltZoom;
 };
 
-struct StorageAccessPermissionDescriptor {
+struct TopLevelStorageAccessPermissionDescriptor {
   // Site vs Origin applicability is still in flux. The current naming indicates
   // site, but origin is preferred as site can be derived from it and not vice-
   // versa. See, e.g.: https://github.com/privacycg/storage-access/issues/113
-  url.mojom.Origin siteOverride;
+  url.mojom.Origin requestedOrigin;
 };
 
 // Union of possible extensions to the base PermissionDescriptor type.
@@ -60,7 +61,7 @@ union PermissionDescriptorExtension {
   MidiPermissionDescriptor midi;
   ClipboardPermissionDescriptor clipboard;
   CameraDevicePermissionDescriptor camera_device;
-  StorageAccessPermissionDescriptor storage_access;
+  TopLevelStorageAccessPermissionDescriptor top_level_storage_access;
 };
 
 // This struct roughly corresponds to the PermissionDescriptor dictionary as

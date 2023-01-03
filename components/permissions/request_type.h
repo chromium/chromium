@@ -27,6 +27,7 @@ enum class RequestType {
 #endif
   kCameraStream,
   kClipboard,
+  kTopLevelStorageAccess,
   kDiskQuota,
 #if !BUILDFLAG(IS_ANDROID)
   kLocalFonts,

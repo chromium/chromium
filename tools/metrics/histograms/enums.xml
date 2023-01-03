@@ -79764,6 +79764,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="21" label="PERMISSION_VR"/>
   <int value="22" label="PERMISSION_AR"/>
   <int value="23" label="PERMISSION_STORAGE_ACCESS"/>
+  <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
 </enum>
 
 <enum name="PermissionStatus">
@@ -79806,6 +79807,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="30" label="PERMISSION_LOCAL_FONTS"/>
   <int value="31" label="PERMISSION_DISPLAY_CAPTURE"/>
   <int value="32" label="PERMISSION_FILE_HANDLING__REMOVED_IN_M98"/>
+  <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
 </enum>
 
 <enum name="PersistedLogsLogReadStatus">

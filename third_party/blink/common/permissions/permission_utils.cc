@@ -81,6 +81,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "LocalFonts";
     case PermissionType::DISPLAY_CAPTURE:
       return "DisplayCapture";
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+      return "TopLevelStorageAccess";
     case PermissionType::NUM:
       NOTREACHED();
       return std::string();
@@ -196,6 +198,8 @@ absl::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::LOCAL_FONTS;
     case PermissionName::DISPLAY_CAPTURE:
       return PermissionType::DISPLAY_CAPTURE;
+    case PermissionName::TOP_LEVEL_STORAGE_ACCESS:
+      return PermissionType::TOP_LEVEL_STORAGE_ACCESS;
 
       NOTREACHED();
       return absl::nullopt;

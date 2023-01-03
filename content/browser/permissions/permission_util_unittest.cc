@@ -35,7 +35,8 @@ TEST_F(PermissionUtilTest, TestIsDomainOverride) {
   blink::mojom::PermissionDescriptorPtr ptr =
       blink::mojom::PermissionDescriptor::New();
   ptr->extension =
-      blink::mojom::PermissionDescriptorExtension::NewStorageAccess(nullptr);
+      blink::mojom::PermissionDescriptorExtension::NewTopLevelStorageAccess(
+          nullptr);
   EXPECT_TRUE(PermissionUtil::IsDomainOverride(ptr));
 }
 
@@ -43,12 +44,12 @@ TEST_F(PermissionUtilTest, TestExtractDomainOverride) {
   url::Origin expected = url::Origin::Create(GURL("https://example.xyz"));
   blink::mojom::PermissionDescriptorPtr ptr =
       blink::mojom::PermissionDescriptor::New();
-  auto storage_access_extension =
-      blink::mojom::StorageAccessPermissionDescriptor::New();
-  storage_access_extension->siteOverride = expected;
+  auto top_level_storage_access_extension =
+      blink::mojom::TopLevelStorageAccessPermissionDescriptor::New();
+  top_level_storage_access_extension->requestedOrigin = expected;
   ptr->extension =
-      blink::mojom::PermissionDescriptorExtension::NewStorageAccess(
-          std::move(storage_access_extension));
+      blink::mojom::PermissionDescriptorExtension::NewTopLevelStorageAccess(
+          std::move(top_level_storage_access_extension));
   EXPECT_EQ(PermissionUtil::ExtractDomainOverride(ptr), expected);
 }
 

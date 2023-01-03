@@ -6206,13 +6206,13 @@ ScriptPromise Document::requestStorageAccessForOrigin(
   }
 
   auto descriptor = mojom::blink::PermissionDescriptor::New();
-  descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
-  auto storage_access_extension =
-      mojom::blink::StorageAccessPermissionDescriptor::New();
-  storage_access_extension->siteOverride = supplied_origin;
+  descriptor->name = mojom::blink::PermissionName::TOP_LEVEL_STORAGE_ACCESS;
+  auto top_level_storage_access_extension =
+      mojom::blink::TopLevelStorageAccessPermissionDescriptor::New();
+  top_level_storage_access_extension->requestedOrigin = supplied_origin;
   descriptor->extension =
-      mojom::blink::PermissionDescriptorExtension::NewStorageAccess(
-          std::move(storage_access_extension));
+      mojom::blink::PermissionDescriptorExtension::NewTopLevelStorageAccess(
+          std::move(top_level_storage_access_extension));
 
   GetPermissionService(ExecutionContext::From(script_state))
       ->RequestPermission(

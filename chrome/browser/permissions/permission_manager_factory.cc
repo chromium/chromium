@@ -132,6 +132,13 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<StorageAccessGrantPermissionContext>(profile);
 
+  // This permission is written by a variant of what writes `STORAGE_ACCESS`;
+  // the two are in the process of being split. For now, the same decision logic
+  // applies. TODO(crbug.com/1385156): split and consolidate as much as
+  // possible.
+  permission_contexts[ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS] =
+      std::make_unique<StorageAccessGrantPermissionContext>(profile);
+
   // TODO(crbug.com/897300): Still in development for Android so we don't
   // support it on WebLayer yet.
   permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =

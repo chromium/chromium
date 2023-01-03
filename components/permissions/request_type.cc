@@ -56,6 +56,7 @@ int GetIconIdAndroid(RequestType type) {
     case RequestType::kProtectedMediaIdentifier:
       return IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER;
     case RequestType::kStorageAccess:
+    case RequestType::kTopLevelStorageAccess:
       return IDR_ANDROID_INFOBAR_PERMISSION_COOKIE;
   }
   NOTREACHED();
@@ -105,6 +106,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kU2fApiRequest:
       return kUsbSecurityKeyIcon;
     case RequestType::kStorageAccess:
+    case RequestType::kTopLevelStorageAccess:
       return vector_icons::kCookieIcon;
     case RequestType::kWindowManagement:
       return vector_icons::kSelectWindowIcon;
@@ -185,6 +187,8 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::WINDOW_MANAGEMENT:
       return RequestType::kWindowManagement;
 #endif
+    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
+      return RequestType::kTopLevelStorageAccess;
     default:
       return absl::nullopt;
   }
@@ -333,6 +337,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";
+    case permissions::RequestType::kTopLevelStorageAccess:
+      return "top_level_storage_access";
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kU2fApiRequest:
       return "u2f_api_request";

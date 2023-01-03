@@ -1092,6 +1092,7 @@ domain Browser
       protectedMediaIdentifier
       sensors
       storageAccess
+      topLevelStorageAccess
       videoCapture
       videoCapturePanTiltZoom
       wakeLockScreen

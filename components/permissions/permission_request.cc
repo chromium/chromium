@@ -82,6 +82,7 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
           IDS_PROTECTED_MEDIA_IDENTIFIER_PER_ORIGIN_PROVISIONING_INFOBAR_TEXT;
       break;
     case RequestType::kStorageAccess:
+    case RequestType::kTopLevelStorageAccess:
       // Handled by `PermissionPromptAndroid::GetMessageText` directly.
       NOTREACHED();
       break;
@@ -209,6 +210,7 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       NOTREACHED();
       return std::u16string();
     case RequestType::kStorageAccess:
+    case RequestType::kTopLevelStorageAccess:
       message_id = IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT;
       break;
     case RequestType::kSecurityAttestation:

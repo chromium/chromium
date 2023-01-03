@@ -53,6 +53,7 @@ enum class PermissionType {
   LOCAL_FONTS = 30,
   DISPLAY_CAPTURE = 31,
   // FILE_HANDLING = 32,  // Removed in M98.
+  TOP_LEVEL_STORAGE_ACCESS = 33,
 
   // Always keep this at the end.
   NUM,

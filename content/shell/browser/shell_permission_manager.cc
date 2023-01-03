@@ -41,6 +41,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     // Storage Access API web platform tests require permission to be granted by
     // default.
     case PermissionType::STORAGE_ACCESS_GRANT:
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
 
     // WebNFC browser tests require permission to be granted by default.
     case PermissionType::NFC:

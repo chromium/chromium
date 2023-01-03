@@ -140,6 +140,9 @@ public class PageInfoDiscoverabilityTest {
             parameters.add(new ParameterSet()
                                    .name("RequestType.kVrSession")
                                    .value(ContentSettingsType.VR, true));
+            parameters.add(new ParameterSet()
+                                   .name("RequestType.kTopLevelStorageAccess")
+                                   .value(ContentSettingsType.TOP_LEVEL_STORAGE_ACCESS, false));
 
             return parameters;
         }
