@@ -22,6 +22,8 @@ public abstract class AwContentsBackgroundThreadClient {
     public abstract WebResourceResponseInfo shouldInterceptRequest(
             AwContentsClient.AwWebResourceRequest request);
 
+    public abstract boolean shouldBlockRequest(String url);
+
     // Protected methods ---------------------------------------------------------------------------
 
     @NonNull
@@ -46,5 +48,10 @@ public abstract class AwContentsBackgroundThreadClient {
 
             return new AwWebResourceInterceptResponse(null, /*raisedException=*/true);
         }
+    }
+
+    @CalledByNative
+    private boolean shouldBlockRequestFromNative(String url) {
+        return shouldBlockRequest(url);
     }
 }

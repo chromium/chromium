@@ -152,6 +152,7 @@ android_resources("webview_instrumentation_apk_resources") {
     "shell/res/raw/resource_file.html",
     "shell/res/raw/resource_icon.png",
     "shell/res/values/config.xml",
+    "shell/res/values/strings.xml",
   ]
 }
 
@@ -259,6 +260,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//components/component_updater/android:embedded_component_loader_java",
     "//components/content_capture/android:java",
     "//components/content_capture/android/test_support:java",
+    "//components/digital_asset_links/android:java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/embedder_support/android/metrics:java",

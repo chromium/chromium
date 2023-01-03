@@ -103,6 +103,12 @@ BASE_FEATURE(kWebViewRecordAppDataDirectorySize,
              "WebViewRecordAppDataDirectorySize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Flag to restrict main frame Web Content to verified web content. Verification
+// happens via Digital Asset Links.
+BASE_FEATURE(kWebViewRestrictThirdPartyContent,
+             "WebViewRestrictThirdPartyContent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,

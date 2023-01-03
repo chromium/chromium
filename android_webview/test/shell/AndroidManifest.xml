@@ -57,6 +57,9 @@
       </intent-filter>
     </activity>
 
+    <!-- Digital Asset Links statement list -->
+    <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
+
     <provider android:name="org.chromium.android_webview.test.TestContentProvider"
         android:authorities="org.chromium.android_webview.test.TestContentProvider" />
     <!-- Some tests require 3 sandboxed services -->
