@@ -830,7 +830,7 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           /*frame_entry=*/nullptr,
           /*top_frame_entry=*/nullptr),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   EXPECT_THAT(maybe_included_cookies, IsEmpty());
   EXPECT_THAT(
@@ -887,7 +887,7 @@ TEST_P(CookieSettingsTest,
       net::FirstPartySetMetadata(
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           &frame_entry, &top_frame_entry),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   EXPECT_EQ(0u, maybe_included_cookies.size());
 
@@ -940,7 +940,7 @@ TEST_P(
       net::FirstPartySetMetadata(
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           &frame_entry, &top_frame_entry),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   EXPECT_EQ(0u, maybe_included_cookies.size());
 
@@ -994,7 +994,7 @@ TEST_P(SamePartyCookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           /*frame_entry=*/nullptr,
           /*top_frame_entry=*/nullptr),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   EXPECT_THAT(maybe_included_cookies, IsEmpty());
   EXPECT_THAT(
@@ -1081,7 +1081,7 @@ TEST_P(CookieSettingsTest,
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           /*frame_entry=*/nullptr,
           /*top_frame_entry=*/nullptr),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies,
               ElementsAre(MatchesCookieWithAccessResult(
                   net::MatchesCookieWithName("__Host-partitioned"),
@@ -1107,7 +1107,7 @@ TEST_P(CookieSettingsTest,
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           /*frame_entry=*/nullptr,
           /*top_frame_entry=*/nullptr),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies, IsEmpty());
   EXPECT_THAT(
       excluded_cookies,
@@ -1138,7 +1138,7 @@ TEST_P(CookieSettingsTest,
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           /*frame_entry=*/nullptr,
           /*top_frame_entry=*/nullptr),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies, IsEmpty());
   EXPECT_THAT(
       excluded_cookies,
@@ -1170,7 +1170,7 @@ TEST_P(CookieSettingsTest,
           net::SamePartyContext(net::SamePartyContext::Type::kCrossParty),
           /*frame_entry=*/nullptr,
           /*top_frame_entry=*/nullptr),
-      maybe_included_cookies, excluded_cookies));
+      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies,
               ElementsAre(MatchesCookieWithAccessResult(
                   net::MatchesCookieWithName("__Host-partitioned"),

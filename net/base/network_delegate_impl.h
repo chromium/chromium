@@ -72,6 +72,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
 

@@ -82,6 +82,7 @@ class NET_EXPORT NetworkDelegate {
   bool AnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieSettingOverrides overrides,
       CookieAccessResultList& maybe_included_cookies,
       CookieAccessResultList& excluded_cookies);
   bool CanSetCookie(const URLRequest& request,
@@ -265,6 +266,7 @@ class NET_EXPORT NetworkDelegate {
   virtual bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) = 0;
 

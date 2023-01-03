@@ -30,6 +30,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -315,6 +316,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
@@ -407,6 +409,7 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
 

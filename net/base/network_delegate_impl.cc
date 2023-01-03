@@ -51,6 +51,7 @@ void NetworkDelegateImpl::OnPACScriptError(int line_number,
 bool NetworkDelegateImpl::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
     const net::FirstPartySetMetadata& first_party_set_metadata,
+    CookieSettingOverrides overrides,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   return true;

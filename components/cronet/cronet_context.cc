@@ -46,6 +46,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/transport_security_state.h"
@@ -122,6 +123,7 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override {
     // Disallow sending cookies by default.

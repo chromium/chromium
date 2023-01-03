@@ -4368,7 +4368,7 @@ TEST_F(NetworkContextTest,
                               net::SamePartyContext::Type::kCrossParty),
                           /*frame_entry=*/nullptr,
                           /*top_frame_entry=*/nullptr),
-                      included, excluded));
+                      net::CookieSettingOverrides(), included, excluded));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   EXPECT_FALSE(network_context->url_request_context()
                    ->network_delegate()
@@ -4379,7 +4379,7 @@ TEST_F(NetworkContextTest,
                                net::SamePartyContext::Type::kCrossParty),
                            /*frame_entry=*/nullptr,
                            /*top_frame_entry=*/nullptr),
-                       included, excluded));
+                       net::CookieSettingOverrides(), included, excluded));
 }
 
 TEST_F(NetworkContextTest,
@@ -4403,6 +4403,48 @@ TEST_F(NetworkContextTest,
                               net::SamePartyContext::Type::kCrossParty),
                           /*frame_entry=*/nullptr,
                           /*top_frame_entry=*/nullptr),
+                      net::CookieSettingOverrides(), included, excluded));
+}
+
+TEST_F(NetworkContextTest, AnnotateAndMoveUserBlockedCookies_3PCookiesBlocked) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  std::unique_ptr<net::URLRequest> request =
+      context->CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->set_site_for_cookies(net::SiteForCookies());
+
+  net::CookieAccessResultList included;
+  net::CookieAccessResultList excluded;
+
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->network_delegate()
+                   ->AnnotateAndMoveUserBlockedCookies(
+                       *request,
+                       net::FirstPartySetMetadata(
+                           net::SamePartyContext(
+                               net::SamePartyContext::Type::kCrossParty),
+                           /*frame_entry=*/nullptr,
+                           /*top_frame_entry=*/nullptr),
+                       net::CookieSettingOverrides(), included, excluded));
+
+  // `kForce unblocks access.
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->network_delegate()
+                  ->AnnotateAndMoveUserBlockedCookies(
+                      *request,
+                      net::FirstPartySetMetadata(
+                          net::SamePartyContext(
+                              net::SamePartyContext::Type::kCrossParty),
+                          /*frame_entry=*/nullptr,
+                          /*top_frame_entry=*/nullptr),
+                      net::CookieSettingOverrides(
+                          net::CookieSettingOverride::kForceThirdPartyByUser),
                       included, excluded));
 }
 

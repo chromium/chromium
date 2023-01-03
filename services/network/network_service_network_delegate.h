@@ -74,6 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
   bool OnCanSetCookie(const net::URLRequest& request,

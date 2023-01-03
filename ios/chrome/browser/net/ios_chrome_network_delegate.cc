@@ -72,15 +72,16 @@ int IOSChromeNetworkDelegate::OnBeforeURLRequest(
 bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
     const net::FirstPartySetMetadata& first_party_set_metadata,
+    net::CookieSettingOverrides overrides,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   // `cookie_settings_` is null during tests, or when we're running in the
   // system context.
-  bool allowed = !cookie_settings_ ||
-                 cookie_settings_->IsFullCookieAccessAllowed(
-                     request.url(), request.site_for_cookies(),
-                     request.isolation_info().top_frame_origin(),
-                     net::CookieSettingOverrides(), QueryReason::kCookies);
+  bool allowed =
+      !cookie_settings_ || cookie_settings_->IsFullCookieAccessAllowed(
+                               request.url(), request.site_for_cookies(),
+                               request.isolation_info().top_frame_origin(),
+                               overrides, QueryReason::kCookies);
 
   if (!allowed) {
     ExcludeAllCookies(
