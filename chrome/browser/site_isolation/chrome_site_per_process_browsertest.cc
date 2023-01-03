@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
   // Resume the pending navigation in the original tab and ensure it finishes
   // loading successfully.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(b_url,
             opener_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
