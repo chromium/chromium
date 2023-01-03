@@ -49,12 +49,10 @@ TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOemApp) {
 
   proto::AppProvisioningListAppsResponse_App app;
   app.set_name("Test app");
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
   app.set_install_reason(
       proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
-  web_extras->set_manifest_id("https://www.example.com/home");
   web_extras->set_manifest_url("https://www.example.com/home");
 
   base::test::TestFuture<bool> result;
@@ -71,33 +69,16 @@ TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOemApp) {
   ASSERT_TRUE(found);
 }
 
-TEST_F(WebAppPreloadInstallerTest, InstallFailure) {
-  WebAppPreloadInstaller installer(profile());
-
-  proto::AppProvisioningListAppsResponse_App app;
-  app.set_name("Test app");
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
-
-  // Installation should fail due to missing web_extras field.
-  base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
-  ASSERT_FALSE(result.Get());
-}
-
 // TODO(b/261632289): temporarily disabled while refactoring is in progress.
 TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallWithManifestId) {
   WebAppPreloadInstaller installer(profile());
 
   proto::AppProvisioningListAppsResponse_App app;
   app.set_name("Test app");
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
   app.set_install_reason(
       proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
-  web_extras->set_manifest_id("https://www.example.com/app");
   web_extras->set_manifest_url("https://www.example.com/manifest.json");
 
   base::test::TestFuture<bool> result;
@@ -127,12 +108,10 @@ TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOverUserApp) {
 
   proto::AppProvisioningListAppsResponse_App app;
   app.set_name("OEM Installed app");
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
   app.set_install_reason(
       proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
-  web_extras->set_manifest_id(kStartUrl);
   web_extras->set_manifest_url(kManifestUrl);
 
   base::test::TestFuture<bool> result;
@@ -147,12 +126,11 @@ TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOverUserApp) {
   ASSERT_TRUE(found);
 }
 
-TEST_F(WebAppPreloadInstallerTest, GetAppId) {
+// TODO(b/263437253): fix up once supporting libraries are in place.
+TEST_F(WebAppPreloadInstallerTest, DISABLED_GetAppId) {
   WebAppPreloadInstaller installer(profile());
 
   proto::AppProvisioningListAppsResponse_App app;
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
-  app.mutable_web_extras()->set_manifest_id("https://cursive.apps.chrome/");
 
   ASSERT_EQ(installer.GetAppId(PreloadAppDefinition(app)),
             "apignacaigpffemhdbhmnajajaccbckh");

@@ -36,6 +36,25 @@ message AppProvisioningListAppsRequest {
     USERTYPE_GUEST = 4;
   }
 
+  enum Channel {
+    // Default for deserialization when an unexpected value is encountered.
+    // Indicates to the client that the server has a new platform and needs
+    // the proto file updated.
+    CHANNEL_UNKNOWN = 0;
+
+    // Canary channel.
+    CHANNEL_CANARY = 1;
+
+    // Developer channel.
+    CHANNEL_DEV = 2;
+
+    // Beta channel.
+    CHANNEL_BETA = 3;
+
+    // Stable channel.
+    CHANNEL_STABLE = 4;
+  }
+
   // The board identifier for the device sending the request.
   optional string board = 1;
 
@@ -64,6 +83,9 @@ message AppProvisioningListAppsRequest {
 
     // Chrome OS platform version.
     optional string platform = 2;
+
+    // The channel the device is using.
+    optional Channel channel = 3;
   }
 
   // The type of user account making this request.
@@ -73,19 +95,6 @@ message AppProvisioningListAppsRequest {
 message AppProvisioningListAppsResponse {
   // A list of zero or more apps for APS to install.
   repeated App apps_to_install = 1;
-
-  enum Platform {
-    // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform and needs
-    // the proto file updated.
-    PLATFORM_UNKNOWN = 0;
-
-    // A Web App.
-    PLATFORM_WEB = 1;
-
-    // An Android app managed by Play.
-    PLATFORM_ANDROID = 2;
-  }
 
   enum InstallReason {
     // Default for deserialization when an unexpected value is encountered.
@@ -116,49 +125,42 @@ message AppProvisioningListAppsResponse {
     optional bool is_masking_allowed = 4;
   }
 
-  // Every platform has its own [Platform]Extras message to store platform
-  // specific metadata.
   // For Android-only metadata.
-  message AndroidExtras {
-    // |package_name| and |activity_name| uniquely identify each Android app.
-    optional string package_name = 1;
-    optional string activity_name = 2;
-  }
+  message AndroidExtras {}
 
   // For Web-only metadata.
   message WebExtras {
-    // |manifest_id| uniquely identifies a web app.
-    optional string manifest_id = 1;
-
     // A URL to the web app's manifest in json format. This will always be from
     // the host meltingpot.googleusercontent.com.
-    optional string manifest_url = 2;
+    optional string manifest_url = 1;
 
     // The URL for the original source used to retrieve the contents of the
     // manifest above. This is needed to resolve the file on the client-side.
-    optional string original_manifest_url = 3;
+    optional string original_manifest_url = 2;
   }
 
   message App {
+    // The primary key for the installer. This will always be of the format
+    // "platform:primary_key". For now we support "android:package_name" and
+    // "web:http://manifest/id".
+    optional string package_id = 1;
+
     // The identifier for the App Group that Fondue used to derive this app
     // instance in the response.
     // Note: this may not be unique in the apps_to_install collection.
-    optional string app_group_uuid = 1;
+    optional string app_group_uuid = 2;
 
     // The App's UTF-8 encoded name in the requested language (or next best).
-    optional string name = 2;
+    optional string name = 3;
 
     // One or more Icons for this App for the requested language (or next best).
-    repeated Icon icons = 3;
-
-    // Specifies the platform this app uses to install. This will match the
-    // contents of the extras.
-    optional Platform platform = 4;
+    repeated Icon icons = 4;
 
     // The reason why this app is in the list.
     optional InstallReason install_reason = 5;
 
-    // Platform-specific information for installing this app.
+    // Every platform has its own [Platform]Extras message to store platform
+    // specific metadata.
     oneof extras {
       AndroidExtras android_extras = 6;
       WebExtras web_extras = 7;

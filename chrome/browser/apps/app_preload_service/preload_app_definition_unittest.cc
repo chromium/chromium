@@ -21,7 +21,7 @@ namespace {
 proto::AppProvisioningListAppsResponse_App CreateTestWebApp() {
   proto::AppProvisioningListAppsResponse_App app;
   app.set_name("Test app");
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
+  app.mutable_web_extras()->set_manifest_url("https://example.com");
   return app;
 }
 }  // namespace
@@ -57,8 +57,8 @@ TEST_F(PreloadAppDefinitionTest, GetPlatformWhenNotSet) {
 TEST_F(PreloadAppDefinitionTest, GetPlatform) {
   proto::AppProvisioningListAppsResponse_App app;
 
-  app.set_platform(proto::AppProvisioningListAppsResponse_Platform::
-                       AppProvisioningListAppsResponse_Platform_PLATFORM_WEB);
+  app.mutable_web_extras()->set_manifest_url("https://example.com");
+
   auto app_def = PreloadAppDefinition(app);
   ASSERT_EQ(app_def.GetPlatform(), AppType::kWeb);
 }
@@ -88,25 +88,6 @@ TEST_F(PreloadAppDefinitionTest, IsNotOemApp) {
           AppProvisioningListAppsResponse_InstallReason_INSTALL_REASON_DEFAULT);
   auto app_def = PreloadAppDefinition(app);
   ASSERT_FALSE(app_def.IsOemApp());
-}
-
-TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
-  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
-  app.mutable_web_extras()->set_manifest_id(
-      "https://www.example.com/manifest_id/");
-
-  PreloadAppDefinition app_def(app);
-
-  ASSERT_EQ(app_def.GetWebAppManifestId(),
-            "https://www.example.com/manifest_id/");
-}
-
-TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdNotSpecified) {
-  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
-
-  PreloadAppDefinition app_def(app);
-
-  ASSERT_TRUE(app_def.GetWebAppManifestId().empty());
 }
 
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlWebsite) {
@@ -146,8 +127,9 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlInvalidUrl) {
   ASSERT_FALSE(app_def.GetWebAppManifestUrl().is_valid());
 }
 
-TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlNotSpecified) {
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlEmpty) {
   proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_manifest_url("");
 
   PreloadAppDefinition app_def(app);
 

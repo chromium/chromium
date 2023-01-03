@@ -12,26 +12,18 @@ std::string PreloadAppDefinition::GetName() const {
   return app_proto_.name();
 }
 
+// TODO(b/263437253): fix up once supporting libraries are in place.
 AppType PreloadAppDefinition::GetPlatform() const {
-  switch (app_proto_.platform()) {
-    case proto::AppProvisioningListAppsResponse::PLATFORM_UNKNOWN:
-      return AppType::kUnknown;
-    case proto::AppProvisioningListAppsResponse::PLATFORM_WEB:
-      return AppType::kWeb;
-    case proto::AppProvisioningListAppsResponse::PLATFORM_ANDROID:
-      return AppType::kArc;
+  if (app_proto_.has_web_extras()) {
+    return AppType::kWeb;
   }
+
+  return AppType::kUnknown;
 }
 
 bool PreloadAppDefinition::IsOemApp() const {
   return app_proto_.install_reason() ==
          proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM;
-}
-
-std::string PreloadAppDefinition::GetWebAppManifestId() const {
-  DCHECK_EQ(GetPlatform(), AppType::kWeb);
-
-  return app_proto_.web_extras().manifest_id();
 }
 
 GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
@@ -54,7 +46,6 @@ std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
 
   if (app.GetPlatform() == AppType::kWeb) {
     os << "- Web Extras:" << std::endl;
-    os << "  - Manifest ID: " << app.GetWebAppManifestId() << std::endl;
     os << "  - Manifest URL: " << app.GetWebAppManifestUrl() << std::endl;
     os << "  - Original Manifest URL: " << app.GetWebAppOriginalManifestUrl()
        << std::endl;
