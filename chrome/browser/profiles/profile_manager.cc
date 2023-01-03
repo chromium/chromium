@@ -43,7 +43,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
@@ -89,7 +88,6 @@
 #include "components/sync/base/stop_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
@@ -1349,10 +1347,6 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
 
   for (auto& observer : observers_)
     observer.OnProfileAdded(profile);
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PROFILE_ADDED, content::Source<Profile>(profile),
-      content::NotificationService::NoDetails());
 
   // At this point, the user policy service and the child account service
   // had enough time to initialize and should have updated the user signout

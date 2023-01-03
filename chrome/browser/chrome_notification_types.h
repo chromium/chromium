@@ -64,18 +64,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174785): Remove.
   NOTIFICATION_AUTH_CANCELLED,
 
-  // Profiles -----------------------------------------------------------------
-
-  // Use ProfileManagerObserver::OnProfileAdded instead of this notification.
-  // Sent after a Profile has been added to ProfileManager.
-  // The details are none and the source is the new profile.
-  // Note: this notification is only sent for profiles owned by the
-  // `ProfileManager`. In particular, off-the-record profiles don't trigger this
-  // notification, but on-the-record System and Guest profiles do.
-  //  TODO(https://crbug.com/1174720): Remove. See also
-  //  https://crbug.com/1038437.
-  NOTIFICATION_PROFILE_ADDED,
-
   // Misc --------------------------------------------------------------------
   // Note:-
   // Currently only Content and Chrome define and use notifications.
