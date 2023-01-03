@@ -288,6 +288,9 @@ double CSSLengthResolver::ZoomedComputedPixels(
     case CSSPrimitiveValue::UnitType::kLhs:
       return value * LineHeight(Zoom());
 
+    case CSSPrimitiveValue::UnitType::kRlhs:
+      return value * RootLineHeight(Zoom());
+
     default:
       NOTREACHED();
       return 0;

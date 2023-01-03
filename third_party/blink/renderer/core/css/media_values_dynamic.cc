@@ -95,6 +95,12 @@ float MediaValuesDynamic::LineHeight(float zoom) const {
   return CalculateLineHeight(frame_);
 }
 
+float MediaValuesDynamic::RootLineHeight(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries rlh and lh units are both based on the initial font.
+  return CalculateLineHeight(frame_);
+}
+
 double MediaValuesDynamic::ViewportWidth() const {
   if (viewport_dimensions_overridden_) {
     return viewport_width_override_;

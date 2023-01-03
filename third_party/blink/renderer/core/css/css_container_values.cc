@@ -23,7 +23,8 @@ CSSContainerValues::CSSContainerValues(Document& document,
           container.GetComputedStyle(),
           document.documentElement()->GetComputedStyle())),
       line_height_size_(CSSToLengthConversionData::LineHeightSize(
-          container.ComputedStyleRef())),
+          container.ComputedStyleRef(),
+          document.documentElement()->GetComputedStyle())),
       container_sizes_(container.ParentOrShadowHostElement()) {}
 
 void CSSContainerValues::Trace(Visitor* visitor) const {
@@ -66,6 +67,10 @@ float CSSContainerValues::RicFontSize(float zoom) const {
 
 float CSSContainerValues::LineHeight(float zoom) const {
   return line_height_size_.Lh(zoom);
+}
+
+float CSSContainerValues::RootLineHeight(float zoom) const {
+  return line_height_size_.Rlh(zoom);
 }
 
 double CSSContainerValues::ContainerWidth() const {

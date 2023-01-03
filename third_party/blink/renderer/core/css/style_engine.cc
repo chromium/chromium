@@ -2692,7 +2692,12 @@ bool StyleEngine::UpdateRootFontRelativeUnits(
       !old_root_style ||
       (UsesGlyphRelativeUnits() &&
        old_root_style->GetFont() != new_root_style->GetFont());
-  bool root_font_changed = rem_changed || root_font_glyphs_changed;
+  bool root_line_height_changed =
+      !old_root_style ||
+      (UsesLineHeightUnits() &&
+       old_root_style->LineHeight() != new_root_style->LineHeight());
+  bool root_font_changed =
+      rem_changed || root_font_glyphs_changed || root_line_height_changed;
   if (root_font_changed) {
     // Resolved root font relative units are stored in the matched properties
     // cache so we need to make sure to invalidate the cache if the

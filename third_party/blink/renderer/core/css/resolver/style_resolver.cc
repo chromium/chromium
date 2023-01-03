@@ -1039,6 +1039,10 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
     UseCounter::Count(GetDocument(), WebFeature::kHasGlyphRelativeUnits);
   }
 
+  if (state.Style()->HasLineHeightRelativeUnits()) {
+    GetDocument().GetStyleEngine().SetUsesLineHeightUnits(true);
+  }
+
   state.LoadPendingResources();
 
   // Now return the style.

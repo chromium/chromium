@@ -161,6 +161,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   float IcFontSize(float zoom) const override;
   float RicFontSize(float zoom) const override;
   float LineHeight(float zoom) const override;
+  float RootLineHeight(float zoom) const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;

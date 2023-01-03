@@ -143,6 +143,12 @@ float MediaValuesCached::LineHeight(float zoom) const {
   return data_.line_height;
 }
 
+float MediaValuesCached::RootLineHeight(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries rlh and lh units are both based on the initial font.
+  return data_.line_height;
+}
+
 double MediaValuesCached::ViewportWidth() const {
   return data_.viewport_width;
 }

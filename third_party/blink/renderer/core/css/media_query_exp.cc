@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -569,7 +570,8 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
       length_type_flags.test(
           CSSPrimitiveValue::kUnitTypeRootFontZeroCharacterWidth) ||
       length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeRootFontIdeographicFullWidth)) {
+          CSSPrimitiveValue::kUnitTypeRootFontIdeographicFullWidth) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootLineHeight)) {
     unit_flags |= UnitFlags::kRootFontRelative;
   }
 

@@ -175,10 +175,15 @@ float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
 }
 
 CSSToLengthConversionData::LineHeightSize::LineHeightSize(
-    const ComputedStyle& style)
-    : LineHeightSize(style.LineHeight(),
-                     &style.GetFont(),
-                     style.EffectiveZoom()) {}
+    const ComputedStyle& style,
+    const ComputedStyle* root_style)
+    : LineHeightSize(
+          style.LineHeight(),
+          root_style ? root_style->LineHeight() : style.LineHeight(),
+          &style.GetFont(),
+          root_style ? &root_style->GetFont() : &style.GetFont(),
+          style.EffectiveZoom(),
+          root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
 
 float CSSToLengthConversionData::LineHeightSize::Lh(float zoom) const {
   if (!font_) {
@@ -189,6 +194,17 @@ float CSSToLengthConversionData::LineHeightSize::Lh(float zoom) const {
   // zoom.
   return ComputedStyle::ComputedLineHeight(line_height_, *font_) / font_zoom_ *
          zoom;
+}
+
+float CSSToLengthConversionData::LineHeightSize::Rlh(float zoom) const {
+  if (!root_font_) {
+    return 0;
+  }
+  // Like font-metrics-based units, rlh is also based on pre-zoomed font
+  // metrics. We therefore need to unzoom using the font zoom before applying
+  // the target zoom.
+  return ComputedStyle::ComputedLineHeight(root_line_height_, *root_font_) /
+         root_font_zoom_ * zoom;
 }
 
 CSSToLengthConversionData::ViewportSize::ViewportSize(
@@ -280,7 +296,8 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     : CSSToLengthConversionData(
           element_style->GetWritingMode(),
           FontSizes(element_style, root_style),
-          LineHeightSize(parent_style ? *parent_style : *element_style),
+          LineHeightSize(parent_style ? *parent_style : *element_style,
+                         root_style),
           ViewportSize(layout_view),
           container_sizes,
           zoom,
@@ -351,6 +368,19 @@ float CSSToLengthConversionData::LineHeight(float zoom) const {
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kLineHeightRelative);
   return line_height_size_.Lh(zoom);
+}
+
+float CSSToLengthConversionData::RootLineHeight(float zoom) const {
+  // Need to mark the current element's ComputedStyle as having glyph relative
+  // styles, even if it is not relative to the current element's font because
+  // the invalidation that happens when a web font finishes loading for the root
+  // element does not necessarily cause a style difference for the root element,
+  // hence will not cause an invalidation of root font relative dependent
+  // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kRootFontRelative);
+  SetFlag(Flag::kLineHeightRelative);
+  return line_height_size_.Rlh(zoom);
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {

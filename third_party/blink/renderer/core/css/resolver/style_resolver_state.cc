@@ -130,17 +130,9 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
     const ComputedStyle* font_style) {
   DCHECK(font_style);
   const ComputedStyle* root_font_style = RootElementStyle();
-  float em = font_style->SpecifiedFontSize();
-  float rem = root_font_style ? root_font_style->SpecifiedFontSize() : 1.0f;
-  const Font* root_font =
-      root_font_style ? &root_font_style->GetFont() : &font_style->GetFont();
-  float root_zoom = root_font_style ? root_font_style->EffectiveZoom()
-                                    : font_style->EffectiveZoom();
-  CSSToLengthConversionData::FontSizes font_sizes(
-      em, rem, &font_style->GetFont(), root_font, font_style->EffectiveZoom(),
-      root_zoom);
+  CSSToLengthConversionData::FontSizes font_sizes(font_style, root_font_style);
   CSSToLengthConversionData::LineHeightSize line_height_size(
-      ParentStyle() ? *ParentStyle() : *Style());
+      ParentStyle() ? *ParentStyle() : *Style(), root_font_style);
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(
@@ -268,7 +260,8 @@ void StyleResolverState::UpdateFont() {
 
 void StyleResolverState::UpdateLineHeight() {
   css_to_length_conversion_data_.SetLineHeightSize(
-      CSSToLengthConversionData::LineHeightSize(*Style()));
+      CSSToLengthConversionData::LineHeightSize(
+          *Style(), GetDocument().documentElement()->GetComputedStyle()));
 }
 
 }  // namespace blink

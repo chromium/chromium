@@ -222,6 +222,17 @@ static float ConvertValueFromICSToUserUnits(const ComputedStyle* style,
          style->EffectiveZoom();
 }
 
+float ConvertValueFromUserUnitsToLHS(const ComputedStyle* style, float value) {
+  return value / AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
+                                                    *style);
+}
+
+static float ConvertValueFromLHSToUserUnits(const ComputedStyle* style,
+                                            float value) {
+  return value * AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
+                                                    *style);
+}
+
 static inline float ViewportLengthPercent(const float width_or_height) {
   return width_or_height / 100;
 }
@@ -463,7 +474,12 @@ float SVGLengthContext::ConvertValueToUserUnits(
           ConvertValueFromICSToUserUnits(RootElementStyle(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kLhs:
-      user_units = ConvertValueFromLHSToUserUnits(value);
+      user_units = ConvertValueFromLHSToUserUnits(
+          ComputedStyleForLengthResolving(context_), value);
+      break;
+    case CSSPrimitiveValue::UnitType::kRlhs:
+      user_units =
+          ConvertValueFromLHSToUserUnits(RootElementStyle(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kViewportWidth:
     case CSSPrimitiveValue::UnitType::kViewportHeight:
@@ -534,7 +550,10 @@ float SVGLengthContext::ConvertValueFromUserUnits(
     case CSSPrimitiveValue::UnitType::kRics:
       return ConvertValueFromUserUnitsToICS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kLhs:
-      return ConvertValueFromUserUnitsToLHS(value);
+      return ConvertValueFromUserUnitsToLHS(
+          ComputedStyleForLengthResolving(context_), value);
+    case CSSPrimitiveValue::UnitType::kRlhs:
+      return ConvertValueFromUserUnitsToLHS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kCentimeters:
       return value / kCssPixelsPerCentimeter;
     case CSSPrimitiveValue::UnitType::kMillimeters:
@@ -566,18 +585,6 @@ float SVGLengthContext::ConvertValueFromUserUnits(
 
   NOTREACHED();
   return 0;
-}
-
-float SVGLengthContext::ConvertValueFromUserUnitsToLHS(float value) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  return value / AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
-                                                    *style);
-}
-
-float SVGLengthContext::ConvertValueFromLHSToUserUnits(float value) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  return value * AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
-                                                    *style);
 }
 
 bool SVGLengthContext::DetermineViewport(gfx::SizeF& viewport_size) const {

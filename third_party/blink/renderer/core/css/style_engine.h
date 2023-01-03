@@ -308,6 +308,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void IncrementSkippedContainerRecalc() { ++skipped_container_recalc_; }
   void DecrementSkippedContainerRecalc() { --skipped_container_recalc_; }
 
+  bool UsesLineHeightUnits() const { return uses_line_height_units_; }
+  void SetUsesLineHeightUnits(bool uses_line_height_units) {
+    uses_line_height_units_ = uses_line_height_units;
+  }
+
   bool UsesGlyphRelativeUnits() const { return uses_glyph_relative_units_; }
   void SetUsesGlyphRelativeUnits(bool uses_glyph_relative_units) {
     uses_glyph_relative_units_ = uses_glyph_relative_units;
@@ -845,6 +850,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   bool uses_root_font_relative_units_{false};
   bool uses_glyph_relative_units_{false};
+  bool uses_line_height_units_{false};
   // True if we have performed style recalc for at least one element that
   // depends on container queries.
   bool style_affected_by_layout_{false};

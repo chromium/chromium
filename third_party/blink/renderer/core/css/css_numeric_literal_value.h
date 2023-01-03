@@ -27,11 +27,22 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
 
   bool IsAngle() const { return CSSPrimitiveValue::IsAngle(GetType()); }
   bool IsFontRelativeLength() const {
-    return GetType() == UnitType::kQuirkyEms || GetType() == UnitType::kEms ||
-           GetType() == UnitType::kExs || GetType() == UnitType::kRems ||
-           GetType() == UnitType::kChs || GetType() == UnitType::kIcs ||
-           GetType() == UnitType::kLhs || GetType() == UnitType::kRexs ||
-           GetType() == UnitType::kRchs || GetType() == UnitType::kRics;
+    switch (GetType()) {
+      case UnitType::kQuirkyEms:
+      case UnitType::kEms:
+      case UnitType::kExs:
+      case UnitType::kRems:
+      case UnitType::kChs:
+      case UnitType::kIcs:
+      case UnitType::kLhs:
+      case UnitType::kRexs:
+      case UnitType::kRchs:
+      case UnitType::kRics:
+      case UnitType::kRlhs:
+        return true;
+      default:
+        return false;
+    }
   }
   bool IsQuirkyEms() const { return GetType() == UnitType::kQuirkyEms; }
   bool IsViewportPercentageLength() const {
