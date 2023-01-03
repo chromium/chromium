@@ -155,11 +155,19 @@ source_set("test_support") {
     "test_print_backend.h",
   ]
 
+  if (use_cups) {
+    sources += [
+      "mock_cups_printer.cc",
+      "mock_cups_printer.h",
+    ]
+  }
+
   deps = [
     ":backend",
     "//base",
     "//printing/backend/mojom",
     "//printing/mojom",
+    "//testing/gmock",
     "//ui/gfx/geometry",
   ]
 }

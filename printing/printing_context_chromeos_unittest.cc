@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "printing/backend/cups_ipp_constants.h"
+#include "printing/backend/mock_cups_printer.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,43 +34,6 @@ constexpr char kUsername[] = "test user";
 
 constexpr char kDocumentName[] = "document name";
 constexpr char16_t kDocumentName16[] = u"document name";
-
-class MockCupsPrinter : public CupsPrinter {
- public:
-  MOCK_CONST_METHOD0(is_default, bool());
-  MOCK_CONST_METHOD0(GetName, std::string());
-  MOCK_CONST_METHOD0(GetMakeAndModel, std::string());
-  MOCK_CONST_METHOD0(GetInfo, std::string());
-  MOCK_CONST_METHOD0(GetUri, std::string());
-  MOCK_CONST_METHOD0(EnsureDestInfo, bool());
-  MOCK_CONST_METHOD1(ToPrinterInfo, bool(PrinterBasicInfo* basic_info));
-  MOCK_METHOD4(CreateJob,
-               ipp_status_t(int* job_id,
-                            const std::string& title,
-                            const std::string& username,
-                            const std::vector<cups_option_t>& options));
-  MOCK_METHOD5(StartDocument,
-               bool(int job_id,
-                    const std::string& docname,
-                    bool last_doc,
-                    const std::string& username,
-                    const std::vector<cups_option_t>& options));
-  MOCK_METHOD1(StreamData, bool(const std::vector<char>& buffer));
-  MOCK_METHOD0(FinishDocument, bool());
-  MOCK_METHOD2(CloseJob, ipp_status_t(int job_id, const std::string& username));
-  MOCK_METHOD1(CancelJob, bool(int job_id));
-  MOCK_METHOD1(GetMediaMarginsByName,
-               CupsMediaMargins(const std::string& media_id));
-
-  MOCK_CONST_METHOD1(GetSupportedOptionValues,
-                     ipp_attribute_t*(const char* option_name));
-  MOCK_CONST_METHOD1(GetSupportedOptionValueStrings,
-                     std::vector<base::StringPiece>(const char* option_name));
-  MOCK_CONST_METHOD1(GetDefaultOptionValue,
-                     ipp_attribute_t*(const char* option_name));
-  MOCK_CONST_METHOD2(CheckOptionSupported,
-                     bool(const char* name, const char* value));
-};
 
 class MockCupsConnection : public CupsConnection {
  public:
