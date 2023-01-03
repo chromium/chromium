@@ -9,12 +9,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.view.ContextThemeWrapper;
 import android.view.InflateException;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -112,8 +114,10 @@ public class WarmupManager {
             ContextThemeWrapper context =
                     new ContextThemeWrapper(baseContext, ActivityUtils.getThemeId());
             FrameLayout contentHolder = new FrameLayout(context);
-            ViewGroup mainView =
-                    (ViewGroup) LayoutInflaterUtils.inflate(context, R.layout.main, contentHolder);
+            var layoutInflater = LayoutInflater.from(context);
+            layoutInflater.setFactory2(new AsyncAppCompatFactory());
+            ViewGroup mainView = (ViewGroup) LayoutInflaterUtils.inflate(
+                    layoutInflater, R.layout.main, contentHolder);
             if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
                 ViewStub stub = (ViewStub) mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);

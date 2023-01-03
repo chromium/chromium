@@ -684,6 +684,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/android_media:android_media_java",
       "//third_party/android_swipe_refresh:android_swipe_refresh_java",
       "//third_party/androidx:androidx_activity_activity_java",
+      "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java",
       "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
