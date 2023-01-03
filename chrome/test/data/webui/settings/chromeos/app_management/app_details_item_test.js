@@ -22,7 +22,7 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
   });
 
-  test('PWA type', async function() {
+  test('PWA type from unknown source', async function() {
     const options = {
       type: AppType.kWeb,
       installSource: InstallSource.kUnknown,
@@ -48,6 +48,43 @@ suite('<app-management-app-details-item>', () => {
         appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'Web App');
+  });
+
+  test('PWA type from browser', async function() {
+    const options = {
+      type: AppType.kWeb,
+      installSource: InstallSource.kBrowser,
+      publisherId: 'https://google.com/',
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app', options);
+
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
+
+    appDetailsItem.app = app;
+
+    replaceBody(appDetailsItem);
+    fakeHandler.flushPipesForTesting();
+    flushTasks();
+
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSourceText'));
+    assertEquals(
+        appDetailsItem.shadowRoot.querySelector('#typeAndSourceText')
+            .textContent.trim(),
+        'Web App installed from Chrome browser');
+
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#infoIconTooltip')
+                     .querySelector('#tooltipText'));
+    assertEquals(
+        appDetailsItem.shadowRoot.querySelector('#infoIconTooltip')
+            .querySelector('#tooltipText')
+            .textContent.trim(),
+        options.publisherId);
   });
 
   test('Android type', async function() {
