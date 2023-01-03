@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Will return false if the navigation was successfully aborted.
   ASSERT_FALSE(manager.WaitForResponse());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   // Now, dynamically insert a frame and expect that it is still activated.
   ASSERT_NO_FATAL_FAILURE(InsertDynamicFrameWithScript());
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   auto* child_rfh =
       navigation_manager.GetNavigationHandle()->GetRenderFrameHost();
   ASSERT_TRUE(child_rfh);
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   ASSERT_EQ(child_rfh->GetLastCommittedURL(), kFrameUrl);
 
   // Wait until the iframe is loaded.
