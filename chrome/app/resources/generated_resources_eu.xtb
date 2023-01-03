@@ -1990,7 +1990,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2792465461386711506">Chrome-ko azken fitxak ikusteko telefonoan, aktibatu Chrome-ren Sinkronizazioa</translation>
 <translation id="2792697226874849938">Murriztapenaren irudia</translation>
 <translation id="2794233252405721443">Blokeatuta dago webgunea</translation>
-<translation id="2794522004398861033">eSIM txartela konfiguratzeko, konektatu wifi- edo Ethernet sare batera</translation>
+<translation id="2794522004398861033">eSIM txartela konfiguratzeko, konektatu wifi- edo Ethernet-sare batera</translation>
 <translation id="2795074478966352573">Family Link bidez kudeatutako kontuak ez dira bateragarriak oraindik</translation>
 <translation id="2795716239552913152">Webguneek kokapena erabili ohi dute eginbide edo informazio egokia eskaintzeko, hala nola tokiko albisteak edo inguruan dauden dendak</translation>
 <translation id="2796740370559399562">Jarraitu cookieak baimentzen</translation>
@@ -4304,7 +4304,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="50080882645628821">Kendu profila</translation>
 <translation id="5008936837313706385">Jardueraren izena</translation>
 <translation id="5009463889040999939">Profilaren izena aldatzen. Agian minutu batzuk beharko dira.</translation>
-<translation id="5010043101506446253">Ziurtagiri-emailea</translation>
+<translation id="5010043101506446253">Autoritate ziurtagiri-emailea</translation>
 <translation id="501057610015570208">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da ChromeOS Flex sistemaren kiosko moduan</translation>
 <translation id="5015344424288992913">Proxya ebazten…</translation>
 <translation id="5016491575926936899">Testu-mezuak bidal ditzakezu ordenagailutik, bai eta Interneteko konexioa partekatu, elkarrizketa batean jasotzen diren jakinarazpenei erantzun, eta telefonoa erabilita <ph name="DEVICE_TYPE" /> gailua desblokeatu ere.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
