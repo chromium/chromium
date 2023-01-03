@@ -45,12 +45,7 @@ BASE_FEATURE(kAbusiveExperienceEnforce,
 SafeBrowsingTriggeredPopupBlocker::PageData::PageData(content::Page& page)
     : PageUserData(page) {}
 
-SafeBrowsingTriggeredPopupBlocker::PageData::~PageData() {
-  if (is_triggered_) {
-    UMA_HISTOGRAM_COUNTS_100("ContentSettings.Popups.StrongBlocker.NumBlocked",
-                             num_popups_blocked_);
-  }
-}
+SafeBrowsingTriggeredPopupBlocker::PageData::~PageData() = default;
 
 SafeBrowsingTriggeredPopupBlocker::NavigationHandleData::NavigationHandleData(
     content::NavigationHandle&) {}

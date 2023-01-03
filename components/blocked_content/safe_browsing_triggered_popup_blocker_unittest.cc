@@ -47,8 +47,6 @@
 #include "url/gurl.h"
 
 namespace blocked_content {
-const char kNumBlockedHistogram[] =
-    "ContentSettings.Popups.StrongBlocker.NumBlocked";
 
 class SafeBrowsingTriggeredPopupBlockerTestBase
     : public content::RenderViewHostTestHarness {
@@ -389,12 +387,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogActions) {
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kBlocked, 2);
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
-  // Only log the num blocked histogram after navigation.
-  histogram_tester.ExpectTotalCount(kNumBlockedHistogram, 0);
-
   // Navigate to a warn site.
   NavigateAndCommit(url_warn);
-  histogram_tester.ExpectBucketCount(kNumBlockedHistogram, 2, 1);
 
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kNavigation, 2);
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kWarningSite, 1);
@@ -416,23 +410,6 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogActions) {
       web_contents()->GetPrimaryPage()));
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kConsidered, 4);
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
-
-  histogram_tester.ExpectTotalCount(kNumBlockedHistogram, 1);
-}
-
-TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogBlockMetricsOnClose) {
-  base::HistogramTester histogram_tester;
-  const GURL url_enforce("https://example.enforce/");
-  MarkUrlAsAbusiveEnforce(url_enforce);
-
-  NavigateAndCommit(url_enforce);
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
-      web_contents()->GetPrimaryPage()));
-
-  histogram_tester.ExpectTotalCount(kNumBlockedHistogram, 0);
-  // Simulate deleting the web contents.
-  SimulateDeleteContents();
-  histogram_tester.ExpectUniqueSample(kNumBlockedHistogram, 1, 1);
 }
 
 class SafeBrowsingTriggeredPopupBlockerFilterAdsDisabledTest
