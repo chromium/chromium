@@ -69,6 +69,7 @@ class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
 class BroadcastChannelService;
 class BrowsingDataFilterBuilder;
+class BrowsingTopicsURLLoaderService;
 class BucketManager;
 class CacheStorageControlWrapper;
 class CookieStoreManager;
@@ -251,6 +252,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   BlobRegistryWrapper* GetBlobRegistry();
   storage::BlobUrlRegistry* GetBlobUrlRegistry();
   PrefetchURLLoaderService* GetPrefetchURLLoaderService();
+  BrowsingTopicsURLLoaderService* GetBrowsingTopicsURLLoaderService();
   CookieStoreManager* GetCookieStoreManager();
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
   BucketManager* GetBucketManager();
@@ -634,6 +636,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<BlobRegistryWrapper> blob_registry_;
   std::unique_ptr<storage::BlobUrlRegistry> blob_url_registry_;
   std::unique_ptr<PrefetchURLLoaderService> prefetch_url_loader_service_;
+  std::unique_ptr<BrowsingTopicsURLLoaderService>
+      browsing_topics_url_loader_service_;
   std::unique_ptr<CookieStoreManager> cookie_store_manager_;
   std::unique_ptr<BucketManager> bucket_manager_;
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;

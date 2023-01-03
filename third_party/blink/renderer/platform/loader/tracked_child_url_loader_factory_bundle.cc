@@ -23,6 +23,8 @@ TrackedChildPendingURLLoaderFactoryBundle::
         OriginMap pending_isolated_world_factories,
         mojo::PendingRemote<network::mojom::URLLoaderFactory>
             pending_prefetch_loader_factory,
+        mojo::PendingRemote<network::mojom::URLLoaderFactory>
+            pending_topics_loader_factory,
         std::unique_ptr<HostPtrAndTaskRunner> main_thread_host_bundle,
         bool bypass_redirect_checks)
     : ChildPendingURLLoaderFactoryBundle(
@@ -30,6 +32,7 @@ TrackedChildPendingURLLoaderFactoryBundle::
           std::move(pending_scheme_specific_factories),
           std::move(pending_isolated_world_factories),
           std::move(pending_prefetch_loader_factory),
+          std::move(pending_topics_loader_factory),
           bypass_redirect_checks),
       main_thread_host_bundle_(std::move(main_thread_host_bundle)) {}
 
@@ -51,6 +54,8 @@ TrackedChildPendingURLLoaderFactoryBundle::CreateFactory() {
       std::move(pending_isolated_world_factories_);
   other->pending_prefetch_loader_factory_ =
       std::move(pending_prefetch_loader_factory_);
+  other->pending_topics_loader_factory_ =
+      std::move(pending_topics_loader_factory_);
   other->main_thread_host_bundle_ = std::move(main_thread_host_bundle_);
   other->bypass_redirect_checks_ = bypass_redirect_checks_;
 
@@ -90,6 +95,7 @@ TrackedChildURLLoaderFactoryBundle::Clone() {
       std::move(pending_factories->pending_scheme_specific_factories()),
       std::move(pending_factories->pending_isolated_world_factories()),
       std::move(pending_factories->pending_prefetch_loader_factory()),
+      std::move(pending_factories->pending_topics_loader_factory()),
       std::move(main_thread_host_bundle_clone),
       pending_factories->bypass_redirect_checks());
 }
@@ -155,6 +161,7 @@ HostChildURLLoaderFactoryBundle::Clone() {
       std::move(pending_factories->pending_scheme_specific_factories()),
       std::move(pending_factories->pending_isolated_world_factories()),
       std::move(pending_factories->pending_prefetch_loader_factory()),
+      std::move(pending_factories->pending_topics_loader_factory()),
       std::move(main_thread_host_bundle_clone),
       pending_factories->bypass_redirect_checks());
 }

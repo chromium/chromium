@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
@@ -86,13 +88,38 @@ class BrowsingTopicsBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(https_server_.Start());
 
     original_client_ = SetBrowserClientForTesting(&browser_client_);
+
+    url_loader_monitor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
+            [&](URLLoaderInterceptor::RequestParams* params) -> bool {
+              last_request_is_topics_request_ =
+                  params->url_request.browsing_topics;
+
+              last_topics_header_.reset();
+              std::string topics_header;
+              if (params->url_request.headers.GetHeader("Sec-Browsing-Topics",
+                                                        &topics_header)) {
+                last_topics_header_ = topics_header;
+              }
+
+              return false;
+            }));
   }
 
   void TearDownOnMainThread() override {
     SetBrowserClientForTesting(original_client_);
+    url_loader_monitor_.reset();
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
+
+  bool last_request_is_topics_request() const {
+    return last_request_is_topics_request_;
+  }
+
+  const absl::optional<std::string>& last_topics_header() const {
+    return last_topics_header_;
+  }
 
   std::string InvokeTopicsAPI(const ToRenderFrameHost& adapter) {
     return EvalJs(adapter, R"(
@@ -124,6 +151,13 @@ class BrowsingTopicsBrowserTest : public ContentBrowserTest {
   FixedTopicsContentBrowserClient browser_client_;
 
   raw_ptr<ContentBrowserClient> original_client_ = nullptr;
+
+  bool last_request_is_topics_request_ = false;
+
+  std::unique_ptr<base::RunLoop> resource_request_url_waiter_;
+  absl::optional<std::string> last_topics_header_;
+
+  std::unique_ptr<URLLoaderInterceptor> url_loader_monitor_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPI) {
@@ -147,6 +181,98 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
   EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
+}
+
+// TODO(crbug.com/1381167): migrate to WPT.
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       Fetch_TopicsHeaderNotVisibleInServiceWorker) {
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/service_worker_factory.html");
+  GURL worker_script_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/topics_service_worker.js");
+  GURL fetch_url = https_server_.GetURL("a.test", "/empty.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  EXPECT_EQ("ok",
+            EvalJs(shell()->web_contents(),
+                   JsReplace("setupServiceWorker($1)", worker_script_url)));
+
+  // Reload the page to let it be controlled by the service worker.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  // Initiate a topics fetch() request from the Window context. Verify that the
+  // topics header is not visible in the service worker during the interception.
+  EXPECT_EQ("null", EvalJs(shell()->web_contents(), content::JsReplace(
+                                                        R"(
+                new Promise((resolve, reject) => {
+                  navigator.serviceWorker.addEventListener('message', e => {
+                    if (e.data.url == $1) {
+                      resolve(e.data.topicsHeader);
+                    }
+                  });
+
+                  fetch($1, {browsingTopics: true});
+                });
+              )",
+                                                        fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsHeaderForWindowFetch) {
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/service_worker_factory.html");
+  GURL fetch_url = https_server_.GetURL("a.test", "/empty.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  EXPECT_TRUE(last_request_is_topics_request());
+  EXPECT_TRUE(last_topics_header());
+  EXPECT_EQ(last_topics_header().value(),
+            "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_"
+            "version=\"2\";taxonomy_version=\"1\"");
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       TopicsNotAllowedForServiceWorkerFetch) {
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/service_worker_factory.html");
+  GURL worker_script_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/topics_service_worker.js");
+  GURL fetch_url = https_server_.GetURL("a.test", "/empty.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  EXPECT_EQ("ok",
+            EvalJs(shell()->web_contents(),
+                   JsReplace("setupServiceWorker($1)", worker_script_url)));
+
+  // Reload the page to let it be controlled by the service worker.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  // Initiate a topics fetch request from the service worker. Verify that it
+  // doesn't contain the topics header.
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), content::JsReplace(
+                                                  R"(
+                new Promise((resolve, reject) => {
+                  navigator.serviceWorker.addEventListener('message', e => {
+                    if (e.data.finishedFetch) {
+                      resolve();
+                    }
+                  });
+
+                  navigator.serviceWorker.controller.postMessage({
+                    fetchUrl: $1
+                  });
+                });
+              )",
+                                                  fetch_url)));
+
+  EXPECT_FALSE(last_request_is_topics_request());
+  EXPECT_FALSE(last_topics_header());
 }
 
 }  // namespace content

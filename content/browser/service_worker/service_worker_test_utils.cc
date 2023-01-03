@@ -92,6 +92,8 @@ class FakeNavigationClient : public mojom::NavigationClient {
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          topics_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
@@ -258,8 +260,8 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       blink::CreateCommitNavigationParams(),
       network::mojom::URLResponseHead::New(),
       mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, absl::nullopt,
-      nullptr, std::move(info), mojo::NullRemote(), blink::DocumentToken(),
-      base::UnguessableToken::Create(),
+      nullptr, std::move(info), mojo::NullRemote(), mojo::NullRemote(),
+      blink::DocumentToken(), base::UnguessableToken::Create(),
       std::vector<blink::ParsedPermissionsPolicyDeclaration>(),
       CreateStubPolicyContainer(), mojo::NullRemote(), nullptr, nullptr,
       base::BindOnce(

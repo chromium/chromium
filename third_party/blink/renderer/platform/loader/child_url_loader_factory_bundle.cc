@@ -145,6 +145,8 @@ ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
     OriginMap pending_isolated_world_factories,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_prefetch_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        pending_topics_loader_factory,
     bool bypass_redirect_checks)
     : PendingURLLoaderFactoryBundle(
           std::move(pending_default_factory),
@@ -152,7 +154,9 @@ ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
           std::move(pending_isolated_world_factories),
           bypass_redirect_checks),
       pending_prefetch_loader_factory_(
-          std::move(pending_prefetch_loader_factory)) {}
+          std::move(pending_prefetch_loader_factory)),
+      pending_topics_loader_factory_(std::move(pending_topics_loader_factory)) {
+}
 
 ChildPendingURLLoaderFactoryBundle::~ChildPendingURLLoaderFactoryBundle() =
     default;
@@ -167,6 +171,8 @@ ChildPendingURLLoaderFactoryBundle::CreateFactory() {
       std::move(pending_isolated_world_factories_);
   other->pending_prefetch_loader_factory_ =
       std::move(pending_prefetch_loader_factory_);
+  other->pending_topics_loader_factory_ =
+      std::move(pending_topics_loader_factory_);
   other->bypass_redirect_checks_ = bypass_redirect_checks_;
 
   return base::MakeRefCounted<ChildURLLoaderFactoryBundle>(std::move(other));
@@ -211,8 +217,13 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     return;
   }
 
+  // Prefetch and topics are two disjoint request types. They cannot be true
+  // at the same time.
+  DCHECK(
+      !((request.load_flags & net::LOAD_PREFETCH) && request.browsing_topics));
+
   // Use |prefetch_loader_factory_| for prefetch requests to send the requests
-  // to the PrefetchURLLoaderService in the browser process and triger the
+  // to the PrefetchURLLoaderService in the browser process and trigger the
   // special prefetch handling.
   // TODO(horo): Move this routing logic to network service, when we will have
   // the special prefetch handling in network service.
@@ -220,6 +231,16 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     // This is no-state prefetch (see
     // WebURLRequest::GetLoadFlagsForWebUrlRequest).
     prefetch_loader_factory_->CreateLoaderAndStart(
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
+    return;
+  }
+
+  // Use |topics_loader_factory_| to send the requests to the
+  // BrowsingTopicsURLLoaderService in the browser process and trigger the
+  // special topics handling.
+  if (request.browsing_topics && topics_loader_factory_) {
+    topics_loader_factory_->CreateLoaderAndStart(
         std::move(loader), request_id, options, request, std::move(client),
         traffic_annotation);
     return;
@@ -246,6 +267,13 @@ ChildURLLoaderFactoryBundle::Clone() {
         pending_prefetch_loader_factory.InitWithNewPipeAndPassReceiver());
   }
 
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      pending_topics_loader_factory;
+  if (topics_loader_factory_) {
+    topics_loader_factory_->Clone(
+        pending_topics_loader_factory.InitWithNewPipeAndPassReceiver());
+  }
+
   // Currently there is no need to override subresources from workers,
   // therefore |subresource_overrides| are not shared with the clones.
 
@@ -253,7 +281,8 @@ ChildURLLoaderFactoryBundle::Clone() {
       std::move(default_factory_pending_remote),
       CloneRemoteMapToPendingRemoteMap(scheme_specific_factories_),
       CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
-      std::move(pending_prefetch_loader_factory), bypass_redirect_checks_);
+      std::move(pending_prefetch_loader_factory),
+      std::move(pending_topics_loader_factory), bypass_redirect_checks_);
 }
 
 std::unique_ptr<ChildPendingURLLoaderFactoryBundle>
@@ -268,11 +297,18 @@ ChildURLLoaderFactoryBundle::PassInterface() {
     pending_prefetch_loader_factory = prefetch_loader_factory_.Unbind();
   }
 
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      pending_topics_loader_factory;
+  if (topics_loader_factory_) {
+    pending_topics_loader_factory = topics_loader_factory_.Unbind();
+  }
+
   return std::make_unique<ChildPendingURLLoaderFactoryBundle>(
       std::move(pending_default_factory),
       BoundRemoteMapToPendingRemoteMap(std::move(scheme_specific_factories_)),
       BoundRemoteMapToPendingRemoteMap(std::move(isolated_world_factories_)),
-      std::move(pending_prefetch_loader_factory), bypass_redirect_checks_);
+      std::move(pending_prefetch_loader_factory),
+      std::move(pending_topics_loader_factory), bypass_redirect_checks_);
 }
 
 void ChildURLLoaderFactoryBundle::Update(
@@ -280,6 +316,10 @@ void ChildURLLoaderFactoryBundle::Update(
   if (pending_factories->pending_prefetch_loader_factory()) {
     prefetch_loader_factory_.Bind(
         std::move(pending_factories->pending_prefetch_loader_factory()));
+  }
+  if (pending_factories->pending_topics_loader_factory()) {
+    topics_loader_factory_.Bind(
+        std::move(pending_factories->pending_topics_loader_factory()));
   }
   URLLoaderFactoryBundle::Update(std::move(pending_factories));
 }
@@ -295,6 +335,12 @@ void ChildURLLoaderFactoryBundle::SetPrefetchLoaderFactory(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory) {
   prefetch_loader_factory_.Bind(std::move(prefetch_loader_factory));
+}
+
+void ChildURLLoaderFactoryBundle::SetTopicsLoaderFactory(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        topics_loader_factory) {
+  topics_loader_factory_.Bind(std::move(topics_loader_factory));
 }
 
 bool ChildURLLoaderFactoryBundle::IsHostChildURLLoaderFactoryBundle() const {

@@ -1,0 +1,11 @@
+<html>
+  <body>
+    <script type="text/javascript">
+      async function setupServiceWorker(script_file) {
+        await navigator.serviceWorker.register(script_file);
+        await navigator.serviceWorker.ready;
+        return 'ok';
+      }
+    </script>
+  </body>
+</html>

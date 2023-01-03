@@ -269,7 +269,8 @@ void TestRenderFrame::Navigate(
       std::move(pending_factory_bundle), absl::nullopt,
       blink::mojom::ControllerServiceWorkerInfoPtr(),
       blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
-      mojo::NullRemote() /* prefetch_loader_factory */, blink::DocumentToken(),
+      mojo::NullRemote() /* prefetch_loader_factory */,
+      mojo::NullRemote() /* topics_loader_factory */, blink::DocumentToken(),
       base::UnguessableToken::Create(), blink::ParsedPermissionsPolicy(),
       blink::mojom::PolicyContainer::New(
           blink::mojom::PolicyContainerPolicies::New(),

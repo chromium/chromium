@@ -449,6 +449,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          topics_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
@@ -898,7 +900,9 @@ class CONTENT_EXPORT RenderFrameImpl
       absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          prefetch_loader_factory);
+          prefetch_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          topics_loader_factory);
 
   // Update current main frame's encoding and send it to browser window.
   // Since we want to let users see the right encoding info from menu
@@ -962,6 +966,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          topics_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,

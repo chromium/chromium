@@ -53,6 +53,7 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -9187,6 +9188,41 @@ void RenderFrameHostImpl::CommitNavigation(
           EnsurePrefetchedSignedExchangeCache());
     }
 
+    // Set up the topics loader factory. It is used to proxy the topics
+    // subresource request via the browser process. The topics loader factory
+    // does not depend on the prefetch loader factory (or vice versa), as they
+    // are intended for disjoint request types (i.e.
+    // fetch(<url>, {browsingTopics: true}) v.s. <link rel="prefetch">).
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory;
+    if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          factory_bundle_for_topics;
+
+      if (subresource_loader_factories) {
+        // Clone the factory bundle for topics.
+        auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
+            std::move(subresource_loader_factories));
+        subresource_loader_factories = CloneFactoryBundle(bundle);
+        factory_bundle_for_topics = CloneFactoryBundle(bundle);
+      }
+
+      if (factory_bundle_for_topics) {
+        // Also set-up URLLoaderFactory for topics using the same loader
+        // factories.
+        auto* storage_partition = GetStoragePartition();
+
+        base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext>
+            bind_context =
+                storage_partition->GetBrowsingTopicsURLLoaderService()
+                    ->GetFactory(
+                        topics_loader_factory.InitWithNewPipeAndPassReceiver(),
+                        std::move(factory_bundle_for_topics));
+
+        navigation_request->set_topics_url_loader_service_bind_context(
+            bind_context);
+      }
+    }
+
     mojom::NavigationClient* navigation_client =
         navigation_request->GetCommitNavigationClient();
 
@@ -9249,7 +9285,8 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
-        manifest_policy, std::move(policy_container), *document_token,
+        std::move(topics_loader_factory), manifest_policy,
+        std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -12130,6 +12167,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
@@ -12206,8 +12244,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(url_loader_client_endpoints),
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
-      std::move(prefetch_loader_factory), document_token,
-      devtools_navigation_token, permissions_policy,
+      std::move(prefetch_loader_factory), std::move(topics_loader_factory),
+      document_token, devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(cookie_manager_info), std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));

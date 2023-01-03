@@ -60,6 +60,7 @@
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/browsing_data/storage_partition_code_cache_data_remover.h"
 #include "content/browser/browsing_topics/browsing_topics_site_data_manager_impl.h"
+#include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -1332,6 +1333,11 @@ void StoragePartitionImpl::Initialize(
   prefetch_url_loader_service_ =
       std::make_unique<PrefetchURLLoaderService>(browser_context_);
 
+  if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+    browsing_topics_url_loader_service_ =
+        std::make_unique<BrowsingTopicsURLLoaderService>();
+  }
+
   cookie_store_manager_ =
       std::make_unique<CookieStoreManager>(service_worker_context_);
   // Unit tests use the LoadAllSubscriptions() callback to crash early if
@@ -1649,6 +1655,12 @@ storage::BlobUrlRegistry* StoragePartitionImpl::GetBlobUrlRegistry() {
 PrefetchURLLoaderService* StoragePartitionImpl::GetPrefetchURLLoaderService() {
   DCHECK(initialized_);
   return prefetch_url_loader_service_.get();
+}
+
+BrowsingTopicsURLLoaderService*
+StoragePartitionImpl::GetBrowsingTopicsURLLoaderService() {
+  DCHECK(initialized_);
+  return browsing_topics_url_loader_service_.get();
 }
 
 CookieStoreManager* StoragePartitionImpl::GetCookieStoreManager() {

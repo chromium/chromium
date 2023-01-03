@@ -6531,6 +6531,15 @@ void NavigationRequest::DidCommitNavigation(
     // committing.
     service_worker_handle_->OnEndNavigationCommit();
   }
+
+  // TODO(https://crbug.com/1399499): consider using NavigationOrDocumentHandle
+  // instead once we can get a WeakDocumentPtr from NavigationOrDocumentHandle.
+  if (topics_url_loader_service_bind_context_) {
+    DCHECK(!IsSameDocument());
+
+    topics_url_loader_service_bind_context_->OnDidCommitNavigation(
+        GetRenderFrameHost()->GetWeakDocumentPtr());
+  }
 }
 
 SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL() {
