@@ -81,7 +81,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
 
     /**
      * Returns a {@link PrivacyGuideFragment.FragmentType} at a specified position of Privacy Guide.
-     * TODO(crbug.com/1396267): Remove this method and substitute with getCurrentFragmentType
      *
      * @param position within |mFragmentTypeList|
      * @return the {@link PrivacyGuideFragment.FragmentType} at the specified position.
