@@ -156,17 +156,6 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   }
 }
 
-bool CanLoadInIncognito(const Extension* extension,
-                        content::BrowserContext* context) {
-  CHECK(extension);
-  if (extension->is_hosted_app())
-    return true;
-  // Packaged apps and regular extensions need to be enabled specifically for
-  // incognito (and split mode should be set).
-  return IncognitoInfo::IsSplitMode(extension) &&
-         IsIncognitoEnabled(extension->id(), context);
-}
-
 bool AllowFileAccess(const std::string& extension_id,
                      content::BrowserContext* context) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
