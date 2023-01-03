@@ -58,7 +58,7 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   void Seek(base::TimeDelta time);
   bool IsSeekWaitingForData() const;
 
-  // Add buffers to this stream.  Buffers are stored in SourceBufferStreams,
+  // Add buffers to this stream. Buffers are stored in SourceBufferStreams,
   // which handle ordering and overlap resolution.
   // Returns true if buffers were successfully added.
   bool Append(const StreamParser::BufferQueue& buffers);
@@ -228,8 +228,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   std::string GetDisplayName() const override;
   DemuxerType GetDemuxerType() const override;
 
-  // |enable_text| Process inband text tracks in the normal way when true,
-  //   otherwise ignore them.
   void Initialize(DemuxerHost* host, PipelineStatusCallback init_cb) override;
   void Stop() override;
   void Seek(base::TimeDelta time, PipelineStatusCallback cb) override;
@@ -341,7 +339,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // Appends webcodecs encoded chunks (already converted by caller into a
   // BufferQueue of StreamParserBuffers) to the source buffer associated with
   // |id|, with same semantic for other parameters and return value as
-  // AppendData().
+  // RunSegmentParserLoop().
   [[nodiscard]] bool AppendChunks(
       const std::string& id,
       std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
