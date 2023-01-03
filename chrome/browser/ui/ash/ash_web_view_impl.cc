@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -193,8 +194,8 @@ void AshWebViewImpl::RenderFrameHostChanged(
     FixZoomLevelToOne(new_host);
 }
 
-void AshWebViewImpl::RenderViewHostChanged(content::RenderViewHost* old_host,
-                                           content::RenderViewHost* new_host) {
+void AshWebViewImpl::PrimaryPageChanged(content::Page& page) {
+  DCHECK_EQ(&page.GetMainDocument(), web_contents_->GetPrimaryMainFrame());
   if (!web_contents_->GetRenderWidgetHostView())
     return;
 
