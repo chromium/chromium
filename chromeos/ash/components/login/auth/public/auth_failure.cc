@@ -67,6 +67,8 @@ const std::string AuthFailure::GetErrorString() const {
       return "Failed to get hashed username";
     case CRYPTOHOME_RECOVERY_SERVICE_ERROR:
       return "Failed interaction with cryptohome recovery server";
+    case CRYPTOHOME_RECOVERY_OAUTH_TOKEN_ERROR:
+      return "Failed to fetch OAuth2 token for recovery service";
     case NONE:
     case NUM_FAILURE_REASONS:
       NOTREACHED();

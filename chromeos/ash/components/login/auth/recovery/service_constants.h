@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_RECOVERY_SERVICE_CONSTANTS_H_
 
 #include <string>
+#include <vector>
 
 class GURL;
 
@@ -19,6 +20,9 @@ GURL GetRecoveryServiceEpochURL();
 // used to perform mediation on the recovery request, the derived/mediated
 // secrets are returned in response.
 GURL GetRecoveryServiceMediateURL();
+
+// OAuth2 scope for the recovery service.
+std::vector<std::string> GetRecoveryOAuth2Scope();
 
 }  // namespace ash
 

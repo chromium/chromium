@@ -21,6 +21,9 @@ const char kTestingHsmPublicKey[] =
 const char kEpochSuffix[] = "v1/epoch/1";
 const char kMediateSuffix[] = "v1/cryptorecovery";
 
+const char kRecoveryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromeoscryptorecovery";
+
 GURL GetRecoveryServiceBaseURL() {
   return GURL(kTestingRecoveryServiceUrl);
 }
@@ -37,6 +40,10 @@ GURL GetRecoveryServiceEpochURL() {
 
 GURL GetRecoveryServiceMediateURL() {
   return GetRecoveryServiceBaseURL().Resolve(kMediateSuffix);
+}
+
+std::vector<std::string> GetRecoveryOAuth2Scope() {
+  return {kRecoveryOAuth2Scope};
 }
 
 }  // namespace ash

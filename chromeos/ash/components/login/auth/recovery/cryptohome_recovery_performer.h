@@ -8,12 +8,14 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 
 // Helper class to authenticate using recovery. Coordinates calls to cryptohome
 // and the requests over network to the recovery service.
-class CryptohomeRecoveryPerformer {
+class CryptohomeRecoveryPerformer : public OAuth2AccessTokenConsumer {
  public:
   explicit CryptohomeRecoveryPerformer(
       UserDataAuthClient*,
@@ -23,7 +25,7 @@ class CryptohomeRecoveryPerformer {
   CryptohomeRecoveryPerformer& operator=(const CryptohomeRecoveryPerformer&) =
       delete;
 
-  ~CryptohomeRecoveryPerformer();
+  ~CryptohomeRecoveryPerformer() override;
 
   // Authenticates an auth session using recovery. `user_context` must contain
   // the following data:
@@ -33,41 +35,48 @@ class CryptohomeRecoveryPerformer {
   //   factors.)
   // - A reauth proof token and an access token that was obtained by
   //   authentication to gaia.
+  // We should never trigger two concurrent requests as it updates the
+  // `user_context_` the callback operations depend on.
   void AuthenticateWithRecovery(std::unique_ptr<UserContext> user_context,
                                 AuthOperationCallback callback);
+
+  // OAuth2AccessTokenConsumer:
+  void OnGetTokenSuccess(const TokenResponse& token_response) override;
+  void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override;
 
  private:
   // Called with the reply when fetching the recovery epoch value via network.
   void OnNetworkFetchEpoch(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
       absl::optional<CryptohomeRecoveryEpochResponse> epoch,
       CryptohomeRecoveryServerStatusCode);
 
   // Called with the reply to a call of GetRecoveryRequest.
   void OnGetRecoveryRequest(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
       CryptohomeRecoveryEpochResponse epoch,
       absl::optional<user_data_auth::GetRecoveryRequestReply> reply);
 
   // Called with the reply when fetching the recovery secret from the recovery
   // service via network.
   void OnFetchRecoveryServiceResponse(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
       CryptohomeRecoveryEpochResponse epoch,
       absl::optional<CryptohomeRecoveryResponse> response,
       CryptohomeRecoveryServerStatusCode);
 
   // Called with the response to the final call to AuthenticateAuthFactor.
   void OnAuthenticateAuthFactor(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
       absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
+
+  std::unique_ptr<UserContext> user_context_;
+  AuthOperationCallback callback_;
+
+  std::string access_token_;
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
 
   const base::raw_ptr<UserDataAuthClient> user_data_auth_client_;
   CryptohomeRecoveryServiceClient service_client_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
   base::WeakPtrFactory<CryptohomeRecoveryPerformer> weak_factory_{this};
 };
 

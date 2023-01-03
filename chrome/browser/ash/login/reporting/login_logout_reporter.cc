@@ -94,6 +94,7 @@ LoginFailureReason GetLoginFailureReasonForReport(
     case AuthFailure::ALLOWLIST_CHECK_FAILED:
     case AuthFailure::AUTH_DISABLED:
     case AuthFailure::CRYPTOHOME_RECOVERY_SERVICE_ERROR:
+    case AuthFailure::CRYPTOHOME_RECOVERY_OAUTH_TOKEN_ERROR:
     case AuthFailure::NUM_FAILURE_REASONS:
       return LoginFailureReason::UNKNOWN_LOGIN_FAILURE_REASON;
   }
