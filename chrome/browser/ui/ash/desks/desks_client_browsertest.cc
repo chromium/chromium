@@ -2465,7 +2465,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
   // Record number of windows being closed per source.
   // NOTE: The template contains an existing browser with 1 tab created by
   // `BrowserMain()`.
-  histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed.Api", 2,
+  histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed2.Api", 2,
                                       1);
   EXPECT_EQ(1u, desks_controller->desks().size());
 }

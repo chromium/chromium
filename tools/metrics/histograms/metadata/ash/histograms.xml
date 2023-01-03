@@ -1677,6 +1677,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed" units="units"
     expires_after="2023-05-09">
+  <obsolete>
+    This metric was originally recording for metrics for both combineDesk and
+    closeAll. Replaced with Ash.Desks.NumberOfWindowsClosed2.
+  </obsolete>
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -1687,6 +1691,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed.{RemovalSource}"
     units="windows" expires_after="2023-10-03">
+  <obsolete>
+    This metric was originally recording for metrics for both combineDesk and
+    closeAll. Replaced with Ash.Desks.NumberOfWindowsClosed2.{RemovalSource}.
+  </obsolete>
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -1699,6 +1707,33 @@ chromium-metrics-reviews@google.com.
     <variant name="Button" summary="button"/>
     <variant name="Keyboard" summary="keyboard"/>
     <variant name="SaveRecall" summary="save and recall"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsClosed2" units="units"
+    expires_after="2023-05-09">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is removed and all windows on the desk being
+    closed to record the total number of windows being closed by this operation.
+    Emitted only for close-all.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsClosed2.{RemovalSource}"
+    units="windows" expires_after="2023-10-03">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is removed and all windows on the desk being
+    closed by {RemovalSource} to record the total number of windows being closed
+    by this operation. Emitted only for close-all.
+  </summary>
+  <token key="RemovalSource">
+    <variant name="Api" summary="api"/>
+    <variant name="Button" summary="close-all button"/>
+    <variant name="Keyboard" summary="keyboard"/>
   </token>
 </histogram>
 

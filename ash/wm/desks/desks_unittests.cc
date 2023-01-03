@@ -7958,6 +7958,7 @@ TEST_P(DesksCloseAllTest, ClearStoredDeskWhenClosingAnotherDesk) {
   };
 
   for (const auto& test_case : kTestCases) {
+    base::HistogramTester histogram_tester;
     SCOPED_TRACE(test_case.scope_trace);
     // Create two desks with one app window each.
     WindowHolder win1(CreateAppWindow());
@@ -8472,6 +8473,11 @@ TEST_P(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
       // Record undo toast expired
       histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllTotal",
                                         ++undo_toast_expired_count);
+      // Record number of windows being closed.
+      histogram_tester.ExpectTotalCount("Ash.Desks.NumberOfWindowsClosed2", 0);
+      // Record number of windows being closed per source.
+      histogram_tester.ExpectTotalCount(
+          "Ash.Desks.NumberOfWindowsClosed2.Button", 0);
 
     } else {
       // Because undo toasts persist on hover, we need to move the cursor
@@ -8479,17 +8485,19 @@ TEST_P(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
       GetEventGenerator()->MoveMouseTo(gfx::Point(0, 0));
 
       // When we wait for the undo toast to expire, `desk_1` should be
-      // destroyed.
-      WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
+      // destroyed. Wait a bit longer than the toast expire duration to avoid
+      // flakiness.
+      WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds() +
+                          base::Seconds(1).InMilliseconds());
       // Record undo toast expired.
       histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllTotal",
                                         ++undo_toast_expired_count);
       // Record number of windows being closed.
-      histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed", 2,
+      histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed2", 2,
                                           1);
       // Record number of windows being closed per source.
       histogram_tester.ExpectUniqueSample(
-          "Ash.Desks.NumberOfWindowsClosed.Button", 2, 1);
+          "Ash.Desks.NumberOfWindowsClosed2.Button", 2, 1);
     }
   }
 }
@@ -8681,6 +8689,64 @@ TEST_P(DesksCloseAllTest, ClosingWindowsHaveParent) {
   EXPECT_TRUE(window.window()->GetRootWindow());
   EXPECT_EQ(kShellWindowId_UnparentedContainer,
             window.window()->parent()->GetId());
+}
+
+TEST_P(DesksCloseAllTest, TestRecordingNumerOfClosedWindowsMetrics) {
+  struct {
+    const std::string scope_trace;
+    const DeskCloseType desk_close_type;
+  } kTestCases[] = {
+      {"Remove second desk with combine desks", DeskCloseType::kCombineDesks},
+      {"Remove second desk with close-all-and-wait",
+       DeskCloseType::kCloseAllWindowsAndWait},
+      {"Remove second desk with close-all", DeskCloseType::kCloseAllWindows},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histogram_tester;
+
+    SCOPED_TRACE(test_case.scope_trace);
+    WindowHolder win1(CreateAppWindow());
+
+    NewDesk();
+    auto* controller = DesksController::Get();
+    controller->SendToDeskAtIndex(win1.window(), 1);
+    Desk* desk = controller->desks()[1].get();
+
+    EnterOverview();
+
+    RemoveDesk(desk, test_case.desk_close_type);
+
+    switch (test_case.desk_close_type) {
+      case DeskCloseType::kCombineDesks:
+        histogram_tester.ExpectTotalCount("Ash.Desks.NumberOfWindowsClosed2",
+                                          0);
+        histogram_tester.ExpectTotalCount(
+            "Ash.Desks.NumberOfWindowsClosed2.Button", 0);
+        break;
+      // Wait and toast expired.
+      case DeskCloseType::kCloseAllWindowsAndWait:
+        // Because undo toasts persist on hover, we need to move the cursor
+        // outside of the undo toast to start the countdown for its expiration.
+        GetEventGenerator()->MoveMouseTo(gfx::Point(0, 0));
+        WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds() +
+                            base::Seconds(1).InMilliseconds());
+        histogram_tester.ExpectTotalCount("Ash.Desks.NumberOfWindowsClosed2",
+                                          1);
+        histogram_tester.ExpectUniqueSample(
+            "Ash.Desks.NumberOfWindowsClosed2.Button", 1, 1);
+        break;
+
+      case DeskCloseType::kCloseAllWindows:
+        // `kCombineDesks` and `kCloseAllWindows` should both clear the removed
+        // desk immediately.
+        histogram_tester.ExpectTotalCount("Ash.Desks.NumberOfWindowsClosed2",
+                                          1);
+        histogram_tester.ExpectUniqueSample(
+            "Ash.Desks.NumberOfWindowsClosed2.Button", 1, 1);
+        break;
+    }
+  }
 }
 
 // TODO(afakhry): Add more tests:

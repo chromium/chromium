@@ -96,15 +96,13 @@ constexpr char kMoveWindowFromActiveDeskHistogramName[] =
 constexpr char kCloseAllUndoHistogramName[] = "Ash.Desks.CloseAllUndo";
 constexpr char kCloseAllTotalHistogramName[] = "Ash.Desks.CloseAllTotal";
 constexpr char kRemoveDeskTypeHistogramName[] = "Ash.Desks.RemoveDeskType";
-constexpr char kNumberOfWindowsClosed[] = "Ash.Desks.NumberOfWindowsClosed";
+constexpr char kNumberOfWindowsClosed[] = "Ash.Desks.NumberOfWindowsClosed2";
 constexpr char kNumberOfWindowsClosedByButton[] =
-    "Ash.Desks.NumberOfWindowsClosed.Button";
+    "Ash.Desks.NumberOfWindowsClosed2.Button";
 constexpr char kNumberOfWindowsClosedByKeyboard[] =
-    "Ash.Desks.NumberOfWindowsClosed.Keyboard";
-constexpr char kNumberOfWindowsClosedBySaveAndRecall[] =
-    "Ash.Desks.NumberOfWindowsClosed.SaveRecall";
+    "Ash.Desks.NumberOfWindowsClosed2.Keyboard";
 constexpr char kNumberOfWindowsClosedByApi[] =
-    "Ash.Desks.NumberOfWindowsClosed.Api";
+    "Ash.Desks.NumberOfWindowsClosed2.Api";
 // Used for histograms from "Ash.Desks.NumberOfWindowsOnDesk_1" up to 16.
 constexpr char kNumberOfWindowsOnDeskHistogramPrefix[] =
     "Ash.Desks.NumberOfWindowsOnDesk_";
@@ -269,7 +267,8 @@ class DesksController::RemovedDeskData {
  public:
   RemovedDeskData(std::unique_ptr<Desk> desk,
                   int index,
-                  DesksCreationRemovalSource source)
+                  DesksCreationRemovalSource source,
+                  DeskCloseType type)
       : toast_id_(base::StringPrintf("UndoCloseAllToast_%d",
                                      ++g_close_desk_toast_counter)),
         was_active_(desk->is_active()),
@@ -279,7 +278,8 @@ class DesksController::RemovedDeskData {
                                  ->accessibility_controller()
                                  ->spoken_feedback()
                                  .enabled()),
-        source_(source) {
+        source_(source),
+        desk_close_type_(type) {
     desk_->set_is_desk_being_removed(true);
   }
 
@@ -302,6 +302,7 @@ class DesksController::RemovedDeskData {
   int index() const { return index_; }
   bool is_toast_persistent() const { return is_toast_persistent_; }
   DesksCreationRemovalSource desk_removal_source() const { return source_; }
+  DeskCloseType desk_close_type() const { return desk_close_type_; }
 
   std::unique_ptr<Desk> AcquireDesk() { return std::move(desk_); }
 
@@ -317,6 +318,8 @@ class DesksController::RemovedDeskData {
   const bool is_toast_persistent_;
 
   const DesksCreationRemovalSource source_;
+
+  const DeskCloseType desk_close_type_;
 };
 
 // Helper class which wraps around a OneShotTimer and used for recording how
@@ -1640,7 +1643,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   // Keep the removed desk's data alive until at least the end of this function.
   auto temporary_removed_desk = std::make_unique<RemovedDeskData>(
-      std::move(*iter), removed_desk_index, source);
+      std::move(*iter), removed_desk_index, source, close_type);
   auto* temporary_removed_desk_ptr = temporary_removed_desk.get();
   Desk* removed_desk = temporary_removed_desk_ptr->desk();
 
@@ -1862,11 +1865,18 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   non_const_desk->RecordAndResetConsecutiveDailyVisits(
       /*being_removed=*/true);
 
-  // Record number of windows being closed by desk removal.
-  UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsClosed,
-                           removed_desk->windows().size());
-  ReportClosedWindowsCountPerSourceHistogram(
-      removed_desk_data->desk_removal_source(), removed_desk->windows().size());
+  // Record number of windows being closed by close-all desk removal.
+  // Only record metric for close-all, not for combine desk action.
+  if (removed_desk_data->desk_close_type() == DeskCloseType::kCloseAllWindows ||
+      removed_desk_data->desk_close_type() ==
+          DeskCloseType::kCloseAllWindowsAndWait) {
+    base::UmaHistogramCounts100(kNumberOfWindowsClosed,
+                                removed_desk->windows().size());
+    ReportClosedWindowsCountPerSourceHistogram(
+        removed_desk_data->desk_removal_source(),
+        removed_desk->windows().size());
+  }
+
   ReportDesksCountHistogram();
   ReportNumberOfWindowsPerDeskHistogram();
 
@@ -2117,12 +2127,12 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     case DesksCreationRemovalSource::kKeyboard:
       desk_removal_source_histogram = kNumberOfWindowsClosedByKeyboard;
       break;
-    case DesksCreationRemovalSource::kSaveAndRecall:
-      desk_removal_source_histogram = kNumberOfWindowsClosedBySaveAndRecall;
-      break;
     case DesksCreationRemovalSource::kApi:
       desk_removal_source_histogram = kNumberOfWindowsClosedByApi;
       break;
+    // Skip recording for save&recall as windows are already closed before
+    // reaching here.
+    case DesksCreationRemovalSource::kSaveAndRecall:
     // Skip recording for source that can't close a desk.
     case DesksCreationRemovalSource::kDragToNewDeskButton:
     case DesksCreationRemovalSource::kLaunchTemplate:
