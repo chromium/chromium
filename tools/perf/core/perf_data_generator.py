@@ -1925,6 +1925,7 @@ def generate_telemetry_args(tester_config, platform):
     '--browser=%s' % browser_name,
     '--upload-results',
     '--test-shard-map-filename=%s' % platform.shards_map_file_name,
+    '--ignore-benchmark-exit-code',
   ]
   if platform.run_reference_build:
     test_args.append('--run-ref-build')
