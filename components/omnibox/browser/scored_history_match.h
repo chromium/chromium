@@ -20,8 +20,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "omnibox_event.pb.h"
 
-class ScoredHistoryMatchTest;
-
 // An HistoryMatch that has a score as well as metrics defining where in the
 // history item's URL and/or page title matches have occurred.
 struct ScoredHistoryMatch : public history::HistoryMatch {
@@ -115,14 +113,7 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
 
  private:
-  friend class ScoredHistoryMatchTest;
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, GetDocumentSpecificityScore);
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, GetFinalRelevancyScore);
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, GetFrequency);
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, GetHQPBucketsFromString);
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, ScoringBookmarks);
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, ScoringScheme);
-  FRIEND_TEST_ALL_PREFIXES(ScoredHistoryMatchTest, ScoringTLD);
+  friend class ScoredHistoryMatchPublic;
 
   // Initialize ScoredHistoryMatch statics. Must be called before any other
   // method of ScoredHistoryMatch and before creating any instances.
