@@ -139,6 +139,8 @@ class XRSession final
   // have a need to differentiate based on the underlying runtime.
   const String preferredReflectionFormat() const { return "rgba16f"; }
 
+  Vector<String> enabledFeatures() const;
+
   XRSpace* viewerSpace() const;
 
   XRAnchorSet* TrackedAnchors() const;

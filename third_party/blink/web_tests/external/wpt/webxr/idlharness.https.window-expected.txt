@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 297 tests; 273 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 297 tests; 275 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -40,7 +40,7 @@ FAIL XRSession interface: attribute frameRate assert_true: The prototype object 
 FAIL XRSession interface: attribute supportedFrameRates assert_true: The prototype object must have a property "supportedFrameRates" expected true got false
 PASS XRSession interface: attribute renderState
 PASS XRSession interface: attribute inputSources
-FAIL XRSession interface: attribute enabledFeatures assert_true: The prototype object must have a property "enabledFeatures" expected true got false
+PASS XRSession interface: attribute enabledFeatures
 PASS XRSession interface: operation updateRenderState(optional XRRenderStateInit)
 FAIL XRSession interface: operation updateTargetFrameRate(float) assert_own_property: interface prototype object missing non-static operation expected property "updateTargetFrameRate" missing
 PASS XRSession interface: operation requestReferenceSpace(XRReferenceSpaceType)
@@ -64,7 +64,7 @@ FAIL XRSession interface: xrSession must inherit property "frameRate" with the p
 FAIL XRSession interface: xrSession must inherit property "supportedFrameRates" with the proper type assert_inherits: property "supportedFrameRates" not found in prototype chain
 PASS XRSession interface: xrSession must inherit property "renderState" with the proper type
 PASS XRSession interface: xrSession must inherit property "inputSources" with the proper type
-FAIL XRSession interface: xrSession must inherit property "enabledFeatures" with the proper type assert_inherits: property "enabledFeatures" not found in prototype chain
+PASS XRSession interface: xrSession must inherit property "enabledFeatures" with the proper type
 PASS XRSession interface: xrSession must inherit property "updateRenderState(optional XRRenderStateInit)" with the proper type
 PASS XRSession interface: calling updateRenderState(optional XRRenderStateInit) on xrSession with too few arguments must throw TypeError
 FAIL XRSession interface: xrSession must inherit property "updateTargetFrameRate(float)" with the proper type assert_inherits: property "updateTargetFrameRate" not found in prototype chain

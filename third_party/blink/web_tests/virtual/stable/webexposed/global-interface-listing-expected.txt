@@ -10365,6 +10365,7 @@ interface XRSession : EventTarget
     getter depthDataFormat
     getter depthUsage
     getter domOverlayState
+    getter enabledFeatures
     getter environmentBlendMode
     getter inputSources
     getter interactionMode

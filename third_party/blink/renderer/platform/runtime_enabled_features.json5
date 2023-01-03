@@ -3256,6 +3256,12 @@
       status: "stable",
     },
     {
+      name: "WebXREnabledFeatures",
+      depends_on: ["WebXR"],
+      status: "stable",
+      base_feature: "WebXREnabledFeatures",
+    },
+    {
       name: "WebXRHandInput",
       depends_on: ["WebXR"],
       public: true,
