@@ -291,10 +291,9 @@ void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
                           .id()) {
     return;
   }
-  // TODO(shidi): Will do the rotate transition on a separate cl. Close the
-  // menu at rotation for now.
-  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
-    event_handler_->ResetMultitaskMenu();
+  if (changed_metrics) {
+    AnimateFadeOut();
+  }
 }
 
 chromeos::MultitaskMenuView*
