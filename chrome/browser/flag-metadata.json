@@ -4532,7 +4532,7 @@
   {
     "name": "mbi-mode",
     "owners": [ "dom", "blink-isolation-dev@chromium.org" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 120
   },
   {
     "name": "media-app-custom-colors",
