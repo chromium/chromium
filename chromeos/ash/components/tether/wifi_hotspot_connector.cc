@@ -247,15 +247,15 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
 }
 
 void WifiHotspotConnector::CreateWifiConfiguration() {
-  base::DictionaryValue properties =
-      CreateWifiPropertyDictionary(ssid_, password_);
+  base::Value::Dict properties = CreateWifiPropertyDictionary(ssid_, password_);
 
   // This newly configured network will eventually be passed as an argument to
   // NetworkPropertiesUpdated().
-  network_connect_->CreateConfiguration(&properties, false /* shared */);
+  network_connect_->CreateConfiguration(std::move(properties),
+                                        /* shared */ false);
 }
 
-base::DictionaryValue WifiHotspotConnector::CreateWifiPropertyDictionary(
+base::Value::Dict WifiHotspotConnector::CreateWifiPropertyDictionary(
     const std::string& ssid,
     const std::string& password) {
   PA_LOG(VERBOSE) << "Creating network configuration. "
@@ -263,21 +263,19 @@ base::DictionaryValue WifiHotspotConnector::CreateWifiPropertyDictionary(
                   << "Password: " << password << ", "
                   << "Wi-Fi network GUID: " << wifi_network_guid_;
 
-  base::DictionaryValue properties;
+  base::Value::Dict properties;
 
   shill_property_util::SetSSID(ssid, &properties);
-  properties.SetKey(shill::kGuidProperty, base::Value(wifi_network_guid_));
-  properties.SetKey(shill::kAutoConnectProperty, base::Value(false));
-  properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeWifi));
-  properties.SetKey(shill::kSaveCredentialsProperty, base::Value(true));
+  properties.Set(shill::kGuidProperty, wifi_network_guid_);
+  properties.Set(shill::kAutoConnectProperty, false);
+  properties.Set(shill::kTypeProperty, shill::kTypeWifi);
+  properties.Set(shill::kSaveCredentialsProperty, true);
 
   if (password.empty()) {
-    properties.SetKey(shill::kSecurityClassProperty,
-                      base::Value(shill::kSecurityClassNone));
+    properties.Set(shill::kSecurityClassProperty, shill::kSecurityClassNone);
   } else {
-    properties.SetKey(shill::kSecurityClassProperty,
-                      base::Value(shill::kSecurityClassPsk));
-    properties.SetKey(shill::kPassphraseProperty, base::Value(password));
+    properties.Set(shill::kSecurityClassProperty, shill::kSecurityClassPsk);
+    properties.Set(shill::kPassphraseProperty, password);
   }
 
   return properties;

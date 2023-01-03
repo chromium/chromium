@@ -55,26 +55,25 @@ std::string CreateConfigurationJsonString(const std::string& guid) {
   return ss.str();
 }
 
-std::string GetSsid(const base::Value& shill_properties) {
-  return shill_property_util::GetSSIDFromProperties(shill_properties, false,
-                                                    nullptr);
+std::string GetSsid(const base::Value::Dict& shill_properties) {
+  return shill_property_util::GetSSIDFromProperties(
+      base::Value(shill_properties.Clone()), false, nullptr);
 }
 
-std::string GetSecurityClass(const base::Value& shill_properties) {
+std::string GetSecurityClass(const base::Value::Dict& shill_properties) {
   const std::string* security =
-      shill_properties.FindStringKey(shill::kSecurityClassProperty);
+      shill_properties.FindString(shill::kSecurityClassProperty);
   return security ? *security : std::string();
 }
 
-std::string GetPassphrase(const base::Value& shill_properties) {
+std::string GetPassphrase(const base::Value::Dict& shill_properties) {
   const std::string* passphrase =
-      shill_properties.FindStringKey(shill::kPassphraseProperty);
+      shill_properties.FindString(shill::kPassphraseProperty);
   return passphrase ? *passphrase : std::string();
 }
 
-std::string GetGuid(const base::Value& shill_properties) {
-  const std::string* guid =
-      shill_properties.FindStringKey(shill::kGuidProperty);
+std::string GetGuid(const base::Value::Dict& shill_properties) {
+  const std::string* guid = shill_properties.FindString(shill::kGuidProperty);
   return guid ? *guid : std::string();
 }
 
@@ -83,7 +82,7 @@ std::string GetGuid(const base::Value& shill_properties) {
 //   - has a non-empty GUID.
 // Returns true if all checks were successful, false otherwise.
 // Fills the GUID of the service into |*out_guid|.
-bool VerifyBaseConfiguration(const base::Value& shill_properties,
+bool VerifyBaseConfiguration(const base::Value::Dict& shill_properties,
                              const std::string& expected_ssid,
                              std::string* out_guid) {
   bool ok = true;
@@ -109,10 +108,14 @@ bool VerifyBaseConfiguration(const base::Value& shill_properties,
 //   - has the passphrase |expected_passphrase|.
 // Returns true if all checks were successful, false otherwise.
 // Fills the GUID of the service into |*out_guid|.
-bool VerifyPskConfiguration(const base::Value& shill_properties,
+bool VerifyPskConfiguration(const base::Value::Dict& shill_properties,
                             const std::string& expected_ssid,
                             const std::string& expected_passphrase,
                             std::string* out_guid) {
+  if (shill_properties.empty()) {
+    ADD_FAILURE() << "Received empty shill_properties";
+    return false;
+  }
   bool ok = VerifyBaseConfiguration(shill_properties, expected_ssid, out_guid);
 
   std::string actual_security_class = GetSecurityClass(shill_properties);
@@ -136,7 +139,7 @@ bool VerifyPskConfiguration(const base::Value& shill_properties,
 //   - has security class None.
 // Returns true if all checks were successful, false otherwise.
 // Fills the GUID of the service into |*out_guid|.
-bool VerifyOpenConfiguration(const base::Value& shill_properties,
+bool VerifyOpenConfiguration(const base::Value::Dict& shill_properties,
                              const std::string& expected_ssid,
                              std::string* out_guid) {
   bool ok = VerifyBaseConfiguration(shill_properties, expected_ssid, out_guid);
@@ -165,11 +168,11 @@ class WifiHotspotConnectorTest : public testing::Test {
       is_running_in_test_task_runner_ = is_running_in_test_task_runner;
     }
 
-    // Returns a NONE value if no configuration has been passed to
-    // TestNetworkConnect yet.
-    const base::Value GetLastConfiguration() {
-      return last_configuration_.is_none() ? base::Value()
-                                           : last_configuration_.Clone();
+    // Returns a Dict object with no entries if no configuration has been passed
+    // to TestNetworkConnect yet.
+    const base::Value::Dict GetLastConfiguration() {
+      return last_configuration_.empty() ? base::Value::Dict()
+                                         : last_configuration_.Clone();
     }
 
     std::string last_service_path_created() {
@@ -186,9 +189,9 @@ class WifiHotspotConnectorTest : public testing::Test {
 
     // Finish configuring the last specified Wi-Fi network config.
     void ConfigureServiceWithLastNetworkConfig() {
-      ASSERT_FALSE(last_configuration_.is_none());
+      ASSERT_FALSE(last_configuration_.empty());
       const std::string* wifi_guid =
-          last_configuration_.FindStringKey(shill::kGuidProperty);
+          last_configuration_.FindString(shill::kGuidProperty);
       ASSERT_TRUE(wifi_guid);
 
       last_service_path_created_ =
@@ -205,14 +208,13 @@ class WifiHotspotConnectorTest : public testing::Test {
     void ConfigureNetworkIdAndConnect(const std::string& network_id,
                                       const base::Value& shill_properties,
                                       bool shared) override {}
-    void CreateConfigurationAndConnect(base::Value* shill_properties,
+    void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
                                        bool shared) override {}
 
-    void CreateConfiguration(base::Value* shill_properties,
+    void CreateConfiguration(base::Value::Dict shill_properties,
                              bool shared) override {
-      ASSERT_TRUE(shill_properties);
       EXPECT_FALSE(shared);
-      last_configuration_ = shill_properties->Clone();
+      last_configuration_ = std::move(shill_properties);
 
       // Prevent nested RunLoops when ConfigureServiceWithLastNetworkConfig()
       // calls NetworkStateTestHelper::ConfigureService(); that causes threading
@@ -237,7 +239,7 @@ class WifiHotspotConnectorTest : public testing::Test {
     NetworkStateTestHelper* helper_;
     // Has type base::Value::Type::NONE if no configuration has been passed to
     // TestNetworkConnect yet.
-    base::Value last_configuration_;
+    base::Value::Dict last_configuration_;
     std::string last_service_path_created_;
     std::string network_id_to_connect_;
     std::string network_id_to_disconnect_;
@@ -395,12 +397,10 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_NetworkDoesNotBecomeConnectable) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string guid_unused;
-  EXPECT_TRUE(VerifyPskConfiguration(last_configuration, kSsid, kPassword,
-                                     &guid_unused));
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &guid_unused));
 
   // Network does not become connectable.
   EXPECT_TRUE(test_network_connect_->network_id_to_connect().empty());
@@ -421,12 +421,10 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_AnotherNetworkBecomesConnectable) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
   EXPECT_TRUE(
-      VerifyPskConfiguration(last_configuration, kSsid, kPassword, &wifi_guid));
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
 
   // Another network becomes connectable. This should not cause the connection
   // to start.
@@ -454,12 +452,10 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_CannotConnectToNetwork) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
   EXPECT_TRUE(
-      VerifyPskConfiguration(last_configuration, kSsid, kPassword, &wifi_guid));
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
 
   // Network becomes connectable.
   NotifyConnectable(test_network_connect_->last_service_path_created());
@@ -486,12 +482,10 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_DeletedWhileConnectionPending) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
   EXPECT_TRUE(
-      VerifyPskConfiguration(last_configuration, kSsid, kPassword, &wifi_guid));
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
 
   // Network becomes connectable.
   NotifyConnectable(test_network_connect_->last_service_path_created());
@@ -515,12 +509,10 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_Success) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
   EXPECT_TRUE(
-      VerifyPskConfiguration(last_configuration, kSsid, kPassword, &wifi_guid));
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
 
   // Network becomes connectable.
   NotifyConnectable(test_network_connect_->last_service_path_created());
@@ -547,11 +539,9 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_Success_EmptyPassword) {
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
-  EXPECT_TRUE(VerifyOpenConfiguration(last_configuration, kSsid, &wifi_guid));
+  EXPECT_TRUE(VerifyOpenConfiguration(
+      test_network_connect_->GetLastConfiguration(), kSsid, &wifi_guid));
 
   // Network becomes connectable.
   NotifyConnectable(test_network_connect_->last_service_path_created());
@@ -579,12 +569,10 @@ TEST_F(WifiHotspotConnectorTest,
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value configuration_1 =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!configuration_1.is_none());
   std::string wifi_guid_1;
-  EXPECT_TRUE(VerifyPskConfiguration(configuration_1, "ssid1", "password1",
-                                     &wifi_guid_1));
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             "ssid1", "password1", &wifi_guid_1));
   std::string service_path_1 =
       test_network_connect_->last_service_path_created();
   EXPECT_FALSE(service_path_1.empty());
@@ -601,12 +589,10 @@ TEST_F(WifiHotspotConnectorTest,
       base::BindOnce(&WifiHotspotConnectorTest::WifiConnectionCallback,
                      base::Unretained(this)));
 
-  const base::Value configuration_2 =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!configuration_2.is_none());
   std::string wifi_guid_2;
-  EXPECT_TRUE(VerifyPskConfiguration(configuration_2, "ssid2", "password2",
-                                     &wifi_guid_2));
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             "ssid2", "password2", &wifi_guid_2));
   std::string service_path_2 =
       test_network_connect_->last_service_path_created();
   EXPECT_FALSE(service_path_2.empty());
@@ -657,12 +643,10 @@ TEST_F(WifiHotspotConnectorTest,
   // for a new network attempt.
   test_clock_.Advance(base::Seconds(13));
 
-  const base::Value configuration_1 =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!configuration_1.is_none());
   std::string wifi_guid_1;
-  EXPECT_TRUE(VerifyPskConfiguration(configuration_1, "ssid1", "password1",
-                                     &wifi_guid_1));
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             "ssid1", "password1", &wifi_guid_1));
   std::string service_path_1 =
       test_network_connect_->last_service_path_created();
   EXPECT_FALSE(service_path_1.empty());
@@ -691,12 +675,10 @@ TEST_F(WifiHotspotConnectorTest,
   EXPECT_EQ(1u, test_network_connect_->num_disconnection_attempts());
   EXPECT_EQ(wifi_guid_1, test_network_connect_->network_id_to_disconnect());
 
-  const base::Value configuration_2 =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!configuration_2.is_none());
   std::string wifi_guid_2;
-  EXPECT_TRUE(VerifyPskConfiguration(configuration_2, "ssid2", "password2",
-                                     &wifi_guid_2));
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             "ssid2", "password2", &wifi_guid_2));
   std::string service_path_2 =
       test_network_connect_->last_service_path_created();
   EXPECT_FALSE(service_path_2.empty());
@@ -748,12 +730,10 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
   RunTestTaskRunner();
   test_network_connect_->ConfigureServiceWithLastNetworkConfig();
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
   EXPECT_TRUE(
-      VerifyPskConfiguration(last_configuration, kSsid, kPassword, &wifi_guid));
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
 
   test_clock_.Advance(kConnectionToHotspotTime);
 
@@ -792,7 +772,7 @@ TEST_F(WifiHotspotConnectorTest,
   // once Wi-Fi is enabled.
   wifi_hotspot_connector_->DeviceListChanged();
   wifi_hotspot_connector_->DeviceListChanged();
-  EXPECT_TRUE(test_network_connect_->GetLastConfiguration().is_none());
+  EXPECT_TRUE(test_network_connect_->GetLastConfiguration().empty());
 
   // Allow the asyncronous call to NetworkStateHandler::SetTechnologyEnabled()
   // within WifiHotspotConnector::ConnectToWifiHotspot() to synchronously
@@ -807,12 +787,10 @@ TEST_F(WifiHotspotConnectorTest,
   RunTestTaskRunner();
   test_network_connect_->ConfigureServiceWithLastNetworkConfig();
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid;
   EXPECT_TRUE(
-      VerifyPskConfiguration(last_configuration, kSsid, kPassword, &wifi_guid));
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             kSsid, kPassword, &wifi_guid));
 
   // Network becomes connectable.
   NotifyConnectable(test_network_connect_->last_service_path_created());
@@ -861,7 +839,7 @@ TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
 
   // No configuration should have been created since the connection attempt
   // timed out before Wi-Fi was successfully enabled.
-  EXPECT_TRUE(test_network_connect_->GetLastConfiguration().is_none());
+  EXPECT_TRUE(test_network_connect_->GetLastConfiguration().empty());
 
   VerifyConnectionToHotspotDurationRecorded(false /* expected */);
   EXPECT_EQ(0u, test_network_connect_->num_disconnection_attempts());
@@ -886,7 +864,7 @@ TEST_F(WifiHotspotConnectorTest,
   // for a new network attempt.
   test_clock_.Advance(base::Seconds(13));
 
-  EXPECT_TRUE(test_network_connect_->GetLastConfiguration().is_none());
+  EXPECT_TRUE(test_network_connect_->GetLastConfiguration().empty());
 
   wifi_hotspot_connector_->ConnectToWifiHotspot(
       "ssid2", "password2", kTetherNetworkGuid2,
@@ -906,12 +884,10 @@ TEST_F(WifiHotspotConnectorTest,
   RunTestTaskRunner();
   test_network_connect_->ConfigureServiceWithLastNetworkConfig();
 
-  const base::Value last_configuration =
-      test_network_connect_->GetLastConfiguration();
-  ASSERT_TRUE(!last_configuration.is_none());
   std::string wifi_guid_2;
-  EXPECT_TRUE(VerifyPskConfiguration(last_configuration, "ssid2", "password2",
-                                     &wifi_guid_2));
+  EXPECT_TRUE(
+      VerifyPskConfiguration(test_network_connect_->GetLastConfiguration(),
+                             "ssid2", "password2", &wifi_guid_2));
   std::string service_path_2 =
       test_network_connect_->last_service_path_created();
   EXPECT_FALSE(service_path_2.empty());

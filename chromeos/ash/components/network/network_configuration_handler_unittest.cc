@@ -225,18 +225,17 @@ class NetworkConfigurationHandlerTest : public testing::Test {
 
   void CreateTestConfiguration(const std::string& service_path,
                                const std::string& type) {
-    base::Value properties(base::Value::Type::DICTIONARY);
+    base::Value::Dict properties;
     shill_property_util::SetSSID(service_path, &properties);
-    properties.SetKey(shill::kNameProperty, base::Value(service_path));
-    properties.SetKey(shill::kGuidProperty, base::Value(service_path));
-    properties.SetKey(shill::kTypeProperty, base::Value(type));
-    properties.SetKey(shill::kStateProperty, base::Value(shill::kStateIdle));
-    properties.SetKey(
-        shill::kProfileProperty,
-        base::Value(NetworkProfileHandler::GetSharedProfilePath()));
+    properties.Set(shill::kNameProperty, service_path);
+    properties.Set(shill::kGuidProperty, service_path);
+    properties.Set(shill::kTypeProperty, type);
+    properties.Set(shill::kStateProperty, shill::kStateIdle);
+    properties.Set(shill::kProfileProperty,
+                   NetworkProfileHandler::GetSharedProfilePath());
 
     network_configuration_handler_->CreateShillConfiguration(
-        properties,
+        base::Value(std::move(properties)),
         base::BindOnce(
             &NetworkConfigurationHandlerTest::CreateConfigurationCallback,
             base::Unretained(this)),
@@ -475,17 +474,18 @@ TEST_F(NetworkConfigurationHandlerTest, CreateConfiguration) {
   constexpr char kGuid[] = "/service/2";
   constexpr char kNetworkName[] = "MyNetwork";
 
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   shill_property_util::SetSSID(kNetworkName, &value);
-  value.SetStringKey(shill::kTypeProperty, "wifi");
-  value.SetStringKey(shill::kProfileProperty, "profile path");
-  value.SetStringKey(shill::kGuidProperty, kGuid);
+  value.Set(shill::kTypeProperty, "wifi");
+  value.Set(shill::kProfileProperty, "profile path");
+  value.Set(shill::kGuidProperty, kGuid);
 
   bool success = false;
   std::string service_path;
   std::string guid;
   network_configuration_handler_->CreateShillConfiguration(
-      value, base::BindOnce(&CopyServiceResult, &success, &service_path, &guid),
+      base::Value(std::move(value)),
+      base::BindOnce(&CopyServiceResult, &success, &service_path, &guid),
       base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 

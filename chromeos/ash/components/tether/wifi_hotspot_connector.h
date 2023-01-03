@@ -69,9 +69,8 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   void InitiateConnectionToCurrentNetwork();
   void CompleteActiveConnectionAttempt(bool success);
   void CreateWifiConfiguration();
-  base::DictionaryValue CreateWifiPropertyDictionary(
-      const std::string& ssid,
-      const std::string& password);
+  base::Value::Dict CreateWifiPropertyDictionary(const std::string& ssid,
+                                                 const std::string& password);
   void OnConnectionTimeout();
 
   void SetTestDoubles(std::unique_ptr<base::OneShotTimer> test_timer,

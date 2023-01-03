@@ -9,11 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "components/onc/onc_constants.h"
-
-namespace base {
-class Value;
-}
 
 namespace ash {
 
@@ -23,7 +20,7 @@ namespace shill_property_util {
 
 // Sets the |ssid| in |properties|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void SetSSID(const std::string& ssid, base::Value* properties);
+void SetSSID(const std::string& ssid, base::Value::Dict* properties);
 
 // Returns the SSID from |properties| in UTF-8 encoding. If |verbose_logging| is
 // true, detailed DEBUG log events will be added to the device event log. If

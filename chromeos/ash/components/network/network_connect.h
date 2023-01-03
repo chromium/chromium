@@ -8,10 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace ash {
 
@@ -118,12 +115,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // Shill properties and sends a connect request if the configuration succeeds.
   // The profile used is determined by |shared|.
   // TODO(stevenjb): Use ONC properties instead of shill.
-  virtual void CreateConfigurationAndConnect(base::Value* shill_properties,
+  virtual void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
                                              bool shared) = 0;
 
   // Requests a new network configuration to be created from a dictionary of
   // Shill properties. The profile used is determined by |shared|.
-  virtual void CreateConfiguration(base::Value* shill_properties,
+  virtual void CreateConfiguration(base::Value::Dict shill_properties,
                                    bool shared) = 0;
 
  protected:
