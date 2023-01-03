@@ -164,12 +164,14 @@ void BeginHandlingWebAuthenticationSessionRequestWithProfile(
 // not possible. If the last active browser is minimized (in particular, if
 // there are only minimized windows), it will unminimize it.
 Browser* ActivateBrowser(Profile* profile) {
-  Browser* browser =
-      chrome::FindLastActiveWithProfile(
-          profile->IsGuestSession()
-              ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-              : profile)
-          ->GetBrowserForOpeningWebUi();
+  Browser* browser = chrome::FindLastActiveWithProfile(
+      profile->IsGuestSession()
+          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : profile);
+
+  if (browser) {
+    browser = browser->GetBrowserForOpeningWebUi();
+  }
 
   if (browser)
     browser->window()->Activate();
