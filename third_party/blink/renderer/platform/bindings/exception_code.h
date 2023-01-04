@@ -113,6 +113,10 @@ enum class DOMExceptionCode : ExceptionCode {
   // WebTransport - https://w3c.github.io/webtransport/
   kWebTransportError,
 
+  // Smart Card API
+  // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+  kSmartCardError,
+
   kNumOfCodes,
 };
 

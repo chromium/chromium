@@ -155,7 +155,11 @@ const struct DOMExceptionEntry {
      "A parity error has been detected."},
     {DOMExceptionCode::kWebTransportError, "WebTransportError",
      "The WebTransport operation failed."},
-};
+
+    // Smart Card API
+    // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+    {DOMExceptionCode::kSmartCardError, "SmartCardError",
+     "A Smart Card operation failed."}};
 
 uint16_t ToLegacyErrorCode(DOMExceptionCode exception_code) {
   if (DOMExceptionCode::kLegacyErrorCodeMin <= exception_code &&

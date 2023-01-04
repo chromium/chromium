@@ -8,6 +8,8 @@ blink_modules_sources("smart_card") {
   sources = [
     "smart_card_connection.cc",
     "smart_card_connection.h",
+    "smart_card_error.cc",
+    "smart_card_error.h",
     "smart_card_reader.cc",
     "smart_card_reader.h",
     "smart_card_reader_presence_event.cc",
