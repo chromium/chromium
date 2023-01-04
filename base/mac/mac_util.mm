@@ -466,21 +466,37 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
   NSString* url = nil;
   NSString* pane_file = nil;
   NSData* subpane_data = nil;
+  // Note: On macOS 13 and later, System Settings are implemented with app
+  // extensions found at /System/Library/ExtensionKit/Extensions/. URLs to open
+  // them are constructed with a scheme of "x-apple.systempreferences" and a
+  // body of the the bundle ID of the app extension. (In the Info.plist there is
+  // an EXAppExtensionAttributes dictionary with legacy identifiers, but given
+  // that those are explicitly named "legacy", this code prefers to use the
+  // bundle IDs for the URLs it uses.) It is not yet known how to definitively
+  // identify the query string used to open sub-panes; the ones used below were
+  // determined from historical usage, disassembly of related code, and
+  // guessing. Clarity was requested from Apple in FB11753405.
   switch (pane) {
     case SystemSettingsPane::kAccessibility_Captions:
-      url = @"x-apple.systempreferences:com.apple.preference.universalaccess?"
-            @"Captioning";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.Accessibility-Settings."
+              @"extension?Captioning";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.universalaccess?"
+              @"Captioning";
+      }
       break;
     case SystemSettingsPane::kDateTime:
       if (IsAtLeastOS13()) {
-        url = @"x-apple.systempreferences:com.apple.preference.datetime";
+        url =
+            @"x-apple.systempreferences:com.apple.Date-Time-Settings.extension";
       } else {
         pane_file = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
       }
       break;
     case SystemSettingsPane::kNetwork_Proxies:
       if (IsAtLeastOS13()) {
-        url = @"x-apple.systempreferences:com.apple.preference.network?"
+        url = @"x-apple.systempreferences:com.apple.Network-Settings.extension?"
               @"Proxies";
       } else {
         pane_file = @"/System/Library/PreferencePanes/Network.prefPane";
@@ -489,22 +505,38 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
       break;
     case SystemSettingsPane::kPrintersScanners:
       if (IsAtLeastOS13()) {
-        url = @"x-apple.systempreferences:com.apple.preference.printfax";
+        url = @"x-apple.systempreferences:com.apple.Print-Scan-Settings."
+              @"extension";
       } else {
         pane_file = @"/System/Library/PreferencePanes/PrintAndFax.prefPane";
       }
       break;
     case SystemSettingsPane::kPrivacySecurity_Accessibility:
-      url = @"x-apple.systempreferences:com.apple.preference.security?"
-            @"Privacy_Accessibility";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+              @"extension?Privacy_Accessibility";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.security?"
+              @"Privacy_Accessibility";
+      }
       break;
     case SystemSettingsPane::kPrivacySecurity_Bluetooth:
-      url = @"x-apple.systempreferences:com.apple.preference.security?"
-            @"Privacy_Bluetooth";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+              @"extension?Privacy_Bluetooth";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.security?"
+              @"Privacy_Bluetooth";
+      }
       break;
     case SystemSettingsPane::kPrivacySecurity_Camera:
-      url = @"x-apple.systempreferences:com.apple.preference.security?"
-            @"Privacy_Camera";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+              @"extension?Privacy_Camera";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.security?"
+              @"Privacy_Camera";
+      }
       break;
     case SystemSettingsPane::kPrivacySecurity_Extensions_Sharing:
       if (IsAtLeastOS13()) {
@@ -527,16 +559,31 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
       }
       break;
     case SystemSettingsPane::kPrivacySecurity_LocationServices:
-      url = @"x-apple.systempreferences:com.apple.preference.security?"
-            @"Privacy_LocationServices";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+              @"extension?Privacy_LocationServices";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.security?"
+              @"Privacy_LocationServices";
+      }
       break;
     case SystemSettingsPane::kPrivacySecurity_Microphone:
-      url = @"x-apple.systempreferences:com.apple.preference.security?"
-            @"Privacy_Microphone";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+              @"extension?Privacy_Microphone";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.security?"
+              @"Privacy_Microphone";
+      }
       break;
     case SystemSettingsPane::kPrivacySecurity_ScreenRecording:
-      url = @"x-apple.systempreferences:com.apple.preference.security?"
-            @"Privacy_ScreenCapture";
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+              @"extension?Privacy_ScreenCapture";
+      } else {
+        url = @"x-apple.systempreferences:com.apple.preference.security?"
+              @"Privacy_ScreenCapture";
+      }
       break;
   }
 
