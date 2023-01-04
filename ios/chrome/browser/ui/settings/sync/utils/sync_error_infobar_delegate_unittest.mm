@@ -64,7 +64,7 @@ TEST_F(SyncErrorInfobarDelegateTest, IconConfigsUseSymbol) {
       new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
 
   EXPECT_TRUE(delegate->UseIconBackgroundTint());
-  EXPECT_NSEQ([UIColor colorNamed:kTextPrimaryColor],
+  EXPECT_NSEQ([UIColor colorNamed:kPrimaryBackgroundColor],
               delegate -> GetIconImageTintColor());
   EXPECT_NSEQ([UIColor colorNamed:kRed500Color],
               delegate -> GetIconBackgroundColor());

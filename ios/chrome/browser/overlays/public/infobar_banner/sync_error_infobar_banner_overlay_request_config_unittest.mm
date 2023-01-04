@@ -74,7 +74,7 @@ TEST_F(SyncErrorInfobarBannerOverlayRequestConfigTest, IconConfigsForSFSymbol) {
   SyncErrorBannerRequestConfig* config =
       request->GetConfig<SyncErrorBannerRequestConfig>();
 
-  EXPECT_NSEQ([UIColor colorNamed:kTextPrimaryColor],
+  EXPECT_NSEQ([UIColor colorNamed:kPrimaryBackgroundColor],
               config -> icon_image_tint_color());
   EXPECT_NSEQ([UIColor colorNamed:kRed500Color],
               config -> background_tint_color());

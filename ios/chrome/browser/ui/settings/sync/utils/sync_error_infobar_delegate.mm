@@ -51,7 +51,7 @@ const IconConfigs& SymbolsIconConfigs() {
   static const IconConfigs kSymbols = {
       true,
       [UIColor colorNamed:kRed500Color],
-      [UIColor colorNamed:kTextPrimaryColor],
+      [UIColor colorNamed:kPrimaryBackgroundColor],
       DefaultSymbolTemplateWithPointSize(kSyncErrorSymbol,
                                          kInfobarSymbolPointSize),
   };
