@@ -2359,7 +2359,7 @@ TEST(DictAdapterForMigrationTest, ImplicitConstruction) {
   }
   {
     DictionaryValue dict;
-    dict.SetString("hello", "world");
+    dict.SetStringKey("hello", "world");
     DictAdapterForMigration v = dict;
     EXPECT_EQ(&dict.GetDict(), &v.dict_for_test());
   }

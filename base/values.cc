@@ -1581,48 +1581,6 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
 
 DictionaryValue::DictionaryValue() : Value(Type::DICTIONARY) {}
 
-Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {
-  DCHECK(IsStringUTF8AllowingNoncharacters(path));
-  DCHECK(in_value);
-
-  // IMPORTANT NOTE: Do not replace with GetDict.SetByDottedPath() yet, because
-  // the latter fails when over-writing a non-dict intermediate node, while this
-  // method just replaces it with one. This difference makes some tests actually
-  // fail (http://crbug.com/949461).
-  StringPiece current_path(path);
-  Value* current_dictionary = this;
-  for (size_t delimiter_position = current_path.find('.');
-       delimiter_position != StringPiece::npos;
-       delimiter_position = current_path.find('.')) {
-    // Assume that we're indexing into a dictionary.
-    StringPiece key = current_path.substr(0, delimiter_position);
-    Value* child_dictionary =
-        current_dictionary->FindKeyOfType(key, Type::DICTIONARY);
-    if (!child_dictionary) {
-      child_dictionary =
-          current_dictionary->SetKey(key, Value(Type::DICTIONARY));
-    }
-
-    current_dictionary = child_dictionary;
-    current_path = current_path.substr(delimiter_position + 1);
-  }
-
-  // NOTE: We can't use |insert_or_assign| here, as only |try_emplace| does
-  // an explicit conversion from StringPiece to std::string if necessary.
-  auto result = static_cast<DictionaryValue*>(current_dictionary)
-                    ->dict()
-                    .try_emplace(current_path, std::move(in_value));
-  if (!result.second) {
-    // in_value is guaranteed to be still intact at this point.
-    result.first->second = std::move(in_value);
-  }
-  return result.first->second.get();
-}
-
-Value* DictionaryValue::SetString(StringPiece path, StringPiece in_value) {
-  return Set(path, std::make_unique<Value>(in_value));
-}
-
 bool DictionaryValue::GetDictionary(StringPiece path,
                                     const DictionaryValue** out_value) const {
   const Value* value = GetDict().FindByDottedPath(path);
