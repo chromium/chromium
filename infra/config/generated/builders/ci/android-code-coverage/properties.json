@@ -42,6 +42,12 @@
           "builder": "android-code-coverage",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-code-coverage",
+          "group": "tryserver.chromium.android"
+        }
       ]
     }
   },

@@ -225,6 +225,31 @@
       "use_remoteexec": true
     }
   },
+  "linux-chromeos-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "linux-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-dcheck-off-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -289,6 +314,20 @@
       "use_goma": true
     }
   },
+  "linux-js-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_webui_inline_sourcemaps": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "optimize_webui": false,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_goma": true,
+      "use_javascript_coverage": true
+    }
+  },
   "linux-lacros-asan-lsan-rel": {
     "gn_args": {
       "also_build_ash_chrome": true,
@@ -300,6 +339,20 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
+      "use_remoteexec": true
+    }
+  },
+  "linux-lacros-code-coverage": {
+    "gn_args": {
+      "also_build_ash_chrome": true,
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
       "use_remoteexec": true
     }
   },

@@ -46,6 +46,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android-code-coverage-native",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-pie-arm64-coverage-rel",
           "group": "tryserver.chromium.android"
         }

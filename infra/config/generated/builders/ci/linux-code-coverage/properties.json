@@ -37,6 +37,12 @@
           "builder": "linux-code-coverage",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-code-coverage",
+          "group": "tryserver.chromium.linux"
+        }
       ]
     }
   },

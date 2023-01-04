@@ -188,6 +188,19 @@
       "use_goma": true
     }
   },
+  "win10-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
   "win10-wpt-content-shell-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

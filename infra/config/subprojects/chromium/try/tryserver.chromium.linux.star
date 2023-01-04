@@ -770,6 +770,26 @@ try_.gpu.optional_tests_builder(
     ),
 )
 
+try_.builder(
+    name = "linux-code-coverage",
+    mirrors = ["ci/linux-code-coverage"],
+)
+
+try_.builder(
+    name = "linux-chromeos-code-coverage",
+    mirrors = ["ci/linux-chromeos-code-coverage"],
+)
+
+try_.builder(
+    name = "linux-lacros-code-coverage",
+    mirrors = ["ci/linux-lacros-code-coverage"],
+)
+
+try_.builder(
+    name = "linux-js-code-coverage",
+    mirrors = ["ci/linux-js-code-coverage"],
+)
+
 # RTS builders
 try_.orchestrator_builder(
     name = "linux-rel-inverse-fyi",

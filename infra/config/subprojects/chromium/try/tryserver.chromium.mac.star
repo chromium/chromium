@@ -295,6 +295,11 @@ try_.builder(
     goma_backend = None,  # Does not use Goma.
 )
 
+try_.builder(
+    name = "mac-code-coverage",
+    mirrors = ["ci/mac-code-coverage"],
+)
+
 ios_builder(
     name = "ios-asan",
     mirrors = [
@@ -452,6 +457,11 @@ ios_builder(
     ],
     os = os.MAC_DEFAULT,
     xcode = xcode.x14betabots,
+)
+
+ios_builder(
+    name = "ios-simulator-code-coverage",
+    mirrors = ["ci/ios-simulator-code-coverage"],
 )
 
 try_.gpu.optional_tests_builder(

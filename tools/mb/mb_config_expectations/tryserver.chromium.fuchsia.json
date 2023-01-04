@@ -59,6 +59,20 @@
       "use_remoteexec": true
     }
   },
+  "fuchsia-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "fuchsia_code_coverage": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_os": "fuchsia",
+      "use_clang_coverage": true,
+      "use_remoteexec": true,
+      "use_v2_script_default": false
+    }
+  },
   "fuchsia-compile-x64-dbg": {
     "gn_args": {
       "is_component_build": true,
