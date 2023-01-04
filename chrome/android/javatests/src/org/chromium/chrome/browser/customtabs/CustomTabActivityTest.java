@@ -37,7 +37,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
@@ -89,7 +88,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -395,10 +393,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(message = "Fails on Marshmallow, https://crbug.com/1180180",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP, sdk_is_less_than = VERSION_CODES.N)
-    public void
-    testContextMenuEntriesBeforeFirstRun() throws Exception {
+    public void testContextMenuEntriesBeforeFirstRun() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         // Mark the first run as not completed. This has to be done after we start the intent,
         // otherwise we are going to hit the FRE.
