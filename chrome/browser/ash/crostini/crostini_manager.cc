@@ -4171,69 +4171,69 @@ bool CrostiniManager::IsPendingCreation(const guest_os::GuestId& container_id) {
 
 void CrostiniManager::SetCreateOptionsUsed(
     const guest_os::GuestId& container_id) {
-  const base::Value* create_options = guest_os::GetContainerPrefValue(
+  const base::Value* create_options_val = guest_os::GetContainerPrefValue(
       profile_, container_id, guest_os::prefs::kContainerCreateOptions);
-  if (create_options == nullptr) {
+  if (create_options_val == nullptr) {
     // Should never reach here.
+    LOG(ERROR)
+        << "create_options_val in SetCreateOptionsUsed is pointing to null.";
     return;
   }
-  base::Value mutable_create_options = create_options->Clone();
-  mutable_create_options.SetKey(prefs::kCrostiniCreateOptionsUsedKey,
-                                base::Value(true));
+
+  base::Value::Dict mutable_create_options =
+      create_options_val->GetDict().Clone();
+  mutable_create_options.Set(prefs::kCrostiniCreateOptionsUsedKey,
+                             base::Value(true));
   guest_os::UpdateContainerPref(profile_, container_id,
                                 guest_os::prefs::kContainerCreateOptions,
-                                std::move(mutable_create_options));
+                                base::Value(std::move(mutable_create_options)));
 }
 
 bool CrostiniManager::FetchCreateOptions(const guest_os::GuestId& container_id,
                                          RestartOptions* options) {
   DCHECK(options != nullptr);
 
-  const base::Value* create_options = guest_os::GetContainerPrefValue(
+  const base::Value* create_options_val = guest_os::GetContainerPrefValue(
       profile_, container_id, guest_os::prefs::kContainerCreateOptions);
-  if (create_options == nullptr) {
+  if (create_options_val == nullptr) {
     // Should never reach here. If we somehow do, just restart with the given
     // options.
+    LOG(ERROR)
+        << "create_options_val in FetchCreateOptions is pointing to null.";
     return true;
   }
 
-  for (const auto& path : *create_options->GetDict().FindList(
-           prefs::kCrostiniCreateOptionsSharePathsKey)) {
+  const base::Value::Dict& create_options = create_options_val->GetDict();
+  for (const auto& path :
+       *create_options.FindList(prefs::kCrostiniCreateOptionsSharePathsKey)) {
     options->share_paths.emplace_back(path.GetString());
   }
 
-  if (create_options->GetDict().Find(
-          prefs::kCrostiniCreateOptionsContainerUsernameKey)) {
-    options->container_username = *create_options->GetDict().FindString(
+  if (create_options.Find(prefs::kCrostiniCreateOptionsContainerUsernameKey)) {
+    options->container_username = *create_options.FindString(
         prefs::kCrostiniCreateOptionsContainerUsernameKey);
   }
-  if (create_options->GetDict().Find(
-          prefs::kCrostiniCreateOptionsDiskSizeBytesKey)) {
+  if (create_options.Find(prefs::kCrostiniCreateOptionsDiskSizeBytesKey)) {
     int64_t size;
-    base::StringToInt64(*create_options->GetDict().FindString(
+    base::StringToInt64(*create_options.FindString(
                             prefs::kCrostiniCreateOptionsDiskSizeBytesKey),
                         &size);
     options->disk_size_bytes = size;
   }
-  if (create_options->GetDict().Find(
-          prefs::kCrostiniCreateOptionsImageServerUrlKey)) {
-    options->image_server_url = *create_options->GetDict().FindString(
+  if (create_options.Find(prefs::kCrostiniCreateOptionsImageServerUrlKey)) {
+    options->image_server_url = *create_options.FindString(
         prefs::kCrostiniCreateOptionsImageServerUrlKey);
   }
-  if (create_options->GetDict().Find(
-          prefs::kCrostiniCreateOptionsImageAliasKey)) {
-    options->image_alias = *create_options->GetDict().FindString(
-        prefs::kCrostiniCreateOptionsImageAliasKey);
+  if (create_options.Find(prefs::kCrostiniCreateOptionsImageAliasKey)) {
+    options->image_alias =
+        *create_options.FindString(prefs::kCrostiniCreateOptionsImageAliasKey);
   }
-  if (create_options->GetDict().Find(
-          prefs::kCrostiniCreateOptionsAnsiblePlaybookKey)) {
-    options->ansible_playbook =
-        base::FilePath(*create_options->GetDict().FindString(
-            prefs::kCrostiniCreateOptionsAnsiblePlaybookKey));
+  if (create_options.Find(prefs::kCrostiniCreateOptionsAnsiblePlaybookKey)) {
+    options->ansible_playbook = base::FilePath(*create_options.FindString(
+        prefs::kCrostiniCreateOptionsAnsiblePlaybookKey));
   }
 
-  return *create_options->GetDict().FindBool(
-      prefs::kCrostiniCreateOptionsUsedKey);
+  return *create_options.FindBool(prefs::kCrostiniCreateOptionsUsedKey);
 }
 
 }  // namespace crostini
