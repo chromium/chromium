@@ -90,6 +90,20 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         ->GetInteger(prefs::kBackgroundBlur);
   }
 
+  // Updates prefs::kPortraitRelighting pref values.
+  void SetPortraitRelightingPref(bool active) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kPortraitRelighting, active);
+  }
+
+  // Retrieves the value of `prefs::kPortraitRelighting`.
+  bool GetPortraitRelightingPref() {
+    return Shell::Get()
+        ->session_controller()
+        ->GetActivePrefService()
+        ->GetBoolean(prefs::kPortraitRelighting);
+  }
+
   CameraEffectsController* camera_effects_controller() {
     return camera_effects_controller_;
   }
@@ -123,6 +137,8 @@ TEST_F(CameraEffectsControllerTest,
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable());
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
+    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+        cros::mojom::CameraEffect::kPortraitRelight));
   }
 
   {
@@ -167,7 +183,7 @@ TEST_F(CameraEffectsControllerTest,
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {features::kVCPortraitRelighting},
+        {features::kVcControlsUi, features::kVCPortraitRelighting},
         {features::kVCBackgroundBlur, features::kVCBackgroundReplace});
 
     // PortraitRelight should be supported.
@@ -177,6 +193,13 @@ TEST_F(CameraEffectsControllerTest,
     EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
         cros::mojom::CameraEffect::kBackgroundReplace));
     EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
+        cros::mojom::CameraEffect::kPortraitRelight));
+
+    // Camera effects are supported, VC controls UI enabled, so camera effects
+    // UI controls are available, and portrait relighting UI is available.
+    EXPECT_TRUE(camera_effects_controller());
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable());
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
   }
 
@@ -576,6 +599,56 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
   camera_effects_controller_->OnEffectControlActivated(
       static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur), -999);
   EXPECT_EQ(GetBackgroundBlurPref(), -1);
+}
+
+TEST_F(CameraEffectsControllerTest, PortraitRelightingGetEffectState) {
+  // Make `kVCPortraitRelighting` enabled by default.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kVCPortraitRelighting},
+      {features::kVCBackgroundBlur, features::kVCBackgroundReplace});
+
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Pref value is "off."
+  SetPortraitRelightingPref(false);
+  EXPECT_FALSE(camera_effects_controller_->GetEffectState(
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight)));
+
+  // Pref value is "on."
+  SetPortraitRelightingPref(true);
+  EXPECT_TRUE(camera_effects_controller_->GetEffectState(
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight)));
+}
+
+TEST_F(CameraEffectsControllerTest,
+       PortraitRelightingOnEffectControlActivated) {
+  // Make `kVCPortraitRelighting` enabled by default.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kVCPortraitRelighting},
+      {features::kVCBackgroundBlur, features::kVCBackgroundReplace});
+
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Pref value is "off" initially.
+  SetPortraitRelightingPref(false);
+
+  // Activating the effect should toggle it to "true." The `value` argument
+  // doesn't matter for toggle effects.
+  camera_effects_controller_->OnEffectControlActivated(
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight), -999);
+  EXPECT_TRUE(GetPortraitRelightingPref());
+
+  // Another toggle should set it to "false."
+  camera_effects_controller_->OnEffectControlActivated(
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight), -999);
+  EXPECT_FALSE(GetPortraitRelightingPref());
+
+  // And one more toggle should set it back to "true."
+  camera_effects_controller_->OnEffectControlActivated(
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight), -999);
+  EXPECT_TRUE(GetPortraitRelightingPref());
 }
 
 }  // namespace
