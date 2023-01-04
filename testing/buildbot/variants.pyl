@@ -542,8 +542,8 @@
   'CROS_DEDEDE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'dedede-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'dedede-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_LKGM',
@@ -569,8 +569,8 @@
   'CROS_DEDEDE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '108.0.5359.75',
-      'cros_img': 'dedede-release/R108-15183.59.0',
+      'cros_chrome_version': '108.0.5359.111',
+      'cros_img': 'dedede-release/R108-15183.69.0',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_STABLE',
@@ -578,8 +578,8 @@
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'eve-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'eve-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_LKGM',
@@ -624,8 +624,8 @@
   'CROS_HANA_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'hana-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'hana-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_LKGM',
@@ -660,8 +660,8 @@
   'CROS_HEROBRINE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'herobrine',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'herobrine-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'herobrine-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'HEROBRINE_RELEASE_LKGM',
@@ -669,8 +669,8 @@
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'jacuzzi-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'jacuzzi-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_LKGM',
@@ -735,8 +735,8 @@
   'CROS_OCTOPUS_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'octopus-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'octopus-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_LKGM',
@@ -771,8 +771,8 @@
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '111.0.5512.0',
-      'cros_img': 'strongbad-release/R111-15300.0.0',
+      'cros_chrome_version': '111.0.5514.0',
+      'cros_img': 'strongbad-release/R111-15301.0.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
