@@ -3120,6 +3120,7 @@
       },
       'ios-fieldtrial-rel': {
         'mixins': [
+          'finch-chromium-swarming-pool',
           'has_native_resultdb_integration',
           'mac_12_arm64',
           'mac_toolchain',
@@ -3608,6 +3609,7 @@
       },
       'mac-fieldtrial-tester': {
         'mixins': [
+          'finch-chromium-swarming-pool',
           'mac_12_arm64',
         ],
         'test_suites': {
