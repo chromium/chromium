@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkModelMergerTime{UpdatesCount}" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-08-01">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -199,9 +199,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="UpdatesCount">
     <variant name="" summary="regardless of the number of updates"/>
-    <variant name="10kUpdates" summary="having more than 10k remote updates"/>
-    <variant name="50kUpdates" summary="having more than 50k remote updates"/>
-    <variant name="100kUpdates" summary="having more than 100k remote updates"/>
+    <variant name=".10kUpdates" summary="having more than 10k remote updates"/>
+    <variant name=".50kUpdates" summary="having more than 50k remote updates"/>
+    <variant name=".100kUpdates"
+        summary="having more than 100k remote updates"/>
   </token>
 </histogram>
 
