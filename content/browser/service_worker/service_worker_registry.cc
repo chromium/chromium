@@ -915,10 +915,10 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     std::set<blink::mojom::WebFeature> used_features(data.used_features.begin(),
                                                      data.used_features.end());
     version->set_used_features(std::move(used_features));
-    version->set_cross_origin_embedder_policy(
-        data.policy_container_policies->cross_origin_embedder_policy);
     // policy_container_host could be null for registration restored from old DB
     if (data.policy_container_policies) {
+      version->set_cross_origin_embedder_policy(
+          data.policy_container_policies->cross_origin_embedder_policy);
       version->set_policy_container_host(
           base::MakeRefCounted<PolicyContainerHost>(
               PolicyContainerPolicies(*data.policy_container_policies)));
