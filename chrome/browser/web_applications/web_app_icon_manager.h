@@ -100,6 +100,17 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                  const SortedSizesPx& icon_sizes,
                  ReadIconsCallback callback);
 
+  // Mimics WebAppShortcutsMenuItemInfo but stores timestamps instead of icons
+  // for os integration.
+  using ShortcutMenuIconTimes =
+      base::flat_map<IconPurpose, base::flat_map<SquareSizePx, base::Time>>;
+  using ShortcutIconDataVector = std::vector<ShortcutMenuIconTimes>;
+  using ShortcutIconDataCallback =
+      base::OnceCallback<void(ShortcutIconDataVector)>;
+
+  void ReadAllShortcutMenuIconsWithTimestamp(const AppId& app_id,
+                                             ShortcutIconDataCallback callback);
+
   using ReadIconsUpdateTimeCallback = base::OnceCallback<void(
       base::flat_map<SquareSizePx, base::Time> time_map)>;
   // Reads all the last updated time for all icons in the app. Returns empty map
