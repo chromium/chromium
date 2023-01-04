@@ -246,8 +246,10 @@ const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::kExtensionScheme,
 #endif
-    chrome::kChromeSearchScheme, content::kChromeDevToolsScheme,
-    content::kChromeUIScheme, content::kChromeUIUntrustedScheme};
+    chrome::kChromeSearchScheme,       chrome::kIsolatedAppScheme,
+    content::kChromeDevToolsScheme,    content::kChromeUIScheme,
+    content::kChromeUIUntrustedScheme,
+};
 const size_t ChromeMainDelegate::kNonWildcardDomainNonPortSchemesSize =
     std::size(kNonWildcardDomainNonPortSchemes);
 
