@@ -317,6 +317,9 @@ class PrintBackendServiceManager {
   static constexpr base::TimeDelta GetClientTypeIdleTimeout(
       ClientType client_type);
 
+  // Whether any clients are printing documents to `remote_id`.
+  bool HasPrintDocumentClientForRemoteId(const RemoteId& remote_id) const;
+
   // Determine if idle timeout should be modified based upon there having been
   // a new client registered for `registered_client_type`.
   absl::optional<base::TimeDelta> DetermineIdleTimeoutUpdateOnRegisteredClient(
