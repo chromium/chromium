@@ -1077,8 +1077,8 @@ chromium-metrics-reviews@google.com.
     lock or change PIN operations on their SIM while this policy is turned on.
   </summary>
   <token key="SimPinOperation">
-    <variant name="ChangeSuccess"/>
-    <variant name="RequireLockSuccess"/>
+    <variant name="ChangePin"/>
+    <variant name="RequirePin"/>
   </token>
 </histogram>
 
