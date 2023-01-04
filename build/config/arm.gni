@@ -133,16 +133,14 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # - "pac": Enables Pointer Authentication Code (PAC, featured in Armv8.3)
     # - "standard": Enables both PAC and Branch Target Identification (Armv8.5).
     # - "none": No branch protection.
-    arm_control_flow_integrity = "standard"
+    arm_control_flow_integrity = "none"
 
-    # TODO(cavalcantii): enable the feature for the following OSes next.
-    if (is_mac || is_chromeos || is_fuchsia || is_win ||
-        target_cpu != "arm64") {
-      # target_cpu != "arm64" covers some cases (e.g. the ChromeOS x64 MSAN
-      # build) where the target platform is x64, but V8 is configured to use
-      # the arm64 simulator. Pointer authentication doesn't work properly
-      # in this mode (yet).
-      arm_control_flow_integrity = "none"
+    if ((is_android || is_linux) && target_cpu == "arm64") {
+      # Enable PAC and BTI on AArch64 Linux/Android systems.
+      # target_cpu == "arm64" filters out some cases (e.g. the ChromeOS x64
+      # MSAN build) where the target platform is x64, but V8 is configured to
+      # use the arm64 simulator.
+      arm_control_flow_integrity = "standard"
     }
   }
   assert(arm_control_flow_integrity == "none" ||
