@@ -266,7 +266,7 @@ TEST_F('WallpaperSubpageBrowserTest', 'SelectWallpaper', async () => {
   Array
       .from(subpage.shadowRoot.querySelector('wallpaper-collections')
                 .shadowRoot.querySelectorAll(
-                    `.photo-inner-container[aria-disabled='false']`))
+                    `wallpaper-grid-item[aria-disabled='false']`))
       .at(-1)
       .click();
 

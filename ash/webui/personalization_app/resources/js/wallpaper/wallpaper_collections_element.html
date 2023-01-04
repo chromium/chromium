@@ -4,11 +4,8 @@
     cursor: default;
   }
 
-  .photo-inner-container.photo-loading-failure:not(.local) {
+  wallpaper-grid-item[aria-disabled='true'][data-online]::part(image) {
     filter: grayscale(100%);
-  }
-
-  .photo-loading-failure:not(.local) .photo-images-container {
     opacity: 0.3;
   }
 
@@ -210,37 +207,17 @@
           </wallpaper-grid-item>
         </template>
         <template is="dom-if" if="[[isOnlineTile_(item)]]">
-          <div class="photo-container">
-            <div aria-disabled$="[[getAriaDisabled_(item)]]"
-                aria-posinset$="[[getAriaIndex_(index)]]"
-                class$="[[getClassForTile_(item)]]"
-                on-click="onCollectionSelected_"
-                on-keypress="onCollectionSelected_"
-                role="option"
-                tabindex$="[[tabIndex]]">
-              <div class$="[[getClassForImagesContainer_(item)]]">
-                <div class="photo-images-border"></div>
-                <template is="dom-repeat" items="[[item.preview]]" as="preview">
-                  <img aria-hidden="true"
-                      auto-src="[[preview.url]]"
-                      class$="[[getClassForImg_(index, item)]]"
-                      clear-src
-                      data-collection-id$="[[item.id]]"
-                      is="cr-auto-img"
-                      on-error="onImgLoad_"
-                      on-load="onImgLoad_">
-                </template>
-              </div>
-              <div class="photo-text-container"
-                  hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
-                <p title$="[[item.name]]">[[item.name]]</p>
-                <p title$="[[item.count]]">[[item.count]]</p>
-              </div>
-              <div class="photo-gradient-mask"
-                  hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
-              </div>
-            </div>
-          </div>
+          <wallpaper-grid-item aria-posinset$="[[getAriaIndex_(index)]]"
+              data-online
+              disabled="[[!isSelectableTile_(item)]]" 
+              index="[[index]]"
+              on-wallpaper-grid-item-selected="onCollectionSelected_"
+              primary-text="[[item.name]]"
+              role="option"
+              secondary-text="[[item.count]]"
+              src="[[item.preview]]"
+              tabindex$="[[tabIndex]]">
+          </wallpaper-grid-item>
         </template>
       </div>
     </template>

@@ -294,20 +294,6 @@ export class WallpaperImages extends WithPersonalizationStore {
             tile.assetId === pendingSelectedAssetId);
   }
 
-  private getClassForImg_(index: number, tile: ImageTile): string {
-    if (tile.preview.length < 2) {
-      return '';
-    }
-    switch (index) {
-      case 0:
-        return 'left';
-      case 1:
-        return 'right';
-      default:
-        return '';
-    }
-  }
-
   private onImageSelected_(e: WallpaperGridItemSelectedEvent&
                            {model: {item: ImageTile}}) {
     const assetId = e.model.item.assetId;

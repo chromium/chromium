@@ -151,7 +151,7 @@ export class WallpaperGridItem extends PolymerElement {
 
   /**
    * Whether the grid item is currently disabled. Automatically sets the
-   * aria-disabled property.
+   * aria-disabled attribute for screen readers and targeting with CSS.
    * @default false
    */
   disabled: boolean;
