@@ -672,7 +672,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2022-12-11">
+    units="ms" expires_after="2023-06-18">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -685,7 +685,7 @@ chromium-metrics-reviews@google.com.
     image paint. See http://bit.ly/fcp_plus_plus for details.
 
     This histogram has incomplete data. It expired after M78 and was re-added in
-    M90.
+    M90, and also after 2022-12-11 until M111.
   </summary>
 </histogram>
 
