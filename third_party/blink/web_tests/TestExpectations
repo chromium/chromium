@@ -1770,10 +1770,16 @@ crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failur
 
 # nth-* selectors
 crbug.com/304163 external/wpt/css/selectors/nth-child-and-nth-last-child.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-attribute.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-classname-002.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-of-classname.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-of-complex-selector.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-of-compound-selector.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-has.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-not.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-nth-child.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-of-tagname.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-universal-selector.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-1.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-2.html [ Failure ]
 crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-3.html [ Failure ]
@@ -3000,12 +3006,6 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-attribute.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-classname-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-has.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-not.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-nth-child.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-universal-selector.html [ Failure ]
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
