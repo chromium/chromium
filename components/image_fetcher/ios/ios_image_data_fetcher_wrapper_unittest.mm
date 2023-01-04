@@ -14,7 +14,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#import "components/image_fetcher/ios/webp_decoder.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -91,13 +90,6 @@ const char kTestUrl[] = "http://www.img.com";
 
 const char kWEBPHeaderResponse[] =
     "HTTP/1.1 200 OK\0Content-type: image/webp\0\0";
-
-// Returns a NSData object containing the decoded image.
-NSData* DecodedWebpImage() {
-  return webp_transcode::WebpDecoder::DecodeWebpImage([NSData
-      dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
-             length:sizeof(kWEBPImage)]);
-}
 
 }  // namespace
 
@@ -194,16 +186,10 @@ TEST_F(IOSImageDataFetcherWrapperTest, TestGoodWebPNoHeader) {
                        std::string(reinterpret_cast<const char*>(kWEBPImage),
                                    sizeof(kWEBPImage)));
   environment_.RunUntilIdle();
-  // TODO(crbug.com/1129484): Remove once minimum supported version is at least
-  // 14 for all consumers of ios/web_view
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    NSData* webPImageConverted =
-        [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
-                       length:sizeof(kWEBPImage)];
-    EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
-  } else {
-    EXPECT_TRUE([DecodedWebpImage() isEqualToData:result_data_]);
-  }
+  NSData* webPImageConverted =
+      [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
+                     length:sizeof(kWEBPImage)];
+  EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
   EXPECT_TRUE(called_);
 }
 
@@ -239,16 +225,10 @@ TEST_F(IOSImageDataFetcherWrapperTest, DeleteDuringWebPDecoding) {
   // Delete the image fetcher, and check that the callback is called.
   image_fetcher_.reset();
   environment_.RunUntilIdle();
-  // TODO(crbug.com/1129484): Remove once minimum supported version is at least
-  // 14 for all consumers of components/image_fetcher/ios
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    NSData* webPImageConverted =
-        [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
-                       length:sizeof(kWEBPImage)];
-    EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
-  } else {
-    EXPECT_TRUE([DecodedWebpImage() isEqualToData:result_data_]);
-  }
+  NSData* webPImageConverted =
+      [NSData dataWithBytes:reinterpret_cast<const char*>(kWEBPImage)
+                     length:sizeof(kWEBPImage)];
+  EXPECT_TRUE([result_data_ isEqualToData:webPImageConverted]);
   EXPECT_TRUE(called_);
 }
 

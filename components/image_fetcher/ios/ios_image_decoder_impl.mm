@@ -11,9 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #import "base/ios/ios_util.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool.h"
-#import "components/image_fetcher/ios/webp_decoder.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -39,25 +37,9 @@ class IOSImageDecoderImpl : public ImageDecoder {
                    const gfx::Size& desired_image_frame_size,
                    data_decoder::DataDecoder* data_decoder,
                    ImageDecodedCallback callback) override;
-
- private:
-  void CreateUIImageAndRunCallback(ImageDecodedCallback callback,
-                                   NSData* image_data);
-
-  // The task runner used to decode images if necessary.
-  const scoped_refptr<base::TaskRunner> task_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-
-  // The WeakPtrFactory is used to cancel callbacks if ImageFetcher is
-  // destroyed during WebP decoding.
-  base::WeakPtrFactory<IOSImageDecoderImpl> weak_factory_;
 };
 
-IOSImageDecoderImpl::IOSImageDecoderImpl() : weak_factory_(this) {
-  DCHECK(task_runner_.get());
-}
+IOSImageDecoderImpl::IOSImageDecoderImpl() {}
 
 IOSImageDecoderImpl::~IOSImageDecoderImpl() {}
 
@@ -66,47 +48,17 @@ void IOSImageDecoderImpl::DecodeImage(const std::string& image_data,
                                       data_decoder::DataDecoder* data_decoder,
                                       ImageDecodedCallback callback) {
   // Convert the |image_data| std::string to an NSData buffer.
-  // The data is copied as it may have to outlive the caller in
-  // PostTaskAndReplyWithResult.
   NSData* data =
       [NSData dataWithBytes:image_data.data() length:image_data.size()];
 
-  // The WebP image format is not supported by iOS natively. Therefore WebP
-  // images need to be decoded explicitly,
-  NSData* (^decodeBlock)();
-  // TODO(crbug.com/1129484): Remove once minimum supported version is at least
-  // 14 for all consumers of ios/web_view
-  if (!base::ios::IsRunningOnIOS14OrLater() &&
-      webp_transcode::WebpDecoder::IsWebpImage(image_data)) {
-    decodeBlock = ^NSData*() {
-      return webp_transcode::WebpDecoder::DecodeWebpImage(data);
-    };
-  } else {
-    // Use block to prevent |data| from being released.
-    decodeBlock = ^NSData*() { return data; };
-  }
-
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(decodeBlock),
-      base::BindOnce(&IOSImageDecoderImpl::CreateUIImageAndRunCallback,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void IOSImageDecoderImpl::CreateUIImageAndRunCallback(
-    ImageDecodedCallback callback,
-    NSData* image_data) {
   // Decode the image data using UIImage.
-  if (image_data) {
-    // "Most likely" always returns 1x images.
-    UIImage* ui_image = [UIImage imageWithData:image_data scale:1];
-    if (ui_image) {
-      gfx::Image gfx_image(ui_image);
-      std::move(callback).Run(gfx_image);
-      return;
-    }
+  // "Most likely" always returns 1x images.
+  UIImage* ui_image = [UIImage imageWithData:data scale:1];
+  gfx::Image gfx_image;
+  if (ui_image) {
+    gfx_image = gfx::Image(ui_image);
   }
-  gfx::Image empty_image;
-  std::move(callback).Run(empty_image);
+  std::move(callback).Run(gfx_image);
 }
 
 std::unique_ptr<ImageDecoder> CreateIOSImageDecoder() {
