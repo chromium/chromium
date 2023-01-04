@@ -107,6 +107,15 @@ var SidePanelCustomizeChromeColorsTest =
   }
 };
 
+var SidePanelCustomizeChromeHoverButtonTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/hover_button_test.js';
+  }
+};
+
 var SidePanelCustomizeChromeThemesTest =
     class extends SidePanelCustomizeChromeBrowserTest {
   /** @override */
@@ -158,6 +167,11 @@ TEST_F('SidePanelCustomizeChromeColorTest', 'All', function() {
 });
 
 TEST_F('SidePanelCustomizeChromeColorsTest', 'All', function() {
+  mocha.run();
+});
+
+
+TEST_F('SidePanelCustomizeChromeHoverButtonTest', 'All', function() {
   mocha.run();
 });
 

@@ -1,0 +1,38 @@
+<style include="cr-icons">
+  #hoverButton {
+    box-sizing: border-box;
+    color: var(--cr-primary-text-color);
+    cursor: pointer;
+    display: flex;
+    font-size: 13px;
+    font-weight: 400;
+    justify-content: space-between;
+    line-height: 20px;
+    margin-top: 8px;
+    padding: 18px 16px;
+    width: 100%;
+  }
+
+  #hoverButton:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #hoverButton:focus {
+    background-color: var(--cr-menu-background-focus-color);
+    outline: none;
+  }
+
+  #icon {
+    --cr-icon-color: var(--cr-primary-text-color);
+    --cr-icon-size: 18px;
+    height: 18px;
+    margin: 0;
+    width: 18px;
+  }
+</style>
+<div id="hoverButton" role="button" tabindex="0">
+  <customize-chrome-button-label label="[[label]]"
+      label-description="[[labelDescription]]">
+  </customize-chrome-button-label>
+  <div id="icon" class="cr-icon"></div>
+</div>

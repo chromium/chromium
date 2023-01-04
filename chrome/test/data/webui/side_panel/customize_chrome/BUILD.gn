@@ -18,17 +18,18 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "button_label_test.ts",
-    "cards_test.ts",
-    "shortcuts_test.ts",
-    "test_support.ts",
     "app_test.ts",
     "appearance_test.ts",
+    "button_label_test.ts",
+    "cards_test.ts",
     "categories_test.ts",
     "check_mark_wrapper_test.ts",
     "color_test.ts",
     "colors_test.ts",
     "colors_focus_test.ts",
+    "hover_button_test.ts",
+    "shortcuts_test.ts",
+    "test_support.ts",
     "themes_test.ts",
     "theme_snapshot_test.ts",
   ]

@@ -292,7 +292,7 @@
     "includes": [1926],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/resources.grd": {
-    "META": {"sizes": {"includes": [35],}},
+    "META": {"sizes": {"includes": [50],}},
     "includes": [1930],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/history_clusters/resources.grd": {

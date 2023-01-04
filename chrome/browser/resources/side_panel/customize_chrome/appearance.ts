@@ -4,6 +4,7 @@
 
 import './colors.js';
 import './theme_snapshot.js';
+import './hover_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';

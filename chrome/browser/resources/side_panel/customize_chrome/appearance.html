@@ -1,30 +1,7 @@
-<style include="cr-hidden-style cr-button cr-icons">
+<style include="cr-hidden-style cr-icons">
   #editThemeButton {
     margin: 0 16px 24px;
     width: calc(100% - 32px);
-  }
-
-  #setClassicChromeButton {
-    box-sizing: border-box;
-    color: var(--cr-primary-text-color);
-    cursor: pointer;
-    display: flex;
-    font-size: 13px;
-    font-weight: 400;
-    justify-content: space-between;
-    line-height: 20px;
-    margin-top: 8px;
-    padding: 18px 16px;
-    width: 100%;
-  }
-
-  #setClassicChromeButton:hover {
-    background-color: var(--cr-hover-background-color);
-  }
-
-  #setClassicChromeButton:focus {
-    background-color: var(--cr-menu-background-focus-color);
-    outline: none;
   }
 
   #imageIcon {
@@ -37,13 +14,8 @@
     width: 12px;
   }
 
-  #resetIcon {
-    --cr-icon-color: var(--cr-primary-text-color);
+  #setClassicChromeButton {
     --cr-icon-image: url(icons/reset.svg);
-    --cr-icon-size: 18px;
-    height: 18px;
-    margin: 0;
-    width: 18px;
   }
 </style>
 <customize-chrome-theme-snapshot></customize-chrome-theme-snapshot>
@@ -53,8 +25,7 @@
   $i18n{changeTheme}
 </cr-button>
 <customize-chrome-colors></customize-chrome-colors>
-<div hidden$="[[!showClassicChromeButton_]]" id="setClassicChromeButton"
-    on-click="onSetClassicChromeClicked_" role="button" tabindex="0">
-  $i18n{resetToClassicChrome}
-  <div id="resetIcon" class="cr-icon"></div>
-</div>
+<customize-chrome-hover-button hidden$="[[!showClassicChromeButton_]]"
+  id="setClassicChromeButton" label="$i18n{resetToClassicChrome}"
+  on-click="onSetClassicChromeClicked_">
+</customize-chrome-hover-button>
