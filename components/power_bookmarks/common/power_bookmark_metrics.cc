@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/power_bookmarks/metrics/power_bookmark_metrics.h"
+#include "components/power_bookmarks/common/power_bookmark_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

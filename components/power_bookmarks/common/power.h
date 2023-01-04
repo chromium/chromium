@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_BOOKMARKS_CORE_POWERS_POWER_H_
-#define COMPONENTS_POWER_BOOKMARKS_CORE_POWERS_POWER_H_
+#ifndef COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_H_
+#define COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_H_
 
 #include "base/guid.h"
 #include "base/time/time.h"
@@ -81,4 +81,4 @@ class Power {
 
 }  // namespace power_bookmarks
 
-#endif  // COMPONENTS_POWER_BOOKMARKS_CORE_POWERS_POWER_H_
+#endif  // COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_H_

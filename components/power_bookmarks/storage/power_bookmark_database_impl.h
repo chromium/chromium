@@ -6,8 +6,8 @@
 #define COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_DATABASE_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "components/power_bookmarks/core/powers/power.h"
-#include "components/power_bookmarks/core/powers/power_overview.h"
+#include "components/power_bookmarks/common/power.h"
+#include "components/power_bookmarks/common/power_overview.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"

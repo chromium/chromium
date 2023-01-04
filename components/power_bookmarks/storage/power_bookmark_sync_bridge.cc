@@ -4,7 +4,7 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 
-#include "components/power_bookmarks/core/powers/power.h"
+#include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"

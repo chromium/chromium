@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_BOOKMARKS_METRICS_POWER_BOOKMARK_METRICS_H_
-#define COMPONENTS_POWER_BOOKMARKS_METRICS_POWER_BOOKMARK_METRICS_H_
+#ifndef COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_BOOKMARK_METRICS_H_
+#define COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_BOOKMARK_METRICS_H_
 
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
@@ -27,4 +27,4 @@ void RecordDatabaseSizeAtStartup(int64_t size_in_bytes);
 
 }  // namespace power_bookmarks::metrics
 
-#endif  // COMPONENTS_POWER_BOOKMARKS_METRICS_POWER_BOOKMARK_METRICS_H_
+#endif  // COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_BOOKMARK_METRICS_H_

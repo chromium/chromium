@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_BOOKMARKS_CORE_POWERS_SEARCH_PARAMS_H_
-#define COMPONENTS_POWER_BOOKMARKS_CORE_POWERS_SEARCH_PARAMS_H_
+#ifndef COMPONENTS_POWER_BOOKMARKS_COMMON_SEARCH_PARAMS_H_
+#define COMPONENTS_POWER_BOOKMARKS_COMMON_SEARCH_PARAMS_H_
 
 #include <string>
 
@@ -19,4 +19,4 @@ struct SearchParams {
 
 }  // namespace power_bookmarks
 
-#endif  // COMPONENTS_POWER_BOOKMARKS_CORE_POWERS_SEARCH_PARAMS_H_
+#endif  // COMPONENTS_POWER_BOOKMARKS_COMMON_SEARCH_PARAMS_H_

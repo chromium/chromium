@@ -19,8 +19,7 @@ static_library("storage") {
 
   deps = [
     "//base",
-    "//components/power_bookmarks/core:powers",
-    "//components/power_bookmarks/metrics",
+    "//components/power_bookmarks/common",
     "//components/sync",
     "//components/sync/model",
     "//components/sync/protocol",
@@ -42,7 +41,7 @@ source_set("unit_tests") {
     ":storage",
     "//base",
     "//base/test:test_support",
-    "//components/power_bookmarks/core:powers",
+    "//components/power_bookmarks/common",
     "//components/sync/model",
     "//components/sync/protocol",
     "//sql",

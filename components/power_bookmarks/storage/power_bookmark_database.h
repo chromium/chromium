@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "components/power_bookmarks/core/powers/power.h"
-#include "components/power_bookmarks/core/powers/power_overview.h"
+#include "components/power_bookmarks/common/power.h"
+#include "components/power_bookmarks/common/power_overview.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "url/gurl.h"
 

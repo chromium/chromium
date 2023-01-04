@@ -4,7 +4,7 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
-#include "components/power_bookmarks/core/powers/search_params.h"
+#include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"

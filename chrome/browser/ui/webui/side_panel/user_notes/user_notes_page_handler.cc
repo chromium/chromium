@@ -9,8 +9,9 @@
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
-#include "components/power_bookmarks/core/powers/power.h"
-#include "components/power_bookmarks/core/powers/power_overview.h"
+#include "components/power_bookmarks/common/power.h"
+#include "components/power_bookmarks/common/power_overview.h"
+#include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "ui/base/l10n/time_format.h"
 

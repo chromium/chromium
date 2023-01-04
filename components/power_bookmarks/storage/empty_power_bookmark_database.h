@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_STORAGE_EMPTY_POWER_BOOKMARK_DATABASE_H_
 #define COMPONENTS_POWER_BOOKMARKS_STORAGE_EMPTY_POWER_BOOKMARK_DATABASE_H_
 
-#include "components/power_bookmarks/core/powers/power.h"
-#include "components/power_bookmarks/core/powers/power_overview.h"
+#include "components/power_bookmarks/common/power.h"
+#include "components/power_bookmarks/common/power_overview.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
 #include "url/gurl.h"
 

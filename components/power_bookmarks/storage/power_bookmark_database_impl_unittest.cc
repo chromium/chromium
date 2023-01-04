@@ -13,7 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "components/power_bookmarks/core/powers/search_params.h"
+#include "components/power_bookmarks/common/search_params.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
