@@ -263,8 +263,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PredictionManagerBrowserTest,
                          /*use_install_wide_model_store=*/testing::Bool());
 
+// Flaky on ASAN bots and linux-chromeos-dbg, see https://crbug.com/1403389/.
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER)
+#define MAYBE_ComponentUpdatesPrefDisabled DISABLED_ComponentUpdatesPrefDisabled
+#else
+#define MAYBE_ComponentUpdatesPrefDisabled ComponentUpdatesPrefDisabled
+#endif
 IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
-                       ComponentUpdatesPrefDisabled) {
+                       MAYBE_ComponentUpdatesPrefDisabled) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   g_browser_process->local_state()->SetBoolean(
