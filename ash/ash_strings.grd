@@ -1447,12 +1447,33 @@ Style notes:
         Scanning
       </message>
 
-       <!-- Video Conference tray-->
+       <!-- Video Conference tray/bubble  -->
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP" desc="The tooltip for the toggle bubble button in the video conference tray.">
         Camera and audio controls
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT" desc="The summary text in the return to app panel of the video conference panel, specifying how many video conferencing apps are in used.">
         Used by <ph name="APP_COUNT">$1<ex>2</ex></ph> apps
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME" desc="Text for name of the background blur effect in the VC bubble.">
+        Background Blur
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF" desc="Text for background blur 'off' setting, in the VC bubble.">
+        Off
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LOWEST" desc="Text for background blur 'lowest' setting, in the VC bubble.">
+        Lowest
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT" desc="Text for background blur 'light' setting, in the VC bubble.">
+        Light
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MEDIUM" desc="Text for background blur 'medium' setting, in the VC bubble.">
+        Medium
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_HEAVY" desc="Text for background blur 'heavy' setting, in the VC bubble.">
+        Heavy
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MAXIMUM" desc="Text for background blur 'maximum' setting, in the VC bubble.">
+        Maximum
       </message>
 
       <!-- Phone Hub tray-->

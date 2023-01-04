@@ -24,6 +24,7 @@ namespace {
 class ValueButtonContainer : public views::View {
  public:
   explicit ValueButtonContainer(const VcHostedEffect* effect) {
+    SetID(BubbleViewID::kSingleSetValueEffectView);
     views::FlexLayout* layout =
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -34,8 +35,13 @@ class ValueButtonContainer : public views::View {
       AddChildView(std::make_unique<views::Label>(effect->label_text()));
     }
 
-    // Add a button for each state.
+    // `effect` is expected to provide the current state of the effect, and
+    // a `current_state` of `VcEffectState::kUnusedId` means it couldn't be
+    // obtained.
     const int current_state = effect->get_state_callback().Run();
+    DCHECK(current_state != VcEffectState::kUnusedId);
+
+    // Add a button for each state.
     for (int i = 0; i < effect->GetNumStates(); ++i) {
       const VcEffectState* state = effect->GetState(/*index=*/i);
       std::unique_ptr<views::RadioButton> state_button =
@@ -83,6 +89,15 @@ SetValueEffectsView::SetValueEffectsView(
 
   if (controller->effects_manager().HasSetValueEffects()) {
     for (auto* effect : controller->effects_manager().GetSetValueEffects()) {
+      // Make sure the current value of the effect can be obtained, and if it
+      // can't then don't present its controls.
+      if (effect->get_state_callback().Run() == VcEffectState::kUnusedId) {
+        LOG(ERROR) << __FUNCTION__ << " effect with id (" << effect->id()
+                   << ") label_text (" << effect->label_text()
+                   << ") could not obtain its current value";
+        continue;
+      }
+
       AddChildView(std::make_unique<ValueButtonContainer>(effect));
     }
   }

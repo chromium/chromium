@@ -32,6 +32,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   void RegisterDelegate(VcEffectsDelegate* delegate);
   void UnregisterDelegate(VcEffectsDelegate* delegate);
 
+  // Returns 'true' if `delegate` is registered, 'false' otherwise.
+  bool IsDelegateRegistered(VcEffectsDelegate* delegate);
+
   // A vector (or row) of `VcHostedEffect` objects of type
   // `VcEffectType::kToggle`.
   using EffectDataVector = std::vector<const VcHostedEffect*>;

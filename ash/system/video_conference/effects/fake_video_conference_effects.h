@@ -189,6 +189,13 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   // activated.
   int GetNumActivationsForTesting(int value);
 
+  void set_has_invalid_effect_state_for_testing(bool has_invalid_state) {
+    has_invalid_effect_state_for_testing_ = has_invalid_state;
+  }
+  bool has_invalid_effect_state_for_testing() {
+    return has_invalid_effect_state_for_testing_;
+  }
+
  private:
   // Adds a `std::unique_ptr<VcEffectState>` to `effect`.
   void AddStateToEffect(VcHostedEffect* effect,
@@ -198,6 +205,10 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   // Number of times each value has been clicked, one count for each value in
   // `HowCute`.
   std::vector<int> num_activations_for_testing_;
+
+  // Set to 'true' for testing the case where a valid effect state cannot be
+  // obtained.
+  bool has_invalid_effect_state_for_testing_;
 
   base::WeakPtrFactory<SuperCutnessEffect> weak_factory_{this};
 };

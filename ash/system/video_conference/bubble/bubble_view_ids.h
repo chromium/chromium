@@ -22,6 +22,10 @@ enum BubbleViewID {
   // `kMainBubbleView`.
   kSetValueEffectsView,
 
+  // Container view for a single "set-value" VC effect, a child of
+  // `kSetValueEffectsView`.
+  kSingleSetValueEffectView,
+
   // Container view for all "toggle" VC effects, a child of `kMainBubbleView`.
   kToggleEffectsView,
 

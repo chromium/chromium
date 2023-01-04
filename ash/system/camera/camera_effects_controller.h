@@ -10,12 +10,12 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -25,13 +25,25 @@ namespace ash {
 
 // CameraEffectsController is the interface for any object in ash to
 // enable/change camera effects.
-class ASH_EXPORT CameraEffectsController : public SessionObserver {
+class ASH_EXPORT CameraEffectsController : public SessionObserver,
+                                           public VcEffectsDelegate {
  public:
   // Observer that will be notified on camera effects change.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnCameraEffectsChanged(
         cros::mojom::EffectsConfigPtr new_effects) = 0;
+  };
+
+  // Enum that represents the value persisted  to `prefs::kBackgroundBlur`,
+  // which is the "ultimate source of truth" for the background blur setting.
+  enum BackgroundBlurEffectState {
+    kOff = -1,
+    kLowest = 0,
+    kLight = 1,
+    kMedium = 2,
+    kHeavy = 3,
+    kMaximum = 4,
   };
 
   CameraEffectsController();
@@ -48,6 +60,11 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver {
   static bool IsCameraEffectsSupported(
       cros::mojom::CameraEffect effect = cros::mojom::CameraEffect::kNone);
 
+  // Returns 'true' if UI controls for `effect` are available to the user,
+  // 'false' otherwise.
+  bool IsEffectControlAvailable(
+      cros::mojom::CameraEffect effect = cros::mojom::CameraEffect::kNone);
+
   // Returns currently applied camera effects.
   // Should only be called after user logs in.
   cros::mojom::EffectsConfigPtr GetCameraEffects();
@@ -61,6 +78,10 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver {
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
+  // VcEffectsDelegate:
+  int GetEffectState(int effect_id) override;
+  void OnEffectControlActivated(int effect_id, int value) override;
 
   void set_effect_result_for_testing(
       cros::mojom::SetEffectResult effect_result_for_testing) {
@@ -88,6 +109,16 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver {
 
   // Update prefs with the value in `config`.
   void SetEffectsConfigToPref(cros::mojom::EffectsConfigPtr config);
+
+  // Performs any initializations needed for effects whose controls are exposed
+  // via the UI.
+  void InitializeEffectControls();
+
+  // Adds a `std::unique_ptr<VcEffectState>` to `effect`, where `effect` is
+  // assumed to be that of camera background blur.
+  void AddBackgroundBlurStateToEffect(VcHostedEffect* effect,
+                                      int state_value,
+                                      int string_id);
 
   // Used to bypass the CameraHalDispatcherImpl::SetCameraEffects for testing
   // purpose. The value will be null for non-testing cases; and not null in

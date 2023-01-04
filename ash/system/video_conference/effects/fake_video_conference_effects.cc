@@ -170,6 +170,10 @@ SuperCutnessEffect::SuperCutnessEffect() {
 SuperCutnessEffect::~SuperCutnessEffect() = default;
 
 int SuperCutnessEffect::GetEffectState(int effect_id) {
+  if (has_invalid_effect_state_for_testing_) {
+    return VcEffectState::kUnusedId;
+  }
+
   return static_cast<int>(HowCute::kTeddyBear);
 }
 

@@ -47,7 +47,9 @@ class ASH_EXPORT VcEffectsDelegate {
 
   // Invoked when the UI controls are being constructed, to get the actual
   // effect state. `effect_id` specifies the effect whose state is requested,
-  // and can be ignored if only one effect is being hosted.
+  // and can be ignored if only one effect is being hosted. If no state can be
+  // determined for `effect_id`, this function should return
+  // `VcEffectState::kUnusedId`.
   virtual int GetEffectState(int effect_id) = 0;
 
   // Invoked anytime the user makes an adjustment. `effect_id` is the unique ID

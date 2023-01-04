@@ -21,10 +21,7 @@ VideoConferenceTrayEffectsManager::~VideoConferenceTrayEffectsManager() =
 void VideoConferenceTrayEffectsManager::RegisterDelegate(
     VcEffectsDelegate* delegate) {
   DCHECK(delegate);
-  DCHECK(std::find_if(effect_delegates_.begin(), effect_delegates_.end(),
-                      [delegate](VcEffectsDelegate* d) {
-                        return delegate == d;
-                      }) == effect_delegates_.end());
+  DCHECK(!IsDelegateRegistered(delegate));
   effect_delegates_.push_back(delegate);
 }
 
@@ -35,6 +32,15 @@ void VideoConferenceTrayEffectsManager::UnregisterDelegate(
       base::EraseIf(effect_delegates_,
                     [delegate](VcEffectsDelegate* d) { return delegate == d; });
   DCHECK_EQ(num_items_erased, 1UL);
+}
+
+bool VideoConferenceTrayEffectsManager::IsDelegateRegistered(
+    VcEffectsDelegate* delegate) {
+  DCHECK(delegate);
+  return std::find_if(effect_delegates_.begin(), effect_delegates_.end(),
+                      [delegate](VcEffectsDelegate* d) {
+                        return delegate == d;
+                      }) != effect_delegates_.end();
 }
 
 bool VideoConferenceTrayEffectsManager::HasToggleEffects() {
@@ -49,8 +55,9 @@ VideoConferenceTrayEffectsManager::GetToggleEffectButtonTable() {
   EffectDataTable buttons;
 
   int num_buttons = total_buttons.size();
-  if (num_buttons == 0)
+  if (num_buttons == 0) {
     return buttons;
+  }
 
   if (num_buttons <= 3) {
     // For 3 or fewer, `effects_buttons` is the entire row.
@@ -80,8 +87,9 @@ VideoConferenceTrayEffectsManager::GetSetValueEffects() {
   EffectDataVector effects;
 
   for (auto* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kSetValue))
+    for (auto* effect : delegate->GetEffects(VcEffectType::kSetValue)) {
       effects.push_back(effect);
+    }
   }
 
   return effects;
@@ -92,8 +100,9 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
 
   for (auto* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle))
+    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
       effects.push_back(effect);
+    }
   }
 
   return effects;
