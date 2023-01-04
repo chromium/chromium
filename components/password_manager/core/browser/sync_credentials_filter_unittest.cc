@@ -164,7 +164,16 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
   std::unique_ptr<SyncCredentialsFilter> filter_;
 };
 
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_ExistingSyncCredentials) {
+// TODO(crbug.com/1404890): This test fails on iOS devices.
+#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
+#define MAYBE_ReportFormLoginSuccess_ExistingSyncCredentials \
+  DISABLED_ReportFormLoginSuccess_ExistingSyncCredentials
+#else
+#define MAYBE_ReportFormLoginSuccess_ExistingSyncCredentials \
+  ReportFormLoginSuccess_ExistingSyncCredentials
+#endif
+TEST_P(CredentialsFilterTest,
+       MAYBE_ReportFormLoginSuccess_ExistingSyncCredentials) {
   FakeSigninAs("user@gmail.com");
   SetSyncingPasswords(true);
 
