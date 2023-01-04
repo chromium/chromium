@@ -351,23 +351,7 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
 
 const base::ProcessIterator::ProcessEntries FindProcesses(
     const base::FilePath::StringType& executable_name) {
-  class ExeNameProcessFilter : public base::ProcessFilter {
-   public:
-    explicit ExeNameProcessFilter(
-        const base::FilePath::StringType& executable_name)
-        : executable_name_(executable_name) {}
-
-    bool Includes(const base::ProcessEntry& entry) const override {
-      return base::EqualsCaseInsensitiveASCII(entry.exe_file(),
-                                              executable_name_);
-    }
-
-   private:
-    const base::FilePath::StringType executable_name_;
-  };
-
-  ExeNameProcessFilter exe_name_filter(executable_name);
-  return base::ProcessIterator(&exe_name_filter).Snapshot();
+  return base::NamedProcessIterator(executable_name, nullptr).Snapshot();
 }
 
 base::FilePath::StringType PrintProcesses(
