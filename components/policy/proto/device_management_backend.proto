@@ -3924,11 +3924,11 @@ enum HashingAlgorithm {
   // The client supports this starting with M-89.
   //
   // For SigningAlgorithm RSA_PKCS1_V1_5, the client will perform PKCS#1 v1.5
-  // padding on |data_to_sign|. |data_to_sign| is expected to already contain a
+  // padding on `data_to_sign`. `data_to_sign` is expected to already contain a
   // PKCS#1 DigestInfo prefix - the client will not attempt to add such a
-  // prefix. Also |data_to_sign| must be shorter than (key_size-11) bytes. If no
+  // prefix. Also `data_to_sign` must be shorter than (key_size-11) bytes. If no
   // other key size was specified in the
-  // RequiredClientCertificateFor{User,Device} policy, 2048 bytes is assumed.
+  // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
   NO_HASH = 3;
 }
 
@@ -4006,7 +4006,7 @@ message CertProvUploadProofOfPossessionRequest {
   // The hashing and signing algorithms have been previously delivered by the
   // server in the `hashing_algorithm` and `signing_algorithm` fields of
   // `CertProvProofOfPossessionInstruction`.
-  optional bytes signature = 2;
+  optional bytes signature = 1;
 }
 
 // The client should perform an authorization step.
@@ -4018,14 +4018,17 @@ message CertProvAuthorizeInstruction {
 // The client should provide a proof-of-possession signature generated using
 // the private key.
 message CertProvProofOfPossessionInstruction {
-  // Algorithm to hash data with before signing.
-  optional HashingAlgorithm hashing_algorithm = 1;
-
   // Algorithm to sign data with for CSR creation.
-  optional SigningAlgorithm signing_algorithm = 2;
+  optional SigningAlgorithm signing_algorithm = 1;
 
   // Data to sign for CSR creation.
-  optional bytes data_to_sign = 3;
+  // For SigningAlgorithm RSA_PKCS1_V1_5, the client will perform PKCS#1 v1.5
+  // padding on `data_to_sign`. `data_to_sign` is expected to already contain a
+  // PKCS#1 DigestInfo prefix - the client will not attempt to add such a
+  // prefix. Also `data_to_sign` must be shorter than (key_size-11) bytes. If no
+  // other key size was specified in the
+  // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
+  optional bytes data_to_sign = 2;
 }
 
 // The client should import an issued certificate.
@@ -4043,6 +4046,9 @@ message CertProvNextActionResponse {
   // certificate provisioning process and ignores subsequent values.
   optional string invalidation_topic = 1;
 
+  // One of the instructions must be filled.
+  // If no instruction is available yet, the server should fill
+  // `ClientCertificateProvisioningResponse.try_again_later instead`.
   oneof instruction {
     CertProvAuthorizeInstruction authorize_instruction = 2;
     CertProvProofOfPossessionInstruction proof_of_possession_instruction = 3;
@@ -4051,7 +4057,7 @@ message CertProvNextActionResponse {
 }
 
 // Start / continue client certificate provisioning process for the profile
-// |cert_profile_id|.
+// `cert_profile_id`.
 message ClientCertificateProvisioningRequest {
   // The scope of the certificate. Similar to policy_type in PolicyFetchRequest.
   //   google/chromeos/device => a certificate for a device is being requested.
@@ -4084,7 +4090,7 @@ message ClientCertificateProvisioningRequest {
 
   // Received as part of policy for client certificate profiles. The client
   // should not interpret this data and should forward it verbatim. DMServer
-  // uses |policy_version| as a hint to verify that the policy view of DMServer
+  // uses `policy_version` as a hint to verify that the policy view of DMServer
   // matches the view of Chrome OS device.
   optional bytes policy_version = 8;
 }
