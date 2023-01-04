@@ -1120,17 +1120,7 @@ export class Output {
         continue;
       }
 
-      const parentRole = roleInfo.inherits;
-      if (formatNode.role && eventBlock[formatNode.role] &&
-          eventBlock[formatNode.role][formatName]) {
-        rule.role = formatNode.role;
-      } else if (
-          parentRole && eventBlock[parentRole] &&
-          eventBlock[parentRole][formatName]) {
-        rule.role = parentRole;
-      } else {
-        rule.role = CustomRole.DEFAULT;
-      }
+      rule.populateRole(formatNode.role, roleInfo.inherits, formatName);
 
       if (eventBlock[rule.role][formatName]) {
         rule.navigation = formatName;

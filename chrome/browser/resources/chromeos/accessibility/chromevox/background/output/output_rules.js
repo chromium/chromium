@@ -56,6 +56,24 @@ export class OutputRule {
     });
   }
 
+  /**
+   * @param {ChromeVoxRole|undefined} role
+   * @param {ChromeVoxRole|undefined} parentRole
+   * @param {string} formatName
+   */
+  populateRole(role, parentRole, formatName) {
+    const eventBlock = OutputRule.RULES[this.event_];
+    if (role && eventBlock[role] && eventBlock[role][formatName]) {
+      this.role_ = role;
+    } else if (
+        parentRole && eventBlock[parentRole] &&
+        eventBlock[parentRole][formatName]) {
+      this.role_ = parentRole;
+    } else {
+      this.role_ = CustomRole.DEFAULT;
+    }
+  }
+
   // The following setter functions are a temporary measure.
   // TODO(anastasi): move the logic for determining the below properties into
   // this class.
