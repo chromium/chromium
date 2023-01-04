@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_FAKE_BLUETOOTH_ADAPTER_H_
-#define ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_FAKE_BLUETOOTH_ADAPTER_H_
+#ifndef ASH_QUICK_PAIR_COMMON_FAKE_BLUETOOTH_ADAPTER_H_
+#define ASH_QUICK_PAIR_COMMON_FAKE_BLUETOOTH_ADAPTER_H_
 
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +23,8 @@ class FakeBluetoothAdapter
   void SetHardwareOffloadingStatus(
       device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
           hardware_offloading_status);
+
+  void NotifyRemoved(device::BluetoothDevice* device);
 
   bool IsPowered() const override;
 
@@ -46,4 +48,4 @@ class FakeBluetoothAdapter
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_FAKE_BLUETOOTH_ADAPTER_H_
+#endif  // ASH_QUICK_PAIR_COMMON_FAKE_BLUETOOTH_ADAPTER_H_

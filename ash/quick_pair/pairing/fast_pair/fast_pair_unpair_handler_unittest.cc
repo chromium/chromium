@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/repository/mock_fast_pair_repository.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -17,17 +18,6 @@
 
 namespace ash {
 namespace quick_pair {
-
-class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
- public:
-  void NotifyRemoved(device::BluetoothDevice* device) {
-    for (auto& observer : observers_)
-      observer.DeviceRemoved(this, device);
-  }
-
- private:
-  ~FakeBluetoothAdapter() override = default;
-};
 
 class FastPairUnpairHandlerTest : public testing::Test {
  public:

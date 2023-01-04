@@ -53,6 +53,7 @@ static_library("test_support") {
 
   deps = [
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/fast_pair_handshake",
     "//base",
     "//base/test:test_support",
@@ -77,6 +78,7 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/public/cpp:test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/fast_pair_handshake:test_support",
     "//ash/quick_pair/feature_status_tracker",

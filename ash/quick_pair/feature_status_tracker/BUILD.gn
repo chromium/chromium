@@ -48,8 +48,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_bluetooth_adapter.cc",
-    "fake_bluetooth_adapter.h",
     "fake_feature_status_tracker.cc",
     "fake_feature_status_tracker.h",
     "mock_bluetooth_enabled_provider.cc",
@@ -69,6 +67,8 @@ static_library("test_support") {
 
   deps = [
     ":feature_status_tracker",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//base/test:test_support",
     "//device/bluetooth:mocks",
     "//skia",
@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//base/test:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",

@@ -5,7 +5,7 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_support_utils.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/quick_pair/feature_status_tracker/fake_bluetooth_adapter.h"
+#include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
