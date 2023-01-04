@@ -1424,7 +1424,7 @@ IN_PROC_BROWSER_TEST_P(PortalOrphanedNavigationBrowserTest,
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
   }
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_TRUE(navigation_manager.was_successful());
 }
 
@@ -1492,7 +1492,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivateEarlyInNavigation) {
                                    " beforeunload or has started unloading"));
 
   // The navigation should commit properly thereafter.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   navigation_observer.Wait();
   EXPECT_EQ(web_contents_impl, shell()->web_contents());
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
@@ -1797,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
 
   NavigationControllerImpl& activated_controller = portal_controller;
 
-  pending_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(pending_navigation.WaitForNavigationFinished());
   ASSERT_EQ(2, activated_controller.GetEntryCount());
   ASSERT_EQ(1, activated_controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(main_url, activated_controller.GetEntryAtIndex(0)->GetURL());
@@ -2245,7 +2245,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigationPrecedence) {
                              "    () => 'resolve', () => 'reject');",
                              EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  pending_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(pending_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(pending_navigation.was_successful());
 }
 
