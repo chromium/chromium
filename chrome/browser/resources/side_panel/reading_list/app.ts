@@ -79,11 +79,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
         type: Boolean,
         value: true,
       },
-
-      unifiedSidePanel_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('unifiedSidePanel'),
-      },
     };
   }
 
@@ -92,7 +87,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private currentPageActionButtonState_: CurrentPageActionButtonState;
   buttonRipples: boolean;
   private loadingContent_: boolean;
-  private unifiedSidePanel_: boolean;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -125,14 +119,8 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
             (state: CurrentPageActionButtonState) =>
                 this.updateCurrentPageActionButton_(state)));
 
-    // If added in a visible state update current reading list items.
-    // If UnifiedSidePanel is enabled do this immediately. This is only
-    // undesirable when UnifiedSidePanel is not enabled since previously reading
-    // list and bookmarks shared a webview.
-    if (document.visibilityState === 'visible' || this.unifiedSidePanel_) {
-      this.updateReadLaterEntries_();
-      this.apiProxy_.updateCurrentPageActionButtonState();
-    }
+    this.updateReadLaterEntries_();
+    this.apiProxy_.updateCurrentPageActionButtonState();
 
     this.readingListEventTracker_.add(
         this.root!, MARKED_AS_READ_UI_EVENT, this.onMarkedAsRead.bind(this));

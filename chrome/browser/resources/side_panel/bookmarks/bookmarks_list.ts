@@ -86,11 +86,11 @@ export class BookmarksListElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'tree');
-    if (loadTimeData.getBoolean('unifiedSidePanel')) {
-      listenOnce(this.$.bookmarksContainer, 'dom-change', () => {
-        setTimeout(() => this.bookmarksApi_.showUi(), 0);
-      });
-    }
+
+    listenOnce(this.$.bookmarksContainer, 'dom-change', () => {
+      setTimeout(() => this.bookmarksApi_.showUi(), 0);
+    });
+
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.bookmarksApi_.getFolders().then(folders => {
       this.folders_ = folders;

@@ -51,7 +51,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIReadLaterHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
-      {"bookmarksTabTitle", IDS_BOOKMARK_MANAGER_TITLE},
       {"bookmarkCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
       {"bookmarkDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
       {"bookmarkCreated", IDS_BOOKMARK_SCREEN_READER_CREATED},
@@ -65,8 +64,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       {"readAnythingTabTitle", IDS_READ_ANYTHING_TITLE},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
-      {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
-      {"tooltipClose", IDS_CLOSE},
       {"tooltipDelete", IDS_DELETE},
       {"tooltipMore", IDS_BOOKMARKS_EDIT_MORE},
       {"tooltipMarkAsRead", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_READ},
@@ -138,7 +135,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
 
   source->AddBoolean("readAnythingEnabled", features::IsReadAnythingEnabled());
-  source->AddBoolean("unifiedSidePanel", true);
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());

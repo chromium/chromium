@@ -49,7 +49,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"bookmarkCreated", IDS_BOOKMARK_SCREEN_READER_CREATED},
       {"bookmarkReordered", IDS_BOOKMARK_SCREEN_READER_REORDERED},
       {"bookmarkMoved", IDS_BOOKMARK_SCREEN_READER_MOVED},
-      {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
       {"tooltipClose", IDS_CLOSE},
       {"tooltipDelete", IDS_DELETE},
       {"tooltipMore", IDS_BOOKMARKS_EDIT_MORE},
@@ -101,8 +100,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
-
-  source->AddBoolean("unifiedSidePanel", true);
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());

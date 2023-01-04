@@ -7283,9 +7283,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Side panel strings -->
-      <message name="IDS_SIDE_PANEL_TITLE" desc="Title of the Side Panel">
-        Side Panel
-      </message>
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle
       </message>

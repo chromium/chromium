@@ -16,18 +16,6 @@ class SidePanelBrowserTest extends PolymerTest {
   }
 }
 
-var SidePanelAppTest = class extends SidePanelBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/side_panel_app_test.js';
-  }
-};
-
-// TODO(crbug.com/1401515): Test no longer works, delete as part of the cleanup.
-TEST_F('SidePanelAppTest', 'DISABLED_All', function() {
-  mocha.run();
-});
-
 var SidePanelBookmarksListTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {

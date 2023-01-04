@@ -117,7 +117,6 @@ generate_grd("build_grd") {
     "bookmarks/bookmarks.html",
     "bookmarks/power_bookmarks.html",
     "read_anything/read_anything.html",
-    "side_panel.html",
     "user_notes/user_notes.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
