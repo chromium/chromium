@@ -1377,4 +1377,7 @@ ci.builder(
         short_name = "12",
     ),
     execution_timeout = 4 * time.hour,
+
+    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
