@@ -75,4 +75,5 @@ ci.builder(
         short_name = "win-rel-cft",
     ),
     os = os.WINDOWS_DEFAULT,
+    execution_timeout = 6 * time.hour,
 )

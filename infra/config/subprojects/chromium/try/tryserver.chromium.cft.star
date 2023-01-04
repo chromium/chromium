@@ -46,4 +46,5 @@ try_.builder(
         "ci/win-rel-cft",
     ],
     os = os.WINDOWS_DEFAULT,
+    execution_timeout = 6 * time.hour,
 )
