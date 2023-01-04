@@ -39,9 +39,15 @@ TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
   for (const auto& entry : *enums) {
     // Check that the C++ file has a definition equal to the histogram file.
     // For now, we do this in a simple, but reasonably effective, manner:
-    // expecting to find the string "ENTRY = <value>" somewhere in the file.
+    // expecting to find the string " ENTRY = <value>" somewhere in the file.
+    // Notes:
+    // - We prepend a space here (" ENTRY =" instead of "ENTRY =") so that
+    //   it also enforces updating the entry if you rename it to
+    //   `DELETED_FOO_METHOD`.
+    // - This doesn't work with multi-line declarations in the enum file. It's
+    //   not (yet) worth making it smart enough to deal with that.
     std::string expected_string =
-        base::StringPrintf("%s = %d", entry.second.c_str(), entry.first);
+        base::StringPrintf(" %s = %d", entry.second.c_str(), entry.first);
     EXPECT_NE(std::string::npos, file_contents.find(expected_string))
         << "Failed to find entry " << entry.second << " with value "
         << entry.first;
