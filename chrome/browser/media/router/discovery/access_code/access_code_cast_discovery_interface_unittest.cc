@@ -471,4 +471,67 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, CommandLineSwitch) {
             fetcher->GetUrlForTesting());
 }
 
+TEST_F(AccessCodeCastDiscoveryInterfaceTest,
+       HandleServerErrorProfileSyncError) {
+  // Tests that an endpoint response will return the appropriate profile sync
+  // error when handled.
+  MockDiscoveryDeviceCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(Eq(absl::nullopt), AddSinkResultCode::PROFILE_SYNC_ERROR));
+  stub_interface()->SetCallbackForTesting(mock_callback.Get());
+
+  auto response = std::make_unique<EndpointResponse>();
+  response->error_type =
+      absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+  response->response = "No primary accounts found";
+  stub_interface()->HandleServerError(std::move(response));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccessCodeCastDiscoveryInterfaceTest, HandleServerErrorAuthError) {
+  // Tests that an endpoint response will return the appropriate auth error when
+  // handled.
+  MockDiscoveryDeviceCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(Eq(absl::nullopt), AddSinkResultCode::AUTH_ERROR));
+  stub_interface()->SetCallbackForTesting(mock_callback.Get());
+
+  auto response = std::make_unique<EndpointResponse>();
+  response->error_type =
+      absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+  stub_interface()->HandleServerError(std::move(response));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccessCodeCastDiscoveryInterfaceTest, HandleServerErrorServerError) {
+  // Tests that an endpoint response will return the appropriate server error
+  // when handled.
+  MockDiscoveryDeviceCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(Eq(absl::nullopt), AddSinkResultCode::SERVER_ERROR));
+  stub_interface()->SetCallbackForTesting(mock_callback.Get());
+
+  auto response = std::make_unique<EndpointResponse>();
+  response->error_type =
+      absl::make_optional<FetchErrorType>(FetchErrorType::kNetError);
+  stub_interface()->HandleServerError(std::move(response));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccessCodeCastDiscoveryInterfaceTest,
+       HandleServerErrorResponseMalformedError) {
+  // Tests that an endpoint response will return the appropriate response
+  // malformed error when handled.
+  MockDiscoveryDeviceCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(Eq(absl::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
+  stub_interface()->SetCallbackForTesting(mock_callback.Get());
+
+  auto response = std::make_unique<EndpointResponse>();
+  response->error_type =
+      absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
+  stub_interface()->HandleServerError(std::move(response));
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace media_router
