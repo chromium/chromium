@@ -583,8 +583,10 @@ void PrivacySandboxService::ConvertInterestGroupDataKeysForDisplay(
 
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxService::GetCurrentTopTopics() const {
-  if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get())
+  if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get() ||
+      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get()) {
     return {fake_current_topics_.begin(), fake_current_topics_.end()};
+  }
 
   if (!browsing_topics_service_)
     return {};
@@ -601,8 +603,10 @@ PrivacySandboxService::GetCurrentTopTopics() const {
 
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxService::GetBlockedTopics() const {
-  if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get())
+  if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get() ||
+      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get()) {
     return {fake_blocked_topics_.begin(), fake_blocked_topics_.end()};
+  }
 
   const base::Value::List& pref_value =
       pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
@@ -622,7 +626,8 @@ PrivacySandboxService::GetBlockedTopics() const {
 void PrivacySandboxService::SetTopicAllowed(
     privacy_sandbox::CanonicalTopic topic,
     bool allowed) {
-  if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get()) {
+  if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get() ||
+      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get()) {
     if (allowed) {
       fake_current_topics_.insert(topic);
       fake_blocked_topics_.erase(topic);

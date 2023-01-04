@@ -135,6 +135,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -3237,6 +3238,52 @@ const FeatureEntry::FeatureVariation
          std::size(kSafetyCheckUnusedSitePermissionsNoDelayParam), nullptr},
 };
 #endif
+
+constexpr FeatureEntry::FeatureParam
+    kPrivacySandboxSettings4ShowSampleDataForTesting[] = {
+        {privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.name,
+         "true"}};
+constexpr FeatureEntry::FeatureParam kPrivacySandboxSettings4NoticeRequired[] =
+    {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.name, "true"}};
+constexpr FeatureEntry::FeatureParam kPrivacySandboxSettings4ConsentRequired[] =
+    {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name, "true"}};
+constexpr FeatureEntry::FeatureParam
+    kPrivacySandboxSettings4ForceShowConsentForTesting[] = {
+        {privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
+             .name,
+         "true"}};
+constexpr FeatureEntry::FeatureParam
+    kPrivacySandboxSettings4ForceShowROWNoticeForTesting[] = {
+        {privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
+             .name,
+         "true"}};
+constexpr FeatureEntry::FeatureParam
+    kPrivacySandboxSettings4ForceShowEEANoticeForTesting[] = {
+        {privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
+             .name,
+         "true"}};
+
+constexpr FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] =
+    {
+        {"Sample Data", kPrivacySandboxSettings4ShowSampleDataForTesting,
+         std::size(kPrivacySandboxSettings4ShowSampleDataForTesting), nullptr},
+        {"Notice Required", kPrivacySandboxSettings4NoticeRequired,
+         std::size(kPrivacySandboxSettings4NoticeRequired), nullptr},
+        {"Consent Required", kPrivacySandboxSettings4ConsentRequired,
+         std::size(kPrivacySandboxSettings4ConsentRequired), nullptr},
+        {"Force show consent",
+         kPrivacySandboxSettings4ForceShowConsentForTesting,
+         std::size(kPrivacySandboxSettings4ForceShowConsentForTesting),
+         nullptr},
+        {"Force show ROW notice",
+         kPrivacySandboxSettings4ForceShowROWNoticeForTesting,
+         std::size(kPrivacySandboxSettings4ForceShowROWNoticeForTesting),
+         nullptr},
+        {"Force show EEA notice",
+         kPrivacySandboxSettings4ForceShowEEANoticeForTesting,
+         std::size(kPrivacySandboxSettings4ForceShowEEANoticeForTesting),
+         nullptr},
+};
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -7580,6 +7627,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnablePrivacySandboxAdsApis)},
+
+    {"privacy-sandbox-settings-4",
+     flag_descriptions::kPrivacySandboxSettings4Name,
+     flag_descriptions::kPrivacySandboxSettings4Description, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(privacy_sandbox::kPrivacySandboxSettings4,
+                                    kPrivacySandboxSettings4Variations,
+                                    "PrivacySandboxSettings4")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"site-data-improvements", flag_descriptions::kSiteDataImprovementsName,

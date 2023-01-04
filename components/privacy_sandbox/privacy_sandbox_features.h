@@ -15,22 +15,30 @@ BASE_DECLARE_FEATURE(kPrivacySandboxSettings4);
 // When true, the user will be shown a consent to enable the Privacy Sandbox
 // release 4, if they accept the APIs will become active. Only one of this and
 // the below notice feature should be enabled at any one time.
-extern const base::FeatureParam<bool> kPrivacySandboxSettings4ConsentRequired;
+constexpr base::FeatureParam<bool> kPrivacySandboxSettings4ConsentRequired{
+    &kPrivacySandboxSettings4, "consent-required", false};
 // When true, the user will be shown a notice, after which the Privacy Sandbox
 // 4 APIs will become active. Only one of this and the above consent feature
 // should be enabled at any one time.
-extern const base::FeatureParam<bool> kPrivacySandboxSettings4NoticeRequired;
+constexpr base::FeatureParam<bool> kPrivacySandboxSettings4NoticeRequired{
+    &kPrivacySandboxSettings4, "notice-required", false};
 
 // Feature parameters which should exclusively be used for testing purposes.
 // Enabling any of these parameters may result in the Privacy Sandbox prefs
 // (unsynced) entering an unexpected state, requiring profile deletion to
 // resolve.
-extern const base::FeatureParam<bool>
-    kPrivacySandboxSettings4ForceShowConsentForTesting;
-extern const base::FeatureParam<bool>
-    kPrivacySandboxSettings4ForceShowNoticeRowForTesting;
-extern const base::FeatureParam<bool>
-    kPrivacySandboxSettings4ForceShowNoticeEeaForTesting;
+constexpr base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowConsentForTesting{
+        &kPrivacySandboxSettings4, "force-show-consent-for-testing", false};
+constexpr base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeRowForTesting{
+        &kPrivacySandboxSettings4, "force-show-notice-row-for-testing", false};
+constexpr base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeEeaForTesting{
+        &kPrivacySandboxSettings4, "force-show-notice-eea-for-testing", false};
+constexpr base::FeatureParam<bool>
+    kPrivacySandboxSettings4ShowSampleDataForTesting{&kPrivacySandboxSettings4,
+                                                     "show-sample-data", false};
 
 // Enables the third release of the Privacy Sandbox settings.
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings3);

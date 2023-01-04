@@ -5598,6 +5598,14 @@
     "expiry_milestone": 112
   },
   {
+    "name": "privacy-sandbox-settings-4",
+    "owners": [
+      "sauski",
+      "olesiamarukhno",
+      "tommasin"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "private-aggregation-developer-mode",
     "owners": [
       "//content/browser/private_aggregation/OWNERS"

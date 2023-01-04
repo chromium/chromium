@@ -1478,27 +1478,40 @@ TEST_F(PrivacySandboxServiceTest, TestNoFakeTopics) {
 }
 
 TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings3,
-      {{privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.name,
-        "true"}});
-  CanonicalTopic topic1(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic2(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic3(Topic(3), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic4(Topic(4), CanonicalTopic::AVAILABLE_TAXONOMY);
+  std::vector<base::test::FeatureRefAndParams> test_features = {
+      {privacy_sandbox::kPrivacySandboxSettings3,
+       {{privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.name,
+         "true"}}},
+      {privacy_sandbox::kPrivacySandboxSettings4,
+       {{privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.name,
+         "true"}}}};
 
-  auto* service = privacy_sandbox_service();
-  EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
-  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
+  for (const auto& feature : test_features) {
+    feature_list()->Reset();
+    feature_list()->InitWithFeaturesAndParameters({feature}, {});
+    CanonicalTopic topic1(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+    CanonicalTopic topic2(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
+    CanonicalTopic topic3(Topic(3), CanonicalTopic::AVAILABLE_TAXONOMY);
+    CanonicalTopic topic4(Topic(4), CanonicalTopic::AVAILABLE_TAXONOMY);
 
-  service->SetTopicAllowed(topic1, false);
-  EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2));
-  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3, topic4));
+    auto* service = privacy_sandbox_service();
+    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
+    EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
 
-  service->SetTopicAllowed(topic4, true);
-  EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2, topic4));
-  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3));
+    service->SetTopicAllowed(topic1, false);
+    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2));
+    EXPECT_THAT(service->GetBlockedTopics(),
+                ElementsAre(topic1, topic3, topic4));
+
+    service->SetTopicAllowed(topic4, true);
+    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2, topic4));
+    EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3));
+
+    service->SetTopicAllowed(topic1, true);
+    service->SetTopicAllowed(topic4, false);
+    EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
+    EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
+  }
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxPromptNoticeWaiting) {

@@ -61373,6 +61373,7 @@ from previous Chrome versions.
   <int value="299792415" label="OmniboxSuggestionTransparencyOptions:enabled"/>
   <int value="300095239" label="FCMInvalidations:enabled"/>
   <int value="300870732" label="ShelfDimming:disabled"/>
+  <int value="301513718" label="PrivacySandboxSettings4:enabled"/>
   <int value="301536977" label="DetailedLanguageSettings:enabled"/>
   <int value="301630312" label="ForcedColors:disabled"/>
   <int value="301869874" label="NTPPhysicalWebPageSuggestions:disabled"/>
@@ -63733,6 +63734,7 @@ from previous Chrome versions.
   <int value="1689123607" label="enable-app-link"/>
   <int value="1689183477" label="enable-merge-key-char-events"/>
   <int value="1690248203" label="HelpAppV2:enabled"/>
+  <int value="1690415951" label="PrivacySandboxSettings4:disabled"/>
   <int value="1690837904" label="save-previous-document-resources"/>
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
   <int value="1691853573" label="PersonalizationHub:enabled"/>
