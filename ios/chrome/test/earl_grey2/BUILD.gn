@@ -158,7 +158,6 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
-    "//ios/chrome/browser/ui/activity_services:eg2_tests",
     "//ios/chrome/browser/ui/browser_view:eg2_tests",
     "//ios/chrome/browser/ui/dialogs:eg2_tests",
     "//ios/chrome/browser/ui/download:eg2_tests",
@@ -187,6 +186,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/safe_mode:eg2_tests",
     "//ios/chrome/browser/ui/send_tab_to_self:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync/utils:eg2_tests",
+    "//ios/chrome/browser/ui/sharing/activity_services:eg2_tests",
     "//ios/chrome/browser/ui/side_swipe:eg2_tests",
     "//ios/chrome/browser/ui/start_surface:eg2_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:eg2_tests",

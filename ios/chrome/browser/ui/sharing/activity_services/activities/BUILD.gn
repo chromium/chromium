@@ -1,0 +1,93 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("activities") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "bookmark_activity.h",
+    "bookmark_activity.mm",
+    "copy_activity.h",
+    "copy_activity.mm",
+    "find_in_page_activity.h",
+    "find_in_page_activity.mm",
+    "generate_qr_code_activity.h",
+    "generate_qr_code_activity.mm",
+    "print_activity.h",
+    "print_activity.mm",
+    "reading_list_activity.h",
+    "reading_list_activity.mm",
+    "request_desktop_or_mobile_site_activity.h",
+    "request_desktop_or_mobile_site_activity.mm",
+    "send_tab_to_self_activity.h",
+    "send_tab_to_self_activity.mm",
+  ]
+  deps = [
+    "resources:activity_services_add_bookmark",
+    "resources:activity_services_copy",
+    "resources:activity_services_edit_bookmark",
+    "resources:activity_services_find_in_page",
+    "resources:activity_services_generate_qr_code",
+    "resources:activity_services_print",
+    "resources:activity_services_read_later",
+    "resources:activity_services_request_desktop_site",
+    "resources:activity_services_request_mobile_site",
+    "resources:activity_services_send_tab_to_self",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/send_tab_to_self",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/sharing/activity_services/data",
+    "//ios/chrome/browser/ui/sharing/activity_services/requirements",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "bookmark_activity_unittest.mm",
+    "copy_activity_unittest.mm",
+    "find_in_page_activity_unittest.mm",
+    "generate_qr_code_activity_unittest.mm",
+    "print_activity_unittest.mm",
+    "request_desktop_or_mobile_site_activity_unittest.mm",
+    "send_tab_to_self_activity_unittest.mm",
+  ]
+  deps = [
+    ":activities",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/lens",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/sharing/activity_services/data",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:url_with_title",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

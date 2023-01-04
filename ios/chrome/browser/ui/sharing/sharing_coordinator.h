@@ -7,8 +7,8 @@
 
 #include <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/activity_services/activity_scenario.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
 
 @class ActivityParams;
 class Browser;

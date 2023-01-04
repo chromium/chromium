@@ -6,9 +6,9 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/activity_services/activity_service_histograms.h"
-#import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/ui/open_in/open_in_activity_delegate.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_service_histograms.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

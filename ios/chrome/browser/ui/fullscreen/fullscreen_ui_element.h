@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_ELEMENT_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_ELEMENT_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class FullscreenAnimator;
 

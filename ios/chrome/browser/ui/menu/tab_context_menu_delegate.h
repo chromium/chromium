@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/activity_services/activity_scenario.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/activity_scenario.h"
 
 class GURL;
 

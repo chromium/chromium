@@ -8,9 +8,9 @@
 
 #import "base/bind.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/sharing/activity_services/canonical_url_retriever.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
