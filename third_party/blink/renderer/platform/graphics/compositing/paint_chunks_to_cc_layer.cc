@@ -851,11 +851,11 @@ void PaintChunksToCcLayer::ConvertInto(
   }
 }
 
-PaintRecord PaintChunksToCcLayer::Convert(const PaintChunkSubset& chunks,
-                                          const PropertyTreeState& layer_state,
-                                          const gfx::Vector2dF& layer_offset) {
+PaintRecord PaintChunksToCcLayer::Convert(
+    const PaintChunkSubset& chunks,
+    const PropertyTreeState& layer_state) {
   PaintOpBufferExt buffer;
-  ConversionContext(layer_state, layer_offset, buffer).Convert(chunks);
+  ConversionContext(layer_state, gfx::Vector2dF(), buffer).Convert(chunks);
   return buffer.ReleaseAsRecord();
 }
 
