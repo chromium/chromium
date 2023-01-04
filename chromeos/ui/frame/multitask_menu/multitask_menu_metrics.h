@@ -32,6 +32,9 @@ enum class MultitaskMenuActionType {
   kMaxValue = kFloatButton,
 };
 
+constexpr char kPartialSplitDurationHistogramName[] =
+    "Ash.Window.PartialSplitDuration";
+
 // Used to record when the user partial splits to one third.
 constexpr char kPartialSplitOneThirdUserAction[] =
     "MultitaskMenu_PartialSplit_OneThird";

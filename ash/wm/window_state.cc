@@ -40,8 +40,11 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -79,6 +82,7 @@ constexpr char kValidDragMaximizedHistogramName[] =
 
 using ::chromeos::kHideShelfWhenFullscreenKey;
 using ::chromeos::kImmersiveIsActive;
+using ::chromeos::kPartialSplitDurationHistogramName;
 using ::chromeos::kWindowManagerManagesOpacityKey;
 using ::chromeos::WindowStateType;
 
@@ -161,6 +165,13 @@ bool IsTemporarilyHiddenForFullrestore(aura::Window* window) {
   auto* transient_parent = wm::GetTransientParent(window);
   return transient_parent && transient_parent->GetProperty(
                                  app_restore::kParentToHiddenContainerKey);
+}
+
+bool IsPartial(float snap_ratio) {
+  return cc::MathUtil::IsWithinEpsilon(snap_ratio,
+                                       chromeos::kOneThirdSnapRatio) ||
+         cc::MathUtil::IsWithinEpsilon(snap_ratio,
+                                       chromeos::kTwoThirdSnapRatio);
 }
 
 // A tentative class to set the bounds on the window.
@@ -468,7 +479,14 @@ void WindowState::RestoreZOrdering() {
 void WindowState::OnWMEvent(const WMEvent* event) {
   if (event->IsSnapEvent()) {
     // Save `event` requested snap ratio.
-    snap_ratio_ = absl::make_optional(event->snap_ratio());
+    const float target_snap_ratio = event->snap_ratio();
+    snap_ratio_ = absl::make_optional(target_snap_ratio);
+    if (IsPartial(target_snap_ratio)) {
+      partial_start_time_ = base::TimeTicks::Now();
+    } else {
+      // If a different snap ratio was requested, partial may have just ended.
+      MaybeRecordPartialDuration();
+    }
   }
 
   current_state_->OnWMEvent(this, event);
@@ -602,6 +620,8 @@ void WindowState::UpdateSnapRatio() {
   if (!IsSnapped())
     return;
   snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
+  // If the snap ratio was adjusted, partial may have ended.
+  MaybeRecordPartialDuration();
 }
 
 void WindowState::SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {
@@ -873,6 +893,10 @@ void WindowState::NotifyPostStateTypeChange(
   OnPostPipStateChange(old_window_state_type);
   UpdateWindowStateRestoreHistoryStack(old_window_state_type);
   SaveWindowForWindowRestore(this);
+  if (chromeos::IsSnappedWindowStateType(old_window_state_type)) {
+    // If the state type is no longer snapped, partial may have ended.
+    MaybeRecordPartialDuration();
+  }
 }
 
 void WindowState::OnPostPipStateChange(WindowStateType old_window_state_type) {
@@ -1051,6 +1075,17 @@ void WindowState::CollectPipEnterExitMetrics(bool enter) {
   }
 }
 
+void WindowState::MaybeRecordPartialDuration() {
+  // No-op if `partial_start_time_` is null, i.e. partial never started.
+  if (!partial_start_time_.is_null()) {
+    base::UmaHistogramCustomCounts(
+        kPartialSplitDurationHistogramName,
+        (base::TimeTicks::Now() - partial_start_time_).InMinutes(), /*min=*/1,
+        /*exclusive_max=*/base::Days(7).InMinutes(), 50);
+    partial_start_time_ = base::TimeTicks();
+  }
+}
+
 void WindowState::UpdateWindowStateRestoreHistoryStack(
     chromeos::WindowStateType previous_state_type) {
   WindowStateType current_state_type = GetStateType();
@@ -1215,6 +1250,8 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
   if (IsPip())
     CollectPipEnterExitMetrics(/*enter=*/false);
 
+  MaybeRecordPartialDuration();
+
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (widget)
     Shell::Get()->focus_cycler()->RemoveWidget(widget);
@@ -1235,6 +1272,32 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
 
   if (reason != ui::PropertyChangeReason::FROM_ANIMATION && !is_dragged())
     SaveWindowForWindowRestore(this);
+}
+
+void WindowState::OnWindowParentChanged(aura::Window* window,
+                                        aura::Window* parent) {
+  if (window != window_) {
+    return;
+  }
+  // If the window is moved to another desk, partial may have ended.
+  MaybeRecordPartialDuration();
+}
+
+void WindowState::OnWindowVisibilityChanged(aura::Window* window,
+                                            bool visible) {
+  // We are only interested if the parent visibility changes, i.e. desk changes.
+  if (window != window_->parent()) {
+    return;
+  }
+  // If the parent just became visible and `window_` is partial split, start
+  // recording.
+  if (visible && snap_ratio_ && IsPartial(*snap_ratio_)) {
+    partial_start_time_ = base::TimeTicks::Now();
+  }
+  // If the parent is no longer visible, partial may have ended.
+  if (!visible) {
+    MaybeRecordPartialDuration();
+  }
 }
 
 bool WindowState::CanUnresizableSnapOnDisplay(display::Display display) const {

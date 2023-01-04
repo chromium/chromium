@@ -5599,6 +5599,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Window.PartialSplitDuration" units="minutes"
+    expires_after="2023-06-25">
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <summary>
+    The amount of time a user keeps a partial split window open and visible.
+    Starts recording when a user partial splits through the multitask menu, or
+    activates a desk that contains a partial window. Ends recording when the
+    window is closed, changes window state, is snapped/dragged/resized to a
+    non-partial snap ratio, gets moved to an inactive desk, or a different desk
+    is activated.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
     expires_after="2023-06-25">
   <owner>cattalyya@chromium.org</owner>

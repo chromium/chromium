@@ -516,6 +516,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Collects PIP enter and exit metrics:
   void CollectPipEnterExitMetrics(bool enter);
 
+  // Records the time since partial split was started. Does nothing if the
+  // window was not partial.
+  void MaybeRecordPartialDuration();
+
   // Called after the window state change to update the window state restore
   // history stack.
   void UpdateWindowStateRestoreHistoryStack(
@@ -537,6 +541,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
   bool CanUnresizableSnapOnDisplay(display::Display display) const;
 
@@ -627,6 +634,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // When the current (or last) PIP session started.
   base::TimeTicks pip_start_time_;
+
+  // When the window was partial split. Not null during partial split.
+  base::TimeTicks partial_start_time_;
 
   // Maintains the window state restore history that the current window state
   // can restore back to. See kWindowStateRestoreHistoryLayerMap in the cc file

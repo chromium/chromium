@@ -138,7 +138,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       base::UmaHistogramCustomCounts(
           kFloatWindowDurationHistogramName,
           (base::TimeTicks::Now() - float_start_time_).InMinutes(), 1,
-          base::Days(7).InMinutes(), 100);
+          base::Days(7).InMinutes(), 50);
       float_start_time_ = base::TimeTicks();
     }
   }

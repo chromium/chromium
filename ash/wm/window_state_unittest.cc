@@ -12,9 +12,11 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_positioner.h"
@@ -29,6 +31,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -1468,6 +1472,100 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
       kWorkAreaBounds.x(), kWorkAreaBounds.height() - kMinimumSize.height(),
       kWorkAreaBounds.width(), kMinimumSize.height());
   EXPECT_EQ(expected_snap, window->GetBoundsInScreen());
+}
+
+class WindowStateMetricsTest : public AshTestBase {
+ public:
+  WindowStateMetricsTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment()->AdvanceClock(delta);
+    task_environment()->RunUntilIdle();
+  }
+};
+
+TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
+  base::HistogramTester histogram_tester;
+  const std::string kHistogramName =
+      chromeos::kPartialSplitDurationHistogramName;
+  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  WindowState* window_state = WindowState::Get(window.get());
+
+  auto* desks_controller = DesksController::Get();
+  NewDesk();
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  // Partial split for 30 seconds, then maximize. Test that it records 0 since
+  // it has been less than 1 minute.
+  WMEvent partial_event(WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio);
+  window_state->OnWMEvent(&partial_event);
+  AdvanceClock(base::Seconds(30));
+  window_state->Maximize();
+  histogram_tester.ExpectBucketCount(kHistogramName, 0, 1);
+
+  // Partial split for 3 minutes, then minimize. Test that it records.
+  window_state->OnWMEvent(&partial_event);
+  AdvanceClock(base::Minutes(3));
+  window_state->Minimize();
+  histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
+
+  // Partial split for 3 hours, then default split. Test that it records
+  // in the 180 minute bucket.
+  window_state->OnWMEvent(&partial_event);
+  AdvanceClock(base::Hours(3));
+  WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_event);
+  histogram_tester.ExpectBucketCount(kHistogramName, 180, 1);
+
+  // Partial split for 3 minutes, then change display work area, then wait 3
+  // minutes, then drag to resize. Test that it continues recording through the
+  // work area change but stops when the snap ratio is adjusted.
+  window_state->OnWMEvent(&partial_event);
+  AdvanceClock(base::Minutes(3));
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  AdvanceClock(base::Minutes(3));
+  const int kIncreasedWidth = 225;
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(window->bounds().right(), window->bounds().y());
+  generator->PressLeftButton();
+  generator->MoveMouseTo(window->bounds().right() + kIncreasedWidth,
+                         window->bounds().y());
+  generator->ReleaseLeftButton();
+  histogram_tester.ExpectBucketCount(kHistogramName, 6, 1);
+
+  // Partial split for 3 minutes, then activate desk 2. Test that it
+  // records as the partial window is no longer active and visible.
+  window_state->OnWMEvent(&partial_event);
+  AdvanceClock(base::Minutes(3));
+  ActivateDesk(desks_controller->desks()[1].get());
+  histogram_tester.ExpectBucketCount(kHistogramName, 3, 2);
+
+  // Activate desk 1. The partial window will be visible again and start the
+  // recording. Test that sending the window to desk 2 records the duration.
+  ActivateDesk(desks_controller->desks()[0].get());
+  AdvanceClock(base::Minutes(3));
+  desks_controller->SendToDeskAtIndex(window.get(), 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, 3, 3);
+
+  // Activate desk 2 with the partial window, wait 1 minute, create another
+  // partial window, wait another minute, then close both windows. Test that
+  // window 1 records in the 2 minute bucket, and window 2 in the 1 minute
+  // bucket.
+  ActivateDesk(desks_controller->desks()[1].get());
+  AdvanceClock(base::Minutes(1));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  WMEvent partial_secondary(WM_EVENT_SNAP_SECONDARY,
+                            chromeos::kOneThirdSnapRatio);
+  WindowState::Get(window2.get())->OnWMEvent(&partial_secondary);
+  AdvanceClock(base::Minutes(1));
+  window.reset();
+  window2.reset();
+  histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
+
+  // TODO(sophiewen): Determine whether to stop recording if a partial split
+  // window swaps sides, e.g. from one third to two thirds.
 }
 
 // TODO(skuhne): Add more unit test to verify the correctness for the restore
