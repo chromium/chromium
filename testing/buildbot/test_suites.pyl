@@ -2615,19 +2615,6 @@
       },
     },
 
-    # For Windows. Use the D3D12 backend validation layers but without GPU-based
-    # validation and shader patching. This avoids hangs on less powerful systems.
-    'gpu_dawn_gtests_with_partial_validation': {
-      'dawn_end2end_validation_layers_tests': {
-        'mixins': ['dawn_end2end_gpu_test'],
-        'args': [
-          '--enable-backend-validation=partial',
-        ],
-        'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
-      },
-    },
-
     # GPU gtests that test only Dawn with backend validation layers
     'gpu_dawn_gtests_with_validation': {
       'dawn_end2end_validation_layers_tests': {
@@ -3773,15 +3760,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-    },
-
-    'gpu_win_intel_specific_telemetry_tests': {
-      'power_measurement_test': {
-        'telemetry_test_name': 'power',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
       },
     },
 
@@ -6034,14 +6012,6 @@
       'gpu_common_gtests_passthrough',
     ],
 
-    # GPU gtests that test Dawn and integration with Chromium
-    # These tests are run both on the CI and trybots which test DEPS Dawn.
-    'gpu_dawn_integration_gtests_passthrough_win_intel': [
-      'gpu_dawn_gtests',
-      'gpu_dawn_gtests_with_partial_validation',
-      'gpu_common_gtests_passthrough',
-    ],
-
     'gpu_dawn_isolated_scripts': [
       'gpu_dawn_common_isolated_scripts',
       'gpu_dawn_perf_smoke_isolated_scripts',
@@ -6243,7 +6213,6 @@
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-      'gpu_win_intel_specific_telemetry_tests',
     ],
 
     'gpu_fyi_win_optional_isolated_scripts': [
@@ -7379,49 +7348,44 @@
     'win_optional_gpu_tests_rel_gpu_telemetry_tests': {
       'gpu_common_and_optional_telemetry_tests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_mediapipe_passthrough_telemetry_tests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_webcodecs_telemetry_test': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
-        ],
-      },
-      'gpu_win_intel_specific_telemetry_tests': {
-        'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
         ],
       },
     },
@@ -7429,25 +7393,25 @@
     'win_optional_gpu_tests_rel_gtests': {
       'gpu_default_and_optional_win_specific_gtests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_fyi_and_optional_non_linux_gtests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_fyi_and_optional_win_specific_gtests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
       'gpu_gles2_conform_gtests': {
         'variants': [
-          'WIN10_INTEL_HD_630_STABLE',
+          'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },

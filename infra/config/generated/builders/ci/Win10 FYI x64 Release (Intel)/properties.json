@@ -6,12 +6,11 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Win10 x64 Builder",
+              "builder": "GPU FYI Win x64 Builder",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
-              "builder_group": "chromium.dawn",
+              "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -19,27 +18,21 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "win"
+                "target_bits": 64
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "dawn_top_of_tree"
-                ],
                 "config": "chromium"
-              },
-              "run_tests_serially": true
+              }
             }
           },
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Win10 x64 Release (Intel HD 630)",
+              "builder": "Win10 FYI x64 Release (Intel)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
-              "builder_group": "chromium.dawn",
+              "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -47,15 +40,14 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "win"
+                "target_bits": 64
               },
               "legacy_gclient_config": {
                 "config": "chromium"
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Dawn Win10 x64 Builder",
+                "builder": "GPU FYI Win x64 Builder",
                 "project": "chromium"
               },
               "run_tests_serially": true
@@ -66,14 +58,14 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Win10 x64 Release (Intel HD 630)",
+          "builder": "Win10 FYI x64 Release (Intel)",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "win-dawn-rel",
-          "group": "tryserver.chromium.dawn"
+          "builder": "gpu-fyi-try-win10-intel-rel-64",
+          "group": "tryserver.chromium.win"
         }
       ]
     }
@@ -85,6 +77,10 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.dawn",
-  "recipe": "chromium"
+  "builder_group": "chromium.gpu.fyi",
+  "perf_dashboard_machine_group": "ChromiumGPUFYI",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.gpu"
+  ]
 }

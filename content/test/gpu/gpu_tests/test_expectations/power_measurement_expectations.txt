@@ -81,19 +81,6 @@
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# These tests fail consistently on Win10 FYI x64 Exp Release (Intel HD 630).
-crbug.com/1074402 [ win10 intel-0x5912 ] Basic [ Failure ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4 [ Failure ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay [ Failure ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Fullscreen [ Failure ]
-crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay_Fullscreen [ Failure ]
-# These tests were previously flaky, due to crbug.com/941163, so when the above
-# consistent failures are fixed, these expectations may need to be restored.
-#crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4 [ RetryOnFailure ]
-#crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4_Underlay [ RetryOnFailure ]
-#crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4_Fullscreen [ RetryOnFailure ]
-#crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4_Underlay_Fullscreen [ RetryOnFailure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

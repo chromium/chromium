@@ -28,7 +28,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win10 FYI x64 Exp Release (Intel HD 630)",
+              "builder": "Win10 FYI x64 Exp Release (NVIDIA)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -56,7 +56,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win10 FYI x64 Exp Release (NVIDIA)",
+              "builder": "Win10 FYI x64 Experimental Release (Intel)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -112,7 +112,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Win10 FYI x64 Release (Intel HD 630)",
+              "builder": "Win10 FYI x64 Release (Intel)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -177,12 +177,12 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Win10 FYI x64 Exp Release (Intel HD 630)",
+          "builder": "Win10 FYI x64 Exp Release (NVIDIA)",
           "project": "chromium"
         },
         {
           "bucket": "ci",
-          "builder": "Win10 FYI x64 Exp Release (NVIDIA)",
+          "builder": "Win10 FYI x64 Experimental Release (Intel)",
           "project": "chromium"
         },
         {
@@ -192,7 +192,7 @@
         },
         {
           "bucket": "ci",
-          "builder": "Win10 FYI x64 Release (Intel HD 630)",
+          "builder": "Win10 FYI x64 Release (Intel)",
           "project": "chromium"
         },
         {

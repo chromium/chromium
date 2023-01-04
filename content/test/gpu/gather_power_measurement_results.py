@@ -271,10 +271,9 @@ def main():
       action='store_true',
       default=False,
       help='Enable verbose output')
-  parser.add_argument(
-      '--bot',
-      default='Win10 FYI x64 Release (Intel HD 630)',
-      help='Which bot to examine.')
+  parser.add_argument('--bot',
+                      default='Win10 FYI x64 Release (Intel)',
+                      help='Which bot to examine.')
   parser.add_argument(
       '--last-build',
       type=int,

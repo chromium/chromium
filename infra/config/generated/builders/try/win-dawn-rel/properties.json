@@ -34,7 +34,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Win10 x64 Release (Intel HD 630)",
+              "builder": "Dawn Win10 x64 Release (Intel)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -103,7 +103,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Dawn Win10 x64 Release (Intel HD 630)",
+          "builder": "Dawn Win10 x64 Release (Intel)",
           "project": "chromium"
         },
         {

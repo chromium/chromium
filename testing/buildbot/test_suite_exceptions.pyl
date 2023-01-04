@@ -2006,8 +2006,6 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
-      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
-      'Dawn Win10 x86 Release (Intel HD 630)',
     ],
   },
   'device_unittests': {
@@ -3134,11 +3132,6 @@
       },
     },
   },
-  'power_measurement_test': {
-    'remove_from': [
-      'Win10 FYI x64 Exp Release (Intel HD 630)',  # https://crbug.com/1376082
-    ],
-  },
   'sandbox_linux_unittests': {
     'modifications': {
       'android-nougat-x86-rel': {
@@ -3582,8 +3575,8 @@
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
-      'Win10 FYI x64 Release (Intel HD 630)',
-      'Win10 FYI x64 Exp Release (Intel HD 630)',
+      'Win10 FYI x64 Release (Intel)',
+      'Win10 FYI x64 Experimental Release (Intel)',
     ],
   },
   'views_unittests': {
@@ -3938,8 +3931,6 @@
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 Release (AMD)',
-      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
-      'Dawn Win10 x64 Release (Intel HD 630)',
     ],
   },
   'webgpu_cts_tests': {
@@ -3962,10 +3953,6 @@
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 Release (AMD)',
-      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
-      'Dawn Win10 x64 Release (Intel HD 630)',
-      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
-      'Dawn Win10 x86 Release (Intel HD 630)',
     ],
     'modifications': {
       # ci_only for bots where capacity is constrained.
@@ -3982,10 +3969,6 @@
     'remove_from': [
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 Release (AMD)',
-      'Dawn Win10 x64 DEPS Release (Intel HD 630)',
-      'Dawn Win10 x64 Release (Intel HD 630)',
-      'Dawn Win10 x86 DEPS Release (Intel HD 630)',
-      'Dawn Win10 x86 Release (Intel HD 630)',
     ],
     'modifications': {
       # ci_only for bots where capacity is constrained.

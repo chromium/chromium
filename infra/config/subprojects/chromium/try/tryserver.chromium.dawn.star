@@ -119,7 +119,7 @@ try_.builder(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Dawn Win10 x64 DEPS Builder",
-        "ci/Dawn Win10 x64 DEPS Release (Intel HD 630)",
+        "ci/Dawn Win10 x64 DEPS Release (Intel)",
         "ci/Dawn Win10 x64 DEPS Release (NVIDIA)",
     ],
     os = os.WINDOWS_ANY,
@@ -150,7 +150,7 @@ try_.builder(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Dawn Win10 x86 DEPS Builder",
-        "ci/Dawn Win10 x86 DEPS Release (Intel HD 630)",
+        "ci/Dawn Win10 x86 DEPS Release (Intel)",
         "ci/Dawn Win10 x86 DEPS Release (NVIDIA)",
     ],
     os = os.WINDOWS_ANY,
@@ -275,7 +275,7 @@ try_.builder(
     name = "win-dawn-rel",
     mirrors = [
         "ci/Dawn Win10 x64 Builder",
-        "ci/Dawn Win10 x64 Release (Intel HD 630)",
+        "ci/Dawn Win10 x64 Release (Intel)",
         "ci/Dawn Win10 x64 Release (NVIDIA)",
     ],
     os = os.WINDOWS_ANY,
@@ -289,7 +289,7 @@ try_.builder(
     name = "dawn-try-win10-x86-rel",
     mirrors = [
         "ci/Dawn Win10 x86 Builder",
-        "ci/Dawn Win10 x86 Release (Intel HD 630)",
+        "ci/Dawn Win10 x86 Release (Intel)",
         "ci/Dawn Win10 x86 Release (NVIDIA)",
     ],
     os = os.WINDOWS_ANY,
