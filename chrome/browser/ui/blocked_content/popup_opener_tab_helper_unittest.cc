@@ -56,7 +56,6 @@ class InfoBarAndroid;
 constexpr char kTabUnderVisibleTime[] = "Tab.TabUnder.VisibleTime";
 constexpr char kTabUnderVisibleTimeBefore[] = "Tab.TabUnder.VisibleTimeBefore";
 constexpr char kPopupToTabUnder[] = "Tab.TabUnder.PopupToTabUnderTime";
-constexpr char kTabUnderAction[] = "Tab.TabUnderAction";
 
 class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -582,58 +581,6 @@ TEST_F(BlockTabUnderTest, MultipleRedirectAttempts_AreBlocked) {
   ExpectUIShown(true);
 }
 
-TEST_F(BlockTabUnderTest,
-       MultipleRedirectAttempts_AreBlockedAndLogsActionMetrics) {
-  EXPECT_TRUE(NavigateAndCommitWithoutGesture(GURL("https://first.test/")));
-  histogram_tester()->ExpectUniqueSample(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kStarted), 1);
-  SimulatePopup();
-
-  const GURL blocked_url("https://example.test/");
-  EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
-  EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
-  EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
-
-  histogram_tester()->ExpectBucketCount(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kStarted), 4);
-  histogram_tester()->ExpectBucketCount(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kBlocked), 3);
-  histogram_tester()->ExpectBucketCount(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kDidTabUnder), 3);
-  histogram_tester()->ExpectTotalCount(kTabUnderAction, 10);
-}
-
-TEST_F(BlockTabUnderTest, ClickThroughAction) {
-  EXPECT_TRUE(NavigateAndCommitWithoutGesture(GURL("https://first.test/")));
-  histogram_tester()->ExpectUniqueSample(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kStarted), 1);
-  SimulatePopup();
-
-  // Populate two blocked URLs in the UI.
-  expect_message();
-  const GURL blocked_url("https://example.test/");
-  EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
-  EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
-#if BUILDFLAG(IS_ANDROID)
-  message_wrapper()->HandleActionClick(base::android::AttachCurrentThread());
-#else
-  FramebustBlockTabHelper* framebust =
-      FramebustBlockTabHelper::FromWebContents(web_contents());
-  framebust->OnBlockedUrlClicked(1);
-  histogram_tester()->ExpectUniqueSample(
-      "Tab.TabUnder.ClickThroughPosition",
-      static_cast<int>(blocked_content::ListItemPosition::kLastItem), 1);
-#endif
-  histogram_tester()->ExpectBucketCount(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kClickedThrough), 1);
-}
-
 TEST_F(BlockTabUnderTest, LogsUkm) {
   using UkmEntry = ukm::builders::AbusiveExperienceHeuristic_TabUnder;
 
@@ -756,28 +703,6 @@ class BlockTabUnderDisabledTest : public BlockTabUnderTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// kDidTabUnder is not reported multiple times for redirects.
-TEST_F(BlockTabUnderDisabledTest, DisableFeature_LogsDidTabUnder) {
-  EXPECT_TRUE(NavigateAndCommitWithoutGesture(GURL("https://first.test/")));
-  SimulatePopup();
-
-  const GURL a_url("https://a.com/");
-  const GURL b_url("https://b.com/");
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(a_url, main_rfh());
-  simulator->SetHasUserGesture(false);
-  simulator->Redirect(b_url);
-  simulator->Redirect(a_url);
-  simulator->Commit();
-  histogram_tester()->ExpectBucketCount(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kStarted), 2);
-  histogram_tester()->ExpectBucketCount(
-      kTabUnderAction,
-      static_cast<int>(TabUnderNavigationThrottle::Action::kDidTabUnder), 1);
-  histogram_tester()->ExpectTotalCount(kTabUnderAction, 3);
-}
 
 TEST_F(BlockTabUnderDisabledTest, NoFeature_NoBlocking) {
   EXPECT_TRUE(NavigateAndCommitWithoutGesture(GURL("https://first.test/")));

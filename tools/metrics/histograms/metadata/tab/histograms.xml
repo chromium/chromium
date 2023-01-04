@@ -673,18 +673,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.TabUnder.ClickThroughPosition" enum="ListItemPosition"
-    expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    The position of the URL in the framebust UI list (desktop only) when it is
-    clicked. Note that this UI surface is shared with the framebusting
-    intervention, so elements in the list could come from either features. This
-    metric will only be logged when a URL from the tab under intervention is
-    clicked.
-  </summary>
-</histogram>
-
 <histogram name="Tab.TabUnder.PopupToTabUnderTime" units="ms"
     expires_after="M85">
   <owner>csharrison@chromium.org</owner>
@@ -715,18 +703,6 @@ chromium-metrics-reviews@google.com.
     WebContents destruction. The total visible time for the tab is the sum of
     this metric and Tab.TabUnder.VisibleTime.
   </summary>
-</histogram>
-
-<histogram name="Tab.TabUnderAction{OffTheRecordType}" enum="TabUnderAction"
-    expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Various actions related to the tab under intervention, logged during main
-    frame navigation. {OffTheRecordType}
-  </summary>
-  <token key="OffTheRecordType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Tab.TotalTabCount.BeforeLeavingApp" units="tabs"

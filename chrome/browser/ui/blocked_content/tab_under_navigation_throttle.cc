@@ -53,41 +53,7 @@
 
 namespace {
 
-void LogAction(TabUnderNavigationThrottle::Action action) {
-  UMA_HISTOGRAM_ENUMERATION("Tab.TabUnderAction", action,
-                            TabUnderNavigationThrottle::Action::kCount);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-typedef blocked_content::FramebustBlockedMessageDelegate::InterventionOutcome
-    InterventionOutcome;
-
-TabUnderNavigationThrottle::Action GetActionForOutcome(
-    InterventionOutcome outcome) {
-  switch (outcome) {
-    case InterventionOutcome::kAccepted:
-      return TabUnderNavigationThrottle::Action::kAcceptedIntervention;
-    case InterventionOutcome::kDeclinedAndNavigated:
-      return TabUnderNavigationThrottle::Action::kClickedThrough;
-  }
-  NOTREACHED();
-}
-
-void LogOutcome(InterventionOutcome outcome) {
-  LogAction(GetActionForOutcome(outcome));
-}
-#else
-void OnListItemClicked(const GURL& url, size_t index, size_t total_size) {
-  LogAction(TabUnderNavigationThrottle::Action::kClickedThrough);
-  UMA_HISTOGRAM_ENUMERATION(
-      "Tab.TabUnder.ClickThroughPosition",
-      blocked_content::GetListItemPositionFromDistance(index, total_size));
-}
-#endif
-
 void LogTabUnderAttempt(content::NavigationHandle* handle) {
-  LogAction(TabUnderNavigationThrottle::Action::kDidTabUnder);
-
   // The source id should generally be set, except for very rare circumstances
   // where the popup opener tab helper is not observing at the time the
   // previous navigation commit.
@@ -197,7 +163,6 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
                            navigation_handle()->GetURL().spec().c_str());
     contents->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, error.c_str());
-    LogAction(Action::kBlocked);
     ShowUI();
     return content::NavigationThrottle::CANCEL;
   }
@@ -218,11 +183,11 @@ void TabUnderNavigationThrottle::ShowUI() {
       url,
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext()),
-      base::BindOnce(&LogOutcome));
+      base::NullCallback());
 #else
   if (auto* tab_helper =
           FramebustBlockTabHelper::FromWebContents(web_contents)) {
-    tab_helper->AddBlockedUrl(url, base::BindOnce(&OnListItemClicked));
+    tab_helper->AddBlockedUrl(url, base::NullCallback());
   }
 #endif
 }
@@ -248,7 +213,6 @@ bool TabUnderNavigationThrottle::TabUndersAllowedBySettings() const {
 
 content::NavigationThrottle::ThrottleCheckResult
 TabUnderNavigationThrottle::WillStartRequest() {
-  LogAction(Action::kStarted);
   return MaybeBlockNavigation();
 }
 
