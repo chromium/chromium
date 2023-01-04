@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
-#include "chrome/browser/ash/file_manager/fusebox_mounter.h"
+#include "chrome/browser/ash/file_manager/fusebox_daemon.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
@@ -625,7 +625,7 @@ class VolumeManager : public KeyedService,
   base::ObserverList<VolumeManagerObserver>::Unchecked observers_;
   GetMtpStorageInfoCallback get_mtp_storage_info_callback_;
   Volumes mounted_volumes_;
-  FuseBoxMounter fusebox_mounter_;
+  scoped_refptr<file_manager::FuseBoxDaemon> fusebox_daemon_;
   std::unique_ptr<SnapshotManager> snapshot_manager_;
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;

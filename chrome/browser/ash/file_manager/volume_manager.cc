@@ -725,8 +725,6 @@ void VolumeManager::Initialize() {
     return;
   }
 
-  fusebox_mounter_.Mount(disk_mount_manager_);
-
   const base::FilePath localVolume =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   const bool success = RegisterDownloadsMountPoint(profile_, localVolume);
@@ -814,7 +812,6 @@ void VolumeManager::Shutdown() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  fusebox_mounter_.Unmount(disk_mount_manager_);
   snapshot_manager_.reset();
   pref_change_registrar_.RemoveAll();
   disk_mount_manager_->RemoveObserver(this);
@@ -1322,6 +1319,11 @@ void VolumeManager::OnProvidedFileSystemMount(
   if (error != base::File::FILE_OK)
     return;
 
+  // Get the FuseBoxDaemon instance.
+  if (!fusebox_daemon_) {
+    fusebox_daemon_ = file_manager::FuseBoxDaemon::GetInstance();
+  }
+
   // Get the FileSystemURL of the FSP storage device.
   const std::string fsid =
       file_system_info.mount_path().BaseName().AsUTF8Unsafe();
@@ -1333,7 +1335,7 @@ void VolumeManager::OnProvidedFileSystemMount(
 
   // Attach the FSP storage device to the fusebox daemon.
   const std::string subdir = FuseBoxSubdirFSP(file_system_info);
-  fusebox_mounter_.AttachStorage(subdir, url, !file_system_info.writable());
+  fusebox_daemon_->AttachStorage(subdir, url, !file_system_info.writable());
 
   // Create a Volume for the fusebox FSP storage device.
   const base::FilePath mount_path =
@@ -1401,7 +1403,9 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   mount_points->RevokeFileSystem(fusebox_fsid);
 
   // Detach the fusebox FSP storage device from the fusebox daemon.
-  fusebox_mounter_.DetachStorage(subdir);
+  if (fusebox_daemon_) {
+    fusebox_daemon_->DetachStorage(subdir);
+  }
 }
 
 void VolumeManager::OnExternalStorageDisabledChangedUnmountCallback(
@@ -1568,6 +1572,11 @@ void VolumeManager::DoAttachMtpStorage(
   std::unique_ptr<Volume> volume = Volume::CreateForMTP(path, label, read_only);
   DoMountEvent(std::move(volume));
 
+  // Get the FuseBoxDaemon instance.
+  if (!fusebox_daemon_) {
+    fusebox_daemon_ = file_manager::FuseBoxDaemon::GetInstance();
+  }
+
   // Get the FileSystemURL of the MTP storage device.
   auto mtp_file_system_url = mount_points->CreateExternalFileSystemURL(
       blink::StorageKey(util::GetFilesAppOrigin()), fsid, {});
@@ -1576,7 +1585,7 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Attach the MTP storage device to the fusebox daemon.
   std::string subdir = FuseBoxSubdirMTP(info.device_id());
-  fusebox_mounter_.AttachStorage(subdir, url, read_only);
+  fusebox_daemon_->AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox MTP storage device.
   const base::FilePath mount_path =
@@ -1643,7 +1652,9 @@ void VolumeManager::OnRemovableStorageDetached(
   mount_points->RevokeFileSystem(fusebox_fsid);
 
   // Detach the fusebox MTP storage device from the fusebox daemon.
-  fusebox_mounter_.DetachStorage(subdir);
+  if (fusebox_daemon_) {
+    fusebox_daemon_->DetachStorage(subdir);
+  }
 }
 
 void VolumeManager::OnDocumentsProviderRootAdded(
@@ -1661,6 +1672,11 @@ void VolumeManager::OnDocumentsProviderRootAdded(
       authority, root_id, document_id, title, summary, icon_url, read_only,
       /*optional_fusebox_subdir=*/std::string()));
 
+  // Get the FuseBoxDaemon instance.
+  if (!fusebox_daemon_) {
+    fusebox_daemon_ = file_manager::FuseBoxDaemon::GetInstance();
+  }
+
   // Get the FileSystemURL of the ADP storage device.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   auto adp_file_system_url = mount_points->CreateExternalFileSystemURL(
@@ -1672,7 +1688,7 @@ void VolumeManager::OnDocumentsProviderRootAdded(
 
   // Attach the ADP storage device to the fusebox daemon.
   std::string subdir = FuseBoxSubdirADP(authority, root_id);
-  fusebox_mounter_.AttachStorage(subdir, url, read_only);
+  fusebox_daemon_->AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox ADP storage device.
   std::unique_ptr<Volume> fusebox_volume =
@@ -1719,7 +1735,9 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
   mount_points->RevokeFileSystem(fusebox_fsid);
 
   // Detach the fusebox ADP storage device from the fusebox daemon.
-  fusebox_mounter_.DetachStorage(subdir);
+  if (fusebox_daemon_) {
+    fusebox_daemon_->DetachStorage(subdir);
+  }
 }
 
 void VolumeManager::AddSmbFsVolume(const base::FilePath& mount_point,
