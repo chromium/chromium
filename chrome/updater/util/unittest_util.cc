@@ -129,7 +129,30 @@ bool WaitForProcessesToExit(const base::FilePath::StringType& executable_name,
 
 bool KillProcesses(const base::FilePath::StringType& executable_name,
                    int exit_code) {
-  return base::KillProcesses(executable_name, exit_code, nullptr);
+  bool result = true;
+  for (const base::ProcessEntry& entry :
+       base::NamedProcessIterator(executable_name, nullptr).Snapshot()) {
+    base::Process process = base::Process::Open(entry.pid());
+    if (!process.IsValid()) {
+      PLOG(ERROR) << "Process invalid for PID: " << executable_name << ": "
+                  << entry.pid();
+      result = false;
+      continue;
+    }
+
+    const bool process_terminated = process.Terminate(exit_code, true);
+
+#if BUILDFLAG(IS_WIN)
+    PLOG_IF(ERROR, !process_terminated &&
+                       !::TerminateProcess(process.Handle(),
+                                           static_cast<UINT>(exit_code)))
+        << "::TerminateProcess failed: " << executable_name << ": "
+        << entry.pid();
+#endif  // BUILDFLAG(IS_WIN)
+
+    result &= process_terminated;
+  }
+  return result;
 }
 
 scoped_refptr<PolicyService> CreateTestPolicyService() {

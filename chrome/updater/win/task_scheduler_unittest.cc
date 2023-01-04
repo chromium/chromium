@@ -69,8 +69,9 @@ class TaskSchedulerTests : public ::testing::Test {
   void SetUp() override {
     task_scheduler_ = TaskScheduler::CreateInstance(GetTestScope());
     EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
-    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName))
+    ASSERT_TRUE(test::KillProcesses(kTestProcessExecutableName, 0))
         << test::PrintProcesses(kTestProcessExecutableName);
+    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
   }
 
   void TearDown() override {
@@ -78,6 +79,7 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
     EXPECT_FALSE(test::IsProcessRunning(kTestProcessExecutableName))
         << test::PrintProcesses(kTestProcessExecutableName);
+    EXPECT_TRUE(test::KillProcesses(kTestProcessExecutableName, 0));
   }
 
   // Converts a base::Time that is in UTC and returns the corresponding local
