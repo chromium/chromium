@@ -1383,7 +1383,8 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
   }
   std::unique_ptr<SyntheticPointerAction> synthetic_gesture =
       std::make_unique<SyntheticPointerAction>(action_list_params);
-  synthetic_gesture->SetSyntheticPointerDriver(synthetic_pointer_driver_.get());
+  synthetic_gesture->SetSyntheticPointerDriver(
+      synthetic_pointer_driver_->AsWeakPtr());
 
   RenderWidgetHostViewBase* root_view = GetRootView();
   if (!root_view) {

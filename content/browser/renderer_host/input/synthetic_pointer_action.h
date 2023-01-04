@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
@@ -38,31 +38,43 @@ class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
                         SyntheticGestureTarget* target) const override;
 
   void SetSyntheticPointerDriver(
-      SyntheticPointerDriver* synthetic_pointer_driver) {
-    synthetic_pointer_driver_ = synthetic_pointer_driver;
+      base::WeakPtr<SyntheticPointerDriver> synthetic_pointer_driver) {
+    DCHECK(!internal_synthetic_pointer_driver_);
+    DCHECK(!external_synthetic_pointer_driver_);
+    external_synthetic_pointer_driver_ = synthetic_pointer_driver;
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SyntheticPointerActionTest,
+                           UsesCorrectPointerDriver);
+
   enum class GestureState { UNINITIALIZED, RUNNING, INVALID, DONE };
 
   GestureState ForwardTouchOrMouseInputEvents(const base::TimeTicks& timestamp,
                                               SyntheticGestureTarget* target);
 
+  SyntheticPointerDriver* PointerDriver() const;
+
   // params_ contains a list of lists of pointer actions, that each list of
   // pointer actions will be dispatched together.
   SyntheticPointerActionListParams params_;
 
-  // It is owned by this class, which is used when synthetic_pointer_driver_ is
-  // not initialized, where the SyntheticPointerAction object is not created
-  // in InputHandler class.
-  std::unique_ptr<SyntheticPointerDriver> owned_synthetic_pointer_driver_;
-  // It is owned by InputHandler class, which is used to keep the states of the
-  // previous synthetic events when a sequence of actions are dispatched one by
-  // one.
-  raw_ptr<SyntheticPointerDriver> synthetic_pointer_driver_ = nullptr;
-  content::mojom::GestureSourceType gesture_source_type_;
-  GestureState state_;
-  size_t num_actions_dispatched_;
+  // An internal pointer driver createad and used only when an
+  // external_synthetic_pointer_driver_ isn't provided before the gesture is
+  // initialized. Use PointerDriver() rather than accessing this pointer
+  // directly.
+  std::unique_ptr<SyntheticPointerDriver> internal_synthetic_pointer_driver_;
+
+  // A pointer driver that's owned externally (by the DevTools InputHandler
+  // class). Allows the InputHandler to keep track of state from previous
+  // synthetic events when a sequence of actions are dispatched one by one. Use
+  // PointerDriver() rather than accessing this pointer directly.
+  base::WeakPtr<SyntheticPointerDriver> external_synthetic_pointer_driver_;
+
+  content::mojom::GestureSourceType gesture_source_type_ =
+      content::mojom::GestureSourceType::kDefaultInput;
+  GestureState state_ = GestureState::UNINITIALIZED;
+  size_t num_actions_dispatched_ = 0U;
 };
 
 }  // namespace content

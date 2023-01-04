@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action_params.h"
@@ -15,7 +16,8 @@ namespace content {
 
 class SyntheticGestureTarget;
 
-class CONTENT_EXPORT SyntheticPointerDriver {
+class CONTENT_EXPORT SyntheticPointerDriver
+    : public base::SupportsWeakPtr<SyntheticPointerDriver> {
  public:
   SyntheticPointerDriver();
 

@@ -20,8 +20,6 @@ using blink::WebTouchPoint;
 
 namespace content {
 
-namespace {
-
 WebTouchPoint::State ToWebTouchPointState(
     SyntheticPointerActionParams::PointerActionType action_type) {
   switch (action_type) {
@@ -430,7 +428,7 @@ class SyntheticPointerActionTest : public testing::Test {
   int num_success_;
   int num_failure_;
   std::unique_ptr<MockSyntheticPointerActionTarget> target_;
-  std::unique_ptr<SyntheticGesture> pointer_action_;
+  std::unique_ptr<SyntheticPointerAction> pointer_action_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   SyntheticPointerActionListParams params_;
 };
@@ -1223,6 +1221,32 @@ TEST_F(SyntheticPointerActionTest, EmptyParams) {
   EXPECT_EQ(0, num_failure_);
 }
 
+TEST_F(SyntheticPointerActionTest, UsesCorrectPointerDriver) {
+  CreateSyntheticPointerActionTarget<MockSyntheticPointerPenActionTarget>();
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+
+  // Before events are forwarded, no PointerDriver is set yet.
+  EXPECT_FALSE(pointer_action_->PointerDriver());
+
+  // If an external driver isn't set, forwarding the first event should
+  // initialize an internal pointer driver.
+  ForwardSyntheticPointerAction();
+  EXPECT_NE(pointer_action_->PointerDriver(), nullptr);
+  EXPECT_EQ(pointer_action_->PointerDriver(),
+            pointer_action_->internal_synthetic_pointer_driver_.get());
+  EXPECT_EQ(pointer_action_->external_synthetic_pointer_driver_.get(), nullptr);
+
+  // Create a new PointerAction and set an external pointer driver on it.
+  // Ensure it is used instead of creating an internal one.
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+  auto driver = SyntheticPointerDriver::Create(
+      target_->GetDefaultSyntheticGestureSourceType());
+  pointer_action_->SetSyntheticPointerDriver(driver->AsWeakPtr());
+  EXPECT_NE(pointer_action_->PointerDriver(), nullptr);
+  EXPECT_EQ(pointer_action_->PointerDriver(), driver.get());
+  EXPECT_EQ(pointer_action_->internal_synthetic_pointer_driver_.get(), nullptr);
+}
+
 TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
   CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
 
@@ -1513,7 +1537,5 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountAfterMove) {
   EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
       param7, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
 }
-
-}  // namespace
 
 }  // namespace content
