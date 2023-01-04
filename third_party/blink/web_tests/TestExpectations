@@ -3020,7 +3020,6 @@ crbug.com/626703 [ Mac ] external/wpt/url/a-element-xhtml.xhtml?exclude=(file|ja
 crbug.com/626703 [ Mac12-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/a-element-origin.html [ Crash Failure ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/credential-management/fedcm-iframe.https.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/fetch/metadata/generated/element-meta-refresh.optional.sub.html [ Timeout ]
@@ -3076,8 +3075,6 @@ crbug.com/626703 [ Linux ] wpt_internal/webxr/xrDevice_supportsSession_immersive
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrSession_dataProviderDisconnect_immersive.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrSession_environmentProviderDisconnect.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrSession_framesThrottled.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
-crbug.com/626703 [ Win11 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
@@ -6818,3 +6815,6 @@ virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failur
 
 # TODO(crbug.com/1404614): Fix this test on MacOS (sheriff 2023-01-03).
 crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Failure Pass ]
+
+# Sheriff 2023-01-04
+crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout Pass ]
