@@ -464,8 +464,16 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,
                                                   const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
+  auto* process = GetRenderProcessHost();
+  if (!process) {
     return;
+  }
+  TRACE_EVENT("extensions", "MessageFilter::OnOpenMessagePort",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+  if (!IsValidSourceContext(*process, source)) {
+    return;
+  }
 
   MessageService::Get(browser_context_)
       ->OpenPort(port_id, render_process_id_, source);
@@ -476,14 +484,21 @@ void MessagingAPIMessageFilter::OnCloseMessagePort(
     const PortId& port_id,
     bool force_close) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
+  auto* process = GetRenderProcessHost();
+  if (!process) {
     return;
+  }
+  TRACE_EVENT("extensions", "MessageFilter::OnCloseMessagePort",
+              ChromeTrackEvent::kRenderProcessHost, *process);
 
-  // Note, we need to add more stringent IPC validation here.
   if (!port_context.is_for_render_frame() &&
       !port_context.is_for_service_worker()) {
     bad_message::ReceivedBadMessage(render_process_id_,
                                     bad_message::EMF_INVALID_PORT_CONTEXT);
+    return;
+  }
+
+  if (!IsValidSourceContext(*process, port_context)) {
     return;
   }
 
@@ -504,8 +519,16 @@ void MessagingAPIMessageFilter::OnResponsePending(
     const PortContext& port_context,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
+  auto* process = GetRenderProcessHost();
+  if (!process) {
     return;
+  }
+  TRACE_EVENT("extensions", "MessageFilter::OnResponsePending",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+  if (!IsValidSourceContext(*process, port_context)) {
+    return;
+  }
 
   MessageService::Get(browser_context_)
       ->NotifyResponsePending(port_id, render_process_id_, port_context);
