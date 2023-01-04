@@ -86,10 +86,10 @@ void AccountChecker::OnPrimaryAccountChanged(
 }
 
 void AccountChecker::FetchWaaStatus() {
-  // For now we need to update users' consent status on web and app activity
-  // only when ShoppingList feature is enabled.
-  if (!base::FeatureList::IsEnabled(kShoppingList) || !IsSignedIn())
+  // For now we need to update users' consent status on web and app activity.
+  if (!IsSignedIn()) {
     return;
+  }
   // TODO(crbug.com/1311754): These parameters (url, oauth_scope, etc.) are
   // copied from web_history_service.cc directly, it works now but we should
   // figure out a better way to keep these parameters in sync.
@@ -161,8 +161,9 @@ void AccountChecker::OnFetchWaaJsonParsed(
 }
 
 void AccountChecker::FetchPriceEmailPref() {
-  if (!base::FeatureList::IsEnabled(kShoppingList) || !IsSignedIn())
+  if (!IsSignedIn()) {
     return;
+  }
 
   is_waiting_for_pref_fetch_completion_ = true;
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -238,9 +239,9 @@ void AccountChecker::OnFetchPriceEmailPrefJsonParsed(
 }
 
 void AccountChecker::SendPriceEmailPref() {
-  if (!base::FeatureList::IsEnabled(kShoppingList) || !IsSignedIn() ||
-      !pref_service_)
+  if (!IsSignedIn() || !pref_service_) {
     return;
+  }
 
   // If users update the pref faster than we hear back from the server fetch,
   // the fetched result should be discarded.

@@ -299,11 +299,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
-  html_source->AddBoolean(
-      "changePriceEmailNotificationsEnabled",
-      base::FeatureList::IsEnabled(commerce::kShoppingList));
-  commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
-      ->FetchPriceEmailPref();
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  html_source->AddBoolean("changePriceEmailNotificationsEnabled",
+                          shopping_service->IsShoppingListEligible());
+  if (shopping_service->IsShoppingListEligible()) {
+    commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
+        ->FetchPriceEmailPref();
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(

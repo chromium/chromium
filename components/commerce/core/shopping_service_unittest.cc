@@ -50,6 +50,9 @@ const char kDetailsPageUrl[] = "http://example.com/merchant_details_page";
 const bool kHasReturnPolicy = true;
 const bool kContainsSensitiveContent = false;
 
+const char kEligibleCountry[] = "US";
+const char kEligibleLocale[] = "en-us";
+
 }  // namespace
 
 class ShoppingServiceTest : public ShoppingServiceTestBase {
@@ -61,8 +64,11 @@ class ShoppingServiceTest : public ShoppingServiceTestBase {
 
   // Expose the private feature check for testing.
   static bool IsShoppingListEligible(AccountChecker* account_checker,
-                                     PrefService* prefs) {
-    return ShoppingService::IsShoppingListEligible(account_checker, prefs);
+                                     PrefService* prefs,
+                                     const std::string& country,
+                                     const std::string& locale) {
+    return ShoppingService::IsShoppingListEligible(account_checker, prefs,
+                                                   country, locale);
   }
 };
 
@@ -459,8 +465,9 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithNoTitle) {
   EXPECT_EQ(kTitle, info.title);
 }
 
-TEST_F(ShoppingServiceTest, TestShoppingListEnabled_Policy) {
-  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_Policy) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -471,14 +478,17 @@ TEST_F(ShoppingServiceTest, TestShoppingListEnabled_Policy) {
   checker.SetAnonymizedUrlDataCollectionEnabled(true);
   checker.SetWebAndAppActivityEnabled(true);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
 
   SetShoppingListEnterprisePolicyPref(&prefs, false);
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
 }
 
-TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_FeatureFlagOff) {
-  test_features_.InitAndDisableFeature(commerce::kShoppingList);
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
+  test_features_.InitWithFeatures({},
+                                  {kShoppingList, kShoppingListRegionLaunched});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -489,11 +499,13 @@ TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_FeatureFlagOff) {
   checker.SetAnonymizedUrlDataCollectionEnabled(true);
   checker.SetWebAndAppActivityEnabled(true);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
 }
 
-TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_MSBB) {
-  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -504,15 +516,18 @@ TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_MSBB) {
   checker.SetAnonymizedUrlDataCollectionEnabled(true);
   checker.SetWebAndAppActivityEnabled(true);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
 
   checker.SetAnonymizedUrlDataCollectionEnabled(false);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
 }
 
-TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_SignIn) {
-  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -523,15 +538,18 @@ TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_SignIn) {
   checker.SetAnonymizedUrlDataCollectionEnabled(true);
   checker.SetWebAndAppActivityEnabled(true);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
 
   checker.SetSignedIn(false);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
 }
 
-TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_WAA) {
-  test_features_.InitAndEnableFeature(commerce::kShoppingList);
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_WAA) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
@@ -542,10 +560,98 @@ TEST_F(ShoppingServiceTest, TestShoppingListEnabledWithPolicy_WAA) {
   checker.SetAnonymizedUrlDataCollectionEnabled(true);
   checker.SetWebAndAppActivityEnabled(true);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
 
   checker.SetWebAndAppActivityEnabled(false);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs));
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
 }
+
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
+
+  // This should continue to work since we can assume, for the sake of the test,
+  // that the experiment config includes the ZZ country and zz-zz locale.
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+}
+
+TEST_F(ShoppingServiceTest,
+       TestShoppingListEligible_CountryAndLocale_BothFlags) {
+  test_features_.InitWithFeatures({kShoppingList, kShoppingListRegionLaunched},
+                                  {});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
+
+  // Same as the previous test, this should still work since, presumably, the
+  // experiment config for "ShoppingList" includes these.
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
+  test_features_.InitWithFeatures({},
+                                  {kShoppingList, kShoppingListRegionLaunched});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+}
+
+TEST_F(ShoppingServiceTest,
+       TestShoppingListEligible_CountryAndLocale_RegionLaunched) {
+  test_features_.InitWithFeatures({kShoppingListRegionLaunched},
+                                  {kShoppingList});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+  checker.SetSignedIn(true);
+  checker.SetAnonymizedUrlDataCollectionEnabled(true);
+  checker.SetWebAndAppActivityEnabled(true);
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
+
+  // If we only have the region flag enabled, we should be restricted to
+  // specific countries and locales. The fake country and locale below should
+  // be blocked.
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+}
+
 }  // namespace commerce

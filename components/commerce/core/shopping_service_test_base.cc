@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/shopping_service_test_base.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -15,6 +16,7 @@
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -238,6 +240,8 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   RegisterPrefs(pref_service_->registry());
   shopping_service_ = std::make_unique<ShoppingService>(
       "us", "en-us", bookmark_model_.get(), opt_guide_.get(),

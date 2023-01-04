@@ -384,11 +384,21 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
 }
 
 bool ShoppingService::IsProductInfoApiEnabled() {
-  return base::FeatureList::IsEnabled(kShoppingList);
+  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
+  bool region_launched =
+      base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
+      IsEnabledForCountryAndLocale(country_on_startup_, locale_on_startup_);
+
+  return flag_enabled || region_launched;
 }
 
 bool ShoppingService::IsPDPMetricsRecordingEnabled() {
-  return base::FeatureList::IsEnabled(commerce::kShoppingPDPMetrics);
+  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingPDPMetrics);
+  bool region_launched =
+      base::FeatureList::IsEnabled(kShoppingPDPMetricsRegionLaunched) &&
+      IsEnabledForCountryAndLocale(country_on_startup_, locale_on_startup_);
+
+  return flag_enabled || region_launched;
 }
 
 bool ShoppingService::IsMerchantInfoApiEnabled() {
@@ -719,13 +729,22 @@ void ShoppingService::ScheduleSavedProductUpdate() {
 }
 
 bool ShoppingService::IsShoppingListEligible() {
-  return IsShoppingListEligible(account_checker_.get(), pref_service_);
+  return IsShoppingListEligible(account_checker_.get(), pref_service_,
+                                country_on_startup_, locale_on_startup_);
 }
 
 bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
-                                             PrefService* prefs) {
-  if (!base::FeatureList::IsEnabled(kShoppingList))
+                                             PrefService* prefs,
+                                             const std::string& country_code,
+                                             const std::string& locale) {
+  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
+  bool region_launched =
+      base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
+      IsEnabledForCountryAndLocale(country_code, locale);
+
+  if (!flag_enabled && !region_launched) {
     return false;
+  }
 
   if (!prefs || !IsShoppingListAllowedForEnterprise(prefs))
     return false;

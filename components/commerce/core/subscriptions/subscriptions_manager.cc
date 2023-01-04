@@ -156,8 +156,7 @@ void SubscriptionsManager::Unsubscribe(
 void SubscriptionsManager::SyncSubscriptions() {
   last_sync_succeeded_ = false;
   storage_->DeleteAll();
-  if (base::FeatureList::IsEnabled(commerce::kShoppingList) &&
-      account_checker_ && account_checker_->IsSignedIn() &&
+  if (account_checker_ && account_checker_->IsSignedIn() &&
       account_checker_->IsAnonymizedUrlDataCollectionEnabled()) {
     pending_requests_.emplace(
         SubscriptionType::kPriceTrack, AsyncOperation::kSync,

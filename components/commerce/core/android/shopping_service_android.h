@@ -73,6 +73,8 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                    const JavaParamRef<jstring>& j_id,
                    const JavaParamRef<jobject>& j_callback);
 
+  bool IsShoppingListEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
+
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:

@@ -230,7 +230,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   // This is a feature check for the "shopping list". This will only return true
   // if the user has the feature flag enabled, is signed-in, has MSBB enabled,
-  // has webapp activity enabled, and is allowed by enterprise policy.
+  // has webapp activity enabled, is allowed by enterprise policy, and (if
+  // applicable) in an eligible country and locale. The value returned by this
+  // method can change at runtime, so it should not be used when deciding
+  // whether to create critical, feature-related infrastructure.
   virtual bool IsShoppingListEligible();
 
   // Check whether a product (based on cluster ID) is explicitly price tracked
@@ -340,7 +343,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // whether the user is signed in. The value returned here can change during
   // runtime so it should not be used when deciding to build infrastructure.
   static bool IsShoppingListEligible(AccountChecker* account_checker,
-                                     PrefService* prefs);
+                                     PrefService* prefs,
+                                     const std::string& country_code,
+                                     const std::string& locale);
 
   void HandleOptGuideMerchantInfoResponse(
       const GURL& url,

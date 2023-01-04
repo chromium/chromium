@@ -231,4 +231,12 @@ ShoppingServiceAndroid::ConvertSubscriptionsToJavaList(
   return j_subs;
 }
 
+bool ShoppingServiceAndroid::IsShoppingListEligible(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  return shopping_service_->IsShoppingListEligible();
+}
+
 }  // namespace commerce

@@ -184,6 +184,21 @@ public class ShoppingService {
         mSubscriptionsObservers.removeObserver(observer);
     }
 
+    /**
+     * This is a feature check for the "shopping list". This will only return true if the user has
+     * the feature flag enabled, is signed-in, has MSBB enabled, has webapp activity enabled, is
+     * allowed by enterprise policy, and (if applicable) in an eligible country and locale. The
+     * value returned by this method can change at runtime, so it should not be used when deciding
+     * whether to create critical, feature-related infrastructure.
+     *
+     * @return Whether the user is eligible to use the shopping list feature.
+     */
+    public boolean isShoppingListEligible() {
+        if (mNativeShoppingServiceAndroid == 0) return false;
+
+        return ShoppingServiceJni.get().isShoppingListEligible(mNativeShoppingServiceAndroid, this);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
@@ -269,5 +284,6 @@ public class ShoppingService {
                 String seenCountry, Callback<Boolean> callback);
         void unsubscribe(long nativeShoppingServiceAndroid, ShoppingService caller, int type,
                 int idType, int managementType, String id, Callback<Boolean> callback);
+        boolean isShoppingListEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }
