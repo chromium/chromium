@@ -77,7 +77,8 @@
       "ffmpeg_branding": "Chrome",
       "fuchsia_additional_boot_images": [
         "//third_party/fuchsia-sdk/images-internal/astro-release/",
-        "//third_party/fuchsia-sdk/images-internal/sherlock-release/"
+        "//third_party/fuchsia-sdk/images-internal/sherlock-release/",
+        "//third_party/fuchsia-sdk/images-internal/nelson-release/"
       ],
       "is_chrome_branded": true,
       "is_official_build": true,
