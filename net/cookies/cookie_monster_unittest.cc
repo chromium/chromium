@@ -5602,6 +5602,10 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
   // method only considers partitioned cookies.
   EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),
               testing::Optional(false));
+
+  // Should return nullopt when the partition key is nullopt.
+  EXPECT_FALSE(
+      cm->SiteHasCookieInOtherPartition(site, /*partition_key=*/absl::nullopt));
 }
 
 // Tests which use this class verify the expiry date clamping behavior when
