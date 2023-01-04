@@ -3769,6 +3769,8 @@ enum WebFeature {
   kIDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
   kWindowOpenPopupOnMobile = 4429,
   kWindowOpenedAsPopupOnMobile = 4430,
+  kPrivateNetworkAccessIgnoredCrossOriginPreflightError = 4431,
+  kPrivateNetworkAccessIgnoredCrossSitePreflightError = 4432,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

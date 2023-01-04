@@ -164,6 +164,70 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ExpectHistogramIncreasedBy(0);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       PrivateNetworkAccessIgnoredCrossSitePreflightError) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  ASSERT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      content::JsReplace(
+                          "fetch($1).then(response => response.ok)",
+                          https_server().GetURL("b.com", "/cors-ok.txt"))));
+
+  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1);
+  CheckCounter(
+      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
+  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
+               1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTest,
+    PrivateNetworkAccessIgnoredCrossOriginSameSitePreflightError) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  ASSERT_EQ(true, content::EvalJs(web_contents(),
+                                  content::JsReplace(
+                                      "fetch($1).then(response => response.ok)",
+                                      https_server().GetURL("subdomain.a.com",
+                                                            "/cors-ok.txt"))));
+
+  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1);
+  CheckCounter(
+      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
+  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
+               0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       PrivateNetworkAccessIgnoredSameOriginPreflightError) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  ASSERT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      content::JsReplace(
+                          "fetch($1).then(response => response.ok)",
+                          https_server().GetURL("a.com", "/cors-ok.txt"))));
+
+  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1);
+  CheckCounter(
+      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 0);
+  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
+               0);
+}
+
 // Check the kCrossOriginOpenerPolicyReporting feature usage. COOP-Report-Only +
 // HTTP => 0 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,

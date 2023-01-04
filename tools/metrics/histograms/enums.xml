@@ -41732,6 +41732,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4428" label="IDNA2008DeviationCharacterInHostnameOfIFrame"/>
   <int value="4429" label="WindowOpenPopupOnMobile"/>
   <int value="4430" label="WindowOpenedAsPopupOnMobile"/>
+  <int value="4431"
+      label="PrivateNetworkAccessIgnoredCrossOriginPreflightError"/>
+  <int value="4432" label="PrivateNetworkAccessIgnoredCrossSitePreflightError"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
