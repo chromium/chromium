@@ -149,19 +149,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfFeature(features::kWebAssemblyBaseline, "--liftoff");
   SetV8FlagIfNotFeature(features::kWebAssemblyBaseline, "--no-liftoff");
 
-  SetV8FlagIfFeature(features::kWebAssemblyCodeProtection,
-                     "--wasm-write-protect-code-memory");
-  SetV8FlagIfNotFeature(features::kWebAssemblyCodeProtection,
-                        "--no-wasm-write-protect-code-memory");
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
-  SetV8FlagIfFeature(features::kWebAssemblyCodeProtectionPku,
-                     "--wasm-memory-protection-keys");
-  SetV8FlagIfNotFeature(features::kWebAssemblyCodeProtectionPku,
-                        "--no-wasm-memory-protection-keys");
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(ARCH_CPU_X86_64)
-
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
   SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
                      "--experimental-wasm-stack-switching");

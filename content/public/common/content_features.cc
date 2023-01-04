@@ -1269,21 +1269,6 @@ BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable memory protection for code JITed for WebAssembly.
-BASE_FEATURE(kWebAssemblyCodeProtection,
-             "WebAssemblyCodeProtection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
-// Use memory protection keys in userspace (PKU) (if available) to protect code
-// JITed for WebAssembly. Fall back to traditional memory protection if
-// WebAssemblyCodeProtection is also enabled.
-BASE_FEATURE(kWebAssemblyCodeProtectionPku,
-             "WebAssemblyCodeProtectionPku",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(ARCH_CPU_X86_64)
-
 // Enable WebAssembly stack switching.
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 BASE_FEATURE(kEnableExperimentalWebAssemblyStackSwitching,
