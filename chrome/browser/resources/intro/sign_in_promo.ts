@@ -11,6 +11,7 @@ import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {IntroBrowserProxy, IntroBrowserProxyImpl} from './browser_proxy.js';
@@ -66,8 +67,18 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
   static get properties() {
     return {
+      /**
+       * The list of benefits the user will get when signed in to Chrome
+       */
       benefitCards_: {
         type: Array,
+      },
+
+      shouldDisplayManagedDisclaimer_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getString('managedDeviceDisclaimer').length > 0;
+        },
       },
     };
   }
@@ -76,6 +87,7 @@ export class SignInPromoElement extends SignInPromoElementBase {
       IntroBrowserProxyImpl.getInstance();
   private benefitCards_: BenefitCard[];
   private divisionLineResizeObserver_: ResizeObserver|null = null;
+  private shouldDisplayManagedDisclaimer_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -16,6 +18,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/grit/chromium_strings.h"
@@ -43,6 +46,17 @@ void AddStrings(content::WebUIDataSource* html_source) {
 #endif
 }
 
+std::string GetEnterpriseDisclaimer(content::WebUI* web_ui) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  int managed_id = IDS_FRE_MANAGED_DESCRIPTION;
+  return chrome::ShouldDisplayManagedUi(Profile::FromWebUI(web_ui))
+             ? l10n_util::GetStringUTF8(managed_id)
+             : "";
+#else
+  return "";
+#endif
+}
+
 }  // namespace
 
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
@@ -57,6 +71,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       IDR_INTRO_INTRO_HTML);
 
   AddStrings(source);
+
+  source->AddString("managedDeviceDisclaimer", GetEnterpriseDisclaimer(web_ui));
 
   source->AddResourcePath("product-logo.svg", IDR_PRODUCT_LOGO_SVG);
   source->AddResourcePath("product-logo-animation.svg",

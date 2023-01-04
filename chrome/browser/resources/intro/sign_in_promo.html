@@ -12,8 +12,11 @@
     --card-title-font-size: 1.25em;
     --card-top-padding: 24px;
     --card-width: 188px;
+    --disclaimer-border-color: var(--google-grey-200);
+    --disclaimer-color: var(--google-grey-700);
     --gap-between-cards: 12px;
     --icon-color: var(--google-blue-600);
+    --icon-container-color: var(--google-grey-100);
     --left-background-image-url: url(left_illustration.svg);
     --product-logo-margin-top: 50px;
     --product-logo-size: 90px;
@@ -35,6 +38,9 @@
       --card-background-color: var(--google-grey-800);
       --card-description-color: white;
       --icon-color: var(--google-blue-300);
+      --icon-container-color: var(--google-grey-700);
+      --disclaimer-border-color: var(--google-grey-600);
+      --disclaimer-color: var(--google-grey-100);
       --left-background-image-url: url(left_illustration_dark.svg);
       --right-background-image-url: url(right_illustration_dark.svg);
       --scrollbar-background: var(--google-grey-800);
@@ -254,6 +260,43 @@
   #buttonContainer.division-line {
     border-top: var(--cr-separator-line);
   }
+
+  #managed-device-disclaimer {
+    align-items: center;
+    border: 1px solid var(--disclaimer-border-color);
+    border-radius: 8px;
+    color: var(--disclaimer-color);
+    display: inline-flex;
+    flex-direction: row;
+    margin-inline: auto;
+    margin-top: 32px;
+    max-width: 780px;
+    padding-block: 12px;
+    padding-inline-end: 18px;
+  }
+
+  #managed-device-disclaimer > p {
+    flex-grow: 1;
+    font-family: Roboto, Cantarell, Arial, sans-serif;
+    margin-block: 0;
+    text-align: start;
+  }
+
+  #icon-container {
+    --icon-container-size: 28px;
+    background-color: var(--icon-container-color);
+    border-radius: 50%;
+    height: var(--icon-container-size);
+    margin-inline: 16px;
+    width: var(--icon-container-size);
+  }
+
+  #icon-container iron-icon {
+    --iron-icon-width: 16px;
+    --iron-icon-height: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 </style>
 
 <img class="background-image" id="left-background-image">
@@ -273,6 +316,16 @@
         </div>
       </template>
     </div>
+    <template is="dom-if" if="[[shouldDisplayManagedDisclaimer_]]">
+      <div id="managed-device-disclaimer" class="fade-in">
+        <div id="icon-container">
+          <iron-icon icon="cr:domain"></iron-icon>
+        </div>
+        <p>
+        $i18n{managedDeviceDisclaimer}
+        </p>
+      </div>
+    </template>
   </div>
 </div>
 
