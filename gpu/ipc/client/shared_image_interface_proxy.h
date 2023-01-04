@@ -46,13 +46,14 @@ class SharedImageInterfaceProxy {
                             SkAlphaType alpha_type,
                             uint32_t usage,
                             gfx::GpuMemoryBufferHandle handle);
-  Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                            GpuMemoryBufferManager* gpu_memory_buffer_manager,
+  Mailbox CreateSharedImage(gfx::BufferFormat format,
                             gfx::BufferPlane plane,
+                            const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
-                            uint32_t usage);
+                            uint32_t usage,
+                            gfx::GpuMemoryBufferHandle buffer_handle);
 
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,

@@ -873,15 +873,14 @@ void GpuServiceImpl::CreateGpuMemoryBuffer(
 }
 
 void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                            int client_id,
-                                            const gpu::SyncToken& sync_token) {
+                                            int client_id) {
   if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::DestroyGpuMemoryBuffer,
-                                  weak_ptr_, id, client_id, sync_token));
+                                  weak_ptr_, id, client_id));
     return;
   }
-  gpu_channel_manager_->DestroyGpuMemoryBuffer(id, client_id, sync_token);
+  gpu_channel_manager_->DestroyGpuMemoryBuffer(id, client_id);
 }
 
 void GpuServiceImpl::CopyGpuMemoryBuffer(

@@ -23,8 +23,7 @@ interface GpuMemoryBufferFactory {
       => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
 
   // Tells the GPU process to destroy GPU memory buffer.
-  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
-                         gpu.mojom.SyncToken sync_token);
+  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id);
   // Copies GMB pixel data to |shared_memory|.
   // Returns |true| if the copy has succeeded.
   CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,

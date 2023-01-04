@@ -65,8 +65,7 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
       gfx::BufferUsage usage,
       mojom::GpuMemoryBufferFactory::CreateGpuMemoryBufferCallback callback)
       override;
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              const gpu::SyncToken& sync_token) override;
+  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id) override;
   void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
                            base::UnsafeSharedMemoryRegion shared_memory,
                            CopyGpuMemoryBufferCallback callback) override;

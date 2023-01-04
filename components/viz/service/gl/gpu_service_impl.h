@@ -195,8 +195,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                              gpu::SurfaceHandle surface_handle,
                              CreateGpuMemoryBufferCallback callback) override;
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id,
-                              const gpu::SyncToken& sync_token) override;
+                              int client_id) override;
   void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
                            base::UnsafeSharedMemoryRegion shared_memory,
                            CopyGpuMemoryBufferCallback callback) override;

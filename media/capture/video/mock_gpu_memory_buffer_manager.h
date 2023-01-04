@@ -31,10 +31,6 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
                    gpu::SurfaceHandle surface_handle,
                    base::WaitableEvent* shutdown_event));
 
-  MOCK_METHOD2(SetDestructionSyncToken,
-               void(gfx::GpuMemoryBuffer* buffer,
-                    const gpu::SyncToken& sync_token));
-
   MOCK_METHOD3(CopyGpuMemoryBufferAsync,
                void(gfx::GpuMemoryBufferHandle buffer_handle,
                     base::UnsafeSharedMemoryRegion memory_region,

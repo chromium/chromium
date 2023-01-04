@@ -199,25 +199,21 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gfx::BufferFormat format,
     gfx::BufferPlane plane,
+    const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
-  DCHECK(gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP ||
-         gpu_memory_buffer->GetType() == gfx::ANDROID_HARDWARE_BUFFER ||
-         gpu_memory_buffer->GetType() == gfx::DXGI_SHARED_HANDLE ||
-         gpu_memory_buffer_manager);
-
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle buffer_handle) {
   auto mailbox = Mailbox::GenerateForSharedImage();
 
   auto params = mojom::CreateGMBSharedImageParams::New();
   params->mailbox = mailbox;
-  params->buffer_handle = gpu_memory_buffer->CloneHandle();
-  params->size = gpu_memory_buffer->GetSize();
-  params->format = gpu_memory_buffer->GetFormat();
+  params->buffer_handle = std::move(buffer_handle);
+  params->size = size;
+  params->format = format;
   params->plane = plane;
   params->color_space = color_space;
   params->usage = usage;
@@ -228,28 +224,16 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(params->size,
                                                        params->format));
 
-  bool requires_sync_token =
-      params->buffer_handle.type == gfx::IO_SURFACE_BUFFER;
-  {
-    base::AutoLock lock(lock_);
-    params->release_id = ++next_release_id_;
-    // Note: we enqueue and send the IPC under the lock to guarantee
-    // monotonicity of the release ids as seen by the service.
-    last_flush_id_ = host_->EnqueueDeferredMessage(
-        mojom::DeferredRequestParams::NewSharedImageRequest(
-            mojom::DeferredSharedImageRequest::NewCreateGmbSharedImage(
-                std::move(params))));
-    host_->EnsureFlush(last_flush_id_);
-  }
-  if (requires_sync_token) {
-    DCHECK(gpu_memory_buffer_manager);
-
-    gpu::SyncToken sync_token = GenVerifiedSyncToken();
-    gpu_memory_buffer_manager->SetDestructionSyncToken(gpu_memory_buffer,
-                                                       sync_token);
-  }
-
   base::AutoLock lock(lock_);
+  params->release_id = ++next_release_id_;
+  // Note: we enqueue and send the IPC under the lock to guarantee
+  // monotonicity of the release ids as seen by the service.
+  last_flush_id_ = host_->EnqueueDeferredMessage(
+      mojom::DeferredRequestParams::NewSharedImageRequest(
+          mojom::DeferredSharedImageRequest::NewCreateGmbSharedImage(
+              std::move(params))));
+  host_->EnsureFlush(last_flush_id_);
+
   AddMailbox(mailbox, usage);
   return mailbox;
 }

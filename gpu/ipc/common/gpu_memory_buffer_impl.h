@@ -19,7 +19,7 @@ namespace gpu {
 // TODO(reveman): Rename to GpuMemoryBufferBase.
 class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
-  using DestructionCallback = base::OnceCallback<void(const gpu::SyncToken&)>;
+  using DestructionCallback = base::OnceCallback<void()>;
 
   GpuMemoryBufferImpl(const GpuMemoryBufferImpl&) = delete;
   GpuMemoryBufferImpl& operator=(const GpuMemoryBufferImpl&) = delete;
@@ -36,10 +36,6 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
       uint64_t tracing_process_id,
       int importance) const override;
 
-  void set_destruction_sync_token(const gpu::SyncToken& sync_token) {
-    destruction_sync_token_ = sync_token;
-  }
-
  protected:
   GpuMemoryBufferImpl(gfx::GpuMemoryBufferId id,
                       const gfx::Size& size,
@@ -52,7 +48,6 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   const gfx::Size size_;
   const gfx::BufferFormat format_;
   DestructionCallback callback_;
-  gpu::SyncToken destruction_sync_token_;
 
   // Note: This lock must be held throughout the entirety of the Map() and
   // Unmap() operations to avoid corrupt mutation across multiple threads.

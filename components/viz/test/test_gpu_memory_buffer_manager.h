@@ -41,8 +41,6 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event) override;
-  void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
-                               const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,

@@ -23,7 +23,7 @@ GpuMemoryBufferImpl::~GpuMemoryBufferImpl() {
   }
 #endif
   if (!callback_.is_null())
-    std::move(callback_).Run(destruction_sync_token_);
+    std::move(callback_).Run();
 }
 
 gfx::Size GpuMemoryBufferImpl::GetSize() const {

@@ -194,10 +194,6 @@ TestGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   return result;
 }
 
-void TestGpuMemoryBufferManager::SetDestructionSyncToken(
-    gfx::GpuMemoryBuffer* buffer,
-    const gpu::SyncToken& sync_token) {}
-
 void TestGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,

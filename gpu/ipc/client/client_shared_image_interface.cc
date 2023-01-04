@@ -130,8 +130,9 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     uint32_t usage) {
   DCHECK(gpu::IsValidClientUsage(usage));
   return AddMailbox(proxy_->CreateSharedImage(
-      gpu_memory_buffer, gpu_memory_buffer_manager, plane, color_space,
-      surface_origin, alpha_type, usage));
+      gpu_memory_buffer->GetFormat(), plane, gpu_memory_buffer->GetSize(),
+      color_space, surface_origin, alpha_type, usage,
+      gpu_memory_buffer->CloneHandle()));
 }
 
 #if BUILDFLAG(IS_WIN)

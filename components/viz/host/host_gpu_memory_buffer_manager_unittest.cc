@@ -174,8 +174,7 @@ class TestGpuService : public mojom::GpuService {
   }
 
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id,
-                              const gpu::SyncToken& sync_token) override {
+                              int client_id) override {
     destruction_requests_.push_back({id, client_id});
   }
 

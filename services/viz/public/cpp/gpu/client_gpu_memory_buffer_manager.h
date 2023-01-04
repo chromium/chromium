@@ -56,8 +56,7 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::GpuMemoryBufferHandle* ret_handle,
       base::WaitableEvent* wait,
       gfx::GpuMemoryBufferHandle handle);
-  void DeletedGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              const gpu::SyncToken& sync_token);
+  void DeletedGpuMemoryBuffer(gfx::GpuMemoryBufferId id);
 
   // Overridden from gpu::GpuMemoryBufferManager:
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
@@ -66,8 +65,6 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event) override;
-  void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
-                               const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,

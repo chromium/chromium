@@ -258,12 +258,10 @@ void GpuClient::CreateGpuMemoryBuffer(
                      weak_factory_.GetWeakPtr(), id));
 }
 
-void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                       const gpu::SyncToken& sync_token) {
+void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id) {
   if (auto* gpu_memory_buffer_manager =
           delegate_->GetGpuMemoryBufferManager()) {
-    gpu_memory_buffer_manager->DestroyGpuMemoryBuffer(id, client_id_,
-                                                      sync_token);
+    gpu_memory_buffer_manager->DestroyGpuMemoryBuffer(id, client_id_);
   }
 }
 

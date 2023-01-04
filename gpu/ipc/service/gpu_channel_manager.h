@@ -58,7 +58,6 @@ namespace gpu {
 
 class SharedImageManager;
 struct GpuPreferences;
-struct SyncToken;
 class GpuChannel;
 class GpuChannelManagerDelegate;
 class GpuMemoryAblationExperiment;
@@ -130,9 +129,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   void PopulateCache(const gpu::GpuDiskCacheHandle& handle,
                      const std::string& key,
                      const std::string& program);
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id,
-                              const SyncToken& sync_token);
+  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
 #if BUILDFLAG(IS_ANDROID)
   void WakeUpGpu();
 #endif
@@ -310,8 +307,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     std::unique_ptr<GpuMemoryAblationExperiment> ablation_experiment_;
     base::WeakPtrFactory<GpuPeakMemoryMonitor> weak_factory_;
   };
-
-  void InternalDestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
 
 #if BUILDFLAG(IS_ANDROID)
   void ScheduleWakeUpGpu();

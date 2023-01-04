@@ -55,8 +55,6 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event) override;
-  void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
-                               const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
@@ -71,8 +69,6 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
 
  private:
   // Provided as callback when a GpuMemoryBuffer should be destroyed.
-  void ShouldDestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                    const gpu::SyncToken& sync_token);
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id);
 
   gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;

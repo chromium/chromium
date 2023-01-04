@@ -137,8 +137,7 @@ interface GpuService {
       => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
 
   DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
-                         int32 client_id,
-                         gpu.mojom.SyncToken sync_token);
+                         int32 client_id);
 
   // Copies GMB pixel data to |shared_memory|.
   // Returns |true| if the copy has succeeded.

@@ -68,9 +68,7 @@ class GpuMemoryBufferImplTest : public testing::Test {
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 
-  void FreeGpuMemoryBuffer(base::OnceClosure free_callback,
-                           bool* destroyed,
-                           const gpu::SyncToken& sync_token) {
+  void FreeGpuMemoryBuffer(base::OnceClosure free_callback, bool* destroyed) {
     std::move(free_callback).Run();
     if (destroyed)
       *destroyed = true;
@@ -387,14 +385,14 @@ TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
   for (auto format : gfx::GetBufferFormatsForTesting()) {
     if (!TestFixture::gpu_memory_buffer_support()
              ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
-                                               usage))
+                                               usage)) {
       continue;
+    }
     bool destroyed = false;
     std::unique_ptr<TypeParam> buffer(TypeParam::Create(
         kBufferId, kBufferSize, format, usage,
-        base::BindOnce(
-            [](bool* destroyed, const gpu::SyncToken&) { *destroyed = true; },
-            base::Unretained(&destroyed))));
+        base::BindOnce([](bool* destroyed) { *destroyed = true; },
+                       base::Unretained(&destroyed))));
     ASSERT_TRUE(buffer);
     EXPECT_EQ(buffer->GetFormat(), format);
 

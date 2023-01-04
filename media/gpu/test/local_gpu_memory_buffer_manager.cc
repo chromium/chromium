@@ -278,10 +278,6 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   return std::make_unique<GpuMemoryBufferImplGbm>(format, buffer_object);
 }
 
-void LocalGpuMemoryBufferManager::SetDestructionSyncToken(
-    gfx::GpuMemoryBuffer* buffer,
-    const gpu::SyncToken& sync_token) {}
-
 void LocalGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,

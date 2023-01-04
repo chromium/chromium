@@ -72,9 +72,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // on requests. Must be called from UI thread.
   void Shutdown();
 
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id,
-                              const gpu::SyncToken& sync_token);
+  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
 
   void DestroyAllGpuMemoryBufferForClient(int client_id);
 
@@ -98,8 +96,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event) override;
-  void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
-                               const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
