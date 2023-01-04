@@ -103,7 +103,6 @@ class BluetoothLowEnergyWrapperFake : public BluetoothLowEnergyWrapper {
   BluetoothLowEnergyWrapperFake();
   ~BluetoothLowEnergyWrapperFake() override;
 
-  bool IsBluetoothLowEnergySupported() override;
   bool EnumerateKnownBluetoothLowEnergyDevices(
       std::vector<std::unique_ptr<BluetoothLowEnergyDeviceInfo>>* devices,
       std::string* error) override;

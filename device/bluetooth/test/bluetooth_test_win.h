@@ -180,7 +180,6 @@ class BluetoothTestWinrt
   void SimulateSpuriousRadioStateChangedEvent();
 
   // BluetoothTestBase:
-  bool PlatformSupportsLowEnergy() override;
   void InitWithDefaultAdapter() override;
   void InitWithoutDefaultAdapter() override;
   void InitWithFakeAdapter() override;

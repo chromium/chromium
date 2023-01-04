@@ -110,9 +110,9 @@ struct DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceInfo {
   std::string id;
   absl::optional<std::string> friendly_name;
   BLUETOOTH_ADDRESS address;
-  bool visible;
-  bool authenticated;
-  bool connected;
+  bool visible = false;
+  bool authenticated = false;
+  bool connected = false;
 };
 
 bool DEVICE_BLUETOOTH_EXPORT
@@ -127,9 +127,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyWrapper {
  public:
   BluetoothLowEnergyWrapper();
   virtual ~BluetoothLowEnergyWrapper();
-
-  // Returns true only on Windows platforms supporting Bluetooth Low Energy.
-  virtual bool IsBluetoothLowEnergySupported();
 
   // Enumerates the list of known (i.e. already paired) Bluetooth LE devices on
   // this machine. In case of error, returns false and sets |error| with an

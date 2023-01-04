@@ -7,13 +7,14 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "base/win/windows_version.h"
 
 namespace device {
 
@@ -40,6 +41,9 @@ static const LPCSTR kXInputGetStateExOrdinal = (LPCSTR)100;
 
 // Bitmask for the Guide button in XInputGamepadEx.wButtons.
 static const int kXInputGamepadGuide = 0x0400;
+
+constexpr base::FilePath::CharType kXInputDllFileName[] =
+    FILE_PATH_LITERAL("xinput1_4.dll");
 
 float NormalizeXInputAxis(SHORT value) {
   return ((value + 32768.f) / 32767.5f) - 1.f;
@@ -72,17 +76,6 @@ const wchar_t* GamepadSubTypeName(BYTE sub_type) {
   }
 }
 
-const base::FilePath::CharType* XInputDllFileName() {
-  // Xinput.h defines filename (XINPUT_DLL) on different Windows versions, but
-  // Xinput.h specifies it in build time. Approach here uses the same values
-  // and it is resolving dll filename based on Windows version it is running on.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    // For Windows 8+, XINPUT_DLL is xinput1_4.dll.
-    return FILE_PATH_LITERAL("xinput1_4.dll");
-  }
-  return FILE_PATH_LITERAL("xinput9_1_0.dll");
-}
-
 }  // namespace
 
 XInputDataFetcherWin::XInputDataFetcherWin() : xinput_available_(false) {}
@@ -99,7 +92,7 @@ GamepadSource XInputDataFetcherWin::source() {
 }
 
 void XInputDataFetcherWin::OnAddedToProvider() {
-  xinput_dll_ = base::ScopedNativeLibrary(base::FilePath(XInputDllFileName()));
+  xinput_dll_ = base::ScopedNativeLibrary(base::FilePath(kXInputDllFileName));
   xinput_available_ = GetXInputDllFunctions();
 }
 
@@ -409,7 +402,7 @@ bool XInputDataFetcherWin::GetXInputDllFunctionsForWgiDataFetcher() {
 }
 
 void XInputDataFetcherWin::InitializeForWgiDataFetcher() {
-  xinput_dll_ = base::ScopedNativeLibrary(base::FilePath(XInputDllFileName()));
+  xinput_dll_ = base::ScopedNativeLibrary(base::FilePath(kXInputDllFileName));
   xinput_available_ = GetXInputDllFunctionsForWgiDataFetcher();
 }
 

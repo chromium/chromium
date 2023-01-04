@@ -136,9 +136,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   base::OnceClosure init_callback_;
   std::string address_;
   std::string name_;
-  bool initialized_;
-  bool powered_;
-  DiscoveryStatus discovery_status_;
+  bool initialized_ = false;
+  bool powered_ = false;
+  DiscoveryStatus discovery_status_ = NOT_DISCOVERING;
   std::unordered_set<std::string> discovered_devices_;
 
   DiscoverySessionResultCallback discovery_changed_callback_;
@@ -149,7 +149,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   base::ThreadChecker thread_checker_;
 
   // Flag indicating a device update must be forced in DevicesPolled.
-  bool force_update_device_for_test_;
+  bool force_update_device_for_test_ = false;
 
   // NOTE: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

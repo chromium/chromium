@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/mac/mac_util.h"
 #endif
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "device/bluetooth/bluetooth_adapter_win.h"
 #endif
 
@@ -56,13 +56,8 @@ bool BluetoothAdapterFactory::IsLowEnergySupported() {
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return true;
-#elif BUILDFLAG(IS_WIN)
-  // Windows 8 supports Low Energy GATT operations but it does not support
-  // scanning, initiating connections and GATT Server. To keep the API
-  // consistent we consider Windows 8 as lacking Low Energy support.
-  return base::win::GetVersion() >= base::win::Version::WIN10;
 #else
   return false;
 #endif
@@ -92,12 +87,6 @@ void BluetoothAdapterFactory::GetAdapter(AdapterCallback callback) {
 void BluetoothAdapterFactory::GetClassicAdapter(AdapterCallback callback) {
 #if BUILDFLAG(IS_WIN)
   DCHECK(IsBluetoothSupported());
-
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    // Prior to Win10, the default adapter will support Bluetooth classic.
-    GetAdapter(std::move(callback));
-    return;
-  }
 
   if (!classic_adapter_) {
     classic_adapter_callbacks_.push_back(std::move(callback));

@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_low_energy_win.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/files/file.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -24,8 +24,6 @@ using device::win::DevicePropertyValue;
 using device::win::BluetoothLowEnergyDeviceInfo;
 using device::win::BluetoothLowEnergyServiceInfo;
 
-const char kPlatformNotSupported[] =
-    "Bluetooth Low energy is only supported on Windows 8 and later.";
 const char kDeviceEnumError[] = "Error enumerating Bluetooth LE devices.";
 const char kDeviceInfoError[] =
     "Error retrieving Bluetooth LE device information.";
@@ -619,8 +617,7 @@ DevicePropertyValue::DevicePropertyValue(DEVPROPTYPE property_type,
       value_(std::move(value)),
       value_size_(value_size) {}
 
-DevicePropertyValue::~DevicePropertyValue() {
-}
+DevicePropertyValue::~DevicePropertyValue() = default;
 
 uint32_t DevicePropertyValue::AsUint32() const {
   CHECK_EQ(property_type_, static_cast<DEVPROPTYPE>(DEVPROP_TYPE_UINT32));
@@ -628,14 +625,11 @@ uint32_t DevicePropertyValue::AsUint32() const {
   return *reinterpret_cast<uint32_t*>(value_.get());
 }
 
-BluetoothLowEnergyServiceInfo::BluetoothLowEnergyServiceInfo() {
-}
+BluetoothLowEnergyServiceInfo::BluetoothLowEnergyServiceInfo() = default;
 
-BluetoothLowEnergyServiceInfo::~BluetoothLowEnergyServiceInfo() {
-}
+BluetoothLowEnergyServiceInfo::~BluetoothLowEnergyServiceInfo() = default;
 
-BluetoothLowEnergyDeviceInfo::BluetoothLowEnergyDeviceInfo()
-    : visible(false), authenticated(false), connected(false) {
+BluetoothLowEnergyDeviceInfo::BluetoothLowEnergyDeviceInfo() {
   address.ullLong = BLUETOOTH_NULL_ADDRESS;
 }
 
@@ -649,21 +643,12 @@ bool ExtractBluetoothAddressFromDeviceInstanceIdForTesting(
   return ExtractBluetoothAddressFromDeviceInstanceId(instance_id, btha, error);
 }
 
-BluetoothLowEnergyWrapper::BluetoothLowEnergyWrapper() {}
-BluetoothLowEnergyWrapper::~BluetoothLowEnergyWrapper() {}
-
-bool BluetoothLowEnergyWrapper::IsBluetoothLowEnergySupported() {
-  return base::win::GetVersion() >= base::win::Version::WIN8;
-}
+BluetoothLowEnergyWrapper::BluetoothLowEnergyWrapper() = default;
+BluetoothLowEnergyWrapper::~BluetoothLowEnergyWrapper() = default;
 
 bool BluetoothLowEnergyWrapper::EnumerateKnownBluetoothLowEnergyDevices(
     std::vector<std::unique_ptr<BluetoothLowEnergyDeviceInfo>>* devices,
     std::string* error) {
-  if (!IsBluetoothLowEnergySupported()) {
-    *error = kPlatformNotSupported;
-    return false;
-  }
-
   return EnumerateKnownBLEOrBLEGattServiceDevices(
       GUID_BLUETOOTHLE_DEVICE_INTERFACE, devices, error);
 }
@@ -672,11 +657,6 @@ bool BluetoothLowEnergyWrapper::
     EnumerateKnownBluetoothLowEnergyGattServiceDevices(
         std::vector<std::unique_ptr<BluetoothLowEnergyDeviceInfo>>* devices,
         std::string* error) {
-  if (!IsBluetoothLowEnergySupported()) {
-    *error = kPlatformNotSupported;
-    return false;
-  }
-
   return EnumerateKnownBLEOrBLEGattServiceDevices(
       GUID_BLUETOOTH_GATT_SERVICE_DEVICE_INTERFACE, devices, error);
 }
@@ -685,11 +665,6 @@ bool BluetoothLowEnergyWrapper::EnumerateKnownBluetoothLowEnergyServices(
     const base::FilePath& device_path,
     std::vector<std::unique_ptr<BluetoothLowEnergyServiceInfo>>* services,
     std::string* error) {
-  if (!IsBluetoothLowEnergySupported()) {
-    *error = kPlatformNotSupported;
-    return false;
-  }
-
   return CollectBluetoothLowEnergyDeviceServices(device_path, services, error);
 }
 

@@ -23,7 +23,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/win/scoped_hstring.h"
-#include "base/win/windows_version.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/gamepad_provider.h"
@@ -158,13 +157,6 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
  public:
   WgiDataFetcherWinTest() = default;
   ~WgiDataFetcherWinTest() override = default;
-
-  void SetUp() override {
-    // Windows.Gaming.Input is available in Windows 10.0.10240.0 and later.
-    if (base::win::GetVersion() < base::win::Version::WIN10)
-      GTEST_SKIP();
-    DeviceServiceTestBase::SetUp();
-  }
 
   void SetUpXInputEnv(WgiTestErrorCode error_code) {
     // Resetting MockXInputGetStateExFunc static variable state.

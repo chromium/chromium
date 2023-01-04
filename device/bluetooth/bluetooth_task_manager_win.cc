@@ -562,10 +562,6 @@ bool BluetoothTaskManagerWin::SearchClassicDevices(
 
 bool BluetoothTaskManagerWin::SearchLowEnergyDevices(
     std::vector<std::unique_ptr<DeviceState>>* device_list) {
-  if (!le_wrapper_->IsBluetoothLowEnergySupported()) {
-    return true;  // Bluetooth LE not supported is not an error.
-  }
-
   std::vector<std::unique_ptr<win::BluetoothLowEnergyDeviceInfo>> btle_devices;
   std::string error;
   bool success = le_wrapper_->EnumerateKnownBluetoothLowEnergyDevices(
@@ -722,10 +718,6 @@ int BluetoothTaskManagerWin::DiscoverClassicDeviceServicesWorker(
 bool BluetoothTaskManagerWin::DiscoverLowEnergyDeviceServices(
     const base::FilePath& device_path,
     std::vector<std::unique_ptr<ServiceRecordState>>* service_record_states) {
-  if (!le_wrapper_->IsBluetoothLowEnergySupported()) {
-    return true;  // Bluetooth LE not supported is not an error.
-  }
-
   std::string error;
   std::vector<std::unique_ptr<win::BluetoothLowEnergyServiceInfo>> services;
   bool success = le_wrapper_->EnumerateKnownBluetoothLowEnergyServices(

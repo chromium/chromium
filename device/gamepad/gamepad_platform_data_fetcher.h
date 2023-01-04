@@ -18,7 +18,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "device/gamepad/gamepad_platform_data_fetcher_android.h"
 #elif BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "device/gamepad/nintendo_data_fetcher.h"
 #include "device/gamepad/raw_input_data_fetcher_win.h"
 #include "device/gamepad/wgi_data_fetcher_win.h"
@@ -44,8 +43,7 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
 
   // Windows.Gaming.Input is available in Windows 10.0.10240.0 and later.
   if (base::FeatureList::IsEnabled(
-          features::kEnableWindowsGamingInputDataFetcher) &&
-      base::win::GetVersion() >= base::win::Version::WIN10) {
+          features::kEnableWindowsGamingInputDataFetcher)) {
     manager->AddFactory(new WgiDataFetcherWin::Factory());
   } else {
     manager->AddFactory(new XInputDataFetcherWin::Factory());

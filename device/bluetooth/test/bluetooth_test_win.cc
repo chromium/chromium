@@ -55,10 +55,7 @@
 // Note: As UWP does not provide int specializations for IObservableVector and
 // VectorChangedEventHandler we need to supply our own. UUIDs were generated
 // using `uuidgen`.
-namespace ABI {
-namespace Windows {
-namespace Foundation {
-namespace Collections {
+namespace ABI::Windows::Foundation::Collections {
 
 template <>
 struct __declspec(uuid("2736c37e-4218-496f-a46a-92d5d9e610a9"))
@@ -68,10 +65,7 @@ template <>
 struct __declspec(uuid("94844fba-ddf9-475c-be6e-ebb87039cef6"))
     VectorChangedEventHandler<GUID> : VectorChangedEventHandler_impl<GUID> {};
 
-}  // namespace Collections
-}  // namespace Foundation
-}  // namespace Windows
-}  // namespace ABI
+}  // namespace ABI::Windows::Foundation::Collections
 
 namespace device {
 
@@ -262,8 +256,6 @@ BluetoothTestWin::BluetoothTestWin()
 BluetoothTestWin::~BluetoothTestWin() {}
 
 bool BluetoothTestWin::PlatformSupportsLowEnergy() {
-  if (fake_bt_le_wrapper_)
-    return fake_bt_le_wrapper_->IsBluetoothLowEnergySupported();
   return true;
 }
 
@@ -693,9 +685,7 @@ BluetoothTestWinrt::BluetoothTestWinrt() {
   std::vector<base::test::FeatureRef> disabled;
   if (GetParam().new_ble_implementation_enabled) {
     enabled.push_back(kNewBLEWinImplementation);
-    if (base::win::GetVersion() >= base::win::Version::WIN10) {
-      scoped_winrt_initializer_.emplace();
-    }
+    scoped_winrt_initializer_.emplace();
   } else {
     disabled.push_back(kNewBLEWinImplementation);
   }
@@ -714,12 +704,6 @@ BluetoothTestWinrt::~BluetoothTestWinrt() {
   // The callbacks run by |notify_sessions_| may end up calling back into
   // |this|, so run them early to prevent a use-after-free.
   notify_sessions_.clear();
-}
-
-bool BluetoothTestWinrt::PlatformSupportsLowEnergy() {
-  return UsesNewBleImplementation()
-             ? base::win::GetVersion() >= base::win::Version::WIN10
-             : BluetoothTestWin::PlatformSupportsLowEnergy();
 }
 
 bool BluetoothTestWinrt::UsesNewBleImplementation() const {
@@ -848,8 +832,9 @@ void BluetoothTestWinrt::SimulateAdapterPoweredOff() {
 
 BluetoothDevice* BluetoothTestWinrt::SimulateLowEnergyDevice(
     int device_ordinal) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateLowEnergyDevice(device_ordinal);
+  }
 
   LowEnergyDeviceData data = GetLowEnergyDeviceData(device_ordinal);
   static_cast<TestBluetoothAdapterWinrt*>(adapter_.get())
@@ -926,8 +911,9 @@ void BluetoothTestWinrt::SimulateAdvertisementError(
 }
 
 void BluetoothTestWinrt::SimulateGattConnection(BluetoothDevice* device) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattConnection(device);
+  }
 
   // Spin the message loop to make sure a device instance was obtained.
   base::RunLoop().RunUntilIdle();
@@ -948,8 +934,9 @@ void BluetoothTestWinrt::SimulateGattConnection(BluetoothDevice* device) {
 
 void BluetoothTestWinrt::SimulateGattNameChange(BluetoothDevice* device,
                                                 const std::string& new_name) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattNameChange(device, new_name);
+  }
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
@@ -959,8 +946,9 @@ void BluetoothTestWinrt::SimulateGattNameChange(BluetoothDevice* device,
 
 void BluetoothTestWinrt::SimulateStatusChangeToDisconnect(
     BluetoothDevice* device) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateStatusChangeToDisconnect(device);
+  }
   // Spin the message loop to make sure a device instance was obtained.
   base::RunLoop().RunUntilIdle();
   auto* const ble_device =
@@ -1012,9 +1000,10 @@ void BluetoothTestWinrt::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
     const std::vector<std::string>& uuids,
     const std::vector<std::string>& blocked_uuids) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattServicesDiscovered(device, uuids,
                                                             blocked_uuids);
+  }
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
@@ -1023,8 +1012,9 @@ void BluetoothTestWinrt::SimulateGattServicesDiscovered(
 }
 
 void BluetoothTestWinrt::SimulateGattServicesChanged(BluetoothDevice* device) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattServicesChanged(device);
+  }
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
@@ -1034,8 +1024,9 @@ void BluetoothTestWinrt::SimulateGattServicesChanged(BluetoothDevice* device) {
 
 void BluetoothTestWinrt::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattServiceRemoved(service);
+  }
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(service->GetDevice())
@@ -1046,8 +1037,9 @@ void BluetoothTestWinrt::SimulateGattServiceRemoved(
 
 void BluetoothTestWinrt::SimulateGattServicesDiscoveryError(
     BluetoothDevice* device) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattServicesDiscoveryError(device);
+  }
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
@@ -1059,9 +1051,10 @@ void BluetoothTestWinrt::SimulateGattCharacteristic(
     BluetoothRemoteGattService* service,
     const std::string& uuid,
     int properties) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattCharacteristic(service, uuid,
                                                         properties);
+  }
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(service->GetDevice())
@@ -1072,8 +1065,9 @@ void BluetoothTestWinrt::SimulateGattCharacteristic(
 
 void BluetoothTestWinrt::SimulateGattNotifySessionStarted(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattNotifySessionStarted(characteristic);
+  }
 
   static_cast<FakeGattCharacteristicWinrt*>(
       static_cast<BluetoothRemoteGattCharacteristicWinrt*>(characteristic)
@@ -1084,7 +1078,7 @@ void BluetoothTestWinrt::SimulateGattNotifySessionStarted(
 void BluetoothTestWinrt::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattNotifySessionStartError(characteristic,
                                                                  error_code);
   }
@@ -1115,7 +1109,7 @@ void BluetoothTestWinrt::SimulateGattNotifySessionStopError(
 void BluetoothTestWinrt::SimulateGattCharacteristicChanged(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattCharacteristicChanged(characteristic,
                                                                value);
   }
@@ -1129,7 +1123,7 @@ void BluetoothTestWinrt::SimulateGattCharacteristicChanged(
 void BluetoothTestWinrt::SimulateGattCharacteristicRead(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattCharacteristicRead(characteristic,
                                                             value);
   }
@@ -1143,7 +1137,7 @@ void BluetoothTestWinrt::SimulateGattCharacteristicRead(
 void BluetoothTestWinrt::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattCharacteristicReadError(characteristic,
                                                                  error_code);
   }
@@ -1156,8 +1150,9 @@ void BluetoothTestWinrt::SimulateGattCharacteristicReadError(
 
 void BluetoothTestWinrt::SimulateGattCharacteristicWrite(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattCharacteristicWrite(characteristic);
+  }
 
   static_cast<FakeGattCharacteristicWinrt*>(
       static_cast<BluetoothRemoteGattCharacteristicWinrt*>(characteristic)
@@ -1168,7 +1163,7 @@ void BluetoothTestWinrt::SimulateGattCharacteristicWrite(
 void BluetoothTestWinrt::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattCharacteristicWriteError(
         characteristic, error_code);
   }
@@ -1182,8 +1177,9 @@ void BluetoothTestWinrt::SimulateGattCharacteristicWriteError(
 void BluetoothTestWinrt::SimulateGattDescriptor(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::string& uuid) {
-  if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
+  if (!UsesNewBleImplementation()) {
     return BluetoothTestWin::SimulateGattDescriptor(characteristic, uuid);
+  }
 
   auto* const ble_device = static_cast<TestBluetoothDeviceWinrt*>(
                                characteristic->GetService()->GetDevice())
@@ -1228,9 +1224,8 @@ void BluetoothTestWinrt::SimulateGattDescriptorWriteError(
 }
 
 void BluetoothTestWinrt::DeleteDevice(BluetoothDevice* device) {
-  (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
-      ? BluetoothTestWin::DeleteDevice(device)
-      : BluetoothTestBase::DeleteDevice(device);
+  (!UsesNewBleImplementation()) ? BluetoothTestWin::DeleteDevice(device)
+                                : BluetoothTestBase::DeleteDevice(device);
 }
 
 void BluetoothTestWinrt::OnFakeBluetoothDeviceConnectGattAttempt() {
