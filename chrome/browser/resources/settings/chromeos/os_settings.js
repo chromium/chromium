@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
 import '../prefs/prefs.js';
 import './device_page/audio.js';
 import './device_page/cros_audio_config.js';
