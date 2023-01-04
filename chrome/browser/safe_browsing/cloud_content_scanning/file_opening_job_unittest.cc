@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "content/public/test/browser_task_environment.h"
@@ -100,7 +101,13 @@ TEST_F(FileOpeningJobTest, MultiFiles) {
   EXPECT_EQ(100, on_got_file_data_count_);
 }
 
-TEST_F(FileOpeningJobTest, MaxThreadsFlag) {
+// Disabled due to flakiness on Mac https://crbug.com/1403810
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MaxThreadsFlag DISABLED_MaxThreadsFlag
+#else
+#define MAYBE_MaxThreadsFlag MaxThreadsFlag
+#endif
+TEST_F(FileOpeningJobTest, MAYBE_MaxThreadsFlag) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   base::RunLoop run_loop;
