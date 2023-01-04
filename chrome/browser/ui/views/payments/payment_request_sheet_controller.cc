@@ -534,12 +534,8 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
 }
 
 views::View* PaymentRequestSheetController::GetFirstFocusedView() {
-  if (primary_button_ && primary_button_->GetEnabled())
-    return primary_button_;
-
-  if (secondary_button_)
-    return secondary_button_;
-
+  // Do not focus either of the buttons, per guidelines in
+  // docs/security/security-considerations-for-browser-ui.md
   DCHECK(content_view_);
   return content_view_;
 }
