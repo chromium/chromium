@@ -119,6 +119,9 @@ export class EmojiPicker extends PolymerElement {
         events.EMOJI_CLEAR_RECENTS_CLICK,
         (ev: events.EmojiClearRecentClickEvent) => this.clearRecentEmoji(ev));
     // variant popup related handlers
+    this.addEventListener(
+        events.EMOJI_VARIANTS_SHOWN,
+        (ev: events.EmojiVariantsShownEvent) => this.onShowEmojiVariants(ev));
     this.addEventListener('click', () => this.hideDialogs());
     this.addEventListener(
         events.CATEGORY_BUTTON_CLICK,
@@ -852,6 +855,66 @@ export class EmojiPicker extends PolymerElement {
                             // ! is safe as categories history must contain
                             // entries for all categories.
                             this.categoriesHistory[category]!.data.preference;
+  }
+
+  onShowEmojiVariants(ev: events.EmojiVariantsShownEvent) {
+    // Hide the currently shown emoji variants if the new one belongs
+    // to a different emoji group.
+    if (this.activeVariant && ev.detail.owner !== this.activeVariant) {
+      this.hideEmojiVariants();
+    }
+
+    this.activeVariant = ev.detail.owner as EmojiGroupComponent;
+
+    // Updates the UI if a variant is shown.
+    if (ev.detail.variants) {
+      const message = this.getMessage();
+      if (message) {
+        message.textContent = ev.detail.baseEmoji + ' variants shown.';
+      }
+      this.positionEmojiVariants(ev.detail.variants);
+    }
+  }
+
+  positionEmojiVariants(variants: HTMLElement) {
+    // TODO(crbug.com/1174311): currently positions horizontally within page.
+    // ideal UI would be overflowing the bounds of the page.
+    // also need to account for vertical positioning.
+
+    // compute width required for the variant popup as: SIZE * columns + 10.
+    // SIZE is emoji width in pixels. number of columns is determined by width
+    // of variantRows, then one column each for the base emoji and skin tone
+    // indicators if present. 10 pixels are added for padding and the shadow.
+
+    // Reset any existing left margin before calculating a new position.
+    variants.style.marginLeft = '0';
+
+    // get size of emoji picker
+    const pickerRect = this.getBoundingClientRect();
+
+    // determine how much overflows the right edge of the window.
+    const rect = variants.getBoundingClientRect();
+    const overflowWidth = rect.x + rect.width - pickerRect.width;
+    // shift left by overflowWidth rounded up to next multiple of EMOJI_SIZE.
+    const shift = constants.EMOJI_ICON_SIZE *
+        Math.ceil(overflowWidth / constants.EMOJI_ICON_SIZE);
+    // negative value means we are already within bounds, so no shift needed.
+    variants.style.marginLeft = `-${Math.max(shift, 0)}px`;
+    // Now, examine vertical scrolling and scroll if needed. Not quire sure why
+    // we need listcontainer.offsetTop, but it makes things work.
+    const groups = this.$['groups'] as HTMLElement | null;
+    const scrollTop = groups?.scrollTop ?? 0;
+    const variantTop = variants?.offsetTop ?? 0;
+    const variantBottom = variantTop + variants.offsetHeight;
+    const listTop =
+        (this.$['list-container'] as HTMLElement | null)?.offsetTop ?? 0;
+    if (variantBottom > scrollTop + (groups?.offsetHeight ?? 0) + listTop) {
+      groups?.scrollTo({
+        top: variantBottom - (groups?.offsetHeight ?? 0) - listTop,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
   }
 
   /**
