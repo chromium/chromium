@@ -3750,19 +3750,22 @@ bool AXNodeObject::HasValidHTMLTableStructureAndLayout() const {
   //   so that no content is lost.
   // See comments in AddTableChildren() for more information about valid tables.
   auto* table = To<HTMLTableElement>(GetNode());
+  auto* thead = table->tHead();
+  auto* tfoot = table->tFoot();
   for (Element* child = ElementTraversal::FirstChild(*GetElement()); child;
        child = ElementTraversal::NextSibling(*child)) {
-    if (child->HasTagName(html_names::kColgroupTag)) {
+    if (child == thead || child == tfoot) {
+      // Only 1 thead and 1 tfoot are allowed.
       continue;
     }
-    if (child->HasTagName(html_names::kTbodyTag)) {
+    if (IsA<HTMLTableSectionElement>(child) &&
+        child->HasTagName(html_names::kTbodyTag)) {
+      // Multiple <tbody>s are valid, but only 1 thead or tfoot.
       continue;
     }
-    if (child->HasTagName(html_names::kTheadTag) && child == table->tHead()) {
-      continue;  // Only one <thead> is valid.
-    }
-    if (child->HasTagName(html_names::kTfootTag) && child == table->tFoot()) {
-      continue;  // Only one <tfoot> is valid.
+    if (!child->GetLayoutObject() &&
+        child->HasTagName(html_names::kColgroupTag)) {
+      continue;
     }
     if (IsA<HTMLTableCaptionElement>(child) && child == table->caption()) {
       continue;  // Only one caption is valid.
