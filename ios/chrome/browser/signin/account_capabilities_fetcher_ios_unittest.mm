@@ -92,7 +92,7 @@ TEST_F(AccountCapabilitiesFetcherIOSTest, CheckUnknownCapability) {
                                        signin::Tribool::kUnknown);
 }
 
-// Check that a capability set to Unknown is received as Unknown.
+// Check that an unset capability is received as Unknown.
 TEST_F(AccountCapabilitiesFetcherIOSTest, CheckUnsetCapability) {
   TestCapabilityValueFetchedIsReceived(absl::nullopt,
                                        signin::Tribool::kUnknown);
