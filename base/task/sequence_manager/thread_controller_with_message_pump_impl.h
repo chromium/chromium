@@ -158,7 +158,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // represents the time it took to execute the current batch in the looper.
   WorkDetails DoWorkImpl(LazyNow* continuation_lazy_now);
 
-  void InitializeThreadTaskRunnerHandle()
+  void InitializeSingleThreadTaskRunnerCurrentDefaultHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
 
   // Returns the rate at which the thread controller should alternate between

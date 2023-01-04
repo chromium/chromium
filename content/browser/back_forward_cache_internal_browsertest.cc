@@ -1053,8 +1053,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SameSiteNavigationCaching) {
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
   // Inject mock time task runner to be used in the eviction timer, so we can
   // check for the functionality we are interested before and after the time to
-  // live. We don't replace ThreadTaskRunnerHandle::Get to ensure that it
-  // doesn't affect other unrelated callsites.
+  // live. We don't replace SingleThreadTaskRunner::GetCurrentDefault to ensure
+  // that it doesn't affect other unrelated callsites.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
@@ -3740,8 +3740,8 @@ IN_PROC_BROWSER_TEST_F(CustomTTLBackForwardCacheBrowserTest,
                        TestTimeToLiveParameter) {
   // Inject mock time task runner to be used in the eviction timer, so we can,
   // check for the functionality we are interested before and after the time to
-  // live. We don't replace ThreadTaskRunnerHandle::Get to ensure that it
-  // doesn't affect other unrelated callsites.
+  // live. We don't replace SingleThreadTaskRunner::GetCurrentDefault to ensure
+  // that it doesn't affect other unrelated callsites.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
@@ -4027,8 +4027,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
   ASSERT_TRUE(https_server()->Start());
   // Inject mock time task runner to be used in the eviction timer, so we can,
   // check for the functionality we are interested before and after the time to
-  // live. We don't replace ThreadTaskRunnerHandle::Get to ensure that it
-  // doesn't affect other unrelated callsites.
+  // live. We don't replace SingleThreadTaskRunner::GetCurrentDefault to ensure
+  // that it doesn't affect other unrelated callsites.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 

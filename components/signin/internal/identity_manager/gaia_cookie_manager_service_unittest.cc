@@ -20,7 +20,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -319,8 +318,8 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetried) {
   MockObserver observer(&helper);
 
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ThreadTaskRunnerHandleOverrideForTesting ttrh_override(
-      test_task_runner);
+  base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
+      sttrcdh_override(test_task_runner);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
   EXPECT_CALL(helper, StartFetchingMergeSession());
@@ -344,8 +343,9 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetriedTwice) {
   base::HistogramTester histograms;
 
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ThreadTaskRunnerHandleOverrideForTesting ttrh_override(
-      test_task_runner);
+
+  base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
+      sttrcdh_override(test_task_runner);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
   EXPECT_CALL(helper, StartFetchingMergeSession()).Times(2);
@@ -957,8 +957,9 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     MockObserver observer(&helper);
     auto test_task_runner =
         base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-    base::ThreadTaskRunnerHandleOverrideForTesting ttrh_override(
-        test_task_runner);
+
+    base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
+        sttrcdh_override(test_task_runner);
 
     EXPECT_CALL(helper, StartFetchingListAccounts()).Times(3);
 

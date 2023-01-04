@@ -4,8 +4,8 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -45,7 +45,7 @@ class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
 
   // Required by base::Timer's.
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
-      thread_task_runner_handle_;
+      thread_task_runner_current_default_handle_;
 };
 
 InkDropTest::InkDropTest() : ink_drop_(nullptr) {
@@ -61,10 +61,10 @@ InkDropTest::InkDropTest() : ink_drop_(nullptr) {
           InkDrop::Get(&test_ink_drop_host_), gfx::Size(),
           InkDropImpl::AutoHighlightMode::NONE);
       // The Timer's used by the InkDropImpl class require a
-      // base::ThreadTaskRunnerHandle instance.
+      // base::SingleThreadTaskRunner::CurrentDefaultHandle instance.
       scoped_refptr<base::TestMockTimeTaskRunner> task_runner(
           new base::TestMockTimeTaskRunner);
-      thread_task_runner_handle_ =
+      thread_task_runner_current_default_handle_ =
           std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
               task_runner);
       break;

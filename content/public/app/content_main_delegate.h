@@ -143,9 +143,9 @@ class CONTENT_EXPORT ContentMainDelegate {
   // won't run until base::ThreadPoolInstance::Start() is called.
   //
   // It is also possible to post tasks to the main thread loop via
-  // base::ThreadTaskRunnerHandle. These tasks won't run until
-  // base::RunLoop::Run() is called on the main thread, which happens after all
-  // ContentMainDelegate entry points.
+  // base::SingleThreadTaskRunner::CurrentDefaultHandle. These tasks won't run
+  // until base::RunLoop::Run() is called on the main thread, which happens
+  // after all ContentMainDelegate entry points.
   //
   // If ShouldCreateFeatureList() returns true for `invoked_in`, the
   // field trials and FeatureList have been initialized. Otherwise, the

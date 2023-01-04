@@ -4,9 +4,9 @@
 
 #include "components/page_load_metrics/browser/observers/click_input_tracker.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,14 +19,15 @@ class ClickInputTrackerTest : public testing::Test {
  public:
   ClickInputTrackerTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_) {}
+        task_runner_current_default_handle_(task_runner_) {}
 
   ClickInputTrackerTest(const ClickInputTrackerTest&) = delete;
   ClickInputTrackerTest& operator=(const ClickInputTrackerTest&) = delete;
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 TEST_F(ClickInputTrackerTest, OnUserInputGestureTapClickBurst) {

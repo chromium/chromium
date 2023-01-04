@@ -97,7 +97,7 @@ void TestDownloadService::CancelDownload(const std::string& guid) {
 
       CompletionInfo completion_info(base::FilePath(), 0u);
 
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&TestDownloadService::OnDownloadFailed,
                          base::Unretained(this), guid, completion_info,

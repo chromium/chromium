@@ -104,20 +104,22 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   //
   // Browser task queues will initially be disabled, that is tasks posted to
   // them will not run. But the default task runner of the thread (the one you
-  // get via ThreadTaskRunnerHandle::Get()) will be active. This is the same
-  // task runner you get by calling BrowserProcessIOThread::task_runner(). The
-  // queues can be initialized by calling InitializeIOThread which is done
-  // during Chromium starup in BrowserMainLoop::CreateThreads.
+  // get via SingleThreadTaskRunner::GetCurrentDefault()) will be active. This
+  // is the same task runner you get by calling
+  // BrowserProcessIOThread::task_runner(). The queues can be initialized by
+  // calling InitializeIOThread which is done during Chromium startup in
+  // BrowserMainLoop::CreateThreads.
   //
   // Early on during Chromium startup we initialize the ServiceManager and it
   // needs to run tasks immediately. The ServiceManager itself does not know
   // about the IO thread (it does not use the browser task traits), it only uses
   // the task runner provided to it during initialization and possibly
-  // ThreadTaskRunnerHandle::Get() from tasks it posts. But we currently run it
-  // on the IO thread so we need the default task runner to be active for its
-  // tasks to run. Note that since tasks posted via the browser task traits will
-  // not run they won't be able to access the default task runner either, so for
-  // those tasks the default task queue is also "disabled".
+  // SingleThreadTaskRunner::GetCurrentDefault() from tasks it posts. But we
+  // currently run it on the IO thread so we need the default task runner to be
+  // active for its tasks to run. Note that since tasks posted via the browser
+  // task traits will not run they won't be able to access the default task
+  // runner either, so for those tasks the default task queue is also
+  // "disabled".
   //
   // Attention: This method can only be called once (as there must be only one
   // IO thread).

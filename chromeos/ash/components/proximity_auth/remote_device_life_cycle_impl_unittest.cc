@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/proximity_auth/messenger.h"
@@ -76,7 +76,7 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
                     test_local_device_,
                     fake_secure_channel_client_.get()),
         task_runner_(new base::TestSimpleTaskRunner()),
-        thread_task_runner_handle_(task_runner_) {}
+        thread_task_runner_current_default_handle_(task_runner_) {}
 
   ~ProximityAuthRemoteDeviceLifeCycleImplTest() override {
     life_cycle_.RemoveObserver(this);
@@ -163,7 +163,8 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
   ash::secure_channel::FakeConnectionAttempt* fake_connection_attempt_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle thread_task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      thread_task_runner_current_default_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

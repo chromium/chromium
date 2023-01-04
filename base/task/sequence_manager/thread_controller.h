@@ -164,7 +164,7 @@ class BASE_EXPORT ThreadController {
   virtual void EnablePeriodicYieldingToNative(base::TimeDelta delta) = 0;
 
   // Sets the SingleThreadTaskRunner that will be returned by
-  // ThreadTaskRunnerHandle::Get on the thread controlled by this
+  // SingleThreadTaskRunner::GetCurrentDefault on the thread controlled by this
   // ThreadController.
   virtual void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) = 0;
 

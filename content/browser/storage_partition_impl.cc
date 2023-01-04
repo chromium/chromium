@@ -2648,7 +2648,7 @@ void StoragePartitionImpl::ClearDataForBuckets(
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(
           storage_buckets.size(),
           BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&StoragePartitionImpl::ClearDataForBucketsDone,
                              base::Unretained(this), storage_key,
                              storage_buckets, std::move(callback))));
@@ -2656,9 +2656,9 @@ void StoragePartitionImpl::ClearDataForBuckets(
   storage::QuotaManagerProxy* quota_manager_proxy = GetQuotaManagerProxy();
 
   for (const auto& bucket : storage_buckets) {
-    quota_manager_proxy->DeleteBucket(storage_key, bucket,
-                                      base::SequencedTaskRunnerHandle::Get(),
-                                      remove_buckets_done);
+    quota_manager_proxy->DeleteBucket(
+        storage_key, bucket, base::SequencedTaskRunner::GetCurrentDefault(),
+        remove_buckets_done);
   }
 }
 

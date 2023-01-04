@@ -14,6 +14,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/single_thread_task_runner.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -288,7 +289,7 @@ void WaylandCanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
 
   if (!unsubmitted_buffers_.empty())
     ProcessUnsubmittedBuffers();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(swap_ack_callback), size_));
 }
 

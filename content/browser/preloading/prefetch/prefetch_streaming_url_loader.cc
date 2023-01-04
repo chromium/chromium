@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -33,7 +35,7 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
       *request,
       prefetch_url_loader_client_receiver_.BindNewPipeAndPassRemote(
-          base::ThreadTaskRunnerHandle::Get()),
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation));
   prefetch_url_loader_client_receiver_.set_disconnect_handler(base::BindOnce(
       &PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo,
@@ -100,8 +102,8 @@ void PrefetchStreamingURLLoader::PostTaskToDeleteSelf() {
   }
 
   // To avoid UAF bugs, post a separate task to delete this object.
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(self_pointer_));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(self_pointer_));
 }
 
 void PrefetchStreamingURLLoader::OnReceiveEarlyHints(

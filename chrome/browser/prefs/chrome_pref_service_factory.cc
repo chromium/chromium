@@ -479,9 +479,10 @@ void HandlePersistentPrefStoreReadError(
     }
 
     if (message_id) {
-      // Note: ThreadTaskRunnerHandle() is usually BrowserThread::UI but during
-      // early startup it can be ChromeBrowserMainParts::DeferringTaskRunner
-      // which will forward to BrowserThread::UI when it's initialized.
+      // Note: SingleThreadTaskRunner::CurrentDefaultHandle is usually
+      // BrowserThread::UI but during early startup it can be
+      // ChromeBrowserMainParts::DeferringTaskRunner which will forward to
+      // BrowserThread::UI when it's initialized.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&ShowProfileErrorDialog, ProfileErrorType::PREFERENCES,

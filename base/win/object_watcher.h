@@ -51,7 +51,8 @@ namespace win {
 // still called after (but not necessarily immediately after) watch is started.
 //
 // NOTE: Except for the constructor, all public methods of this class must be
-// called in sequence, in a scope where SequencedTaskRunnerHandle::IsSet().
+// called in sequence, in a scope where
+// SequencedTaskRunner::HasCurrentDefault().
 class BASE_EXPORT ObjectWatcher {
  public:
   class BASE_EXPORT Delegate {

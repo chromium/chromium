@@ -17,7 +17,8 @@ class SingleThreadTaskRunner;
 namespace chromecast {
 
 // Implementation of public TaskRunner interface that just calls
-// base::ThreadTaskRunnerHandle at construction time and uses it to post.
+// base::SingleThreadTaskRunner::CurrentDefaultHandle at construction time and
+// uses it to post.
 class TaskRunnerImpl : public TaskRunner {
  public:
   TaskRunnerImpl();

@@ -170,7 +170,7 @@ void DataAvailable(
   TRACE_EVENT0("ui", "WebUIURLLoader::DataAvailable");
   // Since the bytes are from the memory mapped resource file, copying the
   // data can lead to disk access. Needs to be posted to a SequencedTaskRunner
-  // as Mojo requires a SequencedTaskRunnerHandle in scope.
+  // as Mojo requires a SequencedTaskRunner::CurrentDefaultHandle in scope.
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})

@@ -15,7 +15,7 @@
 namespace crosapi {
 
 PowerAsh::PowerAsh()
-    : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       file_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   lock_set_.set_disconnect_handler(base::BindRepeating(

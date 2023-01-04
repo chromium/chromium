@@ -169,7 +169,7 @@ JavaHandlerThread::State::State()
   pump = static_cast<MessagePumpForUI*>(message_pump.get());
 
   // We must set SetTaskRunner before binding because the Android UI pump
-  // creates a RunLoop which samples ThreadTaskRunnerHandle::Get.
+  // creates a RunLoop which samples SingleThreadTaskRunner::GetCurrentDefault.
   static_cast<sequence_manager::internal::SequenceManagerImpl*>(
       sequence_manager.get())
       ->SetTaskRunner(default_task_queue->task_runner());

@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/biod/test_utils.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +34,7 @@ class FakeBiodClientTest : public testing::Test {
  public:
   FakeBiodClientTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_) {}
+        task_runner_current_default_handle_(task_runner_) {}
 
   FakeBiodClientTest(const FakeBiodClientTest&) = delete;
   FakeBiodClientTest& operator=(const FakeBiodClientTest&) = delete;
@@ -104,7 +104,8 @@ class FakeBiodClientTest : public testing::Test {
  protected:
   FakeBiodClient fake_biod_client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 
   // This number is incremented each time GenerateTestFingerprint is called to
   // ensure each fingerprint is unique.

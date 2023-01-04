@@ -16,9 +16,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/offline_page_item_generator.h"
 #include "components/offline_pages/core/offline_clock.h"
@@ -571,7 +571,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
  public:
   OfflinePageMetadataStoreTest()
       : task_runner_(new base::TestMockTimeTaskRunner),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     EXPECT_TRUE(temp_directory_.CreateUniqueTempDir());
   }
   ~OfflinePageMetadataStoreTest() override {}
@@ -584,7 +584,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
 
   std::unique_ptr<OfflinePageMetadataStore> BuildStore() {
     auto store = std::make_unique<OfflinePageMetadataStore>(
-        base::ThreadTaskRunnerHandle::Get(), TempPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), TempPath());
     PumpLoop();
     return store;
   }
@@ -663,7 +663,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
 
   void LoadAndCheckStore() {
     auto store = std::make_unique<OfflinePageMetadataStore>(
-        base::ThreadTaskRunnerHandle::Get(), TempPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), TempPath());
     OfflinePageItem item = CheckThatStoreHasOneItem(store.get());
     CheckThatPageVisualsCanBeSaved(store.get());
     CheckThatOfflinePageCanBeSaved(std::move(store));
@@ -674,7 +674,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
     // At meta version 1, more items were added to the database for testing,
     // which necessitates different checks.
     auto store = std::make_unique<OfflinePageMetadataStore>(
-        base::ThreadTaskRunnerHandle::Get(), TempPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), TempPath());
     std::vector<OfflinePageItem> pages = GetOfflinePages(store.get());
     EXPECT_EQ(5U, pages.size());
 
@@ -685,7 +685,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
 
   void LoadAndCheckStoreFromMetaVersion3AndUp() {
     auto store = std::make_unique<OfflinePageMetadataStore>(
-        base::ThreadTaskRunnerHandle::Get(), TempPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), TempPath());
     std::vector<OfflinePageItem> pages = GetOfflinePages(store.get());
     EXPECT_EQ(5U, pages.size());
 
@@ -829,7 +829,8 @@ class OfflinePageMetadataStoreTest : public testing::Test {
  protected:
   base::ScopedTempDir temp_directory_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 // Loads empty store and makes sure that there are no offline pages stored in
@@ -993,7 +994,7 @@ TEST_F(OfflinePageMetadataStoreTest, StoreCloses) {
 
 TEST_F(OfflinePageMetadataStoreTest, MultiplePendingCalls) {
   auto store = std::make_unique<OfflinePageMetadataStore>(
-      base::ThreadTaskRunnerHandle::Get(), TempPath());
+      base::SingleThreadTaskRunner::GetCurrentDefault(), TempPath());
   EXPECT_FALSE(task_runner()->HasPendingTask());
   EXPECT_EQ(StoreState::NOT_LOADED, store->GetStateForTesting());
 

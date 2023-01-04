@@ -19,11 +19,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
@@ -554,7 +554,7 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
  protected:
   GoogleUpdateWinTest()
       : task_runner_(new base::TestSimpleTaskRunner()),
-        task_runner_handle_(task_runner_),
+        task_runner_current_default_handle_(task_runner_),
         system_level_install_(GetParam()),
         scoped_install_details_(system_level_install_, 0) {}
 
@@ -649,7 +649,8 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
   static const wchar_t kChromeGuid[];
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
   bool system_level_install_;
   install_static::ScopedInstallDetails scoped_install_details_;
   std::unique_ptr<base::ScopedPathOverride> file_exe_override_;

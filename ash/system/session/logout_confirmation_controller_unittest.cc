@@ -44,7 +44,8 @@ class LogoutConfirmationControllerTest : public testing::Test {
   bool log_out_called_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> runner_;
-  base::ThreadTaskRunnerHandle runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle_;
 
   LogoutConfirmationController controller_;
 };
@@ -52,7 +53,7 @@ class LogoutConfirmationControllerTest : public testing::Test {
 LogoutConfirmationControllerTest::LogoutConfirmationControllerTest()
     : log_out_called_(false),
       runner_(new base::TestMockTimeTaskRunner),
-      runner_handle_(runner_) {
+      runner_current_default_handle_(runner_) {
   controller_.SetClockForTesting(runner_->GetMockTickClock());
   controller_.SetLogoutCallbackForTesting(base::BindRepeating(
       &LogoutConfirmationControllerTest::LogOut, base::Unretained(this)));

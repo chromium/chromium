@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,7 +41,8 @@ class MockTaskWaiter {
 class TaskManagerImplTest : public testing::Test {
  public:
   TaskManagerImplTest()
-      : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {
+      : task_runner_(new base::TestMockTimeTaskRunner),
+        current_default_handle_(task_runner_) {
     auto scheduler = std::make_unique<MockTaskScheduler>();
     task_scheduler_ = scheduler.get();
     task_manager_ = std::make_unique<TaskManagerImpl>(std::move(scheduler));
@@ -76,7 +77,7 @@ class TaskManagerImplTest : public testing::Test {
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 
   raw_ptr<MockTaskScheduler> task_scheduler_;
   std::unique_ptr<TaskManagerImpl> task_manager_;

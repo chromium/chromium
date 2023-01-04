@@ -131,7 +131,7 @@ class BASE_EXPORT ThreadPool {
   // execution context (i.e. same sequence or thread and same TaskTraits if
   // applicable) when |task| completes. Returns false if the task definitely
   // won't run because of current shutdown state. Can only be called when
-  // SequencedTaskRunnerHandle::IsSet().
+  // SequencedTaskRunner::HasCurrentDefault().
   static bool PostTaskAndReply(const Location& from_here,
                                const TaskTraits& traits,
                                OnceClosure task,
@@ -141,7 +141,7 @@ class BASE_EXPORT ThreadPool {
   // of |task| as argument on the caller's execution context (i.e. same sequence
   // or thread and same TaskTraits if applicable) when |task| completes. Returns
   // false if the task definitely won't run because of current shutdown state.
-  // Can only be called when SequencedTaskRunnerHandle::IsSet().
+  // Can only be called when SequencedTaskRunner::HasCurrentDefault().
   //
   // Though RepeatingCallback is convertible to OnceCallback, we need a
   // CallbackType template since we can not use template deduction and object

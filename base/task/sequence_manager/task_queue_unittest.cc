@@ -8,10 +8,10 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -173,8 +173,10 @@ TEST(TaskQueueTest, ValidCancelableTaskIsNotCanceled) {
   auto task_runner = queue->task_runner();
   EXPECT_EQ(queue->GetNumberOfPendingTasks(), 0u);
 
-  // RunLoop requires the ThreadTaskRunnerHandle to be set.
-  ThreadTaskRunnerHandle thread_task_runner_handle(task_runner);
+  // RunLoop requires the SingleThreadTaskRunner::CurrentDefaultHandle to be
+  // set.
+  SingleThreadTaskRunner::CurrentDefaultHandle
+      single_thread_task_runner_current_default_handle(task_runner);
   RunLoop run_loop;
 
   // To reach the |delayed_work_queue|, the task must be posted with a non-

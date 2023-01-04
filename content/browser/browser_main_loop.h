@@ -140,7 +140,7 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   void PreCreateMainMessageLoop();
   // Creates the main message loop, bringing APIs like
-  // ThreadTaskRunnerHandle::Get() online.
+  // SingleThreadTaskRunner::GetCurrentDefault() online.
   void CreateMainMessageLoop();
   void PostCreateMainMessageLoop();
 

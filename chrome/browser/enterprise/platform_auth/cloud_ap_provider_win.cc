@@ -30,11 +30,11 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
@@ -309,7 +309,7 @@ void GetSupportLevel(OnSupportLevelCallback on_support_level) {
 
   // Check if there's at least one WebAccount for the default provider.
   base::MakeRefCounted<WebAccountSupportFinder>(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&OnFindWebAccount, std::move(on_support_level)))
       ->Find();
 }
@@ -406,7 +406,7 @@ void CloudApProviderWin::FetchOrigins(FetchOriginsCallback on_fetch_complete) {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&FetchOriginsInPool,
-                                base::SequencedTaskRunnerHandle::Get(),
+                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 std::move(on_fetch_complete)));
 }
 

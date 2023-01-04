@@ -73,14 +73,15 @@ SingleThreadTaskRunner::CurrentDefaultHandle::~CurrentDefaultHandle() {
 SingleThreadTaskRunner::CurrentHandleOverride::CurrentHandleOverride(
     scoped_refptr<SingleThreadTaskRunner> overriding_task_runner,
     bool allow_nested_runloop) {
-  DCHECK(!SequencedTaskRunnerHandle::IsSet() || ThreadTaskRunnerHandle::IsSet())
+  DCHECK(!SequencedTaskRunner::HasCurrentDefault() ||
+         SingleThreadTaskRunner::HasCurrentDefault())
       << "SingleThreadTaskRunner::CurrentHandleOverride is not compatible with "
          "a SequencedTaskRunner::CurrentDefaultHandle already "
          "being set on this thread (except when it's "
          "set by the current "
          "SingleThreadTaskRunner::CurrentDefaultHandle).";
 
-  if (!ThreadTaskRunnerHandle::IsSet()) {
+  if (!SingleThreadTaskRunner::HasCurrentDefault()) {
     top_level_thread_task_runner_current_default_.emplace(
         std::move(overriding_task_runner));
     return;

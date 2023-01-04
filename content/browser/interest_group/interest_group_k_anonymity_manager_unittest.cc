@@ -295,14 +295,14 @@ class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
   void JoinSet(std::string id,
                base::OnceCallback<void(bool)> callback) override {
     requested_ids_.emplace_back(std::move(id));
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
   }
 
   void QuerySets(
       std::vector<std::string> ids,
       base::OnceCallback<void(std::vector<bool>)> callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<bool>(ids.size(), true)));
   }

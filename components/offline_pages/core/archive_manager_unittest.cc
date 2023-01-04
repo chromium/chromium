@@ -14,9 +14,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
@@ -63,7 +63,8 @@ class ArchiveManagerTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
   base::ScopedTempDir temporary_dir_;
   base::ScopedTempDir private_archive_dir_;
   base::ScopedTempDir public_archive_dir_;
@@ -77,7 +78,7 @@ class ArchiveManagerTest : public testing::Test {
 
 ArchiveManagerTest::ArchiveManagerTest()
     : task_runner_(new base::TestSimpleTaskRunner),
-      task_runner_handle_(task_runner_),
+      task_runner_current_default_handle_(task_runner_),
       callback_status_(CallbackStatus::NOT_CALLED),
       last_storage_sizes_({0, 0, 0}) {}
 
@@ -105,7 +106,7 @@ void ArchiveManagerTest::ResetManager(
     const base::FilePath& public_archive_dir) {
   manager_ = std::make_unique<ArchiveManager>(
       temporary_dir, private_archive_dir, public_archive_dir,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void ArchiveManagerTest::Callback(bool result) {

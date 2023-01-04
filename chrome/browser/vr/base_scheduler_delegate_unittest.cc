@@ -5,8 +5,8 @@
 #include "chrome/browser/vr/base_scheduler_delegate.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/vr/scheduler_ui_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -53,7 +53,7 @@ class SchedulerDelegateTest : public testing::Test {
   void SetUp() override {
     test_task_runner_ =
         base::WrapRefCounted(new base::TestMockTimeTaskRunner());
-    task_runner_handle_override_.emplace(test_task_runner_);
+    task_runner_current_handle_override_.emplace(test_task_runner_);
   }
 
   void FastForwardBy(base::TimeDelta delta) {
@@ -62,8 +62,8 @@ class SchedulerDelegateTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-  absl::optional<base::ThreadTaskRunnerHandleOverrideForTesting>
-      task_runner_handle_override_;
+  absl::optional<base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting>
+      task_runner_current_handle_override_;
 };
 
 TEST_F(SchedulerDelegateTest, NoTimeoutWhenWebXrFrameArrivesFast) {

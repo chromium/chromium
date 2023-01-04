@@ -203,7 +203,7 @@ void DomStorageDatabase::CreateSequenceBoundDomStorageDatabase(
   // chance to run (because scheduler shutdown happens first).
   //
   // This is because the callback below is posted to
-  // SequencedTaskRunnerHandle::Get(), which may not itself be
+  // SequencedTaskRunner::GetCurrentDefault(), which may not itself be
   // shutdown-blocking; so if shutdown completes before the task runs, the
   // callback below is destroyed along with any of its owned arguments.
   // Meanwhile, SequenceBound destruction posts a task to its bound TaskRunner,

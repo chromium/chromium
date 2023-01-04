@@ -28,9 +28,9 @@ namespace content {
 //  - PreEarlyInitialization: things to be be done as soon as possible on
 //    program start (such as setting up signal handlers; checking auto-restarts
 //    on update; etc.). Core APIs like base::FeatureList,
-//    base::ThreadTaskRunnerHandle, and base::ThreadPool are already functional
-//    at this point (ThreadPool will accept but not run tasks until
-//    PostCreateThreads).
+//    base::SingleThreadTaskRunner::CurrentDefaultHandle, and base::ThreadPool
+//    are already functional at this point (ThreadPool will accept but not run
+//    tasks until PostCreateThreads).
 //
 //  - PostEarlyInitialization: things to be be done as soon as possible but that
 //    can/must wait until after the few things in BrowserMainLoop's own

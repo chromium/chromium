@@ -63,7 +63,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
                     }
                     surface = new gl::GLSurfaceEGLSurfaceControl(
                         display->GetAs<gl::GLDisplayEGL>(), std::move(window),
-                        base::ThreadTaskRunnerHandle::Get());
+                        base::SingleThreadTaskRunner::GetCurrentDefault());
                   },
                   [&](gl::ScopedJavaSurfaceControl&& surface_control) {
                     surface = new gl::GLSurfaceEGLSurfaceControl(

@@ -72,7 +72,8 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
             NetworkChangeCalculatorParams(),
             dns_config_notifier.get(),
             // Omit adding observers from the constructor as that would prevent
-            // construction when SequencedTaskRunnerHandle isn't set.
+            // construction when SingleThreadTaskRunner::CurrentDefaultHandle
+            // isn't set.
             /* omit_observers_in_constructor_for_testing=*/true),
         dns_config_notifier_(std::move(dns_config_notifier)) {}
 

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
@@ -30,7 +29,6 @@ namespace extensions {
 
 namespace {
 
-using ::base::ThreadTaskRunnerHandle;
 using ::device::FakeHidManager;
 using ::device::HidReportDescriptor;
 

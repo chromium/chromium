@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -164,7 +164,7 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
             std::make_unique<ash::secure_channel::FakeClientChannel>()),
         bluetooth_adapter_(CreateAndRegisterMockBluetoothAdapter()),
         task_runner_(new base::TestSimpleTaskRunner()),
-        thread_task_runner_handle_(task_runner_) {}
+        thread_task_runner_current_default_handle_(task_runner_) {}
 
   ~ProximityAuthUnlockManagerImplTest() override = default;
 
@@ -238,7 +238,8 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle thread_task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      thread_task_runner_current_default_handle_;
   FakeLockHandler lock_handler_;
   ash::multidevice::ScopedDisableLoggingForTesting disable_logging_;
 };

@@ -14,9 +14,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -30,7 +30,7 @@ class ExploreSitesStoreTest : public testing::Test {
  public:
   ExploreSitesStoreTest()
       : task_runner_(new base::TestMockTimeTaskRunner),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     EXPECT_TRUE(temp_directory_.CreateUniqueTempDir());
   }
   ~ExploreSitesStoreTest() override {}
@@ -43,7 +43,7 @@ class ExploreSitesStoreTest : public testing::Test {
 
   std::unique_ptr<ExploreSitesStore> BuildStore() {
     auto store = std::make_unique<ExploreSitesStore>(
-        base::ThreadTaskRunnerHandle::Get(), TempPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(), TempPath());
     PumpLoop();
     return store;
   }
@@ -77,7 +77,8 @@ class ExploreSitesStoreTest : public testing::Test {
  protected:
   base::ScopedTempDir temp_directory_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 // Loads empty store and makes sure that there are no offline pages stored in

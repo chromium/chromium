@@ -91,7 +91,7 @@ complex and may be a number of things:
 
  * Most commonly, if your component is always used from the main message loop,
    `my_single_thread_task_runner_` may just be
-   [`base::ThreadTaskRunnerHandle::Get()`][task-runner-handle].
+   [`base::SingleThreadTaskRunner::GetCurrentDefault()`][task-runner-handle].
  * If your component already uses a custom `base::SingleThreadTaskRunner` for
    executing tasks on a specific thread, you should likely use this runner.
 

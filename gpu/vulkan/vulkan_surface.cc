@@ -364,8 +364,9 @@ void VulkanSurface::PostSubBufferCompleted(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(presentation_callback), feedback));
   } else {
-    // For webview_instrumentation_test, ThreadTaskRunnerHandle is not set, so
-    // we have to call the callback directly.
+    // For webview_instrumentation_test,
+    // SingleThreadTaskRunner::CurrentDefaultHandle is not set, so we have to
+    // call the callback directly.
     std::move(presentation_callback).Run(feedback);
   }
 }

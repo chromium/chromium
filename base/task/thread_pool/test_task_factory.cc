@@ -72,8 +72,9 @@ void TestTaskFactory::RunTaskCallback(size_t task_index,
       EXPECT_EQ(task_runner_, SequencedTaskRunner::GetCurrentDefault());
       break;
     case TaskSourceExecutionMode::kSingleThread:
-      // SequencedTaskRunnerHandle inherits from ThreadTaskRunnerHandle so
-      // both are expected to be "set" in the kSingleThread case.
+      // SequencedTaskRunner::CurrentDefaultHandle inherits from
+      // SingleThreadTaskRunner::CurrentDefaultHandle so both are expected to be
+      // "set" in the kSingleThread case.
       EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
       EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
       EXPECT_EQ(task_runner_, SingleThreadTaskRunner::GetCurrentDefault());

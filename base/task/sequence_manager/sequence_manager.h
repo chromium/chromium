@@ -173,7 +173,7 @@ class BASE_EXPORT SequenceManager {
   virtual absl::optional<WakeUp> GetNextDelayedWakeUp() const = 0;
 
   // Sets the SingleThreadTaskRunner that will be returned by
-  // ThreadTaskRunnerHandle::Get on the main thread.
+  // SingleThreadTaskRunner::GetCurrentDefault on the main thread.
   virtual void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) = 0;
 

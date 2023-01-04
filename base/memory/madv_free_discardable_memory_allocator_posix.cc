@@ -20,8 +20,9 @@ namespace base {
 MadvFreeDiscardableMemoryAllocatorPosix::
     MadvFreeDiscardableMemoryAllocatorPosix() {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-  // Don't register dump provider if ThreadTaskRunnerHandle is not set, such as
-  // in tests and Android Webview.
+  // Don't register dump provider if
+  // SingleThreadTaskRunner::CurrentDefaultHAndle is not set, such as in tests
+  // and Android Webview.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "MadvFreeDiscardableMemoryAllocator",

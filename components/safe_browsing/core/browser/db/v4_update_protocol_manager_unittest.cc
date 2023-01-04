@@ -11,8 +11,8 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/strings/escape.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -155,7 +155,8 @@ class V4UpdateProtocolManagerTest : public PlatformTest {
 TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingNetwork) {
   scoped_refptr<base::TestSimpleTaskRunner> runner(
       new base::TestSimpleTaskRunner());
-  base::ThreadTaskRunnerHandle runner_handler(runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle(runner);
   const std::vector<ListUpdateResponse> expected_lurs;
   std::unique_ptr<V4UpdateProtocolManager> pm(
       CreateProtocolManager(expected_lurs));
@@ -182,7 +183,8 @@ TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingNetwork) {
 TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingResponseCode) {
   scoped_refptr<base::TestSimpleTaskRunner> runner(
       new base::TestSimpleTaskRunner());
-  base::ThreadTaskRunnerHandle runner_handler(runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle(runner);
   const std::vector<ListUpdateResponse> expected_lurs;
   std::unique_ptr<V4UpdateProtocolManager> pm(
       CreateProtocolManager(expected_lurs));
@@ -209,7 +211,8 @@ TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingResponseCode) {
 TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesNoError) {
   scoped_refptr<base::TestSimpleTaskRunner> runner(
       new base::TestSimpleTaskRunner());
-  base::ThreadTaskRunnerHandle runner_handler(runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle(runner);
   std::vector<ListUpdateResponse> expected_lurs;
   SetupExpectedListUpdateResponse(&expected_lurs);
   std::unique_ptr<V4UpdateProtocolManager> pm(
@@ -237,7 +240,8 @@ TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesNoError) {
 TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesWithOneBackoff) {
   scoped_refptr<base::TestSimpleTaskRunner> runner(
       new base::TestSimpleTaskRunner());
-  base::ThreadTaskRunnerHandle runner_handler(runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle(runner);
   std::vector<ListUpdateResponse> expected_lurs;
   SetupExpectedListUpdateResponse(&expected_lurs);
   std::unique_ptr<V4UpdateProtocolManager> pm(
@@ -299,7 +303,8 @@ TEST_F(V4UpdateProtocolManagerTest, TestBase64EncodingUsesUrlEncoding) {
 TEST_F(V4UpdateProtocolManagerTest, TestDisableAutoUpdates) {
   scoped_refptr<base::TestSimpleTaskRunner> runner(
       new base::TestSimpleTaskRunner());
-  base::ThreadTaskRunnerHandle runner_handler(runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle(runner);
   std::unique_ptr<V4UpdateProtocolManager> pm(CreateProtocolManager(
       std::vector<ListUpdateResponse>(), true /* disable_auto_update */));
 
@@ -316,7 +321,8 @@ TEST_F(V4UpdateProtocolManagerTest, TestDisableAutoUpdates) {
 TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesHasTimeout) {
   scoped_refptr<base::TestSimpleTaskRunner> runner(
       new base::TestSimpleTaskRunner());
-  base::ThreadTaskRunnerHandle runner_handler(runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle(runner);
   std::vector<ListUpdateResponse> expected_lurs;
   SetupExpectedListUpdateResponse(&expected_lurs);
   std::unique_ptr<V4UpdateProtocolManager> pm(

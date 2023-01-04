@@ -7,9 +7,9 @@
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_logs_event_manager.h"
@@ -30,7 +30,7 @@ class MetricsServiceObserverTest : public testing::Test {
  public:
   MetricsServiceObserverTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_),
+        task_runner_current_default_handle_(task_runner_),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true) {}
   ~MetricsServiceObserverTest() override = default;
 
@@ -65,7 +65,8 @@ class MetricsServiceObserverTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 
  private:
   TestEnabledStateProvider enabled_state_provider_;

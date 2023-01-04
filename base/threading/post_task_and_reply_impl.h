@@ -26,11 +26,11 @@ class BASE_EXPORT PostTaskAndReplyImpl {
 
   // Posts |task| by calling PostTask(). On completion, posts |reply| to the
   // origin sequence. Can only be called when
-  // SequencedTaskRunnerHandle::IsSet(). Each callback is deleted synchronously
-  // after running, or scheduled for asynchronous deletion on the origin
-  // sequence if it can't run (e.g. if a TaskRunner skips it on shutdown). See
-  // SequencedTaskRunner::DeleteSoon() for when objects scheduled for
-  // asynchronous deletion can be leaked. Note: All //base task posting APIs
+  // SequencedTaskRunner::HasCurrentDefault(). Each callback is deleted
+  // synchronously after running, or scheduled for asynchronous deletion on the
+  // origin sequence if it can't run (e.g. if a TaskRunner skips it on
+  // shutdown). See SequencedTaskRunner::DeleteSoon() for when objects scheduled
+  // for asynchronous deletion can be leaked. Note: All //base task posting APIs
   // require callbacks to support deletion on the posting sequence if they can't
   // be scheduled.
   bool PostTaskAndReply(const Location& from_here,

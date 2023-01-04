@@ -117,8 +117,9 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   // Adds |observer| to the list. |observer| must not already be in the list.
   AddObserverResult AddObserver(ObserverType* observer) {
     DCHECK(SequencedTaskRunner::HasCurrentDefault())
-        << "An observer can only be registered when SequencedTaskRunnerHandle "
-           "is set. If this is in a unit test, you're likely merely missing a "
+        << "An observer can only be registered when "
+           "SequencedTaskRunner::HasCurrentDefault. If this is in a unit test, "
+           "you're likely merely missing a "
            "base::test::(SingleThread)TaskEnvironment in your fixture. "
            "Otherwise, try running this code on a named thread (main/UI/IO) or "
            "from a task posted to a base::SequencedTaskRunner or "

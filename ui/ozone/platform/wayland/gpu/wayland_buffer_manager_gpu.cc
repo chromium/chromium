@@ -48,8 +48,8 @@ WaylandBufferManagerGpu::WaylandBufferManagerGpu(
   // happen, and a surface will never be registered. Thus, the following two
   // cases are possible:
   // 1) The WaylandBufferManagerGpu runs normally outside tests.
-  // ThreadTaskRunnerHandle is set and it is passed during construction and
-  // never changes.
+  // SingleThreadTaskRunner::CurrentDefaultHandle is set and it is passed during
+  // construction and never changes.
   // 2) The WaylandBufferManagerGpu runs in unit tests and when it's created,
   // the task runner is not available and must be set later when ::Initialize is
   // called. In this case, there is no race between ::Initialize and
@@ -61,7 +61,8 @@ WaylandBufferManagerGpu::WaylandBufferManagerGpu(
     gpu_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   } else {
     // In tests, the further calls might happen on a different sequence.
-    // Otherwise, ThreadTaskRunnerHandle should have already been set.
+    // Otherwise, SingleThreadTaskRunner::CurrentDefaultHandle should have
+    // already been set.
     DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
   }
 }

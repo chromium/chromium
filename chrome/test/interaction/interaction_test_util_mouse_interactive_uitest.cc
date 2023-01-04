@@ -4,8 +4,8 @@
 
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -106,8 +106,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, GestureAborted) {
                                  view->GetBoundsInScreen().CenterPoint();
                              // Queue a cancellation. This should execute
                              // sometime after the mouse move is sent.
-                             base::ThreadTaskRunnerHandle::Get()->PostTask(
-                                 FROM_HERE, cancel);
+                             base::SingleThreadTaskRunner::GetCurrentDefault()
+                                 ->PostTask(FROM_HERE, cancel);
                              // Perform the following gesture:
                              // - move to the center point of the app menu
                              // button

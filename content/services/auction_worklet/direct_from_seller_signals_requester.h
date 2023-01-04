@@ -143,7 +143,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
                      const GURL& signals_url);
 
     // Methods to run the callback synchronously and asynchronously (by posting
-    // to the SequencedTaskRunnerHandle).
+    // to the SequencedTaskRunner::CurrentDefaultHandle).
     //
     // The async version uses WeakPtr, so it will be cancelled if this Request
     // object is destroyed. The sync version should only be used after a

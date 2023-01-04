@@ -8,8 +8,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/common/mock_simple_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +29,7 @@ class DownloadOfflineContentProviderTest : public testing::Test {
  public:
   DownloadOfflineContentProviderTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        handle_(task_runner_),
+        current_default_handle_(task_runner_),
         provider_(&aggregator_, kTestDownloadNamespace),
         coordinator_(base::NullCallback(), false) {}
 
@@ -48,7 +48,7 @@ class DownloadOfflineContentProviderTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
   OfflineContentAggregator aggregator_;
   DownloadOfflineContentProvider provider_;
   SimpleDownloadManagerCoordinator coordinator_;

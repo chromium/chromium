@@ -16,8 +16,8 @@ namespace internal {
 
 // Returns the SequencedTaskRunner to use from the optional user-provided
 // SequencedTaskRunner. If |runner| is provided non-null, it is returned.
-// Otherwise, SequencedTaskRunnerHandle::Get() is returned. If |runner| is non-
-// null, it must run tasks on the current sequence.
+// Otherwise, SequencedTaskRunner::GetCurrentDefault() is returned. If |runner|
+// is non-null, it must run tasks on the current sequence.
 scoped_refptr<base::SequencedTaskRunner>
 GetTaskRunnerToUseFromUserProvidedTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> runner);

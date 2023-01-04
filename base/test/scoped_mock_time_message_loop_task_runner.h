@@ -14,8 +14,8 @@ class SingleThreadTaskRunner;
 
 // A scoped wrapper around TestMockTimeTaskRunner that replaces
 // CurrentThread::Get()'s task runner (and consequently
-// ThreadTaskRunnerHandle) with a TestMockTimeTaskRunner and resets it back at
-// the end of its scope.
+// SingleThreadTaskRunner::GetCurrentDefault) with a TestMockTimeTaskRunner and
+// resets it back at the end of its scope.
 //
 // Note: RunLoop() will not work in the scope of a
 // ScopedMockTimeMessageLoopTaskRunner, the underlying TestMockTimeTaskRunner's

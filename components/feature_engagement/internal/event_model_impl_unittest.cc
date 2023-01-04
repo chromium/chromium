@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
 #include "components/feature_engagement/internal/in_memory_event_store.h"
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
@@ -163,7 +163,7 @@ class EventModelImplTest : public ::testing::Test {
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle handle_;
 
   std::unique_ptr<EventModelImpl> model_;
   raw_ptr<TestInMemoryEventStore> store_;

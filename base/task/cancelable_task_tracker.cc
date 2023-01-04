@@ -109,7 +109,7 @@ CancelableTaskTracker::TaskId CancelableTaskTracker::PostTaskAndReply(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(weak_this_);
 
-  // We need a SequencedTaskRunnerHandle to run |reply|.
+  // We need a SequencedTaskRunner::CurrentDefaultHandle to run |reply|.
   DCHECK(SequencedTaskRunner::HasCurrentDefault());
 
   auto flag = MakeRefCounted<TaskCancellationFlag>();

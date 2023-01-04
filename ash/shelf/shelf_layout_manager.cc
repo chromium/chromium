@@ -3042,7 +3042,8 @@ void ShelfLayoutManager::OnShelfTrayBubbleVisibilityChanged(bool bubble_shown) {
   // status area tray bubble is set, which is before the tray bubble is
   // created/destructed. Meanwhile, we rely on the state of tray bubble to
   // calculate the auto-hide state.
-  // Use ThreadTaskRunnerHandle to specify that the task runs on the UI thread.
+  // Use SingleThreadTaskRunner::CurrentDefaultHandle to specify that the task
+  // runs on the UI thread.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, visibility_update_for_tray_callback_.callback());
 }

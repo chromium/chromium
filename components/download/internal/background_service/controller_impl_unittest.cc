@@ -13,10 +13,10 @@
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/entry.h"
@@ -95,7 +95,7 @@ void UploadClient::GetUploadData(const std::string& guid,
   scoped_refptr<network::ResourceRequestBody> post_body =
       new network::ResourceRequestBody();
   unsigned int delay = upload_response_delay_[guid];
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), post_body),
       base::Seconds(delay));
 }
@@ -129,7 +129,7 @@ class DownloadServiceControllerImplTest : public testing::Test {
  public:
   DownloadServiceControllerImplTest()
       : task_runner_(new base::TestMockTimeTaskRunner),
-        handle_(task_runner_),
+        current_default_handle_(task_runner_),
         controller_(nullptr),
         client_(nullptr),
         driver_(nullptr),
@@ -226,7 +226,7 @@ class DownloadServiceControllerImplTest : public testing::Test {
                void(const std::string&, DownloadParams::StartResult));
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 
   std::unique_ptr<ControllerImpl> controller_;
   raw_ptr<Configuration> config_;

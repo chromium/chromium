@@ -35,7 +35,7 @@ class RefCountedDeleteOnSequence : public subtle::RefCountedThreadSafeBase {
   using RefCountPreferenceTag = subtle::StartRefCountFromZeroTag;
 
   // A SequencedTaskRunner for the current sequence can be acquired by calling
-  // SequencedTaskRunnerHandle::Get().
+  // SequencedTaskRunner::GetCurrentDefault().
   explicit RefCountedDeleteOnSequence(
       scoped_refptr<SequencedTaskRunner> owning_task_runner)
       : subtle::RefCountedThreadSafeBase(subtle::GetRefCountPreference<T>()),

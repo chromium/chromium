@@ -32,7 +32,7 @@ class SoftwareOutputDeviceClient;
 // OutputSurface, such as to a platform-provided window framebuffer.
 class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
  public:
-  // Uses TaskRunner returned from SequencedTaskRunnerHandle::Get().
+  // Uses TaskRunner returned from SequencedTaskRunner::GetCurrentDefault().
   SoftwareOutputDevice();
   explicit SoftwareOutputDevice(
       scoped_refptr<base::SequencedTaskRunner> task_runner);

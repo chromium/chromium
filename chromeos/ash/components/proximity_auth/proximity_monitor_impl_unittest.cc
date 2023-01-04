@@ -9,12 +9,12 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -83,7 +83,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
                            .SetName(kRemoteDeviceName)
                            .Build()),
         task_runner_(new base::TestSimpleTaskRunner()),
-        thread_task_runner_handle_(task_runner_) {}
+        thread_task_runner_current_default_handle_(task_runner_) {}
 
   ~ProximityAuthProximityMonitorImplTest() override {}
 
@@ -142,7 +142,8 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle thread_task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      thread_task_runner_current_default_handle_;
   BluetoothDevice::ConnectionInfoCallback connection_info_callback_;
   ash::multidevice::ScopedDisableLoggingForTesting disable_logging_;
 

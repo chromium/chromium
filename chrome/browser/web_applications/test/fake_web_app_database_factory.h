@@ -21,9 +21,6 @@ namespace web_app {
 
 class WebAppProto;
 
-// Requires base::MessageLoop message_loop_ in test fixture. Reason:
-// InMemoryStore needs a SequencedTaskRunner.
-// MessageLoop ctor calls MessageLoop::SetThreadTaskRunnerHandle().
 class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
   FakeWebAppDatabaseFactory();

@@ -20,10 +20,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -168,7 +168,7 @@ class UkmServiceTest : public testing::Test,
  public:
   UkmServiceTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
     ClearPrefs();
   }
@@ -203,7 +203,8 @@ class UkmServiceTest : public testing::Test,
   metrics::TestMetricsServiceClient client_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 }  // namespace
@@ -1842,7 +1843,7 @@ class UkmServiceTestWithIndependentAppKM
  public:
   UkmServiceTestWithIndependentAppKM()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
 
     prefs_.ClearPref(prefs::kUkmClientId);
@@ -1860,7 +1861,8 @@ class UkmServiceTestWithIndependentAppKM
   TestingPrefServiceSimple prefs_;
   metrics::TestMetricsServiceClient client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1936,7 +1938,7 @@ class UkmServiceTestWithIndependentAppKMFullConsent
  public:
   UkmServiceTestWithIndependentAppKMFullConsent()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
 
     prefs_.ClearPref(prefs::kUkmClientId);
@@ -1954,7 +1956,8 @@ class UkmServiceTestWithIndependentAppKMFullConsent
   TestingPrefServiceSimple prefs_;
   metrics::TestMetricsServiceClient client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

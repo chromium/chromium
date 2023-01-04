@@ -9,7 +9,6 @@
 #include "base/android/build_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/base/waiting.h"
@@ -46,7 +45,7 @@ class MockMediaCodecLoopClient : public StrictMock<MediaCodecLoop::Client> {
 class MediaCodecLoopTest : public testing::Test {
  public:
   MediaCodecLoopTest()
-      : task_runner_handle_(mock_task_runner_),
+      : task_runner_current_default_handle_(mock_task_runner_),
         client_(std::make_unique<MockMediaCodecLoopClient>()) {}
 
   MediaCodecLoopTest(const MediaCodecLoopTest&) = delete;
@@ -190,7 +189,8 @@ class MediaCodecLoopTest : public testing::Test {
   // MediaCodecLoop's task runner.
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_ =
       new base::TestMockTimeTaskRunner;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 
   std::unique_ptr<MediaCodecLoop> codec_loop_;
   std::unique_ptr<MockMediaCodecLoopClient> client_;

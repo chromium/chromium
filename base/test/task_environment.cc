@@ -420,7 +420,8 @@ TaskEnvironment::TaskEnvironment(
       sequence_manager_->SetTimeDomain(mock_time_domain_.get());
     simple_task_executor_ = std::make_unique<SimpleTaskExecutor>(task_runner_);
     CHECK(base::SingleThreadTaskRunner::HasCurrentDefault())
-        << "ThreadTaskRunnerHandle should've been set now.";
+        << "SingleThreadTaskRunner::CurrentDefaultHandle should've been set "
+           "now.";
     CompleteInitialization();
   }
 

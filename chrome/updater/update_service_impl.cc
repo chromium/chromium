@@ -530,7 +530,8 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                        : base::FilePath());
 
   // Create a thread runner that:
-  //   1) has SequencedTaskRunnerHandle set, to run `state_update` callback.
+  //   1) has SequencedTaskRunner::CurrentDefaultHandle set, to run
+  //      `state_update` callback.
   //   2) may block, since `RunApplicationInstaller` blocks.
   //   3) has `base::WithBaseSyncPrimitives()`, since `RunApplicationInstaller`
   //      waits on process.

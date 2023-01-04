@@ -11,9 +11,9 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/download/network/network_status_listener_impl.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -47,7 +47,8 @@ base::Time GetNow() {
 class AutoResumptionHandlerTest : public testing::Test {
  public:
   AutoResumptionHandlerTest()
-      : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
+      : task_runner_(new base::TestMockTimeTaskRunner),
+        current_default_handle_(task_runner_) {}
 
   AutoResumptionHandlerTest(const AutoResumptionHandlerTest&) = delete;
   AutoResumptionHandlerTest& operator=(const AutoResumptionHandlerTest&) =
@@ -110,7 +111,7 @@ class AutoResumptionHandlerTest : public testing::Test {
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
   raw_ptr<download::test::MockTaskManager> task_manager_;
   std::unique_ptr<AutoResumptionHandler> auto_resumption_handler_;
   base::SimpleTestClock clock_;

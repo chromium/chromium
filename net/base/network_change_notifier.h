@@ -610,7 +610,7 @@ class NET_EXPORT NetworkChangeNotifier {
   // |omit_observers_in_constructor_for_testing| is true, internal observers
   // aren't added during construction - this is used to skip registering
   // observers from MockNetworkChangeNotifier, and allow its construction when
-  // SequencedTaskRunnerHandle isn't set.
+  // SingleThreadTaskRunner::CurrentDefaultHandle isn't set.
   explicit NetworkChangeNotifier(
       const NetworkChangeCalculatorParams& params =
           NetworkChangeCalculatorParams(),

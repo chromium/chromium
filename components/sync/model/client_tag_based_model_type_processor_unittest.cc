@@ -526,8 +526,8 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   std::unique_ptr<TestModelTypeSyncBridge> bridge_;
   sync_pb::ModelTypeState model_type_state_;
 
-  // This sets SequencedTaskRunnerHandle on the current thread, which the type
-  // processor will pick up as the sync task runner.
+  // This sets SequencedTaskRunner::CurrentDefaultHandle on the current thread,
+  // which the type processor will pick up as the sync task runner.
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // This run loop is used to wait for OnReadyToConnect is called.

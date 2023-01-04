@@ -201,7 +201,7 @@ base::OnceCallback<int()> compute_result_cb = base::BindOnce(&ComputeResult);
 
 // Task runner for the current thread.
 scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-    base::SequencedTaskRunnerHandle::Get();
+    base::SequencedTaskRunner::GetCurrentDefault();
 
 // A function to accept the result, except it can only be run safely from the
 // current thread.
@@ -605,7 +605,7 @@ Then use `base::WeakPtrFactory<T>::GetWeakPtr()` as the receiver when
 binding a callback:
 
 ```cpp
-base::SequencedTaskRunnerHandle::Get()->PostTask(
+base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
     FROM_HERE,
     base::BindOnce(&MyClass::Foo, weak_factory_.GetWeakPtr());
 ```

@@ -185,8 +185,8 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
         cookie_settings_->GetCookieSettings(), domain, is_https);
   }
 
-  // There must be a valid ThreadTaskRunnerHandle in HostContentSettingsMap's
-  // scope.
+  // There must be a valid SingleThreadTaskRunner::CurrentDefaultHandle in
+  // HostContentSettingsMap's scope.
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;

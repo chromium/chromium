@@ -4529,7 +4529,8 @@ TEST_P(SequenceManagerTest, DestructorPostsViaTaskRunnerHandleDuringShutdown) {
         run = true;
       })));
 
-  // Should not DCHECK when ThreadTaskRunnerHandle::Get() is invoked.
+  // Should not DCHECK when SingleThreadTaskRunner::GetCurrentDefault() is
+  // invoked.
   DestroySequenceManager();
   EXPECT_TRUE(run);
 }
@@ -5497,8 +5498,9 @@ TEST_P(SequenceManagerTest, OnTaskPostedCallbacks) {
   EXPECT_EQ(2, counter2);
 }
 
-TEST(SequenceManagerTest,
-     CanAccessThreadTaskRunnerHandleDuringSequenceLocalStorageSlotDestruction) {
+TEST(
+    SequenceManagerTest,
+    CanAccessSingleThreadTaskRunnerCurrentDefaultHandleHandleDuringSequenceLocalStorageSlotDestruction) {
   auto sequence_manager =
       sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
           MessagePump::Create(MessagePumpType::DEFAULT));

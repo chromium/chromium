@@ -32,7 +32,7 @@ CreateFakeServerHttpPostProviderFactoryHelper(
 
 syncer::CreateHttpPostProviderFactory CreateFakeServerHttpPostProviderFactory(
     const base::WeakPtr<FakeServer>& fake_server) {
-  // TODO(treib): Switch to SequencedTaskRunnerHandler.
+  // TODO(treib): Switch to SequencedTaskRunner::CurrentDefaultHandle.
   return base::BindRepeating(&CreateFakeServerHttpPostProviderFactoryHelper,
                              fake_server,
                              base::SingleThreadTaskRunner::GetCurrentDefault());

@@ -9,7 +9,7 @@ namespace offline_pages {
 
 RequestQueueTaskTestBase::RequestQueueTaskTestBase()
     : task_runner_(new base::TestMockTimeTaskRunner),
-      task_runner_handle_(task_runner_) {}
+      task_runner_current_default_handle_(task_runner_) {}
 
 RequestQueueTaskTestBase::~RequestQueueTaskTestBase() = default;
 

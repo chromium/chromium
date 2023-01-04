@@ -10,8 +10,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/prefetch/test_prefetch_dispatcher.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,7 +108,8 @@ class PrefetchImporterImplTest : public testing::Test {
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_ =
       new base::TestSimpleTaskRunner;
-  base::ThreadTaskRunnerHandle task_runner_handle_{task_runner_};
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_{task_runner_};
 
   TestOfflinePageModel model_;
   base::ScopedTempDir temp_dir_;

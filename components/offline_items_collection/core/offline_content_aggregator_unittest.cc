@@ -7,9 +7,9 @@
 #include <map>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
 #include "components/offline_items_collection/core/test_support/scoped_mock_offline_content_provider.h"
@@ -100,7 +100,8 @@ class DelayedGetAllItemOfflineContentProvider
 class OfflineContentAggregatorTest : public testing::Test {
  public:
   OfflineContentAggregatorTest()
-      : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
+      : task_runner_(new base::TestMockTimeTaskRunner),
+        current_default_handle_(task_runner_) {}
   ~OfflineContentAggregatorTest() override {}
 
  protected:
@@ -116,7 +117,7 @@ class OfflineContentAggregatorTest : public testing::Test {
                               const absl::optional<OfflineItem>& expected);
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
   OfflineContentAggregator aggregator_;
   base::WeakPtrFactory<OfflineContentAggregatorTest> weak_ptr_factory_{this};
 };

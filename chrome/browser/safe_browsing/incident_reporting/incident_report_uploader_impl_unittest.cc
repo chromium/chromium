@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -32,11 +32,11 @@ class IncidentReportUploaderImplTest : public testing::Test {
  protected:
   IncidentReportUploaderImplTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        handle_(task_runner_),
+        current_default_handle_(task_runner_),
         result_(IncidentReportUploader::UPLOAD_REQUEST_FAILED) {}
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
   IncidentReportUploader::Result result_;
   std::unique_ptr<ClientIncidentResponse> response_;
 };

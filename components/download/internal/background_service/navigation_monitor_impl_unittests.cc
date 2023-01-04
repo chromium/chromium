@@ -8,8 +8,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,7 +57,8 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
 class NavigationMonitorImplTest : public testing::Test {
  public:
   NavigationMonitorImplTest()
-      : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
+      : task_runner_(new base::TestMockTimeTaskRunner),
+        current_default_handle_(task_runner_) {}
 
   NavigationMonitorImplTest(const NavigationMonitorImplTest&) = delete;
   NavigationMonitorImplTest& operator=(const NavigationMonitorImplTest&) =
@@ -94,7 +95,7 @@ class NavigationMonitorImplTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
   std::unique_ptr<NavigationMonitorImpl> navigation_monitor_;
   std::unique_ptr<TestNavigationMonitorObserver> observer_;
   base::WeakPtrFactory<NavigationMonitorImplTest> weak_ptr_factory_{this};

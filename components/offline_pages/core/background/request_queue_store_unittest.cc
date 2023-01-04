@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/request_queue.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/offline_clock.h"
@@ -301,14 +301,15 @@ class RequestQueueStoreTestBase : public testing::Test {
   std::vector<std::unique_ptr<SavePageRequest>> last_requests_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 RequestQueueStoreTestBase::RequestQueueStoreTestBase()
     : last_result_(LastResult::RESULT_NONE),
       last_update_status_(UpdateStatus::FAILED),
       task_runner_(new base::TestMockTimeTaskRunner),
-      task_runner_handle_(task_runner_) {
+      task_runner_current_default_handle_(task_runner_) {
   EXPECT_TRUE(temp_directory_.CreateUniqueTempDir());
 }
 
@@ -370,7 +371,8 @@ class RequestQueueStoreTest : public RequestQueueStoreTestBase {
  public:
   std::unique_ptr<RequestQueueStore> BuildStore() {
     return std::make_unique<RequestQueueStore>(
-        base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        temp_directory_.GetPath());
   }
   std::unique_ptr<RequestQueueStore> BuildStoreWithOldSchema(
       int version,
@@ -393,7 +395,8 @@ class RequestQueueStoreTest : public RequestQueueStoreTestBase {
     }
 
     return std::make_unique<RequestQueueStore>(
-        base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        temp_directory_.GetPath());
   }
 
   // Performs checks on the database to verify it works after upgrading.

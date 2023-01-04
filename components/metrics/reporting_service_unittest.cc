@@ -13,8 +13,8 @@
 #include "base/bind.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -114,7 +114,7 @@ class ReportingServiceTest : public testing::Test {
  public:
   ReportingServiceTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     ReportingService::RegisterPrefs(testing_local_state_.registry());
   }
 
@@ -127,7 +127,8 @@ class ReportingServiceTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
   TestMetricsServiceClient client_;
 
  private:

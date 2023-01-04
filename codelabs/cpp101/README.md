@@ -214,7 +214,7 @@ those tasks.
 used abstraction which handles running tasks (which are instances
 of `base::OnceClosure`) in sequential order. These tasks are not guaranteed to
 run on the same thread. The preferred way of posting to the current (virtual)
-thread is `base::SequencedTaskRunnerHandle::Get()`.
+thread is `base::SequencedTaskRunner::GetCurrentDefault()`.
 
 A task that can run on any thread and doesn’t have ordering or mutual exclusion
 requirements with other tasks should be posted using one of the
@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
 ### Exercise 3a: Sleep
 
 Implement the Unix command-line utility `sleep` using only
-a `base::SequencedTaskRunnerHandle` (i.e., without using the `sleep` function
+a `base::SequencedTaskRunner::CurrentDefaultHandle` (i.e., without using the `sleep` function
 or `base::PlatformThread::Sleep`).
 Hint: You will need to use `base::RunLoop` to prevent the main function from
 exiting prematurely.

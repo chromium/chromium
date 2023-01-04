@@ -8,9 +8,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/background_service/stats.h"
 #include "components/download/internal/background_service/test/download_params_utils.h"
 #include "components/download/internal/background_service/test/mock_controller.h"
@@ -28,7 +28,7 @@ class InitAwareBackgroundDownloadServiceTest : public testing::Test {
   InitAwareBackgroundDownloadServiceTest()
       : controller_(nullptr),
         task_runner_(new base::TestSimpleTaskRunner),
-        handle_(task_runner_) {}
+        current_default_handle_(task_runner_) {}
 
   InitAwareBackgroundDownloadServiceTest(
       const InitAwareBackgroundDownloadServiceTest&) = delete;
@@ -48,7 +48,7 @@ class InitAwareBackgroundDownloadServiceTest : public testing::Test {
   raw_ptr<test::MockController> controller_;
   std::unique_ptr<InitAwareBackgroundDownloadService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 };
 
 }  // namespace

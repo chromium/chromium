@@ -10,8 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/file_monitor_impl.h"
@@ -28,7 +28,7 @@ class FileMonitorTest : public testing::Test {
  public:
   FileMonitorTest()
       : task_runner_(new base::TestSimpleTaskRunner),
-        handle_(task_runner_),
+        current_default_handle_(task_runner_),
         completion_callback_called_(false) {}
 
   FileMonitorTest(const FileMonitorTest&) = delete;
@@ -52,7 +52,7 @@ class FileMonitorTest : public testing::Test {
 
   base::ScopedTempDir scoped_temp_dir_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
   base::FilePath download_dir_;
   bool completion_callback_called_;
   std::unique_ptr<FileMonitor> monitor_;

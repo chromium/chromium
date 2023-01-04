@@ -14,11 +14,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -219,8 +219,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   bool reboot_after_update_ = false;
 
   base::test::TaskEnvironment task_environment_;
-  base::ThreadTaskRunnerHandleOverrideForTesting
-      thread_task_runner_handle_override_;
+  base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
+      single_thread_task_runner_current_default_handle_override_;
 
   TestingPrefServiceSimple local_state_;
   MockUserManager* mock_user_manager_;  // Not owned.
@@ -320,7 +320,7 @@ void MockAutomaticRebootManagerObserver::StopObserving() {
 
 AutomaticRebootManagerBasicTest::AutomaticRebootManagerBasicTest()
     : task_runner_(new TestAutomaticRebootManagerTaskRunner),
-      thread_task_runner_handle_override_(task_runner_),
+      single_thread_task_runner_current_default_handle_override_(task_runner_),
       mock_user_manager_(new MockUserManager),
       user_manager_enabler_(base::WrapUnique(mock_user_manager_)) {}
 

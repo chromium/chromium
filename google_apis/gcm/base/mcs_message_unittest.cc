@@ -7,8 +7,8 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,13 +25,13 @@ class MCSMessageTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 MCSMessageTest::MCSMessageTest()
-  : task_runner_(new base::TestSimpleTaskRunner()),
-    task_runner_handle_(task_runner_) {
-}
+    : task_runner_(new base::TestSimpleTaskRunner()),
+      task_runner_current_default_handle_(task_runner_) {}
 
 MCSMessageTest::~MCSMessageTest() {
 }

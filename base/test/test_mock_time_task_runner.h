@@ -55,7 +55,8 @@ namespace base {
 //
 // A TestMockTimeTaskRunner of Type::kBoundToThread has the following additional
 // properties:
-//   - Thread/SequencedTaskRunnerHandle refers to it on its thread.
+//   - Thread/SequencedTaskRunner::CurrentDefaultHandle refers to it on its
+//     thread.
 //   - It can be driven by a RunLoop on the thread it was created on.
 //     RunLoop::Run() will result in running non-delayed tasks until idle and
 //     then, if RunLoop::QuitWhenIdle() wasn't invoked, fast-forwarding time to
@@ -73,7 +74,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
                                public RunLoop::Delegate {
  public:
   // Everything that is executed in the scope of a ScopedContext will behave as
-  // though it ran under |scope| (i.e. ThreadTaskRunnerHandle,
+  // though it ran under |scope|
+  // (i.e. SingleThreadTaskRunner::CurrentDefaultHandle,
   // RunsTasksInCurrentSequence, etc.). This allows the test body to be all in
   // one block when multiple TestMockTimeTaskRunners share the main thread.
   // Note: RunLoop isn't supported: will DCHECK if used inside a ScopedContext.
@@ -84,7 +86,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   //    protected:
   //     DoBarOnFoo() {
   //       DCHECK(foo_task_runner_->RunsOnCurrentThread());
-  //       EXPECT_EQ(foo_task_runner_, ThreadTaskRunnerHandle::Get());
+  //       EXPECT_EQ(
+  //           foo_task_runner_, SingleThreadTaskRunner::GetCurrentDefault());
   //       DoBar();
   //     }
   //
@@ -127,12 +130,13 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
 
   enum class Type {
     // A TestMockTimeTaskRunner which can only be driven directly through its
-    // API. Thread/SequencedTaskRunnerHandle will refer to it only in the scope
-    // of its tasks.
+    // API. SingleThread/SequencedTaskRunner::CurrentDefaultHandle will refer to
+    // it only in the scope of its tasks.
     kStandalone,
     // A TestMockTimeTaskRunner which will associate to the thread it is created
     // on, enabling RunLoop to drive it and making
-    // Thread/SequencedTaskRunnerHandle refer to it on that thread.
+    // Thread/SequencedTaskRunner::CurrentDefaultHandle refer to it on that
+    // thread.
     kBoundToThread,
   };
 

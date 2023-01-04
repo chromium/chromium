@@ -67,7 +67,7 @@ class TestApiImpl : public mojom::TestApi {
       ForceLeveldbDatabaseCompactionCallback callback) override {
     // Note that we post to a SequencedTaskRunner because the task will use Mojo
     // bindings, and by default Mojo bindings assume there is a current
-    // SequencedTaskRunnerHandle they can use for scheduling.
+    // SequencedTaskRunner::CurrentDefaultHandle they can use for scheduling.
     base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::WithBaseSyncPrimitives()})
         ->PostTask(

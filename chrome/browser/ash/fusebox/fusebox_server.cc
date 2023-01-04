@@ -232,7 +232,7 @@ void RunCreateCallback(
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
   auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&RunCreateAndThenStatCallback, std::move(callback),
                      fs_context, read_only, fuse_handle,
                      std::move(on_failure)));
@@ -708,7 +708,7 @@ void Server::Create(const CreateRequestProto& request_proto,
                                    weak_ptr_factory_.GetWeakPtr(), fuse_handle);
 
   auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&RunCreateCallback, std::move(callback), common.fs_context,
                      common.fs_url, common.read_only, fuse_handle,
                      std::move(on_failure)));

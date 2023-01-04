@@ -6,8 +6,8 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
@@ -60,7 +60,7 @@ class ThrottledOfflineContentProviderTest : public testing::Test {
  public:
   ThrottledOfflineContentProviderTest()
       : task_runner_(new base::TestMockTimeTaskRunner),
-        handle_(task_runner_),
+        current_default_handle_(task_runner_),
         delay_(base::Seconds(1)),
         provider_(delay_, &wrapped_provider_) {}
   ~ThrottledOfflineContentProviderTest() override {}
@@ -75,7 +75,7 @@ class ThrottledOfflineContentProviderTest : public testing::Test {
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 
   base::TimeDelta delay_;
   MockOfflineContentProvider wrapped_provider_;

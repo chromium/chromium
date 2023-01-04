@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -85,7 +85,7 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
     OnceInstallCallback callback,
     bool use_fallback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),
                                   webapps::InstallResultCode::
                                       kCancelledOnWebAppProviderShuttingDown));
@@ -106,7 +106,7 @@ void WebAppCommandScheduler::InstallFromInfo(
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(install_callback), AppId(),
                                   webapps::InstallResultCode::
                                       kCancelledOnWebAppProviderShuttingDown));
@@ -126,7 +126,7 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
     OnceInstallCallback install_callback,
     const WebAppInstallParams& install_params) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(install_callback), AppId(),
                                   webapps::InstallResultCode::
                                       kCancelledOnWebAppProviderShuttingDown));
@@ -146,7 +146,7 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
     base::WeakPtr<content::WebContents> contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),
                                   webapps::InstallResultCode::
                                       kCancelledOnWebAppProviderShuttingDown));
@@ -164,7 +164,7 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
     bool allowed,
     base::OnceClosure callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback)));
     return;
   }
@@ -180,7 +180,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateDataFetch(
     base::WeakPtr<content::WebContents> contents,
     ManifestFetchCallback callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   ManifestUpdateResult::kWebContentsDestroyed,
                                   /*install_info_=*/absl::nullopt,
@@ -203,7 +203,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     ManifestWriteCallback callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   /*url=*/GURL(),
                                   /*app_id=*/AppId(),
@@ -223,7 +223,7 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
     base::WeakPtr<content::WebContents> web_contents,
     FetchInstallabilityForChromeManagementCallback callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   InstallableCheckResult::kNotInstallable,
                                   /*app_id=*/absl::nullopt));
@@ -244,7 +244,7 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
   if (IsShuttingDown()) {
     InstallIsolatedWebAppCommandError error;
     error.message = "The profile and/or browser are shutting down.";
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), base::unexpected(error)));
     return;
@@ -277,7 +277,7 @@ void WebAppCommandScheduler::Uninstall(
     webapps::WebappUninstallSource uninstall_source,
     WebAppUninstallCommand::UninstallWebAppCallback callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   webapps::UninstallResultCode::kCancelled));
     return;
@@ -292,8 +292,8 @@ void WebAppCommandScheduler::SetRunOnOsLoginMode(const AppId& app_id,
                                                  RunOnOsLoginMode login_mode,
                                                  base::OnceClosure callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
@@ -305,8 +305,8 @@ void WebAppCommandScheduler::SetRunOnOsLoginMode(const AppId& app_id,
 void WebAppCommandScheduler::SyncRunOnOsLoginMode(const AppId& app_id,
                                                   base::OnceClosure callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
@@ -320,8 +320,8 @@ void WebAppCommandScheduler::UpdateProtocolHandlerUserApproval(
     ApiApprovalState approval_state,
     base::OnceClosure callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
@@ -335,8 +335,8 @@ void WebAppCommandScheduler::ClearWebAppBrowsingData(
     const base::Time& end_time,
     base::OnceClosure done) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(done));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             std::move(done));
     return;
   }
 
@@ -350,8 +350,8 @@ void WebAppCommandScheduler::SetAppIsDisabled(const AppId& app_id,
                                               bool is_disabled,
                                               base::OnceClosure callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
@@ -420,7 +420,7 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
     const AppId& app_id,
     base::OnceClosure synchronize_callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(synchronize_callback));
     return;
   }
@@ -433,8 +433,8 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
 void WebAppCommandScheduler::InstallAppLocally(const AppId& app_id,
                                                base::OnceClosure callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 
@@ -446,7 +446,7 @@ void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,
                                        LaunchWebAppWindowSetting option,
                                        LaunchWebAppCallback callback) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr, nullptr,
                                   apps::LaunchContainer::kLaunchContainerNone));
     return;

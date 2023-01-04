@@ -4,6 +4,7 @@
 
 #include "services/accessibility/features/automation_internal_bindings.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
@@ -48,7 +49,8 @@ class TestIsolateHolder : public BindingsIsolateHolder {
 
     // Test isolate uses the test main thread and will block.
     isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-        base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        gin::IsolateHolder::kSingleThread,
         gin::IsolateHolder::IsolateType::kUtility);
 
     v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
@@ -107,7 +109,7 @@ class AutomationInternalBindingsTest : public testing::Test {
     test_isolate_holder_ = std::make_unique<TestIsolateHolder>();
     automation_bindings_ = std::make_unique<AutomationInternalBindings>(
         test_isolate_holder_->GetWeakPtr(), service_client_->GetWeakPtr(),
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     test_isolate_holder_->StartTestV8AndBindAutomation(
         automation_bindings_.get());
   }

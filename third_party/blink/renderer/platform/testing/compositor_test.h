@@ -20,8 +20,9 @@ class CompositorTest : public testing::Test {
   ~CompositorTest() override;
 
  protected:
-  // cc::LayerTreeHost requires a task runner, so we use a mock task runner
-  // and bind it as the current ThreadTaskRunnerHandle for this thread.
+  // cc::LayerTreeHost requires a task runner, so we use a mock task runner and
+  // bind it as the current SingleThreadTaskRunner::CurrentDefaultHandle for
+  // this thread.
   scoped_refptr<base::TestMockTimeTaskRunner> runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       runner_current_default_handle_;

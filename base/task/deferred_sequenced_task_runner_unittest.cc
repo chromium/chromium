@@ -57,8 +57,8 @@ class DeferredSequencedTaskRunnerTest : public testing::Test {
 
  protected:
   DeferredSequencedTaskRunnerTest()
-      : runner_(
-            new DeferredSequencedTaskRunner(ThreadTaskRunnerHandle::Get())) {}
+      : runner_(new DeferredSequencedTaskRunner(
+            SingleThreadTaskRunner::GetCurrentDefault())) {}
 
   test::TaskEnvironment task_environment_;
   scoped_refptr<DeferredSequencedTaskRunner> runner_;
@@ -206,7 +206,7 @@ TEST_F(DeferredSequencedTaskRunnerTest, StartWithTaskRunner) {
                          std::move(quit_closure).Run();
                        },
                        &run_called, run_loop.QuitClosure()));
-  runner->StartWithTaskRunner(ThreadTaskRunnerHandle::Get());
+  runner->StartWithTaskRunner(SingleThreadTaskRunner::GetCurrentDefault());
   run_loop.Run();
   EXPECT_TRUE(run_called);
 }

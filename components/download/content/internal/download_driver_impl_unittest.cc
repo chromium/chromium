@@ -9,9 +9,9 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
 #include "components/download/public/common/download_features.h"
@@ -59,7 +59,7 @@ class DownloadDriverImplTest : public testing::Test {
   DownloadDriverImplTest()
       : coordinator_(base::NullCallback(), false),
         task_runner_(new base::TestSimpleTaskRunner),
-        handle_(task_runner_) {}
+        current_default_handle_(task_runner_) {}
 
   DownloadDriverImplTest(const DownloadDriverImplTest&) = delete;
   DownloadDriverImplTest& operator=(const DownloadDriverImplTest&) = delete;
@@ -81,7 +81,7 @@ class DownloadDriverImplTest : public testing::Test {
   std::unique_ptr<DownloadDriverImpl> driver_;
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 };
 
 // Ensure the download manager can be initialized after the download driver.

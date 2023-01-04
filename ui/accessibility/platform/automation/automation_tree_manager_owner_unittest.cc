@@ -64,7 +64,8 @@ class FakeAutomationV8Router : public AutomationV8Router {
           gin::ArrayBufferAllocator::SharedInstance());
     }
     isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-        base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        gin::IsolateHolder::kSingleThread,
         gin::IsolateHolder::IsolateType::kUtility);
   }
   FakeAutomationV8Router(const FakeAutomationV8Router&) = delete;

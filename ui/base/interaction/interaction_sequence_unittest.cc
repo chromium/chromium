@@ -8,11 +8,11 @@
 #include "base/debug/stack_trace.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -2015,8 +2015,8 @@ TEST(InteractionSequenceTest, SimulateTestTimeout) {
                        .SetElementID(kTestIdentifier1)
                        .SetStartCallback(base::BindOnce(
                            [](base::OnceClosure cb) {
-                             base::ThreadTaskRunnerHandle::Get()->PostTask(
-                                 FROM_HERE, std::move(cb));
+                             base::SingleThreadTaskRunner::GetCurrentDefault()
+                                 ->PostTask(FROM_HERE, std::move(cb));
                            },
                            std::move(delete_sequence))))
           .AddStep(

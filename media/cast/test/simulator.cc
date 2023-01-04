@@ -59,8 +59,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -309,7 +309,8 @@ void RunSimulation(const base::FilePath& source_path,
   // Task runner.
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner =
       new FakeSingleThreadTaskRunner(&testing_clock);
-  base::ThreadTaskRunnerHandle task_runner_handle(task_runner);
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle(task_runner);
 
   // CastEnvironments.
   test::SkewedTickClock sender_clock(&testing_clock);

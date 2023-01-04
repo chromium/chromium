@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
@@ -316,7 +315,8 @@ SequenceId SchedulerDfs::CreateSequence(
 
 SequenceId SchedulerDfs::CreateSequenceForTesting(SchedulingPriority priority) {
   // This will create the sequence on the thread on which this method is called.
-  return CreateSequence(priority, base::ThreadTaskRunnerHandle::Get());
+  return CreateSequence(priority,
+                        base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void SchedulerDfs::DestroySequence(SequenceId sequence_id) {
@@ -597,10 +597,11 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTaskFromRoot(
   // Return |root_sequence| only if its dependencies are done, and if it can
   // run on the current thread.
   DVLOG_IF(10, root_sequence->task_runner() !=
-                   base::ThreadTaskRunnerHandle::Get().get())
+                   base::SingleThreadTaskRunner::GetCurrentDefault().get())
       << "Will not run sequence because it does not belong to this thread.";
-  if (are_dependencies_done && root_sequence->task_runner() ==
-                                   base::ThreadTaskRunnerHandle::Get().get()) {
+  if (are_dependencies_done &&
+      root_sequence->task_runner() ==
+          base::SingleThreadTaskRunner::GetCurrentDefault().get()) {
     return root_sequence;
   } else {
     DVLOG_IF(10, !are_dependencies_done)
@@ -611,7 +612,7 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTaskFromRoot(
 }
 
 SchedulerDfs::Sequence* SchedulerDfs::FindNextTask() {
-  auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
+  auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto& sorted_sequences = GetSortedRunnableSequences(task_runner);
   // Walk the scheduling queue starting with the highest priority sequence and
   // find the first sequence that can be run. The loop will iterate more than
@@ -637,7 +638,7 @@ void SchedulerDfs::RunNextTask() {
 
   {
     base::AutoLock auto_lock(lock_);
-    auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
+    auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
     auto* thread_state = &per_thread_state_map_[task_runner];
     DVLOG(10) << "RunNextTask: Task runner is " << (uint64_t)task_runner;
 
@@ -675,7 +676,7 @@ void SchedulerDfs::RunNextTask() {
   // Finally, reschedule RunNextTask if there is any potential remaining work.
   {
     base::AutoLock auto_lock(lock_);
-    auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
+    auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
     auto* thread_state = &per_thread_state_map_[task_runner];
 
     if (!HasAnyUnblockedTasksOnRunner(task_runner)) {
@@ -693,7 +694,7 @@ void SchedulerDfs::RunNextTask() {
 
 void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
   base::AutoLock auto_lock(lock_);
-  auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
+  auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto* thread_state = &per_thread_state_map_[task_runner];
 
   const bool log_histograms =

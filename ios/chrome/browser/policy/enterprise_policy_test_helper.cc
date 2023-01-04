@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
