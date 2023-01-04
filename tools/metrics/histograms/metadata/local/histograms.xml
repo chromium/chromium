@@ -36,25 +36,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Under100KB" summary="DB size under 100KB."/>
 </variants>
 
-<histogram base="true" name="LocalNetworkRequests.PrivatePage" units="requests"
-    expires_after="2020-07-06">
-  <owner>uthakore@chromium.org</owner>
-  <owner>invernizzi@chromium.org</owner>
-  <summary>
-    Number of requests made by a private page to resources besides itself.
-  </summary>
-</histogram>
-
-<histogram base="true" name="LocalNetworkRequests.PublicPage" units="requests"
-    expires_after="M81">
-  <owner>uthakore@chromium.org</owner>
-  <owner>invernizzi@chromium.org</owner>
-  <summary>
-    Number of requests made by a public page to resources with reserved IP
-    addresses.
-  </summary>
-</histogram>
-
 <histogram name="LocalSearchService.BindIndexHasError" enum="Boolean"
     expires_after="2023-05-31">
   <owner>tby@chromium.org</owner>

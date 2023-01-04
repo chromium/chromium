@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -137,43 +136,6 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
     DCHECK(navigation_simulator_);
     return navigation_simulator_->GetGlobalRequestID();
   }
-
-  // Helper functions to verify that particular slices of UMA histograms are
-  // empty.
-  void ExpectEmptyHistograms(internal::DomainType domain_type) {
-    for (const auto& port :
-         internal::GetLocalhostHistogramNames().at(domain_type)) {
-      for (const auto& histogramName : port.second) {
-        tester()->histogram_tester().ExpectUniqueSample(histogramName.second, 0,
-                                                        1);
-      }
-    }
-    for (const auto& resource :
-         internal::GetNonlocalhostHistogramNames().at(domain_type)) {
-      for (const auto& histogramName : resource.second) {
-        tester()->histogram_tester().ExpectUniqueSample(histogramName.second, 0,
-                                                        1);
-      }
-    }
-  }
-
-  void ExpectNoHistograms() {
-    for (const auto& domain : internal::GetLocalhostHistogramNames()) {
-      for (const auto& port : domain.second) {
-        for (const auto& status : port.second) {
-          tester()->histogram_tester().ExpectTotalCount(status.second, 0);
-        }
-      }
-    }
-    for (const auto& domain : internal::GetNonlocalhostHistogramNames()) {
-      for (const auto& resource : domain.second) {
-        for (const auto& status : resource.second) {
-          tester()->histogram_tester().ExpectTotalCount(status.second, 0);
-        }
-      }
-    }
-  }
-
   void ExpectUkmPageDomainMetric(const internal::PageAddressInfo& page,
                                  const internal::DomainType domain_type) {
     auto entries = tester()->test_ukm_recorder().GetEntriesByName(
@@ -188,10 +150,9 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
     }
   }
 
-  void ExpectMetricsAndHistograms(
+  void ExpectMetrics(
       const internal::PageAddressInfo& page,
-      const std::vector<internal::UkmMetricInfo>& expected_metrics,
-      const std::map<std::string, int>& expected_histograms) {
+      const std::vector<internal::UkmMetricInfo>& expected_metrics) {
     using LocalNetworkRequests = ukm::builders::LocalNetworkRequests;
     auto entries = tester()->test_ukm_recorder().GetEntriesByName(
         LocalNetworkRequests::kEntryName);
@@ -215,12 +176,6 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
             static_cast<int>(expected_metrics[i].port_type));
       }
     }
-
-    // Should have generated UMA histograms for all requests made.
-    for (auto hist : expected_histograms) {
-      tester()->histogram_tester().ExpectUniqueSample(hist.first, hist.second,
-                                                      1);
-    }
   }
 
  private:
@@ -230,9 +185,6 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, NoMetrics) {
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().sources_count());
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
-
-  // Sanity check
-  ExpectNoHistograms();
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -244,7 +196,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // Should generate only a domain type UKM entry and nothing else.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PUBLIC);
-  ExpectEmptyHistograms(internal::DOMAIN_TYPE_PUBLIC);
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -257,7 +208,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // Should generate only a domain type UKM entry and nothing else.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PUBLIC);
-  ExpectEmptyHistograms(internal::DOMAIN_TYPE_PUBLIC);
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -271,7 +221,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // Should generate only a domain type UKM entry and nothing else.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PRIVATE);
-  ExpectEmptyHistograms(internal::DOMAIN_TYPE_PRIVATE);
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageNoRequests) {
@@ -282,7 +231,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageNoRequests) {
 
   // Should generate only a domain type UKM entry and nothing else.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PRIVATE);
-  ExpectEmptyHistograms(internal::DOMAIN_TYPE_PRIVATE);
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, LocalhostPage) {
@@ -295,7 +243,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, LocalhostPage) {
 
   // Should generate only a domain type UKM entry and nothing else.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_LOCALHOST);
-  ExpectNoHistograms();
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, LocalhostPageIPv6) {
@@ -309,7 +256,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, LocalhostPageIPv6) {
 
   // Should generate only a domain type UKM entry and nothing else.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_LOCALHOST);
-  ExpectNoHistograms();
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -343,73 +289,35 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // We should now see UKM entries and UMA histograms for each of the types of
   // resources requested except for public resources.
-  ExpectMetricsAndHistograms(
-      page,
-      // List of expected UKM metric values.
-      {
-          {internal::RESOURCE_TYPE_ROUTER, internal::PORT_TYPE_WEB, 1,
-           0},  // 10.0.0.1:80
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1,
-           0},  // 10.0.10.200:80
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1,
-           0},  // 172.16.0.85:8181
-          {internal::RESOURCE_TYPE_ROUTER, internal::PORT_TYPE_WEB, 1,
-           0},  // 192.168.10.1:443
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1,
-           0},  // 192.168.10.123:80
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 3,
-           0},  // 192.168.10.200:8000
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 2,
-           0},  // 127.0.0.1:80
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_PRINT, 1,
-           0},  // 127.0.2.1:515
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB, 1,
-           0},  // 127.0.1.1:3306
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 1,
-           0},  // 127.0.0.1:8080
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DEV, 1,
-           0},  // 127.100.150.200:9000
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_OTHER, 1,
-           0},  // 127.0.0.1:9876
-      },
-      // List of expected nonzero UMA histogram values.
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_ROUTER)
-               .at(true),
-           2},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_PRIVATE)
-               .at(true),
-           6},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_WEB)
-               .at(true),
-           3},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_PRINT)
-               .at(true),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_DB)
-               .at(true),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_DEV)
-               .at(true),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_OTHER)
-               .at(true),
-           1},
-      });
+  ExpectMetrics(page,
+                // List of expected UKM metric values.
+                {
+                    {internal::RESOURCE_TYPE_ROUTER, internal::PORT_TYPE_WEB, 1,
+                     0},  // 10.0.0.1:80
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     1, 0},  // 10.0.10.200:80
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     1, 0},  // 172.16.0.85:8181
+                    {internal::RESOURCE_TYPE_ROUTER, internal::PORT_TYPE_WEB, 1,
+                     0},  // 192.168.10.1:443
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     1, 0},  // 192.168.10.123:80
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     3, 0},  // 192.168.10.200:8000
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     2, 0},  // 127.0.0.1:80
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_PRINT, 1, 0},  // 127.0.2.1:515
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB,
+                     1, 0},  // 127.0.1.1:3306
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     1, 0},  // 127.0.0.1:8080
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DEV,
+                     1, 0},  // 127.100.150.200:9000
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_OTHER, 1, 0},  // 127.0.0.1:9876
+
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -443,84 +351,40 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // We should now see UKM entries and UMA histograms for each of the types of
   // resources requested except for the request to the page itself.
-  ExpectMetricsAndHistograms(
-      page,
-      // List of expected UKM metric values.
-      {
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           1, 0},  // 10.0.0.1:80
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           1, 0},  // 10.0.10.200:80
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
-           0},  // 100.150.200.250:80
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           1, 0},  // 172.16.0.85:8181
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
-           0},  // 192.10.20.30:443
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_WEB,
-           1, 0},  // 192.168.10.1:443
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_WEB,
-           3, 0},  // 192.168.10.200:8000
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
-           0},  // 216.58.195.78:443
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
-           0},  // [2607:f8b0:4005:809::200e]:443
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 2,
-           0},  // 127.0.0.1:80
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_PRINT, 1,
-           0},  // 127.0.2.1:515
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB, 1,
-           0},  // 127.0.1.1:3306
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 1,
-           0},  // 127.0.0.1:8080
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DEV, 1,
-           0},  // 127.100.150.200:9000
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_OTHER, 1,
-           0},  // 127.0.0.1:9876
-      },
-      // List of expected nonzero UMA histogram values.
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_PUBLIC)
-               .at(true),
-           4},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET)
-               .at(true),
-           3},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET)
-               .at(true),
-           4},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_WEB)
-               .at(true),
-           3},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_PRINT)
-               .at(true),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_DB)
-               .at(true),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_DEV)
-               .at(true),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_OTHER)
-               .at(true),
-           1},
-      });
+  ExpectMetrics(page,
+                // List of expected UKM metric values.
+                {
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 1, 0},  // 10.0.0.1:80
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 1, 0},  // 10.0.10.200:80
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
+                     0},  // 100.150.200.250:80
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 1, 0},  // 172.16.0.85:8181
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
+                     0},  // 192.10.20.30:443
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_WEB, 1, 0},  // 192.168.10.1:443
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_WEB, 3, 0},  // 192.168.10.200:8000
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
+                     0},  // 216.58.195.78:443
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 1,
+                     0},  // [2607:f8b0:4005:809::200e]:443
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     2, 0},  // 127.0.0.1:80
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_PRINT, 1, 0},  // 127.0.2.1:515
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB,
+                     1, 0},  // 127.0.1.1:3306
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     1, 0},  // 127.0.0.1:8080
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DEV,
+                     1, 0},  // 127.100.150.200:9000
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_OTHER, 1, 0},  // 127.0.0.1:9876
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -552,84 +416,40 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // requested except for the public resources.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PRIVATE);
 
-  ExpectMetricsAndHistograms(
-      page,
-      // List of expected UKM metric values.
-      {
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 10.0.0.1:80
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 10.0.10.200:80
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
-           1},  // 100.150.200.250:80
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 172.16.0.85:8181
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
-           1},  // 192.10.20.30:443
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 192.168.10.1:443
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_WEB,
-           0, 3},  // 192.168.10.200:8000
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
-           1},  // 216.58.195.78:443
-          {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
-           1},  // [2607:f8b0:4005:809::200e]:443
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 0,
-           2},  // 127.0.0.1:80
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_PRINT, 0,
-           1},  // 127.0.2.1:515
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB, 0,
-           1},  // 127.0.1.1:3306
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 0,
-           1},  // 127.0.0.1:8080
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DEV, 0,
-           1},  // 127.100.150.200:9000
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_OTHER, 0,
-           1},  // 127.0.0.1:9876
-      },
-      // List of expected nonzero UMA histogram values.
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_PUBLIC)
-               .at(false),
-           4},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET)
-               .at(false),
-           3},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET)
-               .at(false),
-           4},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_WEB)
-               .at(false),
-           3},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_PRINT)
-               .at(false),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_DB)
-               .at(false),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_DEV)
-               .at(false),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::PORT_TYPE_OTHER)
-               .at(false),
-           1},
-      });
+  ExpectMetrics(page,
+                // List of expected UKM metric values.
+                {
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 10.0.0.1:80
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 10.0.10.200:80
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
+                     1},  // 100.150.200.250:80
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 172.16.0.85:8181
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
+                     1},  // 192.10.20.30:443
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 192.168.10.1:443
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 3},  // 192.168.10.200:8000
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
+                     1},  // 216.58.195.78:443
+                    {internal::RESOURCE_TYPE_PUBLIC, internal::PORT_TYPE_WEB, 0,
+                     1},  // [2607:f8b0:4005:809::200e]:443
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     0, 2},  // 127.0.0.1:80
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_PRINT, 0, 1},  // 127.0.2.1:515
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB,
+                     0, 1},  // 127.0.1.1:3306
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     0, 1},  // 127.0.0.1:8080
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DEV,
+                     0, 1},  // 127.100.150.200:9000
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_OTHER, 0, 1},  // 127.0.0.1:9876
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -648,49 +468,20 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // requested except for the public resources.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PUBLIC);
 
-  ExpectMetricsAndHistograms(
-      page,
-      // List of expected UKM metric values.
-      {
-          {internal::RESOURCE_TYPE_ROUTER, internal::PORT_TYPE_WEB, 1,
-           0},  // 10.0.0.1:80
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1,
-           1},  // 172.16.0.85:8181
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_DEV, 1,
-           0},  // 192.168.10.200:8000
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB, 0,
-           1},  // 127.0.1.1:3306
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_OTHER, 0,
-           1},  // 127.0.0.1:9876
-      },
-      // List of expected nonzero UMA histogram values.
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_ROUTER)
-               .at(true),
-           1},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_PRIVATE)
-               .at(true),
-           2},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_PRIVATE)
-               .at(false),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_DB)
-               .at(false),
-           1},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_OTHER)
-               .at(false),
-           1},
-      });
+  ExpectMetrics(page,
+                // List of expected UKM metric values.
+                {
+                    {internal::RESOURCE_TYPE_ROUTER, internal::PORT_TYPE_WEB, 1,
+                     0},  // 10.0.0.1:80
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     1, 1},  // 172.16.0.85:8181
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_DEV,
+                     1, 0},  // 192.168.10.200:8000
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_DB,
+                     0, 1},  // 127.0.1.1:3306
+                    {internal::RESOURCE_TYPE_LOCALHOST,
+                     internal::PORT_TYPE_OTHER, 0, 1},  // 127.0.0.1:9876
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -737,42 +528,18 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // Close the page.
   DeleteContents();
 
-  ExpectMetricsAndHistograms(
-      page,
-      // List of expected UKM metric values.
-      {
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1000,
-           0},  // 10.0.10.200:80
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 0,
-           100},  // 172.16.0.85:8181
-          {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_DEV, 0,
-           100},  // 192.168.10.200:9000
-          {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB, 100,
-           100},  // 127.0.0.1:80
-      },
-      // List of expected nonzero UMA histogram values.
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_PRIVATE)
-               .at(true),
-           1000},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::RESOURCE_TYPE_PRIVATE)
-               .at(false),
-           200},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_WEB)
-               .at(true),
-           100},
-          {internal::GetLocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PUBLIC)
-               .at(internal::PORT_TYPE_WEB)
-               .at(false),
-           100},
-      });
+  ExpectMetrics(page,
+                // List of expected UKM metric values.
+                {
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     1000, 0},  // 10.0.10.200:80
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB,
+                     0, 100},  // 172.16.0.85:8181
+                    {internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_DEV,
+                     0, 100},  // 192.168.10.200:9000
+                    {internal::RESOURCE_TYPE_LOCALHOST, internal::PORT_TYPE_WEB,
+                     100, 100},  // 127.0.0.1:80
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -793,13 +560,8 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // We should still see a UKM entry and UMA histogram for the resource request.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PUBLIC);
-  ExpectMetricsAndHistograms(
-      page, {{internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1, 0}},
-      {{internal::GetNonlocalhostHistogramNames()
-            .at(internal::DOMAIN_TYPE_PUBLIC)
-            .at(internal::RESOURCE_TYPE_PRIVATE)
-            .at(true),
-        1}});
+  ExpectMetrics(
+      page, {{internal::RESOURCE_TYPE_PRIVATE, internal::PORT_TYPE_WEB, 1, 0}});
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
@@ -820,7 +582,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
 
   // We shouldn't see any UKM entries or UMA histograms this time.
   ExpectUkmPageDomainMetric(page, internal::DOMAIN_TYPE_PUBLIC);
-  ExpectEmptyHistograms(internal::DOMAIN_TYPE_PUBLIC);
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageSubnet10) {
@@ -834,28 +595,15 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageSubnet10) {
 
   // The first two requests should be on the same subnet and the last request
   // should be on a different subnet.
-  ExpectMetricsAndHistograms(
-      page,
-      {
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 10.0.10.200:80
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_OTHER,
-           0, 1},  // 10.15.20.25:12345
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 192.168.10.1:443
-      },
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET)
-               .at(false),
-           2},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET)
-               .at(false),
-           1},
-      });
+  ExpectMetrics(page,
+                {
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 10.0.10.200:80
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_OTHER, 0, 1},  // 10.15.20.25:12345
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 192.168.10.1:443
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageSubnet172) {
@@ -868,26 +616,13 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageSubnet172) {
 
   // The first two requests should be on the same subnet and the last request
   // should be on a different subnet.
-  ExpectMetricsAndHistograms(
-      page,
-      {
-          {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET, internal::PORT_TYPE_WEB,
-           0, 1},  // 10.0.10.200:80
-          {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET, internal::PORT_TYPE_PRINT,
-           0, 1},  // 172.31.100.20:515
-      },
-      {
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET)
-               .at(false),
-           1},
-          {internal::GetNonlocalhostHistogramNames()
-               .at(internal::DOMAIN_TYPE_PRIVATE)
-               .at(internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET)
-               .at(false),
-           1},
-      });
+  ExpectMetrics(page,
+                {
+                    {internal::RESOURCE_TYPE_LOCAL_DIFF_SUBNET,
+                     internal::PORT_TYPE_WEB, 0, 1},  // 10.0.10.200:80
+                    {internal::RESOURCE_TYPE_LOCAL_SAME_SUBNET,
+                     internal::PORT_TYPE_PRINT, 0, 1},  // 172.31.100.20:515
+                });
 }
 
 TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageFailedLoad) {
@@ -905,5 +640,4 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest, PrivatePageFailedLoad) {
                      ->test_ukm_recorder()
                      .GetEntriesByName("HistoryManipulationIntervention")
                      .size());
-  ExpectNoHistograms();
 }

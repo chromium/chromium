@@ -101,7 +101,6 @@ class LocalNetworkRequestsPageLoadMetricsObserver
   void ResolveResourceTypes();
 
   void RecordUkmDomainType(ukm::SourceId source_id);
-  void RecordHistograms();
   void RecordUkmMetrics(ukm::SourceId source_id);
 
   // Stores the counts of resource requests for each non-localhost IP address as
