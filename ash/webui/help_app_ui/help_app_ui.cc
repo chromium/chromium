@@ -31,8 +31,10 @@
 namespace ash {
 
 namespace {
-content::WebUIDataSource* CreateHostDataSource() {
-  auto* source = content::WebUIDataSource::Create(kChromeUIHelpAppHost);
+content::WebUIDataSource* CreateAndAddHostDataSource(
+    content::BrowserContext* browser_context) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, kChromeUIHelpAppHost);
 
   // TODO(b/218419680): Remove index_dark_light_html when the dark/light flag is
   // no longer needed.
@@ -55,8 +57,8 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
     : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource* host_source = CreateHostDataSource();
-  content::WebUIDataSource::Add(browser_context, host_source);
+  content::WebUIDataSource* host_source =
+      CreateAndAddHostDataSource(browser_context);
   // We need a CSP override to use the chrome-untrusted:// scheme in the host.
   std::string csp =
       std::string("frame-src ") + kChromeUIHelpAppUntrustedURL + ";";

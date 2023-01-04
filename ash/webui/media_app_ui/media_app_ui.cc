@@ -36,9 +36,10 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"fileFilterVideo", IDS_MEDIA_APP_FILE_FILTER_VIDEO},
 };
 
-content::WebUIDataSource* CreateHostDataSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIMediaAppHost);
+content::WebUIDataSource* CreateAndAddHostDataSource(
+    content::BrowserContext* browser_context) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, kChromeUIMediaAppHost);
 
   // Add resources from ash_media_app_resources.pak.
   // TODO(b/218419680): Remove index_dark_light_html when the dark/light flag is
@@ -109,8 +110,8 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
     : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource* host_source = CreateHostDataSource();
-  content::WebUIDataSource::Add(browser_context, host_source);
+  content::WebUIDataSource* host_source =
+      CreateAndAddHostDataSource(browser_context);
 
   // The guest is in an <iframe>. Add it to CSP.
   std::string csp = std::string("frame-src ") + kChromeUIMediaAppGuestURL + ";";

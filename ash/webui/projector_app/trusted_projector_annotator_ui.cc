@@ -23,9 +23,10 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIProjectorAnnotatorHost);
+void CreateAndAddProjectorAnnotatorHTMLSource(content::WebUI* web_ui) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIProjectorAnnotatorHost);
 
   // TODO(b/216523790): Split trusted annotator resources into a separate
   // bundle.
@@ -50,8 +51,6 @@ content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource() {
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer-html-literal "
       "polymer-template-event-attribute-policy;");
-
-  return source;
 }
 
 }  // namespace
@@ -68,9 +67,7 @@ TrustedProjectorAnnotatorUI::TrustedProjectorAnnotatorUI(
   auto handler = std::make_unique<ash::AnnotatorMessageHandler>();
   web_ui->AddMessageHandler(std::move(handler));
 
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context,
-                                CreateProjectorAnnotatorHTMLSource());
+  CreateAndAddProjectorAnnotatorHTMLSource(web_ui);
 
   // The Annotator and Projector SWA embed contents in a sandboxed
   // chrome-untrusted:// iframe.

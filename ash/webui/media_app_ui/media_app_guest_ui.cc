@@ -105,11 +105,11 @@ void FontLoaded(content::WebUIDataSource::GotDataCallback got_data_callback,
   }
 }
 
-content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
+content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
     content::WebUI* web_ui,
     MediaAppGuestUIDelegate* delegate) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIMediaAppGuestURL);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMediaAppGuestURL);
   // Add resources from ash_media_app_resources.pak.
   source->AddResourcePath("app.html", IDR_MEDIA_APP_APP_HTML);
   source->AddResourcePath("receiver.js", IDR_MEDIA_APP_RECEIVER_JS);
@@ -190,16 +190,13 @@ MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   content::WebUIDataSource* untrusted_source =
-      CreateMediaAppUntrustedDataSource(web_ui, delegate);
+      CreateAndAddMediaAppUntrustedDataSource(web_ui, delegate);
 
   MaybeConfigureTestableDataSource(
       untrusted_source, "media_app/untrusted",
       base::BindRepeating(&IsFontRequest),
       base::BindRepeating(&MediaAppGuestUI::StartFontDataRequest,
                           weak_factory_.GetWeakPtr()));
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, untrusted_source);
 }
 
 MediaAppGuestUI::~MediaAppGuestUI() {

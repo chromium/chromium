@@ -42,17 +42,15 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   // unique ID to each window.
   ++window_counter_;
 
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  auto* trusted_source = CreateTrustedAppDataSource(window_counter_);
-  content::WebUIDataSource::Add(browser_context, trusted_source);
+  CreateAndAddTrustedAppDataSource(web_ui, window_counter_);
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
 
-content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource(
-    int window_number) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIFileManagerHost);
+void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
+                                                     int window_number) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUIFileManagerHost);
 
   // Setup chrome://file-manager main and default page.
   source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
@@ -92,8 +90,6 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource(
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
-
-  return source;
 }
 
 int FileManagerUI::GetNumInstances() {

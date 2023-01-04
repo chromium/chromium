@@ -26,10 +26,12 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource(
+void CreateAndAddProjectorAnnotatorHTMLSource(
+    content::WebUI* web_ui,
     UntrustedProjectorAnnotatorUIDelegate* delegate) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedAnnotatorUrl);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIUntrustedAnnotatorUrl);
 
   // TODO(b/216523790): Split untrusted annotator resources into a separate
   // bundle.
@@ -90,8 +92,6 @@ content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource(
 
   delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
-
-  return source;
 }
 
 }  // namespace
@@ -100,9 +100,7 @@ UntrustedProjectorAnnotatorUI::UntrustedProjectorAnnotatorUI(
     content::WebUI* web_ui,
     UntrustedProjectorAnnotatorUIDelegate* delegate)
     : UntrustedWebUIController(web_ui) {
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context,
-                                CreateProjectorAnnotatorHTMLSource(delegate));
+  CreateAndAddProjectorAnnotatorHTMLSource(web_ui, delegate);
 }
 
 UntrustedProjectorAnnotatorUI::~UntrustedProjectorAnnotatorUI() = default;

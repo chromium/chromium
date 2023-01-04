@@ -25,9 +25,9 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateProjectorHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIProjectorAppHost);
+void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUIProjectorAppHost);
 
   source->AddResourcePaths(base::make_span(
       kAshProjectorAppTrustedResources, kAshProjectorAppTrustedResourcesSize));
@@ -46,8 +46,6 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer-html-literal "
       "polymer-template-event-attribute-policy;");
-
-  return source;
 }
 
 }  // namespace
@@ -56,8 +54,7 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui,
                                        const GURL& url,
                                        PrefService* pref_service)
     : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
+  CreateAndAddProjectorHTMLSource(web_ui);
 
   // The Annotator and Projector SWA embed contents in a sandboxed
   // chrome-untrusted:// iframe.

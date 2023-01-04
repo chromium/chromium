@@ -18,9 +18,11 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
+void CreateAndAddUntrustedCameraAppUIHTMLSource(
+    content::BrowserContext* browser_context) {
   content::WebUIDataSource* untrusted_source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedCameraAppURL);
+      content::WebUIDataSource::CreateAndAdd(browser_context,
+                                             kChromeUIUntrustedCameraAppURL);
   untrusted_source->AddResourcePaths(
       base::make_span(kAshCameraAppResources, kAshCameraAppResourcesSize));
   untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
@@ -38,19 +40,14 @@ content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       std::string("trusted-types ga-js-static video-processor-js-static;"));
-
-  return untrusted_source;
 }
 
 }  // namespace
 
 CameraAppUntrustedUI::CameraAppUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
-  content::WebUIDataSource* untrusted_source =
-      CreateUntrustedCameraAppUIHTMLSource();
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, untrusted_source);
+  CreateAndAddUntrustedCameraAppUIHTMLSource(
+      web_ui->GetWebContents()->GetBrowserContext());
 }
 
 CameraAppUntrustedUI::~CameraAppUntrustedUI() = default;

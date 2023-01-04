@@ -53,7 +53,8 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   static int GetNumInstances();
 
  private:
-  content::WebUIDataSource* CreateTrustedAppDataSource(int window_number);
+  void CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
+                                        int window_number);
 
   // mojom::PageHandlerFactory:
   void CreatePageHandler(

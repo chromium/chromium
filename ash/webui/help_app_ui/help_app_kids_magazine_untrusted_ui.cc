@@ -29,8 +29,10 @@ base::StringPiece StripPrefix(base::StringPiece input,
   return input;
 }
 
-content::WebUIDataSource* CreateHelpAppKidsMagazineUntrustedDataSource() {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
+void CreateAndAddHelpAppKidsMagazineUntrustedDataSource(
+    content::WebUI* web_ui) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIHelpAppKidsMagazineUntrustedURL);
   // Set index.html as the default resource.
   source->SetDefaultResource(IDR_HELP_APP_KIDS_MAGAZINE_INDEX_HTML);
@@ -54,7 +56,6 @@ content::WebUIDataSource* CreateHelpAppKidsMagazineUntrustedDataSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' https://www.gstatic.com;");
-  return source;
 }
 
 }  // namespace
@@ -75,11 +76,7 @@ HelpAppKidsMagazineUntrustedUIConfig::CreateWebUIController(
 HelpAppKidsMagazineUntrustedUI::HelpAppKidsMagazineUntrustedUI(
     content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
-  content::WebUIDataSource* untrusted_source =
-      CreateHelpAppKidsMagazineUntrustedDataSource();
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, untrusted_source);
+  CreateAndAddHelpAppKidsMagazineUntrustedDataSource(web_ui);
 }
 
 HelpAppKidsMagazineUntrustedUI::~HelpAppKidsMagazineUntrustedUI() = default;

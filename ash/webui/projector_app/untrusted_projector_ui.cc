@@ -23,10 +23,11 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateProjectorHTMLSource(
-    UntrustedProjectorUIDelegate* delegate) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedProjectorUrl);
+void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
+                                     UntrustedProjectorUIDelegate* delegate) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIUntrustedProjectorUrl);
 
   source->AddResourcePaths(
       base::make_span(kAshProjectorAppUntrustedResources,
@@ -80,8 +81,6 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
 
   delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
-
-  return source;
 }
 
 }  // namespace
@@ -90,9 +89,7 @@ UntrustedProjectorUI::UntrustedProjectorUI(
     content::WebUI* web_ui,
     UntrustedProjectorUIDelegate* delegate)
     : UntrustedWebUIController(web_ui) {
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context,
-                                CreateProjectorHTMLSource(delegate));
+  CreateAndAddProjectorHTMLSource(web_ui, delegate);
 }
 
 UntrustedProjectorUI::~UntrustedProjectorUI() = default;

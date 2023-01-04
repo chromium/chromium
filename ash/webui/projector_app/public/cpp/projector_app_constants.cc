@@ -9,7 +9,7 @@ namespace ash {
 const char kChromeUIProjectorAppHost[] = "projector";
 const char kChromeUIProjectorAnnotatorHost[] = "projector-annotator";
 
-// content::WebUIDataSource::Create() requires trailing slash.
+// content::WebUIDataSource::CreateAndAdd() requires trailing slash.
 const char kChromeUIUntrustedProjectorUrl[] = "chrome-untrusted://projector/";
 const char kChromeUIUntrustedProjectorPwaUrl[] =
     "https://screencast.apps.chrome";
