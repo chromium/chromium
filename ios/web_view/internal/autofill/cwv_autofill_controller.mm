@@ -688,6 +688,10 @@ using UserDecision =
   // No op.
 }
 
+- (void)showCredentialProviderPromo:(CredentialProviderPromoTrigger)trigger {
+  // No op
+}
+
 #pragma mark - SharedPasswordControllerDelegate
 
 - (password_manager::PasswordManagerClient*)passwordManagerClient {

@@ -30,6 +30,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_change_success_tracker_factory.h"
@@ -43,6 +44,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "net/cert/cert_status_flags.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
@@ -236,6 +238,11 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
         submitted_manager) {
   helper_.NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
+  if (IsCredentialProviderExtensionPromoEnabled()) {
+    [bridge_
+        showCredentialProviderPromo:CredentialProviderPromoTrigger::
+                                        SuccessfulLoginUsingExistingPassword];
+  }
 }
 
 void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {

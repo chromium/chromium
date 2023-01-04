@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/commands/password_suggestion_commands.h"
@@ -350,6 +351,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                                                         completion:completion];
 }
 
+- (void)showCredentialProviderPromo:(CredentialProviderPromoTrigger)trigger {
+  [self.credentialProviderPromoHandler
+      showCredentialProviderPromoWithTrigger:trigger];
+}
+
 #pragma mark - Private methods
 
 // Returns the user email.
@@ -374,6 +380,12 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (id<PasswordProtectionCommands>)passwordProtectionDispatcher {
   DCHECK(self.dispatcher);
   return HandlerForProtocol(self.dispatcher, PasswordProtectionCommands);
+}
+
+// The handler used for CredentialProviderPromoCommands.
+- (id<CredentialProviderPromoCommands>)credentialProviderPromoHandler {
+  DCHECK(self.dispatcher);
+  return HandlerForProtocol(self.dispatcher, CredentialProviderPromoCommands);
 }
 
 // The dispatcher used for PasswordSuggestionCommands.

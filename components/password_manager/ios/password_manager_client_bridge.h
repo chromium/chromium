@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 
 class GURL;
+enum class CredentialProviderPromoTrigger;
 
 namespace password_manager {
 class PasswordFormManagerForUI;
@@ -64,6 +65,9 @@ using password_manager::CredentialLeakType;
 - (void)showPasswordProtectionWarning:(NSString*)warningText
                            completion:(void (^)(safe_browsing::WarningAction))
                                           completion;
+
+// Shows Credential Provider Promo with |trigger|.
+- (void)showCredentialProviderPromo:(CredentialProviderPromoTrigger)trigger;
 
 @end
 
