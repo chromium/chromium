@@ -34,13 +34,6 @@ class AppListWithRecentAppBrowserTest
     // Ensure async callbacks are run.
     base::RunLoop().RunUntilIdle();
 
-    // In release builds (without DCHECKs) this test sometimes fails because the
-    // search ranking subsystem filters out all the recent app items due to a
-    // race between zero state search request and initialization of the ranker
-    // for removed results. Work around this by disabling ranking.
-    // https://crbug.com/1371600
-    client->search_controller()->disable_ranking_for_test();
-
     // Install enough apps to show the recent apps view.
     LoadExtension(test_data_dir_.AppendASCII("app1"));
     LoadExtension(test_data_dir_.AppendASCII("app2"));
