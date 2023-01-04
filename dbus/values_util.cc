@@ -181,8 +181,8 @@ base::Value PopDataAsValue(MessageReader* reader) {
       MessageReader sub_reader(nullptr);
       if (reader->PopArray(&sub_reader)) {
         // If the type of the array's element is DICT_ENTRY, create a
-        // Value with type base::Value::Type::DICTIONARY, otherwise create a
-        // Value with type base::Value::Type::LIST.
+        // Value with type base::Value::Dict, otherwise create a
+        // Value with type base::Value::List.
         if (sub_reader.GetDataType() == Message::DICT_ENTRY) {
           base::Value::Dict dictionary_value;
           if (PopDictionaryEntries(&sub_reader, dictionary_value))
