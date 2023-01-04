@@ -8,9 +8,9 @@
 
 #include <vector>
 
+#include "base/callback.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -54,15 +54,16 @@ class MockChildProcess : public mojom::ChildProcess {
 class ChildProcessTaskPortProviderTest : public testing::Test,
                                          public base::PortProvider::Observer {
  public:
-  ChildProcessTaskPortProviderTest()
-      : event_(base::WaitableEvent::ResetPolicy::AUTOMATIC) {
-    provider_.AddObserver(this);
-  }
+  ChildProcessTaskPortProviderTest() { provider_.AddObserver(this); }
   ~ChildProcessTaskPortProviderTest() override {
     provider_.RemoveObserver(this);
   }
 
-  void WaitForTaskPort() { event_.Wait(); }
+  void WaitForTaskPort() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
 
   // There is no observer callback for when a process dies, so spin the run loop
   // until the desired exit |condition| is met.
@@ -92,8 +93,9 @@ class ChildProcessTaskPortProviderTest : public testing::Test,
 
   // base::PortProvider::Observer:
   void OnReceivedTaskPort(base::ProcessHandle process) override {
+    DCHECK(quit_closure_);
     received_processes_.push_back(process);
-    event_.Signal();
+    std::move(quit_closure_).Run();
   }
 
   ChildProcessTaskPortProvider* provider() { return &provider_; }
@@ -105,7 +107,7 @@ class ChildProcessTaskPortProviderTest : public testing::Test,
  private:
   base::test::TaskEnvironment task_environment_;
   ChildProcessTaskPortProvider provider_;
-  base::WaitableEvent event_;
+  base::OnceClosure quit_closure_;
   std::vector<base::ProcessHandle> received_processes_;
 };
 

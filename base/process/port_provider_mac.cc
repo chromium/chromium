@@ -8,23 +8,20 @@
 
 namespace base {
 
-PortProvider::PortProvider() : lock_(), observer_list_() {}
+PortProvider::PortProvider()
+    : observer_list_(MakeRefCounted<ObserverListThreadSafe<Observer>>()) {}
 PortProvider::~PortProvider() {}
 
 void PortProvider::AddObserver(Observer* observer) {
-  base::AutoLock l(lock_);
-  observer_list_.AddObserver(observer);
+  observer_list_->AddObserver(observer);
 }
 
 void PortProvider::RemoveObserver(Observer* observer) {
-  base::AutoLock l(lock_);
-  observer_list_.RemoveObserver(observer);
+  observer_list_->RemoveObserver(observer);
 }
 
 void PortProvider::NotifyObservers(ProcessHandle process) {
-  base::AutoLock l(lock_);
-  for (auto& observer : observer_list_)
-    observer.OnReceivedTaskPort(process);
+  observer_list_->Notify(FROM_HERE, &Observer::OnReceivedTaskPort, process);
 }
 
 mach_port_t SelfPortProvider::TaskForPid(base::ProcessHandle process) const {

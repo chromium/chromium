@@ -8,9 +8,9 @@
 #include <mach/mach.h>
 
 #include "base/base_export.h"
-#include "base/observer_list.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/process/process_handle.h"
-#include "base/synchronization/lock.h"
 
 namespace base {
 
@@ -31,10 +31,8 @@ class BASE_EXPORT PortProvider {
     virtual ~Observer() {}
     // Called by the PortProvider to notify observers that the task port was
     // received for a given process.
-    // No guarantees are made about the thread on which this notification will
-    // be sent.
-    // Observers must not call AddObserver() or RemoveObserver() in this
-    // callback, as doing so will deadlock.
+    // This notification is guaranteed to be sent on the same task runner where
+    // the observer was added.
     virtual void OnReceivedTaskPort(ProcessHandle process) = 0;
   };
 
@@ -51,10 +49,7 @@ class BASE_EXPORT PortProvider {
   void NotifyObservers(ProcessHandle process);
 
  private:
-  // ObserverList is not thread-safe, so |lock_| ensures consistency of
-  // |observer_list_|.
-  base::Lock lock_;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 };
 
 // Port provider that returns the calling process's task port, ignoring its
