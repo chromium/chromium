@@ -151,8 +151,9 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
 
   for (auto* locale : kLocales) {
     // Skip locales that are tested in "LocalesWithUniqueNumerals".
-    if (kLocalesWithUniqueNumerals.count(locale))
+    if (kLocalesWithUniqueNumerals.count(locale)) {
       continue;
+    }
 
     SetDefaultLocale(locale);
 
@@ -207,8 +208,9 @@ TEST_F(CalendarUtilsUnitTest, LocalesWithUniqueNumerals) {
     } else if (locale == "mr") {
       EXPECT_EQ(u"२३", calendar_utils::GetTwentyFourHourClockHours(time));
       EXPECT_EQ(u"०३", calendar_utils::GetMinutes(time));
-    } else
+    } else {
       EXPECT_TRUE(false) << "Locale '" << locale << "' needs a test case.";
+    }
   }
 
   // Reset locale to English for subsequent tests.
@@ -430,6 +432,18 @@ TEST_F(
 
   EXPECT_EQ(actual_start, expected_start);
   EXPECT_EQ(actual_end, expected_end);
+}
+
+// Regression test for b/263270426.
+TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
+  SetDefaultLocale("es");
+
+  // Create time: Jan 2023 23:03 GMT. Which is on the week year of 2022 with
+  // Spanish locale.
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromString("1 Jan 2023 23:03 GMT", &time));
+
+  EXPECT_EQ(u"2023", calendar_utils::GetYear(time));
 }
 
 }  // namespace ash
