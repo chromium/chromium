@@ -580,6 +580,32 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
         blockedSitesDescription.innerText);
   });
 
+  // TODO(crbug.com/1378703): Add test for "See all sites" section when
+  // `getFledgeState()` returns a longer list.
+  test('sitesList', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    // Check for current sites.
+    const currentSitesSection =
+        page.shadowRoot!.querySelector<HTMLElement>('#currentSitesSection')!;
+    const currentSites = currentSitesSection.querySelector('dom-repeat');
+    assertTrue(!!currentSites);
+    assertEquals(1, currentSites.items!.length);
+    assertFalse(isVisible(
+        currentSitesSection.querySelector('#currentSitesDescriptionEmpty')));
+    assertEquals('test-site-one.com', currentSites.items![0].site!);
+
+    // Check for blocked sites.
+    page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!.click();
+    await flushTasks();
+    const blockedSitesList =
+        page.shadowRoot!.querySelector('#blockedSitesList')!;
+    const blockedSites = blockedSitesList.querySelector('dom-repeat');
+    assertTrue(!!blockedSites);
+    assertEquals(1, blockedSites.items!.length);
+    assertEquals('test-site-two.com', blockedSites.items![0].site!);
+  });
+
   test('footerLinks', async function() {
     assertTrue(isChildVisible(page, '#footer'));
     const links =

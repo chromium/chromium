@@ -48,10 +48,17 @@ export class PrivacySandboxInterestItemElement extends
   }
 
   private getButtonLabel_(): string {
-    // TODO(crbug.com/1378703): Return Fledge string ids for this.interest.site.
-    return this.i18n(
-        this.interest.removed ? 'topicsPageAllowTopic' :
-                                'topicsPageBlockTopic');
+    if (this.interest.topic !== undefined) {
+      assert(!this.interest.site);
+      return this.i18n(
+          this.interest.removed ? 'topicsPageAllowTopic' :
+                                  'topicsPageBlockTopic');
+    } else {
+      assert(!this.interest.topic);
+      return this.i18n(
+          this.interest.removed ? 'fledgePageAllowSite' :
+                                  'fledgePageBlockSite');
+    }
   }
 
   private onInterestChanged_(e: Event) {

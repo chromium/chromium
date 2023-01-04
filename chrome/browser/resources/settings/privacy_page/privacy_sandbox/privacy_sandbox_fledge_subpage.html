@@ -43,6 +43,10 @@
     padding-block-start: 16px;
   }
 
+  #blockedSitesList {
+    padding: 0 var(--cr-section-padding);
+  }
+
   #footer {
     padding-block-end: 16px;
     padding-block-start: 16px;
@@ -88,7 +92,13 @@
           $i18n{fledgePageCurrentSitesDescriptionLearnMore}
         </button>
       </div>
-      <!-- TODO(b/254411463): Add sites list. -->
+      <template is="dom-repeat" items="[[sitesList_]]">
+        <privacy-sandbox-interest-item interest="[[item]]"
+            on-interest-changed="onInterestChanged_">
+        </privacy-sandbox-interest-item>
+      </template>
+      <!-- TODO(b/254412638): Add an expand button to hide and show additional
+           sites. -->
       <div id="currentSitesDescriptionEmpty"
           class="no-sites cr-secondary-text"
           hidden="[[!isSitesListEmpty_(sitesList_.length)]]">
@@ -111,7 +121,13 @@
       class="cr-row continuation cr-secondary-text">
     [[computeBlockedSitesDescription_(blockedSitesList_.length)]]
   </div>
-  <!-- TODO(b/254411463): Add blocked sites list. -->
+  <div id="blockedSitesList">
+    <template is="dom-repeat" items="[[blockedSitesList_]]">
+      <privacy-sandbox-interest-item interest="[[item]]"
+          on-interest-changed="onInterestChanged_">
+      </privacy-sandbox-interest-item>
+    </template>
+  </div>
 </iron-collapse>
 <div id="footer" class="cr-secondary-text">
   $i18nRaw{fledgePageFooter}
