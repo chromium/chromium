@@ -272,8 +272,8 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
 
 int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     const std::string& path,
-    int64_t bytes_transferred,
-    int64_t bytes_to_transfer) {
+    const int64_t bytes_transferred,
+    const int64_t bytes_to_transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(bytes_to_transfer, 0) << " for " << Quote(path);
 
@@ -284,23 +284,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     return total_bytes_transferred_;
   }
 
-  const auto it = in_progress_items_.find(path);
-  if (it == in_progress_items_.end()) {
-    // TODO(b/261530520): Items can end up in this flow when an update is
-    // attempted on an item that wasn't tracked via an explicit pin operation.
-    // In this case, gracefully degrade by responding with the total bytes
-    // transferred. This should ideally fail as all syncing operations should be
-    // identified as they affect disk space.
-    LOG(ERROR) << "Cannot update " << Quote(path)
-               << " with bytes_transferred = "
-               << HumanReadableSize(bytes_transferred)
-               << " and bytes_to_transfer = "
-               << HumanReadableSize(bytes_to_transfer);
-    return total_bytes_transferred_;
-  }
-
-  DCHECK_EQ(it->first, path);
-  Progress& progress = it->second;
+  Progress& progress = in_progress_items_[path];
   LOG_IF(ERROR, progress.transferred > bytes_transferred)
       << "Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
@@ -541,6 +525,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     const base::FilePath& path = item->path;
     DCHECK(item->metadata);
     const mojom::FileMetadata& md = *item->metadata;
+    VLOG(2) << "path: " << Quote(path) << ", metadata: " << Quote(md);
     if (md.pinned) {
       VLOG(2) << "Skipped " << Quote(md.type) << " " << Quote(path)
               << ": Already pinned";
@@ -548,6 +533,8 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     }
 
     VLOG(2) << "Pinning " << Quote(md.type) << " " << Quote(path) << "...";
+    syncing_items_.AsyncCall(&InProgressSyncingItems::AddItem)
+        .WithArgs(path.value());
     drivefs_interface_->SetPinned(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
@@ -579,7 +566,6 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
   }
 
   VLOG(2) << "Pinned " << Quote(path);
-  syncing_items_.AsyncCall(&InProgressSyncingItems::AddItem).WithArgs(path);
 }
 
 void DriveFsPinManager::OnSyncingStatusUpdate(
@@ -592,25 +578,38 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     DCHECK(event);
     VLOG(2) << "Got event: " << Quote(*event);
 
-    if (event->state == mojom::ItemEvent::State::kCompleted) {
-      VLOG(2) << "Synced " << Quote(event->path);
-      GetMetadataForPath(event->path);
-      continue;
-    }
+    using State = mojom::ItemEvent::State;
 
-    if (event->state == mojom::ItemEvent::State::kFailed) {
-      LOG(ERROR) << "Cannot sync " << Quote(event->path);
-      state_.progress.error_count++;
-      continue;
-    }
+    switch (event->state) {
+      case State::kQueued:
+        VLOG(2) << "Queued " << Quote(event->path);
+        continue;
 
-    // DCHECK_GE(event->bytes_transferred, 0) << " for " << Quote(event->path);
-    // DCHECK_GE(event->bytes_to_transfer, 0) << " for " << Quote(event->path);
-    syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
-        .WithArgs(event->path, event->bytes_transferred,
-                  event->bytes_to_transfer)
-        .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
-                             weak_ptr_factory_.GetWeakPtr()));
+      case State::kCompleted:
+        VLOG(2) << "Synced " << Quote(event->path);
+        GetMetadataForPath(event->path);
+        continue;
+
+      case State::kFailed:
+        LOG(ERROR) << "Cannot sync " << Quote(event->path);
+        state_.progress.error_count++;
+        continue;
+
+      case State::kInProgress:
+        LOG_IF(ERROR, event->bytes_transferred < 0)
+            << "Negative bytes_transferred " << event->bytes_transferred
+            << " for " << Quote(event->path);
+        LOG_IF(ERROR, event->bytes_to_transfer < 0)
+            << "Negative bytes_to_transfer " << event->bytes_to_transfer
+            << " for " << Quote(event->path);
+        syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
+            .WithArgs(event->path, event->bytes_transferred,
+                      event->bytes_to_transfer)
+            .Then(
+                base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
+                               weak_ptr_factory_.GetWeakPtr()));
+        continue;
+    }
   }
 
   syncing_items_.AsyncCall(&InProgressSyncingItems::GetItemCount)
