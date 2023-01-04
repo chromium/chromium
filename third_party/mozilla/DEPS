@@ -1,4 +1,0 @@
-include_rules = [
-  '+base/mac/scoped_nsobject.h',
-  '+url/gurl.h',
-]

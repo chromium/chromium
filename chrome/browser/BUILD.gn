@@ -6137,7 +6137,6 @@ static_library("browser") {
       "//services/video_capture/public/mojom:constants",
       "//third_party/crashpad/crashpad/client",
       "//third_party/google_toolbox_for_mac",
-      "//third_party/mozilla",
     ]
     frameworks = [
       "Accelerate.framework",
@@ -6154,6 +6153,7 @@ static_library("browser") {
     ]
     weak_frameworks = [
       "AuthenticationServices.framework",  # macOS 10.15
+      "UniformTypeIdentifiers.framework",  # macOS 11
       "UserNotifications.framework",  # macOS 10.14
     ]
     public_deps += [ "//chrome/browser/mac:keystone_glue" ]

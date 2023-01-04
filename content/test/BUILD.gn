@@ -2968,7 +2968,6 @@ test("content_unittests") {
   if (is_mac) {
     deps += [
       "//sandbox/mac:seatbelt",
-      "//third_party/mozilla",
       "//third_party/ocmock",
       "//ui/accelerated_widget_mac",
       "//ui/base/mojom",

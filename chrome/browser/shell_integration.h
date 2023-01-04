@@ -21,15 +21,24 @@ class CommandLine;
 
 namespace shell_integration {
 
-// Sets Chrome as the default browser (only for the current user). Returns false
-// if this operation fails. This does not work on Windows version 8 or higher.
-// Prefer to use the DefaultBrowserWorker class below since it works on all OSs.
+// Sets Chrome as the default browser (only for the current user).
+//
+// Don't use this, because:
+//   - This does not work on Windows version 8 or higher.
+//   - This cannot provide feedback as to success because setting a default
+//     browser is asynchronous.
+//
+// Use `DefaultBrowserWorker` instead.
+// TODO(https://crbug.com/1393452): Extend `DefaultBrowserWorker` to work better
+// on the Mac and remove this function.
 bool SetAsDefaultBrowser();
 
-// Sets Chrome as the default client application for the given protocol
-// (only for the current user). Returns false if this operation fails.
-// Prefer to use the DefaultProtocolClientWorker class below since it works on
-// all OSs.
+// Sets Chrome as the default client application for the given protocol (only
+// for the current user). Prefer to use the `DefaultProtocolClientWorker` class
+// below since it works on all OSs.
+//
+// TODO(https://crbug.com/1393452): Extend `DefaultProtocolClientWorker` to work
+// better on the Mac and remove this function.
 bool SetAsDefaultProtocolClient(const std::string& protocol);
 
 // The different types of permissions required to set a default web client.
@@ -37,9 +46,14 @@ enum DefaultWebClientSetPermission {
   // The browser distribution is not permitted to be made default.
   SET_DEFAULT_NOT_ALLOWED,
   // No special permission or interaction is required to set the default
-  // browser. This is used in Linux, Mac and Windows 7 and under.
+  // browser. This is used in Linux and Windows 7 and under. This is returned
+  // for compatibility on the Mac, even though the Mac requires interaction.
+  // TODO(https://crbug.com/1393452): Fix this.
   SET_DEFAULT_UNATTENDED,
-  // On Windows 8+, a browser can be made default only in an interactive flow.
+  // On the Mac and on Windows 8+, a browser can be made default only in an
+  // interactive flow. This value is returned for Windows 8+.
+  // TODO(https://crbug.com/1393452): Fix it so that this value is also returned
+  // on the Mac.
   SET_DEFAULT_INTERACTIVE,
 };
 
@@ -116,19 +130,12 @@ bool IsIEDefaultBrowser();
 // Returns the install id of the installation set as default browser. If no
 // installation of Firefox is set as the default browser, returns an empty
 // string.
-// TODO(crbug/1011830): This should return the install id of the stable
-// version if no version of Firefox is set as default browser.
 std::string GetFirefoxProgIdSuffix();
 #endif
 
 // Attempt to determine if this instance of Chrome is the default client
 // application for the given protocol and return the appropriate state.
 DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol);
-
-// Data that needs to be passed between the app launcher stub and Chrome.
-struct AppModeInfo {};
-void SetAppModeInfo(const AppModeInfo* info);
-const AppModeInfo* AppModeInfo();
 
 // Is the current instance of Chrome running in App mode.
 bool IsRunningInAppMode();

@@ -16,34 +16,39 @@ static NSBundle* g_override_framework_bundle = nil;
 static NSBundle* g_override_outer_bundle = nil;
 
 NSBundle* MainBundle() {
-  return [NSBundle mainBundle];
+  return NSBundle.mainBundle;
+}
+
+NSURL* MainBundleURL() {
+  return MainBundle().bundleURL;
 }
 
 FilePath MainBundlePath() {
-  NSBundle* bundle = MainBundle();
-  return NSStringToFilePath([bundle bundlePath]);
+  return NSStringToFilePath(MainBundle().bundlePath);
 }
 
 NSBundle* OuterBundle() {
   if (g_override_outer_bundle)
     return g_override_outer_bundle;
-  return [NSBundle mainBundle];
+  return NSBundle.mainBundle;
+}
+
+NSURL* OuterBundleURL() {
+  return OuterBundle().bundleURL;
 }
 
 FilePath OuterBundlePath() {
-  NSBundle* bundle = OuterBundle();
-  return NSStringToFilePath([bundle bundlePath]);
+  return NSStringToFilePath(OuterBundle().bundlePath);
 }
 
 NSBundle* FrameworkBundle() {
   if (g_override_framework_bundle)
     return g_override_framework_bundle;
-  return [NSBundle mainBundle];
+  return NSBundle.mainBundle;
 }
 
 FilePath FrameworkBundlePath() {
-  NSBundle* bundle = FrameworkBundle();
-  return NSStringToFilePath([bundle bundlePath]);
+  return NSStringToFilePath(FrameworkBundle().bundlePath);
 }
 
 static void AssignOverrideBundle(NSBundle* new_bundle,

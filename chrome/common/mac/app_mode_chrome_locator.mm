@@ -126,14 +126,12 @@ bool FindChromeBundle(NSString* bundle_id, base::FilePath* out_bundle) {
   // Finally, search the filesystem for a bundle. If several copies of the
   // bundle are present, this will select one arbitrarily.
   {
-    // Note that IsPathValidForBundle is guaranteed to be true for
-    // `bundle_path` because absolutePathForAppBundleWithIdentifier returned
-    // it.
-    NSWorkspace* ws = [NSWorkspace sharedWorkspace];
-    NSString* bundle_path =
-        [ws absolutePathForAppBundleWithIdentifier:bundle_id];
-    if (bundle_path) {
-      *out_bundle = base::mac::NSStringToFilePath(bundle_path);
+    // Note that `IsPathValidForBundle` is guaranteed to be true for
+    // `bundle_path` because URLForApplicationWithBundleIdentifier returned it.
+    NSURL* url = [NSWorkspace.sharedWorkspace
+        URLForApplicationWithBundleIdentifier:bundle_id];
+    if (url) {
+      *out_bundle = base::mac::NSURLToFilePath(url);
       return true;
     }
   }

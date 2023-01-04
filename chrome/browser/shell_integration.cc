@@ -51,8 +51,6 @@ namespace shell_integration {
 
 namespace {
 
-const struct AppModeInfo* gAppModeInfo = nullptr;
-
 // TODO(crbug.com/773563): Remove |g_sequenced_task_runner| and use an instance
 // field / singleton instead.
 #if BUILDFLAG(IS_WIN)
@@ -107,18 +105,6 @@ bool IsElevationNeededForSettingDefaultProtocolClient() {
   return false;
 }
 #endif  // !BUILDFLAG(IS_WIN)
-
-void SetAppModeInfo(const struct AppModeInfo* info) {
-  gAppModeInfo = info;
-}
-
-const struct AppModeInfo* AppModeInfo() {
-  return gAppModeInfo;
-}
-
-bool IsRunningInAppMode() {
-  return gAppModeInfo != nullptr;
-}
 
 base::CommandLine CommandLineArgsForLauncher(
     const GURL& url,

@@ -2571,7 +2571,6 @@ source_set("browser") {
       "//components/remote_cocoa/browser",
       "//components/remote_cocoa/common:mojo",
       "//media",
-      "//third_party/mozilla",
       "//ui/accelerated_widget_mac",
       "//ui/events:dom_keyboard_layout",
     ]

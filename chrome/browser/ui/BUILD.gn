@@ -3897,7 +3897,6 @@ static_library("ui") {
       "//components/remote_cocoa/browser",
       "//extensions/components/native_app_window",
       "//third_party/google_toolbox_for_mac",
-      "//third_party/mozilla",
       "//ui/accelerated_widget_mac:accelerated_widget_mac",
     ]
     include_dirs = [ "$target_gen_dir" ]

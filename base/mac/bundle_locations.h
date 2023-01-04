@@ -12,6 +12,7 @@
 #import <Foundation/Foundation.h>
 #else  // __OBJC__
 class NSBundle;
+class NSURL;
 #endif  // __OBJC__
 
 namespace base {
@@ -22,11 +23,11 @@ namespace base::mac {
 
 // This file provides several functions to explicitly request the various
 // component bundles of Chrome.  Please use these methods rather than calling
-// +[NSBundle mainBundle] or CFBundleGetMainBundle().
+// `+[NSBundle mainBundle]` or `CFBundleGetMainBundle()`.
 //
 // Terminology
 //  - "Outer Bundle" - This is the main bundle for Chrome; it's what
-//  +[NSBundle mainBundle] returns when Chrome is launched normally.
+//  `+[NSBundle mainBundle]` returns when Chrome is launched normally.
 //
 //  - "Main Bundle" - This is the bundle from which Chrome was launched.
 //  This will be the same as the outer bundle except when Chrome is launched
@@ -45,8 +46,10 @@ namespace base::mac {
 
 // Methods for retrieving the various bundles.
 BASE_EXPORT NSBundle* MainBundle();
+BASE_EXPORT NSURL* MainBundleURL();
 BASE_EXPORT FilePath MainBundlePath();
 BASE_EXPORT NSBundle* OuterBundle();
+BASE_EXPORT NSURL* OuterBundleURL();
 BASE_EXPORT FilePath OuterBundlePath();
 BASE_EXPORT NSBundle* FrameworkBundle();
 BASE_EXPORT FilePath FrameworkBundlePath();
