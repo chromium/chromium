@@ -228,8 +228,7 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
     surface->resolveMSAA();
   }
 
-  UpdateEstimatedSize(
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
+  UpdateEstimatedSize(format().EstimatedSizeInBytes(size()));
 
   return true;
 }

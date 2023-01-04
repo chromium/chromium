@@ -142,9 +142,10 @@ int BitsPerPixel(ResourceFormat format) {
     case BGRX_8888:
     case RGBA_1010102:
     case BGRA_1010102:
-    case P010:
     case RG16_EXT:
       return 32;
+    case P010:
+      return 24;
     case YUVA_420_TRIPLANAR:
       return 20;
     case RGBA_4444:

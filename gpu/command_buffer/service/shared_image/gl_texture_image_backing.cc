@@ -143,16 +143,15 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                              SkAlphaType alpha_type,
                                              uint32_t usage,
                                              bool is_passthrough)
-    : ClearTrackingSharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
-          false /* is_thread_safe */),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      format.EstimatedSizeInBytes(size),
+                                      false /* is_thread_safe */),
       is_passthrough_(is_passthrough) {}
 
 GLTextureImageBacking::~GLTextureImageBacking() {

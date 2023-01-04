@@ -127,16 +127,16 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
   DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
 
   // Calculate SharedImage size in bytes.
-  size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
+  auto estimated_size = format.MaybeEstimatedSizeInBytes(size);
+  if (!estimated_size) {
     DLOG(ERROR) << "MakeEglImageBacking: Failed to calculate SharedImage size";
     return nullptr;
   }
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, GetFormatInfo(format), workarounds_, use_passthrough_,
-      pixel_data);
+      estimated_size.value(), GetFormatInfo(format), workarounds_,
+      use_passthrough_, pixel_data);
 }
 
 }  // namespace gpu

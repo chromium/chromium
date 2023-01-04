@@ -335,16 +335,15 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared)
-    : SharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
-          false /* is_thread_safe */),
+    : SharedImageBacking(mailbox,
+                         format,
+                         size,
+                         color_space,
+                         surface_origin,
+                         alpha_type,
+                         usage,
+                         format.EstimatedSizeInBytes(size),
+                         false /* is_thread_safe */),
       io_surface_(std::move(io_surface)),
       io_surface_plane_(io_surface_plane),
       io_surface_format_(io_surface_format),
@@ -394,8 +393,7 @@ IOSurfaceImageBacking::RetainGLTexture() {
       nullptr);
 
   // Set the IOSurface to be initially unbound from the GL texture.
-  gl_texture->SetEstimatedSize(
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
+  gl_texture->SetEstimatedSize(GetEstimatedSize());
   gl_texture->set_bind_pending();
 
   return new IOSurfaceBackingEGLState(this, egl_display, gl_target_,

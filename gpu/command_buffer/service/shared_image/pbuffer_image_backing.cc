@@ -29,16 +29,15 @@ PbufferImageBacking::PbufferImageBacking(
     SkAlphaType alpha_type,
     uint32_t usage,
     scoped_refptr<gles2::TexturePassthrough> passthrough_texture)
-    : ClearTrackingSharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
-          false /* is_thread_safe */),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      format.EstimatedSizeInBytes(size),
+                                      false /* is_thread_safe */),
       on_destruction_closure_runner_(std::move(on_destruction_closure)),
       passthrough_texture_(std::move(passthrough_texture)) {
   DCHECK(!!passthrough_texture_);

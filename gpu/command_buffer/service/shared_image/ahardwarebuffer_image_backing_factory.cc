@@ -652,8 +652,8 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   }
 
   // Calculate SharedImage size in bytes.
-  size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
+  auto estimated_size = format.MaybeEstimatedSizeInBytes(size);
+  if (!estimated_size) {
     LOG(ERROR) << "Failed to calculate SharedImage size";
     return nullptr;
   }
@@ -730,7 +730,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
 
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle), estimated_size, is_thread_safe,
+      std::move(handle), estimated_size.value(), is_thread_safe,
       std::move(initial_upload_fd), dawn_procs_, use_passthrough_);
 
   // If we uploaded initial data, set the backing as cleared.
@@ -840,15 +840,15 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, si_format, &estimated_size)) {
+  auto estimated_size = si_format.MaybeEstimatedSizeInBytes(size);
+  if (!estimated_size) {
     LOG(ERROR) << "Failed to calculate SharedImage size";
     return nullptr;
   }
 
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle.android_hardware_buffer), estimated_size, false,
+      std::move(handle.android_hardware_buffer), estimated_size.value(), false,
       base::ScopedFD(), dawn_procs_, use_passthrough_);
 
   backing->SetCleared();

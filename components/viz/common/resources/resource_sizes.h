@@ -38,12 +38,6 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   static bool MaybeSizeInBytes(const gfx::Size& size,
                                ResourceFormat format,
                                T* bytes);
-  // WARNING: The `format` must be single planar.
-  // TODO(hitawala): Add multiplanar format support.
-  template <typename T>
-  static bool MaybeSizeInBytes(const gfx::Size& size,
-                               SharedImageFormat format,
-                               T* bytes);
 
   // Dies with a CRASH() if the width can not be represented as a positive
   // number of bytes.
@@ -65,11 +59,6 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   // sizes that have already been checked.
   template <typename T>
   static T UncheckedSizeInBytes(const gfx::Size& size, ResourceFormat format);
-  // WARNING: The `format` must be single planar.
-  // TODO(hitawala): Add multiplanar format support.
-  template <typename T>
-  static T UncheckedSizeInBytes(const gfx::Size& size,
-                                SharedImageFormat format);
   // Returns the width in bytes aligned but may overflow or return 0. Only do
   // this for computing widths for sizes that have already been checked.
   template <typename T>
@@ -159,13 +148,6 @@ bool ResourceSizes::MaybeSizeInBytes(const gfx::Size& size,
 }
 
 template <typename T>
-bool ResourceSizes::MaybeSizeInBytes(const gfx::Size& size,
-                                     SharedImageFormat format,
-                                     T* bytes) {
-  return MaybeSizeInBytes<T>(size, format.resource_format(), bytes);
-}
-
-template <typename T>
 T ResourceSizes::CheckedWidthInBytes(int width, ResourceFormat format) {
   VerifyType<T>();
   CHECK_GT(width, 0);
@@ -205,12 +187,6 @@ T ResourceSizes::UncheckedSizeInBytes(const gfx::Size& size,
   DCHECK(!size.IsEmpty());
   DCHECK(VerifySizeInBytesInternal<T>(size, format, false));
   return SizeInBytesInternal<T>(size, format, false);
-}
-
-template <typename T>
-T ResourceSizes::UncheckedSizeInBytes(const gfx::Size& size,
-                                      SharedImageFormat format) {
-  return UncheckedSizeInBytes<T>(size, format.resource_format());
 }
 
 template <typename T>

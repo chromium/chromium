@@ -55,7 +55,6 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                  GrSurfaceOrigin surface_origin,
                  SkAlphaType alpha_type,
                  uint32_t usage,
-                 size_t estimated_size,
                  scoped_refptr<SharedContextState> context_state,
                  const bool thread_safe)
       : ClearTrackingSharedImageBacking(mailbox,
@@ -65,7 +64,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                                         surface_origin,
                                         alpha_type,
                                         usage,
-                                        estimated_size,
+                                        format.EstimatedSizeInBytes(size),
                                         thread_safe),
         context_state_(std::move(context_state)) {
     DCHECK(!!context_state_);
@@ -415,12 +414,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   // That should be fine for now since we do not have/use any locks in backing.
   DCHECK(!is_thread_safe ||
          (context_state_->GrContextIsVulkan() && is_drdc_enabled_));
-  size_t estimated_size =
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format);
   auto texture = std::make_unique<WrappedSkImage>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, estimated_size,
-      context_state_,
+      color_space, surface_origin, alpha_type, usage, context_state_,
       /*is_thread_safe=*/is_thread_safe &&
           context_state_->GrContextIsVulkan() && is_drdc_enabled_);
   if (!texture->Initialize())
@@ -438,13 +434,11 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> data) {
-  size_t estimated_size =
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format);
   auto texture = std::make_unique<WrappedSkImage>(
       base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, estimated_size,
-      context_state_, /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
-                          is_drdc_enabled_);
+      color_space, surface_origin, alpha_type, usage, context_state_,
+      /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
+          is_drdc_enabled_);
   if (!texture->InitializeWithData(data, /*stride=*/0))
     return nullptr;
   return texture;

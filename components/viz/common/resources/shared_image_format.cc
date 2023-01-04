@@ -10,9 +10,19 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 namespace {
+
+static size_t ConvertBitsToBytes(size_t bits) {
+  size_t bytes = bits / 8;
+  // Don't add anything to `bits` to avoid potential overflow.
+  if ((bits & 7) != 0) {
+    ++bytes;
+  }
+  return bytes;
+}
 
 const char* ResourceFormatToString(ResourceFormat format) {
   switch (format) {
@@ -63,6 +73,52 @@ const char* ResourceFormatToString(ResourceFormat format) {
   }
 }
 
+int BitsPerPixelForResourceFormat(ResourceFormat format) {
+  switch (format) {
+    case RGBA_F16:
+      return 64;
+    case BGRA_8888:
+    case RGBA_8888:
+    case RGBX_8888:
+    case BGRX_8888:
+    case RGBA_1010102:
+    case BGRA_1010102:
+    case RG16_EXT:
+      return 32;
+    case RGBA_4444:
+    case RGB_565:
+    case LUMINANCE_F16:
+    case R16_EXT:
+    case BGR_565:
+    case RG_88:
+      return 16;
+    case ALPHA_8:
+    case LUMINANCE_8:
+    case RED_8:
+      return 8;
+    case ETC1:
+      return 4;
+    case YVU_420:
+    case YUV_420_BIPLANAR:
+    case P010:
+    case YUVA_420_TRIPLANAR:
+      NOTREACHED();
+      return 0;
+  }
+}
+
+uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
+  switch (channel) {
+    case SharedImageFormat::ChannelFormat::k8:
+      return 1;
+    // 10 bit formats like P010 still use 2 bytes per element.
+    case SharedImageFormat::ChannelFormat::k10:
+    case SharedImageFormat::ChannelFormat::k16:
+    case SharedImageFormat::ChannelFormat::k16F:
+      return 2;
+  }
+}
+
 const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
   switch (plane) {
     case SharedImageFormat::PlaneConfig::kY_V_U:
@@ -73,6 +129,7 @@ const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
       return "Y+UV+A";
   }
 }
+
 const char* SubsamplingToString(SharedImageFormat::Subsampling subsampling) {
   switch (subsampling) {
     case SharedImageFormat::Subsampling::k420:
@@ -90,6 +147,23 @@ const char* ChannelFormatToString(SharedImageFormat::ChannelFormat channel) {
       return "16 unorm";
     case SharedImageFormat::ChannelFormat::k16F:
       return "16 float";
+  }
+}
+
+SharedImageFormat GetEquivalentMultiplanarFormat(
+    ResourceFormat resource_format) {
+  switch (resource_format) {
+    case ResourceFormat::YVU_420:
+      return MultiPlaneFormat::kYVU_420;
+    case ResourceFormat::YUV_420_BIPLANAR:
+      return MultiPlaneFormat::kYUV_420_BIPLANAR;
+    case ResourceFormat::YUVA_420_TRIPLANAR:
+      return MultiPlaneFormat::kYUVA_420_TRIPLANAR;
+    case ResourceFormat::P010:
+      return MultiPlaneFormat::kP010;
+    default:
+      NOTREACHED();
+      return SinglePlaneFormat::kRGBA_8888;
   }
 }
 
@@ -118,6 +192,60 @@ int SharedImageFormat::NumberOfPlanes() const {
 
 bool SharedImageFormat::IsValidPlaneIndex(int plane_index) const {
   return plane_index >= 0 && plane_index < NumberOfPlanes();
+}
+
+absl::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
+    const gfx::Size& size) const {
+  DCHECK(!size.IsEmpty());
+
+  if (is_single_plane()) {
+    if (IsLegacyMultiplanar()) {
+      return GetEquivalentMultiplanarFormat(resource_format())
+          .MaybeEstimatedSizeInBytes(size);
+    }
+
+    base::CheckedNumeric<size_t> bits_per_row =
+        BitsPerPixelForResourceFormat(resource_format());
+    bits_per_row *= size.width();
+    if (!bits_per_row.IsValid()) {
+      return absl::nullopt;
+    }
+
+    base::CheckedNumeric<size_t> estimated_bytes =
+        ConvertBitsToBytes(bits_per_row.ValueOrDie());
+    estimated_bytes *= size.height();
+    if (!estimated_bytes.IsValid()) {
+      return absl::nullopt;
+    }
+
+    return estimated_bytes.ValueOrDie();
+  }
+
+  size_t bytes_per_element = StorageBytesPerElement(channel_format());
+  base::CheckedNumeric<size_t> total_estimated_bytes = 0;
+  for (int plane_index = 0; plane_index < NumberOfPlanes(); ++plane_index) {
+    gfx::Size plane_size = GetPlaneSize(plane_index, size);
+
+    base::CheckedNumeric<size_t> plane_estimated_bytes =
+        bytes_per_element * NumChannelsInPlane(plane_index);
+    DCHECK(plane_estimated_bytes.IsValid());
+    plane_estimated_bytes *= plane_size.width();
+    plane_estimated_bytes *= plane_size.height();
+    if (!plane_estimated_bytes.IsValid()) {
+      return absl::nullopt;
+    }
+
+    total_estimated_bytes += plane_estimated_bytes;
+    if (!total_estimated_bytes.IsValid()) {
+      return absl::nullopt;
+    }
+  }
+
+  return total_estimated_bytes.ValueOrDie();
+}
+
+size_t SharedImageFormat::EstimatedSizeInBytes(const gfx::Size& size) const {
+  return MaybeEstimatedSizeInBytes(size).value_or(0);
 }
 
 gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,

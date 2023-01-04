@@ -190,15 +190,14 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
     SkAlphaType alpha_type,
     uint32_t usage,
     SharedMemoryRegionWrapper wrapper)
-    : SharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
-          false),
+    : SharedImageBacking(mailbox,
+                         format,
+                         size,
+                         color_space,
+                         surface_origin,
+                         alpha_type,
+                         usage,
+                         format.EstimatedSizeInBytes(size),
+                         false),
       shared_memory_wrapper_(std::move(wrapper)) {}
 }  // namespace gpu
