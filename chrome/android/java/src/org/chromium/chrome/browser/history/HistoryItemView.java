@@ -15,9 +15,9 @@ import android.widget.ImageView.ScaleType;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,7 +68,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mRemoveButton = mEndButtonView;
         mRemoveButton.setImageResource(R.drawable.btn_delete_24dp);
         mRemoveButton.setContentDescription(getContext().getString((R.string.remove)));
-        ApiCompatibilityUtils.setImageTintList(mRemoveButton,
+        ImageViewCompat.setImageTintList(mRemoveButton,
                 AppCompatResources.getColorStateList(
                         getContext(), R.color.default_icon_color_secondary_tint_list));
         mRemoveButton.setOnClickListener(v -> remove());

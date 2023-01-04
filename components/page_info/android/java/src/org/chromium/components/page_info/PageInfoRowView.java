@@ -18,8 +18,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -67,7 +67,7 @@ public class PageInfoRowView extends FrameLayout {
             int p = ViewUtils.dpToPx(displayMetrics, 2);
             mIcon.setPadding(p, p, p, p);
         }
-        ApiCompatibilityUtils.setImageTintList(mIcon,
+        ImageViewCompat.setImageTintList(mIcon,
                 params.iconTint != 0
                         ? ColorStateList.valueOf(getResources().getColor(params.iconTint))
                         : AppCompatResources.getColorStateList(

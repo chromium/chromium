@@ -11,9 +11,9 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
@@ -113,8 +113,7 @@ public class NewTabButton
                 || ((DeviceClassManager.enableAccessibilityLayout(getContext())
                             || mIsGridTabSwitcherEnabled || mIsStartSurfaceEnabled)
                         && mIsIncognito);
-        ApiCompatibilityUtils.setImageTintList(
-                this, shouldUseLightMode ? mLightModeTint : mDarkModeTint);
+        ImageViewCompat.setImageTintList(this, shouldUseLightMode ? mLightModeTint : mDarkModeTint);
     }
 
     /**

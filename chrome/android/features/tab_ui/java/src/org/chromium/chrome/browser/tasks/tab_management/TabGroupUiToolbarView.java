@@ -21,8 +21,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -171,11 +171,11 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void setTint(ColorStateList tint) {
-        ApiCompatibilityUtils.setImageTintList(mLeftButton, tint);
-        ApiCompatibilityUtils.setImageTintList(mRightButton, tint);
+        ImageViewCompat.setImageTintList(mLeftButton, tint);
+        ImageViewCompat.setImageTintList(mRightButton, tint);
         if (mTitleTextView != null) mTitleTextView.setTextColor(tint);
         if (mMenuButton != null) {
-            ApiCompatibilityUtils.setImageTintList(mMenuButton, tint);
+            ImageViewCompat.setImageTintList(mMenuButton, tint);
         }
     }
 

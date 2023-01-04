@@ -27,8 +27,8 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -413,15 +413,15 @@ public class ToolbarTablet
 
     @Override
     public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
-        ApiCompatibilityUtils.setImageTintList(mBackButton, tint);
-        ApiCompatibilityUtils.setImageTintList(mForwardButton, tint);
-        ApiCompatibilityUtils.setImageTintList(mSaveOfflineButton, tint);
-        ApiCompatibilityUtils.setImageTintList(mReloadButton, tint);
+        ImageViewCompat.setImageTintList(mHomeButton, tint);
+        ImageViewCompat.setImageTintList(mBackButton, tint);
+        ImageViewCompat.setImageTintList(mForwardButton, tint);
+        ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
+        ImageViewCompat.setImageTintList(mReloadButton, tint);
         mAccessibilitySwitcherButton.setBrandedColorScheme(brandedColorScheme);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
-            ApiCompatibilityUtils.setImageTintList(mOptionalButton, tint);
+            ImageViewCompat.setImageTintList(mOptionalButton, tint);
         }
     }
 
@@ -496,12 +496,12 @@ public class ToolbarTablet
             mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
             final @ColorRes int tint = isIncognito() ? R.color.default_icon_color_blue_light
                                                      : R.color.default_icon_color_accent1_tint_list;
-            ApiCompatibilityUtils.setImageTintList(
+            ImageViewCompat.setImageTintList(
                     mBookmarkButton, AppCompatResources.getColorStateList(getContext(), tint));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
             mBookmarkButton.setImageResource(R.drawable.btn_star);
-            ApiCompatibilityUtils.setImageTintList(mBookmarkButton, getTint());
+            ImageViewCompat.setImageTintList(mBookmarkButton, getTint());
             mBookmarkButton.setContentDescription(
                     getContext().getString(R.string.accessibility_menu_bookmark));
         }
@@ -670,9 +670,9 @@ public class ToolbarTablet
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
         mOptionalButtonUsesTint = buttonSpec.getSupportsTinting();
         if (mOptionalButtonUsesTint) {
-            ApiCompatibilityUtils.setImageTintList(mOptionalButton, getTint());
+            ImageViewCompat.setImageTintList(mOptionalButton, getTint());
         } else {
-            ApiCompatibilityUtils.setImageTintList(mOptionalButton, null);
+            ImageViewCompat.setImageTintList(mOptionalButton, null);
         }
 
         if (buttonSpec.getIPHCommandBuilder() != null) {

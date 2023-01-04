@@ -10,8 +10,8 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -73,7 +73,7 @@ public class IncognitoToggleButton extends ChromeImageButton {
      */
     protected void setImage(boolean isIncognitoSelected) {
         setImageResource(R.drawable.incognito_simple);
-        ApiCompatibilityUtils.setImageTintList(this,
+        ImageViewCompat.setImageTintList(this,
                 AppCompatResources.getColorStateList(getContext(),
                         isIncognitoSelected ? R.color.default_icon_color_white_tint_list
                                             : R.color.default_icon_color_tint_list));

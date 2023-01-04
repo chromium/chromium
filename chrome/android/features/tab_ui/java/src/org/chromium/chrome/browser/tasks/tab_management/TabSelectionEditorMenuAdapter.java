@@ -9,7 +9,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import androidx.core.widget.ImageViewCompat;
+
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -162,7 +163,7 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
         } else if (propertyKey == TabSelectionEditorActionProperties.ICON_TINT) {
             ColorStateList colorStateList = model.get(TabSelectionEditorActionProperties.ICON_TINT);
             if (colorStateList != null) {
-                ApiCompatibilityUtils.setImageTintList(startIcon, colorStateList);
+                ImageViewCompat.setImageTintList(startIcon, colorStateList);
             }
         }
     }

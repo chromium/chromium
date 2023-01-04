@@ -11,8 +11,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -34,7 +34,7 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
         mEndButtonView.setVisibility(VISIBLE);
         mEndButtonView.setImageResource(R.drawable.btn_delete_24dp);
         mEndButtonView.setContentDescription(getContext().getString((R.string.remove)));
-        ApiCompatibilityUtils.setImageTintList(mEndButtonView,
+        ImageViewCompat.setImageTintList(mEndButtonView,
                 AppCompatResources.getColorStateList(
                         getContext(), R.color.default_icon_color_secondary_tint_list));
         mEndButtonView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);

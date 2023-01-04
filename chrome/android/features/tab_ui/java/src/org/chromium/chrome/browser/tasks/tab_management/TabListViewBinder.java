@@ -15,9 +15,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -119,7 +119,7 @@ class TabListViewBinder {
 
             // The check should be invisible if not selected.
             actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
-            ApiCompatibilityUtils.setImageTintList(actionButton,
+            ImageViewCompat.setImageTintList(actionButton,
                     isSelected ? model.get(TabProperties.CHECKED_DRAWABLE_STATE_LIST) : null);
             if (isSelected) ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
         }

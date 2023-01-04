@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.core.widget.ImageViewCompat;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -29,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
@@ -396,7 +396,7 @@ public class TrustedCdnPublisherUrlTest {
             ImageView expectedSecurityButton =
                     new ImageView(InstrumentationRegistry.getTargetContext());
             expectedSecurityButton.setImageResource(expectedSecurityIcon);
-            ApiCompatibilityUtils.setImageTintList(expectedSecurityButton, colorStateList);
+            ImageViewCompat.setImageTintList(expectedSecurityButton, colorStateList);
 
             BitmapDrawable expectedDrawable = (BitmapDrawable) expectedSecurityButton.getDrawable();
             BitmapDrawable actualDrawable = (BitmapDrawable) securityButton.getDrawable();

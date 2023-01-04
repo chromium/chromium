@@ -21,8 +21,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -147,15 +147,15 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /* package */ void setMicButtonTint(ColorStateList colorStateList) {
-        ApiCompatibilityUtils.setImageTintList(mMicButton, colorStateList);
+        ImageViewCompat.setImageTintList(mMicButton, colorStateList);
     }
 
     /* package */ void setDeleteButtonTint(ColorStateList colorStateList) {
-        ApiCompatibilityUtils.setImageTintList(mDeleteButton, colorStateList);
+        ImageViewCompat.setImageTintList(mDeleteButton, colorStateList);
     }
 
     /* package */ void setLensButtonTint(ColorStateList colorStateList) {
-        ApiCompatibilityUtils.setImageTintList(mLensButton, colorStateList);
+        ImageViewCompat.setImageTintList(mLensButton, colorStateList);
     }
 
     @Override

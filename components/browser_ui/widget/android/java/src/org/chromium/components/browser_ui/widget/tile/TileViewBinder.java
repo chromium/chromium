@@ -9,7 +9,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import androidx.core.widget.ImageViewCompat;
+
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,8 +31,7 @@ public class TileViewBinder {
             iconView.setImageDrawable(model.get(TileViewProperties.ICON));
         } else if (propertyKey == TileViewProperties.ICON_TINT) {
             final ImageView iconView = view.findViewById(R.id.tile_view_icon);
-            ApiCompatibilityUtils.setImageTintList(
-                    iconView, model.get(TileViewProperties.ICON_TINT));
+            ImageViewCompat.setImageTintList(iconView, model.get(TileViewProperties.ICON_TINT));
         } else if (propertyKey == TileViewProperties.BADGE_VISIBLE) {
             final View badgeView = view.findViewById(R.id.offline_badge);
             final boolean isVisible = model.get(TileViewProperties.BADGE_VISIBLE);

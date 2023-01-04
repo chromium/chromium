@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.res.ColorStateList;
 import android.widget.TextView;
 
+import androidx.core.widget.ImageViewCompat;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
@@ -101,7 +103,7 @@ public class MessageCardViewUtils {
      * @param isIncognito Whether the tint is used for incognito mode.
      */
     public static void setCloseButtonTint(ChromeImageView closeButton, boolean isIncognito) {
-        ApiCompatibilityUtils.setImageTintList(closeButton,
+        ImageViewCompat.setImageTintList(closeButton,
                 TabUiThemeProvider.getMessageCardCloseButtonTintList(
                         closeButton.getContext(), isIncognito));
     }

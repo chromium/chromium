@@ -10,10 +10,10 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -142,11 +142,11 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
         // Update the Tab Switcher (Standard button) tab
         mTabSwitcherDrawable.setTint(
                 isIncognitoSelected ? mTabIconLightColor : mTabIconSelectedDarkColor);
-        ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon,
+        ImageViewCompat.setImageTintList(mStandardButtonIcon,
                 isIncognitoSelected ? mTabIconLightColor : mTabIconSelectedDarkColor);
 
         // Update the Incognito tab
-        ApiCompatibilityUtils.setImageTintList(mIncognitoButtonIcon,
+        ImageViewCompat.setImageTintList(mIncognitoButtonIcon,
                 isIncognitoSelected ? mIncognitoSelectedColor : mTabIconDarkColor);
 
         // Ensure the tab in tab layout is correctly selected when tab switcher is

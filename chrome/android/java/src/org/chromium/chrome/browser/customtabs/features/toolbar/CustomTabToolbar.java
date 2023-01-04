@@ -44,8 +44,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MarginLayoutParamsCompat;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -1075,7 +1075,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void showBrandingIconAndText() {
             ColorStateList colorStateList = AppCompatResources.getColorStateList(
                     getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
-            ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
+            ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16, mAnimateIconTransition);
 
             mUrlBar.setText(R.string.twa_running_in_chrome);
@@ -1105,7 +1105,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (securityIconResource != 0) {
                 ColorStateList colorStateList = AppCompatResources.getColorStateList(
                         getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
-                ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
+                ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
             }
             mAnimDelegate.updateSecurityButton(securityIconResource, mAnimateIconTransition);
 

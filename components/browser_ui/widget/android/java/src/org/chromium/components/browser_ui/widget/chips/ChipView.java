@@ -25,6 +25,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
@@ -279,7 +280,7 @@ public class ChipView extends LinearLayout {
 
         ChromeImageView endIcon = new ChromeImageView(getContext());
         endIcon.setImageResource(R.drawable.btn_close);
-        ApiCompatibilityUtils.setImageTintList(endIcon, mPrimaryText.getTextColors());
+        ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
 
         // Adding a wrapper view around the X icon to make the touch target larger, which would
         // cover the start and end margin for the X icon, and full height of the chip.
@@ -357,9 +358,9 @@ public class ChipView extends LinearLayout {
      */
     private void setTint(boolean tintWithTextColor) {
         if (mPrimaryText.getTextColors() != null && tintWithTextColor) {
-            ApiCompatibilityUtils.setImageTintList(mStartIcon, mPrimaryText.getTextColors());
+            ImageViewCompat.setImageTintList(mStartIcon, mPrimaryText.getTextColors());
         } else {
-            ApiCompatibilityUtils.setImageTintList(mStartIcon, null);
+            ImageViewCompat.setImageTintList(mStartIcon, null);
         }
     }
 

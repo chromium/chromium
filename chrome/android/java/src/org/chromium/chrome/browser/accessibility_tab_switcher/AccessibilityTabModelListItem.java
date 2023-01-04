@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.build.annotations.UsedByReflection;
@@ -339,7 +340,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
                     mTitleView, R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
             ApiCompatibilityUtils.setTextAppearance(
                     mDescriptionView, R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
-            ApiCompatibilityUtils.setImageTintList(mCloseButton, mIncognitoCloseIconColor);
+            ImageViewCompat.setImageTintList(mCloseButton, mIncognitoCloseIconColor);
         } else {
             setBackgroundColor(SemanticColorUtils.getDefaultBgColor(getContext()));
             mFaviconView.getBackground().setLevel(mDefaultLevel);
@@ -347,7 +348,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
                     mTitleView, R.style.TextAppearance_TextLarge_Primary);
             ApiCompatibilityUtils.setTextAppearance(
                     mDescriptionView, R.style.TextAppearance_TextMedium_Secondary);
-            ApiCompatibilityUtils.setImageTintList(mCloseButton, mDefaultCloseIconColor);
+            ImageViewCompat.setImageTintList(mCloseButton, mDefaultCloseIconColor);
         }
 
         if (TextUtils.isEmpty(url)) {
@@ -363,11 +364,11 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
             Bitmap bitmap = TabFavicon.getBitmap(mTab);
             if (bitmap != null) {
                 // Don't tint favicon bitmaps.
-                ApiCompatibilityUtils.setImageTintList(mFaviconView, null);
+                ImageViewCompat.setImageTintList(mFaviconView, null);
                 mFaviconView.setImageBitmap(bitmap);
             } else {
                 mFaviconView.setImageResource(R.drawable.ic_globe_24dp);
-                ApiCompatibilityUtils.setImageTintList(
+                ImageViewCompat.setImageTintList(
                         mFaviconView, mTab.isIncognito() ? mIncognitoIconColor : mDefaultIconColor);
             }
         }

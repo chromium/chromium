@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -68,7 +68,7 @@ public class NavigationBubble extends LinearLayout {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
             float fraction = (float) animation.getAnimatedValue();
-            ApiCompatibilityUtils.setImageTintList(mIcon,
+            ImageViewCompat.setImageTintList(mIcon,
                     ColorStateList.valueOf(ColorUtils.getColorWithOverlay(mStart, mEnd, fraction)));
         }
     }

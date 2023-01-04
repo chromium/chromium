@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
@@ -127,7 +128,7 @@ public class ConnectionInfoView implements OnClickListener {
         View section = LayoutInflater.from(mContext).inflate(R.layout.connection_info, null);
         ImageView i = section.findViewById(R.id.connection_info_icon);
         i.setImageResource(iconId);
-        ApiCompatibilityUtils.setImageTintList(
+        ImageViewCompat.setImageTintList(
                 i, AppCompatResources.getColorStateList(mContext, iconColorId));
 
         TextView d = section.findViewById(R.id.connection_info_description);

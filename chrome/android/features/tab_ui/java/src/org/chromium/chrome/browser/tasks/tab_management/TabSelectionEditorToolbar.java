@@ -14,8 +14,8 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.PluralsRes;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
@@ -154,7 +154,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         mActionButton.setTextColor(tint);
         TintedDrawable navigation = (TintedDrawable) getNavigationIcon();
         navigation.setTint(tint);
-        ApiCompatibilityUtils.setImageTintList(mMenuButton, tint);
+        ImageViewCompat.setImageTintList(mMenuButton, tint);
     }
 
     /**

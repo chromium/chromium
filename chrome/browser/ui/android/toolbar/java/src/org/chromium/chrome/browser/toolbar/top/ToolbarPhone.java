@@ -45,7 +45,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -1685,7 +1684,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
+        ImageViewCompat.setImageTintList(mHomeButton, tint);
 
         if (mToggleTabStackButton != null) {
             mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);

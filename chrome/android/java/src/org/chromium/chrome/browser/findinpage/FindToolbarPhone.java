@@ -10,8 +10,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -46,9 +46,9 @@ public class FindToolbarPhone extends FindToolbar {
     protected void updateVisualsForTabModel(boolean isIncognito) {
         setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
         final ColorStateList color = ChromeColors.getPrimaryIconTint(getContext(), isIncognito);
-        ApiCompatibilityUtils.setImageTintList(mFindNextButton, color);
-        ApiCompatibilityUtils.setImageTintList(mFindPrevButton, color);
-        ApiCompatibilityUtils.setImageTintList(mCloseFindButton, color);
+        ImageViewCompat.setImageTintList(mFindNextButton, color);
+        ImageViewCompat.setImageTintList(mFindPrevButton, color);
+        ImageViewCompat.setImageTintList(mCloseFindButton, color);
 
         int queryTextColorId;
         int queryHintTextColorId;

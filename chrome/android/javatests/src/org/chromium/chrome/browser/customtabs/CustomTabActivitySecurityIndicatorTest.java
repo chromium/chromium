@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -24,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -101,7 +101,7 @@ public class CustomTabActivitySecurityIndicatorTest {
         ImageView expectedSecurityButton =
                 new ImageView(InstrumentationRegistry.getTargetContext());
         expectedSecurityButton.setImageResource(expectedSecurityIcon);
-        ApiCompatibilityUtils.setImageTintList(expectedSecurityButton, colorStateList);
+        ImageViewCompat.setImageTintList(expectedSecurityButton, colorStateList);
 
         BitmapDrawable expectedDrawable = (BitmapDrawable) expectedSecurityButton.getDrawable();
         BitmapDrawable actualDrawable = (BitmapDrawable) securityButton.getDrawable();
@@ -139,7 +139,7 @@ public class CustomTabActivitySecurityIndicatorTest {
         ImageView expectedSecurityButton =
                 new ImageView(InstrumentationRegistry.getTargetContext());
         expectedSecurityButton.setImageResource(expectedSecurityIcon);
-        ApiCompatibilityUtils.setImageTintList(expectedSecurityButton, colorStateList);
+        ImageViewCompat.setImageTintList(expectedSecurityButton, colorStateList);
 
         BitmapDrawable expectedDrawable = (BitmapDrawable) expectedSecurityButton.getDrawable();
         BitmapDrawable actualDrawable = (BitmapDrawable) securityButton.getDrawable();

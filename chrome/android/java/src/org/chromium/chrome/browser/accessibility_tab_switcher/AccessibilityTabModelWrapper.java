@@ -14,10 +14,10 @@ import android.widget.ListView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility_tab_switcher.AccessibilityTabModelAdapter.AccessibilityTabModelAdapterListener;
 import org.chromium.chrome.browser.tab.Tab;
@@ -165,15 +165,14 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
             setBackgroundColor(getContext().getColor(R.color.default_bg_color_dark));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedLightColor.getDefaultColor());
-            ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconLightColor);
-            ApiCompatibilityUtils.setImageTintList(
-                    mIncognitoButtonIcon, mTabIconSelectedLightColor);
+            ImageViewCompat.setImageTintList(mStandardButtonIcon, mTabIconLightColor);
+            ImageViewCompat.setImageTintList(mIncognitoButtonIcon, mTabIconSelectedLightColor);
         } else {
             setBackgroundColor(SemanticColorUtils.getDefaultBgColor(getContext()));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedDarkColor.getDefaultColor());
-            ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconSelectedDarkColor);
-            ApiCompatibilityUtils.setImageTintList(mIncognitoButtonIcon, mTabIconDarkColor);
+            ImageViewCompat.setImageTintList(mStandardButtonIcon, mTabIconSelectedDarkColor);
+            ImageViewCompat.setImageTintList(mIncognitoButtonIcon, mTabIconDarkColor);
         }
         // Ensure the tab in tab layout is correctly selected when tab switcher is
         // first opened.

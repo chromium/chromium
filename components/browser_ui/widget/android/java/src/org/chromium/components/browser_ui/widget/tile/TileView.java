@@ -14,8 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -85,7 +85,7 @@ public class TileView extends FrameLayout {
      * Applies or clears icon tint.
      */
     public void setIconTint(ColorStateList color) {
-        ApiCompatibilityUtils.setImageTintList(mIconView, color);
+        ImageViewCompat.setImageTintList(mIconView, color);
     }
 
     /** Shows or hides the offline badge to reflect the offline availability. */

@@ -16,8 +16,8 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.ui.base.ViewUtils;
@@ -100,7 +100,7 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
 
     public void setStartIconBackgroundRes(@DrawableRes int resId) {
         mStartIconView.setBackgroundResource(resId);
-        ApiCompatibilityUtils.setImageTintList(mStartIconView, getDefaultStartIconTint());
+        ImageViewCompat.setImageTintList(mStartIconView, getDefaultStartIconTint());
     }
 
     void setEndButtonDrawable(Drawable drawable) {

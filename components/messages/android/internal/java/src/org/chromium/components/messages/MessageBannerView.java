@@ -23,8 +23,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
@@ -141,9 +141,9 @@ public class MessageBannerView extends BoundedLinearLayout {
 
     void setIconTint(@ColorInt int color) {
         if (color == MessageBannerProperties.TINT_NONE) {
-            ApiCompatibilityUtils.setImageTintList(mIconView, null);
+            ImageViewCompat.setImageTintList(mIconView, null);
         } else {
-            ApiCompatibilityUtils.setImageTintList(mIconView, ColorStateList.valueOf(color));
+            ImageViewCompat.setImageTintList(mIconView, ColorStateList.valueOf(color));
         }
     }
 
