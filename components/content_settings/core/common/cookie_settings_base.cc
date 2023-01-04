@@ -5,13 +5,10 @@
 #include "components/content_settings/core/common/cookie_settings_base.h"
 
 #include "base/check.h"
-#include "base/debug/stack_trace.h"
-#include "base/debug/task_trace.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "components/content_settings/core/common/features.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -19,6 +16,10 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#endif
 
 namespace content_settings {
 
@@ -28,7 +29,16 @@ CookieSettingsBase::CookieSettingsBase()
       storage_access_api_grants_unpartitioned_storage_(
           net::features::kStorageAccessAPIGrantsUnpartitionedStorage.Get()),
       is_storage_partitioned_(base::FeatureList::IsEnabled(
-          net::features::kThirdPartyStoragePartitioning)) {}
+          net::features::kThirdPartyStoragePartitioning)),
+      is_privacy_sandbox_v4_enabled_(
+#if BUILDFLAG(IS_IOS)
+          false
+#else
+          base::FeatureList::IsEnabled(
+              privacy_sandbox::kPrivacySandboxSettings4)
+#endif
+      ) {
+}
 
 // static
 bool CookieSettingsBase::IsThirdPartyRequest(
@@ -52,8 +62,11 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const std::string& domain,
     bool is_https) const {
   GURL origin = net::cookie_util::CookieOriginToURL(domain, is_https);
+  // Pass GURL() as first_party_url since we don't know the context and
+  // don't want to match against (*, exception) pattern.
   ContentSetting setting =
-      GetCookieSetting(origin, origin, nullptr, QueryReason::kCookies);
+      GetCookieSetting(origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+                       nullptr, QueryReason::kCookies);
   DCHECK(IsValidSetting(setting));
   if (setting == CONTENT_SETTING_ALLOW)
     return false;
@@ -110,8 +123,11 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
 
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin,
                                              QueryReason query_reason) const {
+  // Pass GURL() as first_party_url since we don't know the context and
+  // don't want to match against (*, exception) pattern.
   ContentSetting setting =
-      GetCookieSetting(origin, origin, nullptr, query_reason);
+      GetCookieSetting(origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+                       nullptr, query_reason);
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }
