@@ -401,9 +401,9 @@ TEST_P(JsonPrefStoreTest, PreserveEmptyValues) {
   // Check values.
   const Value* result = nullptr;
   EXPECT_TRUE(pref_store->GetValue("list", &result));
-  EXPECT_EQ(ListValue(), *result);
+  EXPECT_EQ(Value::List(), *result);
   EXPECT_TRUE(pref_store->GetValue("dict", &result));
-  EXPECT_EQ(DictionaryValue(), *result);
+  EXPECT_EQ(Value::Dict(), *result);
 }
 
 // This test is just documenting some potentially non-obvious behavior. It
