@@ -487,6 +487,8 @@ void BruschettaInstaller::StartVm() {
   request.add_kernel_params("earlycon=uart8250,io,0x3f8");
   request.add_kernel_params("g-i/track=latest");
   request.add_kernel_params("glinux/bruschetta-alpha");
+  request.add_kernel_params("g-i/bruschetta-use-gbi=false");
+  request.add_kernel_params("g-i/undefok=bruschetta-use-gbi");
   request.set_timeout(240);
 
   // fds and request.fds must have the same order.
