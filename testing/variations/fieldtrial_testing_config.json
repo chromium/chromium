@@ -7773,6 +7773,7 @@
                 {
                     "name": "Group2_20230104",
                     "params": {
+                        "max_input_stream_bytes_available_unknown": "2048",
                         "min_input_stream_available_value_to_ignore": "2",
                         "min_input_stream_read_size": "2048"
                     },
