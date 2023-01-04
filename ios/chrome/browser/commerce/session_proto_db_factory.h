@@ -19,6 +19,28 @@
 
 namespace {
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
+
+template <typename T>
+std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
+  DCHECK(!state->IsOffTheRecord());
+
+  if (std::is_base_of<
+          commerce_subscription_db::CommerceSubscriptionContentProto,
+          T>::value) {
+    return std::make_unique<SessionProtoDB<T>>(
+        state->GetProtoDatabaseProvider(),
+        state->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
+        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
+        web::GetUIThreadTaskRunner({}));
+  } else {
+    // Must add in leveldb_proto::ProtoDbType and database directory folder
+    // new protos.
+    DCHECK(false) << "Provided template is not supported. To support add "
+                     "unique folder in the above proto -> folder name mapping. "
+                     "This check could also fail because the template is not "
+                     "supported on current platform.";
+  }
+}
 }  // namespace
 
 SessionProtoDBFactory<
@@ -33,6 +55,8 @@ class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {
 
   static SessionProtoDBFactory<T>* GetInstance();
   static SessionProtoDB<T>* GetForBrowserState(web::BrowserState* state);
+
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<SessionProtoDBFactory<T>>;
@@ -57,6 +81,12 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForBrowserState(
 }
 
 template <typename T>
+BrowserStateKeyedServiceFactory::TestingFactory
+SessionProtoDBFactory<T>::GetDefaultFactory() {
+  return base::BindRepeating(&BuildSessionProtoDB<T>);
+}
+
+template <typename T>
 SessionProtoDBFactory<T>::SessionProtoDBFactory()
     : BrowserStateKeyedServiceFactory(
           "SessionProtoDB",
@@ -65,24 +95,7 @@ SessionProtoDBFactory<T>::SessionProtoDBFactory()
 template <typename T>
 std::unique_ptr<KeyedService> SessionProtoDBFactory<T>::BuildServiceInstanceFor(
     web::BrowserState* state) const {
-  DCHECK(!state->IsOffTheRecord());
-
-  if (std::is_base_of<
-          commerce_subscription_db::CommerceSubscriptionContentProto,
-          T>::value) {
-    return std::make_unique<SessionProtoDB<T>>(
-        state->GetProtoDatabaseProvider(),
-        state->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
-        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
-        web::GetUIThreadTaskRunner({}));
-  } else {
-    // Must add in leveldb_proto::ProtoDbType and database directory folder
-    // new protos.
-    DCHECK(false) << "Provided template is not supported. To support add "
-                     "unique folder in the above proto -> folder name mapping. "
-                     "This check could also fail because the template is not "
-                     "supported on current platform.";
-  }
+  return BuildSessionProtoDB<T>(state);
 }
 
 #endif  // IOS_CHROME_BROWSER_COMMERCE_SESSION_PROTO_DB_FACTORY_H_

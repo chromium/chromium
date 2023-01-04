@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
 
+#import "base/run_loop.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -33,7 +37,12 @@ NSString* kSerializedPayloadKey = @"op";
 // notification.
 NSString* kVisitSiteActionIdentifier = @"visit_site";
 // Text for option for long press.
-NSString* kVisitSiteTitle = @"Visit Site";
+NSString* kVisitSiteTitle = @"Visit site";
+// Identifier for user pressing 'Untrack price' after long pressing
+// notification.
+NSString* kUntrackPriceIdentifier = @"untrack_price";
+// Text for option 'Untrack price' when long pressing notification.
+NSString* kUntrackPriceTitle = @"Untrack price";
 
 }  // namespace
 
@@ -64,16 +73,48 @@ CommercePushNotificationClient::RegisterActionableNotifications() {
       actionWithIdentifier:kVisitSiteActionIdentifier
                      title:kVisitSiteTitle
                    options:UNNotificationActionOptionForeground];
+  UNNotificationAction* kUntrackPriceAction = [UNNotificationAction
+      actionWithIdentifier:kUntrackPriceIdentifier
+                     title:kUntrackPriceTitle
+                   options:UNNotificationActionOptionForeground];
+
   return @[ [UNNotificationCategory
       categoryWithIdentifier:kCommerceCategoryIdentifier
-                     actions:@[ kVisitSiteAction ]
+                     actions:@[ kVisitSiteAction, kUntrackPriceAction ]
            intentIdentifiers:@[]
                      options:UNNotificationCategoryOptionNone] ];
 }
 
+commerce::ShoppingService*
+CommercePushNotificationClient::GetShoppingService() {
+  return commerce::ShoppingServiceFactory::GetForBrowserState(
+      GetLastUsedBrowserState());
+}
+
+bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
+  return ios::BookmarkModelFactory::GetForBrowserState(
+      GetLastUsedBrowserState());
+}
+
 void CommercePushNotificationClient::HandleNotificationInteraction(
     NSString* action_identifier,
-    NSDictionary* user_info) {
+    NSDictionary* user_info,
+    base::RunLoop* on_complete_for_testing) {
+  std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
+      hint_notification_payload =
+          OptimizationGuidePushNotificationClient::ParseHintNotificationPayload(
+              [user_info objectForKey:kSerializedPayloadKey]);
+  if (!hint_notification_payload) {
+    return;
+  }
+
+  commerce::PriceDropNotificationPayload price_drop_notification;
+  if (!hint_notification_payload->has_payload() ||
+      !price_drop_notification.ParseFromString(
+          hint_notification_payload->payload().value())) {
+    return;
+  }
+
   // TODO(crbug.com/1362342) handle the user tapping 'untrack price'.
   // User taps notification or long presses notification and presses 'Visit
   // Site'.
@@ -82,21 +123,6 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     // TODO(crbug.com/1403190) implement alternate Open URL handler which
     // attempts to find if a Tab with the URL already exists and switch
     // to that Tab.
-    std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
-        hint_notification_payload = OptimizationGuidePushNotificationClient::
-            ParseHintNotificationPayload(
-                [user_info objectForKey:kSerializedPayloadKey]);
-    if (!hint_notification_payload) {
-      return;
-    }
-
-    commerce::PriceDropNotificationPayload price_drop_notification;
-    if (!hint_notification_payload->has_payload() ||
-        !price_drop_notification.ParseFromString(
-            hint_notification_payload->payload().value())) {
-      return;
-    }
-
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(GetLastUsedBrowserState());
     if (!browser_list->AllRegularBrowsers().size()) {
@@ -108,5 +134,16 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     UrlLoadParams params = UrlLoadParams::InNewTab(
         GURL(price_drop_notification.destination_url()));
     UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
+  } else if ([action_identifier isEqualToString:kUntrackPriceIdentifier]) {
+    const bookmarks::BookmarkNode* bookmark =
+        GetBookmarkModel()->GetMostRecentlyAddedUserNodeForURL(
+            GURL(price_drop_notification.destination_url()));
+    commerce::SetPriceTrackingStateForBookmark(
+        GetShoppingService(), GetBookmarkModel(), bookmark, false,
+        base::BindOnce(^(bool success) {
+          if (on_complete_for_testing) {
+            on_complete_for_testing->Quit();
+          }
+        }));
   }
 }
