@@ -40,8 +40,14 @@ UDPWritableStreamWrapper::UDPWritableStreamWrapper(
     : WritableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       udp_socket_(udp_socket) {
-  InitSinkAndWritable(/*sink=*/MakeGarbageCollected<UnderlyingSink>(this),
-                      /*high_water_mark=*/1);
+  ScriptState::Scope scope(script_state);
+
+  auto* sink = WritableStreamWrapper::MakeForwardingUnderlyingSink(this);
+  SetSink(sink);
+
+  auto* writable = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, sink, /*high_water_mark=*/1);
+  SetWritable(writable);
 }
 
 bool UDPWritableStreamWrapper::HasPendingWrite() const {

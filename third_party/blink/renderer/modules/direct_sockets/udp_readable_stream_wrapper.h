@@ -22,7 +22,7 @@ class ScriptState;
 
 class MODULES_EXPORT UDPReadableStreamWrapper
     : public GarbageCollected<UDPReadableStreamWrapper>,
-      public ReadableStreamWrapper {
+      public ReadableStreamDefaultWrapper {
  public:
   UDPReadableStreamWrapper(ScriptState*,
                            CloseOnceCallback,
@@ -30,15 +30,13 @@ class MODULES_EXPORT UDPReadableStreamWrapper
 
   // ReadableStreamWrapper:
   void Pull() override;
-  bool Push(base::span<const uint8_t> data,
-            const absl::optional<net::IPEndPoint>& src_addr) override;
+  uint32_t Push(base::span<const uint8_t> data,
+                const absl::optional<net::IPEndPoint>& src_addr) override;
   void CloseStream() override;
   void ErrorStream(int32_t error_code) override;
   void Trace(Visitor*) const override;
 
  private:
-  class UDPUnderlyingSource;
-
   CloseOnceCallback on_close_;
   const Member<UDPSocketMojoRemote> udp_socket_;
   int32_t pending_receive_requests_ = 0;

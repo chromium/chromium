@@ -41,12 +41,18 @@ UDPReadableStreamWrapper::UDPReadableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
     const Member<UDPSocketMojoRemote> udp_socket)
-    : ReadableStreamWrapper(script_state),
+    : ReadableStreamDefaultWrapper(script_state),
       on_close_(std::move(on_close)),
       udp_socket_(udp_socket) {
-  InitSourceAndReadable(
-      /*source=*/MakeGarbageCollected<UnderlyingSource>(GetScriptState(), this),
-      kReadableStreamBufferSize);
+  ScriptState::Scope scope(script_state);
+
+  auto* source =
+      ReadableStreamDefaultWrapper::MakeForwardingUnderlyingSource(this);
+  SetSource(source);
+
+  auto* readable = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, source, /*high_water_mark=*/kReadableStreamBufferSize);
+  SetReadable(readable);
 }
 
 void UDPReadableStreamWrapper::Pull() {
@@ -60,7 +66,7 @@ void UDPReadableStreamWrapper::Pull() {
   }
 }
 
-bool UDPReadableStreamWrapper::Push(
+uint32_t UDPReadableStreamWrapper::Push(
     base::span<const uint8_t> data,
     const absl::optional<net::IPEndPoint>& src_addr) {
   DCHECK_GT(pending_receive_requests_, 0);
@@ -78,12 +84,12 @@ bool UDPReadableStreamWrapper::Push(
 
   Controller()->Enqueue(message);
 
-  return true;
+  return static_cast<uint32_t>(data.size_bytes());
 }
 
 void UDPReadableStreamWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(udp_socket_);
-  ReadableStreamWrapper::Trace(visitor);
+  ReadableStreamDefaultWrapper::Trace(visitor);
 }
 
 void UDPReadableStreamWrapper::CloseStream() {

@@ -25,7 +25,7 @@ namespace blink {
 // Helper class to read from a mojo consumer handle
 class MODULES_EXPORT TCPReadableStreamWrapper
     : public GarbageCollected<TCPReadableStreamWrapper>,
-      public ReadableStreamWrapper {
+      public ReadableStreamDefaultWrapper {
   USING_PRE_FINALIZER(TCPReadableStreamWrapper, Dispose);
 
  public:
@@ -35,8 +35,8 @@ class MODULES_EXPORT TCPReadableStreamWrapper
 
   // ReadableStreamWrapper:
   void Pull() override;
-  bool Push(base::span<const uint8_t> data,
-            const absl::optional<net::IPEndPoint>&) override;
+  uint32_t Push(base::span<const uint8_t> data,
+                const absl::optional<net::IPEndPoint>&) override;
   void CloseStream() override;
   void ErrorStream(int32_t error_code) override;
   void Trace(Visitor*) const override;

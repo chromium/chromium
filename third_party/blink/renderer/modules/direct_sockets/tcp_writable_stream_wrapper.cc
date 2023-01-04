@@ -52,10 +52,16 @@ TCPWritableStreamWrapper::TCPWritableStreamWrapper(
       WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReset,
                          WrapWeakPersistent(this)));
 
+  ScriptState::Scope scope(script_state);
+
+  auto* sink = WritableStreamWrapper::MakeForwardingUnderlyingSink(this);
+  SetSink(sink);
+
   // Set the CountQueueingStrategy's high water mark as 1 to make the logic of
-  // |WriteOrCacheData| much simpler
-  InitSinkAndWritable(/*sink=*/MakeGarbageCollected<UnderlyingSink>(this),
-                      /*high_water_mark=*/1);
+  // |WriteOrCacheData| much simpler.
+  auto* writable = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, sink, /*high_water_mark=*/1);
+  SetWritable(writable);
 }
 
 bool TCPWritableStreamWrapper::HasPendingWrite() const {

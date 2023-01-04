@@ -42,9 +42,6 @@ class MODULES_EXPORT TCPWritableStreamWrapper
   void ErrorStream(int32_t error_code) override;
   bool HasPendingWrite() const override;
   void Trace(Visitor*) const override;
-
- protected:
-  // WritableStreamWrapper:
   void OnAbortSignal() override;
   ScriptPromise Write(ScriptValue chunk, ExceptionState&) override;
 
