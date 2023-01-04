@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 
 #include <locale>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -62,6 +63,85 @@ class NumPunct : public std::numpunct<char> {
   std::string do_grouping() const override { return "\3"; }
 };
 
+template <typename T>
+struct Quoter {
+  const T& value;
+};
+
+template <typename T>
+Quoter<T> Quote(const T& value) {
+  return {value};
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<base::FilePath> q) {
+  return out << "'" << q.value << "'";
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<std::string> q) {
+  return out << "'" << q.value << "'";
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, Quoter<absl::optional<T>> q) {
+  if (!q.value.has_value()) {
+    return out << "(nullopt)";
+  }
+
+  return out << Quote(*q.value);
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         Quoter<mojom::FileMetadata::Type> q) {
+  using Type = mojom::FileMetadata::Type;
+  switch (q.value) {
+#define PRINT(s)   \
+  case Type::k##s: \
+    return out << #s;
+    PRINT(File)
+    PRINT(Hosted)
+    PRINT(Directory)
+#undef PRINT
+  }
+
+  return out << "Type(" << static_cast<std::underlying_type_t<Type>>(q.value)
+             << ")";
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent::State> q) {
+  using State = mojom::ItemEvent::State;
+  switch (q.value) {
+#define PRINT(s)    \
+  case State::k##s: \
+    return out << #s;
+    PRINT(Queued)
+    PRINT(InProgress)
+    PRINT(Completed)
+    PRINT(Failed)
+#undef PRINT
+  }
+
+  return out << "State(" << static_cast<std::underlying_type_t<State>>(q.value)
+             << ")";
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileMetadata> q) {
+  const mojom::FileMetadata& md = q.value;
+  return out << "{type: " << Quote(md.type)
+             << ", size: " << HumanReadableSize(md.size)
+             << ", pinned: " << md.pinned << ", can_pin: "
+             << (md.can_pin == mojom::FileMetadata::CanPinStatus::kOk)
+             << ", available_offline: " << md.available_offline
+             << ", shared: " << md.shared << ", starred: " << md.starred
+             << ", item_id = " << Quote(md.item_id) << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
+  const mojom::ItemEvent& e = q.value;
+  return out << "{state: " << Quote(e.state) << ", path: " << Quote(e.path)
+             << ", bytes_transferred: " << e.bytes_transferred
+             << ", bytes_to_transfer: " << e.bytes_to_transfer << "}";
+}
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
@@ -114,11 +194,8 @@ std::ostream& operator<<(std::ostream& out, const SetupError error) {
 #undef PRINT
   }
 
-  return out
-         << "SetupError("
-         << static_cast<std::underlying_type_t<drivefs::pinning::SetupError>>(
-                error)
-         << ")";
+  return out << "SetupError("
+             << static_cast<std::underlying_type_t<SetupError>>(error) << ")";
 }
 
 std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
@@ -135,11 +212,8 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
 #undef PRINT
   }
 
-  return out
-         << "SetupStage("
-         << static_cast<std::underlying_type_t<drivefs::pinning::SetupStage>>(
-                stage)
-         << ")";
+  return out << "SetupStage("
+             << static_cast<std::underlying_type_t<SetupStage>>(stage) << ")";
 }
 
 // TODO(b/261530666): This was chosen arbitrarily, this should be experimented
@@ -159,8 +233,8 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
   // Emplace an item with no progress (yet). The progress values will get
   // updated in the `OnSyncingStatusUpdate`.
   const auto [it, ok] = in_progress_items_.try_emplace(path);
-  LOG_IF(ERROR, !ok) << "Cannot add item '" << path
-                     << "': There is already an item with progress "
+  LOG_IF(ERROR, !ok) << "Cannot add item " << Quote(path)
+                     << ": There is already an item with progress "
                      << HumanReadableSize(it->second.transferred) << " / "
                      << HumanReadableSize(it->second.total);
   DCHECK_EQ(path, it->first);
@@ -170,7 +244,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     const std::string& path,
     const int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(total_bytes, 0) << " for '" << path << "'";
+  DCHECK_GE(total_bytes, 0) << " for " << Quote(path);
 
   const auto it = in_progress_items_.find(path);
   if (it == in_progress_items_.end()) {
@@ -179,7 +253,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     // In this case, gracefully degrade by responding with the total bytes
     // transferred. This should ideally fail as all syncing operations should be
     // identified as they affect disk space.
-    LOG(ERROR) << "Cannot remove '" << path << "'";
+    VLOG(2) << "Cannot remove " << Quote(path);
     return total_bytes_transferred_;
   }
 
@@ -188,7 +262,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
   LOG_IF(ERROR, progress.transferred > total_bytes)
       << "Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
-      << HumanReadableSize(total_bytes) << " for '" << path << "'";
+      << HumanReadableSize(total_bytes) << " for " << Quote(path);
   total_bytes_transferred_ += total_bytes - progress.transferred;
   in_progress_items_.erase(it);
   return total_bytes_transferred_;
@@ -199,12 +273,12 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     int64_t bytes_transferred,
     int64_t bytes_to_transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(bytes_to_transfer, 0) << " for '" << path << "'";
+  DCHECK_GE(bytes_to_transfer, 0) << " for " << Quote(path);
 
   if (bytes_transferred < 0) {
     LOG(ERROR) << "Negative bytes_transferred = "
-               << HumanReadableSize(bytes_transferred) << " for '" << path
-               << "'";
+               << HumanReadableSize(bytes_transferred) << " for "
+               << Quote(path);
     return total_bytes_transferred_;
   }
 
@@ -215,7 +289,8 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     // In this case, gracefully degrade by responding with the total bytes
     // transferred. This should ideally fail as all syncing operations should be
     // identified as they affect disk space.
-    LOG(ERROR) << "Cannot update '" << path << "' with bytes_transferred = "
+    LOG(ERROR) << "Cannot update " << Quote(path)
+               << " with bytes_transferred = "
                << HumanReadableSize(bytes_transferred)
                << " and bytes_to_transfer = "
                << HumanReadableSize(bytes_to_transfer);
@@ -227,7 +302,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
   LOG_IF(ERROR, progress.transferred > bytes_transferred)
       << "Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
-      << HumanReadableSize(bytes_transferred) << " for '" << path << "'";
+      << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
   total_bytes_transferred_ += bytes_transferred - progress.transferred;
   progress.transferred = bytes_transferred;
   progress.total = bytes_to_transfer;
@@ -328,7 +403,7 @@ void DriveFsPinManager::OnFreeDiskSpaceRetrieved(const int64_t free_space) {
 
 void DriveFsPinManager::OnSearchResultForSizeCalculation(
     const drive::FileError error,
-    const absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files for size calculation: " << error;
     return Complete(SetupError::kCannotRetrieveSearchResults);
@@ -346,23 +421,25 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 
   VLOG(2) << "Iterating over " << items->size()
           << " items for space calculation";
-  for (const drivefs::mojom::QueryItemPtr& item : *items) {
+  for (const mojom::QueryItemPtr& item : *items) {
     DCHECK(item);
     DCHECK(item->metadata);
 
-    VLOG(2) << "path: '" << item->path
-            << "', size: " << HumanReadableSize(item->metadata->size)
-            << ", pinned: " << item->metadata->pinned
-            << ", available_offline: " << item->metadata->available_offline;
-    if (item->metadata->pinned) {
-      VLOG(2) << "Skipped '" << item->path << "': Already pinned";
+    const mojom::FileMetadata& md = *item->metadata;
+    VLOG(2) << "path: " << Quote(item->path) << ", metadata: " << Quote(md);
+
+    if (md.pinned) {
+      VLOG(2) << "Skipped " << Quote(item->path) << ": Already pinned";
       continue;
     }
 
-    DCHECK_GE(item->metadata->size, 0)
-        << "Negative size " << HumanReadableSize(item->metadata->size)
-        << "for '" << item->path << "'";
-    state_.progress.required_disk_space += item->metadata->size;
+    if (md.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
+      VLOG(2) << "Skipped " << Quote(item->path) << ": Cannot be pinned";
+      continue;
+    }
+
+    DCHECK_GE(md.size, 0) << " for " << Quote(item->path);
+    state_.progress.required_disk_space += md.size;
   }
 
   // TODO(b/259454320): This should really not use up all free space but instead
@@ -429,7 +506,7 @@ void DriveFsPinManager::StartBatchPinning() {
 
 void DriveFsPinManager::OnSearchResultsForPinning(
     const drive::FileError error,
-    const absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files to pin: " << error;
     return Complete(SetupError::kCannotRetrieveSearchResults);
@@ -452,17 +529,18 @@ void DriveFsPinManager::OnSearchResultsForPinning(
   // operations writing to disk might cause cause the free space to get used
   // faster than anticipated.
   bool processed = false;
-  for (const drivefs::mojom::QueryItemPtr& item : *items) {
+  for (const mojom::QueryItemPtr& item : *items) {
     DCHECK(item);
     const base::FilePath& path = item->path;
-
     DCHECK(item->metadata);
-    if (item->metadata->pinned) {
-      VLOG(2) << "Skipped '" << path << "': Already pinned";
+    const mojom::FileMetadata& md = *item->metadata;
+    if (md.pinned) {
+      VLOG(2) << "Skipped " << Quote(md.type) << " " << Quote(path)
+              << ": Already pinned";
       continue;
     }
 
-    VLOG(2) << "Pinning '" << path << "'...";
+    VLOG(2) << "Pinning " << Quote(md.type) << " " << Quote(path) << "...";
     drivefs_interface_->SetPinned(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
@@ -488,12 +566,12 @@ void DriveFsPinManager::OnSearchResultsForPinning(
 void DriveFsPinManager::OnFilePinned(const std::string& path,
                                      const drive::FileError status) {
   if (status != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Cannot pin '" << path << "': " << status;
+    LOG(ERROR) << "Cannot pin " << Quote(path) << ": " << status;
     state_.progress.error_count++;
     return;
   }
 
-  VLOG(2) << "Pinned '" << path << "'";
+  VLOG(2) << "Pinned " << Quote(path);
   syncing_items_.AsyncCall(&InProgressSyncingItems::AddItem).WithArgs(path);
 }
 
@@ -503,27 +581,31 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     return;
   }
 
-  for (const mojom::ItemEventPtr& item : status.item_events) {
-    DCHECK(item);
+  for (const mojom::ItemEventPtr& event : status.item_events) {
+    DCHECK(event);
+    VLOG(2) << "Got event: " << Quote(*event);
 
     // TODO(b/259454320): Hosted files (e.g. gdoc) do not send an update via the
     // `OnSyncingStatusUpdate` method. Need to add a method to cleanse the
     // `in_progress_items_` map to ensure any values that are small enough or
     // optimistically pinned get removed.
-    if (item->state == mojom::ItemEvent::State::kCompleted) {
-      VLOG(2) << "Synced '" << item->path << "'";
-      GetMetadataForPath(base::FilePath(item->path));
+    if (event->state == mojom::ItemEvent::State::kCompleted) {
+      VLOG(2) << "Synced " << Quote(event->path);
+      GetMetadataForPath(event->path);
       continue;
     }
 
-    if (item->state == mojom::ItemEvent::State::kFailed) {
-      LOG(ERROR) << "Cannot sync '" << item->path << "'";
+    if (event->state == mojom::ItemEvent::State::kFailed) {
+      LOG(ERROR) << "Cannot sync " << Quote(event->path);
       state_.progress.error_count++;
       continue;
     }
 
+    // DCHECK_GE(event->bytes_transferred, 0) << " for " << Quote(event->path);
+    // DCHECK_GE(event->bytes_to_transfer, 0) << " for " << Quote(event->path);
     syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
-        .WithArgs(item->path, item->bytes_transferred, item->bytes_to_transfer)
+        .WithArgs(event->path, event->bytes_transferred,
+                  event->bytes_to_transfer)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
                              weak_ptr_factory_.GetWeakPtr()));
   }
@@ -560,8 +642,7 @@ void DriveFsPinManager::OnFilesChanged(
     const std::vector<mojom::FileChange>& changes) {}
 
 void DriveFsPinManager::OnError(const mojom::DriveError& error) {
-  LOG(ERROR) << "DriveFS error " << error.type << " with '" << error.path
-             << "'";
+  LOG(ERROR) << "DriveFS error " << error.type << " with " << Quote(error.path);
 }
 
 void DriveFsPinManager::NotifyProgress() {
@@ -569,11 +650,11 @@ void DriveFsPinManager::NotifyProgress() {
     return;
   }
 
-  VLOG(2) << "Notifying observers...";
+  VLOG(3) << "Notifying observers...";
   for (DriveFsBulkPinObserver& observer : observers_) {
     observer.OnSetupProgress(state_.progress);
   }
-  VLOG(2) << "Notified observers";
+  VLOG(3) << "Notified observers";
 }
 
 void DriveFsPinManager::AddObserver(DriveFsBulkPinObserver* observer) {
@@ -612,10 +693,11 @@ void DriveFsPinManager::GetMetadata(
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DriveFsPinManager::GetMetadataForPath(const base::FilePath& path) {
+void DriveFsPinManager::GetMetadataForPath(const std::string& path) {
   drivefs_interface_->GetMetadata(
-      path, base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
-                           weak_ptr_factory_.GetWeakPtr(), path.value()));
+      base::FilePath(path),
+      base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), path));
 }
 
 void DriveFsPinManager::OnMetadataRetrieved(
@@ -623,20 +705,18 @@ void DriveFsPinManager::OnMetadataRetrieved(
     const drive::FileError error,
     const mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Cannot get metadata of '" << path << "': " << error;
+    LOG(ERROR) << "Cannot get metadata of " << Quote(path) << ": " << error;
     return;
   }
 
   DCHECK(metadata);
-  VLOG(2) << "Got metadata of path: '" << path
-          << "', size: " << HumanReadableSize(metadata->size)
-          << ", pinned: " << metadata->pinned
-          << ", available_offline: " << metadata->available_offline;
+  VLOG(2) << "path: " << Quote(path) << ", metadata: " << Quote(*metadata);
 
   if (metadata->available_offline || metadata->size == 0) {
     VLOG_IF(2, metadata->available_offline)
-        << "Skipped '" << path << "': Already available offline";
-    VLOG_IF(2, metadata->size == 0) << "Skipped '" << path << "': Empty file";
+        << "Skipped " << Quote(path) << ": Already available offline";
+    VLOG_IF(2, metadata->size == 0)
+        << "Skipped " << Quote(path) << ": Empty file";
     syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
         .WithArgs(std::move(path), metadata->size)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
