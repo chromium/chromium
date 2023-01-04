@@ -6,7 +6,6 @@ package org.chromium.components.translate;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -160,14 +159,8 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
             // The menu must be shifted down by the height of the anchor view in order to be
             // displayed over and above it.
             int anchorHeight = mAnchorView.getHeight();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // Setting a positive offset here shifts the menu down.
-                mPopup.setVerticalOffset(anchorHeight);
-            } else {
-                // The framework's PopupWindow positioning changed between N and M.  Setting
-                // a negative offset here shifts the menu down rather than up.
-                mPopup.setVerticalOffset(-anchorHeight);
-            }
+            // Setting a positive offset here shifts the menu down.
+            mPopup.setVerticalOffset(anchorHeight);
 
             mAdapter = new TranslateMenuAdapter(menuType);
             mPopup.setAdapter(mAdapter);
