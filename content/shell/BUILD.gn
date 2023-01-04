@@ -430,6 +430,7 @@ repack("pak") {
 
   sources = [
     "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
+    "$root_gen_dir/content/aggregation_service_internals_resources.pak",
     "$root_gen_dir/content/attribution_internals_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",

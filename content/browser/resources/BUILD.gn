@@ -4,6 +4,7 @@
 
 group("resources") {
   public_deps = [
+    "aggregation_service:resources",
     "attribution_reporting:resources",
     "indexed_db:resources",
     "quota:resources",
