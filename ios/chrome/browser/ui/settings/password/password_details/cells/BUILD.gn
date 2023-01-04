@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "table_view_stacked_details_item.h",
+    "table_view_stacked_details_item.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "table_view_stacked_details_item_unittest.mm" ]
+  deps = [
+    ":cells",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//testing/gtest",
+  ]
+}

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
@@ -85,11 +86,11 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 }  // namespace
 
-// Contains the website, username and password text edit items.
+// Contains the website, username and password text items.
 @interface PasswordDetailsInfoItem : NSObject
 
-// The text item related to the site value.
-@property(nonatomic, strong) TableViewTextEditItem* websiteTextItem;
+// Displays one or more websites on which this credential is used.
+@property(nonatomic, strong) TableViewStackedDetailsItem* websiteItem;
 
 // The text item related to the username value.
 @property(nonatomic, strong) TableViewTextEditItem* usernameTextItem;
@@ -227,21 +228,14 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 #pragma mark - Items
 
-- (TableViewTextEditItem*)websiteItemForPasswordDetails:
+- (TableViewStackedDetailsItem*)websiteItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
-  TableViewTextEditItem* item =
-      [[TableViewTextEditItem alloc] initWithType:ItemTypeWebsite];
-  item.textFieldBackgroundColor = [UIColor clearColor];
-  // TODO(crbug.com/1358982): Update text to "Sites" and display all sites in
-  // PasswordDetails.
-  item.textFieldName = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
-  item.textFieldValue = passwordDetails.websites[0];
-  item.textFieldEnabled = NO;
-  item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
-  item.hideIcon = YES;
-  item.keyboardType = UIKeyboardTypeURL;
-  item.textFieldPlaceholder = l10n_util::GetNSString(
-      IDS_IOS_PASSWORD_SETTINGS_WEBSITE_PLACEHOLDER_TEXT);
+  TableViewStackedDetailsItem* item =
+      [[TableViewStackedDetailsItem alloc] initWithType:ItemTypeWebsite];
+  // TODO(crbug.com/1358982): Update text to "Sites".
+  item.titleText = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
+  item.detailTexts = passwordDetails.websites;
+
   return item;
 }
 
@@ -895,11 +889,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   }
 
   // Add sites to section.
-  // TODO(crbug.com/1358982): Show multiple sites when Password Grouping is
-  // enabled.
-  passwordItem.websiteTextItem =
+  passwordItem.websiteItem =
       [self websiteItemForPasswordDetails:passwordDetails];
-  [model addItem:passwordItem.websiteTextItem
+  [model addItem:passwordItem.websiteItem
       toSectionWithIdentifier:sectionForWebsite];
 
   // Add username and password to section according to credential type.

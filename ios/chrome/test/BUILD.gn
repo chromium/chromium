@@ -363,6 +363,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/language:unit_tests",
     "//ios/chrome/browser/ui/settings/password:unit_tests",
     "//ios/chrome/browser/ui/settings/password/password_details:unit_tests",
+    "//ios/chrome/browser/ui/settings/password/password_details/cells:unit_tests",
     "//ios/chrome/browser/ui/settings/password/password_settings:unit_tests",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:unit_tests",
     "//ios/chrome/browser/ui/settings/privacy:unit_tests",

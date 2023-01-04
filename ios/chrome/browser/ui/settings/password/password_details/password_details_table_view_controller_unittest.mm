@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
@@ -200,18 +201,30 @@ class PasswordDetailsTableViewControllerTest
                    std::string username = kUsername,
                    std::string password = kPassword,
                    bool isCompromised = false) {
-    auto form = password_manager::PasswordForm();
-    form.signon_realm = website;
-    form.username_value = base::ASCIIToUTF16(username);
-    form.password_value = base::ASCIIToUTF16(password);
-    form.url = GURL(website);
-    form.action = GURL(website + "/action");
-    form.username_element = u"email";
-    form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    std::vector<std::string> websites = {website};
+    SetPassword(websites, username, password, isCompromised);
+  }
+
+  void SetPassword(const std::vector<std::string>& websites,
+                   std::string username = kUsername,
+                   std::string password = kPassword,
+                   bool isCompromised = false) {
+    std::vector<password_manager::PasswordForm> forms;
+    for (const auto& website : websites) {
+      auto form = password_manager::PasswordForm();
+      form.signon_realm = website;
+      form.username_value = base::ASCIIToUTF16(username);
+      form.password_value = base::ASCIIToUTF16(password);
+      form.url = GURL(website);
+      form.action = GURL(website + "/action");
+      form.username_element = u"email";
+      form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+      forms.push_back(std::move(form));
+    }
 
     NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
     PasswordDetails* passwordDetails = [[PasswordDetails alloc]
-        initWithCredential:password_manager::CredentialUIEntry(form)];
+        initWithCredential:password_manager::CredentialUIEntry(forms)];
     passwordDetails.compromised = isCompromised;
     [passwords addObject:passwordDetails];
 
@@ -256,6 +269,16 @@ class PasswordDetailsTableViewControllerTest
     TableViewTextEditItem* cell =
         static_cast<TableViewTextEditItem*>(GetTableViewItem(section, item));
     EXPECT_NSEQ(expected_text, cell.textFieldValue);
+  }
+
+  void CheckStackedDetailsCellDetails(NSArray<NSString*>* expected_details,
+                                      int section,
+                                      int item) {
+    TableViewStackedDetailsItem* cell_item =
+        static_cast<TableViewStackedDetailsItem*>(
+            GetTableViewItem(section, item));
+
+    EXPECT_TRUE([expected_details isEqualToArray:cell_item.detailTexts]);
   }
 
   void SetEditCellText(NSString* text, int section, int item) {
@@ -304,7 +327,21 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPassword) {
   EXPECT_EQ(2, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(2, NumberOfItemsInSection(1));
-  CheckEditCellText(@"http://www.example.com/", 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"http://www.example.com/" ], 0, 0);
+  CheckEditCellText(@"test@egmail.com", 1, 0);
+  CheckEditCellText(kMaskedPassword, 1, 1);
+}
+
+// Tests that a credential group is displayed properly.
+TEST_F(PasswordDetailsTableViewControllerTest, TestMultipleWebsites) {
+  std::vector<std::string> websites = {"http://www.example.com/",
+                                       "http://example.com/"};
+  SetPassword(websites);
+  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  CheckStackedDetailsCellDetails(
+      @[ @"http://www.example.com/", @"http://example.com/" ], 0, 0);
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(kMaskedPassword, 1, 1);
 }
@@ -316,7 +353,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPassword) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(2, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
-  CheckEditCellText(@"http://www.example.com/", 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"http://www.example.com/" ], 0, 0);
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(kMaskedPassword, 1, 1);
 
@@ -496,7 +533,7 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   EXPECT_EQ(2, NumberOfItemsInSection(1));
   EXPECT_EQ(1, NumberOfItemsInSection(2));
 
-  CheckEditCellText(@"com.example.my.app", 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"com.example.my.app" ], 0, 0);
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(kMaskedPassword, 1, 1);
 
@@ -513,7 +550,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestFederatedCredential) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(2, NumberOfItemsInSection(1));
 
-  CheckEditCellText(@"http://www.example.com/", 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"http://www.example.com/" ], 0, 0);
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(@"www.example.com", 1, 1);
 
@@ -534,7 +571,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
 
-  CheckEditCellText(@"http://www.example.com/", 0, 0);
+  CheckStackedDetailsCellDetails(@[ @"http://www.example.com/" ], 0, 0);
 
   reauth().expectedResult = ReauthenticationResult::kFailure;
   PasswordDetailsTableViewController* passwordDetails =
