@@ -1091,6 +1091,40 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Healthd.TelemetryResult.{Category}"
+    enum="CrosHealthdTelemetryResult" expires_after="2023-12-31">
+  <owner>weiluanwang@google.com</owner>
+  <owner>dennyh@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    Records the telemetry results from healthd to analyze the usage and error
+    rate. Emitted when the specific category is requested from a client.
+  </summary>
+  <token key="Category">
+    <variant name="Audio"/>
+    <variant name="AudioHardware"/>
+    <variant name="Backlight"/>
+    <variant name="Battery"/>
+    <variant name="BlockDevice"/>
+    <variant name="Bluetooth"/>
+    <variant name="BootPerformance"/>
+    <variant name="Bus"/>
+    <variant name="Cpu"/>
+    <variant name="Display"/>
+    <variant name="Fan"/>
+    <variant name="Graphics"/>
+    <variant name="Input"/>
+    <variant name="Memory"/>
+    <variant name="Network"/>
+    <variant name="NetworkInterface"/>
+    <variant name="Sensor"/>
+    <variant name="StatefulPartition"/>
+    <variant name="System"/>
+    <variant name="Timezone"/>
+    <variant name="Tpm"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.IioService.SensorClientConcurrent" units="clients"
     expires_after="2023-05-01">
   <owner>chenghaoyang@chromium.org</owner>

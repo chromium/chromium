@@ -22181,6 +22181,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Finished with &quot;Keep Exploring&quot; button"/>
 </enum>
 
+<enum name="CrosHealthdTelemetryResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+</enum>
+
 <enum name="CrosSelectToSpeakActivationMethod">
   <int value="0" label="Unknown"/>
   <int value="1" label="Canceled with menu button"/>
