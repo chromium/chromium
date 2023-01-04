@@ -84,7 +84,4 @@ component("app_shim") {
     "QuartzCore.framework",
     "SecurityInterface.framework",
   ]
-  weak_frameworks = [
-    "UniformTypeIdentifiers.framework",  # macOS 11
-  ]
 }

@@ -5,9 +5,8 @@
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 
 #include <AppKit/AppKit.h>
-#include <CoreServices/CoreServices.h>  // pre-macOS 11
+#include <CoreServices/CoreServices.h>
 #include <Foundation/Foundation.h>
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>  // macOS 11
 #include <stddef.h>
 
 #include "base/files/file_util.h"
@@ -26,7 +25,6 @@ namespace {
 
 const int kFileTypePopupTag = 1234;
 
-// TODO(macOS 11): Remove this.
 CFStringRef CreateUTIFromExtension(const base::FilePath::StringType& ext) {
   base::ScopedCFTypeRef<CFStringRef> ext_cf(base::SysUTF8ToCFStringRef(ext));
   return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
@@ -34,23 +32,12 @@ CFStringRef CreateUTIFromExtension(const base::FilePath::StringType& ext) {
 }
 
 NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
-  if (@available(macOS 11, *)) {
-    UTType* type =
-        [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext)];
-    NSString* description = type.localizedDescription;
+  base::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
+  base::ScopedCFTypeRef<CFStringRef> description(
+      UTTypeCopyDescription(uti.get()));
 
-    if (description.length) {
-      return description;
-    }
-  } else {
-    base::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
-    base::ScopedCFTypeRef<CFStringRef> description(
-        UTTypeCopyDescription(uti.get()));
-
-    if (description && CFStringGetLength(description)) {
-      return [[base::mac::CFToNSCast(description.get()) retain] autorelease];
-    }
-  }
+  if (description && CFStringGetLength(description))
+    return [[base::mac::CFToNSCast(description.get()) retain] autorelease];
 
   // In case no description is found, create a description based on the
   // unknown extension type (i.e. if the extension is .qqq, the we create
@@ -180,25 +167,13 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
   // since the dialog_ will stay alive longer than this object.
   NSSavePanel* _dialog;
 
-  // Two ivars serving the same purpose. While `_fileTypeLists` is for pre-macOS
-  // 11, and contains NSStrings with UTType identifiers, `_fileUTTypeLists` is
-  // for macOS 11 and later, and contains UTTypes. TODO(macOS 11): Clean this
-  // up.
-
-  // An array where each item is an array of different extensions in an
-  // extension group.
-  base::scoped_nsobject<NSArray<NSArray<NSString*>*>> _fileTypeLists;
-  base::scoped_nsobject<NSArray<NSArray<UTType*>*>> _fileUTTypeLists
-      API_AVAILABLE(macos(11.0));
+  // An array whose each item corresponds to an array of different extensions in
+  // an extension group.
+  base::scoped_nsobject<NSArray> _fileTypeLists;
 }
 
-// TODO(macOS 11): Remove this.
 - (instancetype)initWithDialog:(NSSavePanel*)dialog
-                 fileTypeLists:(NSArray<NSArray<NSString*>*>*)fileTypeLists;
-
-- (instancetype)initWithDialog:(NSSavePanel*)dialog
-               fileUTTypeLists:(NSArray<NSArray<UTType*>*>*)fileUTTypeLists
-    API_AVAILABLE(macos(11.0));
+                 fileTypeLists:(NSArray*)fileTypeLists;
 
 - (void)popupAction:(id)sender;
 @end
@@ -209,8 +184,8 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
   // Refuse to accept users closing the dialog with a key repeat, since the key
   // may have been first pressed while the user was looking at insecure content.
   // See https://crbug.com/637098.
-  if (NSApp.currentEvent.type == NSEventTypeKeyDown &&
-      NSApp.currentEvent.ARepeat) {
+  if ([[NSApp currentEvent] type] == NSEventTypeKeyDown &&
+      [[NSApp currentEvent] isARepeat]) {
     return NO;
   }
 
@@ -221,9 +196,8 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
 
 @implementation ExtensionDropdownHandler
 
-// TODO(macOS 11): Remove this.
 - (instancetype)initWithDialog:(NSSavePanel*)dialog
-                 fileTypeLists:(NSArray<NSArray<NSString*>*>*)fileTypeLists {
+                 fileTypeLists:(NSArray*)fileTypeLists {
   if ((self = [super init])) {
     _dialog = dialog;
     _fileTypeLists.reset([fileTypeLists retain]);
@@ -231,38 +205,15 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
   return self;
 }
 
-- (instancetype)initWithDialog:(NSSavePanel*)dialog
-               fileUTTypeLists:(NSArray<NSArray<UTType*>*>*)fileUTTypeLists
-    API_AVAILABLE(macos(11.0)) {
-  if ((self = [super init])) {
-    _dialog = dialog;
-    _fileUTTypeLists.reset([fileUTTypeLists retain]);
-  }
-  return self;
-}
-
 - (void)popupAction:(id)sender {
   NSUInteger index = [sender indexOfSelectedItem];
-  if (@available(macOS 11, *)) {
-    if (index < [_fileUTTypeLists count]) {
-      // For save dialogs, this causes the first item in the allowedContentTypes
-      // array to be used as the extension for the save panel.
-      _dialog.allowedContentTypes = [_fileUTTypeLists objectAtIndex:index];
-    } else {
-      // The user selected "All files" option. (Note that an empty array is "all
-      // types" and nil is an error.)
-      _dialog.allowedContentTypes = @[];
-    }
+  if (index < [_fileTypeLists count]) {
+    // For save dialogs, this causes the first item in the allowedFileTypes
+    // array to be used as the extension for the save panel.
+    [_dialog setAllowedFileTypes:[_fileTypeLists objectAtIndex:index]];
   } else {
-    if (index < [_fileTypeLists count]) {
-      // For save dialogs, this causes the first item in the allowedFileTypes
-      // array to be used as the extension for the save panel.
-      _dialog.allowedFileTypes = [_fileTypeLists objectAtIndex:index];
-    } else {
-      // The user selected "All files" option. (Note that nil is "all types" and
-      // an empty array is an error.)
-      _dialog.allowedFileTypes = nil;
-    }
+    // The user selected "All files" option.
+    [_dialog setAllowedFileTypes:nil];
   }
 }
 
@@ -350,7 +301,7 @@ void SelectFileDialogBridge::Show(
   if (type_ == SelectFileDialogType::kSaveAsFile) {
     // When file extensions are hidden and removing the extension from
     // the default filename gives one which still has an extension
-    // that macOS recognizes, it will get confused and think the user
+    // that OS X recognizes, it will get confused and think the user
     // is trying to override the default extension. This happens with
     // filenames like "foo.tar.gz" or "ball.of.tar.png". Work around
     // this by never hiding extensions in that case.
@@ -423,11 +374,8 @@ void SelectFileDialogBridge::SetAccessoryView(
   DCHECK(popup);
 
   // Create an array with each item corresponding to an array of different
-  // extensions in an extension group. TODO(macOS 11): Remove the first,
-  // uncomment the second.
-  NSMutableArray<NSArray<NSString*>*>* file_type_lists = [NSMutableArray array];
-  NSMutableArray /*<NSArray<UTType*>*>*/* file_uttype_lists =
-      [NSMutableArray array];
+  // extensions in an extension group.
+  NSMutableArray* file_type_lists = [NSMutableArray array];
   int default_extension_index = -1;
   for (size_t i = 0; i < file_types->extensions.size(); ++i) {
     const std::vector<base::FilePath::StringType>& ext_list =
@@ -448,51 +396,34 @@ void SelectFileDialogBridge::SetAccessoryView(
     DCHECK_NE(0u, [type_description length]);
     [popup addItemWithTitle:type_description];
 
-    // Store different extensions in the current extension group. TODO(macOS
-    // 11): Remove the first, uncomment the second.
-    NSMutableArray<NSString*>* file_type_array = [NSMutableArray array];
-    NSMutableArray /*<UTType*>*/* file_uttype_array = [NSMutableArray array];
+    // Populate file_type_lists.
+    // Set to store different extensions in the current extension group.
+    NSMutableArray* file_type_array = [NSMutableArray array];
     for (const base::FilePath::StringType& ext : ext_list) {
-      if (ext == default_extension) {
+      if (ext == default_extension)
         default_extension_index = i;
+
+      // Crash reports suggest that CreateUTIFromExtension may return nil. Hence
+      // we nil check before adding to |file_type_set|. See crbug.com/630101 and
+      // rdar://27490414.
+      base::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
+      if (uti) {
+        NSString* uti_ns = base::mac::CFToNSCast(uti.get());
+        if (![file_type_array containsObject:uti_ns])
+          [file_type_array addObject:uti_ns];
       }
 
-      if (@available(macOS 11, *)) {
-        UTType* type =
-            [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext)];
-        if (![file_uttype_array containsObject:type]) {
-          [file_uttype_array addObject:type];
-        }
-      } else {
-        // Crash reports suggest that CreateUTIFromExtension may return nil.
-        // Hence we nil check before adding to |file_type_set|. See
-        // crbug.com/630101 and rdar://27490414.
-        base::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
-        if (uti) {
-          NSString* uti_ns = base::mac::CFToNSCast(uti.get());
-          if (![file_type_array containsObject:uti_ns]) {
-            [file_type_array addObject:uti_ns];
-          }
-        }
-
-        // Always allow the extension itself, in case the UTI doesn't map
-        // back to the original extension correctly. This occurs with dynamic
-        // UTIs on 10.7 and 10.8.
-        // See http://crbug.com/148840, http://openradar.me/12316273
-        base::ScopedCFTypeRef<CFStringRef> ext_cf(
-            base::SysUTF8ToCFStringRef(ext));
-        NSString* ext_ns = base::mac::CFToNSCast(ext_cf.get());
-        if (![file_type_array containsObject:ext_ns]) {
-          [file_type_array addObject:ext_ns];
-        }
-      }
+      // Always allow the extension itself, in case the UTI doesn't map
+      // back to the original extension correctly. This occurs with dynamic
+      // UTIs on 10.7 and 10.8.
+      // See http://crbug.com/148840, http://openradar.me/12316273
+      base::ScopedCFTypeRef<CFStringRef> ext_cf(
+          base::SysUTF8ToCFStringRef(ext));
+      NSString* ext_ns = base::mac::CFToNSCast(ext_cf.get());
+      if (![file_type_array containsObject:ext_ns])
+        [file_type_array addObject:ext_ns];
     }
-
-    if (@available(macOS 11, *)) {
-      [file_uttype_lists addObject:file_uttype_array];
-    } else {
-      [file_type_lists addObject:file_type_array];
-    }
+    [file_type_lists addObject:file_type_array];
   }
 
   if (file_types->include_all_files || file_types->extensions.empty()) {
@@ -505,39 +436,35 @@ void SelectFileDialogBridge::SetAccessoryView(
     }
   }
 
-  if (@available(macOS 11, *)) {
-    extension_dropdown_handler_.reset([[ExtensionDropdownHandler alloc]
-         initWithDialog:dialog
-        fileUTTypeLists:file_uttype_lists]);
-  } else {
-    extension_dropdown_handler_.reset([[ExtensionDropdownHandler alloc]
-        initWithDialog:dialog
-         fileTypeLists:file_type_lists]);
-  }
+  extension_dropdown_handler_.reset([[ExtensionDropdownHandler alloc]
+      initWithDialog:dialog
+       fileTypeLists:file_type_lists]);
 
   // This establishes a weak reference to handler. Hence we persist it as part
-  // of `dialog_data_list_`.
-  popup.target = extension_dropdown_handler_;
-  popup.action = @selector(popupAction:);
+  // of dialog_data_list_.
+  [popup setTarget:extension_dropdown_handler_];
+  [popup setAction:@selector(popupAction:)];
 
-  // Note that `file_type_index` uses 1-based indexing.
+  // file_type_index uses 1 based indexing.
   if (file_type_index) {
     DCHECK_LE(static_cast<size_t>(file_type_index),
               file_types->extensions.size());
     DCHECK_GE(file_type_index, 1);
     [popup selectItemAtIndex:file_type_index - 1];
+    [extension_dropdown_handler_ popupAction:popup];
   } else if (!default_extension.empty() && default_extension_index != -1) {
     [popup selectItemAtIndex:default_extension_index];
+    [dialog
+        setAllowedFileTypes:@[ base::SysUTF8ToNSString(default_extension) ]];
   } else {
     // Select the first item.
     [popup selectItemAtIndex:0];
+    [extension_dropdown_handler_ popupAction:popup];
   }
-  [extension_dropdown_handler_ popupAction:popup];
 
   // There's no need for a popup unless there are at least two choices.
-  if (popup.numberOfItems >= 2) {
+  if (popup.numberOfItems >= 2)
     dialog.accessoryView = accessory_view.get();
-  }
 }
 
 void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
