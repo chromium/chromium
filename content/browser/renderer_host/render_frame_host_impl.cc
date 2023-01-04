@@ -2885,6 +2885,8 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     return;
   }
 
+  CHECK(owner_);
+
   // The initial empty document inherits its policy container from its creator.
   // The creator is either its parent for subframes and embedded frames, or its
   // opener for new windows.
@@ -2920,12 +2922,12 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             network::mojom::WebSandboxFlags::kNone,
             /*is_credentialless=*/false,
             /*can_navigate_top_without_user_gesture=*/true)));
-  } else if (frame_tree_node_->opener()) {
+  } else if (owner_->GetOpener()) {
     // During a `window.open(...)` without `noopener`, a new popup is created
     // and always starts from the initial empty document. The opener has
     // synchronous access toward its openee. So they must both share the same
     // policies.
-    SetPolicyContainerHost(frame_tree_node_->opener()
+    SetPolicyContainerHost(owner_->GetOpener()
                                ->current_frame_host()
                                ->policy_container_host()
                                ->Clone());

@@ -79,6 +79,8 @@ class RenderFrameHostOwner {
 
   virtual RenderFrameHostManager& GetRenderFrameHostManager() = 0;
 
+  virtual FrameTreeNode* GetOpener() const = 0;
+
   virtual void SetFocusedFrame(SiteInstanceGroup* source) = 0;
 
   // Called when the referrer policy changes.

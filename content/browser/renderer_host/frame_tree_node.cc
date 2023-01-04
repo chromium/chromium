@@ -1012,6 +1012,10 @@ RenderFrameHostManager& FrameTreeNode::GetRenderFrameHostManager() {
   return render_manager_;
 }
 
+FrameTreeNode* FrameTreeNode::GetOpener() const {
+  return opener_;
+}
+
 void FrameTreeNode::SetFocusedFrame(SiteInstanceGroup* source) {
   frame_tree_->delegate()->SetFocusedFrame(this, source);
 }

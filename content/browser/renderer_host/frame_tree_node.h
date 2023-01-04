@@ -583,6 +583,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool Reload() override;
   Navigator& GetCurrentNavigator() override;
   RenderFrameHostManager& GetRenderFrameHostManager() override;
+  FrameTreeNode* GetOpener() const override;
   void SetFocusedFrame(SiteInstanceGroup* source) override;
   void DidChangeReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy) override;
