@@ -90,8 +90,8 @@ public class CreatorTabSheetContent implements BottomSheetContent {
         mOpenNewTabCallback = openNewTabCallback;
         mToolbarClickCallback = toolbarClickCallback;
         mCloseButtonCallback = closeButtonCallback;
-        mToolbarHeightPx =
-                mContext.getResources().getDimensionPixelSize(R.dimen.creator_tab_toolbar_height);
+        mToolbarHeightPx = mContext.getResources().getDimensionPixelSize(
+                R.dimen.creator_bottomsheet_toolbar_container_height);
 
         createThinWebView((int) (maxViewHeight * FULL_HEIGHT_RATIO), intentRequestTracker);
         createToolbarView();

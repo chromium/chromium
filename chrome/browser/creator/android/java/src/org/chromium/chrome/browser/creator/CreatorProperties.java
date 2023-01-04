@@ -8,7 +8,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
- * Properties used for the Creator View
+ * Properties used for the CreatorModel
  */
 public class CreatorProperties {
     public static final WritableObjectPropertyKey<byte[]> WEB_FEED_ID_KEY =

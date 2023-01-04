@@ -180,7 +180,12 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mMediator = new CreatorMediator(mActivity, mCreatorModel);
     }
 
-    // Create a FeedStream and bind it to the RecyclerView
+    /**
+     * Create a FeedStream and bind it to the RecyclerView
+     * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
+     * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
+     * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
+     */
     public void initFeedStream(FeedActionDelegate feedActionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Supplier<ShareDelegate> shareDelegateSupplier) {
@@ -249,7 +254,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     }
 
     private int getContentPreviewsPaddingPx() {
-        // Return 16dp
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
     }
 
@@ -281,7 +285,9 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         WebFeedBridge.getWebFeedMetadata(mWebFeedId, metadata_callback);
     }
 
-    /** Set up the bottom sheet for this activity. */
+    /**
+     * Set up the bottom sheet for this activity.
+     */
     private void initBottomSheet() {
         mScrim = new ScrimCoordinator(mActivity, new ScrimCoordinator.SystemUiScrimDelegate() {
             @Override
@@ -310,7 +316,9 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         });
     }
 
-    /** Launches autoplay settings activity. */
+    /**
+     * Launches autoplay settings activity.
+     */
     @Override
     public void launchAutoplaySettings() {}
     @Override
@@ -395,7 +403,9 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mCurrentMaxViewHeight = maxViewHeight;
     }
 
-    /** @return The maximum base view height for sheet content view. */
+    /**
+     * @return The maximum base view height for sheet content view.
+     * */
     private int getMaxViewHeight() {
         return mCreatorViewGroup.getHeight();
     }
@@ -463,7 +473,10 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         private final RoundedIconGenerator mIconGenerator;
         private final int mFaviconSize;
 
-        /** Constructor. */
+        /**
+         * The FaviconLoader constructor.
+         * @param context The context where the Favicon will be loaded.
+         */
         public FaviconLoader(Context context) {
             mContext = context;
             mFaviconHelper = new FaviconHelper();

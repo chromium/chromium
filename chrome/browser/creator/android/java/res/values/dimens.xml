@@ -6,12 +6,50 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Content Previews dimensions. -->
+    <!-- Content Previews dimensions -->
     <dimen name="content_previews_padding">16dp</dimen>
 
     <!-- Toolbar dimensions -->
     <dimen name="creator_toolbar_bottom_border_height">1dp</dimen>
 
-    <!-- Sheet tab toolbar dimensions -->
-    <dimen name="creator_tab_toolbar_height">70dp</dimen>
+    <!-- Profile dimensions -->
+    <dimen name="creator_profile_container_width">0dp</dimen>
+    <dimen name="creator_profile_container_margin">5dp</dimen>
+    <dimen name="creator_profile_text_padding">10dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: container -->
+    <dimen name="creator_bottomsheet_toolbar_container_height">70dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_top_height">4dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_bottom_height">2dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_progressbar_height">2dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: elements container -->
+    <dimen name="creator_bottomsheet_toolbar_elements_container_height">62dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_elements_container_padding">16dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: drag handlebar -->
+    <dimen name="creator_bottomsheet_toolbar_drag_handlebar_margin">4dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: close/open icons -->
+    <dimen name="creator_bottomsheet_toolbar_icon_width">40dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_height">40dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_padding">8dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_marginBottom">6dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_icon_marginEnd">8dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: fav icon -->
+    <dimen name="creator_bottomsheet_toolbar_favicon_width">24dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_favicon_height">24dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_favicon_marginEnd">16dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_favicon_marginBottom">14dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: security icon -->
+    <dimen name="creator_bottomsheet_toolbar_security_icon_width">16dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_security_icon_height">16dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_security_icon_margin">3dp</dimen>
+
+    <!-- Bottomsheet toolbar dimensions: text -->
+    <dimen name="creator_bottomsheet_toolbar_text_marginTop">16dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_text_marginStart">16dp</dimen>
+    <dimen name="creator_bottomsheet_toolbar_text_marginEnd">4dp</dimen>
 </resources>
