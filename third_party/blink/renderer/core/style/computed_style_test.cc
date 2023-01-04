@@ -146,6 +146,52 @@ TEST_F(ComputedStyleTest, IsStackingContextWithoutContainmentAfterClone) {
   EXPECT_FALSE(style3->IsStackingContextWithoutContainment());
 }
 
+TEST_F(ComputedStyleTest, DerivedFlagCopyNonInheritedFromCached) {
+  {
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+    builder1.SetForcesStackingContext(true);
+    scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+    EXPECT_TRUE(style1->IsStackingContextWithoutContainment());
+
+    // Calling CopyNonInheritedFromCached should not change whether or not
+    // the style is a stacking context.
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+    builder2.CopyNonInheritedFromCached(*style1);
+    scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+    EXPECT_TRUE(style2->IsStackingContextWithoutContainment());
+  }
+
+  // The same as above, except that IsStackingContextWithoutContainment is
+  // expected to be false.
+  {
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+    scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+    EXPECT_FALSE(style1->IsStackingContextWithoutContainment());
+
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+    builder2.CopyNonInheritedFromCached(*style1);
+    scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+    EXPECT_FALSE(style2->IsStackingContextWithoutContainment());
+  }
+
+  // The same as the first case, except builder2 sets
+  // SetForcesStackingContext(false) after calling
+  // CopyNonInheritedFromCached.
+  {
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+    builder1.SetForcesStackingContext(true);
+    scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+    EXPECT_TRUE(style1->IsStackingContextWithoutContainment());
+
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+    builder2.CopyNonInheritedFromCached(*style1);
+    builder2.SetForcesStackingContext(false);
+    scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+    // Value copied from 'style1' must not persist.
+    EXPECT_FALSE(style2->IsStackingContextWithoutContainment());
+  }
+}
+
 TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
   for (uint8_t pseudo_id_int = kFirstPublicPseudoId;
        pseudo_id_int <= kLastTrackedPublicPseudoId; pseudo_id_int++) {

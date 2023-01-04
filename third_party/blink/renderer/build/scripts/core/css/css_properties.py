@@ -90,6 +90,7 @@ def validate_property(prop, props_by_name):
     if prop.field_template == 'derived_flag':
         assert prop.mutable, 'Derived flags must be mutable [%s]' % name
         assert not prop.field_group, 'Derived flags may not have field groups [%s]' % name
+        assert prop.custom_copy, 'Derived flags must have custom_copy [%s]' % name
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.

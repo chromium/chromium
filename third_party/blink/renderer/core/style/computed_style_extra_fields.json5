@@ -765,6 +765,7 @@
       field_template: "derived_flag",
       derived_from: "CalculateIsStackingContextWithoutContainment",
       mutable: true,
+      custom_copy: true,
     },
     // A stacking context is forced a few situations, e.g.:
     //
