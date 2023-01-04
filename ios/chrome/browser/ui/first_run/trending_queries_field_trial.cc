@@ -186,10 +186,9 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   // Don't create the trial if either feature is enabled in chrome://flags. This
   // condition is to avoid having multiple registered trials overriding the same
   // feature.
-  if (base::FieldTrialList::TrialExists(
-          kContentSuggestionsUIModuleRefreshFlagOverrideFieldTrialName) ||
-      base::FieldTrialList::TrialExists(
-          kTrendingQueriesFlagOverrideFieldTrialName)) {
+  if (feature_list->IsFeatureOverridden(
+          kContentSuggestionsUIModuleRefreshNewUser.name) ||
+      feature_list->IsFeatureOverridden(kTrendingQueriesModuleNewUser.name)) {
     return;
   }
 
