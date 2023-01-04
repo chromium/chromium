@@ -1581,25 +1581,6 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
 
 DictionaryValue::DictionaryValue() : Value(Type::DICTIONARY) {}
 
-bool DictionaryValue::GetDictionary(StringPiece path,
-                                    const DictionaryValue** out_value) const {
-  const Value* value = GetDict().FindByDottedPath(path);
-  if (!value || !value->is_dict()) {
-    return false;
-  }
-
-  if (out_value)
-    *out_value = static_cast<const DictionaryValue*>(value);
-
-  return true;
-}
-
-bool DictionaryValue::GetDictionary(StringPiece path,
-                                    DictionaryValue** out_value) {
-  return std::as_const(*this).GetDictionary(
-      path, const_cast<const DictionaryValue**>(out_value));
-}
-
 ///////////////////// ListValue ////////////////////
 
 // static

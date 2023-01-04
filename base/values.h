@@ -1251,17 +1251,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   static std::unique_ptr<DictionaryValue> From(std::unique_ptr<Value> value);
 
   DictionaryValue();
-
-  // These are convenience forms of `Get()`.  The value will be retrieved
-  // and the return value will be true if the path is valid and the value at
-  // the end of the path can be returned in the form specified.
-  // `out_value` is optional and will only be set if non-NULL.
-  //
-  // DEPRECATED: prefer `Value::Dict::FindDict()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::FindDictByDottedPath()`
-  // otherwise.
-  bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
-  bool GetDictionary(StringPiece path, DictionaryValue** out_value);
 };
 
 // This type of Value represents a list of other Value values.

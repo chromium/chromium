@@ -2137,22 +2137,22 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   base->GetDict().Set("dict", std::move(child->GetDict()));
   EXPECT_EQ(1U, base->DictSize());
 
-  DictionaryValue* original_child;
-  EXPECT_TRUE(base->GetDictionary("dict", &original_child));
+  base::Value::Dict* original_child = base->GetDict().FindDict("dict");
+  EXPECT_FALSE(original_child->empty());
 
   std::unique_ptr<DictionaryValue> merged(new DictionaryValue);
   merged->MergeDictionary(base.get());
   EXPECT_EQ(1U, merged->DictSize());
-  DictionaryValue* ptr;
-  EXPECT_TRUE(merged->GetDictionary("dict", &ptr));
+  base::Value::Dict* ptr = merged->GetDict().FindDict("dict");
+  EXPECT_FALSE(ptr->empty());
   EXPECT_NE(original_child, ptr);
-  value = ptr->GetDict().FindString("test");
+  value = ptr->FindString("test");
   ASSERT_TRUE(value);
   EXPECT_EQ("value", *value);
 
-  original_child->SetStringKey("test", "overwrite");
+  original_child->Set("test", "overwrite");
   base.reset();
-  value = ptr->GetDict().FindString("test");
+  value = ptr->FindString("test");
   ASSERT_TRUE(value);
   EXPECT_EQ("value", *value);
 }
@@ -2244,46 +2244,6 @@ TEST(ValuesTest, StdDictionaryIterator) {
   }
   EXPECT_TRUE(seen1);
   EXPECT_TRUE(seen2);
-}
-
-// DictionaryValue/ListValue's Get*() methods should accept NULL as an out-value
-// and still return true/false based on success.
-TEST(ValuesTest, GetWithNullOutValue) {
-  DictionaryValue main_dict;
-  ListValue main_list;
-
-  Value bool_value(false);
-  Value int_value(1234);
-  Value double_value(12.34567);
-  Value string_value("foo");
-  Value binary_value(Value::Type::BINARY);
-  DictionaryValue dict_value;
-  ListValue list_value;
-
-  main_dict.SetKey("bool", bool_value.Clone());
-  main_dict.SetKey("int", int_value.Clone());
-  main_dict.SetKey("double", double_value.Clone());
-  main_dict.SetKey("string", string_value.Clone());
-  main_dict.SetKey("binary", binary_value.Clone());
-  main_dict.SetKey("dict", dict_value.Clone());
-  main_dict.SetKey("list", list_value.Clone());
-
-  main_list.Append(bool_value.Clone());
-  main_list.Append(int_value.Clone());
-  main_list.Append(double_value.Clone());
-  main_list.Append(string_value.Clone());
-  main_list.Append(binary_value.Clone());
-  main_list.Append(dict_value.Clone());
-  main_list.Append(list_value.Clone());
-
-  EXPECT_FALSE(main_dict.GetDictionary("bool", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionary("int", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionary("double", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionary("string", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionary("binary", nullptr));
-  EXPECT_TRUE(main_dict.GetDictionary("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionary("list", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionary("DNE", nullptr));
 }
 
 TEST(ValuesTest, SelfSwap) {
