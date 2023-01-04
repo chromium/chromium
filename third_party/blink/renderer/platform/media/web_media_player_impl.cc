@@ -436,6 +436,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
                           base::Unretained(this)),
       media_log_.get());
 
+  // base::Unretained for |demuxer_manager_| is safe, because it outlives
+  // |pipeline_controller_|.
   pipeline_controller_ = std::make_unique<media::PipelineController>(
       std::move(pipeline),
       base::BindRepeating(&WebMediaPlayerImpl::OnPipelineSeeked, weak_this_),
@@ -443,7 +445,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       base::BindRepeating(&WebMediaPlayerImpl::OnBeforePipelineResume,
                           weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnPipelineResumed, weak_this_),
-      base::BindRepeating(&WebMediaPlayerImpl::OnError, weak_this_));
+      base::BindRepeating(&media::DemuxerManager::OnPipelineError,
+                          base::Unretained(demuxer_manager_.get())));
 
   buffered_data_source_host_ = std::make_unique<BufferedDataSourceHostImpl>(
       base::BindRepeating(&WebMediaPlayerImpl::OnProgress, weak_this_),
@@ -530,6 +533,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   }
 
   suppress_destruction_errors_ = true;
+  demuxer_manager_->DisallowFallback();
 
   delegate_->PlayerGone(delegate_id_);
   delegate_->RemoveObserver(delegate_id_);
@@ -1774,6 +1778,42 @@ void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {
   media_metrics_provider_->OnFallback(std::move(status).AddHere());
 }
 
+void WebMediaPlayerImpl::StopForDemuxerReset() {
+  DVLOG(1) << __func__;
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(pipeline_controller_);
+  pipeline_controller_->Stop();
+  // Note: Does not consider the full redirect chain, which could contain
+  // undetected mixed content.
+  demuxer_manager_->SetLoadedUrl(loaded_url_);
+
+  // delete the thread dumper on the media thread.
+  media_task_runner_->DeleteSoon(FROM_HERE,
+                                 std::move(media_thread_mem_dumper_));
+}
+
+bool WebMediaPlayerImpl::IsSecurityOriginCryptographic() const {
+  return url::Origin(frame_->GetSecurityOrigin())
+      .GetURL()
+      .SchemeIsCryptographic();
+}
+
+bool WebMediaPlayerImpl::RestartForHls() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  observer_->OnHlsManifestDetected();
+#if BUILDFLAG(IS_ANDROID)
+  // TODO: DCHECK that |pipeline_| is stopped.
+  renderer_factory_selector_->SetBaseRendererType(
+      media::RendererType::kMediaPlayer);
+  SetMemoryReportingState(false);
+  StartPipeline();
+  return true;
+#else
+  return false;
+#endif
+}
+
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   DVLOG(1) << __func__ << ": status=" << status;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -1781,41 +1821,6 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
 
   if (suppress_destruction_errors_)
     return;
-
-#if BUILDFLAG(IS_ANDROID)
-  if (status == media::DEMUXER_ERROR_DETECTED_HLS) {
-    // Note: Does not consider the full redirect chain, which could contain
-    // undetected mixed content.
-    demuxer_manager_->SetLoadedUrl(loaded_url_);
-    auto maybe_hls_load_url = demuxer_manager_->ResetAfterHlsDetected(
-        url::Origin(frame_->GetSecurityOrigin())
-            .GetURL()
-            .SchemeIsCryptographic());
-    if (maybe_hls_load_url.has_value()) {
-      observer_->OnHlsManifestDetected();
-
-      // This allows |demuxer_manager_| to restart with a MediaPlayerRenderer
-      renderer_factory_selector_->SetBaseRendererType(
-          media::RendererType::kMediaPlayer);
-
-      pipeline_controller_->Stop();
-      SetMemoryReportingState(false);
-      demuxer_manager_->StopAndResetClient(this);
-      media_task_runner_->DeleteSoon(FROM_HERE,
-                                     std::move(media_thread_mem_dumper_));
-
-      demuxer_manager_->FreeResourcesAfterMediaThreadWait(
-          media::BindToCurrentLoop(
-              base::BindOnce(&WebMediaPlayerImpl::StartPipeline, weak_this_)));
-      return;
-    } else {
-      // This will keep "DETECTED_HLS" as the main error if the feature is not
-      // enabled.
-      status =
-          std::move(maybe_hls_load_url).error().AddCause(std::move(status));
-    }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   // Hardware context reset is not an error. Restart to recover.

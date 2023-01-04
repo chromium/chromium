@@ -56,6 +56,14 @@ class MEDIA_EXPORT DemuxerManager {
     // MediaUrlDemuxer.
     virtual bool IsMediaPlayerRendererClient() = 0;
 
+    virtual void OnError(media::PipelineStatus status) = 0;
+
+    // Used for controlling the client when a demuxer swap happens.
+    virtual void StopForDemuxerReset() = 0;
+    virtual bool RestartForHls() = 0;
+
+    virtual bool IsSecurityOriginCryptographic() const = 0;
+
 #if BUILDFLAG(ENABLE_FFMPEG)
     virtual void AddAudioTrack(const std::string& id,
                                const std::string& label,
@@ -94,9 +102,10 @@ class MEDIA_EXPORT DemuxerManager {
   ~DemuxerManager();
   void InvalidateWeakPtrs();
 
+  void OnPipelineError(PipelineStatus error);
   void SetLoadedUrl(GURL url);
   PipelineStatus::Or<GURL> ResetAfterHlsDetected(bool cryptographic_url);
-  void FreeResourcesAfterMediaThreadWait(base::OnceClosure cb);
+  void DisallowFallback();
 
   // Methods that help manage demuxers
   absl::optional<double> GetDemuxerDuration();
@@ -154,6 +163,9 @@ class MEDIA_EXPORT DemuxerManager {
                                 const std::vector<uint8_t>& init_data);
   void OnChunkDemuxerOpened();
   void OnProgress();
+  void RestartClientForHLS();
+  void FreeResourcesAfterMediaThreadWait(base::OnceClosure cb);
+
 #if BUILDFLAG(ENABLE_FFMPEG)
   void OnFFmpegMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks);
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
@@ -201,6 +213,10 @@ class MEDIA_EXPORT DemuxerManager {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   bool demuxer_found_hls_ = false;
+
+  // Are we allowed to switch demuxer mid-stream when fallback error codes
+  // are encountered
+  bool fallback_allowed_ = true;
 
   // Weak pointer implementation.
   base::WeakPtrFactory<DemuxerManager> weak_factory_{this};

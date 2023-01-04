@@ -418,6 +418,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void MakeDemuxerThreadDumper(media::Demuxer* demuxer) override;
   bool CouldPlayIfEnoughData() override;
   bool IsMediaPlayerRendererClient() override;
+  void StopForDemuxerReset() override;
+  bool RestartForHls() override;
+  bool IsSecurityOriginCryptographic() const override;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   void AddAudioTrack(const std::string& id,

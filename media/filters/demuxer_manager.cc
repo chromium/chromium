@@ -124,6 +124,67 @@ void DemuxerManager::InvalidateWeakPtrs() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+void DemuxerManager::RestartClientForHLS() {
+  if (client_ && fallback_allowed_) {
+    client_->RestartForHls();
+  }
+}
+
+void DemuxerManager::OnPipelineError(PipelineStatus error) {
+  DCHECK(client_);
+
+  if (!fallback_allowed_) {
+    return client_->OnError(std::move(error));
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (error == DEMUXER_ERROR_DETECTED_HLS) {
+    PipelineStatus::Or<GURL> hls_url =
+        ResetAfterHlsDetected(client_->IsSecurityOriginCryptographic());
+    if (!hls_url.has_value()) {
+      client_->OnError(std::move(hls_url).error().AddCause(std::move(error)));
+      return;
+    }
+    // We have to stop the pipeline and delete the demuxer thread dumper pronto.
+    client_->StopForDemuxerReset();
+
+    // The data source must be stopped after the client.
+    data_source_->Stop();
+
+    // Free the demuxer and data source now that they are stopped. After that,
+    // we can try restarting the client. If the client gets deleted in the mean
+    // time, we can stop there.
+    FreeResourcesAfterMediaThreadWait(base::BindOnce(
+        &DemuxerManager::RestartClientForHLS, weak_factory_.GetWeakPtr()));
+
+    return;
+  }
+#endif
+
+  client_->OnError(std::move(error));
+}
+
+void DemuxerManager::FreeResourcesAfterMediaThreadWait(base::OnceClosure cb) {
+  // The demuxer and data source must be freed on the main thread, but we have
+  // to make sure nothing is using them on the media thread first. So we have
+  // to post to the media thread and back.
+  media_task_runner_->PostTask(
+      FROM_HERE,
+      BindToCurrentLoop(base::BindOnce(
+          [](std::unique_ptr<Demuxer> demuxer,
+             std::unique_ptr<DataSource> data_source,
+             base::OnceClosure done_cb) {
+            demuxer.reset();
+            data_source.reset();
+            std::move(done_cb).Run();
+          },
+          std::move(demuxer_), std::move(data_source_), std::move(cb))));
+}
+
+void DemuxerManager::DisallowFallback() {
+  fallback_allowed_ = false;
+}
+
 void DemuxerManager::SetLoadedUrl(GURL url) {
   // The URL might be a rather large data:// url, so move it to prevent a
   // copy.
@@ -181,20 +242,6 @@ PipelineStatus::Or<GURL> DemuxerManager::ResetAfterHlsDetected(
 #else
   return DEMUXER_ERROR_DETECTED_HLS;
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void DemuxerManager::FreeResourcesAfterMediaThreadWait(base::OnceClosure cb) {
-  media_task_runner_->PostTask(
-      FROM_HERE,
-      BindToCurrentLoop(base::BindOnce(
-          [](std::unique_ptr<Demuxer> demuxer,
-             std::unique_ptr<DataSource> data_source,
-             base::OnceClosure done_cb) {
-            demuxer.reset();
-            data_source.reset();
-            std::move(done_cb).Run();
-          },
-          std::move(demuxer_), std::move(data_source_), std::move(cb))));
 }
 
 absl::optional<double> DemuxerManager::GetDemuxerDuration() {
