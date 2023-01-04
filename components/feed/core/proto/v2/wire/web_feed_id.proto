@@ -1,0 +1,22 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package feedwire;
+
+option optimize_for = LITE_RUNTIME;
+
+message DomainWebFeedId {
+  oneof id_oneof {
+    string web_web_feed_id = 2;
+    string mid = 3;
+    string web_feed_name = 4;
+  }
+}
+message WebFeedId {
+  oneof id_oneof {
+    DomainWebFeedId domain_web_feed_id = 7;
+  }
+}
