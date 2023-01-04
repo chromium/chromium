@@ -89,9 +89,7 @@ class CORE_EXPORT FindBuffer {
       using reference = BufferMatchResult&;
 
       Iterator() = default;
-      Iterator(const FindBuffer& find_buffer,
-               TextSearcherICU* text_searcher,
-               const String& search_text);
+      Iterator(const FindBuffer& find_buffer, TextSearcherICU* text_searcher);
 
       bool operator==(const Iterator& other) const {
         return has_match_ == other.has_match_;

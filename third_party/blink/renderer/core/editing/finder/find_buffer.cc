@@ -536,7 +536,7 @@ FindBuffer::Results::Iterator FindBuffer::Results::begin() const {
   if (empty_result_)
     return end();
   text_searcher_->SetOffset(0);
-  return Iterator(*find_buffer_, text_searcher_, search_text_);
+  return Iterator(*find_buffer_, text_searcher_);
 }
 
 FindBuffer::Results::Iterator FindBuffer::Results::end() const {
@@ -569,8 +569,7 @@ unsigned FindBuffer::Results::CountForTesting() const {
 
 // Findbuffer::Results::Iterator implementation.
 FindBuffer::Results::Iterator::Iterator(const FindBuffer& find_buffer,
-                                        TextSearcherICU* text_searcher,
-                                        const String& search_text)
+                                        TextSearcherICU* text_searcher)
     : find_buffer_(&find_buffer),
       text_searcher_(text_searcher),
       has_match_(true) {
