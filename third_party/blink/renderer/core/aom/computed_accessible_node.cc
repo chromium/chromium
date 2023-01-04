@@ -92,7 +92,7 @@ void ComputedAccessibleNodePromiseResolver::EnsureUpToDate() {
 }
 
 void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
-  if (!ax_context_->GetDocument()) {
+  if (!ax_context_->HasActiveDocument()) {
     resolver_->Resolve();
     return;
   }

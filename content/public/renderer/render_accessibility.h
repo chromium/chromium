@@ -21,6 +21,7 @@ namespace content {
 // This interface exposes the accessibility tree for one RenderFrame.
 class CONTENT_EXPORT RenderAccessibility {
  public:
+  virtual bool HasActiveDocument() const = 0;
   virtual int GenerateAXID() = 0;
 
   // These APIs allow a page with a single EMBED element to graft an
