@@ -28,17 +28,23 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
 
   static GURL GetHandlerUrl();
 
-  static void ProcessCommands(content::WebContents* web_contents,
-                              GURL target_url,
-                              DoneCallback done_callback);
+  // The caller may override the TaskRunner used for file I/O by providing
+  // a value for |io_task_runner|.
+  static void ProcessCommands(
+      content::WebContents* web_contents,
+      GURL target_url,
+      DoneCallback done_callback,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner = {});
 
  private:
   using SimpleDevToolsProtocolClient =
       simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
-  HeadlessCommandHandler(content::WebContents* web_contents,
-                         GURL target_url,
-                         DoneCallback done_callback);
+  HeadlessCommandHandler(
+      content::WebContents* web_contents,
+      GURL target_url,
+      DoneCallback done_callback,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   ~HeadlessCommandHandler() override;
 
   void ExecuteCommands();
@@ -58,6 +64,7 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   raw_ptr<content::WebContents> web_contents_;
   GURL target_url_;
   DoneCallback done_callback_;
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   base::FilePath pdf_file_path_;
   base::FilePath screenshot_file_path_;

@@ -211,15 +211,15 @@ void WriteFileTask(base::FilePath file_path, std::string file_data) {
   }
 }
 
-void WriteFile(base::FilePath file_path, std::string base64_file_data) {
+void WriteFile(base::FilePath file_path,
+               std::string base64_file_data,
+               scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   std::string file_data;
   CHECK(base::Base64Decode(base64_file_data, &file_data));
 
-  base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
-      ->PostTask(FROM_HERE, base::BindOnce(&WriteFileTask, std::move(file_path),
-                                           std::move(file_data)));
+  io_task_runner->PostTask(FROM_HERE,
+                           base::BindOnce(&WriteFileTask, std::move(file_path),
+                                          std::move(file_data)));
 }
 
 }  // namespace
@@ -227,10 +227,14 @@ void WriteFile(base::FilePath file_path, std::string base64_file_data) {
 HeadlessCommandHandler::HeadlessCommandHandler(
     content::WebContents* web_contents,
     GURL target_url,
-    DoneCallback done_callback)
+    DoneCallback done_callback,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : web_contents_(web_contents),
       target_url_(std::move(target_url)),
-      done_callback_(std::move(done_callback)) {
+      done_callback_(std::move(done_callback)),
+      io_task_runner_(std::move(io_task_runner)) {
+  DCHECK(io_task_runner_);
+
   // Load command execution harness resources and create URL data source
   // for chrome://headless.
   content::WebUIDataSource::Add(web_contents_->GetBrowserContext(),
@@ -252,12 +256,20 @@ GURL HeadlessCommandHandler::GetHandlerUrl() {
 }
 
 // static
-void HeadlessCommandHandler::ProcessCommands(content::WebContents* web_contents,
-                                             GURL target_url,
-                                             DoneCallback done_callback) {
+void HeadlessCommandHandler::ProcessCommands(
+    content::WebContents* web_contents,
+    GURL target_url,
+    DoneCallback done_callback,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
+  if (!io_task_runner) {
+    io_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  }
   // Headless Command Handler instance will self delete when done.
-  HeadlessCommandHandler* command_handler = new HeadlessCommandHandler(
-      web_contents, std::move(target_url), std::move(done_callback));
+  HeadlessCommandHandler* command_handler =
+      new HeadlessCommandHandler(web_contents, std::move(target_url),
+                                 std::move(done_callback), io_task_runner);
 
   command_handler->ExecuteCommands();
 }
@@ -319,12 +331,14 @@ void HeadlessCommandHandler::OnCommandsResult(base::Value::Dict result) {
 
   if (std::string* base64_data = result.FindStringByDottedPath(
           "result.result.value.screenshotResult")) {
-    WriteFile(std::move(screenshot_file_path_), std::move(*base64_data));
+    WriteFile(std::move(screenshot_file_path_), std::move(*base64_data),
+              io_task_runner_);
   }
 
   if (std::string* base64_data = result.FindStringByDottedPath(
           "result.result.value.printToPdfResult")) {
-    WriteFile(std::move(pdf_file_path_), std::move(*base64_data));
+    WriteFile(std::move(pdf_file_path_), std::move(*base64_data),
+              io_task_runner_);
   }
 
   Done();
