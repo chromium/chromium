@@ -35,6 +35,9 @@ constexpr const char* kKde5KcmPrinterCommand[] = {
 constexpr const char* kGnomeControlCenterPrintersCommand[] = {
     "gnome-control-center", "printers", nullptr};
 
+// Print manager in Deepin OS named "dde-printer".
+constexpr const char* kDeepinPrinterCommand[] = {"dde-printer", nullptr};
+
 // Returns true if the dialog was opened successfully.
 bool OpenPrinterConfigDialog(const char* const* command) {
   DCHECK(command);
@@ -74,8 +77,10 @@ void DetectAndOpenPrinterConfigDialog() {
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
       opened = OpenPrinterConfigDialog(kSystemConfigPrinterCommand);
       break;
-    case base::nix::DESKTOP_ENVIRONMENT_CINNAMON:
     case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
+      opened = OpenPrinterConfigDialog(kDeepinPrinterCommand);
+      break;
+    case base::nix::DESKTOP_ENVIRONMENT_CINNAMON:
     case base::nix::DESKTOP_ENVIRONMENT_GNOME:
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_LXQT:
