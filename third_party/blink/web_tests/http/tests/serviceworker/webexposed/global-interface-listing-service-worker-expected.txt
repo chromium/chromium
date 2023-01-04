@@ -122,10 +122,6 @@ interface CacheStorage
     method open
 interface CanMakePaymentEvent : ExtendableEvent
     attribute @@toStringTag
-    getter methodData
-    getter modifiers
-    getter paymentRequestOrigin
-    getter topOrigin
     method constructor
     method respondWith
 interface CanvasFilter

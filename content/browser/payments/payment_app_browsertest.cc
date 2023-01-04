@@ -320,17 +320,10 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, CanMakePayment) {
       registrationIds[0], GetTestServerOrigin(), "id", "basic-card");
   ASSERT_TRUE(can_make_payment);
 
-  EXPECT_EQ("https://example.test/", PopConsoleString() /* topOrigin */);
-  EXPECT_EQ("https://example.test/",
-            PopConsoleString() /* paymentRequestOrigin */);
-  EXPECT_EQ("[{\"supportedMethods\":\"basic-card\"}]",
-            PopConsoleString() /* methodData */);
-  EXPECT_EQ(
-      "[{\"additionalDisplayItems\":[],\"supportedMethods\":\"basic-card\","
-      "\"total\":{\"amount\":{\"currency\":\"USD\","
-      "\"value\":\"55\"},\"label\":\"\",\"pending\":false}}"
-      "]",
-      PopConsoleString() /* modifiers */);
+  EXPECT_EQ("undefined", PopConsoleString() /* topOrigin */);
+  EXPECT_EQ("undefined", PopConsoleString() /* paymentRequestOrigin */);
+  EXPECT_EQ("undefined", PopConsoleString() /* methodData */);
+  EXPECT_EQ("undefined", PopConsoleString() /* modifiers */);
 
   ClearStoragePartitionData();
 }

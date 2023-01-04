@@ -3180,11 +3180,12 @@ const char kIgnoreCSPInWebPaymentAPIDescription[] =
     "directive for Web Payment API when fetching manifest files, app icons, "
     "and service worker JavaScript files.";
 
-const char kClearIdentityInCanMakePaymentEventName[] =
-    "Remove identity from canmakepayment event";
-const char kClearIdentityInCanMakePaymentEventDescription[] =
-    "Do not share the merchant and user identity with the payment app when the "
-    "merchant checks whether the payment app can make payments.";
+const char kAddIdentityInCanMakePaymentEventName[] =
+    "Add identity to canmakepayment event";
+const char kAddIdentityInCanMakePaymentEventDescription[] =
+    "Temporarily re-enable the deprecated feature of sharing the merchant and "
+    "user identity with the payment app when the merchant checks whether the "
+    "payment app can make payments.";
 
 const char kAppStoreBillingDebugName[] =
     "Web Payments App Store Billing Debug Mode";

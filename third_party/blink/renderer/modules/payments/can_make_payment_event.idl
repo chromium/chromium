@@ -9,10 +9,10 @@
     Exposed=ServiceWorker
 ] interface CanMakePaymentEvent : ExtendableEvent {
     constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
-    [DeprecateAs=IdentityInCanMakePaymentEvent, CallWith=ScriptState] readonly attribute USVString topOrigin;
-    [DeprecateAs=IdentityInCanMakePaymentEvent, CallWith=ScriptState] readonly attribute USVString paymentRequestOrigin;
-    [DeprecateAs=IdentityInCanMakePaymentEvent, CallWith=ScriptState] readonly attribute any methodData;
-    [DeprecateAs=IdentityInCanMakePaymentEvent, CallWith=ScriptState] readonly attribute any modifiers;
+    [DeprecateAs=IdentityInCanMakePaymentEvent, RuntimeEnabled=AddIdentityInCanMakePaymentEvent] readonly attribute USVString topOrigin;
+    [DeprecateAs=IdentityInCanMakePaymentEvent, RuntimeEnabled=AddIdentityInCanMakePaymentEvent] readonly attribute USVString paymentRequestOrigin;
+    [DeprecateAs=IdentityInCanMakePaymentEvent, RuntimeEnabled=AddIdentityInCanMakePaymentEvent] readonly attribute FrozenArray<PaymentMethodData> methodData;
+    [DeprecateAs=IdentityInCanMakePaymentEvent, RuntimeEnabled=AddIdentityInCanMakePaymentEvent] readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
 
     [CallWith=ScriptState, RaisesException] void respondWith(Promise<boolean> canMakePaymentResponse);
 };

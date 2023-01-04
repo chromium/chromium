@@ -77,6 +77,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "add-identity-in-can-make-payment",
+    "owners": [ "rouslan", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "add-to-homescreen-iph",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 100
@@ -989,11 +994,6 @@
   {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran", "kaustubhag" ],
-    "expiry_milestone": 115
-  },
-  {
-    "name": "clear-identity-in-can-make-payment",
-    "owners": [ "rouslan", "web-payments-team@google.com" ],
     "expiry_milestone": 115
   },
   {

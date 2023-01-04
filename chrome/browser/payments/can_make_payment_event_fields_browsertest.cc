@@ -20,11 +20,11 @@ class CanMakePaymentEventFieldsTest
  public:
   CanMakePaymentEventFieldsTest() {
     if (ClearFieldsInCanMakePaymentEvent()) {
-      features_.InitAndEnableFeature(
-          blink::features::kClearIdentityInCanMakePaymentEvent);
-    } else {
       features_.InitAndDisableFeature(
-          blink::features::kClearIdentityInCanMakePaymentEvent);
+          blink::features::kAddIdentityInCanMakePaymentEvent);
+    } else {
+      features_.InitAndEnableFeature(
+          blink::features::kAddIdentityInCanMakePaymentEvent);
     }
   }
 
@@ -72,13 +72,10 @@ IN_PROC_BROWSER_TEST_P(CanMakePaymentEventFieldsTest, VerifyFields) {
     EXPECT_FALSE(GetValueOf("details.definedMethodData"));
     EXPECT_FALSE(GetValueOf("details.definedModifiers"));
 
-    // Checking `if ('topOrigin' in event)` returns true, because the field
-    // accessors are defined on the CanMakePaymentEvent, even though they return
-    // "undefined" when accessed.
-    EXPECT_TRUE(GetValueOf("details.inTopOrigin"));
-    EXPECT_TRUE(GetValueOf("details.inPaymentRequestOrigin"));
-    EXPECT_TRUE(GetValueOf("details.inMethodData"));
-    EXPECT_TRUE(GetValueOf("details.inModifiers"));
+    EXPECT_FALSE(GetValueOf("details.inTopOrigin"));
+    EXPECT_FALSE(GetValueOf("details.inPaymentRequestOrigin"));
+    EXPECT_FALSE(GetValueOf("details.inMethodData"));
+    EXPECT_FALSE(GetValueOf("details.inModifiers"));
   } else {
     EXPECT_TRUE(GetValueOf("details.ifTopOrigin"));
     EXPECT_TRUE(GetValueOf("details.ifPaymentRequestOrigin"));

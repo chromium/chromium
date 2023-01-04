@@ -253,6 +253,13 @@
       public: true,
     },
     {
+      name: "AddIdentityInCanMakePaymentEvent",
+      base_feature: "AddIdentityInCanMakePaymentEvent",
+      origin_trial_allows_third_party: true,
+      origin_trial_feature_name: "AddIdentityInCanMakePaymentEvent",
+      public: true,
+    },
+    {
       name: "AddressSpace",
       status: "experimental",
       implied_by: ["CorsRFC1918"],
@@ -473,6 +480,7 @@
       status: "stable",
     },
     {
+      // TODO(crbug.com/1290492): Remove when all call sites switch to AddIdentityInCanMakePaymentEvent.
       name: "ClearIdentityInCanMakePaymentEvent",
       base_feature: "ClearIdentityInCanMakePaymentEvent",
       origin_trial_allows_third_party: true,

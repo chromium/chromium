@@ -22,14 +22,7 @@ self.addEventListener('canmakepayment', e => {
     });
   }));
 
-  e.respondWith(new Promise(resolve => {
-    e.methodData.forEach(methodData => {
-      if (methodData.supportedMethods == 'basic-card') {
-        resolve(true);
-        return;
-      }
-    });
-  }));
+  e.respondWith(true);
 });
 
 self.addEventListener('paymentrequest', e => {

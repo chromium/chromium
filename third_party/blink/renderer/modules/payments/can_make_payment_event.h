@@ -45,10 +45,10 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
 
   const AtomicString& InterfaceName() const override;
 
-  ScriptValue topOrigin(ScriptState*) const;
-  ScriptValue paymentRequestOrigin(ScriptState*) const;
-  ScriptValue methodData(ScriptState*) const;
-  ScriptValue modifiers(ScriptState*) const;
+  const String& topOrigin() const;
+  const String& paymentRequestOrigin() const;
+  const HeapVector<Member<PaymentMethodData>>& methodData() const;
+  const HeapVector<Member<PaymentDetailsModifier>>& modifiers() const;
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
 

@@ -1809,8 +1809,8 @@ extern const char kWebPaymentsExperimentalFeaturesDescription[];
 extern const char kIgnoreCSPInWebPaymentAPIName[];
 extern const char kIgnoreCSPInWebPaymentAPIDescription[];
 
-extern const char kClearIdentityInCanMakePaymentEventName[];
-extern const char kClearIdentityInCanMakePaymentEventDescription[];
+extern const char kAddIdentityInCanMakePaymentEventName[];
+extern const char kAddIdentityInCanMakePaymentEventDescription[];
 
 extern const char kAppStoreBillingDebugName[];
 extern const char kAppStoreBillingDebugDescription[];

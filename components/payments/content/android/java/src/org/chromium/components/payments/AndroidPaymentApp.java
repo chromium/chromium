@@ -262,8 +262,8 @@ public class AndroidPaymentApp
                 removeUrlScheme(origin), removeUrlScheme(iframeOrigin), certificateChain,
                 WebPaymentIntentHelperTypeConverter.fromMojoPaymentMethodDataMap(methodDataMap),
                 /*clearIdFields=*/
-                PaymentFeatureList.isEnabled(
-                        PaymentFeatureList.CLEAR_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT));
+                !PaymentFeatureList.isEnabled(
+                        PaymentFeatureList.ADD_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT));
         if (mBypassIsReadyToPayServiceInTest) {
             respondToIsReadyToPayQuery(true);
             return;

@@ -60474,6 +60474,7 @@ from previous Chrome versions.
   <int value="-238415226" label="GlobalVaapiLock:disabled"/>
   <int value="-238175256" label="EarlyExitOnNoopClassOrStyleChange:enabled"/>
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
+  <int value="-236719122" label="AddIdentityInCanMakePaymentEvent:enabled"/>
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
   <int value="-236071174" label="NearbyShareVisibilityReminder:disabled"/>
   <int value="-235949168" label="DrawPredictedInkPoint:enabled"/>
@@ -64048,6 +64049,7 @@ from previous Chrome versions.
       label="enable-message-center-always-scroll-up-upon-notification-removal"/>
   <int value="1861515782" label="WebFeedOnboarding:enabled"/>
   <int value="1861521561" label="OmniboxLocalEntitySuggestions:enabled"/>
+  <int value="1861699795" label="AddIdentityInCanMakePaymentEvent:disabled"/>
   <int value="1862126613" label="DesktopPWAsRunOnOsLogin:enabled"/>
   <int value="1862207743" label="enable-android-spellchecker"/>
   <int value="1863622457" label="WebAuthentication:enabled"/>
