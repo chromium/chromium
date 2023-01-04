@@ -105,12 +105,12 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
 
   // An interim score taking into consideration location and completeness
   // of the match.
-  int raw_score;
+  int raw_score = 0;
 
   // `kDomainSuggestions` may boost the score. These record the original and
   // boosted scores for logging.
-  int raw_score_before_domain_boosting;
-  int raw_score_after_domain_boosting;
+  int raw_score_before_domain_boosting = 0;
+  int raw_score_after_domain_boosting = 0;
 
   // Both these TermMatches contain the set of matches that are considered
   // important.  At this time, that means they exclude mid-word matches

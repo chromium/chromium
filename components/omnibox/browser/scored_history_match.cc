@@ -144,8 +144,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     bool is_url_bookmarked,
     size_t num_matching_pages,
     bool is_highly_visited_host,
-    base::Time now)
-    : raw_score(0) {
+    base::Time now) {
   // Initialize HistoryMatch fields. TODO(tommycli): Merge these two classes.
   url_info = row;
   input_location = 0;
