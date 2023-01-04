@@ -58,6 +58,9 @@ class CertProvisioningClient {
     static constexpr int kFieldCount = 4;
   };
 
+  using CertProvNextActionResponse =
+      enterprise_management::CertProvNextActionResponse;
+
   using StartCsrCallback = base::OnceCallback<void(
       policy::DeviceManagementStatus status,
       absl::optional<enterprise_management::
@@ -80,6 +83,24 @@ class CertProvisioningClient {
                          ClientCertificateProvisioningResponse::Error> error,
       absl::optional<int64_t> try_later,
       const std::string& pem_encoded_certificate)>;
+
+  using NextActionCallback = base::OnceCallback<void(
+      policy::DeviceManagementStatus status,
+      absl::optional<enterprise_management::
+                         ClientCertificateProvisioningResponse::Error> error,
+      absl::optional<int64_t> try_later,
+      const CertProvNextActionResponse& next_action_response)>;
+
+  virtual void StartOrContinue(ProvisioningProcess provisioning_process,
+                               NextActionCallback callback) = 0;
+
+  virtual void Authorize(ProvisioningProcess provisioning_process,
+                         std::string va_challenge_response,
+                         NextActionCallback callback) = 0;
+
+  virtual void UploadProofOfPossession(ProvisioningProcess provisioning_process,
+                                       std::string signature,
+                                       NextActionCallback callback) = 0;
 
   // Sends certificate provisioning start csr request. It is Step 1 in the
   // certificate provisioning flow. |cert_scope| defines if it is a user- or
@@ -125,6 +146,17 @@ class CertProvisioningClientImpl : public CertProvisioningClient {
       delete;
   ~CertProvisioningClientImpl() override;
 
+  void StartOrContinue(ProvisioningProcess provisioning_process,
+                       NextActionCallback callback) override;
+
+  void Authorize(ProvisioningProcess provisioning_process,
+                 std::string va_challenge_response,
+                 NextActionCallback callback) override;
+
+  void UploadProofOfPossession(ProvisioningProcess provisioning_process,
+                               std::string signature,
+                               NextActionCallback callback) override;
+
   void StartCsr(ProvisioningProcess provisioning_process,
                 StartCsrCallback callback) override;
 
@@ -140,6 +172,12 @@ class CertProvisioningClientImpl : public CertProvisioningClient {
   void FillCommonRequestData(
       ProvisioningProcess provisioning_process,
       enterprise_management::ClientCertificateProvisioningRequest& out_request);
+
+  void OnNextActionResponse(
+      NextActionCallback callback,
+      policy::DeviceManagementStatus status,
+      const enterprise_management::ClientCertificateProvisioningResponse&
+          response);
 
   void OnStartCsrResponse(
       StartCsrCallback callback,

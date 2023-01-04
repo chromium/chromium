@@ -16,6 +16,26 @@ class MockCertProvisioningClient : public CertProvisioningClient {
   ~MockCertProvisioningClient() override;
 
   MOCK_METHOD(void,
+              StartOrContinue,
+              (ProvisioningProcess provisioning_process,
+               NextActionCallback next_action_callback),
+              (override));
+
+  MOCK_METHOD(void,
+              Authorize,
+              (ProvisioningProcess provisioning_process,
+               std::string va_challenge_response,
+               NextActionCallback next_action_callback),
+              (override));
+
+  MOCK_METHOD(void,
+              UploadProofOfPossession,
+              (ProvisioningProcess provisioning_process,
+               std::string signature,
+               NextActionCallback next_action_callback),
+              (override));
+
+  MOCK_METHOD(void,
               StartCsr,
               (ProvisioningProcess provisioning_process,
                StartCsrCallback callback),

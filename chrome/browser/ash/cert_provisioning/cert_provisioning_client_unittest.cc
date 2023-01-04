@@ -40,7 +40,7 @@ MATCHER_P(EqualsProto,
 class FakeCloudPolicyClient : public policy::MockCloudPolicyClient {
  public:
   struct CertProvCall {
-    enterprise_management::ClientCertificateProvisioningRequest request;
+    em::ClientCertificateProvisioningRequest request;
     ClientCertProvisioningRequestCallback callback;
   };
 
@@ -54,7 +54,7 @@ class FakeCloudPolicyClient : public policy::MockCloudPolicyClient {
 
  private:
   void OnClientCertProvisioningRequest(
-      enterprise_management::ClientCertificateProvisioningRequest request,
+      em::ClientCertificateProvisioningRequest request,
       ClientCertProvisioningRequestCallback callback) {
     cert_prov_calls_.push_back({std::move(request), std::move(callback)});
   }
@@ -63,32 +63,59 @@ class FakeCloudPolicyClient : public policy::MockCloudPolicyClient {
 };
 
 // A TestFuture that supports waiting for a
+// CertProvisioningClient::NextActionCallback.
+class NextActionFuture
+    : public base::test::TestFuture<
+          policy::DeviceManagementStatus,
+          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
+          absl::optional<int64_t>,
+          CertProvisioningClient::CertProvNextActionResponse> {
+ public:
+  CertProvisioningClient::NextActionCallback GetNextActionCallback() {
+    return GetCallback<
+        policy::DeviceManagementStatus,
+        absl::optional<em::ClientCertificateProvisioningResponse::Error>,
+        absl::optional<int64_t>,
+        const CertProvisioningClient::CertProvNextActionResponse&>();
+  }
+
+  policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
+
+  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
+    return Get<1>();
+  }
+
+  absl::optional<int64_t> GetTryLater() { return Get<2>(); }
+
+  const CertProvisioningClient::CertProvNextActionResponse&
+  GetNextActionResponse() {
+    return Get<3>();
+  }
+};
+
+// A TestFuture that supports waiting for a
 // CertProvisioningClient::StartCsrCallback.
 class StartCsrFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
-          absl::optional<enterprise_management::
-                             ClientCertificateProvisioningResponse::Error>,
+          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
           absl::optional<int64_t>,
           std::string,
           std::string,
-          enterprise_management::HashingAlgorithm,
+          em::HashingAlgorithm,
           std::string> {
  public:
   CertProvisioningClient::StartCsrCallback GetStartCsrCallback() {
     return GetCallback<
         policy::DeviceManagementStatus,
-        absl::optional<enterprise_management::
-                           ClientCertificateProvisioningResponse::Error>,
+        absl::optional<em::ClientCertificateProvisioningResponse::Error>,
         absl::optional<int64_t>, const std::string&, const std::string&,
-        enterprise_management::HashingAlgorithm, const std::string&>();
+        em::HashingAlgorithm, const std::string&>();
   }
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
 
-  absl::optional<
-      enterprise_management::ClientCertificateProvisioningResponse::Error>
-  GetError() {
+  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
     return Get<1>();
   }
 
@@ -98,9 +125,7 @@ class StartCsrFuture
 
   const std::string& GetVaChallenge() { return Get<4>(); }
 
-  enterprise_management::HashingAlgorithm GetHashingAlgorithm() {
-    return Get<5>();
-  }
+  em::HashingAlgorithm GetHashingAlgorithm() { return Get<5>(); }
 
   const std::string& GetDataToSign() { return Get<6>(); }
 };
@@ -110,8 +135,7 @@ class StartCsrFuture
 class FinishCsrFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
-          absl::optional<enterprise_management::
-                             ClientCertificateProvisioningResponse::Error>,
+          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
           absl::optional<int64_t>> {
  public:
   CertProvisioningClient::FinishCsrCallback GetFinishCsrCallback() {
@@ -120,9 +144,7 @@ class FinishCsrFuture
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
 
-  absl::optional<
-      enterprise_management::ClientCertificateProvisioningResponse::Error>
-  GetError() {
+  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
     return Get<1>();
   }
 
@@ -134,24 +156,20 @@ class FinishCsrFuture
 class DownloadCertFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
-          absl::optional<enterprise_management::
-                             ClientCertificateProvisioningResponse::Error>,
+          absl::optional<em::ClientCertificateProvisioningResponse::Error>,
           absl::optional<int64_t>,
           std::string> {
  public:
   CertProvisioningClient::DownloadCertCallback GetDownloadCertCallback() {
     return GetCallback<
         policy::DeviceManagementStatus,
-        absl::optional<enterprise_management::
-                           ClientCertificateProvisioningResponse::Error>,
+        absl::optional<em::ClientCertificateProvisioningResponse::Error>,
         absl::optional<int64_t>, const std::string&>();
   }
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
 
-  absl::optional<
-      enterprise_management::ClientCertificateProvisioningResponse::Error>
-  GetError() {
+  absl::optional<em::ClientCertificateProvisioningResponse::Error> GetError() {
     return Get<1>();
   }
 
@@ -166,17 +184,15 @@ class DownloadCertFuture
 // string.
 using CertScopePair = std::tuple<CertScope, std::string>;
 
-class CertProvisioningClientTest
-    : public testing::TestWithParam<CertScopePair> {
+// Base class for testing CertProvisioningClient.
+// The subclasses will implement different test parameters.
+class CertProvisioningClientTestBase : public testing::Test {
  public:
-  CertProvisioningClientTest() = default;
-  ~CertProvisioningClientTest() override = default;
+  CertProvisioningClientTestBase() = default;
+  ~CertProvisioningClientTestBase() override = default;
 
-  CertScope cert_scope() const { return std::get<0>(GetParam()); }
-
-  const std::string& cert_scope_dm_api_string() const {
-    return std::get<1>(GetParam());
-  }
+  virtual CertScope cert_scope() const = 0;
+  virtual const std::string& cert_scope_dm_api_string() const = 0;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -200,6 +216,106 @@ class CertProvisioningClientTest
   const std::string kSignature = "fake_signature_1";
   const std::string kPemEncodedCert = "fake_pem_encoded_cert_1";
 };
+
+// Test fixture for CertProvisioningClient, parametrized by CertScope.
+class CertProvisioningClientTest
+    : public CertProvisioningClientTestBase,
+      public testing::WithParamInterface<CertScopePair> {
+ public:
+  CertScope cert_scope() const override { return std::get<0>(GetParam()); }
+
+  const std::string& cert_scope_dm_api_string() const override {
+    return std::get<1>(GetParam());
+  }
+};
+
+// Checks that StartOrContinue fills the StartOrContinueRequest correctly.
+TEST_P(CertProvisioningClientTest, StartOrContinueRequest) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  NextActionFuture next_action_future;
+  cert_provisioning_client.StartOrContinue(
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  // Expect one request to CloudPolicyClient, verify its contents.
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  {
+    em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_scope(cert_scope_dm_api_string());
+    expected_request.set_cert_profile_id(kCertProfileId);
+    expected_request.set_policy_version(kCertProfileVersion);
+    expected_request.set_public_key(kPublicKeyAsString);
+    // Sets the request type, no actual data is required.
+    expected_request.mutable_start_or_continue_request();
+
+    EXPECT_THAT(cert_prov_call.request, EqualsProto(expected_request));
+  }
+  // Note: Processing of the response will be tested in another test.
+}
+
+// Checks that Authorize fills the AuthorizeRequest correctly.
+TEST_P(CertProvisioningClientTest, AuthorizeRequest) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  NextActionFuture next_action_future;
+  cert_provisioning_client.Authorize(
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      kVaChallengeResponse, next_action_future.GetNextActionCallback());
+
+  // Expect one request to CloudPolicyClient, verify its contents.
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  {
+    em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_scope(cert_scope_dm_api_string());
+    expected_request.set_cert_profile_id(kCertProfileId);
+    expected_request.set_policy_version(kCertProfileVersion);
+    expected_request.set_public_key(kPublicKeyAsString);
+
+    auto* authorize_request = expected_request.mutable_authorize_request();
+    authorize_request->set_va_challenge_response(kVaChallengeResponse);
+
+    EXPECT_THAT(cert_prov_call.request, EqualsProto(expected_request));
+  }
+  // Note: Processing of the response will be tested in another test.
+}
+
+// Checks that UploadProofOfPossession fills the UploadProofOfPossessionRequest
+// correctly.
+TEST_P(CertProvisioningClientTest, UploadProofOfPossessionRequest) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  NextActionFuture next_action_future;
+  cert_provisioning_client.UploadProofOfPossession(
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      kSignature, next_action_future.GetNextActionCallback());
+
+  // Expect one request to CloudPolicyClient, verify its contents.
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  {
+    em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_scope(cert_scope_dm_api_string());
+    expected_request.set_cert_profile_id(kCertProfileId);
+    expected_request.set_policy_version(kCertProfileVersion);
+    expected_request.set_public_key(kPublicKeyAsString);
+
+    auto* upload_proof_of_possession_request =
+        expected_request.mutable_upload_proof_of_possession_request();
+    upload_proof_of_possession_request->set_signature(kSignature);
+
+    EXPECT_THAT(cert_prov_call.request, EqualsProto(expected_request));
+  }
+  // Note: Processing of the response will be tested in another test.
+}
 
 // 1. Checks that `StartCsr` generates a correct request.
 // 2. Checks that CertProvisioningClient correctly extracts data from a response
@@ -475,5 +591,291 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(CertScopePair(CertScope::kUser, "google/chromeos/user"),
                       CertScopePair(CertScope::kDevice,
                                     "google/chromeos/device")));
+
+// A Test case for CertProvisioningClientNextActionProcessingTest.
+struct NextActionProcessingTestCase {
+  // Invokes a CertProvisioningClient API call.
+  base::RepeatingCallback<void(
+      CertProvisioningClient*,
+      CertProvisioningClient::ProvisioningProcess provisioining_process,
+      CertProvisioningClient::NextActionCallback callback)>
+      act_function;
+};
+
+// Test fixture for CertProvisioningClient, parametrized by CertScope and a
+// NextActionProcessingTestCase which implements a call to one of the
+// CertProvisioningClient API calls.
+// This is useful for testing response processing across multiple API calls that
+// provide the same response type (CertProvNextActionResponse).
+class CertProvisioningClientNextActionProcessingTest
+    : public CertProvisioningClientTestBase,
+      public testing::WithParamInterface<
+          std::tuple<CertScopePair, NextActionProcessingTestCase>> {
+ public:
+  CertScope cert_scope() const override {
+    return std::get<0>(cert_scope_pair());
+  }
+
+  const std::string& cert_scope_dm_api_string() const override {
+    return std::get<1>(cert_scope_pair());
+  }
+
+  void ExecuteCertProvisioningClientCall(
+      CertProvisioningClient* client,
+      CertProvisioningClient::ProvisioningProcess provisioning_process,
+      CertProvisioningClient::NextActionCallback callback) const {
+    std::get<1>(GetParam())
+        .act_function.Run(client, std::move(provisioning_process),
+                          std::move(callback));
+  }
+
+ private:
+  const CertScopePair& cert_scope_pair() const {
+    return std::get<0>(GetParam());
+  }
+};
+
+// Checks that all "Dynamic flow" API calls forward a successful
+// CertProvNextActionResponse correctly.
+TEST_P(CertProvisioningClientNextActionProcessingTest, Success) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+  // Execute the CertProvisioningClient API call. Don't verify the filled
+  // request proto - this is done by other tests in this file.
+  NextActionFuture next_action_future;
+  ExecuteCertProvisioningClientCall(
+      &cert_provisioning_client,
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  // Make CloudPolicyClient answer the request.
+  em::ClientCertificateProvisioningResponse response;
+  {
+    auto* next_action_response = response.mutable_next_action_response();
+    next_action_response->set_invalidation_topic(kInvalidationTopic);
+    next_action_response->mutable_import_certificate_instruction();
+  }
+  std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
+
+  // Expect that the CertProvisioningClient forwards the
+  // CertProvNextActionResponse.
+  ASSERT_TRUE(next_action_future.Wait());
+  EXPECT_EQ(next_action_future.GetStatus(), policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
+  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
+  EXPECT_THAT(next_action_future.GetNextActionResponse(),
+              EqualsProto(response.next_action_response()));
+}
+
+// Checks that all "Dynamic flow" API calls forward an error
+// ClientCertificateProvisioningResponse correctly.
+TEST_P(CertProvisioningClientNextActionProcessingTest, CertProvError) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  // Execute the CertProvisioningClient API call. Don't verify the filled
+  // request proto - this is done by other tests in this file.
+  NextActionFuture next_action_future;
+  ExecuteCertProvisioningClientCall(
+      &cert_provisioning_client,
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  // Make CloudPolicyClient answer the request.
+  const CertProvisioningResponseErrorType error =
+      CertProvisioningResponseError::CA_ERROR;
+  em::ClientCertificateProvisioningResponse response;
+  response.set_error(error);
+  std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
+
+  // Expect that the CertProvisioningClient provides the error and an empty
+  // CertProvNextActionResponse.
+  ASSERT_TRUE(next_action_future.Wait());
+  EXPECT_EQ(next_action_future.GetStatus(), policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(next_action_future.GetError(), absl::make_optional(error));
+  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
+  EXPECT_THAT(
+      next_action_future.GetNextActionResponse(),
+      EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
+}
+
+// Checks that all "Dynamic flow" API calls forward a "DM_STATUS_.." error
+// correctly.
+TEST_P(CertProvisioningClientNextActionProcessingTest, DeviceManagementError) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  // Execute the CertProvisioningClient API call. Don't verify the filled
+  // request proto - this is done by other tests in this file.
+  NextActionFuture next_action_future;
+  ExecuteCertProvisioningClientCall(
+      &cert_provisioning_client,
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  // Make CloudPolicyClient answer the request with a device management error.
+  em::ClientCertificateProvisioningResponse response;
+  std::move(cert_prov_call.callback)
+      .Run(policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND, response);
+
+  // Expect that the CertProvisioningClient provides the error and an empty
+  // CertProvNextActionResponse.
+  ASSERT_TRUE(next_action_future.Wait());
+  EXPECT_EQ(next_action_future.GetStatus(),
+            policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
+  EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
+  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
+  EXPECT_THAT(
+      next_action_future.GetNextActionResponse(),
+      EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
+}
+
+// Checks that if no CertProvNextActionResponse is filled , a decoding error
+// will be signaled.
+TEST_P(CertProvisioningClientNextActionProcessingTest,
+       NoNextActionResponseFilled) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  // Execute the CertProvisioningClient API call. Don't verify the filled
+  // request proto - this is done by other tests in this file.
+  NextActionFuture next_action_future;
+  ExecuteCertProvisioningClientCall(
+      &cert_provisioning_client,
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  // Make CloudPolicyClient answer the request with no NextActionResponse
+  // filled.
+  em::ClientCertificateProvisioningResponse response;
+  std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
+
+  // Expect that the CertProvisioningClient provides a deciding error and an
+  // empty CertProvNextActionResponse.
+  ASSERT_TRUE(next_action_future.Wait());
+  EXPECT_EQ(next_action_future.GetStatus(),
+            policy::DM_STATUS_RESPONSE_DECODING_ERROR);
+  EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
+  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
+  EXPECT_THAT(
+      next_action_future.GetNextActionResponse(),
+      EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
+}
+// Checks that if no instruction was filled in CertProvNextActionResponse, a
+// decoding error will be signaled.
+TEST_P(CertProvisioningClientNextActionProcessingTest, NoInstructionFilled) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  // Execute the CertProvisioningClient API call. Don't verify the filled
+  // request proto - this is done by other tests in this file.
+  NextActionFuture next_action_future;
+  ExecuteCertProvisioningClientCall(
+      &cert_provisioning_client,
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  // Make CloudPolicyClient answer the request with no instruction filled.
+  em::ClientCertificateProvisioningResponse response;
+  {
+    auto* next_action_response = response.mutable_next_action_response();
+    next_action_response->set_invalidation_topic(kInvalidationTopic);
+  }
+  std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
+
+  // Expect that the CertProvisioningClient provides a deciding error and an
+  // empty CertProvNextActionResponse.
+  ASSERT_TRUE(next_action_future.Wait());
+  EXPECT_EQ(next_action_future.GetStatus(),
+            policy::DM_STATUS_RESPONSE_DECODING_ERROR);
+  EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
+  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
+  EXPECT_THAT(
+      next_action_future.GetNextActionResponse(),
+      EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
+}
+
+// Checks that all "Dynamic flow" API calls forward an explicit
+// `try_again_later` instruction correctly.
+TEST_P(CertProvisioningClientNextActionProcessingTest, ExplicitTryLater) {
+  CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
+
+  // Execute the CertProvisioningClient API call. Don't verify the filled
+  // request proto - this is done by other tests in this file.
+  NextActionFuture next_action_future;
+  ExecuteCertProvisioningClientCall(
+      &cert_provisioning_client,
+      CertProvisioningClient::ProvisioningProcess(
+          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+      next_action_future.GetNextActionCallback());
+
+  ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
+  FakeCloudPolicyClient::CertProvCall& cert_prov_call =
+      cloud_policy_client_.cert_prov_calls().back();
+  // Make CloudPolicyClient answer the request.
+  em::ClientCertificateProvisioningResponse response;
+  response.set_try_again_later(3000);
+  std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
+
+  // Expect that the CertProvisioningClient provides the error and an empty
+  // CertProvNextActionResponse.
+  ASSERT_TRUE(next_action_future.Wait());
+  EXPECT_EQ(next_action_future.GetStatus(), policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
+  EXPECT_EQ(next_action_future.GetTryLater(), absl::make_optional(3000));
+  EXPECT_THAT(
+      next_action_future.GetNextActionResponse(),
+      EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllTests,
+    CertProvisioningClientNextActionProcessingTest,
+    ::testing::Combine(
+        ::testing::Values(
+            CertScopePair(CertScope::kUser, "google/chromeos/user"),
+            CertScopePair(CertScope::kDevice, "google/chromeos/device")),
+        ::testing::Values(
+            NextActionProcessingTestCase{base::BindRepeating(
+                [](CertProvisioningClient* client,
+                   CertProvisioningClient::ProvisioningProcess
+                       provisioning_process,
+                   CertProvisioningClient::NextActionCallback callback) {
+                  client->StartOrContinue(std::move(provisioning_process),
+                                          std::move(callback));
+                })},
+            NextActionProcessingTestCase{base::BindRepeating(
+                [](CertProvisioningClient* client,
+                   CertProvisioningClient::ProvisioningProcess
+                       provisioning_process,
+                   CertProvisioningClient::NextActionCallback callback) {
+                  client->Authorize(std::move(provisioning_process),
+                                    /*va_challenge_response=*/std::string(),
+                                    std::move(callback));
+                })},
+            NextActionProcessingTestCase{base::BindRepeating(
+                [](CertProvisioningClient* client,
+                   CertProvisioningClient::ProvisioningProcess
+                       provisioning_process,
+                   CertProvisioningClient::NextActionCallback callback) {
+                  client->UploadProofOfPossession(
+                      std::move(provisioning_process),
+                      /*signature=*/std::string(), std::move(callback));
+                })})));
 
 }  // namespace ash::cert_provisioning

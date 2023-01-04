@@ -99,6 +99,53 @@ CertProvisioningClientImpl::CertProvisioningClientImpl(
 
 CertProvisioningClientImpl::~CertProvisioningClientImpl() = default;
 
+void CertProvisioningClientImpl::StartOrContinue(
+    ProvisioningProcess provisioning_process,
+    NextActionCallback callback) {
+  em::ClientCertificateProvisioningRequest request;
+  FillCommonRequestData(std::move(provisioning_process), request);
+
+  // Sets the request type, no actual data is required.
+  request.mutable_start_or_continue_request();
+
+  cloud_policy_client_->ClientCertProvisioningRequest(
+      std::move(request),
+      base::BindOnce(&CertProvisioningClientImpl::OnNextActionResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CertProvisioningClientImpl::Authorize(
+    ProvisioningProcess provisioning_process,
+    std::string va_challenge_response,
+    NextActionCallback callback) {
+  em::ClientCertificateProvisioningRequest request;
+  FillCommonRequestData(std::move(provisioning_process), request);
+
+  request.mutable_authorize_request()->set_va_challenge_response(
+      std::move(va_challenge_response));
+
+  cloud_policy_client_->ClientCertProvisioningRequest(
+      std::move(request),
+      base::BindOnce(&CertProvisioningClientImpl::OnNextActionResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CertProvisioningClientImpl::UploadProofOfPossession(
+    ProvisioningProcess provisioning_process,
+    std::string signature,
+    NextActionCallback callback) {
+  em::ClientCertificateProvisioningRequest request;
+  FillCommonRequestData(std::move(provisioning_process), request);
+
+  request.mutable_upload_proof_of_possession_request()->set_signature(
+      std::move(signature));
+
+  cloud_policy_client_->ClientCertProvisioningRequest(
+      std::move(request),
+      base::BindOnce(&CertProvisioningClientImpl::OnNextActionResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void CertProvisioningClientImpl::StartCsr(
     ProvisioningProcess provisioning_process,
     StartCsrCallback callback) {
@@ -161,6 +208,46 @@ void CertProvisioningClientImpl::FillCommonRequestData(
       std::move(provisioning_process.policy_version));
   out_request.set_public_key(provisioning_process.public_key.data(),
                              provisioning_process.public_key.size());
+}
+
+void CertProvisioningClientImpl::OnNextActionResponse(
+    NextActionCallback callback,
+    policy::DeviceManagementStatus status,
+    const em::ClientCertificateProvisioningResponse& response) {
+  absl::optional<CertProvisioningResponseErrorType> response_error;
+  absl::optional<int64_t> try_later;
+
+  // Single step loop for convenience.
+  do {
+    if (!CheckCommonClientCertProvisioningResponse(response, status,
+                                                   response_error, try_later)) {
+      break;
+    }
+
+    if (!response.has_next_action_response()) {
+      status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
+      break;
+    }
+
+    // One of the oneof fields must be set.
+    // If the server wants to indicate that there is no work to be done yet, it
+    // should fill the `try_again_later` field instead.
+    if (response.next_action_response().instruction_case() ==
+        em::CertProvNextActionResponse::INSTRUCTION_NOT_SET) {
+      status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
+      break;
+    }
+
+    // Everything is ok, run |callback| with data.
+    std::move(callback).Run(status, response_error, try_later,
+                            response.next_action_response());
+    return;
+  } while (false);
+
+  // Something went wrong. Return error via |status|, |response_error|,
+  // |try_later|.
+  std::move(callback).Run(status, response_error, try_later,
+                          CertProvNextActionResponse());
 }
 
 void CertProvisioningClientImpl::OnStartCsrResponse(
