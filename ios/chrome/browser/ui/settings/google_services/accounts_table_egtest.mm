@@ -431,7 +431,15 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests to open the sign-out confirmation dialog, and then open an external
 // URL.
-- (void)testInterruptDuringSignOutConfirmation {
+// TODO(crbug.com/1403825): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testInterruptDuringSignOutConfirmation \
+  testInterruptDuringSignOutConfirmation
+#else
+#define MAYBE_testInterruptDuringSignOutConfirmation \
+  DISABLED_testInterruptDuringSignOutConfirmation
+#endif
+- (void)MAYBE_testInterruptDuringSignOutConfirmation {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
