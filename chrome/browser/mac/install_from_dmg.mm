@@ -44,15 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-// When C++ exceptions are disabled, the C++ library defines |try| and
-// |catch| so as to allow exception-expecting C++ code to build properly when
-// language support for exceptions is not present.  These macros interfere
-// with the use of |@try| and |@catch| in Objective-C files such as this one.
-// Undefine these macros here, after everything has been #included, since
-// there will be no C++ uses and only Objective-C uses from this point on.
-#undef try
-#undef catch
-
 namespace {
 
 // Given an io_service_t (expected to be of class IOMedia), walks the ancestor

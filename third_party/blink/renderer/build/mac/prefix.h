@@ -60,11 +60,4 @@
 
 #ifdef __OBJC__
 #import <Cocoa/Cocoa.h>
-
-/* When C++ exceptions are disabled, the C++ library defines |try| and |catch|
- * to allow C++ code that expects exceptions to build. These definitions
- * interfere with Objective-C++ uses of Objective-C exception handlers, which
- * use |@try| and |@catch|. As a workaround, undefine these macros. */
-#undef try
-#undef catch
 #endif
