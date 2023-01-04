@@ -1837,7 +1837,7 @@ enum class ToolbarKind {
                                    completion:completion];
 }
 
-// TODO(crbug.com/906525) : Move WebStateListObserving out of
+// TODO(crbug.com/1403956) : Move WebStateListObserving out of
 // BrowserCoordinator.
 #pragma mark - WebStateListObserving
 
@@ -1863,7 +1863,7 @@ enum class ToolbarKind {
   [self stopNTPIfNeeded];
 }
 
-// TODO(crbug.com/906525) : Move out of BrowserCoordinator along with
+// TODO(crbug.com/1403956) : Move out of BrowserCoordinator along with
 // WebStateListObserving.
 #pragma mark - Private WebState management methods
 
@@ -2002,22 +2002,32 @@ enum class ToolbarKind {
   DCHECK(!_prerenderService ||
          !_prerenderService->IsWebStatePrerendered(webState));
 
+  // TODO(crbug.com/1403957): Move AutofillTabHelper logic inside
+  // TabLifecycleMediator.
   if (AutofillTabHelper::FromWebState(webState)) {
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
         self.viewController);
   }
 
+  // TODO(crbug.com/1403959): Move PrintTabHelper logic inside
+  // TabLifecycleMediator.
   if (PrintTabHelper::FromWebState(webState)) {
     PrintTabHelper::FromWebState(webState)->set_printer(self.printController);
   }
 
+  // TODO(crbug.com/1403960): Move RepostFormTabHelper logic inside
+  // TabLifecycleMediator.
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(self);
 
+  // TODO(crbug.com/1403962): Move FollowTabHelper logic inside
+  // TabLifecycleMediator.
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
     followTabHelper->set_follow_iph_presenter(self.followIPHCoordinator);
   }
 
+  // TODO(crbug.com/1403963): Move CaptivePortalTabHelper logic inside
+  // TabLifecycleMediator.
   if (CaptivePortalTabHelper::FromWebState(webState)) {
     TabInsertionBrowserAgent* insertionAgent =
         TabInsertionBrowserAgent::FromBrowser(self.browser);
@@ -2025,15 +2035,21 @@ enum class ToolbarKind {
         insertionAgent);
   }
 
+  // TODO(crbug.com/1403964): Move NewTabPageTabHelper logic inside
+  // TabLifecycleMediator.
   if (NewTabPageTabHelper::FromWebState(webState)) {
     NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
   }
 
+  // TODO(crbug.com/1403967): Move AnnotationsTabHelper logic inside
+  // TabLifecycleMediator.
   if (AnnotationsTabHelper::FromWebState(webState)) {
     AnnotationsTabHelper::FromWebState(webState)->SetBaseViewController(
         self.viewController);
   }
 
+  // TODO(crbug.com/1403968): Move PriceNotificationsTabHelper logic inside
+  // TabLifecycleMediator.
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
@@ -2049,34 +2065,50 @@ enum class ToolbarKind {
     return;
   }
 
+  // TODO(crbug.com/1403957): Move AutofillTabHelper logic inside
+  // TabLifecycleMediator.
   if (AutofillTabHelper::FromWebState(webState)) {
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);
   }
 
+  // TODO(crbug.com/1403959): Move PrintTabHelper logic inside
+  // TabLifecycleMediator.
   if (PrintTabHelper::FromWebState(webState)) {
     PrintTabHelper::FromWebState(webState)->set_printer(nil);
   }
 
+  // TODO(crbug.com/1403960): Move RepostFormTabHelper logic inside
+  // TabLifecycleMediator.
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
+  // TODO(crbug.com/1403962): Move FollowTabHelper logic inside
+  // TabLifecycleMediator.
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
     followTabHelper->set_follow_iph_presenter(nil);
   }
 
+  // TODO(crbug.com/1403963): Move CaptivePortalTabHelper logic inside
+  // TabLifecycleMediator.
   if (CaptivePortalTabHelper::FromWebState(webState)) {
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         nil);
   }
 
+  // TODO(crbug.com/1403964): Move NewTabPageTabHelper logic inside
+  // TabLifecycleMediator.
   if (NewTabPageTabHelper::FromWebState(webState)) {
     NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
   }
 
+  // TODO(crbug.com/1403967): Move AnnotationsTabHelper logic inside
+  // TabLifecycleMediator.
   if (AnnotationsTabHelper::FromWebState(webState)) {
     AnnotationsTabHelper::FromWebState(webState)->SetBaseViewController(nil);
   }
 
+  // TODO(crbug.com/1403968): Move PriceNotificationsTabHelper logic inside
+  // TabLifecycleMediator.
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
