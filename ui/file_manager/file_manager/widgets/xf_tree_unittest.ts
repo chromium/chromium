@@ -11,6 +11,7 @@ import {TreeSelectedChangedEvent, XfTree} from './xf_tree.js';
 import {TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from './xf_tree_item.js';
 
 export function setUp() {
+  document.body.setAttribute('theme', 'refresh23');
   document.body.innerHTML = '<xf-tree></xf-tree>';
 }
 

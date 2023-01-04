@@ -409,7 +409,175 @@ export class XfTreeItem extends XfBase {
 }
 
 function getCSS() {
-  const commonCSS = css`
+  const legacyStyle = css`
+    :host {
+      --xf-tree-item-indent: 22;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      outline: none;
+      padding: 0;
+    }
+
+    li {
+      display: block;
+    }
+
+    li:focus-visible {
+      outline: none;
+    }
+
+    :host([separator])::before {
+      border-bottom: 1px solid var(--cros-separator-color);
+      content: '';
+      display: block;
+      margin: 8px 0;
+      width: 100%;
+    }
+
+    .tree-row {
+      align-items: center;
+      border-inline-start-width: 0 !important;
+      border-radius: 0 20px 20px 0;
+      border: 2px solid transparent;
+      box-sizing: border-box;
+      color: var(--cros-text-color-primary);
+      cursor: pointer;
+      display: flex;
+      height: 32px;
+      margin-inline-end: 6px;
+      padding: 4px 0;
+      position: relative;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    :host-context(html[dir=rtl]) .tree-row {
+      border-radius: 20px 0 0 20px;
+    }
+
+    :host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:hover {
+      background-color: var(--cros-ripple-color);
+    }
+
+    :host([selected]) .tree-row {
+      background-color: var(--cros-highlight-color);
+      color: var(--cros-text-color-selection);
+    }
+
+    :host([disabled]) .tree-row {
+      opacity: var(--cros-disabled-opacity);
+      pointer-events: none;
+    }
+
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:not(:hover):active {
+      background-color: var(--cros-ripple-color);
+    }
+
+    li:focus-visible .tree-row {
+      border: 2px solid var(--cros-focus-ring-color);
+      z-index: 2;
+    }
+
+    :host-context(.pointer-active) .tree-row:not(:active) {
+      cursor: default;
+    }
+
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:not(:active):hover {
+      background-color: unset;
+    }
+
+    .expand-icon {
+      -webkit-mask-image: url(../foreground/images/files/ui/sort_desc.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      background-color: currentColor;
+      flex: none;
+      height: 20px;
+      padding: 6px;
+      position: relative;
+      transform: rotate(-90deg);
+      transition: all 150ms;
+      visibility: hidden;
+      width: 20px;
+    }
+
+    li[aria-expanded] .expand-icon {
+      visibility: visible;
+    }
+
+    :host-context(html[dir=rtl]) .expand-icon {
+      transform: rotate(90deg);
+    }
+
+    :host([expanded]) .expand-icon {
+      transform: rotate(0);
+    }
+
+    .tree-label-icon {
+      --xf-icon-color: var(--cros-icon-color-primary);
+      flex: none;
+      left: -4px;
+      position: relative;
+      right: -4px;
+    }
+
+    :host([selected]) .tree-label-icon {
+      --xf-icon-color: var(--cros-icon-color-selection);
+    }
+
+    .tree-label {
+      display: block;
+      flex: auto;
+      font-weight: 500;
+      margin: 0 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: pre;
+    }
+
+    .rename {
+      background-color: var(--cros-bg-color);
+      border-radius: 2px;
+      border: none;
+      caret-color: var(--cros-textfield-cursor-color-focus);
+      color: var(--cros-text-color-primary);
+      margin: 0 10px;
+      outline: 2px solid var(--cros-focus-ring-color);
+      overflow: hidden;
+    }
+
+    paper-ripple {
+      display: none;
+    }
+
+    /* We need to ensure that even empty labels take up space */
+    .tree-label:empty::after {
+      content: ' ';
+      white-space: pre;
+    }
+
+    .tree-children {
+      display: none;
+    }
+
+    :host([expanded]) .tree-children {
+      display: block;
+    }
+
+    slot[name="trailingIcon"]::slotted(*) {
+      height: 20px;
+      margin: 0;
+      width: 20px;
+    }
+  `;
+
+  const refresh23Style = css`
     :host {
       --xf-tree-item-indent: ${TREE_ITEM_INDENT};
     }
@@ -440,27 +608,50 @@ function getCSS() {
     .tree-row {
       align-items: center;
       border-inline-start-width: 0 !important;
+      border-radius: 20px;
       box-sizing: border-box;
+      color: var(--cros-sys-on_surface);
       cursor: pointer;
       display: flex;
+      height: 40px;
+      margin: 8px 0;
       position: relative;
       user-select: none;
       white-space: nowrap;
     }
 
-    li:focus-visible .tree-row {
-      z-index: 2;
+    :host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:hover {
+      background-color: var(--cros-sys-hover_on_subtle);
+    }
+
+    :host([selected]) .tree-row {
+      background-color: var(--cros-sys-primary);
+      color: var(--cros-sys-on_primary);
     }
 
     :host([disabled]) .tree-row {
+      color: var(--cros-sys-disabled);
       pointer-events: none;
+    }
+
+    li:focus-visible .tree-row {
+      outline: 2px solid var(--cros-sys-focus_ring);
+      outline-offset: 2px;
+      z-index: 2;
+    }
+
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:not(:hover):active {
+      background-color: var(--cros-sys-hover_on_subtle);
     }
 
     :host-context(.pointer-active) .tree-row:not(:active) {
       cursor: default;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing])) li:not(:focus-visible) .tree-row:not(:active):hover {
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:not(:active):hover {
       background-color: unset;
     }
 
@@ -471,6 +662,7 @@ function getCSS() {
       background-color: currentColor;
       flex: none;
       height: 20px;
+      margin-inline-start: 28px;
       position: relative;
       transform: rotate(-90deg);
       transition: all 150ms;
@@ -491,22 +683,51 @@ function getCSS() {
     }
 
     .tree-label-icon {
+      --xf-icon-color: var(--cros-sys-on_surface);
       flex: none;
+    }
+
+    :host([selected]) .tree-label-icon {
+      --xf-icon-color: var(--cros-sys-on_primary)
+    }
+
+    :host([disabled]) .tree-label-icon {
+      --xf-icon-color: var(--cros-sys-disabled);
     }
 
     .tree-label {
       display: block;
       flex: auto;
       font-weight: 500;
+      margin-inline-start: 8px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: pre;
     }
 
     .rename {
+      background-color: var(--cros-sys-app_base);
+      border-radius: 4px;
       border: none;
+      color: var(--cros-sys-on_surface);
+      height: 20px;
       margin: 0 10px;
+      outline: 2px solid var(--cros-sys-focus_ring);
       overflow: hidden;
+      padding: 1px 8px;
+    }
+
+    :host([selected]) .rename {
+      outline: 2px solid var(--cros-sys-inverse_primary);
+    }
+
+    .rename::selection {
+      background-color: var(--cros-sys-highlight_text)
+    }
+
+    paper-ripple {
+      border-radius: 20px;
+      color: var(--cros-sys-ripple_primary);
     }
 
     /* We need to ensure that even empty labels take up space */
@@ -528,158 +749,9 @@ function getCSS() {
       margin: 0;
       width: 20px;
     }
-  `;
-
-  const legacyStyle = css`
-    :host {
-      --xf-tree-item-indent: 22;
-    }
-
-    .tree-row {
-      border: 2px solid transparent;
-      border-radius: 0 20px 20px 0;
-      color: var(--cros-text-color-primary);
-      height: 32px;
-      margin-inline-end: 6px;
-      padding: 4px 0;
-    }
-
-    :host-context(html[dir=rtl]) .tree-row {
-      border-radius: 20px 0 0 20px;
-    }
-
-    :host(:not([selected]):not([disabled]):not([editing]))
-        li:not(:focus-visible) .tree-row:hover {
-      background-color: var(--cros-ripple-color);
-    }
-
-    :host([selected]) .tree-row {
-      background-color: var(--cros-highlight-color);
-      color: var(--cros-text-color-selection);
-    }
-
-    :host([disabled]) .tree-row {
-      opacity: var(--cros-disabled-opacity);
-    }
-
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
-        li:not(:focus-visible) .tree-row:not(:hover):active {
-      background-color: var(--cros-ripple-color);
-    }
-
-    li:focus-visible .tree-row {
-      border: 2px solid var(--cros-focus-ring-color);
-    }
-
-    .expand-icon {
-      padding: 6px;
-    }
-
-    .tree-label-icon {
-      --xf-icon-color: var(--cros-icon-color-primary);
-      left: -4px;
-      position: relative;
-      right: -4px;
-    }
-
-    :host([selected]) .tree-label-icon {
-      --xf-icon-color: var(--cros-icon-color-selection);
-    }
-
-    .tree-label {
-      margin: 0 12px;
-    }
-
-    .rename {
-      background-color: var(--cros-bg-color);
-      border-radius: 2px;
-      caret-color: var(--cros-textfield-cursor-color-focus);
-      color: var(--cros-text-color-primary);
-      outline: 2px solid var(--cros-focus-ring-color);
-    }
-
-    paper-ripple {
-      display: none;
-    }
-  `;
-
-  const refresh23Style = css`
-    .tree-row {
-      border-radius: 20px;
-      color: var(--cros-sys-on_surface);
-      height: 40px;
-      margin: 8px 0;
-    }
-
-    :host(:not([selected]):not([disabled]):not([editing]))
-        li:not(:focus-visible) .tree-row:hover {
-      background-color: var(--cros-sys-hover_on_subtle);
-    }
-
-    :host([selected]) .tree-row {
-      background-color: var(--cros-sys-primary);
-      color: var(--cros-sys-on_primary);
-    }
-
-    :host([disabled]) .tree-row {
-      color: var(--cros-sys-disabled);
-    }
-
-    li:focus-visible .tree-row {
-      outline: 2px solid var(--cros-sys-focus_ring);
-      outline-offset: 2px;
-    }
-
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
-        li:not(:focus-visible) .tree-row:not(:hover):active {
-      background-color: var(--cros-sys-hover_on_subtle);
-    }
-
-    .expand-icon {
-      margin-inline-start: 28px;
-    }
-
-    .tree-label-icon {
-      --xf-icon-color: var(--cros-sys-on_surface);
-    }
-
-    :host([selected]) .tree-label-icon {
-      --xf-icon-color: var(--cros-sys-on_primary)
-    }
-
-    :host([disabled]) .tree-label-icon {
-      --xf-icon-color: var(--cros-sys-disabled);
-    }
-
-    .tree-label {
-      margin-inline-start: 8px;
-    }
-
-    .rename {
-      background-color: var(--cros-sys-app_base);
-      border-radius: 4px;
-      color: var(--cros-sys-on_surface);
-      height: 20px;
-      padding: 1px 8px;
-      outline: 2px solid var(--cros-sys-focus_ring);
-    }
-
-    :host([selected]) .rename {
-      outline: 2px solid var(--cros-sys-inverse_primary);
-    }
-
-    .rename::selection {
-      background-color: var(--cros-sys-highlight_text)
-    }
-
-    paper-ripple {
-      border-radius: 20px;
-      color: var(--cros-sys-ripple_primary);
-    }
-  `;
+    `;
 
   return [
-    commonCSS,
     addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
     addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
   ];

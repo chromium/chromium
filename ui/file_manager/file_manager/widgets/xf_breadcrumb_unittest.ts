@@ -15,6 +15,7 @@ import {BreadcrumbClickedEvent, XfBreadcrumb} from './xf_breadcrumb.js';
  * path using the element.path getter.
  */
 export function setUp() {
+  document.body.setAttribute('theme', 'refresh23');
   document.body.innerHTML = '<xf-breadcrumb></xf-breadcrumb>';
   const breadcrumb = document.querySelector('xf-breadcrumb');
   assertEquals('', breadcrumb!.path);

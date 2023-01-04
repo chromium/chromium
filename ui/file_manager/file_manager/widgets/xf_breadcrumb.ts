@@ -265,7 +265,7 @@ export class XfBreadcrumb extends XfBase {
 }
 
 function getCSS() {
-  const commonCSS = css`
+  const legacyStyle = css`
     :host([hidden]),
     [hidden] {
       display: none !important;
@@ -286,13 +286,24 @@ function getCSS() {
       white-space: nowrap;
     }
 
+    /* No paper ripple for path button in Legacy. */
+    button paper-ripple {
+      display: none;
+    }
+
+    #elider-menu button paper-ripple {
+      display: block;
+    }
+
     span[caret] {
       -webkit-mask-image: url(/foreground/images/files/ui/arrow_right.svg);
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-icon-color-secondary);
       display: inline-flex;
       height: 20px;
       min-width: 20px;
+      padding: 8px 0;
       width: 20px;
     }
 
@@ -304,6 +315,7 @@ function getCSS() {
       /* don't use browser's background-color. */
       background-color: unset;
       border: none;
+      color: var(--cros-text-color-primary);
       cursor: pointer;
       display: inline-block;
       position: relative;
@@ -336,6 +348,7 @@ function getCSS() {
       -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-icon-color-primary);
       height: 48px;
       margin-inline-start: var(--tap-target-shift);
       margin-top: var(--tap-target-shift);
@@ -349,53 +362,10 @@ function getCSS() {
       border-radius: 50%;
       display: inline-flex;
       height: 36px;
+      margin: 2px 0;
       min-width: 36px;
       padding: 0;
       width: 36px;
-    }
-
-    #elider-menu button {
-      display: block;
-      font-family: 'Roboto';
-      font-size: 13px;
-      max-width: min(288px, 40vw);
-      min-width: 192px;  /* menu width */
-      padding: 0 16px;
-      position: relative;
-      text-align: start;
-    }
-
-    /** Reset the hover color when using keyboard to navigate the menu items. */
-    :host-context(.focus-outline-visible) #elider-menu button:hover {
-      background-color: unset;
-    }
-  `;
-
-  const legacyStyle = css`
-    /* No paper ripple for path button in Legacy. */
-    button paper-ripple {
-      display: none;
-    }
-
-    #elider-menu button paper-ripple {
-      display: block;
-    }
-
-    span[caret] {
-      background-color: var(--cros-icon-color-secondary);
-      padding: 8px 0;
-    }
-
-    span[elider] {
-      background-color: var(--cros-icon-color-primary);
-    }
-
-    button {
-      color: var(--cros-text-color-primary);
-    }
-
-    button[elider] {
-      margin: 2px 0;
     }
 
     :host > button:not([elider]) {
@@ -435,14 +405,28 @@ function getCSS() {
       background-color: var(--cros-icon-button-pressed-color);
     }
 
+
     #elider-menu button {
+      color: var(--cros-menu-label-color);
+      display: block;
+      font-family: 'Roboto';
+      font-size: 13px;
       height: 32px;
       margin: 0;
-      color: var(--cros-menu-label-color);
+      max-width: min(288px, 40vw);
+      min-width: 192px;  /* menu width */
+      padding: 0 16px;
+      position: relative;
+      text-align: start;
     }
 
     :host-context(.focus-outline-visible) #elider-menu button:focus {
       background-color: var(--cros-menu-item-background-hover);
+    }
+
+    /** Reset the hover color when using keyboard to navigate the menu items. */
+    :host-context(.focus-outline-visible) #elider-menu button:hover {
+      background-color: unset;
     }
 
     cr-action-menu {
@@ -453,16 +437,95 @@ function getCSS() {
   `;
 
   const refresh23Style = css`
-    span[caret] {
-      background-color: var(--cros-sys-secondary);
+    :host([hidden]),
+    [hidden] {
+      display: none !important;
     }
 
-    span[elider] {
+    :host-context(html.col-resize) > * {
+      cursor: unset !important;
+    }
+
+    :host {
+      align-items: center;
+      display: flex;
+      font-family: 'Roboto Medium';
+      font-size: 14px;
+      outline: none;
+      overflow: hidden;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    span[caret] {
+      -webkit-mask-image: url(/foreground/images/files/ui/arrow_right.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
       background-color: var(--cros-sys-secondary);
+      display: inline-flex;
+      height: 20px;
+      min-width: 20px;
+      width: 20px;
+    }
+
+    :host-context(html[dir='rtl']) span[caret] {
+      transform: scaleX(-1);
     }
 
     button {
+      /* don't use browser's background-color. */
+      background-color: unset;
+      border: none;
       color: var(--cros-sys-secondary);
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+
+      /* don't use browser's button font. */
+      font: inherit;
+      margin: 0;
+
+      /* elide wide text */
+      max-width: 200px;
+      /* text rendering debounce: fix a minimum width. */
+      min-width: calc(12px + 1em);
+      outline: none;
+      overflow: hidden;
+
+      /* text rendering debounce: center. */
+      text-align: center;
+      text-overflow: ellipsis;
+    }
+
+    button[disabled] {
+      cursor: default;
+      font-weight: 500;
+      margin-inline-end: 4px;
+      pointer-events: none;
+    }
+
+    span[elider] {
+      --tap-target-shift: -6px;
+      -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-sys-secondary);
+      height: 48px;
+      margin-inline-start: var(--tap-target-shift);
+      margin-top: var(--tap-target-shift);
+      min-width: 48px;
+      position: relative;
+      transform: rotate(90deg);
+      width: 48px;
+    }
+
+    button[elider] {
+      border-radius: 50%;
+      display: inline-flex;
+      height: 36px;
+      min-width: 36px;
+      padding: 0;
+      width: 36px;
     }
 
     :host > button:not([elider]) {
@@ -503,13 +566,26 @@ function getCSS() {
     }
 
     #elider-menu button {
-      height: 36px;
       color: var(--cros-sys-on_surface);
+      display: block;
+      font-family: 'Roboto';
+      font-size: 13px;
+      height: 36px;
+      max-width: min(288px, 40vw);
+      min-width: 192px;  /* menu width */
+      padding: 0 16px;
+      position: relative;
+      text-align: start;
     }
 
     :host-context(.focus-outline-visible) #elider-menu button:focus {
       outline: 2px solid var(--cros-sys-focus_ring);
       outline-offset: -2px;
+    }
+
+    /** Reset the hover color when using keyboard to navigate the menu items. */
+    :host-context(.focus-outline-visible) #elider-menu button:hover {
+      background-color: unset;
     }
 
     cr-action-menu {
@@ -522,7 +598,6 @@ function getCSS() {
   `;
 
   return [
-    commonCSS,
     addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
     addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
   ];

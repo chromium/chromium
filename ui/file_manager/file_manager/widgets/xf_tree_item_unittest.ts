@@ -12,6 +12,7 @@ import {TREE_ITEM_INDENT, TreeItemCollapsedEvent, TreeItemExpandedEvent, TreeIte
 
 /** Construct a single tree item. */
 async function setUpSingleTreeItem() {
+  document.body.setAttribute('theme', 'refresh23');
   document.body.innerHTML =
       '<xf-tree><xf-tree-item id="item1" label="item1"></xf-tree-item></xf-tree>';
   const element = document.querySelector('xf-tree-item');
