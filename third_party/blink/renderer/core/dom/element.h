@@ -585,6 +585,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual void CloneNonAttributePropertiesFrom(const Element&,
                                                CloneChildrenFlag) {}
 
+  // NOTE: This shadows Node::GetComputedStyle().
+  // The definition is in node_computed_style.h.
+  inline const ComputedStyle* GetComputedStyle() const;
+
   void AttachLayoutTree(AttachContext&) override;
   void DetachLayoutTree(bool performing_reattach = false) override;
 

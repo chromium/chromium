@@ -41,7 +41,6 @@ class FlatTreeNodeData;
 class LayoutObject;
 class MutationObserverRegistration;
 class NodeListsNodeData;
-class NodeRenderingData;
 class NodeRareData;
 class ScrollTimeline;
 
@@ -80,21 +79,44 @@ class NodeData : public GarbageCollected<NodeData> {
     kNumberOfDynamicRestyleFlags = 14
   };
 
+  // NOTE: This can only distinguish between NodeRareData and ElementRareData,
+  // not a regular NodeData (because we never need to do that).
   enum class ClassType : uint8_t {
     kNodeRareData,
     kElementRareData,
-    kNodeRenderingData,
-    kLastType = kNodeRenderingData
+    kLastType = kElementRareData,
   };
 
-  virtual ~NodeData() = default;
+  virtual ~NodeData();
   virtual void Trace(Visitor*) const;
+
+  CORE_EXPORT NodeData(LayoutObject*,
+                       scoped_refptr<const ComputedStyle> computed_style);
+  NodeData(const NodeData&) = delete;
+  NodeData(NodeData&&);
+
+  LayoutObject* GetLayoutObject() const { return layout_object_; }
+  void SetLayoutObject(LayoutObject* layout_object) {
+    DCHECK_NE(&SharedEmptyData(), this);
+    layout_object_ = layout_object;
+  }
+
+  const ComputedStyle* GetComputedStyle() const {
+    return computed_style_.get();
+  }
+  void SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style);
+
+  void SetIsPseudoElement(bool value) { is_pseudo_element_ = value; }
+  bool IsPseudoElement() const { return is_pseudo_element_; }
+
+  static NodeData& SharedEmptyData();
+  bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
 
  protected:
   using BitField = WTF::ConcurrentlyReadBitField<uint16_t>;
   using RestyleFlags =
       BitField::DefineFirstValue<uint16_t, kNumberOfDynamicRestyleFlags>;
-  static constexpr size_t kClassTypeBits = 2;
+  static constexpr size_t kClassTypeBits = 1;
   static_assert(static_cast<size_t>(ClassType::kLastType) <
                     ((size_t{1} << kClassTypeBits)),
                 "Too many subtypes to fit into bitfield.");
@@ -103,32 +125,19 @@ class NodeData : public GarbageCollected<NodeData> {
                                     kClassTypeBits,
                                     WTF::BitFieldValueConstness::kConst>;
 
-  explicit NodeData(ClassType sub_type)
-      : connected_frame_count_(0),
-        element_flags_(0),
-        is_pseudo_element_(false),
-        bit_field_(RestyleFlags::encode(0) |
-                   ClassTypeData::encode(static_cast<uint8_t>(sub_type))) {}
-
   ClassType GetClassType() const {
     return static_cast<ClassType>(bit_field_.get_concurrently<ClassTypeData>());
   }
 
-  uint16_t connected_frame_count_ : kConnectedFrameCountBits;
-  uint16_t element_flags_ : kNumberOfElementFlags;
-  bool is_pseudo_element_ : 1;
+ protected:
+  scoped_refptr<const ComputedStyle> computed_style_;
+  Member<LayoutObject> layout_object_;
   BitField bit_field_;
+  bool is_pseudo_element_ = false;
+  // 8 free bits here (or 16, if moving is_pseudo_element_ into bit_field_).
 
   friend struct DowncastTraits<NodeRareData>;
-  friend struct DowncastTraits<NodeRenderingData>;
   friend struct DowncastTraits<ElementRareData>;
-};
-
-template <>
-struct DowncastTraits<NodeRenderingData> {
-  static bool AllowFrom(const NodeData& node_data) {
-    return node_data.GetClassType() == NodeData::ClassType::kNodeRenderingData;
-  }
 };
 
 template <>
@@ -145,46 +154,17 @@ struct DowncastTraits<ElementRareData> {
   }
 };
 
-class CORE_EXPORT NodeRenderingData final : public NodeData {
- public:
-  NodeRenderingData(LayoutObject*,
-                    scoped_refptr<const ComputedStyle> computed_style);
-  NodeRenderingData(const NodeRenderingData&) = delete;
-  NodeRenderingData& operator=(const NodeRenderingData&) = delete;
-
-  LayoutObject* GetLayoutObject() const { return layout_object_; }
-  void SetLayoutObject(LayoutObject* layout_object) {
-    DCHECK_NE(&SharedEmptyData(), this);
-    layout_object_ = layout_object;
-  }
-
-  const ComputedStyle* GetComputedStyle() const {
-    return computed_style_.get();
-  }
-  void SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style);
-
-  static NodeRenderingData& SharedEmptyData();
-  bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
-
-  void Trace(Visitor*) const override;
-
- private:
-  Member<LayoutObject> layout_object_;
-  scoped_refptr<const ComputedStyle> computed_style_;
-};
-
 class NodeRareData : public NodeData {
  public:
-  explicit NodeRareData(NodeRenderingData* node_layout_data)
-      : NodeRareData(ClassType::kNodeRareData, node_layout_data) {}
+  explicit NodeRareData(NodeData&& node_layout_data)
+      : NodeData(std::move(node_layout_data)),
+        connected_frame_count_(0),
+        element_flags_(0) {
+    bit_field_.set<ClassTypeData>(
+        ClassTypeData::encode(static_cast<uint8_t>(ClassType::kNodeRareData)));
+  }
   NodeRareData(const NodeRareData&) = delete;
   NodeRareData& operator=(const NodeRareData&) = delete;
-
-  NodeRenderingData* GetNodeRenderingData() const { return node_layout_data_; }
-  void SetNodeRenderingData(NodeRenderingData* node_layout_data) {
-    DCHECK(node_layout_data);
-    node_layout_data_ = node_layout_data;
-  }
 
   void ClearNodeLists() { node_lists_.Clear(); }
   NodeListsNodeData* NodeLists() const { return node_lists_.Get(); }
@@ -245,18 +225,20 @@ class NodeRareData : public NodeData {
   void UnregisterScrollTimeline(ScrollTimeline*);
   void InvalidateAssociatedAnimationEffects();
 
-  void SetIsPseudoElement(bool value) { is_pseudo_element_ = value; }
-  bool IsPseudoElement() const { return is_pseudo_element_; }
-
   void Trace(blink::Visitor*) const override;
 
  protected:
-  NodeRareData(ClassType class_type, NodeRenderingData* node_layout_data)
-      : NodeData(class_type), node_layout_data_(node_layout_data) {
-    CHECK_NE(node_layout_data, nullptr);
+  NodeRareData(ClassType class_type, NodeData&& node_layout_data)
+      : NodeData(std::move(node_layout_data)),
+        connected_frame_count_(0),
+        element_flags_(0) {
+    bit_field_.set<ClassTypeData>(
+        ClassTypeData::encode(static_cast<uint16_t>(class_type)));
   }
 
-  Member<NodeRenderingData> node_layout_data_;
+  uint16_t connected_frame_count_ : kConnectedFrameCountBits;
+  uint16_t element_flags_ : kNumberOfElementFlags;
+  // 16 free bits here.
 
  private:
   NodeListsNodeData& CreateNodeLists();

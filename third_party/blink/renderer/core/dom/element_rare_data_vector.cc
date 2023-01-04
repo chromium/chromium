@@ -35,8 +35,7 @@
 
 namespace blink {
 
-ElementRareDataVector::ElementRareDataVector(
-    NodeRenderingData* node_layout_data)
+ElementRareDataVector::ElementRareDataVector(NodeData* node_layout_data)
     : ElementRareDataBase(node_layout_data) {}
 
 ElementRareDataVector::~ElementRareDataVector() {

@@ -46,7 +46,8 @@
 namespace blink {
 
 struct SameSizeAsNodeRareData : NodeData {
-  Member<void*> member_[5];
+  uint16_t bit_fields_;
+  Member<void*> member_[4];
 };
 
 ASSERT_SIZE(NodeRareData, SameSizeAsNodeRareData);
@@ -78,30 +79,31 @@ void NodeMutationObserverData::RemoveRegistration(
   registry_.EraseAt(registry_.Find(registration));
 }
 
-void NodeData::Trace(Visitor* visitor) const {}
-
-NodeRenderingData::NodeRenderingData(
-    LayoutObject* layout_object,
-    scoped_refptr<const ComputedStyle> computed_style)
-    : NodeData(ClassType::kNodeRenderingData),
+NodeData::NodeData(LayoutObject* layout_object,
+                   scoped_refptr<const ComputedStyle> computed_style)
+    : computed_style_(computed_style),
       layout_object_(layout_object),
-      computed_style_(computed_style) {}
+      bit_field_(RestyleFlags::encode(0) |
+                 ClassTypeData::encode(static_cast<uint16_t>(
+                     ClassType::kNodeRareData))  // Just pick any.
+      ) {}
 
-void NodeRenderingData::SetComputedStyle(
+NodeData::NodeData(blink::NodeData&&) = default;
+NodeData::~NodeData() = default;
+
+void NodeData::SetComputedStyle(
     scoped_refptr<const ComputedStyle> computed_style) {
   DCHECK_NE(&SharedEmptyData(), this);
   computed_style_ = computed_style;
 }
 
-NodeRenderingData& NodeRenderingData::SharedEmptyData() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<NodeRenderingData>, shared_empty_data,
-      (MakeGarbageCollected<NodeRenderingData>(nullptr, nullptr)));
+NodeData& NodeData::SharedEmptyData() {
+  DEFINE_STATIC_LOCAL(Persistent<NodeData>, shared_empty_data,
+                      (MakeGarbageCollected<NodeData>(nullptr, nullptr)));
   return *shared_empty_data;
 }
-void NodeRenderingData::Trace(Visitor* visitor) const {
+void NodeData::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
-  NodeData::Trace(visitor);
 }
 
 void NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {
@@ -127,7 +129,6 @@ void NodeRareData::InvalidateAssociatedAnimationEffects() {
 void NodeRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(mutation_observer_data_);
   visitor->Trace(flat_tree_node_data_);
-  visitor->Trace(node_layout_data_);
   visitor->Trace(node_lists_);
   visitor->Trace(scroll_timelines_);
   NodeData::Trace(visitor);

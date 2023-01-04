@@ -121,7 +121,7 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
   }
 
  public:
-  explicit ElementRareDataVector(NodeRenderingData*);
+  explicit ElementRareDataVector(NodeData*);
   ~ElementRareDataVector() override;
 
   void SetPseudoElement(

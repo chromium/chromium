@@ -42,8 +42,9 @@ enum class ElementFlags;
 
 class ElementRareDataBase : public NodeRareData {
  public:
-  explicit ElementRareDataBase(NodeRenderingData* node_layout_data)
-      : NodeRareData(ClassType::kElementRareData, node_layout_data) {}
+  explicit ElementRareDataBase(NodeData* node_layout_data)
+      : NodeRareData(ClassType::kElementRareData,
+                     std::move(*node_layout_data)) {}
 
   virtual void SetPseudoElement(
       PseudoId,

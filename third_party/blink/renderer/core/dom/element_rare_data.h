@@ -63,7 +63,7 @@ class ResizeObserver;
 
 class ElementRareData final : public ElementRareDataBase {
  public:
-  explicit ElementRareData(NodeRenderingData*);
+  explicit ElementRareData(NodeData*);
   ~ElementRareData() override;
 
   void SetPseudoElement(

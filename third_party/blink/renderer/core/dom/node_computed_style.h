@@ -34,10 +34,7 @@ namespace blink {
 
 inline const ComputedStyle* Node::GetComputedStyle() const {
   if (IsElementNode()) {
-    return HasRareData() ? DataAsNodeRareData()
-                               ->GetNodeRenderingData()
-                               ->GetComputedStyle()
-                         : DataAsNodeRenderingData()->GetComputedStyle();
+    return GetComputedStyleAssumingElement();
   }
   // Text nodes and Document.
   if (LayoutObject* layout_object = GetLayoutObject())
@@ -49,6 +46,15 @@ inline const ComputedStyle& Node::ComputedStyleRef() const {
   const ComputedStyle* style = GetComputedStyle();
   DCHECK(style);
   return *style;
+}
+
+inline const ComputedStyle* Node::GetComputedStyleAssumingElement() const {
+  DCHECK(IsElementNode());
+  return data_->GetComputedStyle();
+}
+
+inline const ComputedStyle* Element::GetComputedStyle() const {
+  return GetComputedStyleAssumingElement();
 }
 
 }  // namespace blink

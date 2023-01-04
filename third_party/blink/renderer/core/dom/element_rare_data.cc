@@ -51,7 +51,7 @@ struct SameSizeAsElementRareData : ElementRareDataBase {
   wtf_size_t anchored_popover_count;
 };
 
-ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
+ElementRareData::ElementRareData(NodeData* node_layout_data)
     : ElementRareDataBase(node_layout_data), class_list_(nullptr) {}
 
 ElementRareData::~ElementRareData() {

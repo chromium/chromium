@@ -20,7 +20,7 @@ class ElementRareDataVectorTest : public testing::Test {
  public:
   void SetUp() override {
     rare_data_ = MakeGarbageCollected<ElementRareDataVector>(
-        MakeGarbageCollected<NodeRenderingData>(nullptr, nullptr));
+        MakeGarbageCollected<NodeData>(nullptr, nullptr));
   }
 
   void SetField(unsigned field_id, ElementRareDataField* field) {
