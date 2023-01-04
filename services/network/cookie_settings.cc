@@ -213,6 +213,8 @@ CookieSettings::GetCookieSettingWithMetadata(
 
   // Default to allowing cookies.
   ContentSetting cookie_setting = CONTENT_SETTING_ALLOW;
+  net::cookie_util::StorageAccessResult storage_access_result =
+      net::cookie_util::StorageAccessResult::ACCESS_ALLOWED;
   ThirdPartyBlockingOutcome third_party_blocking_outcome =
       ThirdPartyBlockingOutcome::kIrrelevant;
 
@@ -224,8 +226,6 @@ CookieSettings::GetCookieSettingWithMetadata(
     found_explicit_setting = IsExplicitSetting(*match);
   }
 
-  bool allowed_by_storage_access_grant = false;
-  bool allowed_by_override = false;
   if (cookie_setting != CONTENT_SETTING_BLOCK && !found_explicit_setting) {
     // Check for should block third party.
     if (block_third_party_cookies_ && is_third_party_request &&
@@ -236,12 +236,14 @@ CookieSettings::GetCookieSettingWithMetadata(
               FindMatchingSetting(url, first_party_url, storage_access_grants_);
           ShouldConsiderStorageAccessGrants(query_reason) && match &&
           match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
-        allowed_by_storage_access_grant = true;
+        storage_access_result = net::cookie_util::StorageAccessResult::
+            ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
       } else if (overrides.Has(
                      net::CookieSettingOverride::kForceThirdPartyByUser)) {
         cookie_setting = CONTENT_SETTING_ALLOW;
         third_party_blocking_outcome = ThirdPartyBlockingOutcome::kForceAllowed;
-        allowed_by_override = true;
+        storage_access_result =
+            net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
       } else {
         cookie_setting = CONTENT_SETTING_BLOCK;
         third_party_blocking_outcome =
@@ -251,19 +253,10 @@ CookieSettings::GetCookieSettingWithMetadata(
   }
 
   if (cookie_setting == CONTENT_SETTING_BLOCK) {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
-  } else if (allowed_by_storage_access_grant) {
-    FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                   ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
-
-  } else if (allowed_by_override) {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
-  } else {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
+    storage_access_result =
+        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
+  FireStorageAccessHistogram(storage_access_result);
 
   return {cookie_setting, third_party_blocking_outcome};
 }
