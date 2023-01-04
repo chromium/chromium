@@ -226,11 +226,12 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool NetworkServiceNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options) {
+    net::CookieOptions* options,
+    net::CookieSettingOverrides overrides) {
   bool allowed =
       network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
           cookie, request.url(), request.site_for_cookies(),
-          request.isolation_info().top_frame_origin());
+          request.isolation_info().top_frame_origin(), overrides);
   if (!allowed)
     return false;
   URLLoader* url_loader = URLLoader::ForRequest(request);

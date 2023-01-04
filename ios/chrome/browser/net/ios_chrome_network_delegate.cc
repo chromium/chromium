@@ -24,6 +24,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request.h"
 
@@ -95,15 +96,16 @@ bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool IOSChromeNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options) {
+    net::CookieOptions* options,
+    net::CookieSettingOverrides overrides) {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_)
     return true;
 
   return cookie_settings_->IsFullCookieAccessAllowed(
       request.url(), request.site_for_cookies(),
-      request.isolation_info().top_frame_origin(),
-      net::CookieSettingOverrides(), QueryReason::kCookies);
+      request.isolation_info().top_frame_origin(), overrides,
+      QueryReason::kCookies);
 }
 
 net::NetworkDelegate::PrivacySetting

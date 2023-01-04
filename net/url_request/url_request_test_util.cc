@@ -18,6 +18,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
@@ -524,7 +525,8 @@ NetworkDelegate::PrivacySetting TestNetworkDelegate::OnForcePrivacyMode(
 
 bool TestNetworkDelegate::OnCanSetCookie(const URLRequest& request,
                                          const net::CanonicalCookie& cookie,
-                                         CookieOptions* options) {
+                                         CookieOptions* options,
+                                         CookieSettingOverrides overrides) {
   bool allow = true;
   if (cookie_options_bit_mask_ & NO_SET_COOKIE)
     allow = false;
@@ -570,7 +572,8 @@ FilteringTestNetworkDelegate::~FilteringTestNetworkDelegate() = default;
 bool FilteringTestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
-    CookieOptions* options) {
+    CookieOptions* options,
+    CookieSettingOverrides overrides) {
   // Filter out cookies with the same name as |cookie_name_filter_| and
   // combine with |allowed_from_caller|.
   bool allowed = cookie.Name() != cookie_name_filter_;
@@ -581,7 +584,8 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
     ++blocked_set_cookie_count_;
 
   // Call the nested delegate's method first to avoid a short circuit.
-  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options) &&
+  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options,
+                                             overrides) &&
          allowed;
 }
 

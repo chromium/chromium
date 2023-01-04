@@ -326,7 +326,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       CookieSettingOverrides overrides) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options) override;
+                      CookieOptions* options,
+                      CookieSettingOverrides overrides) override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
       const GURL& target_url,
@@ -392,7 +393,8 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options) override;
+                      CookieOptions* options,
+                      CookieSettingOverrides overrides) override;
 
   void SetCookieFilter(std::string filter) {
     cookie_name_filter_ = std::move(filter);

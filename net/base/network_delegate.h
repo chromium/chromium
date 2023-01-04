@@ -87,7 +87,8 @@ class NET_EXPORT NetworkDelegate {
       CookieAccessResultList& excluded_cookies);
   bool CanSetCookie(const URLRequest& request,
                     const net::CanonicalCookie& cookie,
-                    CookieOptions* options);
+                    CookieOptions* options,
+                    CookieSettingOverrides overrides);
 
   // PrivacySetting is kStateDisallowed iff the given |url| has to be
   // requested over connection that is not tracked by the server.
@@ -275,7 +276,8 @@ class NET_EXPORT NetworkDelegate {
   // LOAD_DO_NOT_SAVE_COOKIES is specified.
   virtual bool OnCanSetCookie(const URLRequest& request,
                               const CanonicalCookie& cookie,
-                              CookieOptions* options) = 0;
+                              CookieOptions* options,
+                              CookieSettingOverrides overrides) = 0;
 
   virtual PrivacySetting OnForcePrivacyMode(
       const GURL& url,

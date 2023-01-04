@@ -134,7 +134,8 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
 
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options) override {
+                      net::CookieOptions* options,
+                      net::CookieSettingOverrides overrides) override {
     // Disallow saving cookies by default.
     return false;
   }

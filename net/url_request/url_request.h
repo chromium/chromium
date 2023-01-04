@@ -912,7 +912,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Otherwise, cookies can be used unless SetDefaultCookiePolicyToBlock() has
   // been called.
   bool CanSetCookie(const net::CanonicalCookie& cookie,
-                    CookieOptions* options) const;
+                    CookieOptions* options,
+                    CookieSettingOverrides overrides) const;
 
   // Called just before calling a delegate that may block a request. |type|
   // should be the delegate's event type,

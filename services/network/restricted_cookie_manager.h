@@ -22,6 +22,7 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -211,6 +212,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void OnGotFirstPartySetMetadataForTesting(
       base::OnceClosure done_closure,
       net::FirstPartySetMetadata first_party_set_metadata);
+
+  // Computes the CookieSettingOverrides to be used by this instance.
+  net::CookieSettingOverrides GetCookieSettingOverrides() const;
 
   const mojom::RestrictedCookieManagerRole role_;
   const raw_ptr<net::CookieStore> cookie_store_;

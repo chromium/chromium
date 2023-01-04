@@ -24,6 +24,7 @@
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -398,8 +399,9 @@ void URLRequestJob::NotifySSLCertificateError(int net_error,
 }
 
 bool URLRequestJob::CanSetCookie(const net::CanonicalCookie& cookie,
-                                 CookieOptions* options) const {
-  return request_->CanSetCookie(cookie, options);
+                                 CookieOptions* options,
+                                 CookieSettingOverrides overrides) const {
+  return request_->CanSetCookie(cookie, options, overrides);
 }
 
 void URLRequestJob::NotifyHeadersComplete() {

@@ -4322,11 +4322,42 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
       net::COOKIE_PRIORITY_LOW, false);
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, nullptr, net::CookieSettingOverrides()));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, nullptr, net::CookieSettingOverrides()));
+}
+
+TEST_F(NetworkContextTest, CanSetCookieFalseIf3PCookiesBlocked) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  std::unique_ptr<net::URLRequest> request =
+      context->CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
+      base::Time(), base::Time(), false, false, net::CookieSameSite::LAX_MODE,
+      net::COOKIE_PRIORITY_LOW, false);
+
+  ASSERT_TRUE(
+      network_context->url_request_context()->network_delegate()->CanSetCookie(
+          *request, *cookie, nullptr, net::CookieSettingOverrides()));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+
+  EXPECT_FALSE(
+      network_context->url_request_context()->network_delegate()->CanSetCookie(
+          *request, *cookie, nullptr, net::CookieSettingOverrides()));
+
+  // The kFirstThirdPartyByUser override can unblock access.
+  EXPECT_TRUE(
+      network_context->url_request_context()->network_delegate()->CanSetCookie(
+          *request, *cookie, nullptr,
+          net::CookieSettingOverrides(
+              net::CookieSettingOverride::kForceThirdPartyByUser)));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
@@ -4344,7 +4375,7 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, nullptr, net::CookieSettingOverrides()));
 }
 
 TEST_F(NetworkContextTest,
@@ -4433,7 +4464,7 @@ TEST_F(NetworkContextTest, AnnotateAndMoveUserBlockedCookies_3PCookiesBlocked) {
                            /*top_frame_entry=*/nullptr),
                        net::CookieSettingOverrides(), included, excluded));
 
-  // `kForce unblocks access.
+  // `kForceThirdPartyByUser` unblocks access.
   EXPECT_TRUE(network_context->url_request_context()
                   ->network_delegate()
                   ->AnnotateAndMoveUserBlockedCookies(

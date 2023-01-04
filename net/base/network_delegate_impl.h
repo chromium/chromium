@@ -78,7 +78,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options) override;
+                      CookieOptions* options,
+                      CookieSettingOverrides overrides) override;
 
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,

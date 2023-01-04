@@ -118,21 +118,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if the given cookie is accessible according to user
   // cookie-blocking settings. Assumes that the cookie is otherwise accessible
   // (i.e. that the cookie is otherwise valid with no other exclusion reasons).
-  // DEPRECATED: Use IsCookieAccessible(CanonicalCookie, GURL, SiteForCookies,
-  // Origin, bool).
-  // TODO(crbug.com/1386190): Update callers and remove.
-  bool IsCookieAccessible(
-      const net::CanonicalCookie& cookie,
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const {
-    return IsCookieAccessible(cookie, url, site_for_cookies, top_frame_origin,
-                              net::CookieSettingOverrides());
-  }
-
-  // Returns true if the given cookie is accessible according to user
-  // cookie-blocking settings. Assumes that the cookie is otherwise accessible
-  // (i.e. that the cookie is otherwise valid with no other exclusion reasons).
   bool IsCookieAccessible(const net::CanonicalCookie& cookie,
                           const GURL& url,
                           const net::SiteForCookies& site_for_cookies,

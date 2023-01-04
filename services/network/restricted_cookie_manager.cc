@@ -30,6 +30,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -287,7 +288,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // being deleted at a later time, which can happen due to eviction or due to
     // the user explicitly deleting all cookies.
     if (!restricted_cookie_manager_->cookie_settings().IsCookieAccessible(
-            change.cookie, url_, site_for_cookies_, top_frame_origin_)) {
+            change.cookie, url_, site_for_cookies_, top_frame_origin_,
+            restricted_cookie_manager_->GetCookieSettingOverrides())) {
       return;
     }
 
@@ -549,7 +551,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
 
   // TODO(morlovich): Try to validate site_for_cookies as well.
   bool blocked = !cookie_settings_->IsCookieAccessible(
-      cookie, url, site_for_cookies, top_frame_origin);
+      cookie, url, site_for_cookies, top_frame_origin,
+      GetCookieSettingOverrides());
 
   if (blocked)
     status.AddExclusionReason(
@@ -799,7 +802,7 @@ void RestrictedCookieManager::CookiesEnabledFor(
   }
 
   std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      url, site_for_cookies, top_frame_origin, GetCookieSettingOverrides(),
       CookieSettings::QueryReason::kCookies));
 }
 
@@ -846,6 +849,11 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   mojo::ReportBadMessage("Incorrect url origin");
   return false;
+}
+
+net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides()
+    const {
+  return net::CookieSettingOverrides();
 }
 
 }  // namespace network
