@@ -32,7 +32,10 @@ BluetoothInternalsTest.prototype = {
   ],
 };
 
-TEST_F('BluetoothInternalsTest', 'Startup_BluetoothInternals', function() {
-  // Run all registered tests.
-  mocha.run();
-});
+// TODO(crbug.com/1399475): Flaky on all platforms.
+TEST_F(
+    'BluetoothInternalsTest', 'DISABLED_Startup_BluetoothInternals',
+    function() {
+      // Run all registered tests.
+      mocha.run();
+    });
