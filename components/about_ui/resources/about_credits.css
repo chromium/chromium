@@ -130,3 +130,11 @@ input:checked + label::after {
     display: none;
   }
 }
+
+/* Style the show/hide license button to look like a link in Forced Colors
+ * Mode. */
+@media (forced-colors: active) {
+  .product .show {
+    color: LinkText;
+  }
+}
