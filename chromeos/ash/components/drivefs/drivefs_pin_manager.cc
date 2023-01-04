@@ -13,11 +13,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 
 namespace drivefs::pinning {
@@ -141,6 +141,8 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
              << ", bytes_transferred: " << e.bytes_transferred
              << ", bytes_to_transfer: " << e.bytes_to_transfer << "}";
 }
+
+constexpr int64_t kAverageHostedFileSizeInBytes = 7800;
 
 }  // namespace
 
@@ -438,6 +440,11 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
       continue;
     }
 
+    if (md.type == mojom::FileMetadata::Type::kHosted) {
+      state_.progress.required_disk_space += kAverageHostedFileSizeInBytes;
+      continue;
+    }
+
     DCHECK_GE(md.size, 0) << " for " << Quote(item->path);
     state_.progress.required_disk_space += md.size;
   }
@@ -585,10 +592,6 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     DCHECK(event);
     VLOG(2) << "Got event: " << Quote(*event);
 
-    // TODO(b/259454320): Hosted files (e.g. gdoc) do not send an update via the
-    // `OnSyncingStatusUpdate` method. Need to add a method to cleanse the
-    // `in_progress_items_` map to ensure any values that are small enough or
-    // optimistically pinned get removed.
     if (event->state == mojom::ItemEvent::State::kCompleted) {
       VLOG(2) << "Synced " << Quote(event->path);
       GetMetadataForPath(event->path);
@@ -713,12 +716,17 @@ void DriveFsPinManager::OnMetadataRetrieved(
   VLOG(2) << "path: " << Quote(path) << ", metadata: " << Quote(*metadata);
 
   if (metadata->available_offline || metadata->size == 0) {
+    const int64_t file_size =
+        (metadata->type == mojom::FileMetadata::Type::kHosted)
+            ? kAverageHostedFileSizeInBytes
+            : metadata->size;
+
     VLOG_IF(2, metadata->available_offline)
         << "Skipped " << Quote(path) << ": Already available offline";
     VLOG_IF(2, metadata->size == 0)
         << "Skipped " << Quote(path) << ": Empty file";
     syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
-        .WithArgs(std::move(path), metadata->size)
+        .WithArgs(std::move(path), file_size)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
                              weak_ptr_factory_.GetWeakPtr()));
   }
