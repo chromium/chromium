@@ -5450,7 +5450,7 @@
   {
     "name": "password-edit-dialog-with-details",
     "owners": ["atsvirchkova@google.com", "ioanap"],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "password-import",
