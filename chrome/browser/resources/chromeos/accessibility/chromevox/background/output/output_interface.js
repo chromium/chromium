@@ -72,11 +72,6 @@ export class OutputInterface {
   /**
    * @param {!outputTypes.OutputFormattingData} data
    */
-  formatPhoneticReading_(data) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   */
   formatPrecedingBullet_(data) {}
 
   /**

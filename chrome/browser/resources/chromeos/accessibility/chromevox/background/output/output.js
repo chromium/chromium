@@ -24,7 +24,6 @@ import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
 import {EventSourceState} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';
-import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
 import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
@@ -668,16 +667,6 @@ export class Output {
   format_(params) {
     const formatter = new OutputFormatter(this, params);
     new OutputFormatParser(formatter).parse(params.outputFormat);
-  }
-
-  /** @override */
-  formatPhoneticReading_(data) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-
-    const text =
-        PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
-    this.append_(buff, text);
   }
 
   /** @override */

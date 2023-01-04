@@ -13,6 +13,7 @@ import {CursorRange} from '../../../common/cursors/range.js';
 import {LocalStorage} from '../../../common/local_storage.js';
 import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {Msgs} from '../../common/msgs.js';
+import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
@@ -108,7 +109,7 @@ export class OutputFormatter {
     } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
       this.formatAsStateValue_(this.params_, token, options);
     } else if (token === 'phoneticReading') {
-      this.output_.formatPhoneticReading_(this.params_);
+      this.formatPhoneticReading_(this.params_);
     } else if (token === 'listNestedLevel') {
       this.output_.formatListNestedLevel_(this.params_);
     } else if (token === 'precedingBullet') {
@@ -611,6 +612,19 @@ export class OutputFormatter {
           related, related, outputTypes.OutputCustomEvent.NAVIGATE, buff,
           formatLog);
     }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @private
+   */
+  formatPhoneticReading_(data) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+
+    const text =
+        PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
+    this.output_.append_(buff, text);
   }
 
   /**
