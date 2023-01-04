@@ -39,15 +39,79 @@ promise_test(() => {
   });
 }, "Week picker: Picker should default to the day closest to min when it comes after the current date");
 
+function isLeapYear(year)
+{
+  return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
+}
+
+function getCurrentWeek()
+{
+  // Date picker weeks are Monday-Sunday ranges of days, numbered by the
+  // year their Thursday is part of.  See:
+  // https://html.spec.whatwg.org/multipage/C#week-state-(type=week)
+  // https://html.spec.whatwg.org/multipage/C#weeks
+
+  // Calculate the Julian date based on month and day to avoid doing the
+  // wrong thing because of timezones.
+
+  let now = new Date();
+
+  let year = now.getFullYear();
+  let month = now.getMonth();
+  let dayOfMonth = now.getDate();
+
+  // Adjust the date to the nearest Thursday, without fixing the month
+  // if it's out of range.
+  // Javascript days are 0-6, where 0 is Sunday.
+  const OFFSET_TO_THURSDAY = [ -3, 3, 2, 1, 0, -1, -2 ]
+  dayOfMonth = dayOfMonth + OFFSET_TO_THURSDAY[now.getDay()];
+
+  // Check for the week year being in the following year
+  if (month == 11 && dayOfMonth > 31) {
+    return `${year + 1}-W01`;
+  }
+
+  // Check for the week year being in the previous year
+  if (month == 0 && dayOfMonth < 1) {
+    --year;
+    month = 12;
+    // Continue to code below, which will correctly calculate whether
+    // the previous year has 52 or 53 weeks.  It can handle negative
+    // dayOfMonth and month=12 (for following January).
+  }
+
+  let month_lengths = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+  if (isLeapYear(year))
+    ++month_lengths[1];
+
+  let dayOfYear = dayOfMonth;
+  for (let m = month; --m >= 0; )
+    dayOfYear += month_lengths[m];
+
+  let week = Math.ceil(dayOfYear / 7);
+  if (week < 10) {
+    week = "0" + week;
+  }
+
+  return `${year}-W${week}`;
+}
+
 promise_test(() => {
   let weekElement = document.getElementById("week2");
+  let current_week_1 = getCurrentWeek();
   return openPicker(weekElement)
   .then(() => {
     eventSender.keyDown('Enter');
     assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
-    let weekExpr = new RegExp(`${new Date().getFullYear()}-W\\d{2}`);
-
-    assert_true(weekExpr.test(weekElement.value), "Week control should default to current week");
+    let value = weekElement.value;
+    let current_week_2 = getCurrentWeek();
+    if (current_week_1 == current_week_2) {
+      assert_equals(value, current_week_1, "Week control should default to current week")
+    } else {
+      // The week changed in the middle of running the test.  Allow
+      // either the old or new expected value.
+      assert_true(value == current_week_1 || value == current_week_2, "Week control should default to current week (one of two choices)");
+    }
   });
 }, "Week picker: Picker should default the current week if it is valid");
 
