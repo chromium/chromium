@@ -1953,6 +1953,9 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current sites list when the sites list is empty in the FLEDGE preferences page.">
     Morbi quis orci in mauris tempus rutrum. Curabitur blandit orci tortor, pellentesque tempor turpis lacinia ac.
   </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_SEE_ALL_SITES_LABEL" translateable="false" desc="Label for the expand button which shows the rest of the sites list in the FLEDGE preferences page.">
+    Donec non mi
+  </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCK_SITE" translateable="false" desc="String on the button to block a site in the FLEDGE preferences page.">
     Pellent
   </message>

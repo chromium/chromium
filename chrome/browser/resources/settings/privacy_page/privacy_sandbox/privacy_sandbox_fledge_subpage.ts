@@ -28,6 +28,8 @@ export interface SettingsPrivacySandboxFledgeSubpageElement {
   };
 }
 
+const maxFledgeSitesCount: number = 15;
+
 const SettingsPrivacySandboxFledgeSubpageElementBase =
     I18nMixin(PrefsMixin(PolymerElement));
 
@@ -52,6 +54,29 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
       },
 
       sitesList_: {
+        type: Array,
+        observer: 'onSitesListChanged_',
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * Helper list used to display the main sites in the current sites
+       * section, above the "See all sites" expand button.
+       */
+      mainSitesList_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * Helper list used to display the remaining sites in the current sites
+       * section that are inside the "See all sites" expandable section.
+       */
+      remainingSitesList_: {
         type: Array,
         value() {
           return [];
@@ -82,6 +107,11 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         value: false,
       },
 
+      seeAllSitesExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
       blockedSitesExpanded_: {
         type: Boolean,
         value: false,
@@ -90,10 +120,17 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     };
   }
 
+  static get maxFledgeSites() {
+    return maxFledgeSitesCount;
+  }
+
   private sitesList_: PrivacySandboxInterest[];
+  private mainSitesList_: PrivacySandboxInterest[];
+  private remainingSitesList_: PrivacySandboxInterest[];
   private blockedSitesList_: PrivacySandboxInterest[];
   private isSitesListLoaded_: boolean;
   private isLearnMoreDialogOpen_: boolean;
+  private seeAllSitesExpanded_: boolean;
   private blockedSitesExpanded_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
@@ -117,6 +154,12 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.isSitesListLoaded_ = true;
   }
 
+  private onSitesListChanged_() {
+    this.mainSitesList_ = this.sitesList_.slice(0, maxFledgeSitesCount);
+    this.remainingSitesList_ = this.sitesList_.slice(maxFledgeSitesCount);
+  }
+
+
   private isFledgeEnabledAndLoaded_(): boolean {
     return this.getPref('privacy_sandbox.m1.fledge_enabled').value &&
         this.isSitesListLoaded_;
@@ -124,6 +167,10 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
   private isSitesListEmpty_(): boolean {
     return this.sitesList_.length === 0;
+  }
+
+  private isRemainingSitesListEmpty_(): boolean {
+    return this.remainingSitesList_.length === 0;
   }
 
   private computeBlockedSitesDescription_(): string {

@@ -580,8 +580,6 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
         blockedSitesDescription.innerText);
   });
 
-  // TODO(crbug.com/1378703): Add test for "See all sites" section when
-  // `getFledgeState()` returns a longer list.
   test('sitesList', async function() {
     page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
     await flushTasks();
@@ -594,6 +592,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertFalse(isVisible(
         currentSitesSection.querySelector('#currentSitesDescriptionEmpty')));
     assertEquals('test-site-one.com', currentSites.items![0].site!);
+    assertFalse(isVisible(currentSitesSection.querySelector('#seeAllSites')));
 
     // Check for blocked sites.
     page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!.click();
@@ -615,6 +614,76 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     const expectedLinks =
         ['chrome://settings/adPrivacy/interests', 'chrome://settings/cookies'];
     assertDeepEquals(hrefs, expectedLinks);
+  });
+});
+
+suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
+  let page: SettingsPrivacySandboxFledgeSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  const sitesList: string[] = [];
+  const remainingSitesCount: number = 5;
+  const sitesCount: number = remainingSitesCount +
+      SettingsPrivacySandboxFledgeSubpageElement.maxFledgeSites;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    // Setup long list of sites.
+    for (let i = 0; i < sitesCount; i++) {
+      sitesList.push('site-' + i + '.com');
+    }
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: sitesList,
+      blockedSites: [],
+    });
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-fledge-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFledgeState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('sitesList', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    // Check for current sites.
+    const currentSitesSection =
+        page.shadowRoot!.querySelector<HTMLElement>('#currentSitesSection')!;
+    const currentSites = currentSitesSection.querySelector('dom-repeat');
+    assertTrue(!!currentSites);
+    assertEquals(
+        SettingsPrivacySandboxFledgeSubpageElement.maxFledgeSites,
+        currentSites.items!.length);
+    assertFalse(isVisible(
+        currentSitesSection.querySelector('#currentSitesDescriptionEmpty')));
+
+    // Check for "See all sites" button.
+    const seeAllSites =
+        currentSitesSection.querySelector<HTMLElement>('#seeAllSites');
+    assertTrue(isVisible(seeAllSites));
+    seeAllSites!.click();
+    await flushTasks();
+    const allCurrentSites = currentSitesSection.querySelectorAll('dom-repeat');
+    assertTrue(!!currentSites);
+    assertEquals(2, allCurrentSites.length);
+    assertEquals(remainingSitesCount, allCurrentSites[1]!.items!.length);
   });
 });
 

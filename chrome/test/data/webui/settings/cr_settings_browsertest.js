@@ -642,6 +642,12 @@ TEST_F('CrSettingsPrivacySandboxPageTest', 'FledgeSubpageTests', function() {
 });
 
 TEST_F(
+    'CrSettingsPrivacySandboxPageTest', 'FledgeSubpageSeeAllSitesTests',
+    function() {
+      runMochaSuite('PrivacySandboxFledgeSubpageSeeAllSitesTests');
+    });
+
+TEST_F(
     'CrSettingsPrivacySandboxPageTest', 'AdMeasurementSubpageTests',
     function() {
       runMochaSuite('PrivacySandboxAdMeasurementSubpageTests');

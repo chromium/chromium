@@ -92,13 +92,24 @@
           $i18n{fledgePageCurrentSitesDescriptionLearnMore}
         </button>
       </div>
-      <template is="dom-repeat" items="[[sitesList_]]">
+      <template is="dom-repeat" items="[[mainSitesList_]]">
         <privacy-sandbox-interest-item interest="[[item]]"
             on-interest-changed="onInterestChanged_">
         </privacy-sandbox-interest-item>
       </template>
-      <!-- TODO(b/254412638): Add an expand button to hide and show additional
-           sites. -->
+      <template is="dom-if" if="[[!isRemainingSitesListEmpty_(
+          remainingSitesList_.length)]]" restamp>
+        <cr-expand-button id="seeAllSites" expanded="{{seeAllSitesExpanded_}}">
+          $i18n{fledgePageSeeAllSitesLabel}
+        </cr-expand-button>
+        <iron-collapse opened="[[seeAllSitesExpanded_]]">
+          <template is="dom-repeat" items="[[remainingSitesList_]]">
+            <privacy-sandbox-interest-item interest="[[item]]"
+                on-interest-changed="onInterestChanged_">
+            </privacy-sandbox-interest-item>
+          </template>
+        </iron-collapse>
+      </template>
       <div id="currentSitesDescriptionEmpty"
           class="no-sites cr-secondary-text"
           hidden="[[!isSitesListEmpty_(sitesList_.length)]]">
