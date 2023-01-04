@@ -2649,7 +2649,7 @@
     "owners": [
       "wicarr@microsoft.com"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-media-foundation-video-capture",
