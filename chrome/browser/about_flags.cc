@@ -6549,10 +6549,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUseImprovedLabelDisambiguation)},
 
-    {"file-handling-api", flag_descriptions::kFileHandlingAPIName,
-     flag_descriptions::kFileHandlingAPIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kFileHandlingAPI)},
-
     {"file-handling-icons", flag_descriptions::kFileHandlingIconsName,
      flag_descriptions::kFileHandlingIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kFileHandlingIcons)},

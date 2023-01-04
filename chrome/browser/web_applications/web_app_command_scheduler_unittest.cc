@@ -85,32 +85,5 @@ TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 }
 
-TEST_F(WebAppCommandSchedulerTest, UpdateFileHandlerOsIntegration) {
-  EXPECT_FALSE(provider()->is_registry_ready());
-  provider()->scheduler().UpdateFileHandlerOsIntegration("app id",
-                                                         base::DoNothing());
-
-  provider()->StartWithSubsystems();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
-
-  WaitForProviderReady();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
-  base::Value::Dict log =
-      provider()->command_manager().ToDebugValue().TakeDict();
-  base::Value::List* command_queue = log.FindList("command_queue");
-
-  EXPECT_EQ(command_queue->size(), 1u);
-
-  const base::Value::Dict& command_log = command_queue->front().GetDict();
-  EXPECT_EQ(*command_log.FindString("name"), "UpdateFileHandlerCommand");
-  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
-
-  provider()->Shutdown();
-  // commands don't get scheduled after shutdown.
-  provider()->scheduler().PersistFileHandlersUserChoice(
-      "app id", /*allowed=*/true, base::DoNothing());
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
-}
-
 }  // namespace
 }  // namespace web_app

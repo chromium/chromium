@@ -51,29 +51,19 @@ UpdateFileHandlerCommand::CreateForPersistUserChoice(
       new UpdateFileHandlerCommand(app_id, allowed, std::move(callback)));
 }
 
-// static
-std::unique_ptr<UpdateFileHandlerCommand>
-UpdateFileHandlerCommand::CreateForUpdate(const AppId& app_id,
-                                          base::OnceClosure callback) {
-  return base::WrapUnique(new UpdateFileHandlerCommand(
-      app_id, /*user_choice_to_remember=*/absl::nullopt, std::move(callback)));
-}
-
-UpdateFileHandlerCommand::UpdateFileHandlerCommand(
-    const AppId& app_id,
-    absl::optional<bool> user_choice_to_remember,
-    base::OnceClosure callback)
+UpdateFileHandlerCommand::UpdateFileHandlerCommand(const AppId& app_id,
+                                                   bool user_choice_to_remember,
+                                                   base::OnceClosure callback)
     : WebAppCommandTemplate<AppLock>("UpdateFileHandlerCommand"),
       lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
       app_id_(app_id),
-      user_choice_to_remember_(std::move(user_choice_to_remember)),
+      user_choice_to_remember_(user_choice_to_remember),
       callback_(std::move(callback)) {
   debug_info_.Set("app_id", app_id_);
-  if (user_choice_to_remember_)
-    debug_info_.Set("user_choice_to_remember",
-                    user_choice_to_remember_.value() ? "allow" : "disallow");
+  debug_info_.Set("user_choice_to_remember",
+                  user_choice_to_remember_ ? "allow" : "disallow");
 }
 
 UpdateFileHandlerCommand::~UpdateFileHandlerCommand() = default;
@@ -88,17 +78,13 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
     return;
   }
 
-  if (user_choice_to_remember_) {
-    lock_->sync_bridge().SetAppFileHandlerApprovalState(
-        app_id_, user_choice_to_remember_.value()
-                     ? ApiApprovalState::kAllowed
-                     : ApiApprovalState::kDisallowed);
-  }
+  lock_->sync_bridge().SetAppFileHandlerApprovalState(
+      app_id_, user_choice_to_remember_ ? ApiApprovalState::kAllowed
+                                        : ApiApprovalState::kDisallowed);
 
   // File handling could have been disabled via origin trial as well as user
   // choice, so check both here.
   bool file_handling_enabled =
-      lock_->os_integration_manager().IsFileHandlingAPIAvailable(app_id_) &&
       !lock_->registrar().IsAppFileHandlerPermissionBlocked(app_id_);
 
   // This checks whether the current enabled state matches what we expect

@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -72,7 +71,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -186,10 +184,6 @@ class LacrosWebAppsControllerBrowserTest : public WebAppControllerBrowserTest {
  public:
   LacrosWebAppsControllerBrowserTest() = default;
   ~LacrosWebAppsControllerBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kFileHandlingAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PublishApps) {

@@ -5,10 +5,8 @@
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -21,7 +19,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -185,8 +182,6 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
 
  private:
   web_app::AppId app_id_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kFileHandlingAPI};
 };
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp) {

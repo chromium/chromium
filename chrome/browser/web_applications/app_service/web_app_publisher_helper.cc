@@ -1960,9 +1960,6 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     apps::AppLaunchParams params,
     base::OnceCallback<void(const std::vector<content::WebContents*>&)>
         callback) {
-  DCHECK(
-      provider_->os_integration_manager().IsFileHandlingAPIAvailable(app_id));
-
   std::vector<base::FilePath> file_paths = params.launch_files;
   auto launch_callback =
       base::BindOnce(&WebAppPublisherHelper::OnFileHandlerDialogCompleted,

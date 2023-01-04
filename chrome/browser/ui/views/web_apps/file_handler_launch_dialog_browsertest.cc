@@ -27,7 +27,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -35,7 +34,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -166,9 +164,6 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
 
  protected:
   AppId app_id_;
-
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kFileHandlingAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,

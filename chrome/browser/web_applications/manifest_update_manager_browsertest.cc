@@ -2299,8 +2299,6 @@ class ManifestUpdateManagerBrowserTestWithFileHandling
   ManifestUpdateManagerBrowserTestWithFileHandling() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kFileHandlingAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,

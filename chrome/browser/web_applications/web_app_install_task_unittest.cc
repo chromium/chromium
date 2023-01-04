@@ -60,7 +60,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1252,11 +1251,6 @@ TEST_F(WebAppInstallTaskTestWithShortcutsMenu,
 
 class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
  public:
-  WebAppInstallTaskTestWithFileHandlers() {
-    scoped_feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI},
-                                          {});
-  }
-
   blink::mojom::ManifestPtr CreateManifest(const GURL& url) {
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
@@ -1333,9 +1327,6 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
     EXPECT_TRUE(callback_called);
     return result;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(WebAppInstallTaskTestWithFileHandlers,

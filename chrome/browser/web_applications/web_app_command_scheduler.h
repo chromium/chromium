@@ -96,9 +96,6 @@ class WebAppCommandScheduler {
                                      bool allowed,
                                      base::OnceClosure callback);
 
-  void UpdateFileHandlerOsIntegration(const AppId& app_id,
-                                      base::OnceClosure callback);
-
   // Schedule a command that performs fetching data from the manifest
   // for a manifest update.
   void ScheduleManifestUpdateDataFetch(

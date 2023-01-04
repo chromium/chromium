@@ -823,9 +823,6 @@ extern const char kFedCmUserInfoDescription[];
 extern const char kFedCmWithoutThirdPartyCookiesName[];
 extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 
-extern const char kFileHandlingAPIName[];
-extern const char kFileHandlingAPIDescription[];
-
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 

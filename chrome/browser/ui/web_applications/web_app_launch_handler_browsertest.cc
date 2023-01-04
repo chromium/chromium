@@ -464,9 +464,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, SelectActiveBrowser) {
 class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
  public:
   WebAppLaunchHandlerDisabledBrowserTest() {
-    feature_list_.InitWithFeatures({},
-                                   {blink::features::kWebAppEnableLaunchHandler,
-                                    blink::features::kFileHandlingAPI});
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kWebAppEnableLaunchHandler});
   }
   ~WebAppLaunchHandlerDisabledBrowserTest() override = default;
 
@@ -485,7 +484,8 @@ class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest, NoLaunchQueue) {
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest,
+                       LaunchQueueNoLaunchHandlers) {
   base::HistogramTester histogram_tester;
   AppId app_id = InstallWebAppFromPage(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
@@ -494,9 +494,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest, NoLaunchQueue) {
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
-  EXPECT_FALSE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
-  EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchParams").ExtractBool());
+  EXPECT_TRUE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
+  EXPECT_TRUE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
+  EXPECT_TRUE(EvalJs(web_contents, "!!window.LaunchParams").ExtractBool());
 
   histogram_tester.ExpectTotalCount(kLaunchHandlerHistogram, 0);
 }

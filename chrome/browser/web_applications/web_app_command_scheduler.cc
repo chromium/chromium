@@ -174,19 +174,6 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
           app_id, allowed, std::move(callback)));
 }
 
-void WebAppCommandScheduler::UpdateFileHandlerOsIntegration(
-    const AppId& app_id,
-    base::OnceClosure callback) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
-    return;
-  }
-
-  provider_->command_manager().ScheduleCommand(
-      UpdateFileHandlerCommand::CreateForUpdate(app_id, std::move(callback)));
-}
-
 void WebAppCommandScheduler::ScheduleManifestUpdateDataFetch(
     const GURL& url,
     const AppId& app_id,

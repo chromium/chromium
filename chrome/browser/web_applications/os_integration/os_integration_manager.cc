@@ -424,8 +424,7 @@ void OsIntegrationManager::GetShortcutInfoForApp(
 }
 
 bool OsIntegrationManager::IsFileHandlingAPIAvailable(const AppId& app_id) {
-  DCHECK(file_handler_manager_);
-  return file_handler_manager_->IsFileHandlingAPIAvailable(app_id);
+  return true;
 }
 
 const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
@@ -787,12 +786,6 @@ void OsIntegrationManager::UpdateFileHandlers(
 #endif
   }
   if (file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
-    std::move(finished_callback).Run(Result::kOk);
-    return;
-  }
-
-  if (file_handlers_need_os_update == FileHandlerUpdateAction::kUpdate &&
-      !IsFileHandlingAPIAvailable(app_id)) {
     std::move(finished_callback).Run(Result::kOk);
     return;
   }

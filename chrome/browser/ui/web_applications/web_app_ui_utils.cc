@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 
-#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,10 +14,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -31,17 +28,9 @@ namespace {
 
 absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
-  bool show_app_link_in_tabbed_browser =
-      base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
-
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
     return absl::nullopt;
-
-  if (!web_app::AppBrowserController::IsWebApp(browser) &&
-      !show_app_link_in_tabbed_browser) {
-    return absl::nullopt;
-  }
 
   const web_app::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);

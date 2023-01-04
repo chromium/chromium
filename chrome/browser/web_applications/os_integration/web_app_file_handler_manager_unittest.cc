@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -24,7 +23,6 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -161,13 +159,6 @@ TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandlers) {
 }
 
 class WebAppFileHandlerManagerTest : public WebAppTest {
- public:
-  WebAppFileHandlerManagerTest() {
-    // |features_| needs to be initialized before SetUp kicks off tasks that
-    // check if a feature is enabled.
-    features_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
-  }
-
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
@@ -203,7 +194,6 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
   raw_ptr<FakeWebAppProvider> provider_;
   std::unique_ptr<FakeWebAppFileHandlerManager> file_handler_manager_;
 
-  base::test::ScopedFeatureList features_;
   AppId app_id_;
 };
 

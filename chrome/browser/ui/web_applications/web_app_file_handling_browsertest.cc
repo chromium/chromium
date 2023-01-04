@@ -261,8 +261,6 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
   }
 
   TestServerRedirectHandle redirect_handle_;
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kFileHandlingAPI};
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher_;
 };
@@ -501,28 +499,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // is removed, this test should work the same as IsFileHandlerOnChromeOS.
   EXPECT_EQ(0u, tasks.size());
 }
-
-class WebAppFileHandlingDisabledTest : public WebAppFileHandlingBrowserTest {
- public:
-  WebAppFileHandlingDisabledTest() {
-    feature_list_.InitWithFeatures({}, {blink::features::kFileHandlingAPI});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Check that the web app is not returned as a file handler task when
-// the flag kFileHandlingAPI is disabled.
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingDisabledTest,
-                       NoFileHandlerOnChromeOS) {
-  InstallFileHandlingPWA();
-
-  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
-  std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
-      file_manager::test::GetTasksForFile(profile(), test_file_path);
-  EXPECT_EQ(0u, tasks.size());
-}
 #endif
 
 class WebAppFileHandlingIconBrowserTest
@@ -530,9 +506,7 @@ class WebAppFileHandlingIconBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   WebAppFileHandlingIconBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI,
-                                    blink::features::kFileHandlingIcons},
-                                   {});
+    feature_list_.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
     WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
   }
   ~WebAppFileHandlingIconBrowserTest() override = default;

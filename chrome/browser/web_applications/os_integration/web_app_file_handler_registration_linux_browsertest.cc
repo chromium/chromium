@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -24,7 +23,6 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -51,11 +49,6 @@ apps::FileHandler GetTestFileHandler(const std::string& action,
 class WebAppFileHandlerRegistrationLinuxBrowserTest
     : public InProcessBrowserTest {
  protected:
-  WebAppFileHandlerRegistrationLinuxBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kFileHandlingAPI);
-  }
-
   WebAppRegistrar& registrar() {
     return WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
   }
@@ -66,7 +59,6 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
     result_code_ = result.code;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<webapps::InstallResultCode> result_code_;
 };
 

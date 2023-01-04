@@ -132,13 +132,6 @@ constexpr const char kExampleManifestURL[] = "http://example.org/manifest";
 
 constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
 
-// Represents the variety of states that can exist and which control the page
-// info bubble's app settings link.
-enum class WebAppSettingsState {
-  kFileHandlingDisabled = 1,
-  kFileHandlingEnabled,
-};
-
 // Opens |url| in a new popup window with the dimensions |popup_size|.
 Browser* OpenPopupAndWait(Browser* browser,
                           const GURL& url,
@@ -2168,9 +2161,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_FileHandler() {
-    feature_list_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
-  }
+  WebAppBrowserTest_FileHandler() {}
 
 #if BUILDFLAG(IS_WIN)
  protected:
@@ -2182,9 +2173,6 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
 
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif  // BUILDFLAG(IS_WIN)
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/1320285): Flaky on Mac.
@@ -2419,32 +2407,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UninstallIncompleteUninstall) {
 }
 
 // Verifies the behavior of the App/site settings link in the page info bubble.
-class WebAppBrowserTest_PageInfoManagementLink
-    : public WebAppBrowserTest,
-      public testing::WithParamInterface<WebAppSettingsState> {
+class WebAppBrowserTest_PageInfoManagementLink : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_PageInfoManagementLink() {
-    file_handling_feature_list_.InitWithFeatureState(
-        blink::features::kFileHandlingAPI,
-        GetParam() == WebAppSettingsState::kFileHandlingEnabled);
-  }
-
   bool ShowingAppManagementLink(Browser* browser) {
     int unused_id, unused_id2;
     return GetLabelIdsForAppManagementLinkInPageInfo(
         browser->tab_strip_model()->GetActiveWebContents(), &unused_id,
         &unused_id2);
   }
-
-  static bool ShowsAppSettingsLinkInTabbedBrowser() {
-    return base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
-  }
-
- private:
-  base::test::ScopedFeatureList file_handling_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
   const GURL app_url = GetSecureAppURL();
   InstallPWA(app_url);
 
@@ -2465,13 +2438,12 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
 
   // Move back into tabbed browser: should keep showing the app settings link.
   Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
-  EXPECT_EQ(ShowsAppSettingsLinkInTabbedBrowser(),
-            ShowingAppManagementLink(tabbed_browser));
+  EXPECT_TRUE(ShowingAppManagementLink(tabbed_browser));
 }
 
 // Verifies behavior when an app window is opened by navigating with
 // `open_pwa_window_if_possible` set to true.
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink,
                        OpenAppWindowIfPossible) {
   const GURL app_url = GetSecureAppURL();
   InstallPWA(app_url);
@@ -2490,7 +2462,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink,
   EXPECT_TRUE(ShowingAppManagementLink(params.browser));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
 
@@ -2501,15 +2473,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
   // should be visible.
   Browser* tabbed_browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_EQ(browser(), tabbed_browser);
-  EXPECT_EQ(ShowsAppSettingsLinkInTabbedBrowser(),
-            ShowingAppManagementLink(tabbed_browser));
+  EXPECT_TRUE(ShowingAppManagementLink(tabbed_browser));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppBrowserTest_PageInfoManagementLink,
-    ::testing::Values(WebAppSettingsState::kFileHandlingDisabled,
-                      WebAppSettingsState::kFileHandlingEnabled));
 
 INSTANTIATE_TEST_SUITE_P(
     All,

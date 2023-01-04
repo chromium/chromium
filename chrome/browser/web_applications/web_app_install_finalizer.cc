@@ -681,9 +681,6 @@ void WebAppInstallFinalizer::ScheduleUninstallCommand(
 FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
     const AppId& app_id,
     const WebAppInstallInfo& new_web_app_info) {
-  if (!os_integration_manager_->IsFileHandlingAPIAvailable(app_id))
-    return FileHandlerUpdateAction::kNoUpdate;
-
   if (GetWebAppRegistrar().GetAppFileHandlerApprovalState(app_id) ==
       ApiApprovalState::kDisallowed) {
     return FileHandlerUpdateAction::kNoUpdate;

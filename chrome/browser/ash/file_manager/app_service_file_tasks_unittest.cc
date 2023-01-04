@@ -352,20 +352,9 @@ class AppServiceFileTasksTestDisabled : public AppServiceFileTasksTest {
  public:
   AppServiceFileTasksTestDisabled() {
     feature_list_.InitWithFeatures(
-        {}, {blink::features::kFileHandlingAPI,
-             ash::features::kArcAndGuestOsFileTasksUseAppService});
+        {}, {ash::features::kArcAndGuestOsFileTasksUseAppService});
   }
 };
-
-// Web Apps should not be able to handle files when kFileHandlingAPI is
-// disabled.
-TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceFileTasksText) {
-  AddTextApp();
-  // Find apps for a "text/plain" file.
-  std::vector<FullTaskDescriptor> tasks =
-      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
-  ASSERT_EQ(0U, tasks.size());
-}
 
 // ARC apps should not be found when kArcAndGuestOsFileTasksUseAppService is
 // disabled.
