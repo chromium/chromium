@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
 
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -118,7 +118,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     BruschettaServiceFactory::EnableForTesting(&profile_);
 
-    installer_ = std::make_unique<BruschettaInstaller>(
+    installer_ = std::make_unique<BruschettaInstallerImpl>(
         &profile_, base::BindOnce(&BruschettaInstallerTest::CloseCallback,
                                   base::Unretained(this)));
 
