@@ -251,9 +251,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns whether *some* cookie would be allowed to be sent in this context,
   // according to the user's settings. Note that cookies may still be "excluded"
   // for other reasons, even if this method returns true.
-  //
-  // `is_same_party` should reflect whether the context is same-party *and*
-  // whether the (real or hypothetical) cookie is SameParty.
   bool IsHypotheticalCookieAllowed(
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       bool is_partitioned) const;
