@@ -582,6 +582,9 @@ extern const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore;
 extern const base::FeatureParam<int> kDocumentProviderMaxLowQualitySuggestions;
 
 // Domain suggestions.
+// Whether enabled for counterfactual logging; i.e. shouldn't use domain
+// suggestions/scores.
+extern const base::FeatureParam<bool> kDomainSuggestionsCounterfactual;
 // The minimum number of unique URLs a domain needs to be considered highly
 // visited.
 extern const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold;

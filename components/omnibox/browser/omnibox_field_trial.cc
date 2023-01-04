@@ -965,6 +965,11 @@ const base::FeatureParam<int> kDocumentProviderMaxLowQualitySuggestions(
     "DocumentProviderMaxLowQualitySuggestions",
     100);
 
+const base::FeatureParam<bool> kDomainSuggestionsCounterfactual(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsCounterfactual",
+    false);
+
 const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold(
     &omnibox::kDomainSuggestions,
     "DomainSuggestionsTypedUrlsThreshold",

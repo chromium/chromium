@@ -289,8 +289,28 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   const float domain_score =
       is_highly_visited_host ? domain_suggestions_score_factor : 1;
 
-  raw_score = base::saturated_cast<int>(GetFinalRelevancyScore(
-      topicality_score, frequency_score, specificity_score, domain_score));
+  raw_score_before_domain_boosting =
+      base::saturated_cast<int>(GetFinalRelevancyScore(
+          topicality_score, frequency_score, specificity_score, 1));
+  // Short-circuit the redundant 2nd computations if domain boosting is
+  // disabled.
+  raw_score_after_domain_boosting =
+      domain_score > 1 ? base::saturated_cast<int>(GetFinalRelevancyScore(
+                             topicality_score, frequency_score,
+                             specificity_score, domain_score))
+                       : raw_score_before_domain_boosting;
+  DCHECK(domain_score > 1 ? raw_score_before_domain_boosting <=
+                                raw_score_after_domain_boosting
+                          : raw_score_before_domain_boosting ==
+                                raw_score_after_domain_boosting);
+
+  // If the feature is cf enabled, use the un-boosted score; If enabled, use the
+  // boosted score; and if disabled, it doesn't matter as the scores are equal.
+  static const bool domain_suggestions_counterfactual =
+      OmniboxFieldTrial::kDomainSuggestionsCounterfactual.Get();
+  raw_score = domain_suggestions_counterfactual
+                  ? raw_score_before_domain_boosting
+                  : raw_score_after_domain_boosting;
 
   if (also_do_hup_like_scoring_ && likely_can_inline) {
     // HistoryURL-provider-like scoring gives any match that is

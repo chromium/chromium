@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -128,8 +129,12 @@ void HistoryQuickProvider::DoAutocomplete() {
 
   static const size_t domain_suggestions_min_char =
       OmniboxFieldTrial::kDomainSuggestionsMinInputLength.Get();
-  if (autocomplete_input_.text().length() < domain_suggestions_min_char)
+  static const int max_host_matches =
+      OmniboxFieldTrial::kDomainSuggestionsMaxMatchesPerDomain.Get();
+  if (autocomplete_input_.text().length() < domain_suggestions_min_char ||
+      max_host_matches == 0) {
     return;
+  }
 
   // Append suggestions for each of the user's highly visited domains. To
   // determine these domains, the user's visits are aggregated by URL host and
@@ -146,17 +151,20 @@ void HistoryQuickProvider::DoAutocomplete() {
     //  those are not as big of a concern. If performance metrics regress, we
     //  should extract matching and scoring history items from
     //  `HistoryItemsForTerms()` so it can be done just once.
-    static const int max_host_matches =
-        OmniboxFieldTrial::kDomainSuggestionsMaxMatchesPerDomain.Get();
     ScoredHistoryMatches host_matches =
         in_memory_url_index_->HistoryItemsForTerms(
             autocomplete_input_.text(), autocomplete_input_.cursor_position(),
             host, max_host_matches);
     // TODO(manukh): Consider using a new `AutocompleteMatchType` for domain
-    //  suggestions to distinguish them in metrics. Would also help with CF
-    //  logging.
-    if (!host_matches.empty())
-      add_matches(host_matches);
+    //  suggestions to distinguish them in metrics.
+    if (!host_matches.empty()) {
+      client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+          OmniboxTriggeredFeatureService::Feature::kDomainSuggestions);
+      static const bool counterfactual =
+          OmniboxFieldTrial::kDomainSuggestionsCounterfactual.Get();
+      if (!counterfactual)
+        add_matches(host_matches);
+    }
   }
 }
 
@@ -363,6 +371,14 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
   match.RecordAdditionalInfo("typed count", info.typed_count());
   match.RecordAdditionalInfo("visit count", info.visit_count());
   match.RecordAdditionalInfo("last visit", info.last_visit());
-
+  match.RecordAdditionalInfo("raw score before domain boosting",
+                             history_match.raw_score_before_domain_boosting);
+  match.RecordAdditionalInfo("raw score after domain boosting",
+                             history_match.raw_score_after_domain_boosting);
+  if (history_match.raw_score_before_domain_boosting <
+      history_match.raw_score_after_domain_boosting) {
+    client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+        OmniboxTriggeredFeatureService::Feature::kDomainSuggestions);
+  }
   return match;
 }
