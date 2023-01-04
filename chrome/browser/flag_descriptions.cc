@@ -52,6 +52,12 @@ extern const char
         "Enables supervised users to add additional Edu accounts and "
         "simplifies settings UI";
 
+const char kAppDeduplicationServiceFondueName[] =
+    "Identify duplicate app groups.";
+const char kAppDeduplicationServiceFondueDescription[] =
+    "Enables pulling app duplicate data from a Google server to allow clients "
+    "to determine app duplicates.";
+
 const char kLauncherAppSortName[] = "Productivity experiment: Reorder Apps";
 const char kLauncherAppSortDescription[] =
     "To evaluate an enhanced Launcher experience that enables users to reorder "

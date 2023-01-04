@@ -9330,6 +9330,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseMojoVideoDecoderForPepperDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kUseMojoVideoDecoderForPepper)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"app-deduplication-service-fondue",
+     flag_descriptions::kAppDeduplicationServiceFondueName,
+     flag_descriptions::kAppDeduplicationServiceFondueDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAppDeduplicationServiceFondue)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

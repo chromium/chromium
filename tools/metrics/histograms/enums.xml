@@ -61000,6 +61000,7 @@ from previous Chrome versions.
   <int value="75747474" label="disable-webview-signin-flow"/>
   <int value="77886794" label="AllowRepeatedUpdates:enabled"/>
   <int value="77946316" label="PrefixWebAppWindowsWithAppName:disabled"/>
+  <int value="78781399" label="AppDeduplicationServiceFondue:disabled"/>
   <int value="78900745"
       label="SharedHighlightingRefinedMaxContextWords:disabled"/>
   <int value="78998551" label="disable-hosted-app-shim-creation"/>
@@ -64027,6 +64028,7 @@ from previous Chrome versions.
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
+  <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>
   <int value="1860955818" label="PowerScheduler:enabled"/>
   <int value="1861067469" label="SystemJapanesePhysicalTyping:disabled"/>
