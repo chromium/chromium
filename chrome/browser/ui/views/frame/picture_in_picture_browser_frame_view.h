@@ -17,7 +17,6 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -25,6 +24,8 @@
 #endif
 
 namespace views {
+class AnimatingLayoutManager;
+class FlexLayoutView;
 class FrameBackground;
 class Label;
 }
@@ -121,9 +122,11 @@ class PictureInPictureBrowserFrameView
   void OnPaint(gfx::Canvas* canvas) override;
 
   // PictureInPictureBrowserFrameView:
-  // Convert the bounds of a child view of |controls_container_view_| to use
-  // the system's coordinate system.
-  gfx::Rect ConvertControlViewBounds(views::View* control_view) const;
+  // Convert the bounds of a child control view of |top_bar_container_view_| to
+  // use the system's coordinate system while we need to know the original
+  // container view.
+  gfx::Rect ConvertTopBarControlViewBounds(views::View* control_view,
+                                           views::View* source_view) const;
 
   // Gets the bounds of the controls.
   gfx::Rect GetLocationIconViewBounds() const;
@@ -169,13 +172,15 @@ class PictureInPictureBrowserFrameView
   static gfx::ShadowValues GetShadowValues();
 #endif
 
+  // Helper functions for testing.
+  views::AnimatingLayoutManager* GetAnimatingLayoutManagerForTesting();
   views::View* GetBackToTabButtonForTesting();
 
  private:
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;
 
-  raw_ptr<views::BoxLayoutView> controls_container_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> top_bar_container_view_ = nullptr;
 
   // An icon to the left of the window title, which reuses the location icon in
   // the location bar of a normal browser. Since the web contents to PiP is
@@ -183,6 +188,11 @@ class PictureInPictureBrowserFrameView
   raw_ptr<LocationIconView> location_icon_view_ = nullptr;
 
   raw_ptr<views::Label> window_title_ = nullptr;
+
+  // A container view for the top right buttons.
+  raw_ptr<views::View> button_container_view_ = nullptr;
+  raw_ptr<views::AnimatingLayoutManager> button_container_animating_layout_ =
+      nullptr;
 
   // The content setting views for icons and bubbles.
   std::vector<ContentSettingImageView*> content_setting_views_;

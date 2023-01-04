@@ -27,6 +27,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/layout/animating_layout_manager.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/frame_background.h"
 #include "ui/views/window/window_shape.h"
@@ -166,29 +168,31 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);
 
-  // Creates a view that will hold all the control views.
-  AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .CopyAddressTo(&controls_container_view_)
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .Build());
+  // Creates a view for the top bar area.
+  AddChildView(views::Builder<views::FlexLayoutView>()
+                   .CopyAddressTo(&top_bar_container_view_)
+                   .SetOrientation(views::LayoutOrientation::kHorizontal)
+                   .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+                   .Build());
 
   // Creates the window icon.
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
-  location_icon_view_ = controls_container_view_->AddChildView(
+  location_icon_view_ = top_bar_container_view_->AddChildView(
       std::make_unique<LocationIconView>(font_list, this, this));
 
   // Creates the window title.
-  controls_container_view_->AddChildView(
+  top_bar_container_view_->AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&window_title_)
           .SetText(location_bar_model_->GetURLForDisplay())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetElideBehavior(gfx::ELIDE_HEAD)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded))
           .Build());
-  controls_container_view_->SetFlexForView(window_title_, 1);
 
   // Creates the content setting models. Currently we only support geo location
   // and camera and microphone settings.
@@ -199,16 +203,37 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   for (auto type : kContentSettingImageOrder)
     models.push_back(ContentSettingImageModel::CreateForContentType(type));
 
+  // Creates a container view for the top right buttons with an animating layout
+  // to handle the button animations.
+  button_container_view_ =
+      top_bar_container_view_->AddChildView(std::make_unique<views::View>());
+  button_container_animating_layout_ = button_container_view_->SetLayoutManager(
+      std::make_unique<views::AnimatingLayoutManager>());
+  button_container_animating_layout_
+      ->SetBoundsAnimationMode(
+          views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes)
+      .SetDefaultFadeMode(
+          views::AnimatingLayoutManager::FadeInOutMode::kSlideFromTrailingEdge);
+  auto* flex_layout =
+      button_container_animating_layout_->SetTargetLayoutManager(
+          std::make_unique<views::FlexLayout>());
+  flex_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  button_container_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          button_container_animating_layout_->GetDefaultFlexRule()));
+
   // Creates the content setting views.
   for (auto& model : models) {
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), this, this, font_list);
     content_setting_views_.push_back(
-        controls_container_view_->AddChildView(std::move(image_view)));
+        button_container_view_->AddChildView(std::move(image_view)));
   }
 
   // Creates the back to tab button.
-  back_to_tab_button_ = controls_container_view_->AddChildView(
+  back_to_tab_button_ = button_container_view_->AddChildView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
             PictureInPictureWindowManager::GetInstance()->FocusInitiator();
@@ -218,7 +243,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           base::Unretained(this))));
 
   // Creates the close button.
-  close_image_button_ = controls_container_view_->AddChildView(
+  close_image_button_ = button_container_view_->AddChildView(
       std::make_unique<CloseImageButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
             PictureInPictureWindowManager::GetInstance()
@@ -345,7 +370,7 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
 
 #if !BUILDFLAG(IS_LINUX)
   // On Linux the top bar background will be drawn in OnPaint().
-  controls_container_view_->SetBackground(views::CreateSolidBackground(
+  top_bar_container_view_->SetBackground(views::CreateSolidBackground(
       SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
                   SK_AlphaOPAQUE)));
 #endif
@@ -355,7 +380,7 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
 
 void PictureInPictureBrowserFrameView::Layout() {
   auto border_thickness = FrameBorderInsets();
-  controls_container_view_->SetBoundsRect(
+  top_bar_container_view_->SetBoundsRect(
       gfx::Rect(border_thickness.left(), border_thickness.top(),
                 width() - border_thickness.width(), kTopControlsHeight));
 
@@ -576,32 +601,37 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // PictureInPictureBrowserFrameView implementations:
-gfx::Rect PictureInPictureBrowserFrameView::ConvertControlViewBounds(
-    views::View* control_view) const {
+gfx::Rect PictureInPictureBrowserFrameView::ConvertTopBarControlViewBounds(
+    views::View* control_view,
+    views::View* source_view) const {
   gfx::RectF bounds(control_view->GetMirroredBounds());
-  views::View::ConvertRectToTarget(controls_container_view_, this, &bounds);
+  views::View::ConvertRectToTarget(source_view, this, &bounds);
   return gfx::ToEnclosingRect(bounds);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetLocationIconViewBounds() const {
   DCHECK(location_icon_view_);
-  return ConvertControlViewBounds(location_icon_view_);
+  return ConvertTopBarControlViewBounds(location_icon_view_,
+                                        top_bar_container_view_);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetContentSettingViewBounds(
     size_t index) const {
   DCHECK(index < content_setting_views_.size());
-  return ConvertControlViewBounds(content_setting_views_[index]);
+  return ConvertTopBarControlViewBounds(content_setting_views_[index],
+                                        button_container_view_);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
   DCHECK(back_to_tab_button_);
-  return ConvertControlViewBounds(back_to_tab_button_);
+  return ConvertTopBarControlViewBounds(back_to_tab_button_,
+                                        button_container_view_);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetCloseControlsBounds() const {
   DCHECK(close_image_button_);
-  return ConvertControlViewBounds(close_image_button_);
+  return ConvertTopBarControlViewBounds(close_image_button_,
+                                        button_container_view_);
 }
 
 LocationIconView* PictureInPictureBrowserFrameView::GetLocationIconView() {
@@ -615,15 +645,16 @@ void PictureInPictureBrowserFrameView::UpdateContentSettingsIcons() {
 }
 
 void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
-  back_to_tab_button_->SetVisible(render_active);
-  close_image_button_->SetVisible(render_active);
-
-  SkColor color;
   if (render_active) {
-    color = GetColorProvider()->GetColor(kColorPipWindowForeground);
+    button_container_animating_layout_->FadeIn(back_to_tab_button_);
+    button_container_animating_layout_->FadeIn(close_image_button_);
   } else {
-    color = GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
+    button_container_animating_layout_->FadeOut(back_to_tab_button_);
+    button_container_animating_layout_->FadeOut(close_image_button_);
   }
+
+  const SkColor color = GetColorProvider()->GetColor(
+      render_active ? kColorPipWindowForeground : kColorOmniboxResultsIcon);
   window_title_->SetEnabledColor(color);
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetIconColor(color);
@@ -685,6 +716,12 @@ gfx::ShadowValues PictureInPictureBrowserFrameView::GetShadowValues() {
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
 }
 #endif
+
+// Helper functions for testing.
+views::AnimatingLayoutManager*
+PictureInPictureBrowserFrameView::GetAnimatingLayoutManagerForTesting() {
+  return button_container_animating_layout_;
+}
 
 views::View* PictureInPictureBrowserFrameView::GetBackToTabButtonForTesting() {
   return back_to_tab_button_;

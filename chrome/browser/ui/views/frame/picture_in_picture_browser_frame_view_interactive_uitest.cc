@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 namespace {
 
@@ -103,6 +104,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   gfx::Point center = pip_frame_view()->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToScreen(pip_frame_view(), &center);
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
+  views::test::WaitForAnimatingLayoutManager(
+      pip_frame_view()->GetAnimatingLayoutManagerForTesting());
   ASSERT_TRUE(pip_frame_view()->GetBackToTabButtonForTesting()->GetVisible());
 
   // Move mouse to the top-left corner of the main browser window (out side of
@@ -112,10 +115,14 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       static_cast<BrowserView*>(browser()->window()), &outside);
   ASSERT_FALSE(IsPointInPIPFrameView(outside));
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(outside));
+  views::test::WaitForAnimatingLayoutManager(
+      pip_frame_view()->GetAnimatingLayoutManagerForTesting());
   ASSERT_FALSE(pip_frame_view()->GetBackToTabButtonForTesting()->GetVisible());
 
   // Move mouse back in pip window should activate title.
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(center));
+  views::test::WaitForAnimatingLayoutManager(
+      pip_frame_view()->GetAnimatingLayoutManagerForTesting());
   ASSERT_TRUE(pip_frame_view()->GetBackToTabButtonForTesting()->GetVisible());
 }
 
