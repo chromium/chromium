@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -224,6 +225,11 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
 
   const CoreAccountInfo account_info =
       gaia_account_info_by_gaia_id_cb_.Run(gaia_id);
+
+  base::UmaHistogramBoolean(
+      "Sync.TrustedVaultJavascriptAddRecoveryMethodUserKnown",
+      account_info != CoreAccountInfo());
+
   if (account_info == CoreAccountInfo()) {
     std::move(cb).Run();
     return;

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "components/sync/base/features.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -67,6 +68,11 @@ std::vector<std::vector<uint8_t>> EncryptionKeysAsBytes(
     encryption_keys_as_bytes.push_back(ArrayBufferAsBytes(encryption_key));
   }
   return encryption_keys_as_bytes;
+}
+
+void RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(bool valid_args) {
+  base::UmaHistogramBoolean(
+      "Sync.TrustedVaultJavascriptAddRecoveryMethodValidArgs", valid_args);
 }
 
 }  // namespace
@@ -236,6 +242,8 @@ void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
 
   v8::Local<v8::Function> callback;
   if (!args->GetNext(&callback)) {
+    RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No callback";
     args->ThrowError();
     return;
@@ -243,6 +251,8 @@ void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
 
   std::string gaia_id;
   if (!args->GetNext(&gaia_id)) {
+    RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No account ID";
     args->ThrowError();
     return;
@@ -250,6 +260,8 @@ void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
 
   v8::Local<v8::ArrayBuffer> public_key;
   if (!args->GetNext(&public_key)) {
+    RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No public key";
     args->ThrowError();
     return;
@@ -257,6 +269,8 @@ void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
 
   int method_type_hint = 0;
   if (!args->GetNext(&method_type_hint)) {
+    RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No method type hint";
     args->ThrowError();
     return;
@@ -269,6 +283,7 @@ void SyncEncryptionKeysExtension::AddTrustedSyncEncryptionRecoveryMethod(
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
   }
 
+  RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(/*valid_args=*/true);
   remote_->AddTrustedRecoveryMethod(
       gaia_id, ArrayBufferAsBytes(public_key), method_type_hint,
       base::BindOnce(&SyncEncryptionKeysExtension::RunCompletionCallback,
