@@ -108,6 +108,12 @@ base::Value OsStatesDebugValue(
             current_states.run_on_os_login().run_on_os_login_mode()));
   }
 
+  if (current_states.has_uninstall_registration()) {
+    debug_dict.Set(
+        "uninstall_registration",
+        current_states.uninstall_registration().registered_with_os());
+  }
+
   return base::Value(std::move(debug_dict));
 }
 

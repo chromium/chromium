@@ -43,6 +43,10 @@ message RunOnOsLogin {
   optional RunOnOsLoginMode run_on_os_login_mode = 1;
 }
 
+message OsUninstallRegistration {
+  optional bool registered_with_os = 1;
+}
+
 // Represents all the common OS Integration states to be stored in the web_app
 // DB that matches the values in the OS.
 message WebAppOsIntegrationState {
@@ -50,7 +54,7 @@ message WebAppOsIntegrationState {
   optional ShortcutDescription shortcut = 1;
   optional ProtocolsHandled protocols_handled = 3;
   optional RunOnOsLogin run_on_os_login = 4;
-
+  optional OsUninstallRegistration uninstall_registration = 5;
   // Add data states for other OS integration hooks here.
   // New fields added to this message must also be added to:
   // OsStatesDebugValue()

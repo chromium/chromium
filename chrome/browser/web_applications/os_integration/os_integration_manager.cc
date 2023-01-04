@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/os_integration/protocol_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/run_on_os_login_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/shortcut_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/uninstallation_via_os_settings_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -188,12 +189,16 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
       *profile_, *icon_manager, *registrar);
   auto protocol_handling_sub_manager =
       std::make_unique<ProtocolHandlingSubManager>(*registrar);
-
   auto run_on_os_login_sub_manager =
       std::make_unique<RunOnOsLoginSubManager>(*registrar);
+
+  auto uninstallation_via_os_settings_sub_manager =
+      std::make_unique<UninstallationViaOsSettingsSubManager>(*registrar);
   sub_managers_.push_back(std::move(shortcut_handling_sub_manager));
   sub_managers_.push_back(std::move(protocol_handling_sub_manager));
   sub_managers_.push_back(std::move(run_on_os_login_sub_manager));
+  sub_managers_.push_back(
+      std::move(uninstallation_via_os_settings_sub_manager));
 }
 
 void OsIntegrationManager::Start() {
