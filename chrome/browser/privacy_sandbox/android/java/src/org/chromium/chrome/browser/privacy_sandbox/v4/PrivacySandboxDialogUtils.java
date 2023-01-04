@@ -104,8 +104,8 @@ public class PrivacySandboxDialogUtils {
         TextView view = targetLayout.findViewById(bulletViewId);
         SpannableString spannableString =
                 SpanApplier.applySpans(context.getResources().getString(stringRes),
-                        new SpanApplier.SpanInfo(
-                                "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
+                        new SpanApplier.SpanInfo("<b>", "</b>",
+                                new StyleSpan(R.style.TextAppearance_TextMediumThick_Secondary)));
         spannableString.setSpan(new ChromeBulletSpan(context), 0, spannableString.length(), 0);
         view.setText(spannableString);
     }

@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_consent_learn_more_heading"
-        style="@style/TextAppearance.TextMediumThick.Primary" />
+        style="@style/TextAppearance.TextMediumThick.Secondary" />
 
     <TextView
         android:id="@+id/privacy_sandbox_m1_consent_learn_more_bullet_one"

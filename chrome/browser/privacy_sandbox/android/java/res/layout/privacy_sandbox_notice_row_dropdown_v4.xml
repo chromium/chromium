@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_1"
-        style="@style/TextAppearance.TextMediumThick.Primary" />
+        style="@style/TextAppearance.TextMediumThick.Secondary" />
 
     <TextView
         android:layout_marginBottom="@dimen/promo_between_text_margin"
@@ -32,7 +32,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_2"
-        style="@style/TextAppearance.TextMediumThick.Primary" />
+        style="@style/TextAppearance.TextMediumThick.Secondary" />
 
     <TextView
         android:layout_marginBottom="@dimen/promo_between_text_margin"
@@ -74,9 +74,10 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_3"
-        style="@style/TextAppearance.TextMediumThick.Primary" />
+        style="@style/TextAppearance.TextMediumThick.Secondary" />
 
     <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_5"
