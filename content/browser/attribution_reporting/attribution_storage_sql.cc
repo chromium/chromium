@@ -893,9 +893,9 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   absl::optional<StoredSource::Id> source_id_to_attribute;
   std::vector<StoredSource::Id> source_ids_to_delete;
   std::vector<StoredSource::Id> source_ids_to_deactivate;
-  if (!FindMatchingSourceForTrigger(trigger, source_id_to_attribute,
-                                    source_ids_to_delete,
-                                    source_ids_to_deactivate)) {
+  if (!FindMatchingSourceForTrigger(
+          trigger, trigger_time, source_id_to_attribute, source_ids_to_delete,
+          source_ids_to_deactivate)) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
@@ -1075,6 +1075,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
 bool AttributionStorageSql::FindMatchingSourceForTrigger(
     const AttributionTrigger& trigger,
+    base::Time trigger_time,
     absl::optional<StoredSource::Id>& source_id_to_attribute,
     std::vector<StoredSource::Id>& source_ids_to_delete,
     std::vector<StoredSource::Id>& source_ids_to_deactivate) {
@@ -1099,7 +1100,7 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetMatchingSourcesSql));
   statement.BindString(0, net::SchemefulSite(destination_origin).Serialize());
   statement.BindString(1, reporting_origin.Serialize());
-  statement.BindTime(2, base::Time::Now());
+  statement.BindTime(2, trigger_time);
 
   // If there are no matching sources, return early.
   if (!statement.Step()) {
