@@ -36,7 +36,7 @@ class ConnectorsManager {
 
   ConnectorsManager(
       std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
-      ExtensionInstallEventRouter extension_install_router,
+      std::unique_ptr<ExtensionInstallEventRouter> extension_install_router,
       PrefService* pref_service,
       const ServiceProviderConfig* config,
       bool observe_prefs = true);
@@ -129,7 +129,7 @@ class ConnectorsManager {
   std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router_;
 
   // An observer to report extension install events via the reporting pipeline.
-  ExtensionInstallEventRouter extension_install_event_router_;
+  std::unique_ptr<ExtensionInstallEventRouter> extension_install_event_router_;
 };
 
 }  // namespace enterprise_connectors

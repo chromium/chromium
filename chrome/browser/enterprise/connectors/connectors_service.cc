@@ -598,7 +598,7 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
   return new ConnectorsService(
       context, std::make_unique<ConnectorsManager>(
                    std::make_unique<BrowserCrashEventRouter>(context),
-                   ExtensionInstallEventRouter(context),
+                   std::make_unique<ExtensionInstallEventRouter>(context),
                    user_prefs::UserPrefs::Get(context),
                    GetServiceProviderConfig(), observe_prefs));
 }

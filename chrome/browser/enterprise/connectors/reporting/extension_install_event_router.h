@@ -23,7 +23,11 @@ class ExtensionInstallEventRouter
  public:
   explicit ExtensionInstallEventRouter(content::BrowserContext* context);
 
+  ExtensionInstallEventRouter(const ExtensionInstallEventRouter&) = delete;
   ExtensionInstallEventRouter& operator=(const ExtensionInstallEventRouter&) =
+      delete;
+  ExtensionInstallEventRouter(ExtensionInstallEventRouter&&) = delete;
+  ExtensionInstallEventRouter& operator=(ExtensionInstallEventRouter&&) =
       delete;
 
   ~ExtensionInstallEventRouter() override;
