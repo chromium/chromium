@@ -928,7 +928,10 @@ void PrintPreviewHandler::SendInitialSettings(
   initial_settings.Set(kIsDriveMounted,
                        drive_service && drive_service->IsMounted());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (drive_integration_service_) {
+  // The "Save to Google Drive" option is only allowed for the primary profile
+  // in the Lacros browser.
+  if (Profile::FromWebUI(web_ui())->IsMainProfile() &&
+      drive_integration_service_) {
     drive_integration_service_->GetMountPointPath(base::BindOnce(
         &PrintPreviewHandler::OnDrivePathReady, weak_factory_.GetWeakPtr(),
         std::move(initial_settings), callback_id));

@@ -47,6 +47,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
@@ -55,10 +56,10 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #endif
 
 namespace printing {
@@ -324,6 +325,23 @@ class TestLocalPrinter : public FakeLocalPrinter {
   absl::optional<crosapi::mojom::Policies> policies_;
   std::vector<mojom::PrinterType> deny_list_;
 };
+
+class FakeDriveIntegrationService
+    : public crosapi::mojom::DriveIntegrationService {
+ public:
+  FakeDriveIntegrationService() = default;
+  FakeDriveIntegrationService(const FakeDriveIntegrationService&) = delete;
+  FakeDriveIntegrationService& operator=(const FakeDriveIntegrationService&) =
+      delete;
+  ~FakeDriveIntegrationService() override = default;
+
+  void GetMountPointPath(GetMountPointPathCallback callback) override {
+    std::move(callback).Run(base::FilePath("/drive/path"));
+  }
+  void AddDriveIntegrationServiceObserver(
+      mojo::PendingRemote<crosapi::mojom::DriveIntegrationServiceObserver>)
+      override {}
+};
 #endif
 
 class TestPrintPreviewHandler : public PrintPreviewHandler {
@@ -381,11 +399,19 @@ class PrintPreviewHandlerTest : public testing::Test {
   void AddToDenyList(const mojom::PrinterType& printer_type) {
     local_printer_.add_to_deny_list(printer_type);
   }
+
+  void SetProfileForInitialSettings(TestingProfile* profile) {
+    preview_web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile));
+    web_ui_->set_web_contents(preview_web_contents_.get());
+  }
 #endif
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ASSERT_TRUE(testing_profile_manager_.SetUp());
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     local_printer_ = std::make_unique<TestLocalPrinterAsh>(&profile_, nullptr);
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
@@ -419,6 +445,7 @@ class PrintPreviewHandlerTest : public testing::Test {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     handler_->local_printer_ = &local_printer_;
     handler_->local_printer_version_ = crosapi::mojom::LocalPrinter::Version_;
+    handler_->drive_integration_service_ = &drive_integration_service_;
 #endif
 
     auto preview_ui = std::make_unique<FakePrintPreviewUI>(
@@ -667,16 +694,24 @@ class PrintPreviewHandlerTest : public testing::Test {
   TestPrintPreviewHandler* handler() { return handler_; }
   TestPrinterHandler* printer_handler() { return printer_handler_; }
   std::vector<PrinterInfo>& printers() { return printers_; }
+#if BUILDFLAG(IS_CHROMEOS)
+  TestingProfileManager* testing_profile_manager() {
+    return &testing_profile_manager_;
+  }
+#endif
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestLocalPrinterAsh> local_printer_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   TestLocalPrinter local_printer_;
+  FakeDriveIntegrationService drive_integration_service_;
 #endif
   TestingProfile profile_;
   std::unique_ptr<content::TestWebUI> web_ui_;
@@ -1333,6 +1368,42 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   // Handler should have tried to kill the renderer for each of these.
   EXPECT_EQ(handler()->bad_messages(), 3);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Tests that the `isDriveMounted` setting is only included for the primary
+// profile on Lacros.
+TEST_F(PrintPreviewHandlerTest, SaveToDriveLacrosPrimaryProfile) {
+  crosapi::mojom::Policies policies;
+  SetPolicies(policies);
+  TestingProfile* main_profile =
+      testing_profile_manager()->CreateTestingProfile("Main Profile",
+                                                      /*is_main_profile=*/true);
+  SetProfileForInitialSettings(main_profile);
+  Initialize();
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  const base::Value::Dict& settings = data.arg3()->GetDict();
+  EXPECT_TRUE(settings.FindBool("isDriveMounted").has_value());
+}
+
+// Tests that the `isDriveMounted` setting is not included for a non-primary
+// profile on Lacros.
+TEST_F(PrintPreviewHandlerTest, SaveToDriveLacrosNonPrimaryProfile) {
+  crosapi::mojom::Policies policies;
+  SetPolicies(policies);
+  TestingProfile* secondary_profile =
+      testing_profile_manager()->CreateTestingProfile(
+          "Secondary Profile",
+          /*is_main_profile=*/false);
+  SetProfileForInitialSettings(secondary_profile);
+  Initialize();
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  const base::Value::Dict& settings = data.arg3()->GetDict();
+  EXPECT_FALSE(settings.FindBool("isDriveMounted").has_value());
+}
+
+#endif
 
 class FailingTestPrinterHandler : public TestPrinterHandler {
  public:
