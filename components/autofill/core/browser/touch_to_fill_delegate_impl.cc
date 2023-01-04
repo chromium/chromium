@@ -56,10 +56,11 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   std::vector<CreditCard*> cards_to_suggest = pdm->GetCreditCardsToSuggest(
       manager_->client()->AreServerCardsSupported());
 
-  base::EraseIf(cards_to_suggest,
-                base::not_fn(&CreditCard::IsCompleteValidCard));
-  if (cards_to_suggest.empty())
+  // Not showing the sheet if all the cards are incomplete or invalid.
+  if (base::ranges::none_of(cards_to_suggest,
+                            &CreditCard::IsCompleteValidCard)) {
     return false;
+  }
   // Trigger only if the UI is available.
   if (!manager_->driver()->CanShowAutofillUi())
     return false;
