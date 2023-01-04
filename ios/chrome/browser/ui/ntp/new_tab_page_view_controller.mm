@@ -926,8 +926,8 @@
     [self cleanUpCollectionViewConstraints];
 
     [NSLayoutConstraint activateConstraints:@[
-      [self.feedHeaderViewController.view.leadingAnchor
-          constraintEqualToAnchor:self.collectionView.leadingAnchor],
+      [self.feedHeaderViewController.view.leftAnchor
+          constraintEqualToAnchor:self.collectionView.leftAnchor],
       [self.feedHeaderViewController.view.widthAnchor
           constraintEqualToAnchor:self.collectionView.widthAnchor],
       [self.collectionView.centerXAnchor
@@ -939,8 +939,8 @@
     if (IsDiscoverFeedTopSyncPromoEnabled() &&
         self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
-        [self.feedTopSectionViewController.view.leadingAnchor
-            constraintEqualToAnchor:self.collectionView.leadingAnchor],
+        [self.feedTopSectionViewController.view.leftAnchor
+            constraintEqualToAnchor:self.collectionView.leftAnchor],
         [self.feedTopSectionViewController.view.widthAnchor
             constraintEqualToAnchor:self.collectionView.widthAnchor],
         [self.feedTopSectionViewController.view.topAnchor
