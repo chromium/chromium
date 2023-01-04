@@ -378,7 +378,23 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       return status;
     }
 
-    status = web_view->StartBidiServer(kMapperScript);
+    base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+    base::FilePath bidi_mapper_path =
+        cmd_line->GetSwitchValuePath("bidi-mapper-path");
+
+    std::string mapper_script = kMapperScript;
+
+    if (!bidi_mapper_path.empty()) {
+      VLOG(0) << "Custom BiDi mapper path specified: " << bidi_mapper_path;
+
+      if (!base::ReadFileToString(bidi_mapper_path, &mapper_script)) {
+        return Status(StatusCode::kUnknownError,
+                      "Failed to read the specified BiDi mapper path: " +
+                          bidi_mapper_path.AsUTF8Unsafe());
+      }
+    }
+
+    status = web_view->StartBidiServer(mapper_script);
     if (status.IsError()) {
       return status;
     }

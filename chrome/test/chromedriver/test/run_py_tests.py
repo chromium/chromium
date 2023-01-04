@@ -30,7 +30,6 @@ import unittest
 import urllib.error
 import urllib.parse
 import urllib.request
-import uuid
 
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -5657,7 +5656,46 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('browsingContext.load', events2[0]['method'])
 
 
+class CustomBidiMapperTest(ChromeDriverBaseTest):
+  """Base class for testing chromedriver with a custom bidi mapper path."""
 
+  def CreateDriver(self, bidi_mapper_path=None, **kwargs):
+    chromedriver_server = server.Server(
+        _CHROMEDRIVER_BINARY, bidi_mapper_path=bidi_mapper_path)
+
+    driver = chromedriver.ChromeDriver(server_url=chromedriver_server.GetUrl(),
+                                     server_pid=chromedriver_server.GetPid(),
+                                     chrome_binary=_CHROME_BINARY,
+                                     test_name=self.id(),
+                                     web_socket_url=True,
+                                     **kwargs)
+    self._drivers += [driver]
+    return driver
+
+  def testInvalidCustomBidiMapperPath(self):
+    # Test that an invalid bidi mapper path raises an exception.
+
+    bidi_mapper_path = os.path.join(
+        os.path.realpath(os.path.dirname(os.path.dirname(__file__))),
+        'js', 'test_bidi_mapper_invalid.js')
+
+    self.assertRaisesRegex(Exception,
+                           'unknown error: ' +
+                           'Failed to read the specified BiDi mapper path',
+                           self.CreateDriver, bidi_mapper_path=bidi_mapper_path)
+
+  def testValidCustomBidiMapperPath(self):
+    # Test that we can use a custom bidi mapper path.
+
+    bidi_mapper_path = os.path.join(
+        os.path.realpath(os.path.dirname(os.path.dirname(__file__))),
+        'js', 'test_bidi_mapper.js')
+
+    self.assertRaisesRegex(Exception,
+                           'unknown error: ' +
+                           'Failed to initialize BiDi Mapper: Error: ' +
+                           'custom bidi mapper error from test_bidi_mapper.js',
+                           self.CreateDriver, bidi_mapper_path=bidi_mapper_path)
 
 class ClassicTest(ChromeDriverBaseTestWithWebServer):
 

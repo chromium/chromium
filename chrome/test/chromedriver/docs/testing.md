@@ -36,7 +36,7 @@ To run these tests, first build Chrome and ChromeDriver, and then
 invoke `run_py_tests.py`:
 ```
 autoninja -C out/Default chrome chromedriver
-python3 <CHROMEDRIVER_DIR>/test/run_py_tests.py --chromedriver=out/Default/chromedriver
+vpython3 <CHROMEDRIVER_DIR>/test/run_py_tests.py --chromedriver=out/Default/chromedriver
 ```
 
 The `run_py_tests.py` script has a number of options.

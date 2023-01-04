@@ -336,6 +336,8 @@ int main(int argc, char *argv[]) {
       "add readable timestamps to log",
       "enable-chrome-logs",
       "show logs from the browser (overrides other logging options)",
+      "bidi-mapper-path",
+      "custom bidi mapper path",
     // TODO(crbug.com/1052397): Revisit the macro expression once build flag
     // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

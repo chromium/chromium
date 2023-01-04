@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import platform
 import sys
 import util
 
@@ -747,4 +746,3 @@ class ChromeDriver(object):
 
   def __exit__(self, *args):
     self.Quit()
-
