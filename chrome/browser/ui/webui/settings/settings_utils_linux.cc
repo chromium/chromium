@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -30,19 +31,18 @@ using content::Referrer;
 namespace {
 
 const char* const kCinnamonProxyConfigCommand[] = {"cinnamon-settings",
-                                                   "network", nullptr};
+                                                   "network"};
 // Command used to configure GNOME 2 proxy settings.
-const char* const kGNOME2ProxyConfigCommand[] = {"gnome-network-properties",
-                                                 nullptr};
+const char* const kGNOME2ProxyConfigCommand[] = {"gnome-network-properties"};
 // In GNOME 3, we might need to run gnome-control-center instead. We try this
 // only after gnome-network-properties is not found, because older GNOME also
 // has this but it doesn't do the same thing. See below where we use it.
 const char* const kGNOME3ProxyConfigCommand[] = {"gnome-control-center",
-                                                 "network", nullptr};
+                                                 "network"};
 // KDE3, 4, and 5 are only slightly different, but incompatible. Go figure.
-const char* const kKDE3ProxyConfigCommand[] = {"kcmshell", "proxy", nullptr};
-const char* const kKDE4ProxyConfigCommand[] = {"kcmshell4", "proxy", nullptr};
-const char* const kKDE5ProxyConfigCommand[] = {"kcmshell5", "proxy", nullptr};
+const char* const kKDE3ProxyConfigCommand[] = {"kcmshell", "proxy"};
+const char* const kKDE4ProxyConfigCommand[] = {"kcmshell4", "proxy"};
+const char* const kKDE5ProxyConfigCommand[] = {"kcmshell5", "proxy"};
 
 // The URL for Linux proxy configuration help when not running under a
 // supported desktop environment.
@@ -67,7 +67,7 @@ void ShowLinuxProxyConfigUrl(base::WeakPtr<content::WebContents> web_contents,
 }
 
 // Start the given proxy configuration utility.
-bool StartProxyConfigUtil(const char* const command[]) {
+bool StartProxyConfigUtil(base::span<const char* const> command) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // base::LaunchProcess() returns true ("success") if the fork()
@@ -80,8 +80,9 @@ bool StartProxyConfigUtil(const char* const command[]) {
     return false;
 
   std::vector<std::string> argv;
-  for (size_t i = 0; command[i]; ++i)
-    argv.push_back(command[i]);
+  for (const char* arg : command) {
+    argv.push_back(arg);
+  }
   base::Process process = base::LaunchProcess(argv, base::LaunchOptions());
   if (!process.IsValid()) {
     LOG(ERROR) << "StartProxyConfigUtil failed to start " << command[0];

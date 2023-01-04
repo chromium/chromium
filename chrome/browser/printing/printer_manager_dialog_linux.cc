@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -22,31 +23,32 @@ namespace {
 // not bother with system-config-printer-kde and just always use
 // system-config-printer.
 // https://bugs.kde.org/show_bug.cgi?id=271957.
-constexpr const char* kSystemConfigPrinterCommand[] = {"system-config-printer",
-                                                       nullptr};
+constexpr const char* kSystemConfigPrinterCommand[] = {"system-config-printer"};
 
 // Newer KDE has an improved print manager.
-constexpr const char* kKde4KcmPrinterCommand[] = {
-    "kcmshell4", "kcm_printer_manager", nullptr};
-constexpr const char* kKde5KcmPrinterCommand[] = {
-    "kcmshell5", "kcm_printer_manager", nullptr};
+constexpr const char* kKde4KcmPrinterCommand[] = {"kcmshell4",
+                                                  "kcm_printer_manager"};
+constexpr const char* kKde5KcmPrinterCommand[] = {"kcmshell5",
+                                                  "kcm_printer_manager"};
 
 // Older GNOME printer manager. Used as a fallback.
 constexpr const char* kGnomeControlCenterPrintersCommand[] = {
-    "gnome-control-center", "printers", nullptr};
+    "gnome-control-center", "printers"};
 
 // Print manager in Deepin OS named "dde-printer".
-constexpr const char* kDeepinPrinterCommand[] = {"dde-printer", nullptr};
+constexpr const char* kDeepinPrinterCommand[] = {"dde-printer"};
 
 // Returns true if the dialog was opened successfully.
-bool OpenPrinterConfigDialog(const char* const* command) {
-  DCHECK(command);
+bool OpenPrinterConfigDialog(base::span<const char* const> command) {
+  DCHECK(!command.empty());
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (!base::ExecutableExistsInPath(env.get(), *command))
+  if (!base::ExecutableExistsInPath(env.get(), command[0])) {
     return false;
+  }
   std::vector<std::string> argv;
-  while (*command)
-    argv.push_back(*command++);
+  for (const char* arg : command) {
+    argv.push_back(arg);
+  }
   base::Process process = base::LaunchProcess(argv, base::LaunchOptions());
   if (!process.IsValid())
     return false;
