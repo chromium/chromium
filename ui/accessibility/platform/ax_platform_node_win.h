@@ -344,6 +344,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
  public:
   WinAccessibilityAPIUsageObserver();
   virtual ~WinAccessibilityAPIUsageObserver();
+  virtual void OnMSAAUsed() = 0;
   virtual void OnIAccessible2Used() = 0;
   virtual void OnScreenReaderHoneyPotQueried() = 0;
   virtual void OnAccNameCalled() = 0;
@@ -1515,6 +1516,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
       const gfx::Range& range,
       const std::wstring& active_composition_text,
       bool is_composition_committed);
+
+  // Notifies observers that basic MSAA usage was detected. Only some of the
+  // APIs were chosen to avoid accessibility being enabled unnecessarily or
+  // unexpectedly in a test environment, while still ensuring that clients that
+  // only use MSAA/IAccessible have a way to turn on accessibility.
+  void NotifyObserverForMSAAUsage() const;
 
   void NotifyAPIObserverForPatternRequest(PATTERNID pattern_id) const;
   void NotifyAPIObserverForPropertyRequest(PROPERTYID property_id) const;

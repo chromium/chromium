@@ -39,13 +39,21 @@ class WindowsAccessibilityEnabler
 
  private:
   // WinAccessibilityAPIUsageObserver
+  void OnMSAAUsed() override {
+    // When only basic MSAA functionality is used, just enable kNativeAPIs.
+    // Enabling kNativeAPIs gives little perf impact, but allows these APIs to
+    // interact with the BrowserAccessibilityManager allowing ATs to be able at
+    // least find the document without using any advanced APIs.
+    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+        ui::AXMode::kNativeAPIs);
+  }
+
   void OnIAccessible2Used() override {
     // When IAccessible2 APIs have been used elsewhere in the codebase,
     // enable basic web accessibility support. (Full screen reader support is
     // detected later when specific more advanced APIs are accessed.)
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
         ui::kAXModeBasic);
-    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnScreenReaderHoneyPotQueried() override {
@@ -59,7 +67,6 @@ class WindowsAccessibilityEnabler
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
           ui::kAXModeBasic);
     }
-    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnAccNameCalled() override {
@@ -71,7 +78,6 @@ class WindowsAccessibilityEnabler
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
           ui::kAXModeBasic);
     }
-    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void OnBasicUIAutomationUsed() override {
@@ -116,7 +122,6 @@ class WindowsAccessibilityEnabler
       mode = ui::kAXModeComplete;
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
         mode);
-    BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
   }
 
   void StartFiringUIAEvents() override { firing_uia_events_ = true; }
