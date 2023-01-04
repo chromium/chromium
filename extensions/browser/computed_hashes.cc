@@ -241,7 +241,7 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   if (!base::CreateDirectoryAndGetError(path.DirName(), nullptr))
     return false;
 
-  base::Value file_list(base::Value::Type::LIST);
+  base::Value::List file_list;
   for (const auto& resource_info : data_.items()) {
     const Data::HashInfo& hash_info = resource_info.second;
     int block_size = hash_info.block_size;
@@ -255,21 +255,19 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
       block_hashes.Append(std::move(encoded));
     }
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey(computed_hashes::kPathKey,
-                      hash_info.relative_unix_path.AsUTF8Unsafe());
-    dict.SetIntKey(computed_hashes::kBlockSizeKey, block_size);
-    dict.SetKey(computed_hashes::kBlockHashesKey,
-                base::Value(std::move(block_hashes)));
+    base::Value::Dict dict;
+    dict.Set(computed_hashes::kPathKey,
+             hash_info.relative_unix_path.AsUTF8Unsafe());
+    dict.Set(computed_hashes::kBlockSizeKey, block_size);
+    dict.Set(computed_hashes::kBlockHashesKey, std::move(block_hashes));
 
     file_list.Append(std::move(dict));
   }
 
   std::string json;
-  base::Value top_dictionary(base::Value::Type::DICTIONARY);
-  top_dictionary.SetIntKey(computed_hashes::kVersionKey,
-                           computed_hashes::kVersion);
-  top_dictionary.SetKey(computed_hashes::kFileHashesKey, std::move(file_list));
+  base::Value::Dict top_dictionary;
+  top_dictionary.Set(computed_hashes::kVersionKey, computed_hashes::kVersion);
+  top_dictionary.Set(computed_hashes::kFileHashesKey, std::move(file_list));
 
   if (!base::JSONWriter::Write(top_dictionary, &json))
     return false;

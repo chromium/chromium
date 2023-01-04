@@ -42,12 +42,11 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
   SessionStorageManagerUnittest()
       : value_int_(123),
         value_string_("value"),
-        value_list_(base::Value::Type::LIST),
-        value_dict_(base::Value::Type::DICTIONARY) {
+        value_list_(base::Value::Type::LIST) {
     value_list_.GetList().Append(1);
     value_list_.GetList().Append(2);
-    value_dict_.GetDict().Set("int", 123);
-    value_dict_.GetDict().Set("string", "abc");
+    value_dict_.Set("int", 123);
+    value_dict_.Set("string", "abc");
   }
 
  protected:
@@ -58,7 +57,7 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
   base::Value value_int_;
   base::Value value_string_;
   base::Value value_list_;
-  base::Value value_dict_;
+  base::Value::Dict value_dict_;
 
   // Session storage manager being tested.
   raw_ptr<SessionStorageManager> manager_;

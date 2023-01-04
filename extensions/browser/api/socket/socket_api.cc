@@ -291,9 +291,9 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
 
   DCHECK(socket);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey(kSocketIdKey, base::Value(AddSocket(socket)));
-  return RespondNow(OneArgument(std::move(result)));
+  base::Value::Dict result;
+  result.Set(kSocketIdKey, AddSocket(socket));
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction SocketDestroyFunction::Work() {
@@ -526,15 +526,15 @@ void SocketAcceptFunction::OnAccept(
     const absl::optional<net::IPEndPoint>& remote_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetIntKey(kResultCodeKey, result_code);
+  base::Value::Dict result;
+  result.Set(kResultCodeKey, result_code);
   if (result_code == net::OK) {
     Socket* client_socket =
         new TCPSocket(std::move(socket), std::move(receive_pipe_handle),
                       std::move(send_pipe_handle), remote_addr, GetOriginId());
-    result.SetIntKey(kSocketIdKey, AddSocket(client_socket));
+    result.Set(kSocketIdKey, AddSocket(client_socket));
   }
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 SocketReadFunction::SocketReadFunction() = default;
@@ -562,13 +562,13 @@ ExtensionFunction::ResponseAction SocketReadFunction::Work() {
 void SocketReadFunction::OnCompleted(int bytes_read,
                                      scoped_refptr<net::IOBuffer> io_buffer,
                                      bool socket_destroying) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetIntKey(kResultCodeKey, bytes_read);
+  base::Value::Dict result;
+  result.Set(kResultCodeKey, bytes_read);
   base::span<const uint8_t> data_span;
   if (bytes_read > 0)
     data_span = base::as_bytes(base::make_span(io_buffer->data(), bytes_read));
-  result.SetKey(kDataKey, base::Value(data_span));
-  Respond(OneArgument(std::move(result)));
+  result.Set(kDataKey, base::Value(data_span));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 SocketWriteFunction::SocketWriteFunction() = default;
@@ -603,9 +603,9 @@ ExtensionFunction::ResponseAction SocketWriteFunction::Work() {
 }
 
 void SocketWriteFunction::OnCompleted(int bytes_written) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetIntKey(kBytesWrittenKey, bytes_written);
-  Respond(OneArgument(std::move(result)));
+  base::Value::Dict result;
+  result.Set(kBytesWrittenKey, bytes_written);
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 SocketRecvFromFunction::SocketRecvFromFunction() = default;
@@ -636,15 +636,15 @@ void SocketRecvFromFunction::OnCompleted(int bytes_read,
                                          bool socket_destroying,
                                          const std::string& address,
                                          uint16_t port) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetIntKey(kResultCodeKey, bytes_read);
+  base::Value::Dict result;
+  result.Set(kResultCodeKey, bytes_read);
   base::span<const uint8_t> data_span;
   if (bytes_read > 0)
     data_span = base::as_bytes(base::make_span(io_buffer->data(), bytes_read));
-  result.SetKey(kDataKey, base::Value(data_span));
-  result.SetStringKey(kAddressKey, address);
-  result.SetIntKey(kPortKey, port);
-  Respond(OneArgument(std::move(result)));
+  result.Set(kDataKey, base::Value(data_span));
+  result.Set(kAddressKey, address);
+  result.Set(kPortKey, port);
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 SocketSendToFunction::SocketSendToFunction() = default;

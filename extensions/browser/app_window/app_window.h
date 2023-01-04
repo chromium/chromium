@@ -363,7 +363,7 @@ class AppWindow : public content::WebContentsDelegate,
 
   // Retrieve the current state of the app window as a dictionary, to pass to
   // the renderer.
-  void GetSerializedState(base::Value* properties) const;
+  void GetSerializedState(base::Value::Dict* properties) const;
 
   // Whether the app window wants to be alpha enabled.
   bool requested_alpha_enabled() const { return requested_alpha_enabled_; }

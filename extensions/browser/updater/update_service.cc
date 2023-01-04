@@ -126,11 +126,12 @@ void UpdateService::OnEvent(Events event, const std::string& extension_id) {
   }
 
   if (should_perform_action_on_omaha_attributes) {
-    base::Value attributes = GetExtensionOmahaAttributes(extension_id);
+    base::Value::Dict attributes = GetExtensionOmahaAttributes(extension_id);
     // Note that it's important to perform actions even if |attributes| is
     // empty, missing values may default to false and have associated logic.
     ExtensionSystem::Get(browser_context_)
-        ->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
+        ->PerformActionBasedOnOmahaAttributes(
+            extension_id, base::Value(std::move(attributes)));
   }
 }
 
@@ -263,10 +264,10 @@ void UpdateService::HandleComponentUpdateFoundEvent(
       content::Details<UpdateDetails>(&update_info));
 }
 
-base::Value UpdateService::GetExtensionOmahaAttributes(
+base::Value::Dict UpdateService::GetExtensionOmahaAttributes(
     const std::string& extension_id) {
   update_client::CrxUpdateItem update_item;
-  base::Value attributes(base::Value::Type::DICTIONARY);
+  base::Value::Dict attributes;
   if (!update_client_->GetCrxUpdateState(extension_id, &update_item))
     return attributes;
 
@@ -277,7 +278,7 @@ base::Value UpdateService::GetExtensionOmahaAttributes(
     // Only create the attribute if it's defined in the custom update check
     // data. We want to distinguish true, false and undefined values.
     if (iter != update_item.custom_updatecheck_data.end())
-      attributes.SetKey(key, base::Value(iter->second == "true"));
+      attributes.Set(key, iter->second == "true");
   }
   return attributes;
 }

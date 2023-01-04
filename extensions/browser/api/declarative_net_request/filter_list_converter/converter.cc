@@ -54,9 +54,7 @@ class ProtoToJSONRuleConverter {
 
  private:
   ProtoToJSONRuleConverter(const proto::UrlRule& rule, int rule_id)
-      : input_rule_(rule),
-        rule_id_(rule_id),
-        json_rule_(base::Value::Type::DICTIONARY) {}
+      : input_rule_(rule), rule_id_(rule_id), json_rule_(base::Value::Dict()) {}
 
   base::Value Convert(std::string* error) {
     CHECK(error);

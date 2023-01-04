@@ -138,7 +138,7 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
       continue;
     }
 
-    value = entry->ToValue();
+    value = base::Value(entry->ToValue());
     break;
   }
 }
@@ -300,27 +300,27 @@ bool DevicePermissionEntry::IsPersistent() const {
   return !serial_number_.empty();
 }
 
-base::Value DevicePermissionEntry::ToValue() const {
+base::Value::Dict DevicePermissionEntry::ToValue() const {
   if (!IsPersistent()) {
-    return base::Value();
+    return base::Value::Dict();
   }
 
   DCHECK(!serial_number_.empty());
-  base::Value entry_dict(base::Value::Type::DICTIONARY);
-  entry_dict.SetStringKey(kDeviceType, TypeToString(type_));
-  entry_dict.SetIntKey(kDeviceVendorId, vendor_id_);
-  entry_dict.SetIntKey(kDeviceProductId, product_id_);
-  entry_dict.SetStringKey(kDeviceSerialNumber, serial_number_);
+  base::Value::Dict entry_dict;
+  entry_dict.Set(kDeviceType, TypeToString(type_));
+  entry_dict.Set(kDeviceVendorId, vendor_id_);
+  entry_dict.Set(kDeviceProductId, product_id_);
+  entry_dict.Set(kDeviceSerialNumber, serial_number_);
 
   if (!manufacturer_string_.empty()) {
-    entry_dict.SetStringKey(kDeviceManufacturerString, manufacturer_string_);
+    entry_dict.Set(kDeviceManufacturerString, manufacturer_string_);
   }
   if (!product_string_.empty()) {
-    entry_dict.SetStringKey(kDeviceProductString, product_string_);
+    entry_dict.Set(kDeviceProductString, product_string_);
   }
   if (!last_used_.is_null()) {
-    entry_dict.SetStringKey(kDeviceLastUsed,
-                            base::NumberToString(last_used_.ToInternalValue()));
+    entry_dict.Set(kDeviceLastUsed,
+                   base::NumberToString(last_used_.ToInternalValue()));
   }
 
   return entry_dict;

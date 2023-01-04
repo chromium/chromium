@@ -61,7 +61,7 @@ void AppWindowContentsImpl::LoadContents(int32_t creator_process_id) {
 
 void AppWindowContentsImpl::NativeWindowChanged(
     NativeAppWindow* native_app_window) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value::Dict dictionary;
   host_->GetSerializedState(&dictionary);
   base::Value::List args;
   args.Append(std::move(dictionary));

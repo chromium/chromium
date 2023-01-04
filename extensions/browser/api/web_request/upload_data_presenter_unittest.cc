@@ -28,8 +28,8 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   // Expected output.
   base::Value values(base::Value::Type::LIST);
   values.Append("value");
-  base::Value expected_form(base::Value::Type::DICTIONARY);
-  expected_form.SetKey("key.with.dots", std::move(values));
+  base::Value::Dict expected_form;
+  expected_form.Set("key.with.dots", std::move(values));
 
   // Real output.
   std::unique_ptr<ParsedDataPresenter> parsed_data_presenter(

@@ -80,33 +80,33 @@ const int kDefaultHeight = 384;
 
 void SetConstraintProperty(const std::string& name,
                            int value,
-                           base::Value* bounds_properties) {
-  DCHECK(bounds_properties->is_dict());
+                           base::Value::Dict* bounds_properties) {
+  DCHECK(bounds_properties);
   if (value != SizeConstraints::kUnboundedSize)
-    bounds_properties->SetIntKey(name, value);
+    bounds_properties->Set(name, value);
   else
-    bounds_properties->SetKey(name, base::Value());
+    bounds_properties->Set(name, base::Value());
 }
 
 void SetBoundsProperties(const gfx::Rect& bounds,
                          const gfx::Size& min_size,
                          const gfx::Size& max_size,
                          const std::string& bounds_name,
-                         base::Value* window_properties) {
-  DCHECK(window_properties->is_dict());
-  base::Value bounds_properties(base::Value::Type::DICTIONARY);
+                         base::Value::Dict* window_properties) {
+  DCHECK(window_properties);
+  base::Value::Dict bounds_properties;
 
-  bounds_properties.SetIntKey("left", bounds.x());
-  bounds_properties.SetIntKey("top", bounds.y());
-  bounds_properties.SetIntKey("width", bounds.width());
-  bounds_properties.SetIntKey("height", bounds.height());
+  bounds_properties.Set("left", bounds.x());
+  bounds_properties.Set("top", bounds.y());
+  bounds_properties.Set("width", bounds.width());
+  bounds_properties.Set("height", bounds.height());
 
   SetConstraintProperty("minWidth", min_size.width(), &bounds_properties);
   SetConstraintProperty("minHeight", min_size.height(), &bounds_properties);
   SetConstraintProperty("maxWidth", max_size.width(), &bounds_properties);
   SetConstraintProperty("maxHeight", max_size.height(), &bounds_properties);
 
-  window_properties->SetKey(bounds_name, std::move(bounds_properties));
+  window_properties->Set(bounds_name, std::move(bounds_properties));
 }
 
 // Combines the constraints of the content and window, and returns constraints
@@ -747,17 +747,15 @@ void AppWindow::RestoreAlwaysOnTop() {
     UpdateNativeAlwaysOnTop();
 }
 
-void AppWindow::GetSerializedState(base::Value* properties) const {
+void AppWindow::GetSerializedState(base::Value::Dict* properties) const {
   DCHECK(properties);
-  DCHECK(properties->is_dict());
 
-  properties->SetBoolKey("fullscreen",
-                         native_app_window_->IsFullscreenOrPending());
-  properties->SetBoolKey("minimized", native_app_window_->IsMinimized());
-  properties->SetBoolKey("maximized", native_app_window_->IsMaximized());
-  properties->SetBoolKey("alwaysOnTop", IsAlwaysOnTop());
-  properties->SetBoolKey("hasFrameColor", native_app_window_->HasFrameColor());
-  properties->SetBoolKey(
+  properties->Set("fullscreen", native_app_window_->IsFullscreenOrPending());
+  properties->Set("minimized", native_app_window_->IsMinimized());
+  properties->Set("maximized", native_app_window_->IsMaximized());
+  properties->Set("alwaysOnTop", IsAlwaysOnTop());
+  properties->Set("hasFrameColor", native_app_window_->HasFrameColor());
+  properties->Set(
       "alphaEnabled",
       requested_alpha_enabled_ && native_app_window_->CanHaveAlphaEnabled());
 
@@ -765,12 +763,12 @@ void AppWindow::GetSerializedState(base::Value* properties) const {
   // removed to
   // make the values easier to check.
   SkColor transparent_white = ~SK_ColorBLACK;
-  properties->SetIntKey(
-      "activeFrameColor",
-      native_app_window_->ActiveFrameColor() & transparent_white);
-  properties->SetIntKey(
-      "inactiveFrameColor",
-      native_app_window_->InactiveFrameColor() & transparent_white);
+  properties->Set("activeFrameColor",
+                  static_cast<int>(native_app_window_->ActiveFrameColor() &
+                                   transparent_white));
+  properties->Set("inactiveFrameColor",
+                  static_cast<int>(native_app_window_->InactiveFrameColor() &
+                                   transparent_white));
 
   gfx::Rect content_bounds = GetClientBounds();
   gfx::Size content_min_size = native_app_window_->GetContentMinimumSize();

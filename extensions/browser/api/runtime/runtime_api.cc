@@ -449,14 +449,14 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
   }
 
   base::Value::List event_args;
-  base::Value info(base::Value::Type::DICTIONARY);
+  base::Value::Dict info;
   if (old_version.IsValid()) {
-    info.SetStringKey(kInstallReason, kInstallReasonUpdate);
-    info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
+    info.Set(kInstallReason, kInstallReasonUpdate);
+    info.Set(kInstallPreviousVersion, old_version.GetString());
   } else if (chrome_updated) {
-    info.SetStringKey(kInstallReason, kInstallReasonChromeUpdate);
+    info.Set(kInstallReason, kInstallReasonChromeUpdate);
   } else {
-    info.SetStringKey(kInstallReason, kInstallReasonInstall);
+    info.Set(kInstallReason, kInstallReasonInstall);
   }
   event_args.Append(std::move(info));
   EventRouter* event_router = EventRouter::Get(context);
