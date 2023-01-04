@@ -18,8 +18,12 @@ namespace shared_storage_worklet {
 
 PrivateAggregation::PrivateAggregation(
     mojom::SharedStorageWorkletServiceClient& client,
+    bool private_aggregation_permissions_policy_allowed,
     content::mojom::PrivateAggregationHost& private_aggregation_host)
-    : client_(client), private_aggregation_host_(private_aggregation_host) {}
+    : client_(client),
+      private_aggregation_permissions_policy_allowed_(
+          private_aggregation_permissions_policy_allowed),
+      private_aggregation_host_(private_aggregation_host) {}
 
 PrivateAggregation::~PrivateAggregation() = default;
 
@@ -41,7 +45,8 @@ void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
   EnsureUseCountersAreRecorded();
 
   content::mojom::AggregatableReportHistogramContributionPtr contribution =
-      worklet_utils::ParseSendHistogramReportArguments(*args);
+      worklet_utils::ParseSendHistogramReportArguments(
+          *args, private_aggregation_permissions_policy_allowed_);
   if (contribution.is_null()) {
     // Indicates an exception was thrown.
     return;
@@ -61,8 +66,9 @@ void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
 void PrivateAggregation::EnableDebugMode(gin::Arguments* args) {
   EnsureUseCountersAreRecorded();
 
-  worklet_utils::ParseAndApplyEnableDebugModeArguments(*args,
-                                                       debug_mode_details_);
+  worklet_utils::ParseAndApplyEnableDebugModeArguments(
+      *args, private_aggregation_permissions_policy_allowed_,
+      debug_mode_details_);
 }
 
 void PrivateAggregation::EnsureUseCountersAreRecorded() {

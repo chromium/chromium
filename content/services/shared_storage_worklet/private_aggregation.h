@@ -23,6 +23,7 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
  public:
   PrivateAggregation(
       mojom::SharedStorageWorkletServiceClient& client,
+      bool private_aggregation_permissions_policy_allowed,
       content::mojom::PrivateAggregationHost& private_aggregation_host);
   ~PrivateAggregation() override;
 
@@ -40,6 +41,9 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
   void EnsureUseCountersAreRecorded();
 
   raw_ref<mojom::SharedStorageWorkletServiceClient> client_;
+
+  bool private_aggregation_permissions_policy_allowed_;
+
   raw_ref<content::mojom::PrivateAggregationHost> private_aggregation_host_;
 
   bool has_recorded_use_counters_ = false;

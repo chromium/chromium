@@ -329,8 +329,11 @@ void PrivateAggregationBindings::SendHistogramReport(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
+  // TODO(crbug.com/1403364): pass the correct permissions policy state.
   content::mojom::AggregatableReportHistogramContributionPtr contribution =
-      worklet_utils::ParseSendHistogramReportArguments(gin::Arguments(args));
+      worklet_utils::ParseSendHistogramReportArguments(
+          gin::Arguments(args),
+          /*private_aggregation_permissions_policy_allowed=*/true);
   if (contribution.is_null()) {
     // Indicates an exception was thrown.
     return;
@@ -388,8 +391,11 @@ void PrivateAggregationBindings::EnableDebugMode(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
+  // TODO(crbug.com/1403364): pass the correct permissions policy state.
   worklet_utils::ParseAndApplyEnableDebugModeArguments(
-      gin::Arguments(args), bindings->debug_mode_details_);
+      gin::Arguments(args),
+      /*private_aggregation_permissions_policy_allowed=*/true,
+      bindings->debug_mode_details_);
 }
 
 std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>

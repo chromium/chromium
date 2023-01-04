@@ -826,12 +826,19 @@ base::TimeDelta SharedStorageWorkletHost::GetKeepAliveTimeout() const {
 
 shared_storage_worklet::mojom::SharedStorageWorkletService*
 SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
+  DCHECK(document_service_);
+
   if (!shared_storage_worklet_service_) {
+    bool private_aggregation_permissions_policy_allowed =
+        document_service_->render_frame_host().IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kPrivateAggregation);
+
     driver_->StartWorkletService(
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver());
 
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
+        private_aggregation_permissions_policy_allowed,
         MaybeBindPrivateAggregationHost());
   }
 

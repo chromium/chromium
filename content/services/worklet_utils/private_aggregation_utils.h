@@ -28,7 +28,9 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 // corresponding contribution. In case of an error, throws an exception and
 // returns `nullptr`.
 content::mojom::AggregatableReportHistogramContributionPtr
-ParseSendHistogramReportArguments(const gin::Arguments& args);
+ParseSendHistogramReportArguments(
+    const gin::Arguments& args,
+    bool private_aggregation_permissions_policy_allowed);
 
 // Parses arguments provided to `enableDebugMode()` and updates
 // `debug_mode_details` as appropriate. `debug_mode_details` must be passed a
@@ -36,6 +38,7 @@ ParseSendHistogramReportArguments(const gin::Arguments& args);
 // throws an exception and does not update `debug_mode_details`.
 void ParseAndApplyEnableDebugModeArguments(
     const gin::Arguments& args,
+    bool private_aggregation_permissions_policy_allowed,
     content::mojom::DebugModeDetails& debug_mode_details);
 
 }  // namespace worklet_utils

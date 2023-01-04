@@ -276,7 +276,8 @@ class SharedStorageWorkletGlobalScopeTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
     mock_private_aggregation_host_ =
         std::make_unique<MockMojomPrivateAggregationHost>();
-    global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>();
+    global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>(
+        /*private_aggregation_permissions_policy_allowed=*/true);
   }
 
   ~SharedStorageWorkletGlobalScopeTest() override = default;
@@ -287,6 +288,11 @@ class SharedStorageWorkletGlobalScopeTest : public testing::Test {
 
   v8::Local<v8::Context> LocalContext() {
     return global_scope_->LocalContext();
+  }
+
+  void OverrideGlobalScope(
+      std::unique_ptr<SharedStorageWorkletGlobalScope> global_scope) {
+    global_scope_ = std::move(global_scope);
   }
 
   v8::Local<v8::Value> EvalJs(const std::string& src) {
@@ -1470,6 +1476,32 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_TRUE(unnamed_operation_finished());
   EXPECT_TRUE(unnamed_operation_success());
   EXPECT_TRUE(unnamed_operation_error_message().empty());
+}
+
+TEST_F(SharedStorageRunOperationTest,
+       UnnamedOperationWithPrivateAggregationCall_PAPermissionsPolicyDisabled) {
+  OverrideGlobalScope(std::make_unique<SharedStorageWorkletGlobalScope>(
+      /*private_aggregation_permissions_policy_allowed=*/false));
+
+  SimulateAddModule(R"(
+      class TestClass {
+        async run() {
+          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        }
+      }
+
+      register("test-operation", TestClass);
+    )");
+
+  SimulateRunOperation("test-operation", /*serialized_data=*/{});
+
+  EXPECT_TRUE(unnamed_operation_finished());
+  EXPECT_FALSE(unnamed_operation_success());
+
+  EXPECT_EQ(unnamed_operation_error_message(),
+            "TypeError: The \"private-aggregation\" Permissions Policy denied "
+            "the method on privateAggregation");
+  EXPECT_TRUE(test_client()->observed_record_use_counter_call());
 }
 
 TEST_F(SharedStorageRunOperationTest,

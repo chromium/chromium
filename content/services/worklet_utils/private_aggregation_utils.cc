@@ -99,8 +99,19 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 }
 
 content::mojom::AggregatableReportHistogramContributionPtr
-ParseSendHistogramReportArguments(const gin::Arguments& args) {
+ParseSendHistogramReportArguments(
+    const gin::Arguments& args,
+    bool private_aggregation_permissions_policy_allowed) {
   v8::Isolate* isolate = args.isolate();
+
+  if (!private_aggregation_permissions_policy_allowed) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate,
+        "The \"private-aggregation\" Permissions Policy denied the method on "
+        "privateAggregation")));
+    return nullptr;
+  }
+
   std::vector<v8::Local<v8::Value>> argument_list = args.GetAll();
 
   // Any additional arguments are ignored.
@@ -183,9 +194,18 @@ ParseSendHistogramReportArguments(const gin::Arguments& args) {
 
 void ParseAndApplyEnableDebugModeArguments(
     const gin::Arguments& args,
+    bool private_aggregation_permissions_policy_allowed,
     content::mojom::DebugModeDetails& debug_mode_details) {
   v8::Isolate* isolate = args.isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  if (!private_aggregation_permissions_policy_allowed) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate,
+        "The \"private-aggregation\" Permissions Policy denied the method on "
+        "privateAggregation")));
+    return;
+  }
 
   std::vector<v8::Local<v8::Value>> argument_list = args.GetAll();
 

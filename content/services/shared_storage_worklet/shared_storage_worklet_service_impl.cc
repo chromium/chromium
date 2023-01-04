@@ -25,10 +25,13 @@ SharedStorageWorkletServiceImpl::~SharedStorageWorkletServiceImpl() = default;
 void SharedStorageWorkletServiceImpl::Initialize(
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
         client,
+    bool private_aggregation_permissions_policy_allowed,
     mojo::PendingRemote<content::mojom::PrivateAggregationHost>
         private_aggregation_host) {
   DCHECK(!global_scope_);
   client_.Bind(std::move(client));
+  private_aggregation_permissions_policy_allowed_ =
+      private_aggregation_permissions_policy_allowed;
   if (private_aggregation_host)
     private_aggregation_host_.Bind(std::move(private_aggregation_host));
 }
@@ -63,8 +66,10 @@ void SharedStorageWorkletServiceImpl::RunOperation(
 
 SharedStorageWorkletGlobalScope*
 SharedStorageWorkletServiceImpl::GetGlobalScope() {
-  if (!global_scope_)
-    global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>();
+  if (!global_scope_) {
+    global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>(
+        private_aggregation_permissions_policy_allowed_);
+  }
 
   return global_scope_.get();
 }

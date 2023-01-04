@@ -227,7 +227,15 @@ enum PermissionsPolicyFeature {
   kComputePressure = 106,
 
   // Web Smart Card API
-  kSmartCard = 107
+  kSmartCard = 107,
+
+  // "shared-storage-select-url" permissions policy that controls the use of
+  // sharedStorage.selectURL().
+  kSharedStorageSelectUrl = 108,
+
+  // "private-aggregation" permissions policy that controls the use of
+  // privateAggregation within the shared storage worklet.
+  kPrivateAggregation = 109
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

@@ -33,7 +33,8 @@ class ModuleScriptDownloader;
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
  public:
-  SharedStorageWorkletGlobalScope();
+  explicit SharedStorageWorkletGlobalScope(
+      bool private_aggregation_permissions_policy_allowed);
   ~SharedStorageWorkletGlobalScope();
 
   void AddModule(
@@ -72,6 +73,8 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
   v8::Isolate* Isolate();
 
   v8::Local<v8::Context> LocalContext();
+
+  bool private_aggregation_permissions_policy_allowed_;
 
   std::unique_ptr<ModuleScriptDownloader> module_script_downloader_;
 

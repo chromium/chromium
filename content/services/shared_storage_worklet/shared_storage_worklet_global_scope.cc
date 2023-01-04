@@ -43,7 +43,11 @@ void InitV8() {
 
 }  // namespace
 
-SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope() = default;
+SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
+    bool private_aggregation_permissions_policy_allowed)
+    : private_aggregation_permissions_policy_allowed_(
+          private_aggregation_permissions_policy_allowed) {}
+
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 
 void SharedStorageWorkletGlobalScope::AddModule(
@@ -115,7 +119,8 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
 
   if (private_aggregation_host) {
     private_aggregation_ = std::make_unique<PrivateAggregation>(
-        *client, *private_aggregation_host);
+        *client, private_aggregation_permissions_policy_allowed_,
+        *private_aggregation_host);
     global
         ->Set(context, gin::StringToSymbol(Isolate(), "privateAggregation"),
               private_aggregation_->GetWrapper(Isolate()).ToLocalChecked())

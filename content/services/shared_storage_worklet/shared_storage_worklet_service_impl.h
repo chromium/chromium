@@ -32,6 +32,7 @@ class SharedStorageWorkletServiceImpl
   // mojom::SharedStorageWorkletService implementation:
   void Initialize(mojo::PendingAssociatedRemote<
                       mojom::SharedStorageWorkletServiceClient> client,
+                  bool private_aggregation_permissions_policy_allowed,
                   mojo::PendingRemote<content::mojom::PrivateAggregationHost>
                       private_aggregation_host) override;
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -68,6 +69,10 @@ class SharedStorageWorkletServiceImpl
   // standalone service, so the starting of a worklet operation doesn't have to
   // depend on / preserve the order with messages of other types.
   mojo::AssociatedRemote<mojom::SharedStorageWorkletServiceClient> client_;
+
+  // Whether the "private-aggregation" permissions policy is enabled in the
+  // worklet.
+  bool private_aggregation_permissions_policy_allowed_ = false;
 
   // No need to be associated as message ordering (relative to shared storage
   // operations) is unimportant.

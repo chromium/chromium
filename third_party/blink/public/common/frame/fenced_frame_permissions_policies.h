@@ -17,7 +17,9 @@ namespace blink {
 constexpr blink::mojom::PermissionsPolicyFeature
     kFencedFrameOpaqueAdsDefaultAllowedFeatures[] = {
         blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
-        blink::mojom::PermissionsPolicyFeature::kSharedStorage};
+        blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+        blink::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation};
 
 }  // namespace blink
 

@@ -77,10 +77,13 @@ interface SharedStorageWorkletServiceClient {
 // in the worklet environment.
 // See https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 interface SharedStorageWorkletService {
-  // Binds `client` and, if not null, `pa_host`. Must be the first call on this
-  // interface.
+  // Binds `client` and, if not null, `pa_host`. Also initializes the
+  // "private-aggregation" permisisons policy's status to
+  // `private_aggregation_permissions_policy_allowed`. Must be the first call on
+  // this interface.
   Initialize(
     pending_associated_remote<SharedStorageWorkletServiceClient> client,
+    bool private_aggregation_permissions_policy_allowed,
     pending_remote<content.mojom.PrivateAggregationHost>? pa_host);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in
