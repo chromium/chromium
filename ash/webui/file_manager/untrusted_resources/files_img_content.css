@@ -28,3 +28,13 @@ img {
 #content[hidden] {
   display: none;
 }
+
+/* TODO(files-app-dark-mode): figure out what background color should be
+ * used here. */
+@media (prefers-color-scheme: dark) {
+  html,
+  body,
+  img {
+    background-color: black;
+  }
+}
