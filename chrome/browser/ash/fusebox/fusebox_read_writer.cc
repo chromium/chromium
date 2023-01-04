@@ -4,10 +4,19 @@
 
 #include "chrome/browser/ash/fusebox/fusebox_read_writer.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
+#include "base/files/file_util.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
 
 namespace fusebox {
 
@@ -57,9 +66,31 @@ void RunWrite2CallbackTypical(ReadWriter::Write2Callback callback, int length) {
   std::move(callback).Run(response_proto);
 }
 
+ReadWriter::WriteTempFileResult WriteTempFile(
+    base::ScopedFD&& scoped_fd,
+    scoped_refptr<net::StringIOBuffer> buffer,
+    int64_t offset,
+    int length) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  int fd = scoped_fd.get();
+  char* ptr = buffer->data();
+  if ((HANDLE_EINTR(lseek(fd, static_cast<off_t>(offset), SEEK_SET)) == -1) ||
+      (HANDLE_EINTR(write(fd, ptr, static_cast<size_t>(length))) == -1)) {
+    return std::make_pair(std::move(scoped_fd), errno);
+  }
+  return std::make_pair(std::move(scoped_fd), 0);
+}
+
 }  // namespace
 
-ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url) : fs_url_(fs_url) {
+ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url,
+                       const std::string& profile_path,
+                       bool use_temp_file)
+    : fs_url_(fs_url),
+      profile_path_(profile_path),
+      use_temp_file_(use_temp_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
@@ -71,12 +102,69 @@ ReadWriter::~ReadWriter() {
 // looks unused, but we need to keep the storage::FileSystemContext reference
 // alive until the callbacks are run.
 
+void ReadWriter::Close(scoped_refptr<storage::FileSystemContext> fs_context,
+                       Close2Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  bool trivial = closed_ || !use_temp_file_;
+  closed_ = true;
+  if (trivial) {
+    Close2ResponseProto response_proto;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  close2_fs_context_ = std::move(fs_context);
+  close2_callback_ = std::move(callback);
+  if (!is_loaning_temp_file_scoped_fd_) {
+    Save();
+  }
+}
+
+void ReadWriter::Save() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(close2_fs_context_);
+  DCHECK(close2_callback_);
+  DCHECK(!is_loaning_temp_file_scoped_fd_);
+  DCHECK(use_temp_file_);
+
+  std::string src_path =
+      created_temp_file_
+          ? base::StringPrintf("/proc/self/fd/%d", temp_file_.get())
+          : "/dev/null";
+
+  constexpr auto outer_callback =
+      [](base::ScopedFD scoped_fd,
+         scoped_refptr<storage::FileSystemContext> fs_context,
+         Close2Callback callback, base::File::Error file_error) {
+        Close2ResponseProto response_proto;
+        if (file_error != base::File::Error::FILE_OK) {
+          response_proto.set_posix_error_code(FileErrorToErrno(file_error));
+        }
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+      };
+
+  close2_fs_context_->operation_runner()->CopyInForeignFile(
+      base::FilePath(src_path), fs_url_,
+      base::BindOnce(outer_callback, std::move(temp_file_), close2_fs_context_,
+                     std::move(close2_callback_)));
+}
+
 void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
                       int64_t offset,
                       int64_t length,
                       Read2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!is_in_flight_);
+
+  if (closed_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&RunRead2CallbackFailure, std::move(callback),
+                                  base::File::Error::FILE_ERROR_FAILED));
+    return;
+  }
 
   // See if we can re-use the previous storage::FileStreamReader.
   std::unique_ptr<storage::FileStreamReader> fs_reader;
@@ -161,6 +249,48 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!is_in_flight_);
 
+  if (closed_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
+                       base::File::Error::FILE_ERROR_FAILED));
+    return;
+  }
+
+  if (use_temp_file_) {
+    if (!temp_file_.is_valid()) {
+      // Create the temporary file via open and O_TMPFILE, instead of
+      // base::CreateTemporaryFile, to simplify clean-up. With the latter,
+      // there is a garbage collection problem of when to delete no-longer-used
+      // files (as base::File::DeleteOnClose is Windows only). That problem can
+      // be tricky if Chrome crashes before we're done with the temporary file.
+      // With O_TMPFILE, the kernel deletes the file automatically when the
+      // file descriptor is closed, whether via base::ScopedFD destructor or,
+      // for crashes, at process exit.
+      temp_file_.reset(open(profile_path_.c_str(),
+                            O_CLOEXEC | O_EXCL | O_TMPFILE | O_RDWR, 0600));
+      if (!temp_file_.is_valid()) {
+        PLOG(WARNING) << "could not create O_TMPFILE file";
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
+                           base::File::Error::FILE_ERROR_NO_SPACE));
+        return;
+      }
+      created_temp_file_ = true;
+    }
+
+    is_in_flight_ = true;
+    is_loaning_temp_file_scoped_fd_ = true;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&WriteTempFile, std::move(temp_file_), std::move(buffer),
+                       offset, length),
+        base::BindOnce(&OnWriteTempFile, weak_ptr_factory_.GetWeakPtr(),
+                       std::move(callback)));
+    return;
+  }
+
   // See if we can re-use the previous storage::FileStreamWriter.
   std::unique_ptr<storage::FileStreamWriter> fs_writer;
   if (fs_writer_ && (write_offset_ == offset)) {
@@ -185,8 +315,8 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
 
   is_in_flight_ = true;
   auto pair = base::SplitOnceCallback(base::BindOnce(
-      &ReadWriter::OnWrite, weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-      fs_context, std::move(fs_writer), buffer, offset));
+      &ReadWriter::OnWriteDirect, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), fs_context, std::move(fs_writer), buffer, offset));
 
   int result =
       saved_fs_writer->Write(buffer.get(), length, std::move(pair.first));
@@ -195,7 +325,39 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   }
 }
 
-void ReadWriter::OnWrite(
+void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
+                                 Write2Callback callback,
+                                 WriteTempFileResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    Write2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EBUSY);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  DCHECK(self->is_in_flight_);
+  self->is_in_flight_ = false;
+  self->is_loaning_temp_file_scoped_fd_ = false;
+
+  self->temp_file_ = std::move(result.first);
+
+  Write2ResponseProto response_proto;
+  if (result.second) {
+    response_proto.set_posix_error_code(result.second);
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+
+  if (self->close2_callback_) {
+    self->Save();
+  }
+}
+
+void ReadWriter::OnWriteDirect(
     base::WeakPtr<ReadWriter> weak_ptr,
     Write2Callback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.

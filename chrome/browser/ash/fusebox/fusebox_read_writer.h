@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_READ_WRITER_H_
 #define CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_READ_WRITER_H_
 
+#include <utility>
+
 #include "base/callback_forward.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/fusebox/fusebox.pb.h"
 #include "net/base/io_buffer.h"
@@ -35,13 +38,26 @@ namespace fusebox {
 // ends just before the corresponding callback is run.
 class ReadWriter {
  public:
+  using Close2Callback =
+      base::OnceCallback<void(const Close2ResponseProto& response)>;
   using Read2Callback =
       base::OnceCallback<void(const Read2ResponseProto& response)>;
   using Write2Callback =
       base::OnceCallback<void(const Write2ResponseProto& response)>;
 
-  explicit ReadWriter(const storage::FileSystemURL& fs_url);
+  // |use_temp_file| is for the case when the |fs_url| storage system does not
+  // support incremental writes, only atomic "here's the entire contents"
+  // writes, such as MTP (Media Transfer Protocol, e.g. phones attached to a
+  // Chromebook, which is a file-oriented rather than block-oriented protocol).
+  // In this case, the Write calls are diverted to a temporary file and the
+  // Close call saves that temporary file to |fs_url|.
+  ReadWriter(const storage::FileSystemURL& fs_url,
+             const std::string& profile_path,
+             bool use_temp_file);
   ~ReadWriter();
+
+  void Close(scoped_refptr<storage::FileSystemContext> fs_context,
+             Close2Callback callback);
 
   void Read(scoped_refptr<storage::FileSystemContext> fs_context,
             int64_t offset,
@@ -54,7 +70,13 @@ class ReadWriter {
              int length,
              Write2Callback callback);
 
+  // The int is a POSIX error code.
+  using WriteTempFileResult = std::pair<base::ScopedFD, int>;
+
  private:
+  // Saves the |temp_file_| to the |fs_url_|.
+  void Save();
+
   // The OnXxx methods are static (but take a WeakPtr) so that the callback
   // will run even if the WeakPtr is invalidated.
 
@@ -66,15 +88,21 @@ class ReadWriter {
                      int64_t offset,
                      int length);
 
-  static void OnWrite(base::WeakPtr<ReadWriter> weak_ptr,
-                      Write2Callback callback,
-                      scoped_refptr<storage::FileSystemContext> fs_context,
-                      std::unique_ptr<storage::FileStreamWriter> fs_writer,
-                      scoped_refptr<net::IOBuffer> buffer,
-                      int64_t offset,
-                      int length);
+  static void OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
+                              Write2Callback callback,
+                              WriteTempFileResult result);
+
+  static void OnWriteDirect(
+      base::WeakPtr<ReadWriter> weak_ptr,
+      Write2Callback callback,
+      scoped_refptr<storage::FileSystemContext> fs_context,
+      std::unique_ptr<storage::FileStreamWriter> fs_writer,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t offset,
+      int length);
 
   const storage::FileSystemURL fs_url_;
+  const std::string profile_path_;
 
   std::unique_ptr<storage::FileStreamReader> fs_reader_;
   // Unused whenever fs_reader_ is nullptr.
@@ -84,9 +112,21 @@ class ReadWriter {
   // Unused whenever fs_writer_ is nullptr.
   int64_t write_offset_ = -1;
 
-  // TODO(b/255703917): snapshot management.
+  scoped_refptr<storage::FileSystemContext> close2_fs_context_;
+  Close2Callback close2_callback_;
+
+  base::ScopedFD temp_file_;
+
+  // True when the FD in |temp_file_| has been loaned out to a separate thread
+  // (separate from the content::BrowserThread::IO thread that this lives on,
+  // which should not be used for blocking I/O).
+  bool is_loaning_temp_file_scoped_fd_ = false;
 
   bool is_in_flight_ = false;
+  bool closed_ = false;
+  bool created_temp_file_ = false;
+
+  const bool use_temp_file_;
 
   base::WeakPtrFactory<ReadWriter> weak_ptr_factory_{this};
 };

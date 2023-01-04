@@ -39,6 +39,14 @@ namespace {
 
 Server* g_server_instance = nullptr;
 
+bool UseTempFile(const std::string fs_url_as_string) {
+  // MTP (the protocol) does not support incremental writes. When creating an
+  // MTP file (via FuseBox), we need to supply its contents as a whole. Up
+  // until that transfer, spool incremental writes to a temporary file.
+  return base::StartsWith(fs_url_as_string,
+                          file_manager::util::kFuseBoxSubdirPrefixMTP);
+}
+
 std::pair<std::string, bool> ResolvePrefixMap(
     const fusebox::Server::PrefixMap& prefix_map,
     const std::string& s) {
@@ -420,12 +428,17 @@ std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
 Server::FuseFileMapEntry::FuseFileMapEntry(
     scoped_refptr<storage::FileSystemContext> fs_context_arg,
     storage::FileSystemURL fs_url_arg,
+    const std::string& profile_path_arg,
     bool readable_arg,
-    bool writable_arg)
+    bool writable_arg,
+    bool use_temp_file_arg)
     : fs_context_(fs_context_arg),
       readable_(readable_arg),
       writable_(writable_arg),
-      seqbnd_read_writer_(content::GetIOThreadTaskRunner({}), fs_url_arg) {}
+      seqbnd_read_writer_(content::GetIOThreadTaskRunner({}),
+                          fs_url_arg,
+                          profile_path_arg,
+                          use_temp_file_arg) {}
 
 Server::FuseFileMapEntry::FuseFileMapEntry(FuseFileMapEntry&&) = default;
 
@@ -624,11 +637,10 @@ void Server::Close2(const Close2RequestProto& request_proto,
   }
   FuseFileMapEntry& entry = iter->second;
   base::circular_deque<PendingOp> pending_ops = std::move(entry.pending_ops_);
+  entry.seqbnd_read_writer_.AsyncCall(&ReadWriter::Close)
+      .WithArgs(entry.fs_context_, std::move(callback));
 
   fuse_file_map_.erase(iter);
-
-  Close2ResponseProto response_proto;
-  std::move(callback).Run(response_proto);
 
   for (auto& pending_op : pending_ops) {
     if (absl::holds_alternative<PendingRead2>(pending_op)) {
@@ -670,9 +682,27 @@ void Server::Create(const CreateRequestProto& request_proto,
 
   constexpr bool readable = true;
   constexpr bool writable = true;
+  bool use_temp_file = writable && UseTempFile(fs_url_as_string);
 
-  uint64_t fuse_handle = InsertFuseFileMapEntry(
-      FuseFileMapEntry(common.fs_context, common.fs_url, readable, writable));
+  uint64_t fuse_handle = InsertFuseFileMapEntry(FuseFileMapEntry(
+      common.fs_context, common.fs_url,
+      use_temp_file
+          ? ProfileManager::GetActiveUserProfile()->GetPath().AsUTF8Unsafe()
+          : std::string(),
+      readable, writable, use_temp_file));
+
+  if (use_temp_file) {
+    base::Time now = base::Time::Now();
+    base::File::Info info;
+    info.last_modified = now;
+    info.last_accessed = now;
+    info.creation_time = now;
+    CreateResponseProto response_proto;
+    response_proto.set_fuse_handle(fuse_handle);
+    FillInDirEntryProto(response_proto.mutable_stat(), info, common.read_only);
+    std::move(callback).Run(response_proto);
+    return;
+  }
 
   auto on_failure = base::BindOnce(&Server::EraseFuseFileMapEntry,
                                    weak_ptr_factory_.GetWeakPtr(), fuse_handle);
@@ -755,10 +785,19 @@ void Server::Open2(const Open2RequestProto& request_proto,
   bool writable =
       !common.read_only && ((access_mode == AccessMode::WRITE_ONLY) ||
                             (access_mode == AccessMode::READ_WRITE));
+  bool use_temp_file = writable && UseTempFile(fs_url_as_string);
+  if (use_temp_file) {
+    // TODO(b/255703917): allow use_temp_file when modifying existing files,
+    // not just creating new ones.
+    Open2ResponseProto response_proto;
+    response_proto.set_posix_error_code(ENOTSUP);
+    std::move(callback).Run(response_proto);
+    return;
+  }
 
   uint64_t fuse_handle = InsertFuseFileMapEntry(
       FuseFileMapEntry(std::move(common.fs_context), std::move(common.fs_url),
-                       readable, writable));
+                       std::string(), readable, writable, use_temp_file));
 
   Open2ResponseProto response_proto;
   response_proto.set_fuse_handle(fuse_handle);

@@ -203,8 +203,10 @@ class Server {
   struct FuseFileMapEntry {
     FuseFileMapEntry(scoped_refptr<storage::FileSystemContext> fs_context_arg,
                      storage::FileSystemURL fs_url_arg,
+                     const std::string& profile_path_arg,
                      bool readable_arg,
-                     bool writable_arg);
+                     bool writable_arg,
+                     bool use_temp_file_arg);
     FuseFileMapEntry(FuseFileMapEntry&&);
     ~FuseFileMapEntry();
 
