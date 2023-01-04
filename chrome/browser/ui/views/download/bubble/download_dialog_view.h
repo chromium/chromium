@@ -30,12 +30,8 @@ class DownloadDialogView : public views::View {
   void AddHeader();
   void AddFooter();
 
-  // views::View.
-  void OnThemeChanged() override;
-
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<Browser> browser_ = nullptr;
-  raw_ptr<views::Link> footer_link_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_DIALOG_VIEW_H_
