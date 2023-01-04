@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -47,7 +48,9 @@
 #include "absl/flags/usage.h"
 #include "absl/flags/usage_config.h"
 #include "absl/strings/ascii.h"
+#include "absl/strings/internal/damerau_levenshtein_distance.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
 #include "absl/synchronization/mutex.h"
@@ -71,6 +74,11 @@ ABSL_CONST_INIT bool tryfromenv_needs_processing
 ABSL_CONST_INIT absl::Mutex specified_flags_guard(absl::kConstInit);
 ABSL_CONST_INIT std::vector<const CommandLineFlag*>* specified_flags
     ABSL_GUARDED_BY(specified_flags_guard) = nullptr;
+
+// Suggesting at most kMaxHints flags in case of misspellings.
+ABSL_CONST_INIT const size_t kMaxHints = 100;
+// Suggesting only flags which have a smaller distance than kMaxDistance.
+ABSL_CONST_INIT const size_t kMaxDistance = 3;
 
 struct SpecifiedFlagsCompare {
   bool operator()(const CommandLineFlag* a, const CommandLineFlag* b) const {
@@ -605,6 +613,55 @@ bool WasPresentOnCommandLine(absl::string_view flag_name) {
 
 // --------------------------------------------------------------------
 
+struct BestHints {
+  explicit BestHints(uint8_t _max) : best_distance(_max + 1) {}
+  bool AddHint(absl::string_view hint, uint8_t distance) {
+    if (hints.size() >= kMaxHints) return false;
+    if (distance == best_distance) {
+      hints.emplace_back(hint);
+    }
+    if (distance < best_distance) {
+      best_distance = distance;
+      hints = std::vector<std::string>{std::string(hint)};
+    }
+    return true;
+  }
+
+  uint8_t best_distance;
+  std::vector<std::string> hints;
+};
+
+// Return the list of flags with the smallest Damerau-Levenshtein distance to
+// the given flag.
+std::vector<std::string> GetMisspellingHints(const absl::string_view flag) {
+  const size_t maxCutoff = std::min(flag.size() / 2 + 1, kMaxDistance);
+  auto undefok = absl::GetFlag(FLAGS_undefok);
+  BestHints best_hints(static_cast<uint8_t>(maxCutoff));
+  absl::flags_internal::ForEachFlag([&](const CommandLineFlag& f) {
+    if (best_hints.hints.size() >= kMaxHints) return;
+    uint8_t distance = strings_internal::CappedDamerauLevenshteinDistance(
+        flag, f.Name(), best_hints.best_distance);
+    best_hints.AddHint(f.Name(), distance);
+    // For boolean flags, also calculate distance to the negated form.
+    if (f.IsOfType<bool>()) {
+      const std::string negated_flag = absl::StrCat("no", f.Name());
+      distance = strings_internal::CappedDamerauLevenshteinDistance(
+          flag, negated_flag, best_hints.best_distance);
+      best_hints.AddHint(negated_flag, distance);
+    }
+  });
+  // Finally calculate distance to flags in "undefok".
+  absl::c_for_each(undefok, [&](const absl::string_view f) {
+    if (best_hints.hints.size() >= kMaxHints) return;
+    uint8_t distance = strings_internal::CappedDamerauLevenshteinDistance(
+        flag, f, best_hints.best_distance);
+    best_hints.AddHint(absl::StrCat(f, " (undefok)"), distance);
+  });
+  return best_hints.hints;
+}
+
+// --------------------------------------------------------------------
+
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
                                         ArgvListAction arg_list_act,
                                         UsageFlagsAction usage_flag_act,
@@ -755,10 +812,19 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
 
   for (const auto& flag_name : undefined_flag_names) {
     if (CanIgnoreUndefinedFlag(flag_name.second)) continue;
-
-    flags_internal::ReportUsageError(
-        absl::StrCat("Unknown command line flag '", flag_name.second, "'"),
-        true);
+    // Verify if flag_name has the "no" already removed
+    std::vector<std::string> flags;
+    if (flag_name.first) flags = GetMisspellingHints(flag_name.second);
+    if (flags.empty()) {
+      flags_internal::ReportUsageError(
+          absl::StrCat("Unknown command line flag '", flag_name.second, "'"),
+          true);
+    } else {
+      flags_internal::ReportUsageError(
+          absl::StrCat("Unknown command line flag '", flag_name.second,
+                       "'. Did you mean: ", absl::StrJoin(flags, ", "), " ?"),
+          true);
+    }
 
     success = false;
   }

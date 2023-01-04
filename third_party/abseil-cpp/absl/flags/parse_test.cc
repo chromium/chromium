@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 
+#include <cstddef>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -38,6 +39,36 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+// Define 125 similar flags to test kMaxHints for flag suggestions.
+#define FLAG_MULT(x) F3(x)
+#define TEST_FLAG_HEADER FLAG_HEADER_
+
+#define F(name) ABSL_FLAG(int, name, 0, "");
+
+#define F1(name) \
+  F(name##1);    \
+  F(name##2);    \
+  F(name##3);    \
+  F(name##4);    \
+  F(name##5);
+/**/
+#define F2(name) \
+  F1(name##1);   \
+  F1(name##2);   \
+  F1(name##3);   \
+  F1(name##4);   \
+  F1(name##5);
+/**/
+#define F3(name) \
+  F2(name##1);   \
+  F2(name##2);   \
+  F2(name##3);   \
+  F2(name##4);   \
+  F2(name##5);
+/**/
+
+FLAG_MULT(TEST_FLAG_HEADER)
 
 namespace {
 
@@ -561,6 +592,49 @@ TEST_F(ParseDeathTest, TestInvalidUDTFlagFormat) {
   EXPECT_DEATH_IF_SUPPORTED(InvokeParse(in_args2),
                "Illegal value 'AA' specified for flag 'udt_flag'; Use values "
                "A, AAA instead");
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(ParseDeathTest, TestFlagSuggestions) {
+  const char* in_args1[] = {
+      "testbin",
+      "--legacy_boo",
+  };
+  EXPECT_DEATH_IF_SUPPORTED(
+      InvokeParse(in_args1),
+      "Unknown command line flag 'legacy_boo'. Did you mean: legacy_bool ?");
+
+  const char* in_args2[] = {"testbin", "--foo", "--undefok=foo1"};
+  EXPECT_DEATH_IF_SUPPORTED(
+      InvokeParse(in_args2),
+      "Unknown command line flag 'foo'. Did you mean: foo1 \\(undefok\\)?");
+
+  const char* in_args3[] = {
+      "testbin",
+      "--nolegacy_ino",
+  };
+  EXPECT_DEATH_IF_SUPPORTED(InvokeParse(in_args3),
+                            "Unknown command line flag 'nolegacy_ino'. Did "
+                            "you mean: nolegacy_bool, legacy_int ?");
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(ParseTest, GetHints) {
+  EXPECT_THAT(absl::flags_internal::GetMisspellingHints("legacy_boo"),
+              testing::ContainerEq(std::vector<std::string>{"legacy_bool"}));
+  EXPECT_THAT(absl::flags_internal::GetMisspellingHints("nolegacy_itn"),
+              testing::ContainerEq(std::vector<std::string>{"legacy_int"}));
+  EXPECT_THAT(absl::flags_internal::GetMisspellingHints("nolegacy_int1"),
+              testing::ContainerEq(std::vector<std::string>{"legacy_int"}));
+  EXPECT_THAT(absl::flags_internal::GetMisspellingHints("nolegacy_int"),
+              testing::ContainerEq(std::vector<std::string>{"legacy_int"}));
+  EXPECT_THAT(absl::flags_internal::GetMisspellingHints("nolegacy_ino"),
+              testing::ContainerEq(
+                  std::vector<std::string>{"nolegacy_bool", "legacy_int"}));
+  EXPECT_THAT(
+      absl::flags_internal::GetMisspellingHints("FLAG_HEADER_000").size(), 100);
 }
 
 // --------------------------------------------------------------------

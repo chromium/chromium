@@ -61,6 +61,7 @@ cc_test(
     name = "status_test",
     srcs = ["status_test.cc"],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":status",
         "//absl/strings",
