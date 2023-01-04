@@ -60,17 +60,17 @@ class SpeechSynthesisUtterance final
   SpeechSynthesisVoice* voice() const;
   void setVoice(SpeechSynthesisVoice*);
 
-  float volume() const { return mojom_utterance_->volume; }
+  float volume() const;
   void setVolume(float volume) {
     mojom_utterance_->volume = ClampTo(volume, 0.0f, 1.0f);
   }
 
-  float rate() const { return mojom_utterance_->rate; }
+  float rate() const;
   void setRate(float rate) {
     mojom_utterance_->rate = ClampTo(rate, 0.1f, 10.0f);
   }
 
-  float pitch() const { return mojom_utterance_->pitch; }
+  float pitch() const;
   void setPitch(float pitch) {
     mojom_utterance_->pitch = ClampTo(pitch, 0.0f, 2.0f);
   }

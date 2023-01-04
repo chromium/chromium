@@ -76,10 +76,25 @@ TEST(TtsControllerDelegateImplTest, TestTtsControllerUtteranceDefaults) {
       content::TtsUtterance::Create();
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance3.get(), &rate, &pitch, &volume);
-  // Updated to pref values.
+  // Values should not change.
   EXPECT_EQ(1.1f, rate);
   EXPECT_EQ(1.2f, pitch);
   EXPECT_EQ(1.3f, volume);
+
+  // If we explicitly set rate, pitch and volume to the default values, they
+  // should not be changed.
+  rate = blink::mojom::kSpeechSynthesisDefaultRate;
+  pitch = blink::mojom::kSpeechSynthesisDefaultPitch;
+  volume = blink::mojom::kSpeechSynthesisDefaultVolume;
+
+  std::unique_ptr<content::TtsUtterance> utterance4 =
+      content::TtsUtterance::Create();
+  tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
+      utterance4.get(), &rate, &pitch, &volume);
+  // Values should not change.
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultRate, rate);
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultPitch, pitch);
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultVolume, volume);
 }
 
 TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {

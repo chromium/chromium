@@ -76,6 +76,27 @@ void SpeechSynthesisUtterance::setVoice(SpeechSynthesisVoice* voice) {
   mojom_utterance_->voice = voice_ ? voice_->name() : String();
 }
 
+float SpeechSynthesisUtterance::volume() const {
+  return mojom_utterance_->volume ==
+                 mojom::blink::kSpeechSynthesisDoublePrefNotSet
+             ? mojom::blink::kSpeechSynthesisDefaultVolume
+             : mojom_utterance_->volume;
+}
+
+float SpeechSynthesisUtterance::rate() const {
+  return mojom_utterance_->rate ==
+                 mojom::blink::kSpeechSynthesisDoublePrefNotSet
+             ? mojom::blink::kSpeechSynthesisDefaultRate
+             : mojom_utterance_->rate;
+}
+
+float SpeechSynthesisUtterance::pitch() const {
+  return mojom_utterance_->pitch ==
+                 mojom::blink::kSpeechSynthesisDoublePrefNotSet
+             ? mojom::blink::kSpeechSynthesisDefaultPitch
+             : mojom_utterance_->pitch;
+}
+
 void SpeechSynthesisUtterance::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(synthesis_);
