@@ -13,6 +13,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.components.signin.AccountCapabilitiesConstants;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -28,6 +30,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * AccountManagerFacade mock.
  */
 public class SigninTestRule extends AccountManagerTestRule {
+    public static final AccountCapabilities NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES =
+            new AccountCapabilities(
+                    new String[] {AccountCapabilitiesConstants
+                                          .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME},
+                    new boolean[] {false});
+
     private boolean mIsSignedIn;
 
     /**
@@ -109,15 +117,9 @@ public class SigninTestRule extends AccountManagerTestRule {
     }
 
     /**
-     * Adds a child account, and waits for auto-signin to complete.
+     * Waits for the account corresponding to coreAccountInfo to finish signin.
      */
-    public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
-        assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo =
-                addAccountAndWaitForSeeding(generateChildEmail(TEST_ACCOUNT_EMAIL));
-
-        // The child will be force signed in (by SigninChecker).  Wait for this to complete before
-        // enabling sync.
+    public void waitForSignin(CoreAccountInfo coreAccountInfo) {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(IdentityServicesProvider.get()
                                        .getIdentityManager(Profile.getLastUsedRegularProfile())
@@ -125,7 +127,19 @@ public class SigninTestRule extends AccountManagerTestRule {
                     is(coreAccountInfo));
         });
         mIsSignedIn = true;
+    }
 
+    /**
+     * Adds a child account, and waits for auto-signin to complete.
+     */
+    public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
+        assert !mIsSignedIn : "An account is already signed in!";
+        CoreAccountInfo coreAccountInfo =
+                addAccountAndWaitForSeeding(generateChildEmail(TEST_ACCOUNT_EMAIL));
+
+        // The child will be force signed in (by SigninChecker).
+        // Wait for this to complete before enabling sync.
+        waitForSignin(coreAccountInfo);
         return coreAccountInfo;
     }
 

@@ -315,6 +315,48 @@ public class SyncConsentFragmentTest {
     }
 
     @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
+    public void testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmail()
+            throws IOException {
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(
+                SigninTestRule.generateChildEmail(AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
+                SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        mSigninTestRule.waitForSeeding();
+        mSigninTestRule.waitForSignin(accountInfo);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SIGNIN_PROMO,
+                            accountInfo.getEmail());
+                });
+        onView(withText(accountInfo.getEmail())).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
+    public void
+    testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
+            throws IOException {
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(
+                SigninTestRule.generateChildEmail(AccountManagerTestRule.TEST_ACCOUNT_EMAIL), "",
+                "", null, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        mSigninTestRule.waitForSeeding();
+        mSigninTestRule.waitForSignin(accountInfo);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(), SigninAccessPoint.SIGNIN_PROMO,
+                            accountInfo.getEmail());
+                });
+        onView(withText(accountInfo.getEmail())).check(doesNotExist());
+        onView(withText(R.string.default_google_account_username)).check(matches(isDisplayed()));
+    }
+
+    @Test
     @LargeTest
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
