@@ -78,7 +78,8 @@
       {
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache",
-          "--strip-chrome"
+          "--strip-chrome",
+          "--tast-retries=1"
         ],
         "merge": {
           "args": [],
@@ -1416,6 +1417,9 @@
         }
       },
       {
+        "args": [
+          "--tast-retries=1"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

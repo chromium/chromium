@@ -1211,6 +1211,7 @@
         'args': [
           # This bot sets symbol_level=2, which doesn't fit inside a normal VM.
           '--strip-chrome',
+          '--tast-retries=1',
         ],
       },
       'chromeos-betty-pi-arc-chrome': {
@@ -1219,6 +1220,9 @@
         },
       },
       'chromeos-eve-chrome': {
+        'args':[
+          '--tast-retries=1',
+        ],
         'swarming': {
           # Increased timeout to 2 hours due to shard timeout.
           'hard_timeout': 7200,
