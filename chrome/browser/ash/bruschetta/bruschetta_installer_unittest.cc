@@ -52,7 +52,7 @@ const char kBadHash[] =
     "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210";
 const base::FilePath kDownloadPath{"/path/to/downloaded/object"};
 
-class MockObserver : public BruschettaInstaller::TestingObserver {
+class MockObserver : public BruschettaInstaller::Observer {
  public:
   MOCK_METHOD(void,
               StateChanged,
@@ -122,7 +122,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         &profile_, base::BindOnce(&BruschettaInstallerTest::CloseCallback,
                                   base::Unretained(this)));
 
-    installer_->set_observer_for_testing(&observer_);
+    installer_->AddObserver(&observer_);
   }
 
   void TearDown() override { ash::disks::DiskMountManager::Shutdown(); }

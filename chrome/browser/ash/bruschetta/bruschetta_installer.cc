@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -549,6 +550,19 @@ void BruschettaInstaller::NotifyObserverError() {
 
 const base::GUID& BruschettaInstaller::GetDownloadGuid() const {
   return download_guid_;
+}
+
+void BruschettaInstaller::AddObserver(BruschettaInstaller::Observer* observer) {
+  // We only support a single observer for now, since we'll only ever have one
+  // (the UI calling us).
+  DCHECK(observer_ == nullptr);
+  observer_ = observer;
+}
+
+void BruschettaInstaller::RemoveObserver(
+    BruschettaInstaller::Observer* observer) {
+  DCHECK(observer_ == observer);
+  observer_ = nullptr;
 }
 
 }  // namespace bruschetta

@@ -22,6 +22,25 @@ namespace bruschetta {
 
 class BruschettaInstaller {
  public:
+  enum class State {
+    kInstallStarted,
+    kDlcInstall,
+    kFirmwareDownload,
+    kFirmwareMount,
+    kBootDiskDownload,
+    kBootDiskMount,
+    kOpenFiles,
+    kCreateVmDisk,
+    kStartVm,
+    kLaunchTerminal,
+  };
+
+  class Observer {
+   public:
+    virtual void StateChanged(State state) = 0;
+    virtual void Error() = 0;
+  };
+
   BruschettaInstaller(Profile* profile, base::OnceClosure close_callback);
 
   BruschettaInstaller(const BruschettaInstaller&) = delete;
@@ -38,29 +57,8 @@ class BruschettaInstaller {
   void DownloadFailed();
   void DownloadSucceeded(const download::CompletionInfo& completion_info);
 
-  enum class State {
-    kInstallStarted,
-    kDlcInstall,
-    kFirmwareDownload,
-    kFirmwareMount,
-    kBootDiskDownload,
-    kBootDiskMount,
-    kOpenFiles,
-    kCreateVmDisk,
-    kStartVm,
-    kLaunchTerminal,
-  };
-
-  class TestingObserver {
-   public:
-    virtual void StateChanged(State state) = 0;
-    virtual void Error() = 0;
-  };
-
-  void set_observer_for_testing(TestingObserver* observer) {
-    CHECK_IS_TEST();
-    observer_ = observer;
-  }
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   using DownloadCallback =
@@ -114,7 +112,7 @@ class BruschettaInstaller {
 
   base::OnceClosure close_closure_;
 
-  base::raw_ptr<TestingObserver> observer_ = nullptr;
+  base::raw_ptr<Observer> observer_ = nullptr;
 
   base::WeakPtrFactory<BruschettaInstaller> weak_ptr_factory_{this};
 };
