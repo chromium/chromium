@@ -70,10 +70,10 @@ void FederatedServiceController::OnLoginStatusChanged(
       federated_service_->StartScheduling();
     }
 
-    // On session first login, reports one example for
-    // "timezone_code_population", a trivial F.A. task for prove-out purpose.
+    // On session first login, reports one example for "timezone_code_phh", a
+    // trivial F.A. task for prove-out purpose.
     if (!reported_) {
-      federated_service_->ReportExample("timezone_code_population",
+      federated_service_->ReportExample("timezone_code_phh",
                                         CreateBrellaAnalyticsExamplePtr());
       reported_ = true;
     }
