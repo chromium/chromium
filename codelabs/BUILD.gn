@@ -10,6 +10,12 @@ group("codelabs") {
     ":codelab_hello_world",
     ":codelab_mojo",
     ":codelab_sleep",
+
+    # threading_and_scheduling examples:
+    ":codelab_multiple_threads",
+    ":codelab_randomized_task_queues",
+    ":codelab_single_task_queue",
+    ":codelab_task_queue_priorities",
   ]
 }
 
@@ -51,4 +57,24 @@ executable("codelab_mojo") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/base",
   ]
+}
+
+executable("codelab_single_task_queue") {
+  sources = [ "threading_and_scheduling/01-single-task-queue.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_task_queue_priorities") {
+  sources = [ "threading_and_scheduling/02-task-queue-priorities.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_randomized_task_queues") {
+  sources = [ "threading_and_scheduling/03-randomized-task-queues.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_multiple_threads") {
+  sources = [ "threading_and_scheduling/04-multiple-threads.cc" ]
+  deps = [ "//base" ]
 }
