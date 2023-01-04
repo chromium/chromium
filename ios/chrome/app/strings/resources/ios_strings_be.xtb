@@ -365,7 +365,6 @@
 <translation id="3661160521073045932">Даступны профіль канфігурацыі</translation>
 <translation id="3670030362669914947">Нумар</translation>
 <translation id="3691593122358196899">Закладка дададзена ў папку "<ph name="FOLDER_TITLE" />"</translation>
-<translation id="369349502275246497">Паказваць прапанову захаваць паролі</translation>
 <translation id="3709582977625132201">Пазначыць як непрачытанае</translation>
 <translation id="371230970611282515">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца.</translation>
 <translation id="37207012422556617">Папулярныя пошукавыя запыты</translation>
@@ -754,6 +753,7 @@
 <translation id="6476800141292307438">Старонка перакладаецца на мову "<ph name="LANGUAGE" />". Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="648164694371393720">Памылка аўтэнтыфікацыі</translation>
 <translation id="6482629121755362506">Выдалена элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="6495429111159337775">Захоўваць паролі ва Уліковы запіс Google</translation>
 <translation id="6497772452874122664">Калі вы давяраеце сайту <ph name="TIME" />, можаце выкарыстаць захаваны пароль з іншага сайта.
 
 Паспрабуйце выкарыстоўваць унікальны пароль для кожнага сайта.</translation>

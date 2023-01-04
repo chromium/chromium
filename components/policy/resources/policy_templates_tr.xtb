@@ -1335,6 +1335,9 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
       Bu politika <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ve kullanıcının tercihlerini geçersiz kılar.
 
       Bu politika, yalnızca Web Serial API üzerinden USB cihazlarına erişimi etkiler. WebUSB API üzerinden USB cihazlarına erişim izni vermek için <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> politikasını inceleyin.</translation>
+<translation id="2246011554082893079"><ph name="BOREALIS_NAME" /> politikasının bu cihaz için kullanılabilirliğini kontrol eder.
+
+      Politika yanlış değerine ayarlanırsa <ph name="BOREALIS_NAME" /> bu cihazdaki kullanıcıların hiçbiri için kullanılamaz. Diğer hallerde (politika ayarlanmadığında veya doğru değerine ayarlandığında) <ph name="BOREALIS_NAME" />, yalnızca başka bir politika ya da ayar tarafından devre dışı bırakılmamışsa kullanılabilir.</translation>
 <translation id="2246621891161157804">Chrome'un, korumalı alana alınmış iframe'lerdeki harici protokollere yönelik gezinmeyi engellemesine izin ver</translation>
 <translation id="224750967938323855">Oturum açma sırasında senkronizasyon izin istemini gösterme</translation>
 <translation id="2252400912879027343">Güvenli olmayan bağlamlarda WebSQL, M109'a kadar kullanılabilir ancak M110'dan itibaren kullanılamaz.</translation>
@@ -2612,11 +2615,6 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
 <translation id="3412937883532015092">Bu politika bir sayıya ayarlanırsa <ph name="PRODUCT_NAME" />, ayarlanan milisaniye süresince bir mesaj görüntüler, ardından alternatif tarayıcıyı açar.
 
       Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlanan bir URL'ye gidildiğinde URL hemen alternatif tarayıcıda açılır.</translation>
-<translation id="3413763534078822244">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="USER_BOREALIS_ALLOWED_NAME" /> politikasını kullanın.
-
-      <ph name="BOREALIS_NAME" /> politikasının bu cihaz için kullanılabilirliğini kontrol eder.
-
-      Politika, Yanlış değerine ayarlanırsa <ph name="BOREALIS_NAME" /> bu cihazdaki kullanıcıların hiçbiri için kullanılamaz. Diğer hallerde (politika ayarlanmadığında veya Doğru değerine ayarlandığında) <ph name="BOREALIS_NAME" />, yalnızca başka bir politika ya da ayar tarafından devre dışı bırakılmamışsa kullanılabilir.</translation>
 <translation id="3415954062311826850">Bu politika Arc dahilinde desteklenmemektedir.</translation>
 <translation id="34160070798637152">Cihaz genelindeki ağ yapılandırmasını kontrol eder.</translation>
 <translation id="3417130629744653218">Web sitelerinin kullanılabilir ödeme yöntemlerini sorgulamalarına izin ver.</translation>

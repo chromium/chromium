@@ -590,7 +590,7 @@
 <translation id="1543284117603151572">從 Edge 匯入的書籤</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或將檔案儲存至其他資料夾</translation>
 <translation id="1545177026077493356">自動 Kiosk 模式</translation>
-<translation id="1545749641540134597">掃描 QR 圖碼</translation>
+<translation id="1545749641540134597">掃描 QR code</translation>
 <translation id="1545775234664667895">已安裝「<ph name="THEME_NAME" />」主題</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{你的無痕式視窗不會重新開啟。}other{你的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1546280085599573572">這個擴充功能已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
@@ -1401,6 +1401,7 @@
 <translation id="2255077166240162850">這個裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
+<translation id="225614027745146050">歡迎使用</translation>
 <translation id="2257053455312861282">新增學校帳戶可讓你以學生的身分輕鬆登入網站、擴充功能及應用程式，同時繼續遵守家長監護功能的操作規範。</translation>
 <translation id="2261323523305321874">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。</translation>
 <translation id="22614517036276112">這份文件或你的裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。</translation>

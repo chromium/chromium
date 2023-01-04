@@ -1339,6 +1339,9 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
       Esta política substitui <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.
 
       Ela afeta apenas o acesso aos dispositivos USB pela API Web Serial. Para conceder acesso a dispositivos USB pela API WebUSB, consulte a política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2246011554082893079">Controla a disponibilidade da <ph name="BOREALIS_NAME" /> neste dispositivo.
+
+      Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível para todos os usuários do dispositivo. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
 <translation id="2246621891161157804">Permitir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="224750967938323855">Não mostrar o consentimento de sincronização durante o login</translation>
 <translation id="2252400912879027343">O WebSQL em contextos não seguros continuará disponível até a versão M109 e ficará indisponível da M110 em diante.</translation>
@@ -2635,11 +2638,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="3412937883532015092">Se a política for definida como um número, o <ph name="PRODUCT_NAME" /> exibirá uma mensagem de milésimos de segundo para o número e abrirá um navegador alternativo.
 
       Se ela não for definida ou for definida como 0, a navegação para um URL designado o abrirá imediatamente em um navegador alternativo.</translation>
-<translation id="3413763534078822244">Esta política foi descontinuada. Use a <ph name="USER_BOREALIS_ALLOWED_NAME" />.
-
-      Controla a disponibilidade da <ph name="BOREALIS_NAME" /> neste dispositivo.
-
-      Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> vai ficar indisponível para todos os usuários do dispositivo. Quando ela for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível apenas se nenhuma outra política ou configuração a desativar.</translation>
 <translation id="3415954062311826850">Esta política não é compatível com o ARC.</translation>
 <translation id="34160070798637152">Controla a configuração de rede em todo o dispositivo.</translation>
 <translation id="3417130629744653218">Permitir que sites consultem formas de pagamento disponíveis.</translation>
@@ -4415,6 +4413,19 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
 <translation id="5194683382395300627">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web, por exemplo, para autorizar a mudança automática de senhas</translation>
 <translation id="5196630732055960309">Permitir a API File Handling nesses apps da Web</translation>
+<translation id="5198660575318473544">Controle se as extensões do Manifest v2 podem ser usadas na tela de login do <ph name="PRODUCT_OS_NAME" />.
+
+O suporte a elas vai ser descontinuado, e todas as extensões precisarão
+ser migradas para a v3. Confira outras informações e o cronograma da
+migração em https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Se a política for definida como <ph name="DEFAULT" /> (0) ou for deixada sem definição, o carregamento das extensões da v2 vai ser decidido pelo dispositivo, seguindo o cronograma acima.
+Se definida como <ph name="DISABLE" /> (1), a instalação de extensões da v2 será bloqueada, e as atuais, desativadas. A opção vai ser tratada da mesma forma que seria se a política não fosse definida após a desativação do suporte à v2 por padrão.
+Se a política for definida como <ph name="ENABLE" /> (2), as extensões da v2 serão permitidas. A opção vai ser tratada da mesma forma que seria se a política não fosse definida antes da desativação do suporte à v2 por padrão.
+Se a política for definida como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), as extensões da v2 instaladas serão permitidas. Isso inclui extensões listadas pela <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> com <ph name="INSTALLATION_MODE" /> "force_installed" ou "normal_installed". Todas as outras extensões v2 são desativadas. A opção vai ser tratada da mesma forma que seria se a política não fosse definida antes da desativação do suporte à v2 por padrão.
+
+
+A disponibilidade das extensões ainda é controlada por outras políticas.</translation>
 <translation id="5206454085187851382">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para o usuário. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura se o <ph name="PRODUCT_NAME" /> no Linux usará notificações do sistema.
 
@@ -4861,6 +4872,7 @@ Se a política for deixada sem definição, nenhum domínio poderá acessar os U
 <translation id="5599461642204007579">Configurações de gerenciamento do <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Ativar relatórios de status do armazenamento do dispositivo</translation>
+<translation id="5608114828230655271">Comportamento padrão do dispositivo</translation>
 <translation id="5614865701790130558">Registros de eventos para instalações de extensão com base em políticas</translation>
 <translation id="5618398258385745432">A configuração associada foi usada antes de a reautenticação na visualização de senhas ter sido introduzida. Desde então, a configuração e, consequentemente, esta política não têm efeito no comportamento do Chrome. O comportamento atual do Chrome agora é o mesmo que seria se a política tivesse sido definida para desativar a visualização de senhas em texto não criptografado na página de configurações do gerenciador de senhas. Isso quer dizer que a página de configurações contém apenas um marcador, e o Chrome só mostrará a senha depois que o usuário clicar em "Mostrar" (e reautenticar, se aplicável). A descrição original da política é a mostrada a seguir.
 

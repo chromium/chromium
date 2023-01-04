@@ -1324,6 +1324,9 @@
       這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。
 
       這項政策只會影響透過 Web Serial API 存取 USB 裝置的權限。如要授予透過 WebUSB API 存取 USB 裝置的權限，請參閱 <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
+<translation id="2246011554082893079">這項政策可控管 <ph name="BOREALIS_NAME" /> 是否適用於這部裝置。
+
+      如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於此裝置的所有使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這部裝置。</translation>
 <translation id="2246621891161157804">允許 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="224750967938323855">不要在登入時顯示同步同意聲明</translation>
 <translation id="2252400912879027343">在 M109 以前，仍可在不安全的環境中使用 WebSQL，自 M110 起則無法使用</translation>
@@ -2577,11 +2580,6 @@
 <translation id="3412937883532015092">如果將這項政策設為數值，<ph name="PRODUCT_NAME" /> 在開啟替代瀏覽器前會先顯示一則等待訊息，並依據該數值 (以毫秒為單位) 來設定這則訊息要顯示多久的時間。
 
       如果未設定這項政策或設為 0，當使用者前往指定網址時，系統會立即在替代瀏覽器中開啟該網址。</translation>
-<translation id="3413763534078822244">這項政策已淘汰，請改用 <ph name="USER_BOREALIS_ALLOWED_NAME" />。
-
-      這項政策會控管是否可在這部裝置上使用 <ph name="BOREALIS_NAME" />。
-
-      如果將這項政策設為 False，這部裝置的所有使用者都將無法使用 <ph name="BOREALIS_NAME" />。如果將政策設為 True 或未設定，只要其他政策或設定未停用 <ph name="BOREALIS_NAME" />，就能在這部裝置上使用這個容器。</translation>
 <translation id="3415954062311826850">ARC 不支援這項政策。</translation>
 <translation id="34160070798637152">控管裝置通用的網路設定。</translation>
 <translation id="3417130629744653218">允許網站查詢可用的付款方式。</translation>
