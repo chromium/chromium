@@ -724,6 +724,67 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
   });
 }
 
+void VisitAnnotationsDatabase::UpdateClusterTriggerability(
+    const std::vector<history::Cluster>& clusters) {
+  sql::Statement clusters_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "UPDATE clusters "
+      "SET should_show_on_prominent_ui_surfaces=?, triggerability_calculated=? "
+      "WHERE cluster_id=?"));
+
+  sql::Statement delete_cluster_keywords_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM cluster_keywords WHERE cluster_id=?"));
+
+  sql::Statement cluster_keywords_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "INSERT INTO cluster_keywords"
+                                 "(cluster_id,keyword,type,score,collections)"
+                                 "VALUES(?,?,?,?,?)"));
+
+  base::ranges::for_each(clusters, [&](const auto& cluster) {
+    DCHECK_GT(cluster.cluster_id, 0);
+
+    // Update cluster visibility.
+    clusters_statement.Reset(true);
+    clusters_statement.BindBool(0,
+                                cluster.should_show_on_prominent_ui_surfaces);
+    clusters_statement.BindBool(1, cluster.triggerability_calculated);
+    clusters_statement.BindInt64(2, cluster.cluster_id);
+    if (!clusters_statement.Run()) {
+      DVLOG(0) << "Failed to execute clusters update statement:  "
+               << "cluster_id = " << cluster.cluster_id;
+    }
+
+    // Delete all previously persisted keywords.
+    delete_cluster_keywords_statement.Reset(true);
+    delete_cluster_keywords_statement.BindInt64(0, cluster.cluster_id);
+    if (!delete_cluster_keywords_statement.Run()) {
+      DVLOG(0) << "Failed to execute 'cluster_keywords' delete statement in "
+                  "`UpdateClusterTriggerability()`:  cluster_id = "
+               << cluster.cluster_id;
+    }
+
+    // Add each keyword into 'cluster_keywords'.
+    for (const auto& [keyword, keyword_data] : cluster.keyword_to_data_map) {
+      cluster_keywords_statement.Reset(true);
+      cluster_keywords_statement.BindInt64(0, cluster.cluster_id);
+      cluster_keywords_statement.BindString16(1, keyword);
+      cluster_keywords_statement.BindInt(2, keyword_data.type);
+      cluster_keywords_statement.BindDouble(3, keyword_data.score);
+      cluster_keywords_statement.BindString(
+          4, keyword_data.entity_collections.empty()
+                 ? ""
+                 : keyword_data.entity_collections[0]);
+      if (!cluster_keywords_statement.Run()) {
+        DVLOG(0) << "Failed to execute 'cluster_keywords' insert statement in "
+                    "`UpdateClusterTriggerability()`:  "
+                 << "cluster_id = " << cluster.cluster_id
+                 << ", keyword = " << keyword;
+      }
+    }
+  });
+}
+
 Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   DCHECK_GT(cluster_id, 0);
   sql::Statement statement(GetDB().GetCachedStatement(

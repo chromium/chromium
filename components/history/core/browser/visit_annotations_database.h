@@ -90,6 +90,10 @@ class VisitAnnotationsDatabase {
   void AddVisitsToCluster(int64_t cluster_id,
                           const std::vector<ClusterVisit>& visits);
 
+  // Updates the triggerability attributes for each cluster in `clusters`.
+  void UpdateClusterTriggerability(
+      const std::vector<history::Cluster>& clusters);
+
   // Get a `Cluster`. Does not include the cluster's `visits` or
   // `keyword_to_data_map`.
   Cluster GetCluster(int64_t cluster_id);

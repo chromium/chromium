@@ -4082,6 +4082,35 @@ TEST_F(HistoryBackendTest, ReserveNextClusterId_AddVisitsToCluster_GetCluster) {
   VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {2, 1}});
 }
 
+TEST_F(
+    HistoryBackendTest,
+    ReserveNextClusterId_AddVisitsToCluster_UpdateClusterTriggerability_GetCluster) {
+  int64_t cluster_id = backend_->ReserveNextClusterId();
+
+  AddAnnotatedVisit(1);
+  AddAnnotatedVisit(2);
+  ClusterVisit visit_1;
+  visit_1.annotated_visit.visit_row.visit_id = 1;
+  // Verify the cluster visits are being flushed out.
+  visit_1.url_for_display = u"url_for_display";
+  ClusterVisit visit_2;
+  visit_2.annotated_visit.visit_row.visit_id = 2;
+  backend_->AddVisitsToCluster(cluster_id, {visit_1, visit_2});
+  Cluster cluster;
+  cluster.cluster_id = cluster_id;
+  cluster.should_show_on_prominent_ui_surfaces = true;
+  cluster.triggerability_calculated = true;
+  cluster.keyword_to_data_map[u"keyword1"];
+  backend_->UpdateClusterTriggerability({cluster});
+
+  Cluster out_cluster = backend_->GetCluster(cluster_id, true);
+  VerifyCluster(out_cluster, {cluster_id, {2, 1}});
+  EXPECT_TRUE(out_cluster.should_show_on_prominent_ui_surfaces);
+  EXPECT_TRUE(out_cluster.triggerability_calculated);
+  EXPECT_EQ(out_cluster.keyword_to_data_map.size(), 1u);
+  EXPECT_TRUE(out_cluster.keyword_to_data_map.contains(u"keyword1"));
+}
+
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   auto last_visit_time = base::Time::Now();
   const auto add_visit = [&](std::string url, VisitID referring_visit,

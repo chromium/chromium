@@ -456,6 +456,70 @@ TEST_F(VisitAnnotationsDatabaseTest,
   EXPECT_EQ(GetClusterIdContainingVisit(7), 3);
 }
 
+TEST_F(VisitAnnotationsDatabaseTest,
+       ReserveNextClusterId_AddVisitsToCluster_UpdateClusterTriggerability) {
+  // Add an initial cluster with multiple visits.
+  VisitID visit_id1 = AddVisitWithTime(IntToTime(0));
+  VisitID visit_id2 = AddVisitWithTime(IntToTime(1));
+  int64_t cluster_id1 = ReserveNextClusterId();
+  int64_t cluster_id2 = ReserveNextClusterId();
+  Cluster cluster1 = CreateCluster({visit_id1, visit_id2});
+  cluster1.cluster_id = cluster_id1;
+  AddVisitsToCluster(cluster_id1, cluster1.visits);
+
+  // Add a second cluster.
+  VisitID visit_id3 = AddVisitWithTime(IntToTime(2));
+  Cluster cluster2 = CreateCluster({visit_id3});
+  cluster2.cluster_id = cluster_id2;
+  AddVisitsToCluster(cluster_id2, {cluster2.visits});
+
+  // Update cluster triggerability initially.
+  cluster1.should_show_on_prominent_ui_surfaces = true;
+  cluster1.triggerability_calculated = true;
+  cluster1.keyword_to_data_map[u"keyword1"];
+  cluster1.keyword_to_data_map[u"keyword2"];
+  cluster2.should_show_on_prominent_ui_surfaces = false;
+  cluster2.triggerability_calculated = true;
+  cluster2.keyword_to_data_map[u"keyword3"];
+  UpdateClusterTriggerability({cluster1, cluster2});
+
+  Cluster out_cluster1 = GetCluster(cluster_id1);
+  out_cluster1.keyword_to_data_map = GetClusterKeywords(cluster_id1);
+  EXPECT_TRUE(out_cluster1.should_show_on_prominent_ui_surfaces);
+  EXPECT_TRUE(out_cluster1.triggerability_calculated);
+  EXPECT_EQ(out_cluster1.keyword_to_data_map.size(), 2u);
+  EXPECT_THAT(GetVisitIdsInCluster(cluster_id1),
+              UnorderedElementsAre(visit_id1, visit_id2));
+
+  Cluster out_cluster2 = GetCluster(cluster_id2);
+  out_cluster2.keyword_to_data_map = GetClusterKeywords(cluster_id2);
+  EXPECT_FALSE(out_cluster2.should_show_on_prominent_ui_surfaces);
+  EXPECT_TRUE(out_cluster2.triggerability_calculated);
+  EXPECT_EQ(out_cluster2.keyword_to_data_map.size(), 1u);
+  EXPECT_TRUE(out_cluster2.keyword_to_data_map.contains(u"keyword3"));
+  EXPECT_THAT(GetVisitIdsInCluster(cluster_id2),
+              UnorderedElementsAre(visit_id3));
+
+  // Update cluster triggerability again for one of the clusters.
+  VisitID visit_id4 = AddVisitWithTime(IntToTime(4));
+  ClusterVisit cluster_visit4;
+  cluster_visit4.annotated_visit.visit_row.visit_id = visit_id4;
+  AddVisitsToCluster(cluster_id2, {cluster_visit4});
+  cluster2.should_show_on_prominent_ui_surfaces = true;
+  cluster2.keyword_to_data_map.clear();
+  cluster2.keyword_to_data_map[u"keyword4"];
+  UpdateClusterTriggerability({cluster2});
+
+  out_cluster2 = GetCluster(cluster_id2);
+  out_cluster2.keyword_to_data_map = GetClusterKeywords(cluster_id2);
+  EXPECT_TRUE(out_cluster2.should_show_on_prominent_ui_surfaces);
+  EXPECT_TRUE(out_cluster2.triggerability_calculated);
+  EXPECT_EQ(out_cluster2.keyword_to_data_map.size(), 1u);
+  EXPECT_TRUE(out_cluster2.keyword_to_data_map.contains(u"keyword4"));
+  EXPECT_THAT(GetVisitIdsInCluster(cluster_id2),
+              UnorderedElementsAre(visit_id3, visit_id4));
+}
+
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   // Add a cluster with 2 visits.
   AddContentAnnotationsForVisit(1, {});

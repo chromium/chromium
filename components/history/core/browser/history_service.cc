@@ -324,6 +324,19 @@ base::CancelableTaskTracker::TaskId HistoryService::AddVisitsToCluster(
                      cluster_id, visits));
 }
 
+base::CancelableTaskTracker::TaskId HistoryService::UpdateClusterTriggerability(
+    const std::vector<history::Cluster>& clusters,
+    base::OnceClosure callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReply(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::UpdateClusterTriggerability,
+                     history_backend_, clusters),
+      std::move(callback));
+}
+
 base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,

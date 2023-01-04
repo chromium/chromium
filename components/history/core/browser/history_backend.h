@@ -521,6 +521,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void AddVisitsToCluster(int64_t cluster_id,
                           const std::vector<ClusterVisit>& visits);
 
+  void UpdateClusterTriggerability(const std::vector<Cluster>& clusters);
+
   std::vector<Cluster> GetMostRecentClusters(
       base::Time inclusive_min_time,
       base::Time exclusive_max_time,

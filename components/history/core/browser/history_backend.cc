@@ -2157,6 +2157,16 @@ void HistoryBackend::AddVisitsToCluster(
   db_->AddVisitsToCluster(cluster_id, visits);
 }
 
+void HistoryBackend::UpdateClusterTriggerability(
+    const std::vector<Cluster>& clusters) {
+  TRACE_EVENT0("browser", "HistoryBackend::UpdateClusterTriggerability");
+  if (!db_) {
+    return;
+  }
+
+  db_->UpdateClusterTriggerability(clusters);
+}
+
 std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,
