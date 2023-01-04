@@ -118,7 +118,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="6062854958530969723">Error al iniciar el host.</translation>
 <translation id="6099500228377758828">Servicio de Escritorio Remoto de Chrome</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6178645564515549384">Host de mensajes nativo para asistencia remota</translation>
+<translation id="6178645564515549384">Host de mensajería nativa para asistencia remota</translation>
 <translation id="618120821413932081">Actualiza la resolución del escritorio remoto para que se ajuste a la ventana</translation>
 <translation id="6223301979382383752">Abrir preferencias de Grabación de la pantalla</translation>
 <translation id="6284412385303060032">Se ha cerrado el host que se ejecuta en la pantalla de inicio de sesión de la consola para poder admitir el modo de cortina. Para ello, se ha cambiado a un host que se ejecuta en una sesión específica de usuario.</translation>
@@ -178,7 +178,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8445362773033888690">Ver en Google Play Store</translation>
 <translation id="8509907436388546015">Proceso de integración del escritorio</translation>
-<translation id="8513093439376855948">Host de mensajes nativo para administración de host de forma remota</translation>
+<translation id="8513093439376855948">Host de mensajería nativa para administración de host de forma remota</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="858006550102277544">Comentario</translation>
 <translation id="8743328882720071828">¿Permitir que <ph name="CLIENT_USERNAME" /> vea y controle tu ordenador?</translation>
