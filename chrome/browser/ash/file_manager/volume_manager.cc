@@ -1351,6 +1351,7 @@ void VolumeManager::OnProvidedFileSystemMount(
     bool result = mount_points->RegisterFileSystem(
         fusebox_fsid, storage::kFileSystemTypeFuseBox,
         storage::FileSystemMountOption(), fusebox_volume->mount_path());
+    LOG_IF(ERROR, !result) << "invalid FuseBox FSP mount path";
     DCHECK(result);
   }
 
@@ -1558,6 +1559,7 @@ void VolumeManager::DoAttachMtpStorage(
     bool result = mount_points->RegisterFileSystem(
         fsid, storage::kFileSystemTypeDeviceMediaAsFileStorage,
         storage::FileSystemMountOption(), path);
+    LOG_IF(ERROR, !result) << "invalid MTP mount path";
     DCHECK(result);
   }
 
@@ -1600,6 +1602,7 @@ void VolumeManager::DoAttachMtpStorage(
     bool result = mount_points->RegisterFileSystem(
         fusebox_fsid, storage::kFileSystemTypeFuseBox,
         storage::FileSystemMountOption(), fusebox_volume->mount_path());
+    LOG_IF(ERROR, !result) << "invalid FuseBox MTP mount path";
     DCHECK(result);
   }
 
@@ -1702,6 +1705,7 @@ void VolumeManager::OnDocumentsProviderRootAdded(
     bool result = mount_points->RegisterFileSystem(
         fusebox_fsid, storage::kFileSystemTypeFuseBox,
         storage::FileSystemMountOption(), fusebox_volume->mount_path());
+    LOG_IF(ERROR, !result) << "invalid FuseBox ADP mount path";
     DCHECK(result);
   }
 
