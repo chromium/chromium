@@ -271,10 +271,11 @@ TEST(SocketPermissionTest, Value) {
   std::unique_ptr<APIPermission> permission2(
       permission_info->CreateAPIPermission());
 
-  base::Value value(base::Value::Type::LIST);
-  value.Append("tcp-connect:*.example.com:80");
-  value.Append("udp-bind::8080");
-  value.Append("udp-send-to::8888");
+  base::Value::List list;
+  list.Append("tcp-connect:*.example.com:80");
+  list.Append("udp-bind::8080");
+  list.Append("udp-send-to::8888");
+  base::Value value(std::move(list));
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
   EXPECT_FALSE(permission1->Equal(permission2.get()));
