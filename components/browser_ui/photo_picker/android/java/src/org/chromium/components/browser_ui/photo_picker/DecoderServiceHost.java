@@ -16,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
-import android.os.RemoteException;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
@@ -24,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -33,8 +33,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -533,12 +531,9 @@ public class DecoderServiceHost
             AssetFileDescriptor afd = null;
             try {
                 afd = mContentResolver.openAssetFileDescriptor(params.mUri, "r");
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "Unable to obtain FileDescriptor: " + e);
-                closeRequestWithError(params.mUri.getPath());
-                return;
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "Invalid ContentResolver state: " + e);
+            } catch (Exception e) {
+                // FileNotFoundException, IllegalStateException, IllegalArgumentException.
+                Log.e(TAG, "Unable to obtain FileDescriptor", e);
                 closeRequestWithError(params.mUri.getPath());
                 return;
             }
@@ -556,14 +551,12 @@ public class DecoderServiceHost
         bundle.putBoolean(ImageDecoder.KEY_FULL_WIDTH, params.mFullWidth);
         try {
             mIRemoteService.decodeImage(bundle, this);
-            pfd.close();
-        } catch (RemoteException e) {
-            Log.e(TAG, "Communications failed (Remote): " + e);
-            closeRequestWithError(params.mUri.getPath());
-        } catch (IOException e) {
-            Log.e(TAG, "Communications failed (IO): " + e);
+        } catch (Exception e) {
+            // RemoteException, IOException.
+            Log.e(TAG, "IPC Failed", e);
             closeRequestWithError(params.mUri.getPath());
         }
+        StreamUtil.closeQuietly(pfd);
     }
 
     /**
