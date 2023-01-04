@@ -24,8 +24,6 @@ interface PressureObserver {
   sequence<PressureRecord> takeRecords();
 
   [SameObject] static readonly attribute FrozenArray<PressureSource> supportedSources;
-
-  [Exposed=Window] static Promise<PermissionState> requestPermission();
 };
 
 [Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
