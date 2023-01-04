@@ -28,7 +28,7 @@ TEST_F(ReentrancyCheckerTest, ReentrantUse) {
   NON_REENTRANT_SCOPE(reentrancy_checker_);
 
 #if DCHECK_IS_ON()
-  EXPECT_DEATH(UseNonReentrantScope(), "reentered");
+  EXPECT_DEATH_IF_SUPPORTED(UseNonReentrantScope(), "reentered");
 #else
   // Does nothing if DCHECKs are off.
   UseNonReentrantScope();

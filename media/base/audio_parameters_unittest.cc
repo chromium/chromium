@@ -194,7 +194,7 @@ TEST(AudioParameters, Constructor_CopyChannelLayoutConfig) {
 }
 
 TEST(AudioParameters, ShouldCheckDiscreteWithNoChannels) {
-  ASSERT_DEATH(
+  ASSERT_DEATH_IF_SUPPORTED(
       {
         ChannelLayoutConfig channel_layout_config(CHANNEL_LAYOUT_DISCRETE, 0);
       },
