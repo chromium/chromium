@@ -32,6 +32,8 @@ class FileOpeningJob {
     std::atomic_bool taken{false};
   };
 
+  static size_t GetMaxFileOpeningThreads();
+
   // This constructor will call base::PostJob on the given tasks and only cancel
   // that job in the destructor. This means that if the result of the tasks is
   // no longer useful (if a folder upload is cancelled for instance), `this`

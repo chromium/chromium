@@ -15,7 +15,10 @@ namespace {
 constexpr char kMaxFileOpeningThreads[] = "wp-max-file-opening-threads";
 constexpr size_t kDefaultMaxFileOpeningThreads = 5;
 
-size_t GetMaxFileOpeningThreads() {
+}  // namespace
+
+// static
+size_t FileOpeningJob::GetMaxFileOpeningThreads() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kMaxFileOpeningThreads)) {
     int parsed_max;
@@ -31,8 +34,6 @@ size_t GetMaxFileOpeningThreads() {
 
   return kDefaultMaxFileOpeningThreads;
 }
-
-}  // namespace
 
 FileOpeningJob::FileOpeningTask::FileOpeningTask() = default;
 FileOpeningJob::FileOpeningTask::~FileOpeningTask() = default;

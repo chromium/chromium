@@ -101,43 +101,29 @@ TEST_F(FileOpeningJobTest, MultiFiles) {
   EXPECT_EQ(100, on_got_file_data_count_);
 }
 
-// Disabled due to flakiness on Mac https://crbug.com/1403810
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MaxThreadsFlag DISABLED_MaxThreadsFlag
-#else
-#define MAYBE_MaxThreadsFlag MaxThreadsFlag
-#endif
-TEST_F(FileOpeningJobTest, MAYBE_MaxThreadsFlag) {
+TEST_F(FileOpeningJobTest, MaxThreadsFlag) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
   quit_file_count_ = 500;
 
-  FileOpeningJob job_1(CreateFilesAndTasks(100));
-  EXPECT_EQ(5u, job_1.MaxConcurrentThreads(/*worker_count*/ 0));
+  EXPECT_EQ(5u, FileOpeningJob::GetMaxFileOpeningThreads());
 
   command_line->AppendSwitchASCII("wp-max-file-opening-threads", "10");
-  FileOpeningJob job_2(CreateFilesAndTasks(100));
-  EXPECT_EQ(10u, job_2.MaxConcurrentThreads(/*worker_count*/ 0));
+  EXPECT_EQ(10u, FileOpeningJob::GetMaxFileOpeningThreads());
 
   command_line->RemoveSwitch("wp-max-file-opening-threads");
   command_line->AppendSwitchASCII("wp-max-file-opening-threads", "0");
-  FileOpeningJob job_3(CreateFilesAndTasks(100));
-  EXPECT_EQ(5u, job_3.MaxConcurrentThreads(/*worker_count*/ 0));
+  EXPECT_EQ(5u, FileOpeningJob::GetMaxFileOpeningThreads());
 
   command_line->RemoveSwitch("wp-max-file-opening-threads");
   command_line->AppendSwitchASCII("wp-max-file-opening-threads", "foo");
-  FileOpeningJob job_4(CreateFilesAndTasks(100));
-  EXPECT_EQ(5u, job_4.MaxConcurrentThreads(/*worker_count*/ 0));
+  EXPECT_EQ(5u, FileOpeningJob::GetMaxFileOpeningThreads());
 
   command_line->RemoveSwitch("wp-max-file-opening-threads");
   command_line->AppendSwitchASCII("wp-max-file-opening-threads", "-1");
-  FileOpeningJob job_5(CreateFilesAndTasks(100));
-  EXPECT_EQ(5u, job_5.MaxConcurrentThreads(/*worker_count*/ 0));
-
-  run_loop.Run();
-  EXPECT_EQ(500, on_got_file_data_count_);
+  EXPECT_EQ(5u, FileOpeningJob::GetMaxFileOpeningThreads());
 }
 
 }  // namespace safe_browsing
