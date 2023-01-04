@@ -4429,6 +4429,13 @@ class PDFExtensionPrerenderTest : public PDFExtensionTest {
   }
 
  protected:
+  void PrerenderAndExpectCancellation(const GURL& prerender_url) {
+    content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
+                                                  prerender_url);
+    prerender_helper().AddPrerenderAsync(prerender_url);
+    observer.WaitForDestroyed();
+  }
+
   content::test::PrerenderTestHelper& prerender_helper() {
     return *prerender_helper_;
   }
@@ -4437,11 +4444,10 @@ class PDFExtensionPrerenderTest : public PDFExtensionTest {
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
 };
 
-// TODO(1206312, 1205920): As of writing this test, we can attempt to prerender
-// the PDF viewer without crashing, however the viewer itself fails to load a
-// PDF. This test should be extended once that works.
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
-                       LoadPdfWhilePrerenderedDoesNotCrash) {
+// TODO(1205920): The PDF viewer cannot currently be prerendered correctly. This
+// tests that prerendering is cancelled. Once we're able to support this, this
+// test should be replaced with one that prerenders the PDF viewer.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest, CancelPrerender) {
   const GURL initial_url =
       embedded_test_server()->GetURL("a.test", "/empty.html");
   const GURL pdf_url =
@@ -4449,14 +4455,59 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
   WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
-  const int host_id = prerender_helper().AddPrerender(pdf_url);
-  content::RenderFrameHost* prerendered_render_frame_host =
-      prerender_helper().GetPrerenderedMainFrameHost(host_id);
-  ASSERT_TRUE(prerendered_render_frame_host);
-  ASSERT_EQ(web_contents->GetLastCommittedURL(), initial_url);
+  PrerenderAndExpectCancellation(pdf_url);
+  EXPECT_EQ(0U, GetGuestViewManager()->num_guests_created());
 
   prerender_helper().NavigatePrimaryPage(pdf_url);
   ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+}
+
+// TODO(1205920): The PDF viewer cannot currently be prerendered correctly. This
+// tests that prerendering is cancelled if a PDF is embedded in a prerendered
+// page. Once we're able to support this, this test should be replaced with one
+// that prerenders the PDF viewer.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
+                       CancelPrerenderWithEmbeddedPdf) {
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
+  const GURL pdf_url =
+      embedded_test_server()->GetURL("a.test", "/pdf/test-iframe.html");
+  WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  PrerenderAndExpectCancellation(pdf_url);
+  EXPECT_EQ(0U, GetGuestViewManager()->num_guests_created());
+
+  prerender_helper().NavigatePrimaryPage(pdf_url);
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
+  EXPECT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
+}
+
+// Cross-origin subframe navigations are deferred during prerendering, which
+// means that an embedded cross-site PDF will not cause the PDF viewer to be
+// created until prerender activation.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
+                       PrerenderWithCrossSiteEmbeddedPdf) {
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
+  const GURL pdf_url = embedded_test_server()->GetURL(
+      "a.test", "/pdf/test-cross-site-iframe.html");
+  WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
+  prerender_helper().AddPrerenderAsync(pdf_url);
+  registry_observer.WaitForTrigger(pdf_url);
+  const auto host_id = prerender_helper().GetHostForUrl(pdf_url);
+  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  content::test::PrerenderHostObserver prerender_observer(*web_contents,
+                                                          host_id);
+  prerender_helper().NavigatePrimaryPage(pdf_url);
+  prerender_observer.WaitForActivation();
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
+  EXPECT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
 }
 
 class PDFExtensionSubmitFormTest : public PDFExtensionTest {
@@ -4546,8 +4597,10 @@ class PDFExtensionPrerenderAndFencedFrameTest : public PDFExtensionTest {
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
+// TODO(1205920): The PDF viewer cannot currently be prerendered correctly. Once
+// this is supported, this test should be re-enabled.
 IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
-                       LoadPDFInPrerender) {
+                       DISABLED_LoadPDFInPrerender) {
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
