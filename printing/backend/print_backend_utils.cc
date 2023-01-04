@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -18,7 +19,6 @@ namespace printing {
 
 namespace {
 
-constexpr int kMicronsPerMm = 1000;
 constexpr float kMmPerInch = 25.4f;
 constexpr float kMicronsPerInch = kMmPerInch * kMicronsPerMm;
 

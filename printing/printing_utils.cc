@@ -102,7 +102,7 @@ gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale) {
     return kIsoA4Microns;
   }
   // Convert millis to microns
-  return gfx::Size(width * 1000, height * 1000);
+  return gfx::Size(width * kMicronsPerMm, height * kMicronsPerMm);
 }
 
 bool SizesEqualWithinEpsilon(const gfx::Size& lhs,

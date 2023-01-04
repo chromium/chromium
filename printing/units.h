@@ -12,6 +12,9 @@ namespace printing {
 // Length of an inch in 0.001mm unit.
 constexpr int kMicronsPerInch = 25400;
 
+// A micron is a thousandth of a mm.
+constexpr int kMicronsPerMm = 1000;
+
 // Mil is a thousandth of an inch.
 constexpr float kMicronsPerMil = 25.4f;
 constexpr int kMilsPerInch = 1000;
