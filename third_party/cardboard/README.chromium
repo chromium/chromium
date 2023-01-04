@@ -1,0 +1,14 @@
+Name: Cardboard SDK
+Short Name: cardboard
+URL: https://github.com/googlevr/cardboard
+Version: 1.19.0
+License: Apache 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+The Cardboard SDK supports a simple API used for displaying VR scenes on
+smartphones inserted into Cardboard viewers.
+
+Local Modifications:
+None at this time.

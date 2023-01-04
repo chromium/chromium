@@ -1320,6 +1320,11 @@ deps = {
       'condition': 'checkout_android',
   },
 
+  'src/third_party/cardboard/src' : {
+      'url': Var('chromium_git') + '/external/github.com/googlevr/cardboard/' + '@' + 'e17632c2f6e5ffe3c807bb138153a05a35f7a6fe',
+      'condition': 'checkout_android',
+  },
+
   'src/third_party/arcore-android-sdk/src': {
       'url': Var('chromium_git') + '/external/github.com/google-ar/arcore-android-sdk.git' + '@' + 'd197af6b38f98d2344bc7f76326c4aa0c4f2fb90',
       'condition': 'checkout_android',
