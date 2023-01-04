@@ -13,7 +13,7 @@ var SidePanelBookmarksListInteractiveUITest =
     class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_list_interactive_ui_test.js';
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_list_interactive_ui_test.js';
   }
 };
 

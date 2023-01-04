@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
+import 'chrome://bookmarks-side-panel.top-chrome/bookmark_folder.js';
 
-import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement} from 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
-import {ActionSource} from 'chrome://read-later.top-chrome/bookmarks/bookmarks.mojom-webui.js';
-import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement} from 'chrome://bookmarks-side-panel.top-chrome/bookmark_folder.js';
+import {ActionSource} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

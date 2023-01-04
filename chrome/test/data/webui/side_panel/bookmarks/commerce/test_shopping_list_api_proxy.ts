@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarkProductInfo, PageCallbackRouter, PageRemote} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.mojom-webui.js';
-import {ShoppingListApiProxy} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list_api_proxy.js';
+import {ShoppingListApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
+import {BookmarkProductInfo, PageCallbackRouter, PageRemote} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestShoppingListApiProxy extends TestBrowserProxy implements

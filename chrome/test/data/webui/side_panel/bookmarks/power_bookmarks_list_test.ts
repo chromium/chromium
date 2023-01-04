@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://read-later.top-chrome/bookmarks/power_bookmarks_list.js';
+import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 
-import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
-import {ShoppingListApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list_api_proxy.js';
-import {PowerBookmarkRowElement} from 'chrome://read-later.top-chrome/bookmarks/power_bookmark_row.js';
-import {PowerBookmarksListElement} from 'chrome://read-later.top-chrome/bookmarks/power_bookmarks_list.js';
+import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
+import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
+import {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
+import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';

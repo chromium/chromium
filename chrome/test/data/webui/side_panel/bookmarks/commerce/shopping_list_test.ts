@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
-import 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
+import 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list.js';
+import 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
 
-import {ActionSource} from 'chrome://read-later.top-chrome/bookmarks/bookmarks.mojom-webui.js';
-import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
-import {ACTION_BUTTON_TRACK_IMAGE, ACTION_BUTTON_UNTRACK_IMAGE, LOCAL_STORAGE_EXPAND_STATUS_KEY, ShoppingListElement} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
-import {BookmarkProductInfo} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.mojom-webui.js';
-import {ShoppingListApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list_api_proxy.js';
+import {ActionSource} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
+import {ACTION_BUTTON_TRACK_IMAGE, ACTION_BUTTON_UNTRACK_IMAGE, LOCAL_STORAGE_EXPAND_STATUS_KEY, ShoppingListElement} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list.js';
+import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
+import {BookmarkProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

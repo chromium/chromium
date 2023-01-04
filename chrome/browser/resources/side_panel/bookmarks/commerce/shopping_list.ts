@@ -14,9 +14,9 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {ActionSource} from '../bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from '../bookmarks_api_proxy.js';
+import {BookmarkProductInfo} from '../shopping_list.mojom-webui.js';
 
 import {getTemplate} from './shopping_list.html.js';
-import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './shopping_list_api_proxy.js';
 
 export const LOCAL_STORAGE_EXPAND_STATUS_KEY = 'shoppingListExpanded';

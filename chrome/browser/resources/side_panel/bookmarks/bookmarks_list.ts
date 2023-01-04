@@ -14,8 +14,8 @@ import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 import {getTemplate} from './bookmarks_list.html.js';
-import {BookmarkProductInfo} from './commerce/shopping_list.mojom-webui.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
+import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
 // Key for localStorage object that refers to all the open folders.
 export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';

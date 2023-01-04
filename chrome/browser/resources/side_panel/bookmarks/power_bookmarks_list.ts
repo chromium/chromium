@@ -25,10 +25,10 @@ import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
-import {BookmarkProductInfo} from './commerce/shopping_list.mojom-webui.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 import {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
+import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
 function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
   return bookmark.title || bookmark.url || '';

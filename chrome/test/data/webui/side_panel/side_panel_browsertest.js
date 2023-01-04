@@ -19,7 +19,7 @@ class SidePanelBrowserTest extends PolymerTest {
 var SidePanelBookmarksListTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_list_test.js';
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_list_test.js';
   }
 };
 
@@ -30,7 +30,7 @@ TEST_F('SidePanelBookmarksListTest', 'All', function() {
 var SidePanelPowerBookmarksListTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/power_bookmarks_list_test.js';
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/power_bookmarks_list_test.js';
   }
 };
 
@@ -48,7 +48,7 @@ GEN('#endif');
 var ShoppingListTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/commerce/shopping_list_test.js';
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/commerce/shopping_list_test.js';
   }
 };
 
@@ -59,7 +59,7 @@ TEST_F('ShoppingListTest', 'MAYBE_All', function() {
 var SidePanelBookmarkFolderTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmark_folder_test.js';
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmark_folder_test.js';
   }
 };
 
@@ -71,7 +71,7 @@ TEST_F('SidePanelBookmarkFolderTest', 'All', function() {
 var SidePanelBookmarksDragManagerTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_drag_manager_test.js';
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_drag_manager_test.js';
   }
 };
 

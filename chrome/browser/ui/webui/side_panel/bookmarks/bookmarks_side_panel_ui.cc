@@ -21,8 +21,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/side_panel_resources.h"
-#include "chrome/grit/side_panel_resources_map.h"
+#include "chrome/grit/side_panel_bookmarks_resources.h"
+#include "chrome/grit/side_panel_bookmarks_resources_map.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/commerce/core/shopping_service.h"
@@ -122,9 +122,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)
           ? IDR_SIDE_PANEL_BOOKMARKS_POWER_BOOKMARKS_HTML
           : IDR_SIDE_PANEL_BOOKMARKS_BOOKMARKS_HTML;
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
-      resource);
+  webui::SetupWebUIDataSource(source,
+                              base::make_span(kSidePanelBookmarksResources,
+                                              kSidePanelBookmarksResourcesSize),
+                              resource);
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();

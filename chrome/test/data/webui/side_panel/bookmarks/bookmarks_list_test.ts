@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
+import 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
 
-import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
-import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
-import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
-import {BookmarkProductInfo} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.mojom-webui.js';
-import {ShoppingListApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list_api_proxy.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://bookmarks-side-panel.top-chrome/bookmark_folder.js';
+import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
+import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
+import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
+import {BookmarkProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
