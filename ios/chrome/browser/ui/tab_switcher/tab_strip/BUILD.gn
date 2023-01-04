@@ -37,10 +37,10 @@ source_set("tab_strip_ui") {
   deps = [
     "//components/favicon/ios",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/url:constants",

@@ -15,10 +15,10 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -31,18 +31,6 @@
 
 namespace {
 
-// Constructs a TabSwitcherItem from a `web_state`.
-TabSwitcherItem* CreateItem(web::WebState* web_state) {
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state->GetStableIdentifier()];
-  // chrome://newtab (NTP) tabs have no title.
-  item.hidesTitle = IsURLNtp(web_state->GetVisibleURL());
-  item.title = tab_util::GetTabTitle(web_state);
-  item.showsActivity = web_state->IsLoading();
-
-  return item;
-}
-
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
 NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   NSMutableArray* items = [[NSMutableArray alloc] init];
@@ -54,42 +42,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
     [items addObject:CreateItem(web_state)];
   }
-
   return [items copy];
-}
-
-// Returns the ID of the active tab in `web_state_list`.
-NSString* GetActivePinnedWebStateId(WebStateList* web_state_list) {
-  if (!web_state_list) {
-    return nil;
-  }
-
-  int web_state_index = web_state_list->active_index();
-  if (web_state_index == WebStateList::kInvalidIndex) {
-    return nil;
-  }
-
-  if (!web_state_list->IsWebStatePinnedAt(web_state_index)) {
-    return nil;
-  }
-
-  // WebState cannot be null, so no need to check here.
-  web::WebState* web_state = web_state_list->GetWebStateAt(web_state_index);
-  return web_state->GetStableIdentifier();
-}
-
-// Returns the index of the pinned tab with `identifier` in `web_state_list`.
-// Returns WebStateList::kInvalidIndex if not found.
-int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
-                              NSString* identifier) {
-  for (int i = 0; i < web_state_list->GetIndexOfFirstNonPinnedWebState(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([identifier isEqualToString:web_state->GetStableIdentifier()]) {
-      DCHECK(web_state_list->IsWebStatePinnedAt(i));
-      return i;
-    }
-  }
-  return WebStateList::kInvalidIndex;
 }
 
 }  // namespace
@@ -169,13 +122,15 @@ int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
   }
 
   if (!webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer selectItemWithID:GetActivePinnedWebStateId(webStateList)];
+    [self.consumer selectItemWithID:GetActiveWebStateIdentifier(
+                                        webStateList, /*pinned=*/YES)];
     return;
   }
 
-  [self.consumer insertItem:CreateItem(webState)
-                    atIndex:index
-             selectedItemID:GetActivePinnedWebStateId(webStateList)];
+  [self.consumer
+          insertItem:CreateItem(webState)
+             atIndex:index
+      selectedItemID:GetActiveWebStateIdentifier(webStateList, /*pinned=*/YES)];
 
   _scopedWebStateObservation->AddObservation(webState);
 }
@@ -233,12 +188,14 @@ int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
   }
 
   if (!webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer selectItemWithID:GetActivePinnedWebStateId(webStateList)];
+    [self.consumer selectItemWithID:GetActiveWebStateIdentifier(
+                                        webStateList, /*pinned=*/YES)];
     return;
   }
 
   [self.consumer removeItemWithID:webState->GetStableIdentifier()
-                   selectedItemID:GetActivePinnedWebStateId(webStateList)];
+                   selectedItemID:GetActiveWebStateIdentifier(webStateList,
+                                                              /*pinned=*/YES)];
 
   _scopedWebStateObservation->RemoveObservation(webState);
 }
@@ -281,12 +238,14 @@ int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
   if (webStateList->IsWebStatePinnedAt(index)) {
     [self.consumer insertItem:CreateItem(webState)
                       atIndex:index
-               selectedItemID:GetActivePinnedWebStateId(webStateList)];
+               selectedItemID:GetActiveWebStateIdentifier(webStateList,
+                                                          /*pinned=*/YES)];
 
     _scopedWebStateObservation->AddObservation(webState);
   } else {
     [self.consumer removeItemWithID:webState->GetStableIdentifier()
-                     selectedItemID:GetActivePinnedWebStateId(webStateList)];
+                     selectedItemID:GetActiveWebStateIdentifier(
+                                        webStateList, /*pinned=*/YES)];
 
     _scopedWebStateObservation->RemoveObservation(webState);
   }
@@ -327,7 +286,8 @@ int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
 #pragma mark - PinnedTabsCommands
 
 - (void)selectItemWithID:(NSString*)itemID {
-  int index = GetIndexOfPinnedTabWithId(self.webStateList, itemID);
+  int index =
+      GetIndexOfTabWithIdentifier(self.webStateList, itemID, /*pinned=*/YES);
   WebStateList* itemWebStateList = self.webStateList;
 
   if (index == WebStateList::kInvalidIndex) {
@@ -366,8 +326,9 @@ int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
 }
 
 - (void)populateConsumerItems {
-  [self.consumer populateItems:CreatePinnedTabConsumerItems(self.webStateList)
-                selectedItemID:GetActivePinnedWebStateId(self.webStateList)];
+  [self.consumer
+       populateItems:CreatePinnedTabConsumerItems(self.webStateList)
+      selectedItemID:GetActiveWebStateIdentifier(self.webStateList, YES)];
 }
 
 @end

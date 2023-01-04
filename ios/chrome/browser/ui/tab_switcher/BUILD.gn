@@ -19,3 +19,22 @@ source_set("tab_switcher") {
     "//url",
   ]
 }
+
+source_set("tab_utils") {
+  sources = [
+    "tab_utils.h",
+    "tab_utils.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":tab_switcher",
+    "//base",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:features",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+  ]
+}
