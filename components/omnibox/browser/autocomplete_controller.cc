@@ -1031,7 +1031,7 @@ void AutocompleteController::UpdateScoringSignals() {
   // If enabled, update scoring signals of URL suggestions.
   if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
     for (const auto& annotator : url_scoring_signals_annotators_) {
-      annotator->AnnotateResult(&result_);
+      annotator->AnnotateResult(input_, &result_);
     }
   }
 }

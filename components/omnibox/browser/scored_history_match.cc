@@ -546,7 +546,6 @@ float ScoredHistoryMatch::GetTopicalityScore(
   int32_t total_host_match_length = 0;
   int32_t total_path_match_length = 0;
   int32_t total_query_or_ref_match_length = 0;
-  int32_t total_title_match_length = 0;
 
   for (const auto& url_match : url_matches) {
     // Calculate the offset in the URL string where the meaningful (word) part
@@ -612,30 +611,14 @@ float ScoredHistoryMatch::GetTopicalityScore(
     total_url_match_length += url_match.length;
   }
   // Now do the analogous loop over all matches in the title.
-  next_word_starts = word_starts.title_word_starts_.begin();
-  end_word_starts = word_starts.title_word_starts_.end();
-  size_t word_num = 0;
   title_matches = FilterTermMatchesByWordStarts(
       title_matches, terms_to_word_starts_offsets,
       word_starts.title_word_starts_, 0, std::string::npos, true);
-  for (const auto& title_match : title_matches) {
-    // Calculate the offset in the title string where the meaningful (word) part
-    // of the term starts.  This takes into account times when a term starts
-    // with punctuation such as "/foo".
-    const size_t term_word_offset =
-        title_match.offset + terms_to_word_starts_offsets[title_match.term_num];
-    // Advance next_word_starts until it's >= the position of the term we're
-    // considering (adjusted for where the word begins within the term).
-    while ((next_word_starts != end_word_starts) &&
-           (*next_word_starts < term_word_offset)) {
-      ++next_word_starts;
-      ++word_num;
-    }
-    if (word_num >= num_title_words_to_allow_)
-      break;  // only count the first ten words
-    term_scores[title_match.term_num] += 8;
-    total_title_match_length += title_match.length;
-  }
+
+  int32_t total_title_match_length =
+      ComputeTotalMatchLength(title_matches, terms_to_word_starts_offsets,
+                              word_starts.title_word_starts_,
+                              num_title_words_to_allow_, &term_scores, 8);
 
   if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
     scoring_signals.set_total_url_match_length(total_url_match_length);
@@ -848,4 +831,45 @@ ScoredHistoryMatch::GetHQPBucketsFromString(const std::string& buckets_str) {
     hqp_buckets.push_back(bucket);
   }
   return hqp_buckets;
+}
+
+// static
+int ScoredHistoryMatch::ComputeTotalMatchLength(
+    const TermMatches& matches,
+    const WordStarts& terms_to_word_starts_offsets,
+    const WordStarts& word_starts,
+    int32_t num_words_to_allow,
+    std::vector<int>* terms_scores,
+    int score_delta) {
+  int total_match_length = 0;
+  auto next_word_starts = word_starts.begin();
+  auto end_word_starts = word_starts.end();
+  int32_t word_num = 0;
+  for (const auto& match : matches) {
+    // Calculate the offset in the title string where the meaningful (word) part
+    // of the term starts.  This takes into account times when a term starts
+    // with punctuation such as "/foo".
+    const size_t term_word_offset =
+        match.offset + terms_to_word_starts_offsets[match.term_num];
+    // Advance next_word_starts until it's >= the position of the term we're
+    // considering (adjusted for where the word begins within the term).
+    while ((next_word_starts != end_word_starts) &&
+           (*next_word_starts < term_word_offset)) {
+      ++next_word_starts;
+      ++word_num;
+    }
+
+    // only count up to the number of allowed words.
+    if (word_num >= num_words_to_allow) {
+      break;
+    }
+
+    // Increment scores for the current match term.
+    if (terms_scores &&
+        match.term_num < static_cast<int>(terms_scores->size())) {
+      (*terms_scores)[match.term_num] += score_delta;
+    }
+    total_match_length += match.length;
+  }
+  return total_match_length;
 }
