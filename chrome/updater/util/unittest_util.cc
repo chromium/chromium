@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
@@ -33,6 +34,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
+#include "base/strings/string_number_conversions_win.h"
 #include "base/win/windows_version.h"
 #include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/util/win_util.h"
@@ -370,20 +372,30 @@ const base::ProcessIterator::ProcessEntries FindProcesses(
 
 base::FilePath::StringType PrintProcesses(
     const base::FilePath::StringType& executable_name) {
-  base::FilePath::StringType message(FILE_PATH_LITERAL("Found processes:"));
-  const base::FilePath::StringType demarcation(72, FILE_PATH_LITERAL('='));
+  base::FilePath::StringType message(L"Found processes:\n");
+  base::FilePath::StringType demarcation(72, L'=');
+  demarcation += L'\n';
   message += demarcation;
 
   for (const base::ProcessEntry& entry : FindProcesses(executable_name)) {
     message += base::StrCat(
-        {entry.exe_file(), FILE_PATH_LITERAL(", cmdline="),
+        {entry.exe_file(), L", pid=", base::NumberToWString(entry.pid()),
+         L", creation time=",
+         [](base::ProcessId pid) {
+           const base::Process process = base::Process::Open(pid);
+           return process.IsValid() ? base::ASCIIToWide(base::TimeFormatHTTP(
+                                          process.CreationTime()))
+                                    : L"n/a";
+         }(entry.pid()),
+         L", cmdline=",
          [](base::ProcessId pid) {
            std::unique_ptr<ProcessInspector> process_inspector =
                ProcessInspector::Create(base::Process::OpenWithAccess(
                    pid, PROCESS_ALL_ACCESS | PROCESS_VM_READ));
            return process_inspector ? process_inspector->command_line()
-                                    : FILE_PATH_LITERAL("n/a");
-         }(entry.pid())});
+                                    : L"n/a";
+         }(entry.pid()),
+         L"\n"});
   }
 
   return message + demarcation;
