@@ -146,8 +146,6 @@ bool SettingsResetPromptConfig::Init() {
       kSettingsResetPrompt, "domain_hashes");
   ConfigError error = ParseDomainHashes(domain_hashes_json);
   if (error != CONFIG_ERROR_OK) {
-    UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ConfigError", error,
-                              CONFIG_ERROR_MAX);
     return false;
   }
 
@@ -155,9 +153,6 @@ bool SettingsResetPromptConfig::Init() {
   int delay_before_prompt_seconds = base::GetFieldTrialParamByFeatureAsInt(
       kSettingsResetPrompt, "delay_before_prompt_seconds", -1);
   if (delay_before_prompt_seconds < 0) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SettingsResetPrompt.ConfigError",
-        CONFIG_ERROR_BAD_DELAY_BEFORE_PROMPT_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
   delay_before_prompt_ = base::Seconds(delay_before_prompt_seconds);
@@ -166,9 +161,6 @@ bool SettingsResetPromptConfig::Init() {
   prompt_wave_ = base::GetFieldTrialParamByFeatureAsInt(kSettingsResetPrompt,
                                                         "prompt_wave", 0);
   if (prompt_wave_ <= 0) {
-    UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ConfigError",
-                              CONFIG_ERROR_BAD_PROMPT_WAVE_PARAM,
-                              CONFIG_ERROR_MAX);
     return false;
   }
 
@@ -176,15 +168,10 @@ bool SettingsResetPromptConfig::Init() {
   int time_between_prompts_seconds = base::GetFieldTrialParamByFeatureAsInt(
       kSettingsResetPrompt, "time_between_prompts_seconds", -1);
   if (time_between_prompts_seconds < 0) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SettingsResetPrompt.ConfigError",
-        CONFIG_ERROR_BAD_TIME_BETWEEN_PROMPTS_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
   time_between_prompts_ = base::Seconds(time_between_prompts_seconds);
 
-  UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ConfigError", CONFIG_ERROR_OK,
-                            CONFIG_ERROR_MAX);
   return true;
 }
 

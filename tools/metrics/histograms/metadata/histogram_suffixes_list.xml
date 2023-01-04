@@ -5807,13 +5807,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ChromeOS.Settings.Languages.Toggle"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SettingsResetPromptSettingType" separator="_">
-  <suffix name="DefaultSearch" label="Reset state for default search engine."/>
-  <suffix name="Homepage" label="Reset state for homepage."/>
-  <suffix name="StartupUrls" label="Reset state for startup URLs."/>
-  <affected-histogram name="SettingsResetPrompt.ResetState"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SharingChannelType" separator=".">
   <suffix name="FcmSenderId" label="FCM Sender ID"/>
   <suffix name="FcmVapid" label="FCM VAPID"/>

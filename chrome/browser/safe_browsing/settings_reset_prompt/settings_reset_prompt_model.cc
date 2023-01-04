@@ -131,19 +131,12 @@ void SettingsResetPromptModel::PerformReset(
   ProfileResetter::ResettableFlags reset_flags = 0;
   if (homepage_reset_state() == RESET_REQUIRED) {
     reset_flags |= ProfileResetter::HOMEPAGE;
-    UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.SettingsReset",
-                              SETTINGS_RESET_HOMEPAGE, SETTINGS_RESET_MAX);
   }
   if (default_search_reset_state() == RESET_REQUIRED) {
     reset_flags |= ProfileResetter::DEFAULT_SEARCH_ENGINE;
-    UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.SettingsReset",
-                              SETTINGS_RESET_DEFAULT_SEARCH,
-                              SETTINGS_RESET_MAX);
   }
   if (startup_urls_reset_state() == RESET_REQUIRED) {
     reset_flags |= ProfileResetter::STARTUP_PAGES;
-    UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.SettingsReset",
-                              SETTINGS_RESET_STARTUP_URLS, SETTINGS_RESET_MAX);
   }
 
   profile_resetter_->Reset(reset_flags, std::move(default_settings),
@@ -197,17 +190,6 @@ const std::vector<GURL>& SettingsResetPromptModel::startup_urls_to_reset()
 SettingsResetPromptModel::ResetState
 SettingsResetPromptModel::startup_urls_reset_state() const {
   return startup_urls_reset_state_;
-}
-
-void SettingsResetPromptModel::ReportUmaMetrics() const {
-  UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.PromptRequired",
-                        ShouldPromptForReset());
-  UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ResetState_DefaultSearch",
-                            default_search_reset_state(), RESET_STATE_MAX);
-  UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ResetState_StartupUrls",
-                            startup_urls_reset_state(), RESET_STATE_MAX);
-  UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ResetState_Homepage",
-                            homepage_reset_state(), RESET_STATE_MAX);
 }
 
 void SettingsResetPromptModel::InitDefaultSearchData() {

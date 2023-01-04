@@ -105,7 +105,6 @@ void SettingsResetPromptController::DialogShown() {
   model_->DialogShown();
   time_dialog_shown_ = base::Time::Now();
   base::RecordAction(base::UserMetricsAction("SettingsResetPrompt_Shown"));
-  UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.DialogShown", true);
 }
 
 void SettingsResetPromptController::Accept() {
@@ -113,9 +112,6 @@ void SettingsResetPromptController::Accept() {
   DCHECK(default_settings_);
 
   base::RecordAction(base::UserMetricsAction("SettingsResetPrompt_Accepted"));
-  UMA_HISTOGRAM_LONG_TIMES_100("SettingsResetPrompt.TimeUntilAccepted",
-                               base::Time::Now() - time_dialog_shown_);
-  UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.PromptAccepted", true);
   model_->PerformReset(
       std::move(default_settings_),
       base::BindOnce(&SettingsResetPromptController::OnInteractionDone,
@@ -125,18 +121,12 @@ void SettingsResetPromptController::Accept() {
 void SettingsResetPromptController::Cancel() {
   DCHECK(!time_dialog_shown_.is_null());
   base::RecordAction(base::UserMetricsAction("SettingsResetPrompt_Canceled"));
-  UMA_HISTOGRAM_LONG_TIMES_100("SettingsResetPrompt.TimeUntilCanceled",
-                               base::Time::Now() - time_dialog_shown_);
-  UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.PromptAccepted", false);
   OnInteractionDone();
 }
 
 void SettingsResetPromptController::Close() {
   DCHECK(!time_dialog_shown_.is_null());
   base::RecordAction(base::UserMetricsAction("SettingsResetPrompt_Dismissed"));
-  UMA_HISTOGRAM_LONG_TIMES_100("SettingsResetPrompt.TimeUntilDismissed",
-                               base::Time::Now() - time_dialog_shown_);
-  UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.PromptAccepted", false);
   OnInteractionDone();
 }
 

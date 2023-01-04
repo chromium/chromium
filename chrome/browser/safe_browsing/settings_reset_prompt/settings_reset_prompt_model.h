@@ -90,8 +90,6 @@ class SettingsResetPromptModel {
   virtual const std::vector<GURL>& startup_urls_to_reset() const;
   virtual ResetState startup_urls_reset_state() const;
 
-  void ReportUmaMetrics() const;
-
  private:
   // Functions to be called by the constructor to initialize the model
   // object. These functions should be called in the order in which they are

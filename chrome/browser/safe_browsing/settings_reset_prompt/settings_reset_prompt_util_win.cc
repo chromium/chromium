@@ -73,8 +73,6 @@ void MaybeShowSettingsResetPrompt(
   auto model = std::make_unique<SettingsResetPromptModel>(
       profile, std::move(config), std::make_unique<ProfileResetter>(profile));
 
-  model->ReportUmaMetrics();
-
   if (!model->ShouldPromptForReset())
     return;
 
