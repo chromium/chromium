@@ -1509,7 +1509,7 @@
   {
     "name": "download-bubble",
     "owners": [ "drubery", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "download-bubble-v2",
@@ -1517,7 +1517,7 @@
       "drubery",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "download-later",
