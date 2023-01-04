@@ -55,17 +55,6 @@ constexpr char kEmptyPrinterName[] = "";
 
 PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
 
-size_t GetClientsCountForRemoteId(
-    const PrintBackendServiceManager::PrintClientsMap& clients,
-    const PrintBackendServiceManager::RemoteId& remote_id) {
-  auto iter = clients.find(remote_id);
-  if (iter != clients.end()) {
-    DCHECK(!iter->second.empty());
-    return iter->second.size();
-  }
-  return 0;
-}
-
 #if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/809738):  Update for other platforms as they are made able
 // to support modal dialogs from OOP.
@@ -750,7 +739,17 @@ constexpr base::TimeDelta PrintBackendServiceManager::GetClientTypeIdleTimeout(
 
 bool PrintBackendServiceManager::HasPrintDocumentClientForRemoteId(
     const RemoteId& remote_id) const {
-  return GetClientsCountForRemoteId(print_document_clients_, remote_id) > 0;
+  return GetPrintDocumentClientsCountForRemoteId(remote_id) > 0;
+}
+
+size_t PrintBackendServiceManager::GetPrintDocumentClientsCountForRemoteId(
+    const RemoteId& remote_id) const {
+  auto iter = print_document_clients_.find(remote_id);
+  if (iter != print_document_clients_.end()) {
+    DCHECK(!iter->second.empty());
+    return iter->second.size();
+  }
+  return 0;
 }
 
 absl::optional<base::TimeDelta>
@@ -793,8 +792,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
       break;
 
     case ClientType::kPrintDocument:
-      size_t clients_count =
-          GetClientsCountForRemoteId(print_document_clients_, remote_id);
+      size_t clients_count = GetPrintDocumentClientsCountForRemoteId(remote_id);
       DCHECK_GT(clients_count, 0u);
 
       // No need to update if there were other printing clients for same remote
