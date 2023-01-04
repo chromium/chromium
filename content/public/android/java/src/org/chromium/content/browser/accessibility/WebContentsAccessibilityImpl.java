@@ -818,7 +818,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // BrowserAccessibilityStateListener
 
     @Override
-    public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState) {
+    public void onAccessibilityStateChanged(AccessibilityState.State oldAccessibilityState,
+            AccessibilityState.State newAccessibilityState) {
         refreshNativeState();
 
         // TODO(mschillaci,jacklynch): Move into {refreshNativeState} or similar method once
