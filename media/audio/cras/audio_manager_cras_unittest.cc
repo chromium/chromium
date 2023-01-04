@@ -203,8 +203,9 @@ const CrasDevice kHDMI(DeviceType::kOutput,
 void CheckDeviceNames(const AudioDeviceNames& device_names,
                       const std::map<uint64_t, std::string>& expectation) {
   EXPECT_EQ(device_names.empty(), expectation.empty());
-  if (device_names.empty())
+  if (device_names.empty()) {
     return;
+  }
 
   AudioDeviceNames::const_iterator it = device_names.begin();
 
@@ -264,8 +265,9 @@ AudioParameters GetPreferredOutputStreamParameters(
   // AudioManagerCras::GetPreferredOutputStreamParameters().
   int sample_rate = 48000;  // kDefaultSampleRate
   int32_t buffer_size = user_buffer_size;
-  if (buffer_size == 0)  // Not user-provided.
-    buffer_size = 512;   // kDefaultOutputBufferSize
+  if (buffer_size == 0) {  // Not user-provided.
+    buffer_size = 512;     // kDefaultOutputBufferSize
+  }
   return AudioParameters(
       AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
       sample_rate, buffer_size,

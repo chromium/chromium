@@ -102,14 +102,12 @@ class CrasInputStreamTest : public testing::Test {
   CrasInputStream* CreateStream(ChannelLayoutConfig layout,
                                 int32_t samples_per_packet,
                                 const std::string& device_id) {
-    AudioParameters params(kTestFormat,
-                           layout,
-                           kTestSampleRate,
+    AudioParameters params(kTestFormat, layout, kTestSampleRate,
                            samples_per_packet);
     return new CrasInputStream(params, mock_manager_.get(), device_id);
   }
 
-  void CaptureSomeFrames(const AudioParameters &params,
+  void CaptureSomeFrames(const AudioParameters& params,
                          unsigned int duration_ms) {
     CrasInputStream* test_stream = new CrasInputStream(
         params, mock_manager_.get(), AudioDeviceDescription::kDefaultDeviceId);
@@ -197,8 +195,8 @@ TEST_F(CrasInputStreamTest, SetGetVolume) {
 }
 
 TEST_F(CrasInputStreamTest, CaptureFrames) {
-  const unsigned int rates[] =
-      {8000, 16000, 22050, 32000, 44100, 48000, 96000, 192000};
+  const unsigned int rates[] = {8000,  16000, 22050, 32000,
+                                44100, 48000, 96000, 192000};
 
   for (unsigned int i = 0; i < ARRAY_SIZE(rates); i++) {
     SCOPED_TRACE(testing::Message() << "Mono " << rates[i] << "Hz");

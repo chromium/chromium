@@ -89,22 +89,25 @@ AudioOutputStream* AudioManagerCrasBase::MakeOutputStream(
 }
 
 AudioInputStream* AudioManagerCrasBase::MakeInputStream(
-    const AudioParameters& params, const std::string& device_id) {
+    const AudioParameters& params,
+    const std::string& device_id) {
   return new CrasInputStream(params, this, device_id);
 }
 
 void AudioManagerCrasBase::RegisterSystemAecDumpSource(
     AecdumpRecordingSource* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (aecdump_recording_manager_)
+  if (aecdump_recording_manager_) {
     aecdump_recording_manager_->RegisterAecdumpSource(stream);
+  }
 }
 
 void AudioManagerCrasBase::DeregisterSystemAecDumpSource(
     AecdumpRecordingSource* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (aecdump_recording_manager_)
+  if (aecdump_recording_manager_) {
     aecdump_recording_manager_->DeregisterAecdumpSource(stream);
+  }
 }
 
 void AudioManagerCrasBase::SetAecDumpRecordingManager(

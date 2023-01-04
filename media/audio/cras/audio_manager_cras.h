@@ -48,8 +48,7 @@ class MEDIA_EXPORT AudioManagerCras : public AudioManagerCrasBase {
 
   // Produces AudioParameters for the system, including audio processing
   // capabilities tailored for the system,
-  AudioParameters GetStreamParametersForSystem(
-      int user_buffer_size);
+  AudioParameters GetStreamParametersForSystem(int user_buffer_size);
 
  protected:
   AudioParameters GetPreferredOutputStreamParameters(

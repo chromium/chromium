@@ -80,9 +80,7 @@ class CrasUnifiedStreamTest : public testing::Test {
                                  AudioDeviceDescription::kDefaultDeviceId);
   }
 
-  MockAudioManagerCras& mock_manager() {
-    return *(mock_manager_.get());
-  }
+  MockAudioManagerCras& mock_manager() { return *(mock_manager_.get()); }
 
   static const ChannelLayout kTestChannelLayout;
   static const int kTestSampleRate;

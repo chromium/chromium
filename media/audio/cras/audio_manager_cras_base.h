@@ -19,7 +19,7 @@ namespace media {
 class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
  public:
   AudioManagerCrasBase(std::unique_ptr<AudioThread> audio_thread,
-                   AudioLogFactory* audio_log_factory);
+                       AudioLogFactory* audio_log_factory);
 
   AudioManagerCrasBase(const AudioManagerCrasBase&) = delete;
   AudioManagerCrasBase& operator=(const AudioManagerCrasBase&) = delete;

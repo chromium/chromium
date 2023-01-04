@@ -215,24 +215,15 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   // Channel map to CRAS_CHANNEL, values in the same order of
   // corresponding source in Chromium defined Channels.
   static const int kChannelMap[] = {
-    CRAS_CH_FL,
-    CRAS_CH_FR,
-    CRAS_CH_FC,
-    CRAS_CH_LFE,
-    CRAS_CH_RL,
-    CRAS_CH_RR,
-    CRAS_CH_FLC,
-    CRAS_CH_FRC,
-    CRAS_CH_RC,
-    CRAS_CH_SL,
-    CRAS_CH_SR
-  };
+      CRAS_CH_FL,  CRAS_CH_FR,  CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
+      CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL,  CRAS_CH_SR};
   static_assert(std::size(kChannelMap) == CHANNELS_MAX + 1,
                 "kChannelMap array size should match");
 
   // If already playing, stop before re-starting.
-  if (started_)
+  if (started_) {
     return;
+  }
 
   StartAgc();
 
@@ -275,14 +266,15 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   // Initialize channel layout to all -1 to indicate that none of
   // the channels is set in the layout.
   int8_t layout[CRAS_CH_MAX];
-  for (size_t i = 0; i < std::size(layout); ++i)
+  for (size_t i = 0; i < std::size(layout); ++i) {
     layout[i] = -1;
+  }
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that are not present in params_.channel_layout().
   for (size_t i = 0; i < std::size(kChannelMap); ++i) {
-    layout[kChannelMap[i]] = ChannelOrder(params_.channel_layout(),
-                                          static_cast<Channels>(i));
+    layout[kChannelMap[i]] =
+        ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
   }
 
   rc = libcras_stream_params_set_channel_layout(stream_params, CRAS_CH_MAX,
@@ -301,20 +293,25 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     libcras_stream_params_enable_aec(stream_params);
   }
 
-  if (UseCrasNs())
+  if (UseCrasNs()) {
     libcras_stream_params_enable_ns(stream_params);
+  }
 
-  if (UseCrasAgc())
+  if (UseCrasAgc()) {
     libcras_stream_params_enable_agc(stream_params);
+  }
 
-  if (DspBasedAecIsAllowed())
+  if (DspBasedAecIsAllowed()) {
     libcras_stream_params_allow_aec_on_dsp(stream_params);
+  }
 
-  if (DspBasedNsIsAllowed())
+  if (DspBasedNsIsAllowed()) {
     libcras_stream_params_allow_ns_on_dsp(stream_params);
+  }
 
-  if (DspBasedAgcIsAllowed())
+  if (DspBasedAgcIsAllowed()) {
     libcras_stream_params_allow_agc_on_dsp(stream_params);
+  }
 
   // Adding the stream will start the audio callbacks.
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,
@@ -330,8 +327,9 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   if (mute_system_audio_) {
     int muted;
     libcras_client_get_system_muted(client_, &muted);
-    if (!muted)
+    if (!muted) {
       libcras_client_set_system_mute(client_, 1);
+    }
     mute_done_ = true;
   }
 
@@ -346,11 +344,13 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 }
 
 void CrasInputStream::Stop() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
 
-  if (!callback_ || !started_)
+  if (!callback_ || !started_) {
     return;
+  }
 
   audio_manager_->DeregisterSystemAecDumpSource(this);
 
@@ -418,8 +418,9 @@ void CrasInputStream::ReadAudio(size_t frames,
 
 void CrasInputStream::NotifyStreamError(int err) {
   ReportNotifyStreamErrors(err);
-  if (callback_)
+  if (callback_) {
     callback_->OnError();
+  }
 }
 
 double CrasInputStream::GetMaxVolume() {
@@ -442,8 +443,9 @@ void CrasInputStream::SetVolume(double volume) {
 }
 
 double CrasInputStream::GetVolume() {
-  if (!client_)
+  if (!client_) {
     return 0.0;
+  }
 
   return input_volume_;
 }
@@ -474,8 +476,9 @@ void CrasInputStream::SetOutputDeviceForAec(
 
 void CrasInputStream::StartAecdump(base::File file) {
   FILE* stream = base::FileToFILE(std::move(file), "w");
-  if (!client_)
+  if (!client_) {
     return;
+  }
 #if DCHECK_IS_ON()
   DCHECK(!recording_enabled_);
   recording_enabled_ = true;
@@ -485,8 +488,9 @@ void CrasInputStream::StartAecdump(base::File file) {
 }
 
 void CrasInputStream::StopAecdump() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
 #if DCHECK_IS_ON()
   DCHECK(recording_enabled_);
   recording_enabled_ = false;

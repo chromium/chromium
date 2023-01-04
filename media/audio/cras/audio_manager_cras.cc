@@ -67,8 +67,9 @@ void AudioManagerCras::GetAudioInputDeviceNames(
        cras_util_->CrasGetAudioDevices(DeviceType::kInput)) {
     device_names->emplace_back(device.name, base::NumberToString(device.id));
   }
-  if (!device_names->empty())
+  if (!device_names->empty()) {
     device_names->push_front(AudioDeviceName::CreateDefault());
+  }
 }
 
 void AudioManagerCras::GetAudioOutputDeviceNames(
@@ -77,8 +78,9 @@ void AudioManagerCras::GetAudioOutputDeviceNames(
        cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
     device_names->emplace_back(device.name, base::NumberToString(device.id));
   }
-  if (!device_names->empty())
+  if (!device_names->empty()) {
     device_names->push_front(AudioDeviceName::CreateDefault());
+  }
 }
 
 // Checks if a system AEC with a specific group ID is flagged to be deactivated
@@ -150,7 +152,6 @@ void SetAllowedDspBasedEffects(int aec_group_id, AudioParameters& params) {
 
   params.set_effects(effects);
 }
-
 
 // Collects flags values for whether, and in what way, the AEC, NS or AGC
 // effects should be enforced in spite of them not being flagged as supported by
@@ -297,14 +298,16 @@ std::string AudioManagerCras::GetAssociatedOutputDeviceID(
 
   std::string device_name = GetGroupIDInput(input_device_id);
 
-  if (device_name.empty())
+  if (device_name.empty()) {
     return "";
+  }
 
   // Now search for an output device with the same device name.
   for (const auto& device :
        cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
-    if (device.dev_name == device_name)
+    if (device.dev_name == device_name) {
       return base::NumberToString(device.id);
+    }
   }
   return "";
 }
@@ -319,11 +322,12 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
   if (input_params.IsValid()) {
     channel_layout_config = input_params.channel_layout_config();
     sample_rate = input_params.sample_rate();
-    if (!buffer_size)  // Not user-provided.
+    if (!buffer_size) {  // Not user-provided.
       buffer_size =
           std::min(static_cast<int>(limits::kMaxAudioBufferSize),
                    std::max(static_cast<int>(limits::kMinAudioBufferSize),
                             input_params.frames_per_buffer()));
+    }
     return AudioParameters(
         AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
         sample_rate, buffer_size,
@@ -337,8 +341,9 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
   if (AudioDeviceDescription::IsDefaultDevice(output_device_id)) {
     preferred_device_id = GetPrimaryActiveOutputNode();
   } else {
-    if (!base::StringToUint64(output_device_id, &preferred_device_id))
+    if (!base::StringToUint64(output_device_id, &preferred_device_id)) {
       preferred_device_id = 0;  // 0 represents invalid |output_device_id|.
+    }
   }
 
   for (const auto& device :
@@ -355,11 +360,13 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
     }
   }
 
-  if (!buffer_size)  // Not user-provided.
+  if (!buffer_size) {  // Not user-provided.
     buffer_size = cras_util_->CrasGetDefaultOutputBufferSize();
+  }
 
-  if (buffer_size <= 0)
+  if (buffer_size <= 0) {
     buffer_size = kDefaultOutputBufferSize;
+  }
 
   return AudioParameters(
       AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
@@ -371,8 +378,9 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
 uint64_t AudioManagerCras::GetPrimaryActiveInputNode() {
   for (const auto& device :
        cras_util_->CrasGetAudioDevices(DeviceType::kInput)) {
-    if (device.active)
+    if (device.active) {
       return device.id;
+    }
   }
   return 0;
 }
@@ -380,8 +388,9 @@ uint64_t AudioManagerCras::GetPrimaryActiveInputNode() {
 uint64_t AudioManagerCras::GetPrimaryActiveOutputNode() {
   for (const auto& device :
        cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
-    if (device.active)
+    if (device.active) {
       return device.id;
+    }
   }
   return 0;
 }
