@@ -66,7 +66,7 @@ PRODUCTS_TO_BUILDER_NAME = {
     'wpt_content_shell_linux': 'linux-wpt-content-shell-fyi-rel',
     'wpt_content_shell_win10': 'win10-wpt-content-shell-fyi-rel',
     'wpt_content_shell_win11': 'win11-wpt-content-shell-fyi-rel',
-    'wpt_content_shell_mac12': 'mac-12-wpt-fyi-rel',
+    'wpt_content_shell_mac12': 'mac12-wpt-content-shell-fyi-rel',
     'content_shell': "Linux Tests"
 }
 STEP_NAME_VARIANTS = {
