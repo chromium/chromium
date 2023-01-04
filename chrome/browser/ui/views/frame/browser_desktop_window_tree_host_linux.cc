@@ -17,8 +17,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -42,6 +45,16 @@ bool CreateGlobalMenuBar() {
 std::unordered_set<std::string>& SentStartupIds() {
   static base::NoDestructor<std::unordered_set<std::string>> sent_startup_ids;
   return *sent_startup_ids;
+}
+
+// Returns the event source for the active tab drag session.
+absl::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
+  if (auto* source_context = TabDragController::GetSourceContext()) {
+    if (auto* drag_controller = source_context->GetDragController()) {
+      return drag_controller->event_source();
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -154,9 +167,12 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
 
   if (auto* wayland_extension = ui::GetWaylandExtension(*platform_window())) {
     if (tab_drag_kind != TabDragKind::kNone) {
-      auto allow_system_drag = base::FeatureList::IsEnabled(
-          features::kAllowWindowDragUsingSystemDragDrop);
-      wayland_extension->StartWindowDraggingSessionIfNeeded(allow_system_drag);
+      if (auto event_source = GetCurrentTabDragEventSource()) {
+        const auto allow_system_drag = base::FeatureList::IsEnabled(
+            features::kAllowWindowDragUsingSystemDragDrop);
+        wayland_extension->StartWindowDraggingSessionIfNeeded(
+            *event_source, allow_system_drag);
+      }
     }
   }
 }

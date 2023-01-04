@@ -70,10 +70,12 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
       delete;
   ~WaylandWindowDragController() override;
 
-  // Starts a new Wayland DND session for window dragging, if not done yet. A
-  // new data source is setup and the focused window is used as the origin
-  // surface.
-  bool StartDragSession();
+  // Starts a new Wayland DND session for window dragging, if not done yet.
+  // Whereas `origin` is used as the origin drag surface and `event_source` as
+  // the event type that is triggering the drag session, ie: mouse or touch. See
+  // https://wayland.app/protocols/wayland#wl_data_device:request:start_drag for
+  // more protocol-related information.
+  bool StartDragSession(WaylandToplevelWindow* origin, DragSource event_source);
 
   bool Drag(WaylandToplevelWindow* window, const gfx::Vector2d& offset);
   void StopDragging();
@@ -99,7 +101,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
                            HandleDraggedWindowDestructionAfterMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest, GetSerialAndOrigin);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest, GetSerial);
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
@@ -145,10 +147,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // |extended_drag_available_for_testing_|.
   bool IsExtendedDragAvailableInternal() const;
 
-  // Returns the serial and origin window based on both how recent is the serial
-  // and the input focus information.
-  // TODO(crbug.com/1246529): Drop once drag source is supplied by the callers.
-  std::pair<absl::optional<wl::Serial>, WaylandWindow*> GetSerialAndOrigin();
+  // Returns the serial for the given |drag_source| if |origin| has the
+  // corresponding focus, otherwise return null.
+  absl::optional<wl::Serial> GetSerial(DragSource drag_source,
+                                       WaylandToplevelWindow* origin);
 
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandDataDeviceManager> data_device_manager_;

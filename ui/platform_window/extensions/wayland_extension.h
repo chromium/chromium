@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 
 namespace ui {
 
@@ -31,13 +32,15 @@ enum class WaylandOrientationLockType {
 
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
-  // Starts a window dragging session for the owning platform window, if
-  // it is not running yet. Under Wayland, window dragging is backed by a
-  // platform drag-and-drop session. `allow_system_drag` indicates whether it is
-  // allowed to use a regular drag-and-drop session if the compositor does not
-  // support the extended drag protocol needed to implement all window dragging
-  // features.
-  virtual void StartWindowDraggingSessionIfNeeded(bool allow_system_drag) = 0;
+  // Starts a window dragging session from the owning platform window triggered
+  // by `event_source` (kMouse or kTouch) if it is not running yet. Under
+  // Wayland, window dragging is backed by a platform drag-and-drop session.
+  // |allow_system_drag| indicates whether it is allowed to use a regular
+  // drag-and-drop session if the compositor does not support the extended-drag
+  // protocol needed to implement all window dragging features.
+  virtual void StartWindowDraggingSessionIfNeeded(
+      ui::mojom::DragEventSource event_source,
+      bool allow_system_drag) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Signals the underneath platform that browser is entering (or exiting)

@@ -9,9 +9,12 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window.h"
@@ -22,6 +25,16 @@ bool ShouldHaveRoundedCorners(chromeos::WindowStateType window_state) {
   return window_state == chromeos::WindowStateType::kNormal ||
          window_state == chromeos::WindowStateType::kDefault ||
          window_state == chromeos::WindowStateType::kFloated;
+}
+
+// Returns the event source for the active tab drag session.
+absl::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
+  if (auto* source_context = TabDragController::GetSourceContext()) {
+    if (auto* drag_controller = source_context->GetDragController()) {
+      return drag_controller->event_source();
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -152,9 +165,12 @@ void BrowserDesktopWindowTreeHostLacros::TabDraggingKindChanged(
     return;
 
   auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
-  auto allow_system_drag = base::FeatureList::IsEnabled(
-      features::kAllowWindowDragUsingSystemDragDrop);
-  wayland_extension->StartWindowDraggingSessionIfNeeded(allow_system_drag);
+  if (auto event_source = GetCurrentTabDragEventSource()) {
+    const auto allow_system_drag = base::FeatureList::IsEnabled(
+        features::kAllowWindowDragUsingSystemDragDrop);
+    wayland_extension->StartWindowDraggingSessionIfNeeded(*event_source,
+                                                          allow_system_drag);
+  }
 }
 
 bool BrowserDesktopWindowTreeHostLacros::SupportsMouseLock() {

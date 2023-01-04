@@ -53,6 +53,7 @@ component("platform_window") {
       "extensions/wayland_extension.cc",
       "extensions/wayland_extension.h",
     ]
+    deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
   }
   if (is_linux || is_chromeos_ash) {
     sources += [

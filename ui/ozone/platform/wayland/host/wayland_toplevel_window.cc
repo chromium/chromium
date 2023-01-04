@@ -750,14 +750,20 @@ void WaylandToplevelWindow::EndMoveLoop() {
 }
 
 void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
+    ui::mojom::DragEventSource event_source,
     bool allow_system_drag) {
   DCHECK(connection()->window_drag_controller());
-  // If extended drag is not available, WaylandDataDragManager is used instead
-  // of WaylandWindowDragManager.
-  if (!allow_system_drag ||
-      connection()->window_drag_controller()->IsExtendedDragAvailable()) {
-    connection()->window_drag_controller()->StartDragSession();
+  // If extended drag is not available and |allow_system_drag| is set, this is
+  // no-op and WaylandDataDragController is assumed to be used instead. i.e:
+  // Fallback to a simpler window drag UX based on regular system drag-and-drop.
+  if (!connection()->window_drag_controller()->IsExtendedDragAvailable() &&
+      allow_system_drag) {
+    return;
   }
+  connection()->window_drag_controller()->StartDragSession(
+      this, event_source == ui::mojom::DragEventSource::kTouch
+                ? WaylandWindowDragController::DragSource::kTouch
+                : WaylandWindowDragController::DragSource::kMouse);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -765,7 +771,7 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
   if (shell_toplevel_ && shell_toplevel_->SupportsTopLevelImmersiveStatus()) {
     shell_toplevel_->SetUseImmersiveMode(status);
   } else if (IsSupportedOnAuraSurface(
-          ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION)) {
+                 ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION)) {
     auto mode = status ? ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE
                        : ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN;
     zaura_surface_set_fullscreen_mode(aura_surface(), mode);
