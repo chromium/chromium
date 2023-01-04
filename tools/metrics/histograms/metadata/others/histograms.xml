@@ -4210,10 +4210,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.CrashReportPending" enum="CrashpadReportPending"
-    expires_after="M85">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4221,70 +4220,63 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Crashpad.CrashReportSize" units="bytes" expires_after="M85">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+<histogram name="Crashpad.CrashReportSize" units="bytes" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The size of a crash report minidump on disk when captured.</summary>
 </histogram>
 
 <histogram name="Crashpad.CrashUpload.AttemptSuccessful"
-    enum="CrashpadUploadAttemptStatus" expires_after="M85">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    enum="CrashpadUploadAttemptStatus" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>Logs whether a crash uploaded succeeded or failed.</summary>
 </histogram>
 
 <histogram name="Crashpad.CrashUpload.Skipped"
-    enum="CrashpadUploadSkippedReason" expires_after="M85">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    enum="CrashpadUploadSkippedReason" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The reason that a crash report upload was skipped.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionCaptureResult"
-    enum="CrashpadExceptionCaptureResult" expires_after="M90">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    enum="CrashpadExceptionCaptureResult" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The outcome of execution of the Crashpad exception handler.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionCode.Mac" enum="CrashpadMacExceptionCodes"
-    expires_after="M90">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>mark@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The exception code encountered in a crash on Mac OS X.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionCode.Win" enum="CrashpadWinExceptionCodes"
-    expires_after="M90">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The exception code encountered in a crash on Windows.</summary>
 </histogram>
 
 <histogram name="Crashpad.ExceptionEncountered"
-    enum="CrashpadExceptionProcessingState" expires_after="2021-08-22">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    enum="CrashpadExceptionProcessingState" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4294,10 +4286,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.HandlerCrash.ExceptionCode.Mac"
-    enum="CrashpadMacExceptionCodes" expires_after="M90">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    enum="CrashpadMacExceptionCodes" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>mark@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4307,10 +4298,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.HandlerCrash.ExceptionCode.Win"
-    enum="CrashpadWinExceptionCodes" expires_after="M90">
-  <expired_intentionally>
-    Kept as a diagnostic metric.
-  </expired_intentionally>
+    enum="CrashpadWinExceptionCodes" expires_after="never">
+<!-- expires-never: Crashpad metrics are continually needed to diagnose issues found in the field. -->
+
   <owner>jperaza@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
