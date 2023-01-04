@@ -47,7 +47,8 @@ id ExecuteJavaScript(NSString* script, web::WebState* web_state) {
   if (!WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
         return execution_completed;
       })) {
-    LOG(ERROR) << "Timed out trying to execute: " << script;
+    LOG(ERROR) << "Timed out trying to execute: "
+               << base::SysNSStringToUTF8(script);
   }
 
   return execution_result;
