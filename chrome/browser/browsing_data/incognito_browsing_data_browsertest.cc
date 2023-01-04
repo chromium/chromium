@@ -29,7 +29,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -203,8 +202,6 @@ class IncognitoBrowsingDataBrowserTest
     // it uses the External Clear Key CDM.
     RegisterClearKeyCdm(command_line);
 #endif
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "StorageFoundationAPI");
   }
 };
 
@@ -455,12 +452,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   TestEmptySiteData("FileSystem");
 }
 
-// Storage foundation is not supported in Incognito.
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
-                       DISABLED_NativeIODeletion) {
-  TestSiteData("StorageFoundation");
-}
-
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_WebSqlDeletion DISABLED_WebSqlDeletion
@@ -533,7 +524,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-// Note that |"StorageFoundation"| is not supported in Incognito.
 const std::vector<std::string> kStorageTypes{
     "Cookie", "LocalStorage",  "FileSystem",   "SessionStorage", "IndexedDb",
     "WebSql", "ServiceWorker", "CacheStorage", "MediaLicense"};

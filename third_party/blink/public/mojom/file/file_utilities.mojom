@@ -27,7 +27,7 @@ interface FileUtilitiesHost {
   // https://crbug.com/1084565.
   //
   // The rendererer passes the file handle to the backend. This could have been
-  // avoided by having NativeIOFileHost always store a dup()ed handle for the
+  // avoided by having the host always store a dup()ed handle for the
   // file. This alternative was rejected in order to avoid reasoning about the
   // effects of having multiple file handles pointing to the same file.
   //

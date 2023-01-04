@@ -101,7 +101,6 @@
 #include "content/browser/media/media_internals.h"
 #include "content/browser/metrics/histogram_controller.h"
 #include "content/browser/mime_registry_impl.h"
-#include "content/browser/native_io/native_io_context_impl.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -2020,15 +2019,6 @@ void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
           // the Quarantine Service.
           bucket.storage_key.origin().GetURL(), GetID()),
       bucket, std::move(callback));
-}
-
-void RenderProcessHostImpl::BindNativeIOHost(
-    const blink::StorageKey& storage_key,
-    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* native_io_context = static_cast<NativeIOContextImpl*>(
-      storage_partition_impl_->GetNativeIOContext());
-  native_io_context->BindReceiver(storage_key, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(

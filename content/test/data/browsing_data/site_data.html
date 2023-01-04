@@ -132,27 +132,6 @@
     }
   }
 
-  async function setStorageFoundation() {
-    try {
-      let f = await storageFoundation.open('foo');
-      // TODO(https://crbug.com/1177307): Implement a more robust deletion
-      // strategy that works reliably for open files on Windows 7.
-      await f.close();
-      success_();
-    } catch (e) {
-      failure_();
-    }
-  }
-
-  async function hasStorageFoundation() {
-    try {
-      let dir = await storageFoundation.getAll();
-      domAutomationController.send(dir.indexOf('foo') != -1);
-    } catch (e) {
-      failure_();
-    }
-  }
-
   function setWebSql() {
     try {
       var db = openDatabase('testdb', '1.0', 'a test db', 1024);
@@ -232,14 +211,6 @@
 
   function setWorkerIndexedDb() {
     worker_("setIndexedDb");
-  }
-
-  function hasWorkerStorageFoundation() {
-    worker_("hasStorageFoundation");
-  }
-
-  function setWorkerStorageFoundation() {
-    worker_("setStorageFoundation");
   }
 
   function setHistory() {

@@ -53,8 +53,7 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
       databases_(base::MakeRefCounted<CannedDatabaseHelper>(browser_context)),
       file_systems_(base::MakeRefCounted<CannedFileSystemHelper>(
           browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
-          additional_file_system_types,
-          browser_context->GetDefaultStoragePartition()->GetNativeIOContext())),
+          additional_file_system_types)),
       indexed_dbs_(base::MakeRefCounted<CannedIndexedDBHelper>(
           browser_context->GetDefaultStoragePartition())),
       local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(

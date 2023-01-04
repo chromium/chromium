@@ -2694,11 +2694,6 @@
       base_feature: "StorageBuckets",
     },
     {
-      name: "StorageFoundationAPI",
-      origin_trial_feature_name: "StorageFoundationAPI",
-      status: "experimental",
-    },
-    {
       name: "StreamingDeclarativeShadowDOM",
       status: "experimental",
       base_feature: "StreamingDeclarativeShadowDOM",

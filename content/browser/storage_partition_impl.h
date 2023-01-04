@@ -85,7 +85,6 @@ class LockManager;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class MediaLicenseManager;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-class NativeIOContextImpl;
 class PaymentAppContextImpl;
 class PrefetchURLLoaderService;
 class PrivateAggregationManager;
@@ -190,7 +189,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   DevToolsBackgroundServicesContext* GetDevToolsBackgroundServicesContext()
       override;
   ContentIndexContextImpl* GetContentIndexContext() override;
-  NativeIOContext* GetNativeIOContext() override;
   HostZoomMap* GetHostZoomMap() override;
   HostZoomLevelContext* GetHostZoomLevelContext() override;
   ZoomLevelDelegate* GetZoomLevelDelegate() override;
@@ -647,7 +645,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
       proto_database_provider_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
-  scoped_refptr<NativeIOContextImpl> native_io_context_;
   std::unique_ptr<AttributionManager> attribution_manager_;
   std::unique_ptr<FontAccessManager> font_access_manager_;
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;

@@ -70,25 +70,6 @@ async function hasCacheStorage() {
   }
 }
 
-async function setStorageFoundation() {
-  try {
-    let f = await storageFoundation.open('worker');
-    await f.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-async function hasStorageFoundation() {
-  try {
-    let dir = await storageFoundation.getAll();
-    return dir.indexOf('worker') != -1;
-  } catch (e) {
-    return false;
-  }
-}
-
 onmessage = async function (e) {
   let result = await this[e.data]();
   postMessage(result);

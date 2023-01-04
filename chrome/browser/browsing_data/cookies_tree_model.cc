@@ -43,7 +43,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permissions_client.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/native_io_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/url_constants.h"
@@ -1750,7 +1749,6 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
     Profile* profile) {
   auto* storage_partition = profile->GetDefaultStoragePartition();
   auto* file_system_context = storage_partition->GetFileSystemContext();
-  auto* native_io_context = storage_partition->GetNativeIOContext();
 
   // If partitioned storage is enabled, the quota node is used to represent all
   // types of quota managed storage. If not, the quota node type is excluded as
@@ -1776,8 +1774,7 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
           ? nullptr
           : base::MakeRefCounted<browsing_data::FileSystemHelper>(
                 file_system_context,
-                browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
-                native_io_context);
+                browsing_data_file_system_util::GetAdditionalFileSystemTypes());
   auto service_worker_helper =
       use_quota_only ? nullptr
                      : base::MakeRefCounted<browsing_data::ServiceWorkerHelper>(

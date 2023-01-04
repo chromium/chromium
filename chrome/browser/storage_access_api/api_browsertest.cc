@@ -24,12 +24,10 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -121,13 +119,6 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     https_server_.ServeFilesFromDirectory(path);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(fivedots): Remove this switch once Storage Foundation is enabled
-    // by default.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "StorageFoundationAPI");
   }
 
   void SetCrossSiteCookieOnHost(const std::string& host) {

@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -51,7 +50,6 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
@@ -68,7 +66,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "ppapi/shared_impl/ppapi_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -210,10 +207,6 @@ class CookieSettingsTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(fivedots): Remove this switch once Storage Foundation is enabled
-    // by default.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "StorageFoundationAPI");
     ContentSettingsTest::SetUpCommandLine(command_line);
   }
 
@@ -777,103 +770,6 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksFileSystem) {
   for (auto& op : kTestOps) {
     EXPECT_EQ(base::StringPrintf(kBaseExpected, op.name, op.error),
               EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)));
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
-                       BlockCookiesAlsoBlocksStorageFoundation) {
-  set_secure_scheme();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetPageURL()));
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
-
-  const char kBaseExpected[] = "%s - Storage access is denied";
-
-  const char kBaseScript[] = R"(
-      (async function() {
-        const name = `%s`;
-        try {
-          await %s;
-        } catch(e) {
-          const error = e.toString();
-          const n = error.lastIndexOf(`: `);
-          const message = error.substring(n + 2)
-          return `${name} - ${message}`;
-        }
-        return `${name} - success`;
-      }())
-  )";
-
-  struct TestOp {
-    const char* name;
-    const char* code;
-  };
-
-  const TestOp kTestOps[] = {
-      {.name = "storageFoundation.open()",
-       .code = "storageFoundation.open('foo')"},
-      {.name = "storageFoundation.delete()",
-       .code = "storageFoundation.delete('foo')"},
-      {.name = "storageFoundation.rename()",
-       .code = "storageFoundation.rename('foo', 'bar')"},
-      {.name = "storageFoundation.getAll()",
-       .code = "storageFoundation.getAll()"},
-      {.name = "storageFoundation.requestCapacity()",
-       .code = "storageFoundation.requestCapacity(10)"},
-      {.name = "storageFoundation.releaseCapacity()",
-       .code = "storageFoundation.releaseCapacity(10)"},
-      {.name = "storageFoundation.getRemainingCapacity()",
-       .code = "storageFoundation.getRemainingCapacity()"},
-  };
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  for (auto& op : kTestOps) {
-    EXPECT_EQ(base::StringPrintf(kBaseExpected, op.name),
-              EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)));
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
-                       BlockCookiesAlsoBlocksSyncStorageFoundation) {
-  set_secure_scheme();
-  GURL url = GetServer()->GetURL("/sync_storage_foundation.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
-
-  const char kBaseExpected[] = "%s - Storage access is denied";
-  const char kBaseUnexpected[] = "%s - Success";
-  const char kBaseCall[] = "run('%s')";
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  const char* kTestOps[] = {
-      "openSync",
-      "deleteSync",
-      "renameSync",
-      "getAllSync",
-      "requestCapacitySync",
-      "releaseCapacitySync",
-      "getRemainingCapacitySync",
-  };
-
-  for (auto* op : kTestOps) {
-    EXPECT_TRUE(ExecJs(tab, base::StringPrintf(kBaseCall, op)));
-
-    std::u16string expected_title(
-        base::ASCIIToUTF16(base::StringPrintf(kBaseExpected, op)));
-    content::TitleWatcher title_watcher(tab, expected_title);
-
-    std::u16string unexpected_title(
-        base::ASCIIToUTF16(base::StringPrintf(kBaseUnexpected, op)));
-    title_watcher.AlsoWaitForTitle(unexpected_title);
-
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
 }
 

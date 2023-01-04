@@ -25,10 +25,6 @@ namespace storage {
 class FileSystemContext;
 }
 
-namespace content {
-class NativeIOContext;
-}
-
 namespace browsing_data {
 
 // FileSystemHelper instances for a specific profile should be
@@ -43,10 +39,6 @@ namespace browsing_data {
 // data) by calling DeleteFileSystemOrigin() on the UI thread. Calling
 // DeleteFileSystemOrigin() for an origin that doesn't have any is safe; it's
 // just an expensive NOOP.
-//
-// FileSystemHelper also manages the storage for StorageFoundation / NativeIO
-// until this API has its own integration into the browsing data removal system.
-// StorageFoundation data is added as temporary file system storage.
 class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
  public:
   // Detailed information about a file system, including its origin and the
@@ -72,9 +64,9 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
   //
   // The FileSystemHelper will not change the profile itself, but
   // can modify data it contains (by removing file systems).
-  FileSystemHelper(storage::FileSystemContext* filesystem_context,
-                   const std::vector<storage::FileSystemType>& additional_types,
-                   content::NativeIOContext* native_io_context);
+  FileSystemHelper(
+      storage::FileSystemContext* filesystem_context,
+      const std::vector<storage::FileSystemType>& additional_types);
 
   // Starts the process of fetching file system data, which will call |callback|
   // upon completion, passing it a constant list of FileSystemInfo objects.
@@ -106,28 +98,12 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
   void DeleteFileSystemForStorageKeyInFileThread(
       const blink::StorageKey& storage_key);
 
-  // Called when FetchFileSystemInfoInFileThread completes and starts fetching
-  // the NativeIOData.
-  void DidFetchFileSystemInfo(
-      FetchCallback callback,
-      const std::list<FileSystemInfo>& file_system_info);
-
-  // Called when DidFetchFileSystemInfo completes with the NativeIO usage
-  // information.
-  void AppendNativeIOInfoToFileSystemInfo(
-      FetchCallback callback,
-      const std::list<FileSystemInfo>& file_system_info_list,
-      const std::map<blink::StorageKey, int64_t>& native_io_usage_map);
-
   // Returns the file task runner for the |filesystem_context_|.
   base::SequencedTaskRunner* file_task_runner();
 
   // Keep a reference to the FileSystemContext object for the current profile
   // for use on the file task runner.
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
-
-  // Owned by the profile.
-  scoped_refptr<content::NativeIOContext> native_io_context_;
 
   std::vector<storage::FileSystemType> types_ = {
       storage::kFileSystemTypeTemporary,
@@ -142,8 +118,7 @@ class CannedFileSystemHelper : public FileSystemHelper {
  public:
   explicit CannedFileSystemHelper(
       storage::FileSystemContext* filesystem_context,
-      const std::vector<storage::FileSystemType>& additional_types,
-      content::NativeIOContext* native_io_context);
+      const std::vector<storage::FileSystemType>& additional_types);
 
   CannedFileSystemHelper(const CannedFileSystemHelper&) = delete;
   CannedFileSystemHelper& operator=(const CannedFileSystemHelper&) = delete;

@@ -76,7 +76,6 @@ class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class HostZoomMap;
 class InterestGroupManager;
-class NativeIOContext;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
@@ -152,7 +151,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual DevToolsBackgroundServicesContext*
   GetDevToolsBackgroundServicesContext() = 0;
   virtual ContentIndexContext* GetContentIndexContext() = 0;
-  virtual NativeIOContext* GetNativeIOContext() = 0;
   virtual HostZoomMap* GetHostZoomMap() = 0;
   virtual HostZoomLevelContext* GetHostZoomLevelContext() = 0;
   virtual ZoomLevelDelegate* GetZoomLevelDelegate() = 0;

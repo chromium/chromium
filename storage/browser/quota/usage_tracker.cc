@@ -309,9 +309,6 @@ void UsageTracker::AccumulateClientUsageWithBreakdown(
     case QuotaClientType::kBackgroundFetch:
       info->usage_breakdown->backgroundFetch += total_usage;
       break;
-    case QuotaClientType::kNativeIO:
-      info->usage_breakdown->fileSystem += total_usage;
-      break;
     case QuotaClientType::kMediaLicense:
       // Media license data does not count against quota and should always
       // report 0 usage.

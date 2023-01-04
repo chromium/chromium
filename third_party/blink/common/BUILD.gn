@@ -221,7 +221,6 @@ source_set("common") {
     "messaging/web_message_port.cc",
     "metrics/post_message_counter.cc",
     "mime_util/mime_util.cc",
-    "native_io/native_io_utils.cc",
     "navigation/impression_mojom_traits.cc",
     "navigation/navigation_params.cc",
     "navigation/navigation_policy.cc",

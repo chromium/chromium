@@ -1,4 +1,0 @@
-include_rules = [
-    "+base/files/file.h",
-    "+base/mac/mac_util.h",
-]

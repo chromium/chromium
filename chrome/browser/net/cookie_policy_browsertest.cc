@@ -22,17 +22,14 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "ui/base/window_open_disposition.h"
 
 using content::BrowserThread;
@@ -71,15 +68,6 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     https_server_.ServeFilesFromDirectory(path);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Storage Foundation has to be enabled, since it is accessed from the tests
-    // that use chrome/browser/net/storage_test_utils.cc.
-    // TODO(fivedots): Remove this switch once Storage Foundation
-    // is enabled by default.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "StorageFoundationAPI");
   }
 
   GURL GetURL(const std::string& host) {

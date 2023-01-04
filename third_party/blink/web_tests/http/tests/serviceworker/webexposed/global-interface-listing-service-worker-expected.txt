@@ -926,25 +926,6 @@ interface MojoWatcher
     attribute @@toStringTag
     method cancel
     method constructor
-interface NativeIOFile
-    attribute @@toStringTag
-    method close
-    method constructor
-    method flush
-    method getLength
-    method read
-    method setLength
-    method write
-interface NativeIOFileManager
-    attribute @@toStringTag
-    method constructor
-    method delete
-    method getAll
-    method getRemainingCapacity
-    method open
-    method releaseCapacity
-    method rename
-    method requestCapacity
 interface NavigationPreloadManager
     attribute @@toStringTag
     method constructor
@@ -3092,7 +3073,6 @@ interface WorkerGlobalScope : EventTarget
     getter performance
     getter scheduler
     getter self
-    getter storageFoundation
     getter trustedTypes
     method atob
     method btoa

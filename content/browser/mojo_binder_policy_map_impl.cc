@@ -23,7 +23,6 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom.h"
-#include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 
@@ -64,8 +63,6 @@ void RegisterNonAssociatedPoliciesForSameOriginPrerendering(
   map.SetNonAssociatedPolicy<blink::mojom::CacheStorage>(
       MojoBinderNonAssociatedPolicy::kGrant);
   map.SetNonAssociatedPolicy<blink::mojom::IDBFactory>(
-      MojoBinderNonAssociatedPolicy::kGrant);
-  map.SetNonAssociatedPolicy<blink::mojom::NativeIOHost>(
       MojoBinderNonAssociatedPolicy::kGrant);
 
   // Grant this interface because some sync web APIs rely on it; deferring it

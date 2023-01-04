@@ -151,10 +151,6 @@ ContentIndexContext* TestStoragePartition::GetContentIndexContext() {
   return content_index_context_;
 }
 
-NativeIOContext* TestStoragePartition::GetNativeIOContext() {
-  return native_io_context_;
-}
-
 leveldb_proto::ProtoDatabaseProvider*
 TestStoragePartition::GetProtoDatabaseProvider() {
   return nullptr;

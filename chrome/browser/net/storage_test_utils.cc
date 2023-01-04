@@ -12,13 +12,11 @@ namespace storage::test {
 const std::vector<std::string> kCookiesTypesForFrame{"Cookie", "CookieStore"};
 
 const std::vector<std::string> kStorageTypesForFrame{
-    "LocalStorage",   "FileSystem",    "FileSystemAccess",
-    "SessionStorage", "IndexedDb",     "WebSql",
-    "CacheStorage",   "ServiceWorker", "StorageFoundation"};
+    "LocalStorage", "FileSystem", "FileSystemAccess", "SessionStorage",
+    "IndexedDb",    "WebSql",     "CacheStorage",     "ServiceWorker"};
 
 const std::vector<std::string> kStorageTypesForWorker{
-    "WorkerFileSystemAccess", "WorkerCacheStorage", "WorkerIndexedDb",
-    "WorkerStorageFoundation"};
+    "WorkerFileSystemAccess", "WorkerCacheStorage", "WorkerIndexedDb"};
 
 const std::vector<std::string> kCrossTabCommunicationTypes{
     "SharedWorker",

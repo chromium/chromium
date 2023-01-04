@@ -15,7 +15,6 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/native_io_context.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -24,18 +23,12 @@
 
 using content::BrowserThread;
 
-namespace storage {
-class FileSystemContext;
-}  // namespace storage
-
 namespace browsing_data {
 
 FileSystemHelper::FileSystemHelper(
     storage::FileSystemContext* filesystem_context,
-    const std::vector<storage::FileSystemType>& additional_types,
-    content::NativeIOContext* native_io_context)
-    : filesystem_context_(filesystem_context),
-      native_io_context_(native_io_context) {
+    const std::vector<storage::FileSystemType>& additional_types)
+    : filesystem_context_(filesystem_context) {
   for (storage::FileSystemType type : additional_types)
     types_.push_back(type);
   DCHECK(filesystem_context_.get());
@@ -54,8 +47,7 @@ void FileSystemHelper::StartFetching(FetchCallback callback) {
   file_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FileSystemHelper::FetchFileSystemInfoInFileThread, this,
-                     base::BindOnce(&FileSystemHelper::DidFetchFileSystemInfo,
-                                    this, std::move(callback))));
+                     std::move(callback)));
 }
 
 void FileSystemHelper::DeleteFileSystemOrigin(const url::Origin& origin) {
@@ -65,8 +57,6 @@ void FileSystemHelper::DeleteFileSystemOrigin(const url::Origin& origin) {
       base::BindOnce(
           &FileSystemHelper::DeleteFileSystemForStorageKeyInFileThread, this,
           blink::StorageKey(origin)));
-  native_io_context_->DeleteStorageKeyData(blink::StorageKey(origin),
-                                           base::DoNothing());
 }
 
 void FileSystemHelper::FetchFileSystemInfoInFileThread(FetchCallback callback) {
@@ -108,40 +98,6 @@ void FileSystemHelper::DeleteFileSystemForStorageKeyInFileThread(
   filesystem_context_->DeleteDataForStorageKeyOnFileTaskRunner(storage_key);
 }
 
-void FileSystemHelper::DidFetchFileSystemInfo(
-    FetchCallback callback,
-    const std::list<FileSystemInfo>& file_system_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_io_context_->GetStorageKeyUsageMap(
-      base::BindOnce(&FileSystemHelper::AppendNativeIOInfoToFileSystemInfo,
-                     this, std::move(callback), std::move(file_system_info)));
-}
-
-void FileSystemHelper::AppendNativeIOInfoToFileSystemInfo(
-    FetchCallback callback,
-    const std::list<FileSystemInfo>& file_system_info_list,
-    const std::map<blink::StorageKey, int64_t>& native_io_usage_map) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::list<FileSystemInfo> result = file_system_info_list;
-  std::map<GURL, FileSystemInfo> file_system_info_map;
-  for (const auto& current : native_io_usage_map) {
-    url::Origin origin = current.first.origin();
-    if (!HasWebScheme(origin.GetURL()))
-      continue;  // Non-websafe state is not considered browsing data.
-    int64_t usage = current.second;
-    auto inserted =
-        file_system_info_map
-            .insert(std::make_pair(origin.GetURL(), FileSystemInfo(origin)))
-            .first;
-    inserted->second
-        .usage_map[storage::FileSystemType::kFileSystemTypeTemporary] = usage;
-  }
-  for (const auto& iter : file_system_info_map)
-    result.push_back(iter.second);
-  std::move(callback).Run(result);
-}
-
 FileSystemHelper::FileSystemInfo::FileSystemInfo(const url::Origin& origin)
     : origin(origin) {}
 
@@ -152,11 +108,8 @@ FileSystemHelper::FileSystemInfo::~FileSystemInfo() {}
 
 CannedFileSystemHelper::CannedFileSystemHelper(
     storage::FileSystemContext* filesystem_context,
-    const std::vector<storage::FileSystemType>& additional_types,
-    content::NativeIOContext* native_io_context)
-    : FileSystemHelper(filesystem_context,
-                       additional_types,
-                       native_io_context) {}
+    const std::vector<storage::FileSystemType>& additional_types)
+    : FileSystemHelper(filesystem_context, additional_types) {}
 
 CannedFileSystemHelper::~CannedFileSystemHelper() {}
 

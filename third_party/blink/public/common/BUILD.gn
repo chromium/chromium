@@ -240,7 +240,6 @@ source_set("headers") {
     "metrics/form_element_pii_type.h",
     "metrics/post_message_counter.h",
     "mime_util/mime_util.h",
-    "native_io/native_io_utils.h",
     "navigation/impression.h",
     "navigation/navigation_params.h",
     "navigation/navigation_params_mojom_traits.h",

@@ -78,7 +78,6 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
-#include "content/browser/native_io/native_io_context_impl.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
@@ -864,10 +863,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
 
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS) {
     quota_client_types.insert(storage::QuotaClientType::kFileSystem);
-
-    // TODO(crbug.com/1137788): Add a removal mask for NativeIO after adopting a
-    // more inclusive name.
-    quota_client_types.insert(storage::QuotaClientType::kNativeIO);
   }
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_WEBSQL)
     quota_client_types.insert(storage::QuotaClientType::kDatabase);
@@ -1269,10 +1264,6 @@ void StoragePartitionImpl::Initialize(
   service_worker_context_->set_storage_partition(this);
 
   dedicated_worker_service_ = std::make_unique<DedicatedWorkerServiceImpl>();
-
-  native_io_context_ = base::MakeRefCounted<NativeIOContextImpl>();
-  native_io_context_->Initialize(
-      path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 
   shared_worker_service_ =
       std::make_unique<SharedWorkerServiceImpl>(this, service_worker_context_);
@@ -1729,11 +1720,6 @@ StoragePartitionImpl::GetBrowsingTopicsSiteDataManager() {
 ContentIndexContextImpl* StoragePartitionImpl::GetContentIndexContext() {
   DCHECK(initialized_);
   return content_index_context_.get();
-}
-
-NativeIOContext* StoragePartitionImpl::GetNativeIOContext() {
-  DCHECK(initialized_);
-  return native_io_context_.get();
 }
 
 AggregationService* StoragePartitionImpl::GetAggregationService() {

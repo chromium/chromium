@@ -18,9 +18,7 @@ MockFileSystemHelper::MockFileSystemHelper(
     content::BrowserContext* browser_context)
     : FileSystemHelper(
           browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
-          {},
-          browser_context->GetDefaultStoragePartition()->GetNativeIOContext()) {
-}
+          {}) {}
 
 MockFileSystemHelper::~MockFileSystemHelper() {}
 

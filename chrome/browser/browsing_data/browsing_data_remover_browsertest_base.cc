@@ -418,8 +418,6 @@ BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Profile* profile) {
       storage_partition->GetServiceWorkerContext();
   storage::FileSystemContext* file_system_context =
       storage_partition->GetFileSystemContext();
-  content::NativeIOContext* native_io_context =
-      storage_partition->GetNativeIOContext();
   auto container = std::make_unique<LocalDataContainer>(
       base::MakeRefCounted<browsing_data::CookieHelper>(
           storage_partition,
@@ -430,8 +428,7 @@ BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Profile* profile) {
       base::MakeRefCounted<browsing_data::IndexedDBHelper>(storage_partition),
       base::MakeRefCounted<browsing_data::FileSystemHelper>(
           file_system_context,
-          browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
-          native_io_context),
+          browsing_data_file_system_util::GetAdditionalFileSystemTypes()),
       BrowsingDataQuotaHelper::Create(profile),
       base::MakeRefCounted<browsing_data::ServiceWorkerHelper>(
           service_worker_context),

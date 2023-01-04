@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/browser/native_io_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -56,15 +55,11 @@ class FileSystemHelperTest : public testing::Test {
   FileSystemHelperTest() {
     auto* file_system_context =
         browser_context_.GetDefaultStoragePartition()->GetFileSystemContext();
-    auto* native_io_context =
-        browser_context_.GetDefaultStoragePartition()->GetNativeIOContext();
     helper_ = base::MakeRefCounted<FileSystemHelper>(
-        file_system_context, std::vector<storage::FileSystemType>(),
-        native_io_context);
+        file_system_context, std::vector<storage::FileSystemType>());
     content::RunAllTasksUntilIdle();
     canned_helper_ = base::MakeRefCounted<CannedFileSystemHelper>(
-        file_system_context, std::vector<storage::FileSystemType>(),
-        native_io_context);
+        file_system_context, std::vector<storage::FileSystemType>());
   }
 
   FileSystemHelperTest(const FileSystemHelperTest&) = delete;
