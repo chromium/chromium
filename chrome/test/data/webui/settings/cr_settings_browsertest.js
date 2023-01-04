@@ -801,8 +801,14 @@ GEN('#else');
 GEN('#define MAYBE_SiteSettingsPage SiteSettingsPage');
 GEN('#endif');
 TEST_F('CrSettingsSiteSettingsPageTest', 'MAYBE_SiteSettingsPage', function() {
-  mocha.run();
+  runMochaSuite('SiteSettingsPage');
 });
+
+TEST_F(
+    'CrSettingsSiteSettingsPageTest', 'PrivacySandboxSettings4Disabled',
+    function() {
+      runMochaSuite('PrivacySandboxSettings4Disabled');
+    });
 
 // TODO(crbug.com/1401833): Flaky.
 GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
@@ -813,7 +819,7 @@ GEN('#endif');
 TEST_F(
     'CrSettingsSiteSettingsPageTest', 'MAYBE_UnusedSitePermissionsReview',
     function() {
-      mocha.run();
+      runMochaSuite('UnusedSitePermissionsReview');
     });
 
 // TODO(crbug.com/1401833): Flaky.
@@ -825,7 +831,7 @@ GEN('#endif');
 TEST_F(
     'CrSettingsSiteSettingsPageTest',
     'MAYBE_UnusedSitePermissionsReviewDisabled', function() {
-      mocha.run();
+      runMochaSuite('UnusedSitePermissionsReviewDisabled');
     });
 
 var CrSettingsMenuTest = class extends CrSettingsBrowserTest {
