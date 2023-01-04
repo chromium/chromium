@@ -29,7 +29,7 @@ enum ViewID {
   VIEW_ID_CAST_SELECT_VIEW,
   VIEW_ID_MEDIA_TRAY_VIEW,
 
-  // System tray quick settings view buttons:
+  // System tray quick settings view buttons shown in the root QS view:
   VIEW_ID_QS_MIN,
   VIEW_ID_QS_BATTERY_BUTTON = VIEW_ID_QS_MIN,
   VIEW_ID_QS_COLLAPSE_BUTTON,
@@ -48,6 +48,9 @@ enum ViewID {
   VIEW_ID_QS_USER_AVATAR_BUTTON,
   VIEW_ID_QS_VERSION_BUTTON,
   VIEW_ID_QS_MAX = VIEW_ID_QS_VERSION_BUTTON,
+
+  // Shown in system tray detailed views:
+  VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON,
 
   // Status area trays:
   VIEW_ID_SA_MIN,

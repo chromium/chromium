@@ -60,10 +60,9 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }
 
-  // Creates the row containing the back button and title. For material design
-  // this appears at the top of the view, for non-material design it appears
-  // at the bottom.
-  void CreateTitleRow(int string_id);
+  // Creates the row containing the back button and title. Optionally omits the
+  // back button if `create_back_button` is false.
+  void CreateTitleRow(int string_id, bool create_back_button = true);
 
   // Creates a scrollable list. The list has a border at the bottom if there is
   // any other view between the list and the footer row at the bottom.

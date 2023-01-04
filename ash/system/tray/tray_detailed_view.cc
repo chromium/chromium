@@ -381,14 +381,16 @@ void TrayDetailedView::OverrideProgressBarAccessibleName(
   progress_bar_accessible_name_ = name;
 }
 
-void TrayDetailedView::CreateTitleRow(int string_id) {
+void TrayDetailedView::CreateTitleRow(int string_id, bool create_back_button) {
   DCHECK(!tri_view_);
 
   tri_view_ = AddChildViewAt(CreateTitleTriView(string_id), 0);
-
-  back_button_ = delegate_->CreateBackButton(base::BindRepeating(
-      &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
-  tri_view_->AddView(TriView::Container::START, back_button_);
+  if (create_back_button) {
+    back_button_ = delegate_->CreateBackButton(base::BindRepeating(
+        &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
+    back_button_->SetID(VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON);
+    tri_view_->AddView(TriView::Container::START, back_button_);
+  }
 
   // If this view doesn't have a separator, adds an empty view as a placeholder
   // so that the views below won't move up when the `progress_bar_` becomes

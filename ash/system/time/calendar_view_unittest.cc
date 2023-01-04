@@ -8,6 +8,7 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -320,6 +321,14 @@ TEST_F(CalendarViewTest, InitDec) {
                 ->GetText());
 }
 
+TEST_F(CalendarViewTest, NoBackButton) {
+  CreateCalendarView();
+
+  // No back button should be shown.
+  EXPECT_FALSE(
+      calendar_view()->GetViewByID(VIEW_ID_QS_DETAILED_VIEW_BACK_BUTTON));
+}
+
 TEST_F(CalendarViewTest, Scroll) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
@@ -496,9 +505,6 @@ TEST_F(CalendarViewTest, HeaderFocusing) {
           ->GetText(),
       u"7");
 
-  // Moves to the back button.
-  PressTab();
-
   // Moves to the next focusable view. Today's button.
   PressTab();
   EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
@@ -560,7 +566,6 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
 
-  PressTab();  // Moves to back button again.
   PressTab();  // Moves to Today's button.
   EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
 
@@ -1108,11 +1113,9 @@ TEST_F(CalendarViewTest, ExpandableViewFocusing) {
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
 
-  // Goes back to back button.
-  PressTab();
-
   // Moves to the next focusable view. Today's button.
   PressTab();
+
   EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
 }
 
@@ -1263,12 +1266,9 @@ TEST_F(CalendarViewTest, AdminDisabledTest) {
   CreateCalendarView();
 
   auto* focus_manager = calendar_view()->GetFocusManager();
-  // Todays DateCellView should be focused on open.
+  // Todays `DateCellView` should be focused on open.
   ASSERT_TRUE(focus_manager->GetFocusedView()->GetClassName());
   ASSERT_TRUE(focus_manager->GetFocusedView());
-
-  // Moves to the back button.
-  PressTab();
 
   // Moves to the next focusable view - managed icon button.
   PressTab();
@@ -1285,6 +1285,7 @@ TEST_F(CalendarViewTest, AdminDisabledTest) {
   // Moves back to managed icon button.
   PressShiftTab();
   PressShiftTab();
+
   EXPECT_EQ(managed_button(), focus_manager->GetFocusedView());
 }
 
@@ -2149,10 +2150,9 @@ TEST_F(CalendarViewWithMessageCenterTest,
   for (int i = 0; i < number_of_focusable_views_in_message_center; i++)
     PressTab();
 
-  // "Previous menu" / exit from calendar button should be focused now.
-  EXPECT_EQ(u"Previous menu",
-            static_cast<IconButton*>(calendar_focus_manager()->GetFocusedView())
-                ->GetAccessibleName());
+  // The "back to today" `PillButton` is the first focused view.
+  EXPECT_STREQ(calendar_focus_manager()->GetFocusedView()->GetClassName(),
+               "PillButton");
 
   // Move back to the message center.
   PressShiftTab();

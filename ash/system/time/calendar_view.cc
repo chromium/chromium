@@ -345,6 +345,9 @@ void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
   header_year_->SetText(year);
 }
 
+BEGIN_METADATA(CalendarHeaderView, views::View)
+END_METADATA
+
 CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            UnifiedSystemTrayController* controller)
     : TrayDetailedView(delegate),
@@ -388,7 +391,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   // `has_separator` in `TrayDetailedView` to false.
   IgnoreSeparator();
 
-  CreateTitleRow(IDS_ASH_CALENDAR_TITLE);
+  CreateTitleRow(IDS_ASH_CALENDAR_TITLE, /*create_back_button=*/false);
 
   // Adds the progress bar to layout when initialization to avoid changing the
   // layout while reading the bounds of it.

@@ -46,6 +46,8 @@ class IconButton;
 // The header of the calendar view, which shows the current month and year.
 class CalendarHeaderView : public views::View {
  public:
+  METADATA_HEADER(CalendarHeaderView);
+
   CalendarHeaderView(const std::u16string& month, const std::u16string& year);
   CalendarHeaderView(const CalendarHeaderView& other) = delete;
   CalendarHeaderView& operator=(const CalendarHeaderView& other) = delete;
