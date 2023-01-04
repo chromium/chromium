@@ -842,8 +842,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = mouse_reverse_scroll_.GetValue();
     if (user_is_active)
       mouse_settings.SetReverseScroll(enabled);
-    ReportBooleanPrefApplication(reason, "Mouse.ReverseScroll.Changed",
-                                 "Mouse.ReverseScroll.Started", enabled);
   }
 
   if (reason != REASON_PREF_CHANGED ||
@@ -943,8 +941,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = mouse_acceleration_.GetValue();
     if (user_is_active)
       mouse_settings.SetAcceleration(enabled);
-    ReportBooleanPrefApplication(reason, "Mouse.Acceleration.Changed",
-                                 "Mouse.Acceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kMouseScrollAcceleration) {
@@ -965,8 +961,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = touchpad_acceleration_.GetValue();
     if (user_is_active)
       touchpad_settings.SetAcceleration(enabled);
-    ReportBooleanPrefApplication(reason, "Touchpad.Acceleration.Changed",
-                                 "Touchpad.Acceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadScrollAcceleration) {

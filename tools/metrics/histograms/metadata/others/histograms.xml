@@ -8503,25 +8503,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mouse.Acceleration.Changed" enum="BooleanEnabled"
-    expires_after="M87">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
-  <summary>
-    Tracks mouse acceleration setting changes by the user. Only reported on
-    Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Mouse.Acceleration.Started" enum="BooleanEnabled"
-    expires_after="M87">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
-  <summary>
-    Tracks mouse acceleration setting on startup. Only reported on Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="Mouse.PointerSensitivity.Changed" enum="PointerSensitivity"
     expires_after="2023-06-18">
   <owner>zentaro@chromium.org</owner>
@@ -8539,23 +8520,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks mouse sensitivity setting on startup. This replaces the old
     Mouse.Sensitivity.Started metric. Only reported on Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Mouse.ReverseScroll.Changed" enum="BooleanEnabled"
-    expires_after="M77">
-  <owner>lannm@chromium.org</owner>
-  <summary>
-    Tracks mouse reverse scroll setting changes by the user. Only reported on
-    Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Mouse.ReverseScroll.Started" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>lannm@chromium.org</owner>
-  <summary>
-    Tracks mouse reverse scroll setting on startup. Only reported on Chrome OS.
   </summary>
 </histogram>
 
@@ -13923,25 +13887,6 @@ should be kept until we use this API.  -->
     The number of millseconds between the user requesting a new tab, from within
     the tab switcher UI, e.g. by tapping the New Tab button from the tab
     switcher UI, and it completing its animation on screen.
-  </summary>
-</histogram>
-
-<histogram name="Touchpad.Acceleration.Changed" enum="BooleanEnabled"
-    expires_after="M87">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
-  <summary>
-    Tracks touchpad acceleration setting changes by the user. Only reported on
-    Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Touchpad.Acceleration.Started" enum="BooleanEnabled"
-    expires_after="M87">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
-  <summary>
-    Tracks touchpad acceleration setting on startup. Only reported on Chrome OS.
   </summary>
 </histogram>
 
