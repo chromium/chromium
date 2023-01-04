@@ -890,16 +890,18 @@ if (is_win) {
       }
     }
 
-    if (is_chrome_branded) {
-      sources += [ "//third_party/updater/chrome_mac_universal_prod/${updater_product_full_name}.app" ]
-    } else {
-      sources += [ "$root_out_dir/${updater_product_full_name}.app" ]
+    if (enable_updater) {
+      if (is_chrome_branded) {
+        sources += [ "//third_party/updater/chrome_mac_universal_prod/${updater_product_full_name}.app" ]
+      } else {
+        sources += [ "$root_out_dir/${updater_product_full_name}.app" ]
 
-      public_deps += [
-        "//chrome/updater/mac:browser_install_script",
-        "//chrome/updater/mac:updater_bundle",
-        "//chrome/updater/mac:updater_install_script",
-      ]
+        public_deps += [
+          "//chrome/updater/mac:browser_install_script",
+          "//chrome/updater/mac:updater_bundle",
+          "//chrome/updater/mac:updater_install_script",
+        ]
+      }
     }
   }
 
