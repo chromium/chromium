@@ -244,9 +244,12 @@ class Element : public Node {
 
  protected:
   void ParseJson(const base::Value::Dict& dict) override {
-    const std::string* e_str = dict.FindString("e");
-    CHECK(e_str);
-    tag_name_ = *e_str;
+    const base::Value* e_value = dict.Find("e");
+    CHECK(e_value);
+    const std::string* e_str = e_value->GetIfString();
+    if (e_str) {
+      tag_name_ = *e_str;
+    }
 
     const base::Value::List* c_list = dict.FindList("c");
     if (c_list)
@@ -297,9 +300,12 @@ class Text : public Node {
   }
 
   void ParseJson(const base::Value::Dict& dict) override {
-    const std::string* t_str = dict.FindString("t");
-    CHECK(t_str);
-    text_ = *t_str;
+    const base::Value* t_value = dict.Find("t");
+    CHECK(t_value);
+    const std::string* t_str = t_value->GetIfString();
+    if (t_str) {
+      text_ = *t_str;
+    }
   }
 
   bool IsText() const override { return true; }
