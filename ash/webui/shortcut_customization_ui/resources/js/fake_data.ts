@@ -90,9 +90,10 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       },
     }],
   },
-  [AcceleratorSource.kBrowser]: {
+  // TODO(michaelcheco): Separate Browser and Ambient accelerators.
+  [AcceleratorSource.kAmbient]: {
     // New Tab
-    [1001]: [{
+    [0]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
@@ -151,8 +152,8 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     subCategory: AcceleratorSubcategory.kSystemControls,
     description: stringToMojoString16('New Tab'),
     style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kBrowser,
-    action: 1001,
+    source: AcceleratorSource.kAmbient,
+    action: 0,
   },
 ];
 
@@ -186,7 +187,7 @@ const createFakeMojoLayoutInfo =
         subCategory: AcceleratorSubcategory.kSystemControls,
         description: stringToMojoString16(description),
         style: LayoutStyle.kDefault,
-        source: AcceleratorSource.kBrowser,
+        source: AcceleratorSource.kAmbient,
         action,
       };
     };
@@ -195,8 +196,8 @@ const icons = Object.keys(keyToIconNameMap);
 
 for (const [index, iconName] of icons.entries()) {
   const actionId = 10000 + index;
-  fakeAcceleratorConfig[AcceleratorSource.kBrowser] = {
-    ...fakeAcceleratorConfig[AcceleratorSource.kBrowser],
+  fakeAcceleratorConfig[AcceleratorSource.kAmbient] = {
+    ...fakeAcceleratorConfig[AcceleratorSource.kAmbient],
     [actionId]: [createFakeMojoAccelInfo(iconName)],
   };
   fakeLayoutInfo.push(createFakeMojoLayoutInfo(`Icon: ${iconName}`, actionId));
