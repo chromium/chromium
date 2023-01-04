@@ -1842,14 +1842,10 @@ void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
 mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
   DVLOG(3) << __func__;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  // TODO(https://crbug.com/1394735): Switch to ArFrame_acquireDepthImage16Bits.
   internal::ScopedArCoreObject<ArImage*> ar_image;
-  ArStatus status = ArFrame_acquireDepthImage(
+  ArStatus status = ArFrame_acquireDepthImage16Bits(
       arcore_session_.get(), arcore_frame_.get(),
       internal::ScopedArCoreObject<ArImage*>::Receiver(ar_image).get());
-#pragma GCC diagnostic pop
 
   if (status != AR_SUCCESS) {
     DVLOG(2) << __func__
@@ -1864,17 +1860,16 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
 
   // The image returned from ArFrame_acquireDepthImage() is documented to have
   // a single 16-bit plane at index 0. The ArImage format is documented to be
-  // AR_IMAGE_FORMAT_DEPTH16 (equivalent to ImageFormat.DEPTH16). There should
-  // be no need to validate this in non-debug builds.
-  // https://developers.google.com/ar/reference/c/group/ar-frame#arframe_acquiredepthimage
-  // https://developer.android.com/reference/android/graphics/ImageFormat#DEPTH16
+  // AR_IMAGE_FORMAT_D_16 (equivalent to HardwareBuffer.D_16).
+  // https://developers.google.com/ar/reference/c/group/ar-frame#arframe_acquiredepthimage16bits
+  // https://developer.android.com/reference/android/hardware/HardwareBuffer#D_16
 
   ArImageFormat image_format;
   ArImage_getFormat(arcore_session_.get(), ar_image.get(), &image_format);
 
-  CHECK_EQ(image_format, AR_IMAGE_FORMAT_DEPTH16)
-      << "Depth image format must be AR_IMAGE_FORMAT_DEPTH16, found: "
-      << image_format;
+  CHECK_EQ(image_format, AR_IMAGE_FORMAT_D_16)
+      << "Depth image format must be AR_IMAGE_FORMAT_D_16 ("
+      << AR_IMAGE_FORMAT_D_16 << "), found: " << image_format;
 
   int32_t num_planes;
   ArImage_getNumberOfPlanes(arcore_session_.get(), ar_image.get(), &num_planes);

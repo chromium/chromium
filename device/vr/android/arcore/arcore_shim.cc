@@ -13,10 +13,6 @@
 
 namespace {
 
-// TODO(https://crbug.com/1394735): Remove this again.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 // Run DO macro for every function defined in the API.
 #define FOR_EACH_API_FN(DO)                                        \
   DO(ArAnchor_detach)                                              \
@@ -67,7 +63,7 @@ namespace {
   DO(ArConfig_setFocusMode)                                        \
   DO(ArConfig_setLightEstimationMode)                              \
   DO(ArFrame_acquireCamera)                                        \
-  DO(ArFrame_acquireDepthImage)                                    \
+  DO(ArFrame_acquireDepthImage16Bits)                              \
   DO(ArFrame_create)                                               \
   DO(ArFrame_destroy)                                              \
   DO(ArFrame_getLightEstimate)                                     \
@@ -159,9 +155,6 @@ void LoadArCoreApi(void* handle, ArCoreApi* api) {
 }
 
 #undef FOR_EACH_API_FN
-
-// TODO(https://crbug.com/1394735): Remove this again.
-#pragma GCC diagnostic pop
 
 void* g_sdk_handle = nullptr;
 ArCoreApi* g_arcore_api = nullptr;
@@ -516,11 +509,11 @@ void ArFrame_acquireCamera(const ArSession* session,
   return g_arcore_api->impl_ArFrame_acquireCamera(session, frame, out_camera);
 }
 
-ArStatus ArFrame_acquireDepthImage(const ArSession* session,
-                                   const ArFrame* frame,
-                                   ArImage** out_depth_image) {
-  return g_arcore_api->impl_ArFrame_acquireDepthImage(session, frame,
-                                                      out_depth_image);
+ArStatus ArFrame_acquireDepthImage16Bits(const ArSession* session,
+                                         const ArFrame* frame,
+                                         ArImage** out_depth_image) {
+  return g_arcore_api->impl_ArFrame_acquireDepthImage16Bits(session, frame,
+                                                            out_depth_image);
 }
 
 void ArFrame_create(const ArSession* session, ArFrame** out_frame) {
