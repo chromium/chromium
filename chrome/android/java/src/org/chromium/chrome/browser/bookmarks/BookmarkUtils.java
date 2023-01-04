@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.LocaleList;
 import android.provider.Browser;
@@ -817,11 +816,9 @@ public class BookmarkUtils {
     }
 
     private static Locale getLocale(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            LocaleList locales = activity.getResources().getConfiguration().getLocales();
-            if (locales.size() > 0) {
-                return locales.get(0);
-            }
+        LocaleList locales = activity.getResources().getConfiguration().getLocales();
+        if (locales.size() > 0) {
+            return locales.get(0);
         }
         @SuppressWarnings("deprecation")
         Locale locale = activity.getResources().getConfiguration().locale;
