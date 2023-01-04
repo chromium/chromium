@@ -222,11 +222,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       AggregationService::AssemblyStatus);
   void MarkReportCompleted(AttributionReport::Id report_id);
 
-  void OnSourceStored(StorableSource source,
+  void OnSourceStored(const StorableSource& source,
                       absl::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       AttributionStorage::StoreSourceResult result);
-  void OnReportStored(AttributionTrigger trigger,
+  void OnReportStored(const AttributionTrigger& trigger,
                       absl::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       CreateReportResult result);

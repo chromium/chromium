@@ -524,7 +524,7 @@ void AttributionManagerImpl::StoreSource(
 }
 
 void AttributionManagerImpl::OnSourceStored(
-    StorableSource source,
+    const StorableSource& source,
     absl::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
     AttributionStorage::StoreSourceResult result) {
@@ -689,7 +689,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 }
 
 void AttributionManagerImpl::OnReportStored(
-    const AttributionTrigger trigger,
+    const AttributionTrigger& trigger,
     absl::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
     CreateReportResult result) {
