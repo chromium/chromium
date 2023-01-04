@@ -67,9 +67,10 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadProgressNotification() {
-  std::string title = "Moving \"" + file_name_ + "\"";
-  std::string message = "Moving to " + cloud_provider_name_ +
-                        ". Your file will open automatically when completed.";
+  std::string title =
+      "Moving \"" + file_name_ + "\" to " + cloud_provider_name_;
+  std::string message =
+      "Your file will open in " + target_app_name_ + " when completed.";
 
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
@@ -89,9 +90,8 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
   std::string title = "Move completed";
-  std::string message =
-      "1 item moved to \"from Chromebook\" folder. Opening in " +
-      target_app_name_;
+  std::string message = "1 item moved to " + cloud_provider_name_ +
+                        ". Opening in " + target_app_name_;
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
