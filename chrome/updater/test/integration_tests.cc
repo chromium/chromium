@@ -741,7 +741,6 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
-  ;
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test2"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -801,7 +800,6 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
-  ;
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test2"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
