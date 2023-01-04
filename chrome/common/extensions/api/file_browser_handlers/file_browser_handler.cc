@@ -57,11 +57,9 @@ struct FileBrowserHandlerInfo : public extensions::Extension::ManifestData {
   ~FileBrowserHandlerInfo() override;
 };
 
-FileBrowserHandlerInfo::FileBrowserHandlerInfo() {
-}
+FileBrowserHandlerInfo::FileBrowserHandlerInfo() = default;
 
-FileBrowserHandlerInfo::~FileBrowserHandlerInfo() {
-}
+FileBrowserHandlerInfo::~FileBrowserHandlerInfo() = default;
 
 }  // namespace
 
@@ -69,8 +67,7 @@ FileBrowserHandler::FileBrowserHandler()
     : file_access_permission_flags_(kPermissionsNotDefined) {
 }
 
-FileBrowserHandler::~FileBrowserHandler() {
-}
+FileBrowserHandler::~FileBrowserHandler() = default;
 
 void FileBrowserHandler::AddPattern(const URLPattern& pattern) {
   url_set_.AddPattern(pattern);
@@ -125,8 +122,9 @@ FileBrowserHandler::List*
 FileBrowserHandler::GetHandlers(const extensions::Extension* extension) {
   FileBrowserHandlerInfo* const info = static_cast<FileBrowserHandlerInfo*>(
       extension->GetManifestData(keys::kFileBrowserHandlers));
-  if (!info)
+  if (!info) {
     return nullptr;
+  }
 
   return &info->file_browser_handlers;
 }
