@@ -67745,6 +67745,7 @@ Called by update_use_counter_css.py.-->
   <int value="35" label="PasswordManagerError"/>
   <int value="36" label="DownloadIncognitoWarning"/>
   <int value="37" label="RestoreCustomTab"/>
+  <int value="38" label="UndoCustomTabRestoration"/>
 </enum>
 
 <enum name="MessageLoopProblems">

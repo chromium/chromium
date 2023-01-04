@@ -235,6 +235,8 @@ public class MessagesMetrics {
                 return "DownloadIncognitoWarning";
             case MessageIdentifier.RESTORE_CUSTOM_TAB:
                 return "RestoreCustomTab";
+            case MessageIdentifier.UNDO_CUSTOM_TAB_RESTORATION:
+                return "UndoCustomTabRestoration";
             default:
                 return "Unknown";
         }

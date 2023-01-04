@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -149,7 +151,9 @@ public class SessionRestoreMessageControllerUnitTest {
     @Mock
     SessionRestoreManager mMockManager;
     @Mock
-    Tab mMockTab;
+    Tab mMockTabInitial;
+    @Mock
+    Tab mMockTabRetained;
 
     @Captor
     private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
@@ -171,7 +175,11 @@ public class SessionRestoreMessageControllerUnitTest {
         doReturn(true).when(mMockLifecycleDispatcher).isNativeInitializationFinished();
         doReturn(mMockManager).when(env.connection).getSessionRestoreManager();
         doReturn(true).when(mMockManager).canRestoreTab();
-        doReturn(mMockTab).when(mMockManager).restoreTab();
+        doReturn(mMockTabRetained).when(mMockManager).restoreTab();
+        doReturn(env.tabModelSelector).when(env.tabFactory).getTabModelSelector();
+        when(env.tabModelSelector.getCurrentTab()).thenReturn(mMockTabRetained);
+        when(env.tabModelSelector.getCurrentTabId()).thenReturn(10);
+        when(env.tabModelSelector.getTabById(10)).thenReturn(mMockTabInitial);
     }
 
     @After
@@ -247,7 +255,54 @@ public class SessionRestoreMessageControllerUnitTest {
                         MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertNotNull(
                 FakeMessageDispatcher.sMessageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION));
+        Assert.assertNotNull(
+                FakeMessageDispatcher.sMessageModel.get(MessageBannerProperties.ON_DISMISSED));
         Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
+    }
+
+    @Test
+    public void testUndoMessageValidPropertyModel() {
+        mController = createSessionRestoreMessageController();
+        mController.showUndoMessage();
+
+        Assert.assertNotNull("PropertyModel is null",
+                SessionRestoreMessageControllerUnitTest.FakeMessageDispatcher.sMessageModel);
+        Assert.assertNotNull(
+                SessionRestoreMessageControllerUnitTest.FakeMessageDispatcher.sMessageModel.get(
+                        MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals(mActivity.getResources().getString(
+                                    org.chromium.chrome.R.string.undo_restoration_title),
+                SessionRestoreMessageControllerUnitTest.FakeMessageDispatcher.sMessageModel.get(
+                        MessageBannerProperties.TITLE));
+        Assert.assertEquals(mActivity.getResources().getString(
+                                    org.chromium.chrome.R.string.restore_custom_tab_description),
+                SessionRestoreMessageControllerUnitTest.FakeMessageDispatcher.sMessageModel.get(
+                        MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals(mActivity.getResources().getString(
+                                    org.chromium.chrome.R.string.undo_restoration_button_text),
+                SessionRestoreMessageControllerUnitTest.FakeMessageDispatcher.sMessageModel.get(
+                        MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+        Assert.assertNotNull(
+                SessionRestoreMessageControllerUnitTest.FakeMessageDispatcher.sMessageModel.get(
+                        MessageBannerProperties.ON_PRIMARY_ACTION));
+        Assert.assertNotNull(
+                FakeMessageDispatcher.sMessageModel.get(MessageBannerProperties.ON_DISMISSED));
+    }
+
+    @Test
+    public void testAcceptUndoMessage() {
+        mController = createSessionRestoreMessageController();
+        mController.onMessageAccepted();
+        mController.onUndoMessageAccepted();
+        verify(env.tabModelSelector, times(1)).closeTab(mMockTabRetained);
+    }
+
+    @Test
+    public void testDismissUndoMessage() {
+        mController = createSessionRestoreMessageController();
+        mController.onMessageAccepted();
+        mController.onUndoMessageDismissed(DismissReason.SECONDARY_ACTION);
+        verify(env.tabModelSelector, times(1)).closeTab(mMockTabInitial);
     }
 
     @Test

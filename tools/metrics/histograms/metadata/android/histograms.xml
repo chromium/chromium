@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".TailoredSecurityDisabled"/>
   <variant name=".TailoredSecurityEnabled"/>
   <variant name=".Translate"/>
+  <variant name=".UndoCustomTabRestoration"/>
   <variant name=".UpdatePassword"/>
   <variant name=".VrServicesUpgrade"/>
 </variants>
