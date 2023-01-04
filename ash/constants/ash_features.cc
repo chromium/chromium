@@ -365,7 +365,7 @@ BASE_FEATURE(kCalendarJelly,
 // Enables to allow low storage warning feature in the camera app.
 BASE_FEATURE(kCameraAppLowStorageWarning,
              "CameraAppLowStorageWarning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to show multi-page UI when for document scanning feature in the
 // camera app.
