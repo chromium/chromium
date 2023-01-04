@@ -190,7 +190,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
           weak_ptr_factory_.GetWeakPtr()));
 
   UpdateKeyboards();
-  InitializeNonConfigurableAccelerators(GetTextDetailsMap());
+  InitializeNonConfigurableAccelerators(GetNonConfigurableActionsMap());
 
   // Create LayoutInfos from kAcceleratorLayouts. LayoutInfos are static
   // data that provides additional details for the app for styling.
@@ -281,7 +281,7 @@ void AcceleratorConfigurationProvider::UpdateKeyboards() {
 }
 
 void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
-    NonConfigurableActionsTextDetailsMap mapping) {
+    NonConfigurableActionsMap mapping) {
   non_configurable_actions_mapping_ = std::move(mapping);
   NotifyAcceleratorsUpdated();
 }
@@ -302,7 +302,7 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
 
 mojom::TextAcceleratorPropertiesPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
-    const AcceleratorTextDetails& details) {
+    const NonConfigurableAcceleratorDetails& details) {
   // Contains the start points of the replaced strings.
   std::vector<size_t> offsets;
   const std::vector<std::u16string> empty_string_replacements(
@@ -324,7 +324,7 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
 
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
-    const AcceleratorTextDetails& details) {
+    const NonConfigurableAcceleratorDetails& details) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->locked = true;
   info_mojom->type = mojom::AcceleratorType::kDefault;

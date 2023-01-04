@@ -52,29 +52,31 @@ TextAcceleratorPart::~TextAcceleratorPart() = default;
 TextAcceleratorPart& TextAcceleratorPart::operator=(
     const TextAcceleratorPart&) = default;
 
-AcceleratorTextDetails::AcceleratorTextDetails(
+NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
     int message_id,
     std::vector<TextAcceleratorPart> replacements) {
   this->message_id = message_id;
   this->replacements = std::move(replacements);
 }
 
-AcceleratorTextDetails::AcceleratorTextDetails(const AcceleratorTextDetails&) =
-    default;
-AcceleratorTextDetails& AcceleratorTextDetails::operator=(
-    const AcceleratorTextDetails&) = default;
+NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
+    const NonConfigurableAcceleratorDetails&) = default;
+NonConfigurableAcceleratorDetails& NonConfigurableAcceleratorDetails::operator=(
+    const NonConfigurableAcceleratorDetails&) = default;
 
-AcceleratorTextDetails::~AcceleratorTextDetails() = default;
-const NonConfigurableActionsTextDetailsMap& GetTextDetailsMap() {
-  static base::NoDestructor<NonConfigurableActionsTextDetailsMap>
-      textDetailsMap({
+NonConfigurableAcceleratorDetails::~NonConfigurableAcceleratorDetails() =
+    default;
+
+const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
+  static base::NoDestructor<NonConfigurableActionsMap>
+      nonConfigurableActionsMap({
           {NonConfigurableActions::kBrowserSelectTabByIndex,
-           AcceleratorTextDetails(
+           NonConfigurableAcceleratorDetails(
                IDS_TEXT_ACCELERATOR_GO_TO_TAB_IN_RANGE,
                {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
       });
-  return *textDetailsMap;
+  return *nonConfigurableActionsMap;
 }
 }  // namespace ash

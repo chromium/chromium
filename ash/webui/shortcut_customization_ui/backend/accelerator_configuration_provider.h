@@ -83,14 +83,13 @@ class AcceleratorConfigurationProvider
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
           receiver);
 
-  void InitializeNonConfigurableAccelerators(
-      NonConfigurableActionsTextDetailsMap);
+  void InitializeNonConfigurableAccelerators(NonConfigurableActionsMap);
 
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
-      const AcceleratorTextDetails& details);
+      const NonConfigurableAcceleratorDetails& details);
 
   mojom::TextAcceleratorPropertiesPtr CreateTextAcceleratorProperties(
-      const AcceleratorTextDetails& details);
+      const NonConfigurableAcceleratorDetails& details);
 
  private:
   friend class AcceleratorConfigurationProviderTest;
@@ -144,7 +143,7 @@ class AcceleratorConfigurationProvider
   // Stores all connected keyboards.
   std::vector<ui::InputDevice> connected_keyboards_;
 
-  NonConfigurableActionsTextDetailsMap non_configurable_actions_mapping_;
+  NonConfigurableActionsMap non_configurable_actions_mapping_;
 
   mojo::Receiver<
       shortcut_customization::mojom::AcceleratorConfigurationProvider>

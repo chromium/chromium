@@ -204,21 +204,23 @@ class ASH_EXPORT TextAcceleratorPart : public mojom::TextAcceleratorPart {
 // Contains info related to a non-configurable accelerator. The |message_id| and
 // list of |replacements| are used by AcceleratorConfigurationProvider to
 // construct arbitrary text with styled keys and modifiers interspersed.
-struct ASH_EXPORT AcceleratorTextDetails {
-  AcceleratorTextDetails(int message_id,
-                         std::vector<TextAcceleratorPart> replacements);
-  AcceleratorTextDetails(const AcceleratorTextDetails&);
-  AcceleratorTextDetails& operator=(const AcceleratorTextDetails&);
-  ~AcceleratorTextDetails();
+struct ASH_EXPORT NonConfigurableAcceleratorDetails {
+  NonConfigurableAcceleratorDetails(
+      int message_id,
+      std::vector<TextAcceleratorPart> replacements);
+  NonConfigurableAcceleratorDetails(const NonConfigurableAcceleratorDetails&);
+  NonConfigurableAcceleratorDetails& operator=(
+      const NonConfigurableAcceleratorDetails&);
+  ~NonConfigurableAcceleratorDetails();
 
   int message_id;
   std::vector<TextAcceleratorPart> replacements;
 };
 
-using NonConfigurableActionsTextDetailsMap =
-    std::map<NonConfigurableActions, AcceleratorTextDetails>;
+using NonConfigurableActionsMap =
+    std::map<NonConfigurableActions, NonConfigurableAcceleratorDetails>;
 
-const ASH_EXPORT NonConfigurableActionsTextDetailsMap& GetTextDetailsMap();
+const ASH_EXPORT NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
