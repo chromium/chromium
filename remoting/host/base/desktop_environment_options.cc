@@ -146,6 +146,7 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
   }
 #if defined(WEBRTC_USE_PIPEWIRE)
   desktop_capture_options_.set_allow_pipewire(true);
+  desktop_capture_options_.set_pipewire_use_damage_region(true);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 }
 
