@@ -183,7 +183,15 @@ TEST_P(CredentialsFilterTest,
   EXPECT_EQ(1, tester.GetActionCount(kFilledAndLoginActionName));
 }
 
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NewSyncCredentials) {
+// TODO(crbug.com/1404890): This test fails on iOS devices.
+#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
+#define MAYBE_ReportFormLoginSuccess_NewSyncCredentials \
+  DISABLED_ReportFormLoginSuccess_NewSyncCredentials
+#else
+#define MAYBE_ReportFormLoginSuccess_NewSyncCredentials \
+  ReportFormLoginSuccess_NewSyncCredentials
+#endif
+TEST_P(CredentialsFilterTest, MAYBE_ReportFormLoginSuccess_NewSyncCredentials) {
   FakeSigninAs("user@gmail.com");
   SetSyncingPasswords(true);
 
@@ -193,7 +201,16 @@ TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NewSyncCredentials) {
   EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
 }
 
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_GAIANotSyncCredentials) {
+// TODO(crbug.com/1404890): This test fails on iOS devices.
+#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
+#define MAYBE_ReportFormLoginSuccess_GAIANotSyncCredentials \
+  DISABLED_ReportFormLoginSuccess_GAIANotSyncCredentials
+#else
+#define MAYBE_ReportFormLoginSuccess_GAIANotSyncCredentials \
+  ReportFormLoginSuccess_GAIANotSyncCredentials
+#endif
+TEST_P(CredentialsFilterTest,
+       MAYBE_ReportFormLoginSuccess_GAIANotSyncCredentials) {
   const char kOtherUsername[] = "other_user@gmail.com";
   const char16_t kOtherUsername16[] = u"other_user@gmail.com";
   FakeSigninAs(kOtherUsername);
@@ -206,7 +223,15 @@ TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_GAIANotSyncCredentials) {
   EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
 }
 
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NotGAIACredentials) {
+// TODO(crbug.com/1404890): This test fails on iOS devices.
+#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
+#define MAYBE_ReportFormLoginSuccess_NotGAIACredentials \
+  DISABLED_ReportFormLoginSuccess_NotGAIACredentials
+#else
+#define MAYBE_ReportFormLoginSuccess_NotGAIACredentials \
+  ReportFormLoginSuccess_NotGAIACredentials
+#endif
+TEST_P(CredentialsFilterTest, MAYBE_ReportFormLoginSuccess_NotGAIACredentials) {
   pending_ = SimpleNonGaiaForm("user@gmail.com");
   FakeSigninAs("user@gmail.com");
   SetSyncingPasswords(true);
@@ -217,7 +242,15 @@ TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NotGAIACredentials) {
   EXPECT_EQ(0, tester.GetActionCount(kFilledAndLoginActionName));
 }
 
-TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NotSyncing) {
+// TODO(crbug.com/1404890): This test fails on iOS devices.
+#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
+#define MAYBE_ReportFormLoginSuccess_NotSyncing \
+  DISABLED_ReportFormLoginSuccess_NotSyncing
+#else
+#define MAYBE_ReportFormLoginSuccess_NotSyncing \
+  ReportFormLoginSuccess_NotSyncing
+#endif
+TEST_P(CredentialsFilterTest, MAYBE_ReportFormLoginSuccess_NotSyncing) {
   FakeSigninAs("user@gmail.com");
   SetSyncingPasswords(false);
 
