@@ -16,8 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -57,7 +56,7 @@ class UserCloudPolicyManagerAsh
     : public CloudPolicyManager,
       public CloudPolicyClient::Observer,
       public CloudPolicyService::Observer,
-      public ProfileManagerObserver,
+      public ProfileObserver,
       public session_manager::SessionManagerObserver {
  public:
   // Enum describing what behavior we want to enforce here.
@@ -247,8 +246,8 @@ class UserCloudPolicyManagerAsh
   // pend creation until all profiles are loaded in profile manager.
   void StartReportSchedulerIfReady(bool enable_delayed_creation);
 
-  // ProfileManagerObserver:
-  void OnProfileAdded(Profile* profile) override;
+  // ProfileObserver overrides:
+  void OnProfileInitializationComplete(Profile* profile) override;
 
   // Called on profile shutdown.
   void ShutdownRemoteCommands();
@@ -326,8 +325,7 @@ class UserCloudPolicyManagerAsh
   scoped_refptr<network::SharedURLLoaderFactory>
       signin_url_loader_factory_for_tests_;
 
-  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
-      observed_profile_manager_{this};
+  base::ScopedObservation<Profile, ProfileObserver> observed_profile_{this};
 
   // Refresh token used in tests instead of the user context refresh token to
   // fetch the policy OAuth token.

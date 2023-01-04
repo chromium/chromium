@@ -194,7 +194,7 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
   // not be initialized before then because the invalidation service cannot be
   // started because it depends on components initialized at the end of profile
   // creation. https://crbug.com/171406
-  observed_profile_manager_.Observe(g_browser_process->profile_manager());
+  observed_profile_.Observe(profile_);
 }
 
 void UserCloudPolicyManagerAsh::ForceTimeoutForTest() {
@@ -341,7 +341,7 @@ UserCloudPolicyManagerAsh::GetAppInstallEventLogUploader() {
 }
 
 void UserCloudPolicyManagerAsh::Shutdown() {
-  observed_profile_manager_.Reset();
+  observed_profile_.Reset();
   app_install_event_log_uploader_.reset();
   report_scheduler_.reset();
   if (client())
@@ -796,11 +796,10 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
   report_scheduler_->OnDMTokenUpdated();
 }
 
-void UserCloudPolicyManagerAsh::OnProfileAdded(Profile* profile) {
-  if (profile != profile_)
-    return;
-
-  observed_profile_manager_.Reset();
+void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
+    Profile* profile) {
+  DCHECK(observed_profile_.IsObservingSource(profile));
+  observed_profile_.Reset();
 
   // Activate user remote commands only for unicorn accounts.
   // The server side only supports user-scoped remote commands for unicorn

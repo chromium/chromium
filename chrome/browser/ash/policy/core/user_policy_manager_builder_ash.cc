@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/schema_registry_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
