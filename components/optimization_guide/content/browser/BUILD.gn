@@ -69,11 +69,15 @@ static_library("test_support") {
   sources = [
     "test_optimization_guide_decider.cc",
     "test_optimization_guide_decider.h",
+    "test_page_content_annotations_service.cc",
+    "test_page_content_annotations_service.h",
     "test_page_content_annotator.cc",
     "test_page_content_annotator.h",
   ]
   deps = [
     ":browser",
+    "//components/history/core/test",
+    "//components/optimization_guide/core:test_support",
     "//content/public/browser",
     "//testing/gtest",
   ]

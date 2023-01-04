@@ -18,7 +18,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/test_page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -83,13 +83,10 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
-    optimization_guide_model_provider_ = std::make_unique<
-        optimization_guide::TestOptimizationGuideModelProvider>();
     page_content_annotations_service_ =
-        std::make_unique<optimization_guide::PageContentAnnotationsService>(
-            nullptr, "en-US", optimization_guide_model_provider_.get(),
-            history_service_.get(), nullptr, nullptr, nullptr, base::FilePath(),
-            nullptr, nullptr);
+        optimization_guide::TestPageContentAnnotationsService::Create(
+            /*optimization_guide_model_provider=*/nullptr,
+            history_service_.get());
 
     page_content_annotations_service_->OverridePageContentAnnotatorForTesting(
         &test_page_content_annotator_);
@@ -197,8 +194,6 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
 
   std::unique_ptr<history::HistoryService> history_service_;
 
-  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
-      optimization_guide_model_provider_;
   std::unique_ptr<optimization_guide::PageContentAnnotationsService>
       page_content_annotations_service_;
 
