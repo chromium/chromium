@@ -48,6 +48,7 @@ class SkTextBlob;
 namespace cc {
 
 class PaintOpWriter;
+class PaintOpReader;
 
 class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
  public:
@@ -63,9 +64,7 @@ class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
 #define HAS_SERIALIZATION_FUNCTIONS()                                         \
   void Serialize(PaintOpWriter& writer, const PaintFlags* flags_to_serialize, \
                  const SkM44& current_ctm, const SkM44& original_ctm) const;  \
-  static PaintOp* Deserialize(const volatile void* input, size_t input_size,  \
-                              void* output, size_t output_size,               \
-                              const DeserializeOptions& options)
+  static PaintOp* Deserialize(PaintOpReader& reader, void* output)
 
 enum class PaintOpType : uint8_t {
   Annotate,
@@ -775,7 +774,8 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
                      SkCanvas* canvas,
                      const PlaybackParams& params);
   bool IsValid() const {
-    return !!skottie && !dst.isEmpty() && t >= 0 && t <= 1.f;
+    return skottie && skottie->is_valid() && !dst.isEmpty() && t >= 0 &&
+           t <= 1.f;
   }
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   bool HasDiscardableImages() const;

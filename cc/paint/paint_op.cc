@@ -256,14 +256,24 @@ void Serialize(const PaintOp& op,
 static const SerializeFunction g_serialize_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
-using DeserializeFunction =
-    PaintOp* (*)(const volatile void* input,
-                 size_t input_size,
-                 void* output,
-                 size_t output_size,
-                 const PaintOp::DeserializeOptions& options);
-
-#define M(T) &T::Deserialize,
+using DeserializeFunction = PaintOp* (*)(PaintOpReader& reader,
+                                         void* output,
+                                         size_t output_size);
+template <typename T>
+PaintOp* Deserialize(PaintOpReader& reader, void* output, size_t output_size) {
+  DCHECK_GE(output_size, sizeof(T));
+  T* op = static_cast<T*>(T::Deserialize(reader, output));
+  if (!op) {
+    return nullptr;
+  }
+  if (!reader.valid() || !op->IsValid()) {
+    op->~T();
+    return nullptr;
+  }
+  op->skip = PaintOpBuffer::ComputeOpSkip(sizeof(T));
+  return op;
+}
+#define M(T) &Deserialize<T>,
 static const DeserializeFunction g_deserialize_functions[kNumOpTypes] = {
     TYPES(M)};
 #undef M
@@ -711,316 +721,149 @@ void TranslateOp::Serialize(PaintOpWriter& writer,
   writer.Write(dy);
 }
 
-template <typename T>
-void UpdateTypeAndSkip(T* op) {
-  op->type = static_cast<uint8_t>(T::kType);
-  op->skip = PaintOpBuffer::ComputeOpSkip(sizeof(T));
+PaintOp* AnnotateOp::Deserialize(PaintOpReader& reader, void* output) {
+  AnnotateOp* op = new (output) AnnotateOp;
+  reader.Read(&op->annotation_type);
+  reader.Read(&op->rect);
+  reader.Read(&op->data);
+  return op;
 }
 
-template <typename T>
-class PaintOpDeserializer {
- public:
-  static_assert(std::is_base_of<PaintOp, T>::value, "T not a PaintOp.");
-
-  explicit PaintOpDeserializer(const volatile void* input,
-                               size_t input_size,
-                               const PaintOp::DeserializeOptions& options,
-                               T* op)
-      : reader_(input, input_size, options), op_(op) {
-    DCHECK(op_);
-  }
-  PaintOpDeserializer(const PaintOpDeserializer&) = delete;
-  PaintOpDeserializer& operator=(const PaintOpDeserializer&) = delete;
-
-  ~PaintOpDeserializer() {
-    DCHECK(!op_)
-        << "FinalizeOp must be called before PaintOpDeserializer is destroyed. "
-           "type="
-        << T::kType;
-  }
-
-  PaintOp* FinalizeOp(bool force_invalid = false) {
-    DCHECK(op_) << "PaintOp has already been finalized. type=" << T::kType;
-
-    if (force_invalid || !reader_.valid() || !op_->IsValid()) {
-      op_->~T();
-      op_ = nullptr;
-      return nullptr;
-    }
-
-    UpdateTypeAndSkip(op_.get());
-    T* op_snapshot = op_;
-    op_ = nullptr;
-    return op_snapshot;
-  }
-
-  PaintOp* InvalidateAndFinalizeOp() {
-    return FinalizeOp(/*force_invalid=*/true);
-  }
-
-  T* operator->() { return op_; }
-
-  template <typename... Args>
-  void Read(Args&&... args) {
-    reader_.Read(std::forward<Args>(args)...);
-  }
-
-  void ReadData(size_t bytes, void* data) { reader_.ReadData(bytes, data); }
-
-  void ReadSize(size_t* size) { reader_.ReadSize(size); }
-
-  void AssertAlignment(size_t alignment) { reader_.AssertAlignment(alignment); }
-
- private:
-  PaintOpReader reader_;
-  raw_ptr<T> op_;
-};
-
-PaintOp* AnnotateOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(AnnotateOp));
-  PaintOpDeserializer<AnnotateOp> deserializer(input, input_size, options,
-                                               new (output) AnnotateOp);
-
-  deserializer.Read(&deserializer->annotation_type);
-  deserializer.Read(&deserializer->rect);
-  deserializer.Read(&deserializer->data);
-  return deserializer.FinalizeOp();
+PaintOp* ClipPathOp::Deserialize(PaintOpReader& reader, void* output) {
+  ClipPathOp* op = new (output) ClipPathOp;
+  reader.Read(&op->path);
+  reader.Read(&op->op);
+  reader.Read(&op->antialias);
+  return op;
 }
 
-PaintOp* ClipPathOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(ClipPathOp));
-  PaintOpDeserializer<ClipPathOp> deserializer(input, input_size, options,
-                                               new (output) ClipPathOp);
-
-  deserializer.Read(&deserializer->path);
-  deserializer.Read(&deserializer->op);
-  deserializer.Read(&deserializer->antialias);
-  return deserializer.FinalizeOp();
+PaintOp* ClipRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  ClipRectOp* op = new (output) ClipRectOp;
+  reader.Read(&op->rect);
+  reader.Read(&op->op);
+  reader.Read(&op->antialias);
+  return op;
 }
 
-PaintOp* ClipRectOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(ClipRectOp));
-  PaintOpDeserializer<ClipRectOp> deserializer(input, input_size, options,
-                                               new (output) ClipRectOp);
-  deserializer.Read(&deserializer->rect);
-  deserializer.Read(&deserializer->op);
-  deserializer.Read(&deserializer->antialias);
-  return deserializer.FinalizeOp();
+PaintOp* ClipRRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  ClipRRectOp* op = new (output) ClipRRectOp;
+  reader.Read(&op->rrect);
+  reader.Read(&op->op);
+  reader.Read(&op->antialias);
+  return op;
 }
 
-PaintOp* ClipRRectOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(ClipRRectOp));
-  PaintOpDeserializer<ClipRRectOp> deserializer(input, input_size, options,
-                                                new (output) ClipRRectOp);
-  deserializer.Read(&deserializer->rrect);
-  deserializer.Read(&deserializer->op);
-  deserializer.Read(&deserializer->antialias);
-  return deserializer.FinalizeOp();
+PaintOp* ConcatOp::Deserialize(PaintOpReader& reader, void* output) {
+  ConcatOp* op = new (output) ConcatOp;
+  reader.Read(&op->matrix);
+  return op;
 }
 
-PaintOp* ConcatOp::Deserialize(const volatile void* input,
-                               size_t input_size,
-                               void* output,
-                               size_t output_size,
-                               const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(ConcatOp));
-  PaintOpDeserializer<ConcatOp> deserializer(input, input_size, options,
-                                             new (output) ConcatOp);
-  deserializer.Read(&deserializer->matrix);
-  return deserializer.FinalizeOp();
+PaintOp* CustomDataOp::Deserialize(PaintOpReader& reader, void* output) {
+  CustomDataOp* op = new (output) CustomDataOp;
+  reader.Read(&op->id);
+  return op;
 }
 
-PaintOp* CustomDataOp::Deserialize(const volatile void* input,
-                                   size_t input_size,
-                                   void* output,
-                                   size_t output_size,
-                                   const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(CustomDataOp));
-  PaintOpDeserializer<CustomDataOp> deserializer(input, input_size, options,
-                                                 new (output) CustomDataOp);
-  deserializer.Read(&deserializer->id);
-  return deserializer.FinalizeOp();
+PaintOp* DrawColorOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawColorOp* op = new (output) DrawColorOp;
+  reader.Read(&op->color);
+  reader.Read(&op->mode);
+  return op;
 }
 
-PaintOp* DrawColorOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawColorOp));
-  PaintOpDeserializer<DrawColorOp> deserializer(input, input_size, options,
-                                                new (output) DrawColorOp);
-  deserializer.Read(&deserializer->color);
-  deserializer.Read(&deserializer->mode);
-  return deserializer.FinalizeOp();
+PaintOp* DrawDRRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawDRRectOp* op = new (output) DrawDRRectOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->outer);
+  reader.Read(&op->inner);
+  return op;
 }
 
-PaintOp* DrawDRRectOp::Deserialize(const volatile void* input,
-                                   size_t input_size,
-                                   void* output,
-                                   size_t output_size,
-                                   const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawDRRectOp));
-  PaintOpDeserializer<DrawDRRectOp> deserializer(input, input_size, options,
-                                                 new (output) DrawDRRectOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->outer);
-  deserializer.Read(&deserializer->inner);
-  return deserializer.FinalizeOp();
+PaintOp* DrawImageOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawImageOp* op = new (output) DrawImageOp;
+  reader.Read(&op->flags);
+
+  reader.Read(&op->image);
+  reader.AssertAlignment(alignof(SkScalar));
+  reader.Read(&op->scale_adjustment.fWidth);
+  reader.Read(&op->scale_adjustment.fHeight);
+
+  reader.Read(&op->left);
+  reader.Read(&op->top);
+  reader.Read(&op->sampling);
+
+  return op;
 }
 
-PaintOp* DrawImageOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawImageOp));
-  PaintOpDeserializer<DrawImageOp> deserializer(input, input_size, options,
-                                                new (output) DrawImageOp);
-  deserializer.Read(&deserializer->flags);
+PaintOp* DrawImageRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawImageRectOp* op = new (output) DrawImageRectOp;
+  reader.Read(&op->flags);
 
-  deserializer.Read(&deserializer->image);
-  deserializer.AssertAlignment(alignof(SkScalar));
-  deserializer.Read(&deserializer->scale_adjustment.fWidth);
-  deserializer.Read(&deserializer->scale_adjustment.fHeight);
+  reader.Read(&op->image);
+  reader.AssertAlignment(alignof(SkScalar));
+  reader.Read(&op->scale_adjustment.fWidth);
+  reader.Read(&op->scale_adjustment.fHeight);
 
-  deserializer.Read(&deserializer->left);
-  deserializer.Read(&deserializer->top);
-  deserializer.Read(&deserializer->sampling);
-  return deserializer.FinalizeOp();
+  reader.Read(&op->src);
+  reader.Read(&op->dst);
+  reader.Read(&op->sampling);
+  reader.Read(&op->constraint);
+
+  return op;
 }
 
-PaintOp* DrawImageRectOp::Deserialize(const volatile void* input,
-                                      size_t input_size,
-                                      void* output,
-                                      size_t output_size,
-                                      const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawImageRectOp));
-  PaintOpDeserializer<DrawImageRectOp> deserializer(
-      input, input_size, options, new (output) DrawImageRectOp);
-  deserializer.Read(&deserializer->flags);
-
-  deserializer.Read(&deserializer->image);
-  deserializer.AssertAlignment(alignof(SkScalar));
-  deserializer.Read(&deserializer->scale_adjustment.fWidth);
-  deserializer.Read(&deserializer->scale_adjustment.fHeight);
-
-  deserializer.Read(&deserializer->src);
-  deserializer.Read(&deserializer->dst);
-  deserializer.Read(&deserializer->sampling);
-  deserializer.Read(&deserializer->constraint);
-  return deserializer.FinalizeOp();
+PaintOp* DrawIRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawIRectOp* op = new (output) DrawIRectOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->rect);
+  return op;
 }
 
-PaintOp* DrawIRectOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawIRectOp));
-  PaintOpDeserializer<DrawIRectOp> deserializer(input, input_size, options,
-                                                new (output) DrawIRectOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->rect);
-  return deserializer.FinalizeOp();
+PaintOp* DrawLineOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawLineOp* op = new (output) DrawLineOp;
+  reader.Read(&op->flags);
+  reader.AssertAlignment(alignof(SkScalar));
+  reader.Read(&op->x0);
+  reader.Read(&op->y0);
+  reader.Read(&op->x1);
+  reader.Read(&op->y1);
+  return op;
 }
 
-PaintOp* DrawLineOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawLineOp));
-  PaintOpDeserializer<DrawLineOp> deserializer(input, input_size, options,
-                                               new (output) DrawLineOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.AssertAlignment(alignof(SkScalar));
-  deserializer.Read(&deserializer->x0);
-  deserializer.Read(&deserializer->y0);
-  deserializer.Read(&deserializer->x1);
-  deserializer.Read(&deserializer->y1);
-  return deserializer.FinalizeOp();
+PaintOp* DrawOvalOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawOvalOp* op = new (output) DrawOvalOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->oval);
+  return op;
 }
 
-PaintOp* DrawOvalOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawOvalOp));
-  PaintOpDeserializer<DrawOvalOp> deserializer(input, input_size, options,
-                                               new (output) DrawOvalOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->oval);
-  return deserializer.FinalizeOp();
+PaintOp* DrawPathOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawPathOp* op = new (output) DrawPathOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->path);
+  reader.Read(&op->sk_path_fill_type);
+  op->path.setFillType(static_cast<SkPathFillType>(op->sk_path_fill_type));
+  return op;
 }
 
-PaintOp* DrawPathOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawPathOp));
-  PaintOpDeserializer<DrawPathOp> deserializer(input, input_size, options,
-                                               new (output) DrawPathOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->path);
-  deserializer.Read(&deserializer->sk_path_fill_type);
-  deserializer->path.setFillType(
-      static_cast<SkPathFillType>(deserializer->sk_path_fill_type));
-  return deserializer.FinalizeOp();
-}
-
-PaintOp* DrawRecordOp::Deserialize(const volatile void* input,
-                                   size_t input_size,
-                                   void* output,
-                                   size_t output_size,
-                                   const DeserializeOptions& options) {
-  // TODO(enne): these must be flattened and not sent directly.
-  // TODO(enne): could also consider caching these service side.
+PaintOp* DrawRecordOp::Deserialize(PaintOpReader& reader, void* output) {
+  // These are flattened during serialization.
   return nullptr;
 }
 
-PaintOp* DrawRectOp::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawRectOp));
-  PaintOpDeserializer<DrawRectOp> deserializer(input, input_size, options,
-                                               new (output) DrawRectOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->rect);
-  return deserializer.FinalizeOp();
+PaintOp* DrawRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawRectOp* op = new (output) DrawRectOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->rect);
+  return op;
 }
 
-PaintOp* DrawRRectOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawRRectOp));
-  PaintOpDeserializer<DrawRRectOp> deserializer(input, input_size, options,
-                                                new (output) DrawRRectOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->rrect);
-  return deserializer.FinalizeOp();
+PaintOp* DrawRRectOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawRRectOp* op = new (output) DrawRRectOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->rrect);
+  return op;
 }
 
 namespace {
@@ -1032,240 +875,159 @@ template <typename T>
 bool DeserializeSkottieMap(
     base::flat_map<SkottieResourceIdHash, T>& map,
     absl::optional<size_t> max_map_size,
-    PaintOpDeserializer<DrawSkottieOp>& deserializer,
-    const base::RepeatingCallback<absl::optional<T>(
-        PaintOpDeserializer<DrawSkottieOp>&)>& value_deserializer) {
+    PaintOpReader& reader,
+    base::FunctionRef<T(PaintOpReader& reader)> value_deserializer) {
   size_t map_size = 0;
-  deserializer.ReadSize(&map_size);
+  reader.ReadSize(&map_size);
   if (max_map_size && map_size > *max_map_size)
     return false;
 
   for (size_t i = 0; i < map_size; ++i) {
     size_t resource_id_hash_raw = 0;
-    deserializer.ReadSize(&resource_id_hash_raw);
+    reader.ReadSize(&resource_id_hash_raw);
     SkottieResourceIdHash resource_id_hash =
         SkottieResourceIdHash::FromUnsafeValue(resource_id_hash_raw);
     if (!resource_id_hash)
       return false;
 
-    absl::optional<T> value = value_deserializer.Run(deserializer);
-    if (!value)
-      return false;
-
+    T value = value_deserializer(reader);
     // Duplicate keys should not happen by design, but defend against it
     // gracefully in case the underlying buffer is corrupted.
-    bool is_new_entry = map.emplace(resource_id_hash, std::move(*value)).second;
+    bool is_new_entry = map.emplace(resource_id_hash, std::move(value)).second;
     if (!is_new_entry)
       return false;
   }
   return true;
 }
 
-absl::optional<SkottieFrameData> DeserializeSkottieFrameData(
-    PaintOpDeserializer<DrawSkottieOp>& deserializer) {
+SkottieFrameData DeserializeSkottieFrameData(PaintOpReader& reader) {
   SkottieFrameData frame_data;
-  deserializer.Read(&frame_data.image);
-  deserializer.Read(&frame_data.quality);
+  reader.Read(&frame_data.image);
+  reader.Read(&frame_data.quality);
   return frame_data;
 }
 
-absl::optional<SkColor> DeserializeSkottieColor(
-    PaintOpDeserializer<DrawSkottieOp>& deserializer) {
+SkColor DeserializeSkottieColor(PaintOpReader& reader) {
   SkColor color = SK_ColorTRANSPARENT;
-  deserializer.Read(&color);
+  reader.Read(&color);
   return color;
 }
 
-absl::optional<SkottieTextPropertyValue> DeserializeSkottieTextPropertyValue(
-    PaintOpDeserializer<DrawSkottieOp>& deserializer) {
+SkottieTextPropertyValue DeserializeSkottieTextPropertyValue(
+    PaintOpReader& reader) {
   size_t text_size = 0u;
-  deserializer.ReadSize(&text_size);
+  reader.ReadSize(&text_size);
   std::string text(text_size, char());
-  deserializer.ReadData(text_size, const_cast<char*>(text.c_str()));
+  reader.ReadData(text_size, const_cast<char*>(text.c_str()));
   SkRect box;
-  deserializer.Read(&box);
+  reader.Read(&box);
   return SkottieTextPropertyValue(std::move(text), gfx::SkRectToRectF(box));
 }
 
 }  // namespace
 
-PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
-                                    size_t input_size,
-                                    void* output,
-                                    size_t output_size,
-                                    const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawSkottieOp));
-  PaintOpDeserializer<DrawSkottieOp> deserializer(input, input_size, options,
-                                                  new (output) DrawSkottieOp);
-  deserializer.Read(&deserializer->dst);
+PaintOp* DrawSkottieOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawSkottieOp* op = new (output) DrawSkottieOp;
+  reader.Read(&op->dst);
+  reader.Read(&op->t);
 
-  SkScalar t;
-  deserializer.Read(&t);
-  deserializer->t = SkScalarToFloat(t);
-
-  deserializer.Read(&deserializer->skottie);
+  reader.Read(&op->skottie);
   // The |skottie| object gets used below, so no point in continuing if it's
   // invalid. That can lead to crashing or unexpected behavior.
-  if (!deserializer->skottie || !deserializer->skottie->is_valid())
-    return deserializer.InvalidateAndFinalizeOp();
+  if (!op->skottie || !op->skottie->is_valid()) {
+    DCHECK(!op->IsValid());
+    return op;
+  }
 
   size_t num_assets_in_animation =
-      deserializer->skottie->GetImageAssetMetadata().asset_storage().size();
-  size_t num_text_nodes_in_animation =
-      deserializer->skottie->GetTextNodeNames().size();
+      op->skottie->GetImageAssetMetadata().asset_storage().size();
+  size_t num_text_nodes_in_animation = op->skottie->GetTextNodeNames().size();
   bool deserialized_all_maps =
-      DeserializeSkottieMap(
-          deserializer->images, /*max_map_size=*/num_assets_in_animation,
-          deserializer, base::BindRepeating(&DeserializeSkottieFrameData)) &&
-      DeserializeSkottieMap(deserializer->color_map,
-                            /*max_map_size=*/absl::nullopt, deserializer,
-                            base::BindRepeating(&DeserializeSkottieColor)) &&
-      DeserializeSkottieMap(
-          deserializer->text_map, /*max_map_size=*/num_text_nodes_in_animation,
-          deserializer,
-          base::BindRepeating(&DeserializeSkottieTextPropertyValue));
-  return deserialized_all_maps ? deserializer.FinalizeOp()
-                               : deserializer.InvalidateAndFinalizeOp();
-}
-
-PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
-                                     size_t input_size,
-                                     void* output,
-                                     size_t output_size,
-                                     const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(DrawTextBlobOp));
-  PaintOpDeserializer<DrawTextBlobOp> deserializer(input, input_size, options,
-                                                   new (output) DrawTextBlobOp);
-  deserializer.Read(&deserializer->flags);
-  unsigned int count = 0;
-  deserializer.Read(&count);
-  deserializer.Read(&deserializer->slug);
-  deserializer->extra_slugs.resize(count - 1);
-  for (auto& slug : deserializer->extra_slugs) {
-    deserializer.Read(&slug);
+      DeserializeSkottieMap<SkottieFrameData>(
+          op->images, /*max_map_size=*/num_assets_in_animation, reader,
+          DeserializeSkottieFrameData) &&
+      DeserializeSkottieMap<SkColor>(op->color_map,
+                                     /*max_map_size=*/absl::nullopt, reader,
+                                     DeserializeSkottieColor) &&
+      DeserializeSkottieMap<SkottieTextPropertyValue>(
+          op->text_map, /*max_map_size=*/num_text_nodes_in_animation, reader,
+          DeserializeSkottieTextPropertyValue);
+  if (!deserialized_all_maps) {
+    op->skottie = nullptr;
+    DCHECK(!op->IsValid());
   }
-  return deserializer.FinalizeOp();
+  return op;
 }
 
-PaintOp* NoopOp::Deserialize(const volatile void* input,
-                             size_t input_size,
-                             void* output,
-                             size_t output_size,
-                             const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(NoopOp));
-  PaintOpDeserializer<NoopOp> deserializer(input, input_size, options,
-                                           new (output) NoopOp);
-  return deserializer.FinalizeOp();
+PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawTextBlobOp* op = new (output) DrawTextBlobOp;
+  reader.Read(&op->flags);
+  unsigned int count = 0;
+  reader.Read(&count);
+  reader.Read(&op->slug);
+  op->extra_slugs.resize(count - 1);
+  for (auto& extra_slug : op->extra_slugs) {
+    reader.Read(&extra_slug);
+  }
+  return op;
 }
 
-PaintOp* RestoreOp::Deserialize(const volatile void* input,
-                                size_t input_size,
-                                void* output,
-                                size_t output_size,
-                                const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(RestoreOp));
-  PaintOpDeserializer<RestoreOp> deserializer(input, input_size, options,
-                                              new (output) RestoreOp);
-  return deserializer.FinalizeOp();
+PaintOp* NoopOp::Deserialize(PaintOpReader& reader, void* output) {
+  return new (output) NoopOp;
 }
 
-PaintOp* RotateOp::Deserialize(const volatile void* input,
-                               size_t input_size,
-                               void* output,
-                               size_t output_size,
-                               const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(RotateOp));
-  PaintOpDeserializer<RotateOp> deserializer(input, input_size, options,
-                                             new (output) RotateOp);
-  deserializer.Read(&deserializer->degrees);
-  return deserializer.FinalizeOp();
+PaintOp* RestoreOp::Deserialize(PaintOpReader& reader, void* output) {
+  return new (output) RestoreOp;
 }
 
-PaintOp* SaveOp::Deserialize(const volatile void* input,
-                             size_t input_size,
-                             void* output,
-                             size_t output_size,
-                             const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SaveOp));
-  PaintOpDeserializer<SaveOp> deserializer(input, input_size, options,
-                                           new (output) SaveOp);
-  return deserializer.FinalizeOp();
+PaintOp* RotateOp::Deserialize(PaintOpReader& reader, void* output) {
+  RotateOp* op = new (output) RotateOp;
+  reader.Read(&op->degrees);
+  return op;
 }
 
-PaintOp* SaveLayerOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SaveLayerOp));
-  PaintOpDeserializer<SaveLayerOp> deserializer(input, input_size, options,
-                                                new (output) SaveLayerOp);
-  deserializer.Read(&deserializer->flags);
-  deserializer.Read(&deserializer->bounds);
-  return deserializer.FinalizeOp();
+PaintOp* SaveOp::Deserialize(PaintOpReader& reader, void* output) {
+  return new (output) SaveOp;
 }
 
-PaintOp* SaveLayerAlphaOp::Deserialize(const volatile void* input,
-                                       size_t input_size,
-                                       void* output,
-                                       size_t output_size,
-                                       const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SaveLayerAlphaOp));
-  PaintOpDeserializer<SaveLayerAlphaOp> deserializer(
-      input, input_size, options, new (output) SaveLayerAlphaOp);
-  deserializer.Read(&deserializer->bounds);
-  deserializer.Read(&deserializer->alpha);
-  return deserializer.FinalizeOp();
+PaintOp* SaveLayerOp::Deserialize(PaintOpReader& reader, void* output) {
+  SaveLayerOp* op = new (output) SaveLayerOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->bounds);
+  return op;
 }
 
-PaintOp* ScaleOp::Deserialize(const volatile void* input,
-                              size_t input_size,
-                              void* output,
-                              size_t output_size,
-                              const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(ScaleOp));
-  PaintOpDeserializer<ScaleOp> deserializer(input, input_size, options,
-                                            new (output) ScaleOp);
-  deserializer.Read(&deserializer->sx);
-  deserializer.Read(&deserializer->sy);
-  return deserializer.FinalizeOp();
+PaintOp* SaveLayerAlphaOp::Deserialize(PaintOpReader& reader, void* output) {
+  SaveLayerAlphaOp* op = new (output) SaveLayerAlphaOp;
+  reader.Read(&op->bounds);
+  reader.Read(&op->alpha);
+  return op;
 }
 
-PaintOp* SetMatrixOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SetMatrixOp));
-  PaintOpDeserializer<SetMatrixOp> deserializer(input, input_size, options,
-                                                new (output) SetMatrixOp);
-  deserializer.Read(&deserializer->matrix);
-  return deserializer.FinalizeOp();
+PaintOp* ScaleOp::Deserialize(PaintOpReader& reader, void* output) {
+  ScaleOp* op = new (output) ScaleOp;
+  reader.Read(&op->sx);
+  reader.Read(&op->sy);
+  return op;
 }
 
-PaintOp* SetNodeIdOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SetNodeIdOp));
-  PaintOpDeserializer<SetNodeIdOp> deserializer(input, input_size, options,
-                                                new (output) SetNodeIdOp);
-  deserializer.Read(&deserializer->node_id);
-  return deserializer.FinalizeOp();
+PaintOp* SetMatrixOp::Deserialize(PaintOpReader& reader, void* output) {
+  SetMatrixOp* op = new (output) SetMatrixOp;
+  reader.Read(&op->matrix);
+  return op;
 }
 
-PaintOp* TranslateOp::Deserialize(const volatile void* input,
-                                  size_t input_size,
-                                  void* output,
-                                  size_t output_size,
-                                  const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(TranslateOp));
-  PaintOpDeserializer<TranslateOp> deserializer(input, input_size, options,
-                                                new (output) TranslateOp);
-  deserializer.Read(&deserializer->dx);
-  deserializer.Read(&deserializer->dy);
-  return deserializer.FinalizeOp();
+PaintOp* SetNodeIdOp::Deserialize(PaintOpReader& reader, void* output) {
+  SetNodeIdOp* op = new (output) SetNodeIdOp;
+  reader.Read(&op->node_id);
+  return op;
+}
+
+PaintOp* TranslateOp::Deserialize(PaintOpReader& reader, void* output) {
+  TranslateOp* op = new (output) TranslateOp;
+  reader.Read(&op->dx);
+  reader.Read(&op->dy);
+  return op;
 }
 
 void AnnotateOp::Raster(const AnnotateOp* op,
@@ -2239,12 +2001,14 @@ PaintOp* PaintOp::Deserialize(const volatile void* input,
 
   uint8_t type;
   uint32_t skip;
-  if (!PaintOpReader::ReadAndValidateOpHeader(input, input_size, &type, &skip))
+  if (!PaintOpReader::ReadAndValidateOpHeader(input, input_size, &type,
+                                              &skip)) {
     return nullptr;
+  }
 
+  PaintOpReader reader(input, skip, options);
   *read_bytes = skip;
-  return g_deserialize_functions[type](input, skip, output, output_size,
-                                       options);
+  return g_deserialize_functions[type](reader, output, output_size);
 }
 
 PaintOp* PaintOp::DeserializeIntoPaintOpBuffer(
@@ -2260,9 +2024,10 @@ PaintOp* PaintOp::DeserializeIntoPaintOpBuffer(
     return nullptr;
   }
 
+  PaintOpReader reader(input, skip, options);
   size_t op_skip = PaintOpBuffer::ComputeOpSkip(g_type_to_size[type]);
   if (auto* op = g_deserialize_functions[type](
-          input, skip, buffer->AllocatePaintOp(op_skip), op_skip, options)) {
+          reader, buffer->AllocatePaintOp(op_skip), op_skip)) {
     g_analyze_op_functions[type](buffer, op);
     *read_bytes = skip;
     return op;
