@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1226243): Implement default-browser & protocol-handler
+// TODO(crbug.com/1226243): Implement default-browser & scheme-handler
 // integration.
 
 #include "chrome/browser/shell_integration.h"
@@ -16,7 +16,7 @@ bool SetAsDefaultBrowser() {
   return false;
 }
 
-bool SetAsDefaultProtocolClient(const std::string& protocol) {
+bool SetAsDefaultClientForScheme(const std::string& scheme) {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -26,7 +26,7 @@ GetPlatformSpecificDefaultWebClientSetPermission() {
   return SET_DEFAULT_UNATTENDED;
 }
 
-std::u16string GetApplicationNameForProtocol(const GURL& url) {
+std::u16string GetApplicationNameForScheme(const GURL& url) {
   NOTIMPLEMENTED_LOG_ONCE();
   return {};
 }
@@ -43,7 +43,7 @@ bool IsFirefoxDefaultBrowser() {
   return false;
 }
 
-DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol) {
+DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   NOTIMPLEMENTED_LOG_ONCE();
   return DefaultWebClientState::UNKNOWN_DEFAULT;
 }

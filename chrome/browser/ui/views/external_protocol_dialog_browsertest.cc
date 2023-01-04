@@ -54,18 +54,17 @@ namespace {
 constexpr char kInitiatingOrigin[] = "a.test";
 constexpr char kRedirectingOrigin[] = "b.test";
 
-class FakeDefaultProtocolClientWorker
-    : public shell_integration::DefaultProtocolClientWorker {
+class FakeDefaultSchemeClientWorker
+    : public shell_integration::DefaultSchemeClientWorker {
  public:
-  explicit FakeDefaultProtocolClientWorker(const GURL& url)
-      : DefaultProtocolClientWorker(url) {}
-  FakeDefaultProtocolClientWorker(const FakeDefaultProtocolClientWorker&) =
-      delete;
-  FakeDefaultProtocolClientWorker& operator=(
-      const FakeDefaultProtocolClientWorker&) = delete;
+  explicit FakeDefaultSchemeClientWorker(const GURL& url)
+      : DefaultSchemeClientWorker(url) {}
+  FakeDefaultSchemeClientWorker(const FakeDefaultSchemeClientWorker&) = delete;
+  FakeDefaultSchemeClientWorker& operator=(
+      const FakeDefaultSchemeClientWorker&) = delete;
 
  private:
-  ~FakeDefaultProtocolClientWorker() override = default;
+  ~FakeDefaultSchemeClientWorker() override = default;
   shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
     return shell_integration::DefaultWebClientState::NOT_DEFAULT;
   }
@@ -113,9 +112,9 @@ class ExternalProtocolDialogBrowserTest
   }
 
   // ExternalProtocolHandler::Delegate:
-  scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const GURL& url) override {
-    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(url);
+  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
+      const GURL& url) override {
+    return base::MakeRefCounted<FakeDefaultSchemeClientWorker>(url);
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,

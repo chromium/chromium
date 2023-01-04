@@ -164,26 +164,27 @@ std::wstring GetExpectedAppId(const base::CommandLine& command_line,
 
 // Windows treats a given scheme as an Internet scheme only if its registry
 // entry has a "URL Protocol" key. Check this, otherwise we allow ProgIDs to be
-// used as custom protocols which leads to security bugs.
-bool IsValidCustomProtocol(const std::wstring& scheme) {
+// used as custom scheme which leads to security bugs.
+bool IsValidCustomScheme(const std::wstring& scheme) {
   if (scheme.empty())
     return false;
   base::win::RegKey cmd_key(HKEY_CLASSES_ROOT, scheme.c_str(), KEY_QUERY_VALUE);
   return cmd_key.Valid() && cmd_key.HasValue(L"URL Protocol");
 }
 
-// Windows 8 introduced a new protocol->executable binding system which cannot
+// Windows 8 introduced a new scheme->executable binding system which cannot
 // be retrieved in the HKCR registry subkey method implemented below. We call
 // AssocQueryString with the new Win8-only flag ASSOCF_IS_PROTOCOL instead.
-std::u16string GetAppForProtocolUsingAssocQuery(const GURL& url) {
+std::u16string GetAppForSchemeUsingAssocQuery(const GURL& url) {
   const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
-  if (!IsValidCustomProtocol(url_scheme))
+  if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
+  }
 
   // Query AssocQueryString for a human-readable description of the program
   // that will be invoked given the provided URL spec. This is used only to
-  // populate the external protocol dialog box the user sees when invoking
-  // an unknown external protocol.
+  // populate the external scheme dialog box the user sees when invoking
+  // an unknown external scheme.
   wchar_t out_buffer[1024];
   DWORD buffer_size = std::size(out_buffer);
   HRESULT hr =
@@ -196,10 +197,11 @@ std::u16string GetAppForProtocolUsingAssocQuery(const GURL& url) {
   return base::AsString16(std::wstring(out_buffer));
 }
 
-std::u16string GetAppForProtocolUsingRegistry(const GURL& url) {
+std::u16string GetAppForSchemeUsingRegistry(const GURL& url) {
   const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
-  if (!IsValidCustomProtocol(url_scheme))
+  if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
+  }
 
   // First, try and extract the application's display name.
   std::wstring command_to_launch;
@@ -318,7 +320,7 @@ void OnSettingsAppFinished(
 
 // There is no way to make sure the user is done with the system settings, but a
 // signal that the interaction is finished is needed for UMA. A timer of 2
-// minutes is used as a substitute. The registry keys for the protocol
+// minutes is used as a substitute. The registry keys for the scheme
 // association with an app are also monitored to signal the end of the
 // interaction early when it is clear that the user made a choice (e.g. http
 // and https for default browser).
@@ -332,13 +334,13 @@ class OpenSystemSettingsHelper {
   OpenSystemSettingsHelper& operator=(const OpenSystemSettingsHelper&) = delete;
 
   // Begin the monitoring and will call |on_finished_callback| when done.
-  // Takes in a null-terminated array of |protocols| whose registry keys must be
+  // Takes in a null-terminated array of |schemes| whose registry keys must be
   // watched. The array must contain at least one element.
-  static void Begin(const wchar_t* const protocols[],
+  static void Begin(const wchar_t* const schemes[],
                     base::OnceClosure on_finished_callback) {
     delete instance_;
-    instance_ = new OpenSystemSettingsHelper(protocols,
-                                             std::move(on_finished_callback));
+    instance_ =
+        new OpenSystemSettingsHelper(schemes, std::move(on_finished_callback));
   }
 
  private:
@@ -346,9 +348,9 @@ class OpenSystemSettingsHelper {
   // because it is used for UMA.
   enum ConcludeReason { REGISTRY_WATCHER, TIMEOUT, NUM_CONCLUDE_REASON_TYPES };
 
-  OpenSystemSettingsHelper(const wchar_t* const protocols[],
+  OpenSystemSettingsHelper(const wchar_t* const schemes[],
                            base::OnceClosure on_finished_callback)
-      : scoped_user_protocol_entry_(protocols[0]),
+      : scoped_user_protocol_entry_(schemes[0]),
         on_finished_callback_(std::move(on_finished_callback)) {
     static const wchar_t kUrlAssociationFormat[] =
         L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\"
@@ -357,7 +359,7 @@ class OpenSystemSettingsHelper {
     // Remember the start time.
     start_time_ = base::TimeTicks::Now();
 
-    for (const wchar_t* const* scan = &protocols[0]; *scan != nullptr; ++scan) {
+    for (const wchar_t* const* scan = &schemes[0]; *scan != nullptr; ++scan) {
       AddRegistryKeyWatcher(
           base::StringPrintf(kUrlAssociationFormat, *scan).c_str());
     }
@@ -422,7 +424,7 @@ class OpenSystemSettingsHelper {
   // Used to make sure only one instance is alive at the same time.
   static OpenSystemSettingsHelper* instance_;
 
-  // This is needed to make sure that Windows displays an entry for the protocol
+  // This is needed to make sure that Windows displays an entry for the scheme
   // inside the "Choose default apps by protocol" settings page.
   ScopedUserProtocolEntry scoped_user_protocol_entry_;
 
@@ -434,7 +436,7 @@ class OpenSystemSettingsHelper {
   int registry_watcher_count_ = 0;
 
   // There can be multiple registry key watchers as some settings modify
-  // multiple protocol associations. e.g. Changing the default browser modifies
+  // multiple scheme associations. e.g. Changing the default browser modifies
   // the http and https associations.
   std::vector<std::unique_ptr<base::win::RegKey>> registry_key_watchers_;
 
@@ -677,7 +679,7 @@ void MigrateChromeAndChromeProxyShortcuts(
   win::MigrateShortcutsInPathInternal(chrome_proxy_path, shortcut_path);
 }
 
-std::wstring GetHttpProtocolUserChoiceProgId() {
+std::wstring GetHttpSchemeUserChoiceProgId() {
   std::wstring prog_id;
   base::win::RegKey key(HKEY_CURRENT_USER, ShellUtil::kRegVistaUrlPrefs,
                         KEY_QUERY_VALUE);
@@ -713,12 +715,13 @@ bool SetAsDefaultBrowser() {
   return true;
 }
 
-bool SetAsDefaultProtocolClient(const std::string& protocol) {
+bool SetAsDefaultClientForScheme(const std::string& scheme) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (protocol.empty())
+  if (scheme.empty()) {
     return false;
+  }
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
@@ -726,14 +729,14 @@ bool SetAsDefaultProtocolClient(const std::string& protocol) {
     return false;
   }
 
-  std::wstring wprotocol(base::UTF8ToWide(protocol));
-  if (!ShellUtil::MakeChromeDefaultProtocolClient(chrome_exe, wprotocol)) {
-    LOG(ERROR) << "Chrome could not be set as default handler for "
-               << protocol << ".";
+  std::wstring wscheme(base::UTF8ToWide(scheme));
+  if (!ShellUtil::MakeChromeDefaultProtocolClient(chrome_exe, wscheme)) {
+    LOG(ERROR) << "Chrome could not be set as default handler for " << scheme
+               << ".";
     return false;
   }
 
-  VLOG(1) << "Chrome registered as default handler for " << protocol << ".";
+  VLOG(1) << "Chrome registered as default handler for " << scheme << ".";
   return true;
 }
 
@@ -750,19 +753,19 @@ GetPlatformSpecificDefaultWebClientSetPermission() {
   return SET_DEFAULT_INTERACTIVE;
 }
 
-bool IsElevationNeededForSettingDefaultProtocolClient() {
+bool IsElevationNeededForSettingDefaultSchemeClient() {
   return base::win::GetVersion() < base::win::Version::WIN8;
 }
 
-std::u16string GetApplicationNameForProtocol(const GURL& url) {
-  // Windows 8 or above has a new protocol association query.
+std::u16string GetApplicationNameForScheme(const GURL& url) {
+  // Windows 8 or above has a new scheme association query.
   if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    std::u16string application_name = GetAppForProtocolUsingAssocQuery(url);
+    std::u16string application_name = GetAppForSchemeUsingAssocQuery(url);
     if (!application_name.empty())
       return application_name;
   }
 
-  return GetAppForProtocolUsingRegistry(url);
+  return GetAppForSchemeUsingRegistry(url);
 }
 
 DefaultWebClientState GetDefaultBrowser() {
@@ -771,15 +774,15 @@ DefaultWebClientState GetDefaultBrowser() {
 }
 
 // This method checks if Firefox is default browser by checking for the default
-// HTTP protocol handler. Returns false in case of error or if Firefox is not
-// the user's default http protocol client.
+// HTTP scheme handler. Returns false in case of error or if Firefox is not
+// the user's default http scheme client.
 bool IsFirefoxDefaultBrowser() {
-  return base::StartsWith(GetHttpProtocolUserChoiceProgId(), L"FirefoxURL",
+  return base::StartsWith(GetHttpSchemeUserChoiceProgId(), L"FirefoxURL",
                           base::CompareCase::SENSITIVE);
 }
 
 std::string GetFirefoxProgIdSuffix() {
-  const std::wstring app_cmd = GetHttpProtocolUserChoiceProgId();
+  const std::wstring app_cmd = GetHttpSchemeUserChoiceProgId();
   static constexpr base::WStringPiece kFirefoxProgIdPrefix(L"FirefoxURL-");
   if (base::StartsWith(app_cmd, kFirefoxProgIdPrefix,
                        base::CompareCase::SENSITIVE)) {
@@ -791,13 +794,12 @@ std::string GetFirefoxProgIdSuffix() {
 }
 
 bool IsIEDefaultBrowser() {
-  return GetHttpProtocolUserChoiceProgId() == L"IE.HTTP";
+  return GetHttpSchemeUserChoiceProgId() == L"IE.HTTP";
 }
 
-DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol) {
+DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   return GetDefaultWebClientStateFromShellUtilDefaultState(
-      ShellUtil::GetChromeDefaultProtocolClientState(
-          base::UTF8ToWide(protocol)));
+      ShellUtil::GetChromeDefaultProtocolClientState(base::UTF8ToWide(scheme)));
 }
 
 namespace win {
@@ -840,13 +842,13 @@ void SetAsDefaultBrowserUsingSystemSettings(
   // The helper manages its own lifetime. Bind the action recorder
   // into the finished callback to keep it alive throughout the
   // interaction.
-  static const wchar_t* const kProtocols[] = {L"http", L"https", nullptr};
+  static const wchar_t* const kSchemes[] = {L"http", L"https", nullptr};
   OpenSystemSettingsHelper::Begin(
-      kProtocols, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
-                                 std::move(on_finished_callback)));
+      kSchemes, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
+                               std::move(on_finished_callback)));
 }
 
-bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol) {
+bool SetAsDefaultClientForSchemeUsingIntentPicker(const std::string& scheme) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -856,9 +858,9 @@ bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol) {
     return false;
   }
 
-  std::wstring wprotocol(base::UTF8ToWide(protocol));
+  std::wstring wscheme(base::UTF8ToWide(scheme));
   if (!ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe,
-                                                              wprotocol)) {
+                                                              wscheme)) {
     LOG(ERROR) << "Failed to launch the set-default-client Windows UI.";
     return false;
   }
@@ -867,8 +869,8 @@ bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol) {
   return true;
 }
 
-void SetAsDefaultProtocolClientUsingSystemSettings(
-    const std::string& protocol,
+void SetAsDefaultClientForSchemeUsingSystemSettings(
+    const std::string& scheme,
     base::OnceClosure on_finished_callback) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
@@ -878,11 +880,11 @@ void SetAsDefaultProtocolClientUsingSystemSettings(
   }
 
   // The helper manages its own lifetime.
-  std::wstring wprotocol(base::UTF8ToWide(protocol));
-  const wchar_t* const kProtocols[] = {wprotocol.c_str(), nullptr};
-  OpenSystemSettingsHelper::Begin(kProtocols, std::move(on_finished_callback));
+  std::wstring wscheme(base::UTF8ToWide(scheme));
+  const wchar_t* const kSchemes[] = {wscheme.c_str(), nullptr};
+  OpenSystemSettingsHelper::Begin(kSchemes, std::move(on_finished_callback));
 
-  ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe, wprotocol);
+  ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe, wscheme);
 }
 
 std::wstring GetAppUserModelIdForApp(const std::wstring& app_name,

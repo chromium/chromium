@@ -97,7 +97,7 @@ std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
 // it does require registering it as the protocol handler for "http", so if
 // protocol registration in general requires elevation, this does as well.
 bool DefaultBrowserInfoBarDelegate::OKButtonTriggersUACPrompt() const {
-  return shell_integration::IsElevationNeededForSettingDefaultProtocolClient();
+  return shell_integration::IsElevationNeededForSettingDefaultSchemeClient();
 }
 
 bool DefaultBrowserInfoBarDelegate::Accept() {

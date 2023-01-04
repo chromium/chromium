@@ -265,8 +265,8 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);
   }
 
-  scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const GURL& url) override {
+  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
+      const GURL& url) override {
     NOTREACHED();
     return nullptr;
   }

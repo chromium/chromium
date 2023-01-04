@@ -33,13 +33,13 @@ namespace shell_integration {
 // on the Mac and remove this function.
 bool SetAsDefaultBrowser();
 
-// Sets Chrome as the default client application for the given protocol (only
-// for the current user). Prefer to use the `DefaultProtocolClientWorker` class
+// Sets Chrome as the default client application for the given scheme (only
+// for the current user). Prefer to use the `DefaultSchemeClientWorker` class
 // below since it works on all OSs.
 //
-// TODO(https://crbug.com/1393452): Extend `DefaultProtocolClientWorker` to work
+// TODO(https://crbug.com/1393452): Extend `DefaultSchemeClientWorker` to work
 // better on the Mac and remove this function.
-bool SetAsDefaultProtocolClient(const std::string& protocol);
+bool SetAsDefaultClientForScheme(const std::string& scheme);
 
 // The different types of permissions required to set a default web client.
 enum DefaultWebClientSetPermission {
@@ -58,12 +58,12 @@ enum DefaultWebClientSetPermission {
 };
 
 // Returns requirements for making the running browser either the default
-// browser or the default client application for a specific protocols for the
+// browser or the default client application for a specific schemes for the
 // current user.
 DefaultWebClientSetPermission GetDefaultWebClientSetPermission();
 
 // Returns requirements for making the running browser either the default
-// browser or the default client application for a specific protocols for the
+// browser or the default client application for a specific schemes for the
 // current user, according to a specific platform.
 DefaultWebClientSetPermission
 GetPlatformSpecificDefaultWebClientSetPermission();
@@ -74,14 +74,14 @@ GetPlatformSpecificDefaultWebClientSetPermission();
 bool CanSetAsDefaultBrowser();
 
 // Returns true if making the running browser the default client for any
-// protocol requires elevated privileges.
-bool IsElevationNeededForSettingDefaultProtocolClient();
+// scheme requires elevated privileges.
+bool IsElevationNeededForSettingDefaultSchemeClient();
 
 // Returns a string representing the application to be launched given the
-// protocol of the requested url. This string may be a name or a path, but
+// scheme of the requested url. This string may be a name or a path, but
 // neither is guaranteed and it should only be used as a display string.
 // Returns an empty string on failure.
-std::u16string GetApplicationNameForProtocol(const GURL& url);
+std::u16string GetApplicationNameForScheme(const GURL& url);
 
 #if BUILDFLAG(IS_MAC)
 // Returns a vector which containing all the application paths that can be used
@@ -94,7 +94,7 @@ std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url);
 bool CanApplicationHandleURL(const base::FilePath& app_path, const GURL& url);
 #endif
 
-// Chrome's default web client state as a browser as a protocol client. If the
+// Chrome's default web client state as a browser as a scheme client. If the
 // current install mode is not default, the brand's other modes are
 // checked. This allows callers to take specific action in case the current mode
 // (e.g., Chrome Dev) is not the default handler, but another of the brand's
@@ -114,7 +114,7 @@ enum DefaultWebClientState {
 
 // Attempt to determine if this instance of Chrome is the default browser and
 // return the appropriate state. (Defined as being the handler for HTTP/HTTPS
-// protocols; we don't want to report "no" here if the user has simply chosen
+// schemes; we don't want to report "no" here if the user has simply chosen
 // to open HTML files in a text editor and FTP links with an FTP client.)
 DefaultWebClientState GetDefaultBrowser();
 
@@ -134,8 +134,8 @@ std::string GetFirefoxProgIdSuffix();
 #endif
 
 // Attempt to determine if this instance of Chrome is the default client
-// application for the given protocol and return the appropriate state.
-DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol);
+// application for the given scheme and return the appropriate state.
+DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme);
 
 // Is the current instance of Chrome running in App mode.
 bool IsRunningInAppMode();
@@ -165,17 +165,17 @@ std::u16string GetAppShortcutsSubdirName();
 #endif
 
 // The type of callback used to communicate processing state to consumers of
-// DefaultBrowserWorker and DefaultProtocolClientWorker.
+// DefaultBrowserWorker and DefaultSchemeClientWorker.
 using DefaultWebClientWorkerCallback =
     base::OnceCallback<void(DefaultWebClientState)>;
 
 // The type of callback used to communicate processing state to consumers of
-// DefaultBrowserWorker and DefaultProtocolClientWorker.
-using DefaultProtocolHandlerWorkerCallback =
+// DefaultBrowserWorker and DefaultSchemeClientWorker.
+using DefaultSchemeHandlerWorkerCallback =
     base::OnceCallback<void(DefaultWebClientState, const std::u16string&)>;
 
 //  Helper objects that handle checking if Chrome is the default browser
-//  or application for a url protocol on Windows and Linux, and also setting
+//  or application for a url scheme on Windows and Linux, and also setting
 //  it as the default. These operations are performed asynchronously on a
 //  blocking sequence since registry access (on Windows) or the preference
 //  database (on Linux) are involved and this can be slow.
@@ -247,7 +247,7 @@ class DefaultWebClientWorker
   void ReportSetDefaultResult(DefaultWebClientState state);
 
   // Used to differentiate UMA metrics for setting the default browser and
-  // setting the default protocol client. The pointer must be valid for the
+  // setting the default scheme client. The pointer must be valid for the
   // lifetime of the worker.
   const char* worker_name_;
 };
@@ -272,53 +272,53 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
 };
 
 // Worker for checking and setting the default client application
-// for a given protocol. A different worker instance is needed for each
-// protocol you are interested in, so to check or set the default for
-// multiple protocols you should use multiple worker objects.
-class DefaultProtocolClientWorker : public DefaultWebClientWorker {
+// for a given scheme. A different worker instance is needed for each
+// scheme you are interested in, so to check or set the default for
+// multiple scheme you should use multiple worker objects.
+class DefaultSchemeClientWorker : public DefaultWebClientWorker {
  public:
-  explicit DefaultProtocolClientWorker(const std::string& protocol);
-  explicit DefaultProtocolClientWorker(const GURL& url);
+  explicit DefaultSchemeClientWorker(const std::string& scheme);
+  explicit DefaultSchemeClientWorker(const GURL& url);
 
-  DefaultProtocolClientWorker(const DefaultProtocolClientWorker&) = delete;
-  DefaultProtocolClientWorker& operator=(const DefaultProtocolClientWorker&) =
+  DefaultSchemeClientWorker(const DefaultSchemeClientWorker&) = delete;
+  DefaultSchemeClientWorker& operator=(const DefaultSchemeClientWorker&) =
       delete;
 
   // Checks to see if Chrome is the default application for the |url_|.
   // The provided callback will be run to communicate the default state to the
   // caller, and also return the name of the default client if available.
   void StartCheckIsDefaultAndGetDefaultClientName(
-      DefaultProtocolHandlerWorkerCallback callback);
+      DefaultSchemeHandlerWorkerCallback callback);
 
-  const std::string& protocol() const { return protocol_; }
+  const std::string& scheme() const { return scheme_; }
   const GURL& url() const { return url_; }
 
  protected:
-  ~DefaultProtocolClientWorker() override;
+  ~DefaultSchemeClientWorker() override;
 
   // Communicates the result via |callback|.
   void OnCheckIsDefaultAndGetDefaultClientNameComplete(
       DefaultWebClientState state,
       std::u16string program_name,
-      DefaultProtocolHandlerWorkerCallback callback);
+      DefaultSchemeHandlerWorkerCallback callback);
 
  private:
   // Checks whether Chrome is the default client for |url_|. This also returns
   // the default client name if available.
   void CheckIsDefaultAndGetDefaultClientName(
-      DefaultProtocolHandlerWorkerCallback callback);
+      DefaultSchemeHandlerWorkerCallback callback);
 
-  // Check if Chrome is the default handler for this protocol.
+  // Check if Chrome is the default handler for this scheme.
   DefaultWebClientState CheckIsDefaultImpl() override;
 
-  // Gets the default client name for |protocol_|. Always called on a blocking
+  // Gets the default client name for |scheme_|. Always called on a blocking
   // sequence.
   virtual std::u16string GetDefaultClientNameImpl();
 
-  // Set Chrome as the default handler for this protocol.
+  // Set Chrome as the default handler for this scheme.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;
 
-  const std::string protocol_;
+  const std::string scheme_;
   const GURL url_;
 };
 

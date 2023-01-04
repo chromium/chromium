@@ -112,7 +112,7 @@ bool SetAsDefaultBrowser() {
   return true;
 }
 
-bool SetAsDefaultProtocolClient(const std::string& scheme) {
+bool SetAsDefaultClientForScheme(const std::string& scheme) {
   if (scheme.empty()) {
     return false;
   }
@@ -157,14 +157,14 @@ bool SetAsDefaultProtocolClient(const std::string& scheme) {
 DefaultWebClientSetPermission
 GetPlatformSpecificDefaultWebClientSetPermission() {
   // This should be `SET_DEFAULT_INTERACTIVE`, but that changes how
-  // `DefaultBrowserWorker` and `DefaultProtocolClientWorker` work.
+  // `DefaultBrowserWorker` and `DefaultSchemeClientWorker` work.
   // TODO(https://crbug.com/1393452): Migrate all callers to the new API,
   // migrate all the Mac code to integrate with it, and change this to return
   // the correct value.
   return SET_DEFAULT_UNATTENDED;
 }
 
-std::u16string GetApplicationNameForProtocol(const GURL& url) {
+std::u16string GetApplicationNameForScheme(const GURL& url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
   if (!ns_url) {
     return {};
@@ -268,7 +268,7 @@ bool IsFirefoxDefaultBrowser() {
 
 // Attempt to determine if this instance of Chrome is the default client
 // application for the given scheme and return the appropriate state.
-DefaultWebClientState IsDefaultProtocolClient(const std::string& scheme) {
+DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   if (scheme.empty()) {
     return UNKNOWN_DEFAULT;
   }

@@ -50,7 +50,7 @@ void ChromeProtocolHandlerRegistryDelegate::RegisterWithOSAsDefaultClient(
   // The worker pointer is reference counted. While it is running, the
   // sequence it runs on will hold references it will be automatically freed
   // once all its tasks have finished.
-  base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(protocol)
+  base::MakeRefCounted<shell_integration::DefaultSchemeClientWorker>(protocol)
       ->StartSetAsDefault(
           GetDefaultWebClientCallback(protocol, std::move(callback)));
 }
@@ -61,7 +61,7 @@ void ChromeProtocolHandlerRegistryDelegate::CheckDefaultClientWithOS(
   // The worker pointer is reference counted. While it is running, the
   // sequence it runs on will hold references it will be automatically freed
   // once all its tasks have finished.
-  base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(protocol)
+  base::MakeRefCounted<shell_integration::DefaultSchemeClientWorker>(protocol)
       ->StartCheckIsDefault(
           GetDefaultWebClientCallback(protocol, std::move(callback)));
 }
@@ -82,7 +82,7 @@ bool ChromeProtocolHandlerRegistryDelegate::ShouldRemoveHandlersNotInOS() {
 }
 
 void ChromeProtocolHandlerRegistryDelegate::
-    OnSetAsDefaultProtocolClientFinished(
+    OnSetAsDefaultClientForSchemeFinished(
         const std::string& protocol,
         DefaultClientCallback callback,
         shell_integration::DefaultWebClientState state) {
@@ -96,7 +96,7 @@ ChromeProtocolHandlerRegistryDelegate::GetDefaultWebClientCallback(
     const std::string& protocol,
     DefaultClientCallback callback) {
   return base::BindOnce(&ChromeProtocolHandlerRegistryDelegate::
-                            OnSetAsDefaultProtocolClientFinished,
+                            OnSetAsDefaultClientForSchemeFinished,
                         weak_ptr_factory_.GetWeakPtr(), protocol,
                         std::move(callback));
 }

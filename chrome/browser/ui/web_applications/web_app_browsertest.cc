@@ -2250,7 +2250,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
     EXPECT_EQ(u"Manifest with file handlers",
-              shell_integration::GetApplicationNameForProtocol(test_file_url))
+              shell_integration::GetApplicationNameForScheme(test_file_url))
         << "The default app to open the file is wrong. "
         << "File extension: " + extension;
   }
@@ -2327,7 +2327,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
     while (u"Manifest with file handlers" ==
-           shell_integration::GetApplicationNameForProtocol(test_file_url)) {
+           shell_integration::GetApplicationNameForScheme(test_file_url)) {
       base::RunLoop delay_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(100));

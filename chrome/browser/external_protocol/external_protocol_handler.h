@@ -49,7 +49,7 @@ class ExternalProtocolHandler {
   // Delegate to allow unit testing to provide different behavior.
   class Delegate {
    public:
-    virtual scoped_refptr<shell_integration::DefaultProtocolClientWorker>
+    virtual scoped_refptr<shell_integration::DefaultSchemeClientWorker>
     CreateShellWorker(const GURL& url) = 0;
     virtual BlockState GetBlockState(const std::string& scheme,
                                      Profile* profile) = 0;

@@ -368,9 +368,9 @@ class MailtoExternalProtocolHandlerDelegate
       const absl::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {}
 
-  scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const GURL& url) override {
-    return new shell_integration::DefaultProtocolClientWorker(url);
+  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
+      const GURL& url) override {
+    return new shell_integration::DefaultSchemeClientWorker(url);
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,

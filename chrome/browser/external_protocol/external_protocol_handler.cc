@@ -100,12 +100,12 @@ void AddMessageToConsole(const content::WeakDocumentPtr& document,
 #if !BUILDFLAG(IS_ANDROID)
 // Functions enabling unit testing. Using a NULL delegate will use the default
 // behavior; if a delegate is provided it will be used instead.
-scoped_refptr<shell_integration::DefaultProtocolClientWorker> CreateShellWorker(
+scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
     const GURL& url,
     ExternalProtocolHandler::Delegate* delegate) {
   if (delegate)
     return delegate->CreateShellWorker(url);
-  return base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(
+  return base::MakeRefCounted<shell_integration::DefaultSchemeClientWorker>(
       url);
 }
 #endif
@@ -203,7 +203,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
 // When we are about to launch a URL with the default OS level application, we
 // check if the external application will be us. If it is we just ignore the
 // request.
-void OnDefaultProtocolClientWorkerFinished(
+void OnDefaultSchemeClientWorkerFinished(
     const GURL& escaped_url,
     content::WebContents::Getter web_contents_getter,
     bool prompt_user,
@@ -506,8 +506,8 @@ void ExternalProtocolHandler::LaunchUrl(
 
   // The worker creates tasks with references to itself and puts them into
   // message loops.
-  shell_integration::DefaultProtocolHandlerWorkerCallback callback =
-      base::BindOnce(&OnDefaultProtocolClientWorkerFinished, escaped_url,
+  shell_integration::DefaultSchemeHandlerWorkerCallback callback =
+      base::BindOnce(&OnDefaultSchemeClientWorkerFinished, escaped_url,
                      std::move(web_contents_getter), block_state == UNKNOWN,
                      page_transition, has_user_gesture, is_in_fenced_frame_tree,
                      initiating_origin_or_precursor,
@@ -516,7 +516,7 @@ void ExternalProtocolHandler::LaunchUrl(
 
   // Start the check process running. This will send tasks to a worker task
   // runner and when the answer is known will send the result back to
-  // OnDefaultProtocolClientWorkerFinished().
+  // OnDefaultSchemeClientWorkerFinished().
   CreateShellWorker(escaped_url, g_external_protocol_handler_delegate)
       ->StartCheckIsDefaultAndGetDefaultClientName(std::move(callback));
 #endif

@@ -37,20 +37,20 @@ class ChromeProtocolHandlerRegistryDelegate
   bool ShouldRemoveHandlersNotInOS() override;
 
  private:
-  // Gets the callback for DefaultProtocolClientWorker.
+  // Gets the callback for DefaultSchemeClientWorker.
   shell_integration::DefaultWebClientWorkerCallback GetDefaultWebClientCallback(
       const std::string& protocol,
       DefaultClientCallback callback);
 
   // Called with the default state when the default protocol client worker is
   // done.
-  void OnSetAsDefaultProtocolClientFinished(
+  void OnSetAsDefaultClientForSchemeFinished(
       const std::string& protocol,
       DefaultClientCallback callback,
       shell_integration::DefaultWebClientState state);
 
   // Makes it possible to invalidate the callback for the
-  // DefaultProtocolClientWorker.
+  // DefaultSchemeClientWorker.
   base::WeakPtrFactory<ChromeProtocolHandlerRegistryDelegate> weak_ptr_factory_{
       this};
 };

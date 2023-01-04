@@ -31,13 +31,13 @@
 #endif
 
 class FakeExternalProtocolHandlerWorker
-    : public shell_integration::DefaultProtocolClientWorker {
+    : public shell_integration::DefaultSchemeClientWorker {
  public:
   FakeExternalProtocolHandlerWorker(
       const GURL& url,
       shell_integration::DefaultWebClientState os_state,
       const std::u16string& program_name)
-      : shell_integration::DefaultProtocolClientWorker(url),
+      : shell_integration::DefaultSchemeClientWorker(url),
         os_state_(os_state),
         program_name_(program_name) {}
 
@@ -71,8 +71,8 @@ class FakeExternalProtocolHandlerDelegate
         on_complete_(std::move(on_complete)),
         program_name_(u"") {}
 
-  scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const GURL& url) override {
+  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
+      const GURL& url) override {
     return new FakeExternalProtocolHandlerWorker(url, os_state_, program_name_);
   }
 

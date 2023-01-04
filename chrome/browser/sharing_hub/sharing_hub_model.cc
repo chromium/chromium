@@ -58,9 +58,9 @@ gfx::Image DecodeIcon(std::string str) {
 
 bool IsEmailEnabled(const GURL& url) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // If the Shell does not have a registered name for the protocol,
-  // attempting to invoke the protocol will fail.
-  return !shell_integration::GetApplicationNameForProtocol(url).empty();
+  // If the Shell does not have a registered name for the scheme,
+  // attempting to invoke the scheme will fail.
+  return !shell_integration::GetApplicationNameForScheme(url).empty();
 #else
   return true;
 #endif
