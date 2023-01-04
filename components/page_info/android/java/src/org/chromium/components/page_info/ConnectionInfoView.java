@@ -63,11 +63,15 @@ public class ConnectionInfoView implements OnClickListener {
      * Delegate that embeds the ConnectionInfoView. Must call ConnectionInfoView::onDismiss when
      * the embedding view is removed.
      */
-    interface ConnectionInfoDelegate {
+    public interface ConnectionInfoDelegate {
         /**
          * Called when the ConnectionInfoView is initialized
          */
         void onReady(ConnectionInfoView popup);
+
+        default boolean onShowCertificateChain() {
+            return false;
+        }
 
         /**
          * Called in order to dismiss the dialog or page that is showing the ConnectionInfoView.
@@ -189,6 +193,9 @@ public class ConnectionInfoView implements OnClickListener {
                     mNativeConnectionInfoView, ConnectionInfoView.this, mWebContents);
             mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
         } else if (mCertificateViewerTextView == v) {
+            if (mDelegate.onShowCertificateChain()) {
+                return;
+            }
             byte[][] certChain = CertificateChainHelper.getCertificateChain(mWebContents);
             if (certChain == null) {
                 // The WebContents may have been destroyed/invalidated. If so,

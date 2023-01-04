@@ -54,7 +54,7 @@ public class PageInfoPageZoomView {
     /**
      * Interface to delegate control of this view to another class.
      */
-    interface PageZoomViewDelegate {
+    public interface PageZoomViewDelegate {
         void setZoomLevel(double newZoomLevel);
         double getZoomLevel();
     }

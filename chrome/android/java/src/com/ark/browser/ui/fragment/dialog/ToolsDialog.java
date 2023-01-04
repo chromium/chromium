@@ -7,17 +7,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
 import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.core.utils.TabPrinter;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
+import com.ark.browser.settings.Keys;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.TabCacheManager;
-import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment2;
+import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment;
 import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.TextCircleImageView;
@@ -38,7 +41,8 @@ import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBri
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.components.page_info.PageInfoPageZoomView;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
@@ -59,30 +63,25 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
     private boolean mEditMode;
 
     public static void start(Context context, ArkTabImpl tab) {
-        ToolsDialog toolsDialog = new ToolsDialog();
-        toolsDialog.mArkWeb = tab.getArkWeb();
-        toolsDialog.show(context);
+        Bundle args = new Bundle();
+        args.putInt(Keys.KEY_ID, tab.getArkWeb().getId());
+        ToolsDialog fragment = new ToolsDialog();
+        fragment.setArguments(args);
+        fragment.show(context);
     }
-
-//    public static ToolsDialog newInstance(int tabId) {
-//        Bundle args = new Bundle();
-//        args.putInt(Keys.KEY_ID, tabId);
-//        ToolsDialog fragment = new ToolsDialog();
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        int pageId = Tab.INVALID_PAGE_ID;
-//        if (savedInstanceState == null) {
-//            if (getArguments() != null) {
-//                pageId = getArguments().getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
-//            }
-//        } else {
-//            pageId = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
-//        }
+        int pageId = Tab.INVALID_PAGE_ID;
+        if (savedInstanceState == null) {
+            if (getArguments() != null) {
+                pageId = getArguments().getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
+            }
+        } else {
+            pageId = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
+        }
+        mArkWeb = ArkWebManager.get(pageId);
         if (mArkWeb == null) {
             popThis();
         }
@@ -91,6 +90,9 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mArkWeb != null) {
+            outState.putInt(Keys.KEY_ID, mArkWeb.getId());
+        }
     }
 
     @Override
@@ -208,6 +210,26 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         tvFullscreen.setOnClickListener(this);
         tvSmartNoImg.setOnClickListener(this);
         tvReaderMode.setOnClickListener(this);
+
+
+        LinearLayout container = findViewById(R.id.ll_container);
+//        if (ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
+//
+//        }
+
+        PageInfoPageZoomView pageZoomView = new PageInfoPageZoomView(context, new PageInfoPageZoomView.PageZoomViewDelegate() {
+            @Override
+            public void setZoomLevel(double newZoomLevel) {
+                HostZoomMap.setZoomLevel(mArkWeb.getWebContents(), newZoomLevel);
+            }
+
+            @Override
+            public double getZoomLevel() {
+                return HostZoomMap.getZoomLevel(mArkWeb.getWebContents());
+            }
+        });
+
+        container.addView(pageZoomView.getMainView());
     }
 
     private void changeHeight(TextCircleImageView textCircleImageView, int dp) {
@@ -260,7 +282,7 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.ib_share) {
             ShareDialog.start(context);
         } else if (id == R.id.ib_info) {
-            start(PageInfoFragment2.newInstance(mArkWeb.getId()));
+            start(PageInfoFragment.newInstance(mArkWeb.getId()));
         } else if (id == R.id.tv_website_settings) {
             start(SingleWebsiteFragment.newInstance(mArkWeb.getPageInfo()));
         } else if (id == R.id.tv_history_stack) {

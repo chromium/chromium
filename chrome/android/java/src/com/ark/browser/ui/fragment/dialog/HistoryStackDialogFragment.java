@@ -19,11 +19,10 @@ import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
-import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment2;
+import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment;
 import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.ark.browser.ui.widget.FitWidthImageView;
@@ -264,7 +263,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                                 if (arkWeb == null) {
                                     start(SingleWebsiteFragment.newInstance(pageInfo));
                                 } else {
-                                    start(PageInfoFragment2.newInstance(pageInfo.getId()));
+                                    start(PageInfoFragment.newInstance(pageInfo.getId()));
                                 }
                                 break;
                             default:

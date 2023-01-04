@@ -89,7 +89,6 @@
                     android:textColor="@color/google_black_400"
                     android:visibility="visible"
                     android:textSize="12sp"
-                    android:textStyle="bold"
                     android:layout_gravity="center"
                     />
 

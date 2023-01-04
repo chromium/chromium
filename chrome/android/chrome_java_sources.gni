@@ -152,7 +152,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/manager/script/ScriptManagerFragment.java",
 
   "java/src/com/ark/browser/ui/fragment/pageinfo/CertificateViewFragment.java",
-  "java/src/com/ark/browser/ui/fragment/pageinfo/PageInfoFragment2.java",
+  "java/src/com/ark/browser/ui/fragment/pageinfo/PageInfoFragment.java",
 
   "java/src/com/ark/browser/ui/fragment/search/FlowHeaderMultiData.java",
   "java/src/com/ark/browser/ui/fragment/search/SearchFragment.java",
