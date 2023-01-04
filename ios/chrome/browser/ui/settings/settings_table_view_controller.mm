@@ -1898,8 +1898,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     case kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       if (UseSymbols()) {
-        googleSyncItem.iconImage = DefaultSettingsRootSymbol(kSyncErrorSymbol);
-        googleSyncItem.iconBackgroundColor = UIColor.redColor;
+        googleSyncItem.iconImage =
+            CustomSettingsRootSymbol(kSyncDisabledSymbol);
+        googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kGrey400Color];
         googleSyncItem.iconTintColor = UIColor.whiteColor;
         googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
 
@@ -1911,7 +1912,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     case kSyncOff:
     case kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = nil;
-      googleSyncItem.iconImage = [UIImage imageNamed:kSyncOffImageName];
       if (UseSymbols()) {
         googleSyncItem.iconImage =
             CustomSettingsRootSymbol(kSyncDisabledSymbol);
