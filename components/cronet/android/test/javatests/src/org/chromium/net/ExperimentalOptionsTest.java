@@ -22,6 +22,7 @@ import androidx.annotation.OptIn;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +50,8 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -277,18 +280,13 @@ public class ExperimentalOptionsTest {
     @OnlyRunNativeCronet
     @DisabledTest(message = "https://crbug.com/1404719")
     // Experimental options should be specified through a JSON compliant string. When that is not
-    // the case building a Cronet engine should fail when it is allowed to do so.
+    // the case building a Cronet engine should fail.
     public void testWrongJsonExperimentalOptions() throws Exception {
         try {
             mBuilder.setExperimentalOptions("Not a serialized JSON object");
             CronetEngine cronetEngine = mBuilder.build();
-            if (nativeExperimentalOptionsParsingIsAllowedToFail()) {
-                fail();
-            }
+            fail("Setting invalid JSON should have thrown an exception.");
         } catch (IllegalArgumentException e) {
-            if (!nativeExperimentalOptionsParsingIsAllowedToFail()) {
-                fail();
-            }
             assertTrue(e.getMessage().contains("Experimental options parsing failed"));
         }
     }
@@ -363,7 +361,7 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertNull(mockBuilderImpl.mConnectionMigrationOptions);
-        assertEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
+        assertJsonEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -399,7 +397,7 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertNull(mockBuilderImpl.mConnectionMigrationOptions);
-        assertEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
+        assertJsonEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -416,7 +414,7 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertNull(mockBuilderImpl.mConnectionMigrationOptions);
-        assertEquals("{\"QUIC\":{}}", mockBuilderImpl.mEffectiveExperimentalOptions);
+        assertJsonEquals("{\"QUIC\":{}}", mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
     @Test
@@ -432,7 +430,7 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertNull(mockBuilderImpl.mConnectionMigrationOptions);
-        assertEquals("{\"QUIC\":{\"allow_port_migration\":true}}",
+        assertJsonEquals("{\"QUIC\":{\"allow_port_migration\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -450,11 +448,10 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertNull(mockBuilderImpl.mConnectionMigrationOptions);
-        assertEquals("{\"QUIC\":{\"migrate_sessions_early_v2\":true}}",
+        assertJsonEquals("{\"QUIC\":{\"migrate_sessions_early_v2\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
-    @DisabledTest(message = "crbug.com/1403204")
     @Test
     @MediumTest
     @Feature({"Cronet"})
@@ -469,7 +466,7 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertNull(mockBuilderImpl.mConnectionMigrationOptions);
-        assertEquals(
+        assertJsonEquals(
                 "{\"QUIC\":{\"migrate_sessions_early_v2\":false,\"allow_port_migration\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -496,7 +493,6 @@ public class ExperimentalOptionsTest {
         }
     }
 
-    @DisabledTest(message = "crbug.com/1403204")
     @Test
     @MediumTest
     @Feature({"Cronet"})
@@ -628,14 +624,9 @@ public class ExperimentalOptionsTest {
                 + "  }"
                 + "}";
 
-        // The generated experimental options aren't prettified. There's no whitespace
-        // in expected values.
-        String expected = formattedJson.replaceAll("\\s", "");
-
-        assertEquals(expected, mockBuilderImpl.mEffectiveExperimentalOptions);
+        assertJsonEquals(formattedJson, mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
-    @DisabledTest(message = "crbug.com/1403204")
     @Test
     @MediumTest
     @Feature({"Cronet"})
@@ -649,7 +640,7 @@ public class ExperimentalOptionsTest {
                 .setDnsOptions(DnsOptions.builder().build());
 
         mBuilder.build();
-        assertEquals("{\"QUIC\":{},\"AsyncDNS\":{},\"StaleDNS\":{}}",
+        assertJsonEquals("{\"QUIC\":{},\"AsyncDNS\":{},\"StaleDNS\":{}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -683,6 +674,53 @@ public class ExperimentalOptionsTest {
                 }
             }
         }
+        return result;
+    }
+
+    private static void assertJsonEquals(String expected, String actual) {
+        try {
+            JSONObject expectedJson = new JSONObject(expected);
+            JSONObject actualJson = new JSONObject(actual);
+
+            assertJsonEquals(expectedJson, actualJson);
+        } catch (JSONException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    private static void assertJsonEquals(JSONObject expected, JSONObject actual)
+            throws JSONException {
+        assertEquals(jsonKeys(expected), jsonKeys(actual));
+
+        for (String key : jsonKeys(expected)) {
+            Object expectedValue = expected.get(key);
+            Object actualValue = actual.get(key);
+            if (expectedValue == actualValue) {
+                continue;
+            }
+            if (expectedValue instanceof JSONObject) {
+                if (actualValue instanceof JSONObject) {
+                    assertJsonEquals((JSONObject) expectedValue, (JSONObject) actualValue);
+                } else {
+                    fail("key [" + key + "]: expected [" + expectedValue + "] but got ["
+                            + actualValue + "]");
+                }
+            } else {
+                assertEquals(expectedValue, actualValue);
+            }
+        }
+    }
+
+    private static Set<String> jsonKeys(JSONObject json) throws JSONException {
+        Set<String> result = new HashSet<>();
+
+        Iterator<String> keys = json.keys();
+
+        while (keys.hasNext()) {
+            String key = keys.next();
+            result.add(key);
+        }
+
         return result;
     }
 
