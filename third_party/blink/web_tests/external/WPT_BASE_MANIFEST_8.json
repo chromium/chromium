@@ -261059,16 +261059,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "a9a50c606d91db61eac8164126993fa1d3b3f9ec",
-     []
-    ],
-    "mtime.json": [
-     "e749d08df272726f0abfe4f62d6de2bcd6733914",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -394957,7 +394947,7 @@
      ]
     },
     "idlharness.https.window-expected.txt": [
-     "5c8507260f586b1b63e99b7a1c0338e77dfa84fe",
+     "4ddf4e7f11e85042d1bbe047aad420206166417e",
      []
     ],
     "idlharness.https.window.js.ini": [
@@ -395034,7 +395024,7 @@
       []
      ],
      "webxr_test_constants.js": [
-      "cabc4b4a965d5db8d9993a5c4591355dd01a1d21",
+      "1a0d7bddad558f8064195d034c8b58775669eadc",
       []
      ],
      "webxr_test_constants_fake_depth.js": [
@@ -552883,6 +552873,13 @@
          {}
         ]
        ],
+       "compile-event-handler-lexical-scopes-form-owner.html": [
+        "e31bd2496a1fee19e356650f502a66e804899713",
+        [
+         null,
+         {}
+        ]
+       ],
        "compile-event-handler-lexical-scopes.html": [
         "ed6c006651162aeaac41a4ad7a8e81ad0bbd457e",
         [
@@ -643246,6 +643243,13 @@
     ],
     "xrSession_cancelAnimationFrame_invalidhandle.https.html": [
      "f036e3080fc213eb58455e7b17d91a99884f5083",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xrSession_enabledFeatures.https.html": [
+     "ba9045597c2d507c2b909f10a96248fc0c4345f1",
      [
       null,
       {}
