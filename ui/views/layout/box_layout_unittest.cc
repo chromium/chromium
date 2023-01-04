@@ -704,6 +704,45 @@ TEST_F(BoxLayoutTest, FlexShrinkVerticalWithRemainder) {
   }
 }
 
+TEST_F(BoxLayoutTest, FlexBehavior) {
+  BoxLayout* layout = host_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(BoxLayout::Orientation::kVertical));
+
+  View* v1 =
+      host_->AddChildView(std::make_unique<StaticSizedView>(gfx::Size(20, 20)));
+  View* v2 =
+      host_->AddChildView(std::make_unique<StaticSizedView>(gfx::Size(20, 20)));
+
+  host_->SetBounds(0, 0, 20, 100);
+
+  // Views don't fill the available space by default.
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 20).ToString(), v1->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 20, 20, 20).ToString(), v2->bounds().ToString());
+
+  // Set default flex so that both views fill 1/2 of the available space.
+  layout->SetDefaultFlex(1);
+  HandleHostLayoutManagerChanges();
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 50).ToString(), v1->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 50, 20, 50).ToString(), v2->bounds().ToString());
+
+  // Set `kFlexBehaviorKey` so that the first view fills 2/3 of the available
+  // space. Flex set via `kFlexBehaviorKey` takes higher precedence than default
+  // flex.
+  v1->SetProperty(kFlexBehaviorKey, FlexSpecification().WithWeight(2));
+  HandleHostLayoutManagerChanges();
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 60).ToString(), v1->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 60, 20, 40).ToString(), v2->bounds().ToString());
+
+  // Set flex so that the first view fills 3/4 of the available space. Flex for
+  // a view set on the `layout` takes higher precedence than flex set via
+  // `kFlexBehaviorKey`.
+  layout->SetFlexForView(v1, 3);
+  HandleHostLayoutManagerChanges();
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 65).ToString(), v1->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 65, 20, 35).ToString(), v2->bounds().ToString());
+}
+
 TEST_F(BoxLayoutTest, MinimumCrossAxisVertical) {
   BoxLayout* layout = host_->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));

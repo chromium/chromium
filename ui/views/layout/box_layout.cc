@@ -383,11 +383,16 @@ void BoxLayout::ViewRemoved(View* host, View* view) {
 }
 
 int BoxLayout::GetFlexForView(const View* view) const {
-  auto it = flex_map_.find(view);
-  if (it == flex_map_.end())
-    return default_flex_;
-
-  return it->second.flex_weight;
+  // Give precedence to flex provided via the layout.
+  if (auto it = flex_map_.find(view); it != flex_map_.end()) {
+    return it->second.flex_weight;
+  }
+  // Respect flex provided via the `kFlexBehaviorKey`.
+  if (auto* flex_behavior_key = view->GetProperty(kFlexBehaviorKey)) {
+    return flex_behavior_key->weight();
+  }
+  // Fall back to default.
+  return default_flex_;
 }
 
 int BoxLayout::GetMinimumSizeForView(const View* view) const {
