@@ -26,6 +26,7 @@
             hidden="[[!pageVisibility.setTheme]]">
           <cr-link-row class="first" hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
+              button-aria-description="$i18n{opensInNewTab}"
               on-click="openThemeUrl_" external></cr-link-row>
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">

@@ -180,6 +180,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
     {"moreActions", IDS_SETTINGS_MORE_ACTIONS},
     {"noThanks", IDS_NO_THANKS},
     {"ok", IDS_OK},
+    {"opensInNewTab", IDS_SETTINGS_OPENS_IN_NEW_TAB},
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     {"relaunchConfirmationDialogTitle", IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE},
 #endif

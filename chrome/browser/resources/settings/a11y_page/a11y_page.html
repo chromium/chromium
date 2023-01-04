@@ -6,6 +6,7 @@
         <cr-link-row
             label="$i18n{manageAccessibilityFeatures}"
             on-click="onManageSystemAccessibilityFeaturesTap_"
+            button-aria-description="$i18n{opensInNewTab}"
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
         </cr-link-row>
 </if>
@@ -19,6 +20,7 @@
               label="$i18n{captionsPreferencesTitle}"
               sub-label="$i18n{captionsPreferencesSubtitle}"
               on-click="onCaptionsClick_"
+              button-aria-description="$i18n{opensInNewTab}"
               external$="[[captionSettingsOpensExternally_]]">
           </cr-link-row>
         </template>
@@ -65,6 +67,7 @@
 </if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
             on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
+            button-aria-description="$i18n{opensInNewTab}"
             external>
         </cr-link-row>
       </div>

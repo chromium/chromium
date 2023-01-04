@@ -40,6 +40,7 @@
     <cr-link-row class="hr"
         label="$i18n{enablePersonalizationLogging}"
         sub-label="$i18n{enablePersonalizationLoggingDesc}"
+        button-aria-description="$i18n{opensInNewTab}"
         on-click="onMetricsReportingLinkClick_" external>
     </cr-link-row>
 </if><!-- chromeos -->
@@ -84,6 +85,7 @@
         label="$i18n{spellingPref}"
         sub-label="$i18n{spellingDescription}"
         hidden="[[!showSpellCheckControlLink_(prefs.spellcheck.dictionaries)]]"
+        button-aria-description="$i18n{opensInNewTab}"
         on-click="onUseSpellingServiceLinkClick_" external>
     </cr-link-row>
 </if><!-- chromeos -->

@@ -144,11 +144,13 @@
 
           <cr-link-row class="hr"
               label="$i18n{personalizeGoogleServicesTitle}"
+              button-aria-description="$i18n{opensInNewTab}"
               on-click="onActivityControlsClick_" external></cr-link-row>
 
           <cr-link-row id="syncDashboardLink" class="hr"
               label="$i18n{manageSyncedDataTitle}"
               on-click="onSyncDashboardLinkClick_"
+              button-aria-description="$i18n{opensInNewTab}"
               hidden="[[syncStatus.supervisedUser]]" external></cr-link-row>
 
           <cr-expand-button id="encryptionDescription"
