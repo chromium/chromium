@@ -124,7 +124,6 @@ export class Background extends ChromeVoxState {
     ClipboardHandler.init();
     CommandHandler.init();
     DownloadHandler.init();
-    EventStreamLogger.init();
     FindHandler.init();
     FocusAutomationHandler.init();
     GestureCommandHandler.init();
@@ -142,6 +141,7 @@ export class Background extends ChromeVoxState {
     // complete before continuing.
     await Promise.all([
       DesktopAutomationHandler.init(),
+      EventStreamLogger.init(),
     ]);
     ChromeVoxState.resolveReadyPromise_();
   }

@@ -103,7 +103,7 @@ export class ChromeVoxPrefs {
     if (key === 'enableSpeechLogging') {
       TtsBackground.console.setEnabled(value);
     } else if (key === 'enableEventStreamLogging') {
-      EventStreamLogger.instance.notifyEventStreamFilterChangedAll(value);
+      EventStreamLogger.instance.updateAllFilters(value);
     }
     this.enableOrDisableLogUrlWatcher_();
   }
