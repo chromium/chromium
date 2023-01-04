@@ -61,7 +61,9 @@ public final class JavaCronetEngine extends CronetEngineBase {
         final int threadPriority =
                 builder.threadPriority(THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_MORE_FAVORABLE);
         this.mUserAgent = builder.getUserAgent();
-        this.mExecutorService = new ThreadPoolExecutor(10, 20, 50, TimeUnit.SECONDS,
+        // For unbounded work queues, the effective maximum pool size is
+        // equivalent to the core pool size.
+        this.mExecutorService = new ThreadPoolExecutor(10, 10, 50, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
                     @Override
                     public Thread newThread(final Runnable r) {
