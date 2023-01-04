@@ -16,7 +16,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
 
@@ -587,21 +586,11 @@ public class ContentSettingsResources {
      */
     public static int[] getTriStateSettingDescriptionIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
-            // The recommended setting is different on different android versions depending on
-            // whether per-origin provisioning is available. See https://crbug.com/904883.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                int[] descriptionIDs = {
-                        R.string.website_settings_category_protected_content_allowed_recommended,
-                        R.string.website_settings_category_protected_content_ask,
-                        R.string.website_settings_category_protected_content_blocked};
-                return descriptionIDs;
-            } else {
-                int[] descriptionIDs = {
-                        R.string.website_settings_category_protected_content_allowed,
-                        R.string.website_settings_category_protected_content_ask_recommended,
-                        R.string.website_settings_category_protected_content_blocked};
-                return descriptionIDs;
-            }
+            int[] descriptionIDs = {
+                    R.string.website_settings_category_protected_content_allowed_recommended,
+                    R.string.website_settings_category_protected_content_ask,
+                    R.string.website_settings_category_protected_content_blocked};
+            return descriptionIDs;
         }
 
         assert false;
