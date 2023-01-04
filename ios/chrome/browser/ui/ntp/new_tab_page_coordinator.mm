@@ -100,13 +100,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Flag to enable the checking of new content for the Follow Feed.
-BASE_FEATURE(kEnableCheckForNewFollowContent,
-             "EnableCheckForNewFollowContent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace
-
 @interface NewTabPageCoordinator () <AppStateObserver,
                                      BooleanObserver,
                                      ContentSuggestionsHeaderCommands,
@@ -423,7 +416,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
   if (![self isFollowingFeedAvailable] ||
-      !base::FeatureList::IsEnabled(kEnableCheckForNewFollowContent)) {
+      !IsDotEnabledForNewFollowedContent()) {
     return;
   }
   if ([self doesFollowingFeedHaveContent]) {
@@ -885,7 +878,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.ntpViewController scrollPosition];
 
-  if (feedType == FeedTypeFollowing) {
+  if (feedType == FeedTypeFollowing && IsDotEnabledForNewFollowedContent()) {
     // Clears dot and notifies service that the Following feed content has
     // been seen.
     [self.feedHeaderViewController
@@ -1006,7 +999,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 }
 
 - (BOOL)isContentHeaderSticky {
-  return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible];
+  return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible] &&
+         !IsStickyHeaderDisabledForFollowingFeed();
 }
 
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
@@ -1495,8 +1489,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
     BOOL followingSegmentDotVisible = NO;
-    if (base::FeatureList::IsEnabled(kEnableCheckForNewFollowContent) &&
-        IsWebChannelsEnabled()) {
+    if (IsDotEnabledForNewFollowedContent() && IsWebChannelsEnabled()) {
       // Only show the dot if the user follows available publishers.
       followingSegmentDotVisible =
           [self doesFollowingFeedHaveContent] &&
