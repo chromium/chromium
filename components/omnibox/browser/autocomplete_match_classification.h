@@ -27,19 +27,6 @@ TermMatches FindTermMatches(std::u16string find_text,
                             bool allow_prefix_matching = true,
                             bool allow_mid_word_matching = false);
 
-// A utility function called by `FindTermMatches` to find valid matches in text
-// for the given terms. Matched terms are sorted, deduped, and possibly
-// filtered-by-word-boundary. If |allow_mid_word_matching| is false, the
-// returned terms will be filtered-by-word-boundary. E.g., for |find_text| "ho
-// to ie", |text| "how to tie a tie", and |allow_mid_word_matching| false, this
-// will return "[ho]w [to] tie a tie". On the other hand, for
-// |allow_mid_word_matching| true, this will return "[ho]w [to] t[ie] a t[ie]."
-TermMatches FindMatchesForTerms(const String16Vector& input_terms,
-                                const WordStarts& terms_to_word_starts_offsets,
-                                const std::u16string& cleaned_text,
-                                const WordStarts& word_starts,
-                                bool allow_mid_word_matching = false);
-
 // Return an ACMatchClassifications structure given the |matches| to highlight.
 // |matches| can be retrieved from calling FindTermMatches. |text_length| should
 // be the full length (not the length of the truncated text clean returns) of

@@ -621,22 +621,6 @@ WordIDSet URLIndexPrivateData::WordIDSetForTermChars(
   return word_id_set;
 }
 
-std::pair<String16Vector, WordStarts>
-URLIndexPrivateData::GetTermsAndStartsOffsets(
-    const std::u16string& lower_raw_string) {
-  String16Vector lower_raw_terms =
-      base::SplitString(lower_raw_string, base::kWhitespaceUTF16,
-                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (lower_raw_terms.empty()) {
-    return {{}, {}};
-  }
-
-  WordStarts lower_terms_to_word_starts_offsets;
-  CalculateWordStartsOffsets(lower_raw_terms,
-                             &lower_terms_to_word_starts_offsets);
-  return std::make_pair(lower_raw_terms, lower_terms_to_word_starts_offsets);
-}
-
 void URLIndexPrivateData::HistoryIdsToScoredMatches(
     HistoryIDVector history_ids,
     const std::u16string& lower_raw_string,
@@ -647,8 +631,15 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   if (history_ids.empty())
     return;
 
-  auto [lower_raw_terms, lower_terms_to_word_starts_offsets] =
-      GetTermsAndStartsOffsets(lower_raw_string);
+  // Break up the raw search string (complete with escaped URL elements) into
+  // 'terms' (as opposed to 'words'; see comment in HistoryItemsForTerms()).
+  // We only want to break up the search string on 'true' whitespace rather than
+  // escaped whitespace.  For example, when the user types
+  // "colspec=ID%20Mstone Release" we get two 'terms': "colspec=id%20mstone" and
+  // "release".
+  String16Vector lower_raw_terms =
+      base::SplitString(lower_raw_string, base::kWhitespaceUTF16,
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Don't score matches when there are no terms to score against.  (It's
   // possible that the word break iterater that extracts words to search for in
@@ -657,9 +648,12 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   // reasonable order to matches when there are no terms (i.e., all the words
   // are some form of whitespace), but this is such a rare edge case that it's
   // not worth the time.
-  if (lower_raw_terms.empty()) {
+  if (lower_raw_terms.empty())
     return;
-  }
+
+  WordStarts lower_terms_to_word_starts_offsets;
+  CalculateWordStartsOffsets(lower_raw_terms,
+                             &lower_terms_to_word_starts_offsets);
 
   // Filter bad matches and other matches we don't want to display.
   base::EraseIf(history_ids, [&](const HistoryID history_id) {

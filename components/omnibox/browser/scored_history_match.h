@@ -91,18 +91,6 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
       size_t end_pos,
       bool allow_midword_continuations = false);
 
-  // Computes the total length of term matches for the first max allowed number
-  // of words from the text being matched against. `word_starts` contains the
-  // offsets at which each word starts within the text. Also, increments the
-  // term scores by a given score delta for each considered match.
-  static int32_t ComputeTotalMatchLength(
-      const TermMatches& matches,
-      const WordStarts& terms_to_word_starts_offsets,
-      const WordStarts& word_starts,
-      int32_t num_words_to_allow,
-      std::vector<int>* terms_scores,
-      int32_t score_delta);
-
   // An interim score taking into consideration location and completeness
   // of the match.
   int raw_score = 0;

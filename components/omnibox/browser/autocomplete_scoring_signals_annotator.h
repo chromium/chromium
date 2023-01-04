@@ -5,12 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_SIGNALS_ANNOTATOR_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_SIGNALS_ANNOTATOR_H_
 
-#include "third_party/metrics_proto/omnibox_event.pb.h"
-
-class AutocompleteInput;
-class AutocompleteResult;
-
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+#include "components/omnibox/browser/autocomplete_result.h"
 
 // Base class for annotating suggestions in autocomplete results with various
 // signals for ML training and scoring.
@@ -24,8 +19,7 @@ class AutocompleteScoringSignalsAnnotator {
   virtual ~AutocompleteScoringSignalsAnnotator() = default;
 
   // Annotate the autocomplete result.
-  virtual void AnnotateResult(const AutocompleteInput& input,
-                              AutocompleteResult* result) = 0;
+  virtual void AnnotateResult(AutocompleteResult* result) = 0;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_SIGNALS_ANNOTATOR_H_

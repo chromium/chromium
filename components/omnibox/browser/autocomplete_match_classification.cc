@@ -30,27 +30,20 @@ TermMatches FindTermMatches(std::u16string find_text,
       base::StartsWith(text, find_text, base::CompareCase::SENSITIVE))
     return {{0, 0, find_text.length()}};
 
-  String16Vector find_terms = String16VectorFromString16(find_text, nullptr);
-  WordStarts word_starts;
-  String16VectorFromString16(text, &word_starts);
-  return FindMatchesForTerms(find_terms, WordStarts(find_terms.size(), 0), text,
-                             word_starts, allow_mid_word_matching);
-}
+  String16Vector find_terms = String16VectorFromString16(find_text, NULL);
 
-TermMatches FindMatchesForTerms(const String16Vector& input_terms,
-                                const WordStarts& terms_to_word_starts_offsets,
-                                const std::u16string& cleaned_text,
-                                const WordStarts& word_starts,
-                                bool allow_mid_word_matching) {
-  TermMatches matches = MatchTermsInString(input_terms, cleaned_text);
+  TermMatches matches = MatchTermsInString(find_terms, text);
   matches = SortMatches(matches);
   matches = DeoverlapMatches(matches);
 
   if (allow_mid_word_matching)
     return matches;
 
+  WordStarts word_starts;
+  String16VectorFromString16(text, &word_starts);
   return ScoredHistoryMatch::FilterTermMatchesByWordStarts(
-      matches, terms_to_word_starts_offsets, word_starts, 0, std::string::npos);
+      matches, WordStarts(find_terms.size(), 0), word_starts, 0,
+      std::string::npos);
 }
 
 ACMatchClassifications ClassifyTermMatches(TermMatches matches,
