@@ -2887,7 +2887,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // descendants need special treatment inside block fragmentation.
       context_.current.is_in_block_fragmentation =
           pre_paint_info_->fragmentainer_is_oof_containing_block &&
-          box->GetNGPaginationBreakability() != LayoutBox::kForbidBreaks;
+          !pre_paint_info_->box_fragment.IsMonolithic();
     } else {
       // TODO(pdr): Several calls in this function walk back up the tree to
       // calculate containers (e.g., physicalLocation,
