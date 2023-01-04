@@ -21,26 +21,21 @@ import '../google_assistant_page/google_assistant_page.js';
 import './search_subpage.js';
 import './search_engine.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_search_page.html.js';
 
 const OsSettingsSearchPageElementBase =
-    mixinBehaviors(
-        [DeepLinkingBehavior], RouteObserverMixin(I18nMixin(PolymerElement))) as
-    {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
-    };
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
 class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
   static get is() {
@@ -71,16 +66,15 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kPreferredSearchEngine]),
+        value: () => new Set<Setting>([Setting.kPreferredSearchEngine]),
       },
     };
   }
 
-  override supportedSettingIds: Set<Setting>;
   private isAssistantAllowed_: boolean;
   private focusConfig_: Map<string, string>;
   private shouldShowQuickAnswersSettings_: boolean;

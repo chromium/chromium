@@ -18,20 +18,19 @@ import './crostini_disk_resize_confirmation_dialog.js';
 import './crostini_port_forwarding.js';
 import './crostini_extra_containers.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo} from './crostini_browser_proxy.js';
@@ -45,14 +44,8 @@ enum ConfirmationState {
   CONFIRMED = 'confirmed',
 }
 
-const SettingsCrostiniSubpageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&PrefsMixinInterface&
-                RouteOriginMixinInterface&DeepLinkingBehaviorInterface>;
+const SettingsCrostiniSubpageElementBase = DeepLinkingMixin(
+    RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))));
 
 class SettingsCrostiniSubpageElement extends
     SettingsCrostiniSubpageElementBase {
@@ -181,11 +174,11 @@ class SettingsCrostiniSubpageElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kUninstallCrostini,
           Setting.kCrostiniDiskResize,
           Setting.kCrostiniMicAccess,

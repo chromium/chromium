@@ -19,32 +19,25 @@ import '../../settings_shared.css.js';
 import './kerberos_add_account_dialog.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {cast, castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {getImage} from '../icon.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './kerberos_accounts.html.js';
 import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosErrorType} from './kerberos_accounts_browser_proxy.js';
 
-const SettingsKerberosAccountsElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
-    Constructor<PolymerElement&DeepLinkingBehaviorInterface&I18nMixinInterface&
-                WebUiListenerMixinInterface&RouteObserverMixinInterface>;
+const SettingsKerberosAccountsElementBase = DeepLinkingMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 class SettingsKerberosAccountsElement extends
     SettingsKerberosAccountsElementBase {
@@ -96,17 +89,16 @@ class SettingsKerberosAccountsElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kAddKerberosTicketV2,
           Setting.kRemoveKerberosTicketV2,
           Setting.kSetActiveKerberosTicketV2,
         ]),
       },
-
     };
   }
 

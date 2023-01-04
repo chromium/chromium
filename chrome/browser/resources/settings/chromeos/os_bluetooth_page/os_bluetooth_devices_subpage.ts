@@ -14,33 +14,24 @@ import './settings_fast_pair_toggle.js';
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_devices_subpage.html.js';
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
-const SettingsBluetoothDevicesSubpageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        PrefsMixin(RouteObserverMixin(
-            WebUiListenerMixin(I18nMixin(PolymerElement))))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                RouteObserverMixinInterface&PrefsMixinInterface&
-                DeepLinkingBehaviorInterface>;
+const SettingsBluetoothDevicesSubpageElementBase = DeepLinkingMixin(PrefsMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 class SettingsBluetoothDevicesSubpageElement extends
     SettingsBluetoothDevicesSubpageElementBase {
@@ -60,7 +51,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,

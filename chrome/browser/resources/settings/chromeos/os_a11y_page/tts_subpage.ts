@@ -16,16 +16,15 @@ import '../../controls/settings_slider.js';
 import '../../settings_shared.css.js';
 
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeat, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './tts_subpage.html.js';
@@ -71,14 +70,8 @@ interface SettingsTtsSubpageElement {
   };
 }
 
-const SettingsTtsSubpageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
+const SettingsTtsSubpageElementBase = DeepLinkingMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   static get is() {
@@ -150,11 +143,11 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kTextToSpeechRate,
           Setting.kTextToSpeechPitch,
           Setting.kTextToSpeechVolume,

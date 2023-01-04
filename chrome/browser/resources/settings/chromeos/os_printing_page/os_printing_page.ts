@@ -8,27 +8,20 @@ import '../../settings_shared.css.js';
 import './cups_printers.js';
 import './cups_printers_browser_proxy.js';
 
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {getTemplate} from './os_printing_page.html.js';
 
 const OsSettingsPrintingPageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(PolymerElement)) as
-    Constructor<PolymerElement&DeepLinkingBehaviorInterface&
-                RouteObserverMixinInterface>;
+    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
 class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
   static get is(): string {
@@ -68,11 +61,12 @@ class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kPrintJobs, Setting.kScanningApp]),
+        value: () =>
+            new Set<Setting>([Setting.kPrintJobs, Setting.kScanningApp]),
       },
     };
   }

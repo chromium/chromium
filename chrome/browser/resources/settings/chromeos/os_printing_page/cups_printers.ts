@@ -45,7 +45,7 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resource
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -59,12 +59,12 @@ import {SettingsCupsAddPrinterDialogElement} from './cups_settings_add_printer_d
 const SettingsCupsPrintersElementBase =
     mixinBehaviors(
         [
-          DeepLinkingBehavior,
           NetworkListenerBehavior,
         ],
-        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as
+        DeepLinkingMixin(
+            RouteObserverMixin(WebUiListenerMixin(PolymerElement)))) as
     Constructor<PolymerElement&WebUiListenerMixinInterface&
-                RouteObserverMixinInterface&DeepLinkingBehaviorInterface&
+                RouteObserverMixinInterface&DeepLinkingMixinInterface&
                 NetworkListenerBehaviorInterface>;
 
 interface SettingsCupsPrintersElement {
@@ -170,11 +170,11 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kAddPrinter,
           Setting.kSavedPrinters,
         ]),
@@ -257,7 +257,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
   }
 
   /**
-   * Overridden from DeepLinkingBehavior.
+   * Overridden from DeepLinkingMixin.
    */
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     if (settingId !== Setting.kSavedPrinters) {

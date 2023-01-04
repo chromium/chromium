@@ -26,18 +26,17 @@ import '../os_reset_page/os_powerwash_dialog.js';
 import './detailed_build_info.js';
 import './update_warning_dialog.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
-import {MainPageMixin, MainPageMixinInterface} from '../main_page_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {MainPageMixin} from '../main_page_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {Route, Router} from '../router.js';
@@ -58,14 +57,8 @@ interface OsSettingsAboutPageElement {
   };
 }
 
-const OsSettingsAboutPageBaseElement =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        MainPageMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&I18nMixinInterface&
-                MainPageMixinInterface&DeepLinkingBehaviorInterface>;
+const OsSettingsAboutPageBaseElement = DeepLinkingMixin(
+    MainPageMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
 
 class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   static get is() {
@@ -222,11 +215,11 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kCheckForOsUpdate,
           Setting.kSeeWhatsNew,
           Setting.kGetHelpWithChromeOs,
@@ -274,7 +267,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   private showTPMFirmwareUpdateDialog_: boolean;
   private updateInfo_?: AboutPageUpdateInfo;
   private isPendingOsUpdateDeepLink_: boolean;
-  override supportedSettingIds: Set<Setting>;
 
   private aboutBrowserProxy_: AboutPageBrowserProxy;
 

@@ -20,16 +20,15 @@ import '../../a11y_page/captions_subpage.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './audio_and_captions_page.html.js';
@@ -41,14 +40,8 @@ interface SettingsAudioAndCaptionsPageElement {
   };
 }
 
-const SettingsAudioAndCaptionsPageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                RouteOriginMixinInterface&DeepLinkingBehaviorInterface>;
+const SettingsAudioAndCaptionsPageElementBase = DeepLinkingMixin(
+    RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 class SettingsAudioAndCaptionsPageElement extends
     SettingsAudioAndCaptionsPageElementBase {
@@ -81,11 +74,11 @@ class SettingsAudioAndCaptionsPageElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kMonoAudio,
           Setting.kStartupSound,
           Setting.kLiveCaption,
@@ -120,7 +113,7 @@ class SettingsAudioAndCaptionsPageElement extends
   }
 
   /**
-   * Overridden from DeepLinkingBehavior.
+   * Overridden from DeepLinkingMixin.
    */
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     if (settingId === Setting.kLiveCaption) {

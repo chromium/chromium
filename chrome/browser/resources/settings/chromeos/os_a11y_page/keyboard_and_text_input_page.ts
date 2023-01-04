@@ -17,19 +17,18 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {cast} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './keyboard_and_text_input_page.html.js';
@@ -44,15 +43,8 @@ interface LocaleInfo {
 }
 
 const SettingsKeyboardAndTextInputPageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteOriginMixin(
-            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                PrefsMixinInterface&RouteOriginMixinInterface&
-                DeepLinkingBehaviorInterface>;
+    DeepLinkingMixin(RouteOriginMixin(
+        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 class SettingsKeyboardAndTextInputPageElement extends
     SettingsKeyboardAndTextInputPageElementBase {
@@ -109,11 +101,11 @@ class SettingsKeyboardAndTextInputPageElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kStickyKeys,
           Setting.kOnScreenKeyboard,
           Setting.kDictation,

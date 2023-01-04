@@ -15,20 +15,19 @@ import '../../prefs/prefs.js';
 import '../../prefs/pref_util.js';
 import '../../settings_shared.css.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {cast, castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
@@ -65,15 +64,8 @@ export enum ConsentStatus {
 }
 
 const SettingsGoogleAssistantPageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(
-            PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                PrefsMixinInterface&RouteObserverMixinInterface&
-                DeepLinkingBehaviorInterface>;
+    DeepLinkingMixin(RouteObserverMixin(
+        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 class SettingsGoogleAssistantPageElement extends
     SettingsGoogleAssistantPageElementBase {
@@ -135,11 +127,11 @@ class SettingsGoogleAssistantPageElement extends
       dspHotwordState_: Number,
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kAssistantOnOff,
           Setting.kAssistantRelatedInfo,
           Setting.kAssistantOkGoogle,

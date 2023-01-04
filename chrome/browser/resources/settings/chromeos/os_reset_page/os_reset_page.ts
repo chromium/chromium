@@ -13,12 +13,12 @@ import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/ash/common
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './os_reset_page.html.js';
@@ -30,11 +30,7 @@ interface OsSettingsResetPageElement {
 }
 
 const OsSettingsResetPageElementBase =
-    mixinBehaviors([DeepLinkingBehavior], RouteObserverMixin(PolymerElement)) as
-    {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          RouteObserverMixinInterface,
-    };
+    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
 class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
   static get is() {
@@ -57,11 +53,11 @@ class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kPowerwash]),
+        value: () => new Set<Setting>([Setting.kPowerwash]),
       },
     };
   }

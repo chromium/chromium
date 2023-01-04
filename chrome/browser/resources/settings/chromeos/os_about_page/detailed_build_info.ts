@@ -17,20 +17,19 @@ import './channel_switcher_dialog.js';
 import './consumer_auto_update_toggle_dialog.js';
 import './edit_hostname_dialog.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
@@ -44,16 +43,8 @@ declare global {
   }
 }
 
-const SettingsDetailedBuildInfoBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(
-            PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement))))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&I18nMixinInterface&
-                PrefsMixinInterface&RouteObserverMixinInterface&
-                DeepLinkingBehaviorInterface>;
+const SettingsDetailedBuildInfoBase = DeepLinkingMixin(RouteObserverMixin(
+    PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
 class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
   static get is() {
@@ -90,11 +81,11 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kChangeChromeChannel,
           Setting.kChangeDeviceName,
           Setting.kCopyDetailedBuildInfo,
@@ -173,7 +164,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
   private isManagedAutoUpdateEnabled_: boolean;
   private showConsumerAutoUpdateToggleDialog_: boolean;
   private eolMessageWithMonthAndYear: string;
-  override supportedSettingIds: Set<Setting>;
   private shouldHideEolInfo_: boolean;
   private isHostnameSettingEnabled_: boolean;
   private isManaged_: boolean;

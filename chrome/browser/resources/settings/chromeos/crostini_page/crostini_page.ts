@@ -26,32 +26,23 @@ import './crostini_shared_usb_devices.js';
 import './crostini_subpage.js';
 import './bruschetta_subpage.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_page.html.js';
 
-const SettingsCrostiniPageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        PrefsMixin(RouteObserverMixin(
-            I18nMixin(WebUiListenerMixin(PolymerElement))))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&I18nMixinInterface&
-                RouteObserverMixinInterface&PrefsMixinInterface&
-                DeepLinkingBehaviorInterface>;
+const SettingsCrostiniPageElementBase = DeepLinkingMixin(PrefsMixin(
+    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
 class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
   static get is() {
@@ -123,11 +114,11 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kSetUpCrostini]),
+        value: () => new Set<Setting>([Setting.kSetUpCrostini]),
       },
 
       enableBruschetta_: {

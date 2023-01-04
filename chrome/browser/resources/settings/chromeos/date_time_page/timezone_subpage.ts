@@ -13,17 +13,16 @@ import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 import './timezone_selector.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
@@ -38,14 +37,8 @@ interface TimezoneSubpageElement {
   };
 }
 
-const TimezoneSubpageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&PrefsMixinInterface&
-                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
+const TimezoneSubpageElementBase = DeepLinkingMixin(
+    RouteObserverMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))));
 
 class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   static get is() {
@@ -67,11 +60,11 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kChangeTimeZone]),
+        value: () => new Set<Setting>([Setting.kChangeTimeZone]),
       },
     };
   }

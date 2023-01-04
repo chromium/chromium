@@ -28,23 +28,22 @@ import './app_management_page/app_detail_view.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
-import {AppManagementStoreMixin, AppManagementStoreMixinInterface} from './app_management_page/store_mixin.js';
+import {AppManagementStoreMixin} from './app_management_page/store_mixin.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 import {getTemplate} from './os_apps_page.html.js';
 
@@ -64,16 +63,8 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
   }
 }
 
-const OsSettingsAppsPageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(
-            PrefsMixin(AppManagementStoreMixin(I18nMixin(PolymerElement))))) as
-    Constructor<PolymerElement&AppManagementStoreMixinInterface&
-                I18nMixinInterface&PrefsMixinInterface&
-                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
+const OsSettingsAppsPageElementBase = DeepLinkingMixin(RouteObserverMixin(
+    PrefsMixin(AppManagementStoreMixin(I18nMixin(PolymerElement)))));
 
 class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   static get is() {
@@ -173,11 +164,11 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kManageAndroidPreferences,
           Setting.kTurnOnPlayStore,
           Setting.kRestoreAppsAndPages,

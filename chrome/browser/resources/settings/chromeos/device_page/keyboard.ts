@@ -15,18 +15,17 @@ import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {FocusConfig} from '../../focus_config.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -48,11 +47,7 @@ enum ModifierKey {
 }
 
 const SettingsKeyboardElementBase =
-    mixinBehaviors(
-        [DeepLinkingBehavior],
-        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&
-                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
+    DeepLinkingMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
 
 class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   static get is() {
@@ -127,11 +122,11 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kKeyboardFunctionKeys,
           Setting.kKeyboardAutoRepeat,
           Setting.kKeyboardShortcuts,

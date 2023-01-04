@@ -14,20 +14,19 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, PowerManagementSettings, PowerSource} from './device_page_browser_proxy.js';
@@ -47,14 +46,8 @@ interface SettingsPowerElement {
   };
 }
 
-const SettingsPowerElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                RouteObserverMixinInterface&DeepLinkingBehaviorInterface>;
+const SettingsPowerElementBase = DeepLinkingMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 class SettingsPowerElement extends SettingsPowerElementBase {
   static get is() {
@@ -173,11 +166,11 @@ class SettingsPowerElement extends SettingsPowerElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kPowerIdleBehaviorWhileCharging,
           Setting.kPowerSource,
           Setting.kSleepWhenLaptopLidClosed,
@@ -227,7 +220,7 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   }
 
   /**
-   * Overridden from DeepLinkingBehavior.
+   * Overridden from DeepLinkingMixin.
    */
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     if (settingId === Setting.kPowerSource && this.$.powerSource.hidden) {

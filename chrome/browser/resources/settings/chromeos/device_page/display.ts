@@ -27,20 +27,19 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrSliderElement, SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../../controls/settings_slider.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {assertExists, cast, castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
@@ -84,11 +83,7 @@ interface SettingsDisplayElement {
 }
 
 const SettingsDisplayElementBase =
-    mixinBehaviors(
-        [DeepLinkingBehavior],
-        PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement)))) as
-    Constructor<PolymerElement&I18nMixinInterface&RouteObserverMixinInterface&
-                PrefsMixinInterface&DeepLinkingBehaviorInterface>;
+    DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 class SettingsDisplayElement extends SettingsDisplayElementBase {
   static get is() {
@@ -246,11 +241,11 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kDisplaySize,
           Setting.kNightLight,
           Setting.kDisplayOrientation,

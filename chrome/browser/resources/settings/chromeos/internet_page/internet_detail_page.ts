@@ -53,7 +53,7 @@ import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {assertExists, castExists} from '../assert_extras.js';
 import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
 import {routes} from '../os_route.js';
@@ -70,15 +70,13 @@ const SettingsInternetDetailPageElementBase =
         [
           NetworkListenerBehavior,
           CrPolicyNetworkBehaviorMojo,
-          DeepLinkingBehavior,
         ],
-        PrefsMixin(RouteObserverMixin(
-            WebUiListenerMixin(I18nMixin(PolymerElement))))) as
+        DeepLinkingMixin(PrefsMixin(RouteObserverMixin(
+            WebUiListenerMixin(I18nMixin(PolymerElement)))))) as
     Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
                 RouteObserverMixinInterface&PrefsMixinInterface&
-                NetworkListenerBehaviorInterface&
-                CrPolicyNetworkBehaviorMojoInterface&
-                DeepLinkingBehaviorInterface>;
+                DeepLinkingMixinInterface&NetworkListenerBehaviorInterface&
+                CrPolicyNetworkBehaviorMojoInterface>;
 
 class SettingsInternetDetailPageElement extends
     SettingsInternetDetailPageElementBase {
@@ -318,11 +316,11 @@ class SettingsInternetDetailPageElement extends
       dataUsageExpanded_: Boolean,
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kConfigureEthernet,
           Setting.kEthernetAutoConfigureIp,
           Setting.kEthernetDns,
@@ -464,7 +462,7 @@ class SettingsInternetDetailPageElement extends
   }
 
   /**
-   * Overridden from DeepLinkingBehavior.
+   * Overridden from DeepLinkingMixin.
    */
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     // Manually show the deep links for settings in shared elements.

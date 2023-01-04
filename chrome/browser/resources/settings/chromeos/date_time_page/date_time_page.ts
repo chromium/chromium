@@ -18,32 +18,23 @@ import './date_time_types.js';
 import './timezone_selector.js';
 import './timezone_subpage.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './date_time_page.html.js';
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 
-const SettingsDateTimePageElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(
-            PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement))))) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&I18nMixinInterface&
-                PrefsMixinInterface&RouteObserverMixinInterface&
-                DeepLinkingBehaviorInterface>;
+const SettingsDateTimePageElementBase = DeepLinkingMixin(RouteObserverMixin(
+    PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
 class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
   static get is() {
@@ -106,11 +97,11 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.k24HourClock,
           Setting.kChangeTimeZone,
         ]),

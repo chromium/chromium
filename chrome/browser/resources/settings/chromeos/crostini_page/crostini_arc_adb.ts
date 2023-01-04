@@ -16,16 +16,15 @@ import '../../settings_shared.css.js';
 
 import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Constructor} from '../common/types.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './crostini_arc_adb.html.js';
@@ -37,14 +36,8 @@ interface SettingsCrostiniArcAdbElement {
   };
 }
 
-const SettingsCrostiniArcAdbElementBase =
-    mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-        ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as
-    Constructor<PolymerElement&DeepLinkingBehaviorInterface&I18nMixinInterface&
-                RouteObserverMixinInterface&WebUiListenerMixinInterface>;
+const SettingsCrostiniArcAdbElementBase = DeepLinkingMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
   static get is() {
@@ -97,11 +90,11 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kCrostiniAdbDebugging]),
+        value: () => new Set<Setting>([Setting.kCrostiniAdbDebugging]),
       },
     };
   }
