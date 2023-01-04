@@ -1,7 +1,4 @@
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
-ExpandCollapseExpandCollapseState changed on role=menuitem, name=New
-MenuOpened on role=menu, name=File
-MenuOpened on role=menu, name=New
 Name changed on role=group, name=open file and new done
 === Start Continuation ===
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
@@ -14,9 +11,6 @@ Name changed on role=group, name=close file and new done
 Name changed on role=group, name=open new done
 === Start Continuation ===
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
-ExpandCollapseExpandCollapseState changed on role=menuitem, name=New
-MenuOpened on role=menu, name=File
-MenuOpened on role=menu, name=New
 Name changed on role=group, name=open file done
 === Start Continuation ===
 MenuClosed 

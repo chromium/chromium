@@ -1,6 +1,6 @@
-AXMenuOpened on AXMenu AXDescription='menu'
+AXMenuClosed on AXWebArea
 === Start Continuation ===
-AXMenuOpened on AXMenu
+AXMenuClosed on AXWebArea
 === Start Continuation ===
 AXMenuClosed on AXWebArea
 === Start Continuation ===
