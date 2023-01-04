@@ -29,7 +29,7 @@ found in the LICENSE file.
         android:orientation="horizontal" >
 
       <LinearLayout
-          android:id="@app:id/icon_frame"
+          android:id="@+id/icon_frame"
           android:layout_width="56dp"
           android:layout_height="32dp"
           android:gravity="center_vertical|start"
