@@ -384,12 +384,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairing.Result"
-    enum="BooleanSuccess" expires_after="2023-05-06">
+    enum="HidDetectionBluetoothPairingResult" expires_after="2023-05-06">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
-    Records success or failure of a pairing attempt (initiated automatically by
-    the OOBE HID detection screen) to a HID.
+    Records if a HID pairing attempt (initiated automatically by the OOBE HID
+    detection screen) paired successfully via Bluetooth or did not pair
+    successfully via Bluetooth. This is expected to fail most of the time
+    because of it being initiated in a loop automatically while the OOBE HID
+    Detection screen is open.
   </summary>
 </histogram>
 

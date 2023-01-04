@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_power_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
@@ -218,7 +219,10 @@ class BluetoothHidDetectorImplTest : public testing::Test {
                       success ? "Success" : "Failure"}),
         duration, count);
     histogram_tester_.ExpectBucketCount(
-        "OOBE.HidDetectionScreen.BluetoothPairing.Result", success, count);
+        "OOBE.HidDetectionScreen.BluetoothPairing.Result",
+        success ? HidDetectionBluetoothPairingResult::kPaired
+                : HidDetectionBluetoothPairingResult::kNotPaired,
+        count);
   }
 
   void AssertBluetoothPairingTimeoutExceeded(int count) {

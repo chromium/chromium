@@ -48716,6 +48716,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Both devices, pointing and keyboard, detected."/>
 </enum>
 
+<enum name="HidDetectionBluetoothPairingResult">
+  <int value="0" label="Attempted but did not pair via Bluetooth"/>
+  <int value="1" label="Paired via Bluetooth"/>
+</enum>
+
 <enum name="HidsMissing">
   <summary>
     Possible combination of human input device types that may be missing when

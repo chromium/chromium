@@ -36,6 +36,15 @@ enum class HidsMissing {
   kMaxValue = kPointerAndKeyboard
 };
 
+// This enum is tied directly to the HidDetectionBluetoothPairingResult UMA
+// enum defined in //tools/metrics/histograms/enums.xml, and should always
+// reflect it (do not add cases to one without adding cases to the other).
+enum class HidDetectionBluetoothPairingResult {
+  kNotPaired = 0,  // Attempted but did not pair via Bluetooth
+  kPaired = 1,     // Paired via Bluetooth
+  kMaxValue = kPaired
+};
+
 // Returns true if |device| is a HID with pointing capabilities (i.e. a mouse or
 // touchpad).
 bool IsDevicePointer(const device::mojom::InputDeviceInfo& device);

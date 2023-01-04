@@ -103,8 +103,10 @@ void RecordBluetoothPairingResult(bool success,
       /*max=*/base::Seconds(30), /*buckets=*/50);
 
   // Also record the pairing result metric.
-  base::UmaHistogramBoolean("OOBE.HidDetectionScreen.BluetoothPairing.Result",
-                            success);
+  base::UmaHistogramEnumeration(
+      "OOBE.HidDetectionScreen.BluetoothPairing.Result",
+      success ? HidDetectionBluetoothPairingResult::kPaired
+              : HidDetectionBluetoothPairingResult::kNotPaired);
 }
 
 void RecordPairingTimeoutExceeded() {
