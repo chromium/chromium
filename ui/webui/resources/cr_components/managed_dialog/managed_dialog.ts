@@ -6,16 +6,15 @@
  * @fileoverview 'managed-dialog' is a dialog that is displayed when a user
  * interact with some UI features which are managed by the user's organization.
  */
-import '../../cr_elements/cr_button/cr_button.js';
-import '../../cr_elements/cr_dialog/cr_dialog.js';
-import '../../cr_elements/icons.html.js';
-import '../../cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './managed_dialog.html.js';
 

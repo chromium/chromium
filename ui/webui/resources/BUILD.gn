@@ -51,6 +51,8 @@ generate_grd("build_grd") {
       "cr_components/app_management:build_grdp",
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
+      "cr_components/managed_dialog:build_grdp",
+      "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
       "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
@@ -60,6 +62,8 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/customize_themes/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
+      "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
+      "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
       "$target_gen_dir/js/browser_command/resources.grdp",
     ]
@@ -168,10 +172,6 @@ ts_library("library") {
     in_files += [
       "cr_components/localized_link/localized_link.html.ts",
       "cr_components/localized_link/localized_link.ts",
-      "cr_components/managed_dialog/managed_dialog.html.ts",
-      "cr_components/managed_dialog/managed_dialog.ts",
-      "cr_components/managed_footnote/managed_footnote.html.ts",
-      "cr_components/managed_footnote/managed_footnote.ts",
     ]
   }
 

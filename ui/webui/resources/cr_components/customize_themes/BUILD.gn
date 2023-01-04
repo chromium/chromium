@@ -39,6 +39,7 @@ build_cr_component("build") {
 
   tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
   ts_deps = [
+    "../managed_dialog:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",

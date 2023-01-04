@@ -55,6 +55,7 @@ build_webui("build") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
 

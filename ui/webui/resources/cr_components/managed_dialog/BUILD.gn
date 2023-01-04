@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/include_polymer.gni")
+import("//ui/webui/webui_features.gni")
+import("../../tools/build_cr_component.gni")
+
+assert(include_polymer)
+
+build_cr_component("build") {
+  grd_prefix = "cr_components_managed_dialog"
+
+  web_component_files = [ "managed_dialog.ts" ]
+
+  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/managed_dialog"
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+
+  optimize = optimize_webui
+}

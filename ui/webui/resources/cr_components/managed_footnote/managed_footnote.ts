@@ -13,14 +13,13 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../../cr_elements/icons.html.js';
-import '../../cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from '../../cr_elements/web_ui_listener_mixin.js';
-import {loadTimeData} from '../../js/load_time_data.js';
 
 import {getTemplate} from './managed_footnote.html.js';
 

@@ -26,11 +26,7 @@ group("preprocess") {
 preprocess_if_expr("preprocess_src_ts") {
   in_folder = "."
   out_folder = preprocess_folder
-  in_files = [
-    "localized_link/localized_link.ts",
-    "managed_dialog/managed_dialog.ts",
-    "managed_footnote/managed_footnote.ts",
-  ]
+  in_files = [ "localized_link/localized_link.ts" ]
 }
 
 # TS files are passed to a separate target so that they are not listed in the
@@ -39,17 +35,9 @@ preprocess_if_expr("preprocess_generated_ts") {
   deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
-  in_files = [
-    "localized_link/localized_link.html.ts",
-    "managed_dialog/managed_dialog.html.ts",
-    "managed_footnote/managed_footnote.html.ts",
-  ]
+  in_files = [ "localized_link/localized_link.html.ts" ]
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = [
-    "localized_link/localized_link.html",
-    "managed_dialog/managed_dialog.html",
-    "managed_footnote/managed_footnote.html",
-  ]
+  in_files = [ "localized_link/localized_link.html" ]
 }
