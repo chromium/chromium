@@ -114,6 +114,22 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   DeclarativeShadowRootType declarative_shadow_root_type_;
 };
 
+ALWAYS_INLINE bool HTMLTemplateElement::IsNonStreamingDeclarativeShadowRoot()
+    const {
+  switch (declarative_shadow_root_type_) {
+    case DeclarativeShadowRootType::kNone:
+      return false;
+    case DeclarativeShadowRootType::kOpen:
+    case DeclarativeShadowRootType::kClosed:
+      DCHECK(!declarative_shadow_root_);
+      return true;
+    case DeclarativeShadowRootType::kStreamingOpen:
+    case DeclarativeShadowRootType::kStreamingClosed:
+      DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
+      return false;
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_TEMPLATE_ELEMENT_H_

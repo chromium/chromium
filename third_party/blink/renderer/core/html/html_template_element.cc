@@ -60,18 +60,6 @@ DocumentFragment* HTMLTemplateElement::content() const {
   return IsDeclarativeShadowRoot() ? nullptr : ContentInternal();
 }
 
-bool HTMLTemplateElement::IsNonStreamingDeclarativeShadowRoot() const {
-  if (declarative_shadow_root_type_ == DeclarativeShadowRootType::kOpen ||
-      declarative_shadow_root_type_ == DeclarativeShadowRootType::kClosed) {
-    DCHECK(!declarative_shadow_root_);
-    return true;
-  }
-  if (declarative_shadow_root_type_ == DeclarativeShadowRootType::kNone)
-    return false;
-  DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
-  return false;
-}
-
 DocumentFragment* HTMLTemplateElement::DeclarativeShadowContent() const {
   DCHECK(IsNonStreamingDeclarativeShadowRoot());
   return IsDeclarativeShadowRoot() ? ContentInternal() : nullptr;
