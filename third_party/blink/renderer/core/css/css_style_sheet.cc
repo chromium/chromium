@@ -214,7 +214,8 @@ void CSSStyleSheet::WillMutateRules() {
   DCHECK(contents_->IsCacheableForStyleElement() ||
          contents_->IsCacheableForResource());
 
-  // Copy-on-write.
+  // Copy-on-write. Note that this eagerly parses any rules that were
+  // lazily parsed.
   contents_->UnregisterClient(this);
   contents_ = contents_->Copy();
   contents_->RegisterClient(this);

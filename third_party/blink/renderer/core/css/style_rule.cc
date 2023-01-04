@@ -396,11 +396,20 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
 }
 
 StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
-    : StyleRuleBase(kStyle),
-      properties_(other.Properties().MutableCopy()),
-      child_rules_(other.child_rules_) {
+    : StyleRuleBase(kStyle), properties_(other.Properties().MutableCopy()) {
   for (unsigned i = 0; i < flattened_size; ++i) {
     new (&SelectorArray()[i]) CSSSelector(other.SelectorArray()[i]);
+  }
+  if (other.child_rules_ != nullptr) {
+    // Since we are getting copied, we also need to copy any child rules
+    // so that both old and new can be freely mutated. This also
+    // parses them eagerly (see comment in StyleSheetContents'
+    // copy constructor).
+    child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
+    child_rules_->ReserveInitialCapacity(other.child_rules_->size());
+    for (const StyleRuleBase* child_rule : *other.child_rules_) {
+      child_rules_->push_back(child_rule->Copy());
+    }
   }
 }
 
