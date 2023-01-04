@@ -384,10 +384,8 @@ export class InputController {
     let value;
     let selStart;
     let selEnd;
-    const isContentEditable = node.state[StateType.RICHLY_EDITABLE];
-    if (isContentEditable && this.surroundingInfo_) {
+    if (this.surroundingInfo_) {
       const info = this.surroundingInfo_;
-      // Use IME data only in contenteditables.
       value = info.text;
       selStart = Math.min(info.anchor, info.focus);
       selEnd = Math.max(info.anchor, info.focus);
