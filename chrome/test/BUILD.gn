@@ -2352,6 +2352,7 @@ if (!is_android) {
       "base/devtools_listener_browsertest.cc",
       "base/in_process_browser_test_browsertest.cc",
       "base/memory_tracing_browsertest.cc",
+      "base/save_desktop_snapshot_browsertest.cc",
       "base/test_chrome_web_ui_controller_factory_browsertest.cc",
       "base/ui_test_utils_browsertest.cc",
       "base/web_ui_browser_test_browsertest.cc",
@@ -4802,6 +4803,9 @@ if (is_chromeos_lacros) {
       "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
+
+      # ScreenCapturer should work for lacros with crosapi.
+      "base/save_desktop_snapshot_browsertest.cc",
     ]
 
     deps = [
@@ -4818,6 +4822,7 @@ if (is_chromeos_lacros) {
       "//chromeos/lacros:test_support",
       "//chromeos/startup",
       "//components/sync:test_support",
+      "//ui/ozone",
       "//ui/platform_window",
     ]
 
@@ -9174,6 +9179,8 @@ if (!is_android) {
       "base/mojo_web_ui_browser_test.h",
       "base/perf/performance_test.cc",
       "base/perf/performance_test.h",
+      "base/save_desktop_snapshot.cc",
+      "base/save_desktop_snapshot.h",
       "base/test_chrome_web_ui_controller_factory.cc",
       "base/test_chrome_web_ui_controller_factory.h",
       "base/ui_test_utils.cc",
@@ -9315,8 +9322,6 @@ if (!is_android) {
         "base/always_on_top_window_killer_win.cc",
         "base/always_on_top_window_killer_win.h",
         "base/interactive_test_utils_win.cc",
-        "base/save_desktop_snapshot_win.cc",
-        "base/save_desktop_snapshot_win.h",
         "base/window_contents_as_string_win.cc",
         "base/window_contents_as_string_win.h",
       ]

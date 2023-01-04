@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/process_lineage_win.h"
-#include "chrome/test/base/save_desktop_snapshot_win.h"
+#include "chrome/test/base/save_desktop_snapshot.h"
 #include "ui/display/win/screen_win.h"
 
 namespace {

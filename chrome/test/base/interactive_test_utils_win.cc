@@ -23,7 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/interactive_test_utils_aura.h"
 #include "chrome/test/base/process_lineage_win.h"
-#include "chrome/test/base/save_desktop_snapshot_win.h"
+#include "chrome/test/base/save_desktop_snapshot.h"
 #include "chrome/test/base/window_contents_as_string_win.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/test/ui_controls.h"
