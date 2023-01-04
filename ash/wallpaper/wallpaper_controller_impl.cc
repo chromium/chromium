@@ -3242,7 +3242,7 @@ void WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo(
     return;
   if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
     return;
-  wallpaper_controller_client_->SaveWallpaperToDriveFs(
+  drivefs_delegate_->SaveWallpaper(
       account_id, origin_path,
       base::BindOnce(&WallpaperControllerImpl::WallpaperSavedToDriveFS,
                      weak_factory_.GetWeakPtr(), account_id));
@@ -3261,37 +3261,24 @@ void WallpaperControllerImpl::WallpaperSavedToDriveFS(
 void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
     const AccountId& account_id,
     const WallpaperInfo& wallpaper_info) {
-  base::FilePath drivefs_path =
-      wallpaper_controller_client_->GetWallpaperPathFromDriveFs(account_id);
-  if (drivefs_path.empty()) {
-    VLOG(1)
-        << "Skip syncing down custom wallpaper because DriveFS is unavailable.";
-    return;
-  }
-
   drivefs_delegate_->GetWallpaperModificationTime(
       account_id,
       base::BindOnce(
           &WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime,
-          weak_factory_.GetWeakPtr(), account_id, wallpaper_info,
-          drivefs_path));
+          weak_factory_.GetWeakPtr(), account_id, wallpaper_info));
 }
 
 void WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime(
     const AccountId& account_id,
     const WallpaperInfo& wallpaper_info,
-    const base::FilePath& drivefs_path,
     base::Time modification_time) {
   if (modification_time.is_null() || modification_time < wallpaper_info.date) {
     // If the drivefs image modification time is null, watch DriveFS for the
     // file being created. If the file exists but is older than synced wallpaper
     // info, watch for the file being updated by the other device.
+    // TODO(b/245987972) listen for file changed events from DriveFS.
     VLOG(1) << "Skip syncing custom wallpaper from DriveFS because it is not "
                "found or out of date";
-    drive_fs_wallpaper_watcher_.Watch(
-        drivefs_path, base::FilePathWatcher::Type::kNonRecursive,
-        base::BindRepeating(&WallpaperControllerImpl::DriveFsWallpaperChanged,
-                            weak_factory_.GetWeakPtr()));
     return;
   }
   base::FilePath path_in_prefs = base::FilePath(wallpaper_info.location);

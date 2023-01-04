@@ -83,10 +83,6 @@ namespace {
 
 // Known user keys.
 const char kWallpaperFilesId[] = "wallpaper-files-id";
-constexpr char kDriveFsWallpaperDirName[] = "Chromebook Wallpaper";
-// Encoded in |WallpaperControllerImpl.ResizeAndEncodeImage|.
-constexpr char kDriveFsWallpaperFileName[] = "wallpaper.jpg";
-constexpr char kDriveFsTempWallpaperFileName[] = "wallpaper-tmp.jpg";
 
 WallpaperControllerClientImpl* g_wallpaper_controller_client_instance = nullptr;
 
@@ -182,47 +178,6 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
   return nullptr;
 }
 
-base::FilePath GetDriveFsWallpaperDir(Profile* profile) {
-  CHECK(profile);
-
-  drive::DriveIntegrationService* drive_integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (!drive_integration_service) {
-    return base::FilePath();
-  }
-  return drive_integration_service->GetMountPointPath()
-      .Append(drive::util::kDriveMyDriveRootDirName)
-      .Append(kDriveFsWallpaperDirName);
-}
-
-bool SaveWallpaperToDriveFsIOTaskRunner(
-    const base::FilePath& origin,
-    const base::FilePath& destination_directory) {
-  if (destination_directory.empty())
-    return false;
-
-  if (!base::DirectoryExists(destination_directory) &&
-      !base::CreateDirectory(destination_directory)) {
-    return false;
-  }
-
-  std::string temp_file_name =
-      base::UnguessableToken::Create().ToString().append(
-          kDriveFsTempWallpaperFileName);
-  base::FilePath temp_destination =
-      destination_directory.Append(temp_file_name);
-  if (!base::CopyFile(origin, temp_destination)) {
-    base::DeleteFile(temp_destination);
-    return false;
-  }
-
-  base::FilePath destination =
-      destination_directory.Append(kDriveFsWallpaperFileName);
-  bool success = base::ReplaceFile(temp_destination, destination, nullptr);
-  base::DeleteFile(temp_destination);
-  return success;
-}
-
 }  // namespace
 
 WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
@@ -241,10 +196,6 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
   // SessionManager might not exist in unit tests.
   if (session_manager)
     session_observation_.Observe(session_manager);
-
-  io_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
@@ -481,28 +432,6 @@ WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
 
 bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
   return wallpaper_controller_->ShouldShowWallpaperSetting();
-}
-
-void WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
-    const AccountId& account_id,
-    const base::FilePath& origin,
-    base::OnceCallback<void(bool)> wallpaper_saved_callback) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  base::FilePath destination_directory = GetDriveFsWallpaperDir(profile);
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&SaveWallpaperToDriveFsIOTaskRunner, origin,
-                     destination_directory),
-      std::move(wallpaper_saved_callback));
-}
-
-base::FilePath WallpaperControllerClientImpl::GetWallpaperPathFromDriveFs(
-    const AccountId& account_id) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  base::FilePath wallpaper_directory = GetDriveFsWallpaperDir(profile);
-  if (wallpaper_directory.empty())
-    return wallpaper_directory;
-  return wallpaper_directory.Append(kDriveFsWallpaperFileName);
 }
 
 void WallpaperControllerClientImpl::GetFilesId(

@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -18,12 +19,28 @@ class ASH_PUBLIC_EXPORT WallpaperDriveFsDelegate {
  public:
   virtual ~WallpaperDriveFsDelegate() = default;
 
+  // Gets the path that synced custom wallpaper is saved to in DriveFS. Returns
+  // empty path if DriveFS is inaccessible. If DriveFS is available and mounted
+  // and `DriveIntegrationService` is available for `account_id`, should always
+  // return a valid path.
+  virtual base::FilePath GetWallpaperPath(const AccountId& account_id) = 0;
+
+  // Copies `source` to DriveFS. This function does not check that `source` is a
+  // valid jpg file, so the caller must do so. Calls `callback` when the
+  // operation finishes.
+  virtual void SaveWallpaper(
+      const AccountId& account_id,
+      const base::FilePath& source,
+      base::OnceCallback<void(bool success)> callback) = 0;
+
+  using GetWallpaperModificationTimeCallback =
+      base::OnceCallback<void(base::Time modification_time)>;
   // Gets the `modification_time` of the wallpaper file saved in DriveFS. If
   // unable to retrieve it because the file does not exist or DriveFS is not
   // mounted, replies with a default constructed `base::Time()`.
   virtual void GetWallpaperModificationTime(
       const AccountId& account_id,
-      base::OnceCallback<void(base::Time modification_time)> callback) = 0;
+      GetWallpaperModificationTimeCallback callback) = 0;
 
   // Downloads and decodes DriveFS wallpaper file. Replies with default
   // constructed `gfx::ImageSkia` in case of failure, such as the file not

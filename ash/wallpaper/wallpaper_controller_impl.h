@@ -749,7 +749,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnGetDriveFsWallpaperModificationTime(
       const AccountId& account_id,
       const WallpaperInfo& wallpaper_info,
-      const base::FilePath& drivefs_path,
       base::Time modification_time);
 
   PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;

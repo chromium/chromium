@@ -8,18 +8,21 @@
 
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -49,25 +52,24 @@ scoped_refptr<base::RefCountedBytes> EncodeImage(const gfx::ImageSkia& image) {
   return output;
 }
 
-// Saves a test wallpaper file and returns the expected metadata `modified_at`
-// time.
-base::Time SaveTestWallpaperFile(const AccountId& account_id) {
-  const base::FilePath wallpaper_path =
-      WallpaperControllerClientImpl::Get()->GetWallpaperPathFromDriveFs(
-          account_id);
-  DCHECK(!wallpaper_path.empty());
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  if (!base::DirectoryExists(wallpaper_path.DirName())) {
-    EXPECT_TRUE(base::CreateDirectory(wallpaper_path.DirName()));
-  }
-  const auto data = EncodeImage(CreateTestImage());
-  const size_t size = base::WriteFile(
-      wallpaper_path, data->front_as<const char>(), data->size());
-  DCHECK_EQ(size, data->size());
+WallpaperDriveFsDelegate* GetWallpaperDriveFsDelegate() {
+  Shell* shell = Shell::Get();
+  auto* wallpaper_controller = shell->wallpaper_controller();
+  return wallpaper_controller->drivefs_delegate_for_testing();
+}
 
-  base::File::Info info;
-  base::GetFileInfo(wallpaper_path, &info);
-  return info.last_modified;
+// Saves a test wallpaper file. If `target` is empty, will default to the
+// DriveFS wallpaper path.
+void SaveTestWallpaperFile(const AccountId& account_id, base::FilePath target) {
+  ASSERT_FALSE(target.empty()) << "target FilePath is required to be non-empty";
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  if (!base::DirectoryExists(target.DirName())) {
+    ASSERT_TRUE(base::CreateDirectory(target.DirName()));
+  }
+  auto data = EncodeImage(CreateTestImage());
+  size_t size =
+      base::WriteFile(target, data->front_as<const char>(), data->size());
+  ASSERT_EQ(size, data->size());
 }
 
 }  // namespace
@@ -84,12 +86,6 @@ class WallpaperDriveFsDelegateImplBrowserTest
 
   ~WallpaperDriveFsDelegateImplBrowserTest() override = default;
 
-  WallpaperDriveFsDelegate* GetWallpaperDriveFsDelegate() const {
-    Shell* shell = Shell::Get();
-    auto* wallpaper_controller = shell->wallpaper_controller();
-    return wallpaper_controller->drivefs_delegate_for_testing();
-  }
-
   const AccountId& GetAccountId() const {
     user_manager::User* user =
         ProfileHelper::Get()->GetUserByProfile(browser()->profile());
@@ -97,8 +93,21 @@ class WallpaperDriveFsDelegateImplBrowserTest
     return user->GetAccountId();
   }
 
-  base::Time GetWallpaperModificationTimeSync(
-      const AccountId& account_id) const {
+  bool SaveWallpaperSync(const AccountId& account_id,
+                         const base::FilePath& source) {
+    base::RunLoop loop;
+    bool out = false;
+    GetWallpaperDriveFsDelegate()->SaveWallpaper(
+        account_id, source,
+        base::BindLambdaForTesting([&out, &loop](bool success) {
+          out = success;
+          loop.Quit();
+        }));
+    loop.Run();
+    return out;
+  }
+
+  base::Time GetWallpaperModificationTimeSync(const AccountId& account_id) {
     base::RunLoop loop;
     base::Time out;
     GetWallpaperDriveFsDelegate()->GetWallpaperModificationTime(
@@ -114,11 +123,13 @@ class WallpaperDriveFsDelegateImplBrowserTest
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        EmptyBaseTimeIfNoDriveFs) {
   InitTestFileMountRoot(browser()->profile());
-  SaveTestWallpaperFile(GetAccountId());
+  SaveTestWallpaperFile(
+      GetAccountId(),
+      GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId()));
 
   drive::DriveIntegrationService* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(browser()->profile());
-  DCHECK(drive_integration_service);
+  ASSERT_TRUE(drive_integration_service);
   drive_integration_service->SetEnabled(false);
 
   const base::Time modification_time =
@@ -130,10 +141,65 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        RespondsWithModifiedAtTime) {
   InitTestFileMountRoot(browser()->profile());
-  const base::Time expected = SaveTestWallpaperFile(GetAccountId());
-  const base::Time actual = GetWallpaperModificationTimeSync(GetAccountId());
-  EXPECT_EQ(actual, expected)
-      << "DriveFS modified_at should match file modified time";
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const base::FilePath drivefs_wallpaper_path =
+      GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId());
+  ASSERT_FALSE(base::PathExists(drivefs_wallpaper_path));
+
+  SaveTestWallpaperFile(GetAccountId(), drivefs_wallpaper_path);
+
+  base::File::Info file_info;
+  ASSERT_TRUE(base::GetFileInfo(drivefs_wallpaper_path, &file_info));
+
+  const base::Time drivefs_modification_time =
+      GetWallpaperModificationTimeSync(GetAccountId());
+
+  EXPECT_EQ(drivefs_modification_time, file_info.last_modified)
+      << "modification_time matches file info time";
+}
+
+IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest, SaveWallpaper) {
+  InitTestFileMountRoot(browser()->profile());
+
+  base::FilePath drivefs_wallpaper_path =
+      GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId());
+  ASSERT_FALSE(drivefs_wallpaper_path.empty());
+
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  // Write a jpg file to a tmp directory. This file will be copied into DriveFS.
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::FilePath source_jpg = scoped_temp_dir.GetPath().Append("source.jpg");
+  SaveTestWallpaperFile(GetAccountId(), source_jpg);
+
+  // `SaveWallpaper` should succeed while DriveFS is enabled.
+  EXPECT_TRUE(SaveWallpaperSync(GetAccountId(), source_jpg));
+  // source.jpg was copied to DriveFS wallpaper path.
+  EXPECT_TRUE(base::PathExists(drivefs_wallpaper_path));
+}
+
+IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
+                       SaveWallpaperDriveFsDisabled) {
+  InitTestFileMountRoot(browser()->profile());
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  // Write a jpg file to a tmp directory. This file will be copied into DriveFS.
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::FilePath source_jpg = scoped_temp_dir.GetPath().Append("source.jpg");
+  SaveTestWallpaperFile(GetAccountId(), source_jpg);
+
+  base::FilePath drivefs_wallpaper_path =
+      GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId());
+  ASSERT_FALSE(drivefs_wallpaper_path.empty());
+
+  // Call `SaveWallpaper` while DriveFS is disabled. No file should be written.
+  auto* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(browser()->profile());
+  drive_integration_service->SetEnabled(false);
+  EXPECT_FALSE(SaveWallpaperSync(GetAccountId(), source_jpg));
+  EXPECT_FALSE(base::PathExists(drivefs_wallpaper_path));
 }
 
 }  // namespace ash

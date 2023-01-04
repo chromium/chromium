@@ -6,12 +6,16 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/file_errors.h"
@@ -56,6 +60,10 @@ constexpr net::NetworkTrafficAnnotationTag kDriveFsDownloadWallpaperTag =
       }
     )");
 
+constexpr char kDriveFsWallpaperDirName[] = "Chromebook Wallpaper";
+constexpr char kDriveFsWallpaperFileName[] = "wallpaper.jpg";
+constexpr char kDriveFsTempWallpaperFileName[] = "wallpaper-tmp.jpg";
+
 // Gets a pointer to `DriveIntegrationService` to interact with DriveFS.  If
 // DriveFS is not enabled or mounted for this `account_id`, responds with
 // `nullptr`. Caller must check null safety carefully, as DriveFS can crash,
@@ -95,11 +103,83 @@ base::Time GetModificationTimeFromDriveMetadata(
   return metadata->modification_time;
 }
 
+// Copies file `source` from outside DriveFS, to `destination` inside DriveFS.
+// `destination` must be the path to the DriveFS wallpaper file. Copies the
+// file to a temporary file first, and then swaps it to the final file path, in
+// order to avoid partial writes corrupting the wallpaper image saved to
+// DriveFS. Must be run on a blocking task runner.
+bool CopyFileToDriveFsBlocking(const base::FilePath& source,
+                               const base::FilePath& destination) {
+  DCHECK_EQ(destination.BaseName().value(), kDriveFsWallpaperFileName);
+  const base::FilePath directory = destination.DirName();
+  DCHECK_EQ(directory.BaseName().value(), kDriveFsWallpaperDirName);
+  if (!base::DirectoryExists(directory) && !base::CreateDirectory(directory)) {
+    DVLOG(1) << "Failed to create DriveFS '" << kDriveFsWallpaperDirName
+             << "' directory";
+    return false;
+  }
+
+  base::FilePath temp_file_path =
+      directory.Append(base::UnguessableToken::Create().ToString().append(
+          kDriveFsTempWallpaperFileName));
+
+  if (!base::CopyFile(source, temp_file_path)) {
+    DVLOG(1) << "Failed to copy wallpaper file to DriveFs";
+    base::DeleteFile(temp_file_path);
+    return false;
+  }
+
+  base::File::Error error;
+  if (!base::ReplaceFile(temp_file_path, destination, &error)) {
+    DVLOG(1) << "Failed to move temp wallpaper file with error '" << error
+             << "'";
+    base::DeleteFile(temp_file_path);
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
-WallpaperDriveFsDelegateImpl::WallpaperDriveFsDelegateImpl() = default;
+WallpaperDriveFsDelegateImpl::WallpaperDriveFsDelegateImpl()
+    : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
 WallpaperDriveFsDelegateImpl::~WallpaperDriveFsDelegateImpl() = default;
+
+base::FilePath WallpaperDriveFsDelegateImpl::GetWallpaperPath(
+    const AccountId& account_id) {
+  auto* drive_integration_service = GetDriveIntegrationService(account_id);
+  if (!drive_integration_service) {
+    VLOG(1)
+        << "Cannot get DriveFS Wallpaper path because DriveFS is unavailable";
+    return base::FilePath();
+  }
+  auto mount_path = drive_integration_service->GetMountPointPath();
+  DCHECK(!mount_path.empty());
+  return mount_path.Append(drive::util::kDriveMyDriveRootDirName)
+      .Append(kDriveFsWallpaperDirName)
+      .Append(kDriveFsWallpaperFileName);
+}
+
+void WallpaperDriveFsDelegateImpl::SaveWallpaper(
+    const AccountId& account_id,
+    const base::FilePath& source,
+    base::OnceCallback<void(bool)> callback) {
+  auto* drive_integration_service = GetDriveIntegrationService(account_id);
+  if (!drive_integration_service) {
+    DVLOG(1)
+        << "Not saving wallpaper to DriveFS because DriveFS is unavailable";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&CopyFileToDriveFsBlocking, source,
+                     GetWallpaperPath(account_id)),
+      std::move(callback));
+}
 
 void WallpaperDriveFsDelegateImpl::GetWallpaperModificationTime(
     const AccountId& account_id,
@@ -109,15 +189,11 @@ void WallpaperDriveFsDelegateImpl::GetWallpaperModificationTime(
     std::move(callback).Run(base::Time());
     return;
   }
-  // `wallpaper_path` is guaranteed to be non-empty if
-  // `drive_integration_service` is initialized.
-  const base::FilePath wallpaper_path =
-      WallpaperControllerClientImpl::Get()->GetWallpaperPathFromDriveFs(
-          account_id);
-  DCHECK(!wallpaper_path.empty());
+
   drive_integration_service->GetMetadata(
-      wallpaper_path, base::BindOnce(&GetModificationTimeFromDriveMetadata)
-                          .Then(std::move(callback)));
+      GetWallpaperPath(account_id),
+      base::BindOnce(&GetModificationTimeFromDriveMetadata)
+          .Then(std::move(callback)));
 }
 
 void WallpaperDriveFsDelegateImpl::DownloadAndDecodeWallpaper(
@@ -131,15 +207,8 @@ void WallpaperDriveFsDelegateImpl::DownloadAndDecodeWallpaper(
     return;
   }
 
-  // `wallpaper_path` is guaranteed to be non-empty if
-  // `drive_integration_service` is initialized.
-  const base::FilePath wallpaper_path =
-      WallpaperControllerClientImpl::Get()->GetWallpaperPathFromDriveFs(
-          account_id);
-  DCHECK(!wallpaper_path.empty());
-
   drive_integration_service->GetMetadata(
-      wallpaper_path,
+      GetWallpaperPath(account_id),
       base::BindOnce(&WallpaperDriveFsDelegateImpl::OnGetDownloadUrlMetadata,
                      weak_ptr_factory_.GetWeakPtr(), account_id,
                      std::move(callback)));

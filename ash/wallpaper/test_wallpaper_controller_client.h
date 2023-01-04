@@ -44,12 +44,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   std::string get_fetch_daily_refresh_wallpaper_param() const {
     return fetch_daily_refresh_wallpaper_param_;
   }
-  AccountId get_save_wallpaper_to_drive_fs_account_id() const {
-    return save_wallpaper_to_drive_fs_account_id_;
-  }
-  AccountId get_wallpaper_path_from_drive_fs_account_id() const {
-    return get_wallpaper_path_from_drive_fs_account_id_;
-  }
 
   void set_fetch_daily_refresh_info_fails(bool fails) {
     fetch_daily_refresh_info_fails_ = fails;
@@ -96,12 +90,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void FetchGooglePhotosAccessToken(
       const AccountId& account_id,
       FetchGooglePhotosAccessTokenCallback callback) override;
-  void SaveWallpaperToDriveFs(
-      const AccountId& account_id,
-      const base::FilePath& origin,
-      base::OnceCallback<void(bool)> wallpaper_saved_callback) override;
-  base::FilePath GetWallpaperPathFromDriveFs(
-      const AccountId& account_id) override;
   void GetFilesId(const AccountId& account_id,
                   base::OnceCallback<void(const std::string&)>
                       files_id_callback) const override;
@@ -113,8 +101,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   size_t fetch_images_for_collection_count_ = 0;
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;
-  AccountId get_wallpaper_path_from_drive_fs_account_id_;
-  AccountId save_wallpaper_to_drive_fs_account_id_;
   std::unordered_map<AccountId, std::string> fake_files_ids_;
   bool wallpaper_sync_enabled_ = true;
   bool fetch_images_for_collection_fails_ = false;

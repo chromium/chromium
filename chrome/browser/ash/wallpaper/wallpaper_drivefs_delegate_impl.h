@@ -10,8 +10,11 @@
 #include <string>
 
 #include "ash/public/cpp/image_downloader.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/account_id/account_id.h"
@@ -32,6 +35,10 @@ class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
   ~WallpaperDriveFsDelegateImpl() override;
 
   // WallpaperDriveFsDelegate:
+  base::FilePath GetWallpaperPath(const AccountId& account_id) override;
+  void SaveWallpaper(const AccountId& account_id,
+                     const base::FilePath& source,
+                     base::OnceCallback<void(bool success)> callback) override;
   void GetWallpaperModificationTime(
       const AccountId& account_id,
       base::OnceCallback<void(base::Time modification_time)> callback) override;
@@ -57,6 +64,7 @@ class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
       google_apis::ApiErrorCode error_code,
       const std::string& authentication_token);
 
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   base::WeakPtrFactory<WallpaperDriveFsDelegateImpl> weak_ptr_factory_{this};
 };
 

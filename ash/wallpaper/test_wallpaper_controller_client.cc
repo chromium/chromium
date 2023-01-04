@@ -48,8 +48,6 @@ void TestWallpaperControllerClient::ResetCounts() {
   set_default_wallpaper_count_ = 0;
   fetch_daily_refresh_wallpaper_param_ = std::string();
   fetch_daily_refresh_info_fails_ = false;
-  get_wallpaper_path_from_drive_fs_account_id_.clear();
-  save_wallpaper_to_drive_fs_account_id_.clear();
   fake_files_ids_.clear();
   wallpaper_sync_enabled_ = true;
 }
@@ -129,20 +127,6 @@ void TestWallpaperControllerClient::FetchGooglePhotosAccessToken(
     const AccountId& account_id,
     FetchGooglePhotosAccessTokenCallback callback) {
   std::move(callback).Run(absl::nullopt);
-}
-
-void TestWallpaperControllerClient::SaveWallpaperToDriveFs(
-    const AccountId& account_id,
-    const base::FilePath& origin,
-    base::OnceCallback<void(bool)> wallpaper_saved_callback) {
-  save_wallpaper_to_drive_fs_account_id_ = account_id;
-  std::move(wallpaper_saved_callback).Run(true);
-}
-
-base::FilePath TestWallpaperControllerClient::GetWallpaperPathFromDriveFs(
-    const AccountId& account_id) {
-  get_wallpaper_path_from_drive_fs_account_id_ = account_id;
-  return base::FilePath();
 }
 
 void TestWallpaperControllerClient::GetFilesId(

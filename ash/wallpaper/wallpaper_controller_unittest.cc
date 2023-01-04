@@ -27,6 +27,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
+#include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
@@ -391,6 +392,10 @@ class WallpaperControllerTest : public AshTestBase {
                       custom_wallpaper_dir_.GetPath(), policy_wallpaper);
     client_.ResetCounts();
     controller_->SetClient(&client_);
+    std::unique_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate =
+        std::make_unique<TestWallpaperDriveFsDelegate>();
+    drivefs_delegate_ = drivefs_delegate.get();
+    controller_->SetDriveFsDelegate(std::move(drivefs_delegate));
     client_.set_fake_files_id_for_account_id(kAccountId1, kWallpaperFilesId1);
     client_.set_fake_files_id_for_account_id(kAccountId2, kWallpaperFilesId2);
   }
@@ -711,6 +716,7 @@ class WallpaperControllerTest : public AshTestBase {
   base::HistogramTester histogram_tester_;
 
   TestWallpaperControllerClient client_;
+  raw_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate_;
   std::unique_ptr<TestImageDownloader> test_image_downloader_;
 
   const AccountId kChildAccountId =
@@ -1435,7 +1441,7 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
       base::FilePath(kWallpaperFilesId1).Append(kFileName1).value(), layout,
       WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
   EXPECT_TRUE(wallpaper_info.MatchesSelection(expected_wallpaper_info));
-  EXPECT_EQ(kAccountId1, client_.get_save_wallpaper_to_drive_fs_account_id());
+  EXPECT_EQ(kAccountId1, drivefs_delegate_->get_save_wallpaper_account_id());
 }
 
 TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper_NonactiveUser) {
@@ -3414,7 +3420,7 @@ TEST_F(WallpaperControllerTest, SetCustomWallpaper) {
       base::FilePath(kWallpaperFilesId1).Append(kFileName1).value(), layout,
       WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
   EXPECT_TRUE(wallpaper_info.MatchesSelection(expected_wallpaper_info));
-  EXPECT_EQ(kAccountId1, client_.get_save_wallpaper_to_drive_fs_account_id());
+  EXPECT_EQ(kAccountId1, drivefs_delegate_->get_save_wallpaper_account_id());
 
   // Now set another custom wallpaper for |kUser1|. Verify that the on-screen
   // wallpaper doesn't change since |kUser1| is not active, but wallpaper info
@@ -3821,7 +3827,7 @@ TEST_F(WallpaperControllerTest, MigrateCustomWallpaper) {
   ClearLogin();
 
   SimulateUserLogin(kAccountId1);
-  EXPECT_EQ(kAccountId1, client_.get_save_wallpaper_to_drive_fs_account_id());
+  EXPECT_EQ(kAccountId1, drivefs_delegate_->get_save_wallpaper_account_id());
 }
 
 TEST_F(WallpaperControllerTest, OnGoogleDriveMounted) {
@@ -3830,7 +3836,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted) {
 
   SimulateUserLogin(kAccountId1);
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
-  EXPECT_EQ(kAccountId1, client_.get_save_wallpaper_to_drive_fs_account_id());
+  EXPECT_EQ(kAccountId1, drivefs_delegate_->get_save_wallpaper_account_id());
 }
 
 TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_WallpaperIsntCustom) {
@@ -3838,7 +3844,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_WallpaperIsntCustom) {
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
 
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
-  EXPECT_TRUE(client_.get_save_wallpaper_to_drive_fs_account_id().empty());
+  EXPECT_TRUE(drivefs_delegate_->get_save_wallpaper_account_id().empty());
 }
 
 TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
@@ -3856,11 +3862,11 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
                                          /*file_path=*/"", image);
   RunAllTasksUntilIdle();
 
-  client_.ResetCounts();
+  drivefs_delegate_->Reset();
 
   // Should not reupload image if it has already been synced.
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
-  EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
+  EXPECT_FALSE(drivefs_delegate_->get_save_wallpaper_account_id().is_valid());
 }
 
 TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
@@ -3876,9 +3882,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
   SimulateUserLogin(kAccountId1);
 
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
-  EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
-  // This is called by WallpaperController::HandleCustomWallpaperSyncedIn.
-  EXPECT_EQ(client_.get_wallpaper_path_from_drive_fs_account_id(), kAccountId1);
+  EXPECT_FALSE(drivefs_delegate_->get_save_wallpaper_account_id().is_valid());
 }
 
 TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
@@ -3895,7 +3899,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
   SimulateUserLogin(kAccountId1);
 
   controller_->SyncLocalAndRemotePrefs(kAccountId1);
-  EXPECT_EQ(kAccountId1, client_.get_save_wallpaper_to_drive_fs_account_id());
+  EXPECT_EQ(kAccountId1, drivefs_delegate_->get_save_wallpaper_account_id());
 }
 
 TEST_F(WallpaperControllerTest,
