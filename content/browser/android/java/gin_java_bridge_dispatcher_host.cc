@@ -119,11 +119,9 @@ void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
       });
 }
 
-void GinJavaBridgeDispatcherHost::RenderViewHostChanged(
-    RenderViewHost* old_host,
-    RenderViewHost* new_host) {
+void GinJavaBridgeDispatcherHost::PrimaryPageChanged(Page& page) {
   AgentSchedulingGroupHost& agent_scheduling_group =
-      static_cast<RenderViewHostImpl*>(new_host)->GetAgentSchedulingGroup();
+      static_cast<PageImpl&>(page).GetMainDocument().GetAgentSchedulingGroup();
   scoped_refptr<GinJavaBridgeMessageFilter> filter =
       GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
                                            /*create_if_not_exists=*/false);

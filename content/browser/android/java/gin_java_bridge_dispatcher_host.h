@@ -53,8 +53,7 @@ class GinJavaBridgeDispatcherHost
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void PrimaryMainDocumentElementAvailable() override;
   void WebContentsDestroyed() override;
-  void RenderViewHostChanged(RenderViewHost* old_host,
-                             RenderViewHost* new_host) override;
+  void PrimaryPageChanged(Page& page) override;
 
   // GinJavaMethodInvocationHelper::DispatcherDelegate
   JavaObjectWeakGlobalRef GetObjectWeakRef(

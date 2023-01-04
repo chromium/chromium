@@ -26,8 +26,8 @@ class RenderWidgetHostConnector::Observer
 
   // WebContentsObserver implementation.
   void RenderViewReady() override;
-  void RenderViewHostChanged(RenderViewHost* old_host,
-                             RenderViewHost* new_host) override;
+  void RenderFrameHostChanged(RenderFrameHost* old_host,
+                              RenderFrameHost* new_host) override;
 
   // WebContentsAndroid::DestructionObserver implementation.
   void WebContentsAndroidDestroyed(
@@ -70,12 +70,15 @@ void RenderWidgetHostConnector::Observer::RenderViewReady() {
   UpdateRenderWidgetHostView(GetRenderWidgetHostViewAndroid());
 }
 
-void RenderWidgetHostConnector::Observer::RenderViewHostChanged(
-    RenderViewHost* old_host,
-    RenderViewHost* new_host) {
-  // |RenderViewHostChanged| is called only for main rwhva change.
+void RenderWidgetHostConnector::Observer::RenderFrameHostChanged(
+    RenderFrameHost* old_host,
+    RenderFrameHost* new_host) {
+  if (!new_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   auto* new_view = new_host ? static_cast<RenderWidgetHostViewBase*>(
-                                  new_host->GetWidget()->GetView())
+                                  new_host->GetRenderWidgetHost()->GetView())
                             : nullptr;
   DCHECK(!new_view || !new_view->IsRenderWidgetHostViewChildFrame());
   auto* new_view_android = static_cast<RenderWidgetHostViewAndroid*>(new_view);
