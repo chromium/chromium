@@ -4331,11 +4331,6 @@ bool RenderProcessHostImpl::IsSuitableHost(
     }
   }
 
-  if (!GetContentClient()->browser()->IsSuitableHost(host,
-                                                     site_info.site_url())) {
-    return false;
-  }
-
   // If this site_info is going to require a dedicated process, then check
   // whether this process has a pending navigation to a URL for which
   // SiteInstance does not assign site URLs.  If this is the case, it is not
@@ -4353,7 +4348,11 @@ bool RenderProcessHostImpl::IsSuitableHost(
       return false;
   }
 
-  return true;
+  // Finally, let the embedder decide if there are any last reasons to consider
+  // this process unsuitable. This check is last so that it cannot override any
+  // of the earlier reasons.
+  return GetContentClient()->browser()->IsSuitableHost(host,
+                                                       site_info.site_url());
 }
 
 // static
