@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_errors.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -29,7 +30,8 @@ namespace translate {
 
 // TranslateController controls the translation of the page, by injecting the
 // translate scripts and monitoring the status.
-class TranslateController : public web::WebStateObserver,
+class TranslateController : public web::WebFramesManager::Observer,
+                            public web::WebStateObserver,
                             public web::WebStateUserData<TranslateController> {
  public:
   // Observer class to monitor the progress of the translation.
@@ -116,13 +118,16 @@ class TranslateController : public web::WebStateObserver,
       std::unique_ptr<std::string> response_body);
 
   // web::WebStateObserver implementation:
-  void WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                  web::WebFrame* web_frame) override;
-  void WebFrameWillBecomeUnavailable(web::WebState* web_state,
-                                     web::WebFrame* web_frame) override;
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void WebStateRealized(web::WebState* web_state) override;
+
+  // web::WebFramesManager implementation:
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override;
+  void WebFrameBecameUnavailable(web::WebFramesManager* web_frames_manager,
+                                 const std::string frame_id) override;
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.

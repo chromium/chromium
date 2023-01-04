@@ -12,6 +12,7 @@
 #import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/http/http_status_code.h"
@@ -120,6 +121,7 @@ class TranslateControllerTest : public PlatformTest,
         fake_main_frame_(web::FakeWebFrame::Create(/*frame_id=*/"",
                                                    /*is_main_frame=*/true,
                                                    GURL())),
+        fake_web_frames_manager_(std::make_unique<web::FakeWebFramesManager>()),
         error_type_(TranslateErrors::NONE),
         ready_time_(0),
         load_time_(0),
@@ -127,6 +129,7 @@ class TranslateControllerTest : public PlatformTest,
         on_script_ready_called_(false),
         on_translate_complete_called_(false) {
     fake_web_state_->SetBrowserState(fake_browser_state_.get());
+    fake_web_state_->SetWebFramesManager(std::move(fake_web_frames_manager_));
     TranslateController::CreateForWebState(fake_web_state_.get(),
                                            &fake_translate_factory_);
     TranslateController::FromWebState(fake_web_state_.get())
@@ -160,6 +163,7 @@ class TranslateControllerTest : public PlatformTest,
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<web::FakeWebFrame> fake_main_frame_;
+  std::unique_ptr<web::FakeWebFramesManager> fake_web_frames_manager_;
   FakeJSTranslateWebFrameManagerFactory fake_translate_factory_;
   TranslateErrors error_type_;
   double ready_time_;
@@ -245,7 +249,10 @@ TEST_F(TranslateControllerTest, TranslationFailure) {
 // Tests that OnTranslateSendRequest() is called with the right parameters
 // when a `sendrequest` message is received from the JS side.
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithValidCommand) {
-  fake_web_state_->OnWebFrameDidBecomeAvailable(fake_main_frame_.get());
+  web::FakeWebFramesManager* web_frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager());
+  web_frames_manager->AddWebFrame(std::move(fake_main_frame_));
 
   base::Value::Dict command;
   command.Set("command", "sendrequest");
@@ -258,7 +265,8 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithValidCommand) {
 
   __block HandleTranslateResponseParams* last_params = nullptr;
   FakeJSTranslateWebFrameManager* fake_translate_manager =
-      fake_translate_factory_.FromWebFrame(fake_main_frame_.get());
+      fake_translate_factory_.FromWebFrame(
+          web_frames_manager->GetMainWebFrame());
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
     task_environment_.RunUntilIdle();
     last_params = fake_translate_manager->GetLastHandleResponseParams();
@@ -296,7 +304,10 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadURL) {
 // Tests that OnTranslateSendRequest() called with a bad method will eventually
 // cause the request to fail.
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
-  fake_web_state_->OnWebFrameDidBecomeAvailable(fake_main_frame_.get());
+  web::FakeWebFramesManager* web_frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager());
+  web_frames_manager->AddWebFrame(std::move(fake_main_frame_));
 
   base::Value::Dict command;
   command.Set("command", "sendrequest");
@@ -312,7 +323,8 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
 
   __block HandleTranslateResponseParams* last_params = nullptr;
   FakeJSTranslateWebFrameManager* fake_translate_manager =
-      fake_translate_factory_.FromWebFrame(fake_main_frame_.get());
+      fake_translate_factory_.FromWebFrame(
+          web_frames_manager->GetMainWebFrame());
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
     task_environment_.RunUntilIdle();
     last_params = fake_translate_manager->GetLastHandleResponseParams();

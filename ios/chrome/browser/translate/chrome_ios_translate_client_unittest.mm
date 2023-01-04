@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/translate/translate_ranker_factory.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -48,6 +49,8 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     web_state_.SetBrowserState(browser_state_.get());
+    fake_web_frames_manager_ = std::make_unique<web::FakeWebFramesManager>();
+    web_state_.SetWebFramesManager(std::move(fake_web_frames_manager_));
     ChromeIOSTranslateClient::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
@@ -58,6 +61,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
+  std::unique_ptr<web::FakeWebFramesManager> fake_web_frames_manager_;
 };
 
 base::File GetValidModelFile() {

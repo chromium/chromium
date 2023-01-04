@@ -79,11 +79,15 @@ TranslateController::TranslateController(
       weak_method_factory_(this) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
+  if (web_state_->IsRealized()) {
+    web_state_->GetWebFramesManager()->AddObserver(this);
+  }
 }
 
 TranslateController::~TranslateController() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
+    web_state_->GetWebFramesManager()->RemoveObserver(this);
     web_state_ = nullptr;
   }
 }
@@ -290,29 +294,14 @@ void TranslateController::OnRequestFetchComplete(
   request_fetchers_.erase(it);
 }
 
-// web::WebStateObserver implementation.
-
-void TranslateController::WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                                     web::WebFrame* web_frame) {
-  DCHECK_EQ(web_state_, web_state);
-  if (web_frame->IsMainFrame()) {
-    js_manager_factory_->CreateForWebFrame(web_frame);
-    main_web_frame_ = web_frame;
-  }
-}
-
-void TranslateController::WebFrameWillBecomeUnavailable(
-    web::WebState* web_state,
-    web::WebFrame* web_frame) {
-  DCHECK_EQ(web_state_, web_state);
-  if (web_frame == main_web_frame_) {
-    main_web_frame_ = nullptr;
-  }
-}
+#pragma mark - web::WebStateObserver implementation
 
 void TranslateController::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
+  if (web_state_->IsRealized()) {
+    web_state_->GetWebFramesManager()->RemoveObserver(this);
+  }
   web_state_ = nullptr;
   main_web_frame_ = nullptr;
 
@@ -326,6 +315,31 @@ void TranslateController::DidStartNavigation(
   if (!navigation_context->IsSameDocument()) {
     request_fetchers_.clear();
     script_fetcher_.reset();
+  }
+}
+
+void TranslateController::WebStateRealized(web::WebState* web_state) {
+  web_state_->GetWebFramesManager()->AddObserver(this);
+}
+
+#pragma mark - web::WebFramesManager implementation
+
+void TranslateController::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
+  DCHECK_EQ(web_state_->GetWebFramesManager(), web_frames_manager);
+  if (web_frame->IsMainFrame()) {
+    js_manager_factory_->CreateForWebFrame(web_frame);
+    main_web_frame_ = web_frame;
+  }
+}
+
+void TranslateController::WebFrameBecameUnavailable(
+    web::WebFramesManager* web_frames_manager,
+    const std::string frame_id) {
+  DCHECK_EQ(web_state_->GetWebFramesManager(), web_frames_manager);
+  if (web_frames_manager->GetMainWebFrame() == main_web_frame_) {
+    main_web_frame_ = nullptr;
   }
 }
 

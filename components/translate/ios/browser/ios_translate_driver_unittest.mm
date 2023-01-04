@@ -13,6 +13,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -40,11 +41,14 @@ class IOSTranslateDriverTest : public PlatformTest {
       : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
-        fake_web_state_(std::make_unique<web::FakeWebState>()) {
+        fake_web_state_(std::make_unique<web::FakeWebState>()),
+        fake_web_frames_manager_(
+            std::make_unique<web::FakeWebFramesManager>()) {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kOfferTranslateEnabled, true);
+    fake_web_state_->SetWebFramesManager(std::move(fake_web_frames_manager_));
     language::IOSLanguageDetectionTabHelper::CreateForWebState(
         fake_web_state_.get(), nullptr, nullptr, pref_service_.get());
 
@@ -65,6 +69,7 @@ class IOSTranslateDriverTest : public PlatformTest {
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
+  std::unique_ptr<web::FakeWebFramesManager> fake_web_frames_manager_;
   std::unique_ptr<IOSTranslateDriver> driver_;
   std::unique_ptr<::testing::NiceMock<testing::MockTranslateClient>>
       mock_translate_client_;
