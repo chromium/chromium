@@ -1348,6 +1348,44 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, predicted_capacity);
 }
 
+#if defined(PA_HAS_MEMORY_TAGGING)
+TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
+  // This test checks that Arm's memory tagging extension (MTE) is correctly
+  // protecting freed pointers.
+  base::CPU cpu;
+  if (!cpu.has_mte()) {
+    // This test won't pass without MTE support.
+    GTEST_SKIP();
+  }
+
+  // Create an arbitrarily-sized small allocation.
+  size_t alloc_size = 64 - ExtraAllocSize(allocator);
+  uint64_t* ptr1 =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr1);
+
+  // Invalidate the pointer by freeing it.
+  allocator.root()->Free(ptr1);
+
+  // When we immediately reallocate a pointer, we should see the same allocation
+  // slot but with a different tag (PA_EXPECT_PTR_EQ ignores the MTE tag).
+  uint64_t* ptr2 =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  PA_EXPECT_PTR_EQ(ptr1, ptr2);
+  // The different tag bits mean that ptr1 is not the same as ptr2.
+  EXPECT_NE(ptr1, ptr2);
+
+  // When we free again, we expect a new tag for that area that's different from
+  // ptr1 and ptr2.
+  allocator.root()->Free(ptr2);
+  uint64_t* ptr3 =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  PA_EXPECT_PTR_EQ(ptr2, ptr3);
+  EXPECT_NE(ptr1, ptr3);
+  EXPECT_NE(ptr2, ptr3);
+}
+#endif  // defined(PA_HAS_MEMORY_TAGGING)
+
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 TEST_P(PartitionAllocTest, IsValidPtrDelta) {
   if (!UseBRPPool())
@@ -2348,6 +2386,41 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
                "Passed DoReturnNullTest");
 }
 
+#if defined(PA_HAS_MEMORY_TAGGING)
+// Check that Arm's memory tagging extension (MTE) is correctly protecting
+// freed pointers. Writes to a free pointer should result in a crash.
+TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
+  base::CPU cpu;
+  if (!cpu.has_mte()) {
+    // This test won't pass on systems without MTE.
+    GTEST_SKIP();
+  }
+
+  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+  constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
+
+  // Make an arbitrary-sized small allocation.
+  size_t alloc_size = 64 - ExtraAllocSize(allocator);
+  uint64_t* ptr =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr);
+
+  // Check that the allocation's writable.
+  *ptr = kCookie;
+
+  // Invalidate ptr by freeing it.
+  allocator.root()->Free(ptr);
+
+  // Writing to ptr after free() should crash
+  EXPECT_EXIT(
+      {
+        // Should be in synchronous MTE mode for running this test.
+        *ptr1 = kQuarantined;
+      },
+      testing::KilledBySignal(SIGSEGV), "");
+}
+#endif  // defined(PA_HAS_MEMORY_TAGGING)
+
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
 // malloc(0), which is not good.
@@ -2438,40 +2511,6 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
     allocator.root()->Free(ptr);
   }
 }
-
-#if defined(PA_HAS_MEMORY_TAGGING)
-TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
-  // This test checks that Arm's memory tagging extension is correctly
-  // protecting freed pointers. Writes to a freed pointer should cause a crash.
-  base::CPU cpu;
-  if (!cpu.has_mte()) {
-    // This test won't pass on non-MTE systems.
-    GTEST_SKIP();
-  }
-
-  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
-  constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
-
-  size_t alloc_size = 64 - ExtraAllocSize(allocator);
-  uint64_t* ptr1 =
-      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
-  EXPECT_TRUE(ptr1);
-
-  // Write to the pointer whilst it's live
-  *ptr1 = kCookie;
-
-  // Invalidate the pointer on free.
-  allocator.root()->Free(ptr1);
-
-  // Writing to ptr1 after free should crash.
-  EXPECT_EXIT(
-      {
-        // Should be in synchronous MTE mode for running this test.
-        *ptr1 = kQuarantined;
-      },
-      testing::KilledBySignal(SIGSEGV), "");
-}
-#endif  // defined(PA_HAS_MEMORY_TAGGING)
 
 // These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
