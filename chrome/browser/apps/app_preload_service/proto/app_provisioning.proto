@@ -42,17 +42,22 @@ message AppProvisioningListAppsRequest {
     // the proto file updated.
     CHANNEL_UNKNOWN = 0;
 
+    // Channel used for test images, local dev, etc. where a channel is not
+    // explicitly defined.
+    // Note: Confusingly on the client-side ChromeOS calls this "unknown"
+    CHANNEL_UNDEFINED = 1;
+
     // Canary channel.
-    CHANNEL_CANARY = 1;
+    CHANNEL_CANARY = 2;
 
     // Developer channel.
-    CHANNEL_DEV = 2;
+    CHANNEL_DEV = 3;
 
     // Beta channel.
-    CHANNEL_BETA = 3;
+    CHANNEL_BETA = 4;
 
     // Stable channel.
-    CHANNEL_STABLE = 4;
+    CHANNEL_STABLE = 5;
   }
 
   // The board identifier for the device sending the request.

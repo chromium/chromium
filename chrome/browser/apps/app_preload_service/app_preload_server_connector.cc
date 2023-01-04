@@ -75,7 +75,7 @@ apps::proto::AppProvisioningListAppsRequest::Channel ConvertChannelTypeToProto(
     case version_info::Channel::STABLE:
       return apps::proto::AppProvisioningListAppsRequest::CHANNEL_STABLE;
     case version_info::Channel::UNKNOWN:
-      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_UNKNOWN;
+      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_UNDEFINED;
   }
 }
 
