@@ -463,6 +463,16 @@ export class PortraitModeProcessError extends Error {
 }
 
 /**
+ * Throws when the camera is suspended while reprocess effects are ongoing.
+ */
+export class CameraSuspendError extends Error {
+  constructor(message = 'camera suspended') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+/**
  * Types of local storage key.
  */
 export enum LocalStorageKey {

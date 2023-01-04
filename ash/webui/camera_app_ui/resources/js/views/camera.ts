@@ -39,6 +39,7 @@ import {speak} from '../spoken_msg.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
 import {
+  CameraSuspendError,
   CanceledError,
   ErrorLevel,
   ErrorType,
@@ -486,7 +487,7 @@ export class Camera extends View implements CameraViewUI {
           return;
         }
         hasError = true;
-        if (e instanceof CanceledError) {
+        if (e instanceof CanceledError || e instanceof CameraSuspendError) {
           return;
         }
         error.reportError(
