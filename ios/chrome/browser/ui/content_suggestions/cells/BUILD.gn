@@ -27,8 +27,6 @@ source_set("cells") {
     "content_suggestions_selection_actions.h",
     "content_suggestions_shortcut_tile_view.h",
     "content_suggestions_shortcut_tile_view.mm",
-    "content_suggestions_text_item.h",
-    "content_suggestions_text_item.mm",
     "content_suggestions_tile_layout_util.h",
     "content_suggestions_tile_layout_util.mm",
     "content_suggestions_tile_view.h",

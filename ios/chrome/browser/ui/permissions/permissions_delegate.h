@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_DELEGATE_H_
 
-#import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
+#import <Foundation/Foundation.h>
 
 @class PermissionInfo;
 
