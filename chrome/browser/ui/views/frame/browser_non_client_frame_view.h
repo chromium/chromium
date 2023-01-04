@@ -161,6 +161,11 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // view coordinates.
   virtual SkRRect GetRestoredClipRegion() const;
 
+  // Returns the height of the top frame.  This value will be 0 if the
+  // compositor doesn't support translucency, if the top frame is not
+  // translucent, or if the window is in full screen mode.
+  virtual int GetTranslucentTopAreaHeight() const;
+
  protected:
   // Called when |frame_|'s "paint as active" state has changed.
   virtual void PaintAsActiveChanged();

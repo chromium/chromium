@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/linux/linux_ui.h"
@@ -238,15 +239,22 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
         region.op(corner_rect, SkRegion::kDifference_Op);
       }
 
+      auto translucent_top_area_rect = SkIRect::MakeXYWH(
+          rect.x(), rect.y(), rect.width(),
+          std::ceil(view->GetTranslucentTopAreaHeight() * scale - rect.y()));
+      region.op(translucent_top_area_rect, SkRegion::kDifference_Op);
+
       // Convert the region to a list of rectangles.
       for (SkRegion::Iterator i(region); !i.done(); i.next())
         opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
     } else {
-      gfx::Rect widget_size_px =
-          gfx::ScaleToEnclosingRect(gfx::Rect(widget_size), scale);
-
-      // Set the entire window as opaque.
-      opaque_region.push_back(widget_size_px);
+      // The entire window except for the translucent top is opaque.
+      gfx::Rect opaque_region_dip(widget_size);
+      gfx::Insets insets;
+      insets.set_top(view->GetTranslucentTopAreaHeight());
+      opaque_region_dip.Inset(insets);
+      opaque_region.push_back(
+          gfx::ScaleToEnclosingRect(opaque_region_dip, scale));
     }
     window->SetOpaqueRegion(&opaque_region);
   }

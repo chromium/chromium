@@ -141,6 +141,7 @@ class TestFrameProvider : public ui::WindowFrameProvider {
 
   // ui::WindowFrameProvider:
   int GetTopCornerRadiusDip() override { return 0; }
+  bool IsTopFrameTranslucent() override { return false; }
   gfx::Insets GetFrameThicknessDip() override { return {}; }
   void PaintWindowFrame(gfx::Canvas* canvas,
                         const gfx::Rect& rect,

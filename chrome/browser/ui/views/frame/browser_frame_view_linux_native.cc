@@ -55,6 +55,11 @@ float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
   return window_frame_provider_->GetTopCornerRadiusDip();
 }
 
+int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
+  return window_frame_provider_->IsTopFrameTranslucent() ? GetTopAreaHeight()
+                                                         : 0;
+}
+
 void BrowserFrameViewLinuxNative::Layout() {
   // Calling MaybeUpdateCachedFrameButtonImages() from Layout() is sufficient to
   // catch all cases that could update the appearance, since

@@ -324,7 +324,7 @@ void NativeThemeGtk::PaintFrameTopArea(
                                            : GTK_STATE_FLAG_BACKDROP);
 
   SkBitmap bitmap =
-      GetWidgetBitmap(rect.size(), context, BG_RENDER_RECURSIVE, false);
+      GetWidgetBitmap(rect.size(), context, BG_RENDER_NORMAL, false);
   bitmap.setImmutable();
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
                     rect.x(), rect.y());

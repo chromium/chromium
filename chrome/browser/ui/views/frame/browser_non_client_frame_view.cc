@@ -269,6 +269,10 @@ SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
   return SkRRect();
 }
 
+int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {
+  return 0;
+}
+
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
   if (web_app_frame_toolbar_)
     web_app_frame_toolbar_->SetPaintAsActive(ShouldPaintAsActive());

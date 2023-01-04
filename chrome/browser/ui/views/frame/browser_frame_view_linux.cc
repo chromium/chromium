@@ -99,3 +99,7 @@ float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
 }
+
+int BrowserFrameViewLinux::GetTranslucentTopAreaHeight() const {
+  return 0;
+}

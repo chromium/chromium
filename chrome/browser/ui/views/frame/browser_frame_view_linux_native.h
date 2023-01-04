@@ -30,6 +30,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
  protected:
   // BrowserFrameViewLinux:
   float GetRestoredCornerRadiusDip() const override;
+  int GetTranslucentTopAreaHeight() const override;
 
   // OpaqueBrowserFrameView:
   void Layout() override;

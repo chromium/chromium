@@ -136,6 +136,33 @@ int ComputeTopCornerRadius() {
   return bitmap.width();
 }
 
+// Returns true iff any part of the header is transparent (even a single pixel).
+// This is used as an optimization hint to the compositor so that it doesn't
+// have to composite behind opaque regions.  The consequence of a false-negative
+// is rendering artifacts, but the consequence of a false-positive is only a
+// slight performance penalty, so this function is intentionally conservative
+// in deciding if the header is translucent.
+bool HeaderIsTranslucent() {
+  // The arbitrary square size to render a sample header.
+  constexpr int kHeaderSize = 32;
+  auto context = HeaderContext(false, false);
+  ApplyCssToContext(context, R"(window, headerbar {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+  })");
+  gfx::Size size_dip{kHeaderSize, kHeaderSize};
+  auto bitmap = PaintHeaderbar(size_dip, context, 1);
+  for (int x = 0; x < kHeaderSize; x++) {
+    for (int y = 0; y < kHeaderSize; y++) {
+      if (SkColorGetA(bitmap.getColor(x, y)) != SK_AlphaOPAQUE) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Returns int(scale * 100), which essentially limits the scale to fractions of
 // 100 and secures from rounding errors.
 int ToRoundedScale(float scale) {
@@ -178,6 +205,11 @@ WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 int WindowFrameProviderGtk::GetTopCornerRadiusDip() {
   MaybeUpdateBitmaps(GetDeviceScaleFactor());
   return top_corner_radius_dip_;
+}
+
+bool WindowFrameProviderGtk::IsTopFrameTranslucent() {
+  MaybeUpdateBitmaps(GetDeviceScaleFactor());
+  return top_frame_is_translucent_;
 }
 
 gfx::Insets WindowFrameProviderGtk::GetFrameThicknessDip() {
@@ -329,6 +361,7 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
   };
 
   top_corner_radius_dip_ = ComputeTopCornerRadius();
+  top_frame_is_translucent_ = !solid_frame_ && HeaderIsTranslucent();
 
   const auto previous_frame_thickness_dip_ = frame_thickness_dip_;
   frame_thickness_dip_ = gfx::Insets::TLBR(
