@@ -284,10 +284,9 @@ Yes, with some important caveats. It is possible to build `chrome` target with
 code coverage instrumentation enabled. However, there are some inconveniences
 involved:
 
-* Linking may take a while
-* The binary is huge (~4GB)
-* The browser "works", but is noticeably slow and laggy
-* The sandbox needs to be disabled (`--no-sandbox`)
+* Linking may take a while, especially if you use a non-component build.
+* The binary is huge (2-4GB).
+* The browser may be noticeably slow and laggy.
 
 For more information, please see [crbug.com/834781].
 
