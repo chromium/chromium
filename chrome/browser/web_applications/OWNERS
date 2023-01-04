@@ -23,3 +23,5 @@ per-file web_app_id_constants.*=jshikaram@chromium.org
 per-file web_app_id_constants.*=tsergeant@chromium.org
 per-file web_app_shortcut_win*=davidbienvenu@chromium.org
 per-file web_app_shortcut_win*=jessemckenna@google.com
+
+per-file BUILD.gn=file://chrome/browser/web_applications/isolated_web_apps/OWNERS
