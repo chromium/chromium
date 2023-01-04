@@ -60,6 +60,9 @@ config("feature_flags") {
     defines += [ "USE_GLIB=1" ]
   }
   if (use_ozone && !is_android) {
+    # Chrome code should check BUILDFLAG(IS_OZONE) instead of
+    # defined(USE_OZONE).
+    #
     # Note that some Chrome OS builds unconditionally set |use_ozone| to true,
     # but they also build some targets with the Android toolchain. This ensures
     # that Android targets still build with USE_OZONE=0 in such cases.

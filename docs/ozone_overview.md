@@ -71,7 +71,7 @@ applications on the host system using a system clipboard mechanism.
 Our implementation of Ozone required changes concentrated in these areas:
 
 * Cleaning up extensive assumptions about use of X11 throughout the tree,
-  protecting this code behind the `USE_X11` ifdef, and adding a new `USE_OZONE`
+  protecting this code behind the `USE_X11` ifdef, and adding a new `IS_OZONE`
   path that works in a relatively platform-neutral way by delegating to the
   interfaces described above.
 * a `WindowTreeHostOzone` to send events into Aura and participate in display

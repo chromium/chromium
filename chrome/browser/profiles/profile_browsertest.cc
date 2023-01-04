@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_ProfileReadmeCreated) {
 }
 
 // The EndSession IO synchronization is only critical on Windows, but also
-// happens under the USE_OZONE define. See BrowserProcessImpl::EndSession.
+// happens under Ozone. See BrowserProcessImpl::EndSession.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
 
 namespace {

@@ -767,7 +767,7 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
 //    Japanese, etc. all use VKEY_Q for the key beside Tab, while French uses
 //    VKEY_A. The stored key_code_ is non-located (e.g. VKEY_SHIFT rather than
 //    VKEY_LSHIFT, VKEY_1 rather than VKEY_NUMPAD1).
-// -- |uint32_t scan_code_| [USE_OZONE only] supports remapping of the top
+// -- |uint32_t scan_code_| [IS_OZONE only] supports remapping of the top
 //    function row based on a sysfs attribute provided by the kernel. This
 //    allows devices to have a custom top row layout and still be able to
 //    perform translation back and forth between F-Key and Action-Key. The

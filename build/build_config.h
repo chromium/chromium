@@ -26,6 +26,9 @@
 
 // This file also adds defines specific to the platform, architecture etc.
 //
+//  Platform:
+//    IS_OZONE
+//
 //  Compiler:
 //    COMPILER_MSVC / COMPILER_GCC
 //
