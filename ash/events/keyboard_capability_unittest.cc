@@ -4,6 +4,7 @@
 
 #include "ui/chromeos/events/keyboard_capability.h"
 
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -34,18 +35,24 @@ class KeyboardCapabilityTest : public AshTestBase {
   ~KeyboardCapabilityTest() override = default;
 
   void SetUp() override {
-    keyboard_capability_ = std::make_unique<ui::KeyboardCapability>();
     AshTestBase::SetUp();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    keyboard_capability_.reset();
+    keyboard_capability_ = Shell::Get()->keyboard_capability();
   }
 
  protected:
-  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
+  ui::KeyboardCapability* keyboard_capability_;
 };
+
+TEST_F(KeyboardCapabilityTest, TestTopRowKeysAreFKeys) {
+  // Top row keys are F-Keys pref is false in default.
+  EXPECT_FALSE(keyboard_capability_->TopRowKeysAreFKeys());
+
+  keyboard_capability_->SetTopRowKeysAsFKeysEnabledForTesting(true);
+  EXPECT_TRUE(keyboard_capability_->TopRowKeysAreFKeys());
+
+  keyboard_capability_->SetTopRowKeysAsFKeysEnabledForTesting(false);
+  EXPECT_FALSE(keyboard_capability_->TopRowKeysAreFKeys());
+}
 
 TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
   for (const ui::KeyboardCode key_code : kSixPackKeyList) {

@@ -72,10 +72,31 @@ class KeyboardCapability {
     kKbdTopRowLayoutMax = kKbdTopRowLayoutCustom
   };
 
-  KeyboardCapability() = default;
+  class Delegate {
+   public:
+    Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    virtual ~Delegate() = default;
+
+    virtual bool TopRowKeysAreFKeys() const = 0;
+
+    virtual void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) = 0;
+  };
+
+  explicit KeyboardCapability(std::unique_ptr<Delegate> delegate);
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;
-  ~KeyboardCapability() = default;
+  ~KeyboardCapability();
+
+  // Returns true if the target would prefer to receive raw
+  // function keys instead of having them rewritten into back, forward,
+  // brightness, volume, etc. or if the user has specified that they desire
+  // top-row keys to be treated as function keys globally.
+  bool TopRowKeysAreFKeys() const;
+
+  // Enable or disable top row keys as F-Keys.
+  void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) const;
 
   // Check if a key code is one of the six pack keys.
   static bool IsSixPackKey(const KeyboardCode& key_code);
@@ -83,6 +104,9 @@ class KeyboardCapability {
   // Check if a key code is one of the top row keys.
   // TODO(zhangwenyu): Support all 4 legacy layouts and custom vivaldi layouts.
   bool IsTopRowKey(const ui::KeyboardCode& key_code) const;
+
+ private:
+  std::unique_ptr<Delegate> delegate_;
 };
 
 }  // namespace ui

@@ -11,10 +11,8 @@
 
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/containers/fixed_flat_map.h"
@@ -22,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -172,15 +169,6 @@ mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
   layout_info->action = static_cast<uint32_t>(layout_details.action_id);
 
   return layout_info;
-}
-
-bool TopRowKeysAreFunctionKeys() {
-  const PrefService* pref_service =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!pref_service) {
-    return false;
-  }
-  return pref_service->GetBoolean(prefs::kSendFunctionKeys);
 }
 
 }  // namespace
@@ -378,7 +366,8 @@ mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateRemappedTopRowAcceleratorInfo(
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of original accelerator.
-  if (accelerator.IsCmdDown() || !TopRowKeysAreFunctionKeys() ||
+  if (accelerator.IsCmdDown() ||
+      !Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys() ||
       !ui::kLayout2TopRowKeyToFKeyMap.contains(accelerator.key_code())) {
     // No remapping is done.
     return nullptr;

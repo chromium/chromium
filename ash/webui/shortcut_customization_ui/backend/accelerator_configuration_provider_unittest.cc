@@ -12,14 +12,12 @@
 
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -38,6 +36,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
@@ -82,22 +81,6 @@ class FakeAcceleratorsUpdatedObserver
       config_;
   int num_times_notified_ = 0;
 };
-
-void SetTopRowKeysAsFunctionKeysEnabled(bool enabled) {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  prefs->SetBoolean(prefs::kSendFunctionKeys, enabled);
-  prefs->CommitPendingWrite();
-}
-
-bool TopRowKeysAreFunctionKeys() {
-  const PrefService* pref_service =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!pref_service) {
-    return false;
-  }
-  return pref_service->GetBoolean(prefs::kSendFunctionKeys);
-}
 
 bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const mojom::AcceleratorInfoPtr& actual_info) {
@@ -372,7 +355,7 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   EXPECT_EQ(0, observer.num_times_notified());
 
   // Top row keys are not function keys by default.
-  EXPECT_FALSE(TopRowKeysAreFunctionKeys());
+  EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
 
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
@@ -405,9 +388,10 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
                                observer.config());
 
-  // Enable TopRowKeysAsFunctionKeys
-  SetTopRowKeysAsFunctionKeysEnabled(true);
-  EXPECT_TRUE(TopRowKeysAreFunctionKeys());
+  // Enable TopRowKeysAreFKeys.
+  Shell::Get()->keyboard_capability()->SetTopRowKeysAsFKeysEnabledForTesting(
+      true);
+  EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
 
   // Initialize the same test_data again, but with
   // TopRowKeysAsFunctionKeysEnabled.

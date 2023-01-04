@@ -10,6 +10,20 @@
 
 namespace ui {
 
+KeyboardCapability::KeyboardCapability(std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)) {}
+
+KeyboardCapability::~KeyboardCapability() = default;
+
+bool KeyboardCapability::TopRowKeysAreFKeys() const {
+  return delegate_->TopRowKeysAreFKeys();
+}
+
+void KeyboardCapability::SetTopRowKeysAsFKeysEnabledForTesting(
+    bool enabled) const {
+  delegate_->SetTopRowKeysAsFKeysEnabledForTesting(enabled);  // IN-TEST
+}
+
 // static
 bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
   return base::Contains(kSixPackKeyToSystemKeyMap, key_code);
