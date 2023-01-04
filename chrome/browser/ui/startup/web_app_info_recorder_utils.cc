@@ -133,28 +133,28 @@ void GetWebApps::SerializeAndScheduleWrite(const base::Value& output_info) {
 }
 
 base::Value GetWebApps::GetInstalledWebApps() {
-  base::Value installed_apps_list(base::Value::Type::LIST);
+  base::Value::List installed_apps_list;
   for (auto* item : profiles_) {
     web_app::WebAppProvider* web_app_provider =
         web_app::WebAppProvider::GetForWebApps(item);
     base::Value::Dict item_info;
     item_info.Set("profile_id", item->GetBaseName().AsUTF8Unsafe());
-    base::Value& installed_apps_per_profile =
-        *item_info.Set("web_apps", base::Value(base::Value::Type::LIST));
+    base::Value::List installed_apps_per_profile;
     for (const web_app::WebApp& web_app :
          web_app_provider->registrar_unsafe().GetApps()) {
       base::Value::Dict web_app_info;
       web_app_info.Set("name", web_app.untranslated_name());
       web_app_info.Set("id", web_app.app_id());
-      installed_apps_per_profile.Append(base::Value(std::move(web_app_info)));
+      installed_apps_per_profile.Append(std::move(web_app_info));
     }
-    installed_apps_list.Append(base::Value(std::move(item_info)));
+    item_info.Set("web_apps", std::move(installed_apps_per_profile));
+    installed_apps_list.Append(std::move(item_info));
   }
-  return installed_apps_list;
+  return base::Value(std::move(installed_apps_list));
 }
 
 base::Value GetWebApps::GetOpenWebApps() {
-  base::flat_map<std::string, base::Value> open_apps;
+  base::flat_map<std::string, base::Value::List> open_apps;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::Type::TYPE_APP)
       continue;
@@ -168,19 +168,18 @@ base::Value GetWebApps::GetOpenWebApps() {
     web_app_info.Set("id", browser->app_controller()->app_id());
     web_app_info.Set("name", base::UTF16ToUTF8(
                                  browser->app_controller()->GetAppShortName()));
-    auto iter_and_inserted = open_apps.emplace(
-        app_profile_base_name, base::Value(base::Value::Type::LIST));
-    iter_and_inserted.first->second.Append(
-        base::Value(std::move(web_app_info)));
+    auto iter_and_inserted =
+        open_apps.emplace(app_profile_base_name, base::Value::List());
+    iter_and_inserted.first->second.Append(std::move(web_app_info));
   }
-  base::Value open_apps_list(base::Value::Type::LIST);
+  base::Value::List open_apps_list;
   for (auto& item : open_apps) {
     base::Value::Dict item_info;
     item_info.Set("profile_id", item.first);
     item_info.Set("web_apps", std::move(item.second));
-    open_apps_list.Append(base::Value(std::move(item_info)));
+    open_apps_list.Append(std::move(item_info));
   }
-  return open_apps_list;
+  return base::Value(std::move(open_apps_list));
 }
 
 void GetWebApps::OnProfileLoaded(base::RepeatingClosure callback,

@@ -2103,37 +2103,38 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   std::vector<web_app::AppId*> expected_open_apps_id = {&app_id1, &app_id3};
   std::vector<std::string*> expected_open_apps_name = {&app_name1, &app_name3};
   base::Value::Dict apps_for_all_profiles;
-  base::Value& installed_apps_for_all_profile = *apps_for_all_profiles.Set(
-      "installed_web_apps", base::Value(base::Value::Type::LIST));
-  base::Value& open_apps_for_all_profile = *apps_for_all_profiles.Set(
-      "open_web_apps", base::Value(base::Value::Type::LIST));
+  base::Value::List installed_apps_for_all_profile;
+  base::Value::List open_apps_for_all_profile;
   for (int i = 0; i < 2; i++) {
     // Get installed web apps.
     base::Value::Dict installed_item_info;
     installed_item_info.Set("profile_id",
                             expected_profiles[i]->GetBaseName().AsUTF8Unsafe());
-    base::Value& installed_apps_per_profile = *installed_item_info.Set(
-        "web_apps", base::Value(base::Value::Type::LIST));
+    base::Value::List installed_apps_per_profile;
     for (int j = 0; j < 2; j++) {
       base::Value::Dict web_app_info;
       web_app_info.Set("id", *expected_installed_apps_id[i * 2 + j]);
       web_app_info.Set("name", *expected_installed_apps_name[i * 2 + j]);
-      installed_apps_per_profile.Append(base::Value(std::move(web_app_info)));
+      installed_apps_per_profile.Append(std::move(web_app_info));
     }
-    installed_apps_for_all_profile.Append(
-        base::Value(std::move(installed_item_info)));
+    installed_item_info.Set("web_apps", std::move(installed_apps_per_profile));
+    installed_apps_for_all_profile.Append(std::move(installed_item_info));
     // Get open web apps.
     base::Value::Dict open_item_info;
     open_item_info.Set("profile_id",
                        expected_profiles[1 - i]->GetBaseName().AsUTF8Unsafe());
-    base::Value& open_apps_per_profile =
-        *open_item_info.Set("web_apps", base::Value(base::Value::Type::LIST));
+    base::Value::List open_apps_per_profile;
     base::Value::Dict web_app_info;
     web_app_info.Set("id", *expected_open_apps_id[i]);
     web_app_info.Set("name", *expected_open_apps_name[i]);
-    open_apps_per_profile.Append(base::Value(std::move(web_app_info)));
-    open_apps_for_all_profile.Append(base::Value(std::move(open_item_info)));
+    open_apps_per_profile.Append(std::move(web_app_info));
+    open_item_info.Set("web_apps", std::move(open_apps_per_profile));
+    open_apps_for_all_profile.Append(std::move(open_item_info));
   }
+  apps_for_all_profiles.Set("installed_web_apps",
+                            std::move(installed_apps_for_all_profile));
+  apps_for_all_profiles.Set("open_web_apps",
+                            std::move(open_apps_for_all_profile));
 
   std::string expected_info;
   JSONStringValueSerializer serializer(&expected_info);
@@ -2203,37 +2204,40 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   ASSERT_NE(app_browser2, nullptr);
 
   // List web apps for the given profile.
-  base::Value::Dict apps_for_given_profiles;
-  base::Value& installed_apps_for_given_profile = *apps_for_given_profiles.Set(
-      "installed_web_apps", base::Value(base::Value::Type::LIST));
-  base::Value& open_apps_for_given_profile = *apps_for_given_profiles.Set(
-      "open_web_apps", base::Value(base::Value::Type::LIST));
+
   // Get installed web apps.
+  base::Value::List installed_apps_for_given_profile;
   base::Value::Dict installed_item_info;
   installed_item_info.Set("profile_id", profile2->GetBaseName().AsUTF8Unsafe());
-  base::Value& installed_apps_per_profile = *installed_item_info.Set(
-      "web_apps", base::Value(base::Value::Type::LIST));
+  base::Value::List installed_apps_per_profile;
   base::Value::Dict web_app_info1;
   web_app_info1.Set("name", app_name4);
   web_app_info1.Set("id", app_id4);
-  installed_apps_per_profile.Append(base::Value(std::move(web_app_info1)));
+  installed_apps_per_profile.Append(std::move(web_app_info1));
   base::Value::Dict web_app_info2;
   web_app_info2.Set("name", app_name3);
   web_app_info2.Set("id", app_id3);
-  installed_apps_per_profile.Append(base::Value(std::move(web_app_info2)));
-  installed_apps_for_given_profile.Append(
-      base::Value(std::move(installed_item_info)));
+  installed_apps_per_profile.Append(std::move(web_app_info2));
+  installed_item_info.Set("web_apps", std::move(installed_apps_per_profile));
+  installed_apps_for_given_profile.Append(std::move(installed_item_info));
+
   // Get open web apps.
+  base::Value::List open_apps_for_given_profile;
   base::Value::Dict open_item_info;
   open_item_info.Set("profile_id", profile2->GetBaseName().AsUTF8Unsafe());
-  base::Value& open_apps_per_profile =
-      *open_item_info.Set("web_apps", base::Value(base::Value::Type::LIST));
+  base::Value::List open_apps_per_profile;
   base::Value::Dict web_app_info3;
   web_app_info3.Set("name", app_name3);
   web_app_info3.Set("id", app_id3);
-  open_apps_per_profile.Append(base::Value(std::move(web_app_info3)));
-  open_apps_for_given_profile.Append(base::Value(std::move(open_item_info)));
+  open_apps_per_profile.Append(std::move(web_app_info3));
+  open_item_info.Set("web_apps", std::move(open_apps_per_profile));
+  open_apps_for_given_profile.Append(std::move(open_item_info));
 
+  base::Value::Dict apps_for_given_profiles;
+  apps_for_given_profiles.Set("installed_web_apps",
+                              std::move(installed_apps_for_given_profile));
+  apps_for_given_profiles.Set("open_web_apps",
+                              std::move(open_apps_for_given_profile));
   std::string expected_info;
   JSONStringValueSerializer serializer(&expected_info);
   serializer.set_pretty_print(true);
@@ -3444,11 +3448,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   policy_map_.Set(policy::key::kRestoreOnStartup,
                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
                   policy::POLICY_SOURCE_CLOUD, base::Value(4), nullptr);
-  base::Value url_list(base::Value::Type::LIST);
+  base::Value::List url_list;
   url_list.Append(embedded_test_server()->GetURL("/title1.html").spec());
   policy_map_.Set(policy::key::kRestoreOnStartupURLs,
                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                  policy::POLICY_SOURCE_CLOUD, std::move(url_list), nullptr);
+                  policy::POLICY_SOURCE_CLOUD, base::Value(std::move(url_list)),
+                  nullptr);
   provider_.UpdateChromePolicy(policy_map_);
   base::RunLoop().RunUntilIdle();
 

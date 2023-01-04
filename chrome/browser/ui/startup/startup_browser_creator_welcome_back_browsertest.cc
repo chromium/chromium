@@ -70,11 +70,11 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
       values.Set(policy::key::kRestoreOnStartup, variant.value(),
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
                  base::Value(4), nullptr);
-      base::Value url_list(base::Value::Type::LIST);
+      base::Value::List url_list;
       url_list.Append("http://managed.site.com/");
       values.Set(policy::key::kRestoreOnStartupURLs, variant.value(),
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-                 std::move(url_list), nullptr);
+                 base::Value(std::move(url_list)), nullptr);
       provider_.UpdateChromePolicy(values);
     }
 
