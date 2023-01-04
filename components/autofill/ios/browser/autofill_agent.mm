@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -264,7 +263,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   autofill::FormData form = forms[0];
   autofillManager->OnFormSubmitted(
       form, false, autofill::mojom::SubmissionSource::FORM_SUBMISSION);
-  autofill::KeyboardAccessoryMetricsLogger::OnFormSubmitted();
 }
 
 // Invokes the form extraction script in |frame| and loads the output into the

@@ -112,10 +112,6 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_IOS)
-#include "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
-#endif
-
 namespace autofill {
 
 using base::StartsWith;
@@ -2629,12 +2625,6 @@ void BrowserAutofillManager::OnAfterProcessParsedForms(
       AutofillMetrics::FORMS_LOADED, form_types,
       client()->GetSecurityLevelForUmaHistograms(),
       /*profile_form_bitmask=*/0);
-#if BUILDFLAG(IS_IOS)
-  // Log this from same location as AutofillMetrics::FORMS_LOADED to ensure
-  // that KeyboardAccessoryButtonsIOS and UserHappiness UMA metrics will be
-  // directly comparable.
-  KeyboardAccessoryMetricsLogger::OnFormsLoaded();
-#endif
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(

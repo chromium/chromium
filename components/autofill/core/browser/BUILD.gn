@@ -476,8 +476,6 @@ static_library("browser") {
     sources += [
       "autofill_save_update_address_profile_delegate_ios.cc",
       "autofill_save_update_address_profile_delegate_ios.h",
-      "keyboard_accessory_metrics_logger.h",
-      "keyboard_accessory_metrics_logger.mm",
     ]
   }
 

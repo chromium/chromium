@@ -491,7 +491,6 @@ using base::UmaHistogramEnumeration;
   [self.consumer showAccessorySuggestions:@[]];
 
   [self.handler resetFormInputView];
-  [self.formNavigationHandler reset];
 
   self.suggestionsDisabled = NO;
   self.currentProvider = nil;

@@ -10,7 +10,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -152,20 +151,12 @@ NSArray* FindDescendantToolbarItemsForActionName(
 
 @end
 
-@implementation FormInputAccessoryViewHandler {
-  // Logs UMA metrics for the keyboard accessory.
-  std::unique_ptr<autofill::KeyboardAccessoryMetricsLogger>
-      _keyboardAccessoryMetricsLogger;
-}
+@implementation FormInputAccessoryViewHandler
 
 @synthesize webState = _webState;
 
 - (instancetype)init {
   self = [super init];
-  if (self) {
-    _keyboardAccessoryMetricsLogger.reset(
-        new autofill::KeyboardAccessoryMetricsLogger());
-  }
   return self;
 }
 
@@ -227,35 +218,30 @@ NSArray* FindDescendantToolbarItemsForActionName(
   return YES;
 }
 
-- (void)reset {
-  _keyboardAccessoryMetricsLogger.reset(
-      new autofill::KeyboardAccessoryMetricsLogger());
-}
-
 #pragma mark - FormInputNavigator
 
 - (void)closeKeyboardWithButtonPress {
-  [self closeKeyboardLoggingButtonPressed:YES];
+  [self closeKeyboardLoggingButtonPressed];
 }
 
 - (void)closeKeyboardWithoutButtonPress {
-  [self closeKeyboardLoggingButtonPressed:NO];
+  [self closeKeyboardLoggingButtonPressed];
 }
 
 - (void)selectPreviousElementWithButtonPress {
-  [self selectPreviousElementLoggingButtonPressed:YES];
+  [self selectPreviousElementLoggingButtonPressed];
 }
 
 - (void)selectPreviousElementWithoutButtonPress {
-  [self selectPreviousElementLoggingButtonPressed:NO];
+  [self selectPreviousElementLoggingButtonPressed];
 }
 
 - (void)selectNextElementWithButtonPress {
-  [self selectNextElementLoggingButtonPressed:YES];
+  [self selectNextElementLoggingButtonPressed];
 }
 
 - (void)selectNextElementWithoutButtonPress {
-  [self selectNextElementLoggingButtonPressed:NO];
+  [self selectNextElementLoggingButtonPressed];
 }
 
 - (void)fetchPreviousAndNextElementsPresenceWithCompletionHandler:
@@ -284,8 +270,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
 
 // Tries to close the keyboard sending an action to the default accessory bar.
 // If that fails, fallbacks on the view to resign the first responder status.
-// Logs metrics if loggingButtonPressed is YES.
-- (void)closeKeyboardLoggingButtonPressed:(BOOL)loggingButtonPressed {
+- (void)closeKeyboardLoggingButtonPressed {
   NSString* actionName = kFormSuggestionAssistButtonDone;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
@@ -294,15 +279,11 @@ NSArray* FindDescendantToolbarItemsForActionName(
     DCHECK(view);
     [view endEditing:YES];
   }
-  if (loggingButtonPressed) {
-    _keyboardAccessoryMetricsLogger->OnCloseButtonPressed();
-  }
 }
 
 // Tries to focus on the next element sendind an action to the default accessory
-// bar if that fails, fallbacks on JavaScript. Logs metrics if
-// loggingButtonPressed is YES.
-- (void)selectPreviousElementLoggingButtonPressed:(BOOL)loggingButtonPressed {
+// bar if that fails, fallbacks on JavaScript.
+- (void)selectPreviousElementLoggingButtonPressed {
   NSString* actionName = kFormSuggestionAssistButtonPreviousElement;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
@@ -317,15 +298,11 @@ NSArray* FindDescendantToolbarItemsForActionName(
           ->SelectPreviousElementInFrame(frame);
     }
   }
-  if (loggingButtonPressed) {
-    _keyboardAccessoryMetricsLogger->OnPreviousButtonPressed();
-  }
 }
 
 // Tries to focus on the previous element sendind an action to the default
-// accessory bar if that fails, fallbacks on JavaScript. Logs metrics if
-// loggingButtonPressed is YES.
-- (void)selectNextElementLoggingButtonPressed:(BOOL)loggingButtonPressed {
+// accessory bar if that fails, fallbacks on JavaScript.
+- (void)selectNextElementLoggingButtonPressed {
   NSString* actionName = kFormSuggestionAssistButtonNextElement;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
@@ -339,9 +316,6 @@ NSArray* FindDescendantToolbarItemsForActionName(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
           ->SelectNextElementInFrame(frame);
     }
-  }
-  if (loggingButtonPressed) {
-    _keyboardAccessoryMetricsLogger->OnNextButtonPressed();
   }
 }
 
