@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "build/build_config.h"
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -2391,16 +2390,14 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
 // Test that deserializing invalid paint ops fails silently. Skia release
 // asserts on invalid values in several places so these are not safe to pass
 // them to the SkCanvas API.
-// TODO(crbug.com/1404840): Crashes on MSAN.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_ValidateRects DISABLED_ValidateRects
-#else
-#define MAYBE_ValidateRects ValidateRects
-#endif
-TEST(PaintOpBufferTest, MAYBE_ValidateRects) {
+TEST(PaintOpBufferTest, ValidateRects) {
   size_t buffer_size = kBufferBytesPerOp;
   auto serialized = AllocateBuffer(buffer_size);
   auto deserialized = AllocateBuffer(buffer_size);
+  // We may read uninitialized gaps in this test. Initialize the buffer with a
+  // special value to avoid MSAN errors.
+  memset(serialized.get(), 0xA5, buffer_size);
+  memset(deserialized.get(), 0x5A, buffer_size);
 
   float rect_size = 0x8.765432p1;
   SkRect rect = SkRect::MakeWH(rect_size, rect_size);
