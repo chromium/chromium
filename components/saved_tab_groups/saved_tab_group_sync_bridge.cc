@@ -32,6 +32,8 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
+#include "base/logging.h"
+
 namespace {
 constexpr base::TimeDelta discard_orphaned_tabs_threshold =
     base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
@@ -354,8 +356,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
     if (existing_group) {
       // We do not have this tab. Add the tab from sync into local storage.
       model_->AddTabToGroup(existing_group->saved_guid(),
-                            SavedTabGroupTab::FromSpecifics(specifics),
-                            /*update_tab_positions=*/false);
+                            SavedTabGroupTab::FromSpecifics(specifics), 0);
     } else {
       // We reach this case if we were unable to find a group for this tab. This
       // can happen when sync sends the tab data before the group data. In this
@@ -382,8 +383,7 @@ void SavedTabGroupSyncBridge::DeleteDataFromLocalStorage(
     if (!group.ContainsTab(guid))
       continue;
 
-    model_->RemoveTabFromGroup(group.saved_guid(), guid,
-                               /*update_tab_positions=*/false);
+    model_->RemoveTabFromGroup(group.saved_guid(), guid);
     return;
   }
 }
@@ -411,8 +411,7 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
       write_batch->WriteData(tab_iterator->guid(),
                              tab_iterator->SerializeAsString());
       model_->AddTabToGroup(group->saved_guid(),
-                            SavedTabGroupTab::FromSpecifics(*tab_iterator),
-                            /*update_tab_positions=*/false);
+                            SavedTabGroupTab::FromSpecifics(*tab_iterator), 0);
       tab_iterator = tabs_missing_groups_.erase(tab_iterator);
     }
   }

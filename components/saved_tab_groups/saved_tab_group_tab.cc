@@ -14,7 +14,6 @@ SavedTabGroupTab::SavedTabGroupTab(
     SavedTabGroup* group,
     absl::optional<base::GUID> saved_tab_guid,
     absl::optional<base::Token> local_tab_id,
-    absl::optional<int> position,
     absl::optional<base::Time> creation_time_windows_epoch_micros,
     absl::optional<base::Time> update_time_windows_epoch_micros,
     absl::optional<gfx::Image> favicon)
@@ -23,7 +22,6 @@ SavedTabGroupTab::SavedTabGroupTab(
                           : base::GUID::GenerateRandomV4()),
       saved_group_guid_(group_guid),
       local_tab_id_(local_tab_id),
-      position_(position.value_or(kUnsetPosition)),
       saved_tab_group_(group),
       url_(url),
       title_(title),
@@ -68,7 +66,6 @@ SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
       base::GUID::ParseLowercase(specific.tab().group_guid());
   const GURL& url = GURL(specific.tab().url());
   const std::u16string title = base::UTF8ToUTF16(specific.tab().title());
-  int position = specific.tab().position();
 
   base::GUID guid = base::GUID::ParseLowercase(specific.guid());
   base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -77,7 +74,7 @@ SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
       base::Microseconds(specific.update_time_windows_epoch_micros()));
 
   return SavedTabGroupTab(url, title, group_guid, nullptr, guid, absl::nullopt,
-                          position, creation_time, update_time);
+                          creation_time, update_time);
 }
 
 std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::ToSpecifics()
@@ -98,7 +95,6 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::ToSpecifics()
   pb_tab->set_url(url().spec());
   pb_tab->set_group_guid(saved_group_guid().AsLowercaseString());
   pb_tab->set_title(base::UTF16ToUTF8(title()));
-  pb_tab->set_position(position());
 
   return pb_specific;
 }
