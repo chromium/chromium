@@ -17,9 +17,6 @@ type AcceleratorName = string;
  */
 type AcceleratorLookupKey = string;
 type AcceleratorLookupMap = Map<AcceleratorId, StandardAcceleratorInfo[]>;
-type AcceleratorLayoutLookupMap =
-    Map<AcceleratorCategory, Map<AcceleratorSubcategory, LayoutInfo[]>>;
-type AcceleratorNameLookupMap = Map<AcceleratorId, AcceleratorName>;
 type ReverseAcceleratorLookupMap = Map<AcceleratorLookupKey, AcceleratorId>;
 
 /**
@@ -28,6 +25,7 @@ type ReverseAcceleratorLookupMap = Map<AcceleratorLookupKey, AcceleratorId>;
  * handled in this class.
  */
 export class AcceleratorLookupManager {
+  private layoutInfoProvider = new LayoutInfoProvider();
   /**
    * A map with the key set to a concatenated string of the accelerator's
    * '{source}-{action_id}', this concatenation uniquely identifies one
@@ -36,21 +34,7 @@ export class AcceleratorLookupManager {
    * AcceleratorInfos for one accelerator.
    */
   private acceleratorLookup: AcceleratorLookupMap = new Map();
-  /**
-   * A multi-layered map container. The top-most layer is a map with the key
-   * as the accelerator's category (e.g. Tabs & Windows, Page & Web Browser).
-   * The value of the top-most map is another map in which the key is the
-   * accelerator's subcategory (e.g. System Controls, System Apps) and the value
-   * is an Array of LayoutInfo. This map serves as a way to find all
-   * LayoutInfo's of a given subsection of accelerators, where each LayoutInfo
-   * corresponds to one AcceleratorRow.
-   */
-  private acceleratorLayoutLookup: AcceleratorLayoutLookupMap = new Map();
-  /**
-   * A map with the string key formatted as `${source_id}-${action_id}` and
-   * the value as the string corresponding to the accelerator's name.
-   */
-  private acceleratorNameLookup: AcceleratorNameLookupMap = new Map();
+
   /**
    * A map with the key as a stringified version of AcceleratorKey and the
    * value as the unique string identifier `${source_id}-${action_id}`. Note
@@ -82,24 +66,17 @@ export class AcceleratorLookupManager {
   getAcceleratorLayout(
       category: AcceleratorCategory,
       subCategory: AcceleratorSubcategory): LayoutInfo[] {
-    const categoryMap = this.acceleratorLayoutLookup.get(category);
-    assert(categoryMap);
-    const subCategoryMap = categoryMap.get(subCategory);
-    assert(subCategoryMap);
-    return subCategoryMap;
+    return this.layoutInfoProvider.getAcceleratorLayout(category, subCategory);
   }
 
   getSubcategories(category: AcceleratorCategory):
       Map<AcceleratorSubcategory, LayoutInfo[]>|undefined {
-    return this.acceleratorLayoutLookup.get(category);
+    return this.layoutInfoProvider.getSubcategories(category);
   }
 
   getAcceleratorName(source: number|string, action: number|string):
       AcceleratorName {
-    const uuid: AcceleratorId = getAcceleratorId(source, action);
-    const acceleratorName = this.acceleratorNameLookup.get(uuid);
-    assert(acceleratorName);
-    return acceleratorName;
+    return this.layoutInfoProvider.getAcceleratorName(source, action);
   }
 
   /**
@@ -172,41 +149,7 @@ export class AcceleratorLookupManager {
   }
 
   setAcceleratorLayoutLookup(layoutInfoList: MojoLayoutInfo[]): void {
-    for (const entry of layoutInfoList) {
-      // This check is necessary because the layout info list may contain
-      // references to accelerators that are not always present
-      // (e.g. developer or debug mode accelerators).
-      const acceleratorExists = this.acceleratorLookup.has(
-          getAcceleratorId(entry.source, entry.action));
-      if (!acceleratorExists) {
-        continue;
-      }
-
-      if (!this.acceleratorLayoutLookup.has(entry.category)) {
-        this.acceleratorLayoutLookup.set(entry.category, new Map());
-      }
-
-      const subcatMap = this.acceleratorLayoutLookup.get(entry.category);
-      if (!subcatMap!.has(entry.subCategory)) {
-        subcatMap!.set(entry.subCategory, []);
-      }
-
-      const sanitizedLayoutInfo: LayoutInfo = {
-        source: entry.source,
-        style: entry.style,
-        description: mojoString16ToString(entry.description),
-        category: entry.category,
-        subCategory: entry.subCategory,
-        action: entry.action,
-      };
-
-      this.getAcceleratorLayout(entry.category, entry.subCategory)
-          .push(sanitizedLayoutInfo);
-
-      // Add the entry to the AcceleratorNameLookup.
-      const uuid = getAcceleratorId(entry.source, entry.action);
-      this.acceleratorNameLookup.set(uuid, sanitizedLayoutInfo.description);
-    }
+    this.layoutInfoProvider.initializeLayoutInfo(layoutInfoList);
   }
 
   replaceAccelerator(
@@ -416,8 +359,7 @@ export class AcceleratorLookupManager {
 
   reset(): void {
     this.acceleratorLookup.clear();
-    this.acceleratorNameLookup.clear();
-    this.acceleratorLayoutLookup.clear();
+    this.layoutInfoProvider.resetLookupMaps();
     this.reverseAcceleratorLookup.clear();
   }
 
@@ -433,3 +375,108 @@ export class AcceleratorLookupManager {
 }
 
 let managerInstance: AcceleratorLookupManager|null = null;
+
+
+function createSanitizedLayoutInfo(entry: MojoLayoutInfo): LayoutInfo {
+  return {...entry, description: mojoString16ToString(entry.description)};
+}
+
+type AcceleratorLayoutLookupMap =
+    Map<AcceleratorCategory, Map<AcceleratorSubcategory, LayoutInfo[]>>;
+type AcceleratorNameLookupMap = Map<AcceleratorId, AcceleratorName>;
+
+interface LayoutProviderInterface {
+  getAcceleratorLayout(
+      category: AcceleratorCategory,
+      subCategory: AcceleratorSubcategory): LayoutInfo[];
+  getSubcategories(category: AcceleratorCategory):
+      Map<AcceleratorSubcategory, LayoutInfo[]>|undefined;
+  getAcceleratorName(source: number|string, action: number|string):
+      AcceleratorName;
+  initializeLayoutInfo(layoutInfoList: MojoLayoutInfo[]): void;
+  resetLookupMaps(): void;
+}
+
+// Responsible for initializing/maintaining layout information for
+// accelerators.
+class LayoutInfoProvider implements LayoutProviderInterface {
+  /**
+   * A multi-layered map container. The top-most layer is a map with the key
+   * as the accelerator's category (e.g. Tabs & Windows, Page & Web Browser).
+   * The value of the top-most map is another map in which the key is the
+   * accelerator's subcategory (e.g. System Controls, System Apps) and the value
+   * is an Array of LayoutInfo. This map serves as a way to find all
+   * LayoutInfo's of a given subsection of accelerators, where each LayoutInfo
+   * corresponds to one AcceleratorRow.
+   */
+  private acceleratorLayoutLookup: AcceleratorLayoutLookupMap = new Map();
+  /**
+   * A map with the string key formatted as `${source_id}-${action_id}` and
+   * the value as the string corresponding to the accelerator's name.
+   */
+  private acceleratorNameLookup: AcceleratorNameLookupMap = new Map();
+
+  getAcceleratorLayout(
+      category: AcceleratorCategory,
+      subCategory: AcceleratorSubcategory): LayoutInfo[] {
+    const categoryMap = this.acceleratorLayoutLookup.get(category);
+    assert(categoryMap);
+    const subCategoryMap = categoryMap.get(subCategory);
+    assert(subCategoryMap);
+    return subCategoryMap;
+  }
+
+  getSubcategories(category: AcceleratorCategory):
+      Map<AcceleratorSubcategory, LayoutInfo[]>|undefined {
+    return this.acceleratorLayoutLookup.get(category);
+  }
+
+  getAcceleratorName(source: number|string, action: number|string):
+      AcceleratorName {
+    const uuid: AcceleratorId = getAcceleratorId(source, action);
+    const acceleratorName = this.acceleratorNameLookup.get(uuid);
+    assert(acceleratorName);
+    return acceleratorName;
+  }
+
+  initializeLayoutInfo(layoutInfoList: MojoLayoutInfo[]): void {
+    this.initializeCategoryMaps(layoutInfoList);
+    for (const entry of layoutInfoList) {
+      // The Accelerator layout table doesn't currently contain any
+      // developer/debug accelerators. Once they are added, we need to
+      // check if they should be shown or not. This assert is to ensure that
+      // this case is handled once developer/debug accelerators are added.
+      assert(
+          entry.category !== AcceleratorCategory.kDebug &&
+          entry.category !== AcceleratorCategory.kDeveloper);
+      const layoutInfo = createSanitizedLayoutInfo(entry);
+      this.getAcceleratorLayout(entry.category, entry.subCategory)
+          .push(layoutInfo);
+      this.addEntrytoAcceleratorNameLookup(
+          getAcceleratorId(entry.source, entry.action), layoutInfo.description);
+    }
+  }
+
+  initializeCategoryMaps(layoutInfoList: MojoLayoutInfo[]): void {
+    for (const entry of layoutInfoList) {
+      if (!this.acceleratorLayoutLookup.has(entry.category)) {
+        this.acceleratorLayoutLookup.set(entry.category, new Map());
+      }
+
+      const subcatMap = this.acceleratorLayoutLookup.get(entry.category);
+      if (!subcatMap!.has(entry.subCategory)) {
+        subcatMap!.set(entry.subCategory, []);
+      }
+    }
+  }
+
+  private addEntrytoAcceleratorNameLookup(uuid: string, description: string):
+      void {
+    this.acceleratorNameLookup.set(uuid, description);
+  }
+
+  resetLookupMaps(): void {
+    this.acceleratorLayoutLookup.clear();
+    this.acceleratorNameLookup.clear();
+  }
+}

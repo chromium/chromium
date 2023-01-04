@@ -161,26 +161,6 @@ suite('acceleratorLookupManagerTest', function() {
     });
   });
 
-  test('GetLayoutInfoDefaultFakeNoAccelerators', () => {
-    // TODO(jimmyxgong): Remove this test once real data is ready.
-    getProvider().setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
-    return getProvider().getAcceleratorLayoutInfos().then((result) => {
-      assertDeepEquals(fakeLayoutInfo, result.layoutInfos);
-
-      getManager().setAcceleratorLayoutLookup(result.layoutInfos);
-
-      // If accelerators have not been initialized into the
-      // AcceleratorLookupManager, we expect the subcategories to be undefined.
-      assertEquals(
-          undefined,
-          getManager().getSubcategories(AcceleratorCategory.kTabsAndWindows));
-      assertEquals(
-          undefined,
-          getManager().getSubcategories(
-              AcceleratorCategory.kPageAndWebBrowser));
-    });
-  });
-
   test('ReplaceBasicAccelerator', () => {
     getProvider().setFakeAcceleratorConfig(fakeAcceleratorConfig);
     return getProvider().getAccelerators().then((result) => {
