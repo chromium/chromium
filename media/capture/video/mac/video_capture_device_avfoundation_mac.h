@@ -81,7 +81,8 @@ FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
 // "next generation" moniker.
 CAPTURE_EXPORT
 @interface VideoCaptureDeviceAVFoundation
-    : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate> {
+    : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate,
+                AVCapturePhotoCaptureDelegate> {
  @private
   // The following attributes are set via -setCaptureHeight:width:frameRate:.
   int _frameWidth;
@@ -130,17 +131,20 @@ CAPTURE_EXPORT
   std::vector<std::unique_ptr<media::SampleBufferTransformer>>
       _scaledFrameTransformers;
 
-  // An AVDataOutput specialized for taking pictures out of |captureSession_|.
-  base::scoped_nsobject<AVCaptureStillImageOutput> _stillImageOutput;
-  size_t _takePhotoStartedCount;
-  size_t _takePhotoPendingCount;
-  size_t _takePhotoCompletedCount;
-  bool _stillImageOutputWarmupCompleted;
+  // On macOS 10.15 or later, this has type AVCapturePhotoOutput.
+  // On earlier versions, this has type AVCaptureStillImageOutput.
+  // You say tomato, I say potato.
+  base::scoped_nsobject<id> _photoOutput;
+  // Only accessed on the main thread. The takePhoto() operation is considered
+  // pending until we're ready to take another photo, which involves a PostTask
+  // back to the main thread after the photo was taken.
+  size_t _pendingTakePhotos;
   std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
       _weakPtrFactoryForTakePhoto;
 
   // For testing.
-  base::RepeatingCallback<void()> _onStillImageOutputStopped;
+  base::RepeatingCallback<void()> _onPhotoOutputStopped;
+  bool _forceLegacyStillImageApi;
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
@@ -206,8 +210,9 @@ CAPTURE_EXPORT
 // formats. This implementation recognizes NV12.
 + (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code;
 
-- (void)setOnStillImageOutputStoppedForTesting:
-    (base::RepeatingCallback<void()>)onStillImageOutputStopped;
+- (void)setOnPhotoOutputStoppedForTesting:
+    (base::RepeatingCallback<void()>)onPhotoOutputStopped;
+- (void)setForceLegacyStillImageApiForTesting:(bool)forceLegacyApi;
 
 // Use the below only for test.
 - (void)callLocked:(base::OnceClosure)lambda;
