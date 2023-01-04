@@ -9,11 +9,18 @@
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BaseLog, LogType, SerializableLog} from '../common/log_types.js';
 
-/**
- * Class to manage the log page.
- */
+/** Class to manage the log page. */
 export class LogPage {
+  constructor() {
+    /**
+     * Store whether each filter type is enabled.
+     * @private {Object<string, boolean>}
+     */
+    this.urlPrefs_ = {};
+  }
+
   static async init() {
+    LogPage.instance = new LogPage();
     /** Create filter checkboxes. */
     for (const type of Object.values(LogType)) {
       const label = document.createElement('label');
@@ -97,7 +104,7 @@ export class LogPage {
     for (const type of Object.values(LogType)) {
       const typeFilter = type + 'Filter';
       const element = document.getElementById(typeFilter);
-      element.checked = LogPage.urlPrefs_[typeFilter];
+      element.checked = LogPage.instance.urlPrefs_[typeFilter];
     }
 
     const log = await BackgroundBridge.LogStore.getLogs();
@@ -111,7 +118,7 @@ export class LogPage {
    */
   static updateLog(log, div) {
     for (let i = 0; i < log.length; i++) {
-      if (!LogPage.urlPrefs_[log[i].logType + 'Filter']) {
+      if (!LogPage.instance.urlPrefs_[log[i].logType + 'Filter']) {
         continue;
       }
 
@@ -158,21 +165,21 @@ export class LogPage {
    */
   static setFilterTypeEnabled(typeFilter, checked) {
     if (checked == null || checked === 'true') {
-      LogPage.urlPrefs_[typeFilter] = true;
+      LogPage.instance.urlPrefs_[typeFilter] = true;
     } else {
-      LogPage.urlPrefs_[typeFilter] = false;
+      LogPage.instance.urlPrefs_[typeFilter] = false;
     }
   }
 
   /**
-   * Create URL parameter based on LogPage.urlPrefs_.
+   * Create URL parameter based on LogPage.instance.urlPrefs_.
    * @return {string}
    */
   static createUrlParams() {
     const urlParams = [];
     for (const type of Object.values(LogType)) {
       const typeFilter = type + 'Filter';
-      urlParams.push(typeFilter + '=' + LogPage.urlPrefs_[typeFilter]);
+      urlParams.push(typeFilter + '=' + LogPage.instance.urlPrefs_[typeFilter]);
     }
     return '?' + urlParams.join('&');
   }
@@ -196,14 +203,9 @@ export class LogPage {
   }
 }
 
-/**
- * Store the preferences of filters.
- * @type {Object<string, boolean>}
- * @private
- */
-LogPage.urlPrefs_ = {};
-
-
 document.addEventListener('DOMContentLoaded', async function() {
   await LogPage.init();
 }, false);
+
+/** @type {LogPage} */
+LogPage.instance;
