@@ -160,9 +160,9 @@ void AddAccountToPrefs(PrefService* prefs,
   // Account shouldn't already exist.
   DCHECK(!IsAccountAvailableInArc(prefs, gaia_id).has_value());
 
-  base::Value account_entry(base::Value::Type::DICTIONARY);
-  account_entry.SetKey(account_manager::prefs::kIsAvailableInArcKey,
-                       base::Value(is_available_in_arc));
+  base::Value::Dict account_entry;
+  account_entry.Set(account_manager::prefs::kIsAvailableInArcKey,
+                    base::Value(is_available_in_arc));
 
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
@@ -388,7 +388,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
     return;
 
   prefs_->Set(account_manager::prefs::kAccountAppsAvailability,
-              base::Value(base::Value::Type::DICTIONARY));
+              base::Value(base::Value::Type::DICT));
 
   ScopedDictPrefUpdate update(prefs_,
                               account_manager::prefs::kAccountAppsAvailability);

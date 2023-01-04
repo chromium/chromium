@@ -109,11 +109,11 @@ TEST_F(AppListRecommendAppsFetcherImplTest, ResponseWithLeadeingBrackets) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
+  base::Value::List expected_apps;
+  base::Value::Dict app;
+  app.Set("name", base::Value("Test app 1"));
+  app.Set("icon", base::Value("http://test.app"));
+  app.Set("package_name", base::Value("test.app1"));
   expected_apps.Append(std::move(app));
 
   EXPECT_EQ(expected_apps, delegate_.loaded_apps());
@@ -172,15 +172,15 @@ TEST_F(AppListRecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app1(base::Value::Type::DICTIONARY);
-  app1.SetKey("name", base::Value("Test app 1"));
-  app1.SetKey("icon", base::Value("http://test.app"));
-  app1.SetKey("package_name", base::Value("test.app1"));
+  base::Value::List expected_apps;
+  base::Value::Dict app1;
+  app1.Set("name", base::Value("Test app 1"));
+  app1.Set("icon", base::Value("http://test.app"));
+  app1.Set("package_name", base::Value("test.app1"));
   expected_apps.Append(std::move(app1));
 
-  base::Value app2(base::Value::Type::DICTIONARY);
-  app2.SetKey("package_name", base::Value("test.app2"));
+  base::Value::Dict app2;
+  app2.Set("package_name", base::Value("test.app2"));
   expected_apps.Append(std::move(app2));
 
   EXPECT_EQ(expected_apps, delegate_.loaded_apps());
@@ -209,15 +209,15 @@ TEST_F(AppListRecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app1(base::Value::Type::DICTIONARY);
-  app1.SetKey("name", base::Value("Test app 1"));
-  app1.SetKey("icon", base::Value("http://test.app"));
-  app1.SetKey("package_name", base::Value("test.app1"));
+  base::Value::List expected_apps;
+  base::Value::Dict app1;
+  app1.Set("name", base::Value("Test app 1"));
+  app1.Set("icon", base::Value("http://test.app"));
+  app1.Set("package_name", base::Value("test.app1"));
   expected_apps.Append(std::move(app1));
 
-  base::Value app2(base::Value::Type::DICTIONARY);
-  app2.SetKey("package_name", base::Value("test.app2"));
+  base::Value::Dict app2;
+  app2.Set("package_name", base::Value("test.app2"));
   expected_apps.Append(std::move(app2));
 
   EXPECT_EQ(expected_apps, delegate_.loaded_apps());

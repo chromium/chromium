@@ -1727,9 +1727,9 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
-        *pref_val.FindKeyOfType(kCertProfileId, base::Value::Type::DICTIONARY),
-        &cloud_policy_client_, MakeInvalidator(&mock_invalidator),
-        GetStateChangeCallback(), GetResultCallback());
+        *pref_val.GetDict().FindDict(kCertProfileId), &cloud_policy_client_,
+        MakeInvalidator(&mock_invalidator), GetStateChangeCallback(),
+        GetResultCallback());
   }
 
   // Retry start csr request, receive response, try sign challenge.
@@ -1813,9 +1813,9 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
-        *pref_val.FindKeyOfType(kCertProfileId, base::Value::Type::DICTIONARY),
-        &cloud_policy_client_, std::move(mock_invalidator_obj),
-        GetStateChangeCallback(), GetResultCallback());
+        *pref_val.GetDict().FindDict(kCertProfileId), &cloud_policy_client_,
+        std::move(mock_invalidator_obj), GetStateChangeCallback(),
+        GetResultCallback());
   }
 
   // Retry download cert request, receive response, try import certificate.

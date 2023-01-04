@@ -233,7 +233,7 @@ CertProvisioningWorkerFactory::Deserialize(
     CertScope cert_scope,
     Profile* profile,
     PrefService* pref_service,
-    const base::Value& saved_worker,
+    const base::Value::Dict& saved_worker,
     policy::CloudPolicyClient* cloud_policy_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
     base::RepeatingClosure state_change_callback,

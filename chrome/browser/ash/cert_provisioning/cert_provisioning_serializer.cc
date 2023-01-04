@@ -39,73 +39,71 @@ bool ConvertToEnum(int value, T* dst) {
 }
 
 template <typename T>
-bool DeserializeEnumValue(const base::Value& parent_value,
+bool DeserializeEnumValue(const base::Value::Dict& parent_value,
                           const char* value_name,
                           T* dst) {
-  const base::Value* serialized_enum =
-      parent_value.FindKeyOfType(value_name, base::Value::Type::INTEGER);
+  const absl::optional<int> serialized_enum = parent_value.FindInt(value_name);
   if (!serialized_enum) {
     return false;
   }
-  return ConvertToEnum<T>(serialized_enum->GetInt(), dst);
+  return ConvertToEnum<T>(*serialized_enum, dst);
 }
 
-bool DeserializeStringValue(const base::Value& parent_value,
+bool DeserializeStringValue(const base::Value::Dict& parent_value,
                             const char* value_name,
                             std::string* dst) {
-  const base::Value* serialized_string =
-      parent_value.FindKeyOfType(value_name, base::Value::Type::STRING);
+  const std::string* serialized_string = parent_value.FindString(value_name);
   if (!serialized_string) {
     return false;
   }
-  *dst = serialized_string->GetString();
+  *dst = *serialized_string;
   return true;
 }
 
-bool DeserializeBoolValue(const base::Value& parent_value,
+bool DeserializeBoolValue(const base::Value::Dict& parent_value,
                           const char* value_name,
                           bool* dst) {
-  const base::Value* serialized_bool =
-      parent_value.FindKeyOfType(value_name, base::Value::Type::BOOLEAN);
+  const absl::optional<bool> serialized_bool =
+      parent_value.FindBool(value_name);
   if (!serialized_bool) {
     return false;
   }
-  *dst = serialized_bool->GetBool();
+  *dst = *serialized_bool;
   return true;
 }
 
-bool DeserializeRenewalPeriod(const base::Value& parent_value,
+bool DeserializeRenewalPeriod(const base::Value::Dict& parent_value,
                               const char* value_name,
                               base::TimeDelta* dst) {
-  absl::optional<int> serialized_time = parent_value.FindIntKey(value_name);
+  absl::optional<int> serialized_time = parent_value.FindInt(value_name);
   *dst = base::Seconds(serialized_time.value_or(0));
   return true;
 }
 
-base::Value SerializeCertProfile(const CertProfile& profile) {
+base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
   static_assert(CertProfile::kVersion == 5, "This function should be updated");
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey(kKeyNameCertProfileId, profile.profile_id);
-  result.SetStringKey(kKeyNameCertProfileName, profile.name);
-  result.SetStringKey(kKeyNameCertProfileVersion, profile.policy_version);
-  result.SetBoolKey(kKeyNameCertProfileVaEnabled, profile.is_va_enabled);
+  base::Value::Dict result;
+  result.Set(kKeyNameCertProfileId, profile.profile_id);
+  result.Set(kKeyNameCertProfileName, profile.name);
+  result.Set(kKeyNameCertProfileVersion, profile.policy_version);
+  result.Set(kKeyNameCertProfileVaEnabled, profile.is_va_enabled);
 
   if (!profile.renewal_period.is_zero()) {
-    result.SetIntKey(kKeyNameCertProfileRenewalPeriod,
-                     profile.renewal_period.InSeconds());
+    result.Set(kKeyNameCertProfileRenewalPeriod,
+               static_cast<int>(profile.renewal_period.InSeconds()));
   }
 
   return result;
 }
 
-bool DeserializeCertProfile(const base::Value& parent_value,
+bool DeserializeCertProfile(const base::Value::Dict& parent_value,
                             const char* value_name,
                             CertProfile* dst) {
   static_assert(CertProfile::kVersion == 5, "This function should be updated");
 
-  const base::Value* serialized_profile =
-      parent_value.FindKeyOfType(value_name, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* serialized_profile =
+      parent_value.FindDict(value_name);
 
   if (!serialized_profile) {
     return false;
@@ -134,18 +132,18 @@ base::Value SerializePublicKey(const std::vector<uint8_t>& public_key) {
   return base::Value(base::Base64Encode(public_key));
 }
 
-bool DeserializePublicKey(const base::Value& parent_value,
+bool DeserializePublicKey(const base::Value::Dict& parent_value,
                           const char* value_name,
                           std::vector<uint8_t>* dst) {
-  const base::Value* serialized_public_key =
-      parent_value.FindKeyOfType(value_name, base::Value::Type::STRING);
+  const std::string* serialized_public_key =
+      parent_value.FindString(value_name);
 
   if (!serialized_public_key) {
     return false;
   }
 
   absl::optional<std::vector<uint8_t>> public_key =
-      base::Base64Decode(serialized_public_key->GetString());
+      base::Base64Decode(*serialized_public_key);
   if (!public_key) {
     return false;
   }
@@ -184,24 +182,23 @@ void CertProvisioningSerializer::DeleteWorkerFromPrefs(
 //   "public_key": <string>,
 //   "invalidation_topic": <string>,
 // }
-base::Value CertProvisioningSerializer::SerializeWorker(
+base::Value::Dict CertProvisioningSerializer::SerializeWorker(
     const CertProvisioningWorkerImpl& worker) {
   static_assert(CertProvisioningWorkerImpl::kVersion == 1,
                 "This function should be updated");
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
-  result.SetKey(kKeyNameCertProfile,
-                SerializeCertProfile(worker.cert_profile_));
-  result.SetIntKey(kKeyNameCertScope, static_cast<int>(worker.cert_scope_));
-  result.SetIntKey(kKeyNameState, static_cast<int>(worker.state_));
-  result.SetKey(kKeyNamePublicKey, SerializePublicKey(worker.public_key_));
-  result.SetStringKey(kKeyNameInvalidationTopic, worker.invalidation_topic_);
+  result.Set(kKeyNameCertProfile, SerializeCertProfile(worker.cert_profile_));
+  result.Set(kKeyNameCertScope, static_cast<int>(worker.cert_scope_));
+  result.Set(kKeyNameState, static_cast<int>(worker.state_));
+  result.Set(kKeyNamePublicKey, SerializePublicKey(worker.public_key_));
+  result.Set(kKeyNameInvalidationTopic, worker.invalidation_topic_);
   return result;
 }
 
 bool CertProvisioningSerializer::DeserializeWorker(
-    const base::Value& saved_worker,
+    const base::Value::Dict& saved_worker,
     CertProvisioningWorkerImpl* worker) {
   static_assert(CertProvisioningWorkerImpl::kVersion == 1,
                 "This function should be updated");

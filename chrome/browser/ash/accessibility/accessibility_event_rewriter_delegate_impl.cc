@@ -129,9 +129,9 @@ void AccessibilityEventRewriterDelegateImpl::SendPointScanPoint(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  base::Value point_dict(base::Value::Type::DICTIONARY);
-  point_dict.SetDoubleKey("x", point.x());
-  point_dict.SetDoubleKey("y", point.y());
+  base::Value::Dict point_dict;
+  point_dict.Set("x", point.x());
+  point_dict.Set("y", point.y());
 
   base::Value::List event_args;
   event_args.Append(std::move(point_dict));

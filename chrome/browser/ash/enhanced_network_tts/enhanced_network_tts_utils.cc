@@ -38,12 +38,12 @@ float ClampRateToLimits(float rate) {
 }  // namespace
 
 std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
-  base::Value request(base::Value::Type::DICTIONARY);
+  base::Value::Dict request;
 
   // utterance is sent as {'text': {'text_parts': [<utterance>]} }
-  base::Value text_parts(base::Value::Type::LIST);
+  base::Value::List text_parts;
   text_parts.Append(std::move(tts_request->utterance));
-  request.SetPath(kTextPartsPath, std::move(text_parts));
+  request.SetByDottedPath(kTextPartsPath, std::move(text_parts));
 
   // Speech rate, Voice and language are sent as
   // {
@@ -66,26 +66,27 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
 
   // Add speech rate.
   const float rate = ClampRateToLimits(tts_request->rate);
-  request.SetPath(kSpeechFactorPath, base::Value(rate));
+  request.SetByDottedPath(kSpeechFactorPath, base::Value(rate));
 
   // The voice and language have to be set together to be valid.
   if (tts_request->voice.has_value() && tts_request->lang.has_value()) {
     // Force the server to produce audio based on the current lang.
-    request.SetPath(kForceLanguagePath, base::Value(tts_request->lang.value()));
+    request.SetByDottedPath(kForceLanguagePath,
+                            base::Value(tts_request->lang.value()));
 
     // Produce 'voice_criteria_and_selections'.
-    base::Value selection(base::Value::Type::DICTIONARY);
-    selection.SetKey(kDefaultVoiceKey,
-                     base::Value(std::move(tts_request->voice.value())));
-    base::Value criteria(base::Value::Type::DICTIONARY);
-    criteria.SetKey(kLanguageKey, base::Value(tts_request->lang.value()));
-    base::Value voice_selection(base::Value::Type::DICTIONARY);
-    voice_selection.SetKey(kSelectionKey, std::move(selection));
-    voice_selection.SetKey(kCriteriaKey, std::move(criteria));
-    base::Value voice_criteria_and_selections(base::Value::Type::LIST);
+    base::Value::Dict selection;
+    selection.Set(kDefaultVoiceKey,
+                  base::Value(std::move(tts_request->voice.value())));
+    base::Value::Dict criteria;
+    criteria.Set(kLanguageKey, base::Value(tts_request->lang.value()));
+    base::Value::Dict voice_selection;
+    voice_selection.Set(kSelectionKey, std::move(selection));
+    voice_selection.Set(kCriteriaKey, std::move(criteria));
+    base::Value::List voice_criteria_and_selections;
     voice_criteria_and_selections.Append(std::move(voice_selection));
-    request.SetPath(kVoiceCriteriaAndSelectionsPath,
-                    std::move(voice_criteria_and_selections));
+    request.SetByDottedPath(kVoiceCriteriaAndSelectionsPath,
+                            std::move(voice_criteria_and_selections));
   }
 
   std::string json_request;

@@ -24,11 +24,12 @@ class CertProvisioningSerializer {
   // Deserializes saved worker state |saved_worker| into a just created
   // |worker|. Consider using CertProvisioningWorkerFactory::Deserialize
   // instead of calling it directly.
-  static bool DeserializeWorker(const base::Value& saved_worker,
+  static bool DeserializeWorker(const base::Value::Dict& saved_worker,
                                 CertProvisioningWorkerImpl* worker);
 
  private:
-  static base::Value SerializeWorker(const CertProvisioningWorkerImpl& worker);
+  static base::Value::Dict SerializeWorker(
+      const CertProvisioningWorkerImpl& worker);
 };
 
 }  // namespace cert_provisioning

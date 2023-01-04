@@ -297,7 +297,7 @@ void CertProvisioningSchedulerImpl::DeserializeWorkers() {
       pref_service_->GetDict(GetPrefNameForSerialization(cert_scope_));
 
   for (const auto kv : saved_workers) {
-    const base::Value& saved_worker = kv.second;
+    const base::Value::Dict& saved_worker = kv.second.GetDict();
 
     std::unique_ptr<CertProvisioningWorker> worker =
         CertProvisioningWorkerFactory::Get()->Deserialize(

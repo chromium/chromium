@@ -179,15 +179,14 @@ bool TpmChallengeKeyResult::operator!=(
 
 std::ostream& operator<<(std::ostream& os,
                          const TpmChallengeKeyResult& result) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
 
-  value.SetIntKey("result_code", static_cast<int>(result.result_code));
+  value.Set("result_code", static_cast<int>(result.result_code));
   if (!result.IsSuccess()) {
-    value.SetStringKey("error_message", result.GetErrorMessage());
+    value.Set("error_message", result.GetErrorMessage());
   }
-  value.SetStringKey("public_key", Base64EncodeStr(result.public_key));
-  value.SetStringKey("challenge_response",
-                     Base64EncodeStr(result.challenge_response));
+  value.Set("public_key", Base64EncodeStr(result.public_key));
+  value.Set("challenge_response", Base64EncodeStr(result.challenge_response));
 
   os << value;
   return os;

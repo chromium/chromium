@@ -536,10 +536,11 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
           "public_key": "fake_public_key_1",
           "state": 1
         })");
-  base::Value all_saved_workers(base::Value::Type::DICTIONARY);
-  all_saved_workers.SetKey("cert_profile_1", saved_worker.Clone());
+  base::Value::Dict all_saved_workers;
+  all_saved_workers.Set("cert_profile_1", saved_worker.Clone());
 
-  pref_service_.Set(GetPrefNameForSerialization(kCertScope), all_saved_workers);
+  pref_service_.SetDict(GetPrefNameForSerialization(kCertScope),
+                        std::move(all_saved_workers));
 
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectDeserializeReturnMock(kCertScope, saved_worker);
@@ -796,11 +797,11 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
           "public_key": "fake_public_key_1",
           "state": 1
         })");
-    base::Value all_saved_workers(base::Value::Type::DICTIONARY);
-    all_saved_workers.SetKey("cert_profile_1", saved_worker.Clone());
+    base::Value::Dict all_saved_workers;
+    all_saved_workers.Set("cert_profile_1", saved_worker.Clone());
 
-    pref_service_.Set(GetPrefNameForSerialization(kCertScope),
-                      all_saved_workers);
+    pref_service_.SetDict(GetPrefNameForSerialization(kCertScope),
+                          std::move(all_saved_workers));
 
     MockCertProvisioningWorker* worker =
         mock_factory_.ExpectDeserializeReturnMock(kCertScope, saved_worker);

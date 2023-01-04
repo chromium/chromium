@@ -4116,43 +4116,43 @@ bool CrostiniManager::RegisterCreateOptions(
     return false;
   }
 
-  base::Value new_create_options(base::Value::Type::DICT);
+  base::Value::Dict new_create_options;
 
-  base::Value share_paths(base::Value::Type::LIST);
+  base::Value::List share_paths;
   for (const base::FilePath& path : options.share_paths) {
     share_paths.Append(path.value());
   }
-  new_create_options.SetKey(prefs::kCrostiniCreateOptionsSharePathsKey,
-                            std::move(share_paths));
+  new_create_options.Set(prefs::kCrostiniCreateOptionsSharePathsKey,
+                         std::move(share_paths));
 
   if (options.container_username.has_value()) {
-    new_create_options.SetKey(prefs::kCrostiniCreateOptionsContainerUsernameKey,
-                              base::Value(options.container_username.value()));
+    new_create_options.Set(prefs::kCrostiniCreateOptionsContainerUsernameKey,
+                           base::Value(options.container_username.value()));
   }
   if (options.disk_size_bytes.has_value()) {
-    new_create_options.SetKey(
+    new_create_options.Set(
         prefs::kCrostiniCreateOptionsDiskSizeBytesKey,
         base::Value(base::NumberToString(options.disk_size_bytes.value())));
   }
   if (options.image_server_url.has_value()) {
-    new_create_options.SetKey(prefs::kCrostiniCreateOptionsImageServerUrlKey,
-                              base::Value(options.image_server_url.value()));
+    new_create_options.Set(prefs::kCrostiniCreateOptionsImageServerUrlKey,
+                           base::Value(options.image_server_url.value()));
   }
   if (options.image_alias.has_value()) {
-    new_create_options.SetKey(prefs::kCrostiniCreateOptionsImageAliasKey,
-                              base::Value(options.image_alias.value()));
+    new_create_options.Set(prefs::kCrostiniCreateOptionsImageAliasKey,
+                           base::Value(options.image_alias.value()));
   }
   if (options.ansible_playbook.has_value()) {
-    new_create_options.SetKey(
+    new_create_options.Set(
         prefs::kCrostiniCreateOptionsAnsiblePlaybookKey,
         base::Value(options.ansible_playbook.value().value()));
   }
-  new_create_options.SetKey(prefs::kCrostiniCreateOptionsUsedKey,
-                            base::Value(false));
+  new_create_options.Set(prefs::kCrostiniCreateOptionsUsedKey,
+                         base::Value(false));
 
   guest_os::UpdateContainerPref(profile_, container_id,
                                 guest_os::prefs::kContainerCreateOptions,
-                                std::move(new_create_options));
+                                base::Value(std::move(new_create_options)));
   return true;
 }
 
