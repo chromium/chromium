@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -50,6 +51,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   device_info.user_type = "unmanaged";
   device_info.version_info.ash_chrome = "10.10.10";
   device_info.version_info.platform = "12345.0.0";
+  device_info.version_info.channel = version_info::Channel::STABLE;
   device_info.locale = "en-US";
 
   std::string method;
@@ -84,6 +86,8 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
             apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNMANAGED);
   EXPECT_EQ(request.chrome_os_version().ash_chrome(), "10.10.10");
   EXPECT_EQ(request.chrome_os_version().platform(), "12345.0.0");
+  EXPECT_EQ(request.chrome_os_version().channel(),
+            apps::proto::AppProvisioningListAppsRequest::CHANNEL_STABLE);
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {

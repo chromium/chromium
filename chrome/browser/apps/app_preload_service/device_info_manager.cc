@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/version/version_loader.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -32,6 +33,7 @@ DeviceInfoManager::~DeviceInfoManager() = default;
 //  - board
 //  - version_info.ash_chrome
 //  - user_type
+//  - channel
 // The method then asynchronously populates:
 //  - version_info.platform (OnPlatformVersionNumber)
 //  - model (OnModelInfo)
@@ -47,6 +49,7 @@ void DeviceInfoManager::GetDeviceInfo(
   device_info.board = base::SysInfo::HardwareModelName();
   device_info.version_info.ash_chrome = version_info::GetVersionNumber();
   device_info.user_type = apps::DetermineUserType(profile_);
+  device_info.version_info.channel = chrome::GetChannel();
 
   // Locale
   PrefService* prefs = profile_->GetPrefs();

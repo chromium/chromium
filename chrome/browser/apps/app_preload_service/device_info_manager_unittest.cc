@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +34,7 @@ class DeviceInfoManagerTest : public testing::Test {
     ASSERT_FALSE(device_info.user_type.empty());
     ASSERT_FALSE(device_info.version_info.ash_chrome.empty());
     ASSERT_FALSE(device_info.version_info.platform.empty());
+    ASSERT_EQ(device_info.version_info.channel, chrome::GetChannel());
     ASSERT_EQ(device_info.locale, kTestLocale);
     std::move(on_complete).Run();
   }

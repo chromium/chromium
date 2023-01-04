@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
+#include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -24,6 +25,8 @@ struct VersionInfo {
   // The ChromeOS platform version of the device. e.g. "15088.0.0"
   // The value is set to "unknown" if the version was not known.
   std::string platform;
+  // The channel of the build.
+  version_info::Channel channel = version_info::Channel::UNKNOWN;
 };
 
 struct DeviceInfo {
