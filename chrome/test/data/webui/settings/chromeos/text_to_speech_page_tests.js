@@ -86,4 +86,21 @@ suite('TextToSpeechPageTests', function() {
       }
     });
   });
+
+  test('pdf ocr pref enabled when pdf ocr enabled', async function() {
+    loadTimeData.overrideValues({pdfOcrEnabled: true});
+    await initPage();
+
+    const pdfOcrToggle = page.shadowRoot.querySelector('#crosPdfOcrToggle');
+    assertTrue(!!pdfOcrToggle);
+    assertTrue(isVisible(pdfOcrToggle));
+    assertFalse(pdfOcrToggle.checked);
+    assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+    pdfOcrToggle.click();
+
+    await waitBeforeNextRender(page);
+    flush();
+    assertTrue(pdfOcrToggle.checked);
+    assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+  });
 });

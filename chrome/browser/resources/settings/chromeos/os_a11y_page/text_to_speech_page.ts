@@ -53,6 +53,16 @@ class SettingsTextToSpeechPageElement extends
   static get properties() {
     return {
       /**
+       * Whether to show the toggle button for PDF OCR.
+       */
+      showPdfOcrSetting_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('pdfOcrEnabled');
+        },
+      },
+
+      /**
        * |hasKeyboard_| starts undefined so observer doesn't trigger until it
        * has been populated.
        */
@@ -83,6 +93,7 @@ class SettingsTextToSpeechPageElement extends
   private hasKeyboard_: boolean;
   private route_: Route;
   private textToSpeechBrowserProxy_: TextToSpeechPageBrowserProxy;
+  private showPdfOcrSetting_: boolean;
 
   constructor() {
     super();

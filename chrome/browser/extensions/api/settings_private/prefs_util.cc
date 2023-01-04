@@ -477,6 +477,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kLiveCaptionLanguageCode] =
       settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[::prefs::kAccessibilityPdfOcrAlwaysActive] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 
   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =

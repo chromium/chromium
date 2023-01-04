@@ -66,6 +66,14 @@
     </template>
   </div>
 </iron-collapse>
+<template is="dom-if" if="[[showPdfOcrSetting_]]">
+  <settings-toggle-button id="crosPdfOcrToggle"
+      class="hr"
+      pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
+      label="$i18n{pdfOcrTitle}"
+      sub-label="$i18n{pdfOcrSubtitle}">
+  </settings-toggle-button>
+</template>
 
 <cr-link-row id="ttsSubpageButton" class="hr"
     label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsTap_"

@@ -686,6 +686,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"onScreenKeyboardLabel", IDS_SETTINGS_ON_SCREEN_KEYBOARD_LABEL},
       {"optionsInMenuDescription", IDS_SETTINGS_OPTIONS_IN_MENU_DESCRIPTION},
       {"optionsInMenuLabel", IDS_SETTINGS_OPTIONS_IN_MENU_LABEL},
+      {"pdfOcrSubtitle", IDS_SETTINGS_PDF_OCR_SUBTITLE},
+      {"pdfOcrTitle", IDS_SETTINGS_PDF_OCR_TITLE},
       {"percentage", IDS_SETTINGS_PERCENTAGE},
       {"saturationLabel", IDS_SETTINGS_SATURATION_LABEL},
       {"screenMagnifierDescriptionOff",
@@ -971,6 +973,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled());
+
+  html_source->AddBoolean("pdfOcrEnabled",
+                          base::FeatureList::IsEnabled(::features::kPdfOcr));
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }

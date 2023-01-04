@@ -95,6 +95,16 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         value: false,
       },
 
+      /**
+       * Whether to show pdf ocr settings.
+       */
+      showPdfOcrToggle_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('pdfOcrEnabled');
+        },
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -135,6 +145,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private showAccessibilityLabelsSetting_: boolean;
   private captionSettingsOpensExternally_: boolean;
 
+
   override ready() {
     super.ready();
 
@@ -169,6 +180,16 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         (event.target as SettingsToggleButtonElement).checked;
     if (a11yImageLabelsOn) {
       chrome.send('confirmA11yImageLabels');
+    }
+  }
+
+  private onPdfOcrChange_(event: Event) {
+    const pdfOcrOn = (event.target as SettingsToggleButtonElement).checked;
+    if (pdfOcrOn) {
+      // TODO(crbug.com/1393069): Downloads a pdf ocr model if not yet
+      // downloaded.
+      console.error(
+          'Need to check a pdf ocr model and download it if necessary');
     }
   }
 
