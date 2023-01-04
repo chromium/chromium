@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// http://crbug.com/269623
-// http://openradar.appspot.com/14999594
+// https://crbug.com/269623
+// https://openradar.appspot.com/14999594
 //
 // When the default version of close used on Mac OS X fails with EINTR, the
 // file descriptor is not in a deterministic state. It may have been closed,

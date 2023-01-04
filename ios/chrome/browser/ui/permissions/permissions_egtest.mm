@@ -28,7 +28,7 @@
 #endif
 
 // TODO(crbug.com/1316705): Re-enable tests on devices once
-// "https://openradar.appspot.com/radar?id=5520542106910720" is fixed.
+// https://openradar.appspot.com/FB9858932 is fixed.
 #if TARGET_OS_SIMULATOR
 
 namespace {

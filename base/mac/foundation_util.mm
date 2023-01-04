@@ -29,7 +29,7 @@ extern "C" {
 CFTypeID SecKeyGetTypeID();
 #if !BUILDFLAG(IS_IOS)
 // The NSFont/CTFont toll-free bridging is broken before 10.15.
-// http://www.openradar.me/15341349 rdar://15341349
+// https://openradar.appspot.com/15341349
 //
 // TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
 // minimum OS for Chromium, remove this SPI declaration.
@@ -304,7 +304,7 @@ CF_TO_NS_CAST_DEFN(CFURL, NSURL)
 CF_TO_NS_CAST_DEFN(CTFont, UIFont)
 #else
 // The NSFont/CTFont toll-free bridging is broken before 10.15.
-// http://www.openradar.me/15341349 rdar://15341349
+// https://openradar.appspot.com/15341349
 //
 // TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
 // minimum OS for Chromium, remove this specialization and replace it with just:
@@ -373,7 +373,7 @@ CF_CAST_DEFN(CTRun)
 CF_CAST_DEFN(CTFont)
 #else
 // The NSFont/CTFont toll-free bridging is broken before 10.15.
-// http://www.openradar.me/15341349 rdar://15341349
+// https://openradar.appspot.com/15341349
 //
 // TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
 // minimum OS for Chromium, remove this specialization and the #if IOS above,

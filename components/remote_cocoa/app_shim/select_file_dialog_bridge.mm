@@ -257,7 +257,7 @@ void SelectFileDialogBridge::Show(
   show_callback_ = std::move(initialize_callback);
   type_ = type;
   // Note: we need to retain the dialog as |owning_window_| can be null.
-  // (See http://crbug.com/29213 .)
+  // (See https://crbug.com/29213 .)
   if (type_ == SelectFileDialogType::kSaveAsFile)
     panel_.reset([[NSSavePanel savePanel] retain]);
   else
@@ -404,8 +404,8 @@ void SelectFileDialogBridge::SetAccessoryView(
         default_extension_index = i;
 
       // Crash reports suggest that CreateUTIFromExtension may return nil. Hence
-      // we nil check before adding to |file_type_set|. See crbug.com/630101 and
-      // rdar://27490414.
+      // we nil check before adding to |file_type_set|. See
+      // https://crbug.com/630101 and rdar://27490414.
       base::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
       if (uti) {
         NSString* uti_ns = base::mac::CFToNSCast(uti.get());
@@ -416,7 +416,7 @@ void SelectFileDialogBridge::SetAccessoryView(
       // Always allow the extension itself, in case the UTI doesn't map
       // back to the original extension correctly. This occurs with dynamic
       // UTIs on 10.7 and 10.8.
-      // See http://crbug.com/148840, http://openradar.me/12316273
+      // See https://crbug.com/148840, https://openradar.appspot.com/12316273
       base::ScopedCFTypeRef<CFStringRef> ext_cf(
           base::SysUTF8ToCFStringRef(ext));
       NSString* ext_ns = base::mac::CFToNSCast(ext_cf.get());

@@ -28,7 +28,7 @@ class TtsPlatformImplMac;
 // two reasons:
 // 1. To associate delegate callbacks with a particular utterance,
 //    without assuming anything undocumented about the protocol.
-// 2. To work around http://openradar.appspot.com/radar?id=2854403,
+// 2. To work around https://openradar.appspot.com/13425549,
 //    where Nuance voices don't retain the utterance string and
 //    crash when trying to call willSpeakWord.
 @interface SingleUseSpeechSynthesizer : NSSpeechSynthesizer
