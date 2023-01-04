@@ -10,12 +10,7 @@ namespace features {
 // user-identifying information is used during the prefetch.
 BASE_FEATURE(kIsolatePrerenders,
              "IsolatePrerenders",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Forces Chrome to probe the origin before reusing a cached response.
 BASE_FEATURE(kIsolatePrerendersMustProbeOrigin,

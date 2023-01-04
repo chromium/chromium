@@ -148,30 +148,7 @@ class PrefetcherTest : public RenderViewHostTestHarness {
   std::unique_ptr<TestPrefetchService> prefetch_service_;
 };
 
-TEST_F(PrefetcherTest, PrefetcherWithDelegate) {
-  MockContentBrowserClient browser_client;
-  auto prefetcher = Prefetcher(GetPrimaryMainFrame());
-  auto* delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(delegate != nullptr);
-
-  // Create list of SpeculationCandidatePtrs.
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-
-  auto candidate1 = blink::mojom::SpeculationCandidate::New();
-  candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
-  candidate1->requires_anonymous_client_ip_when_cross_origin = true;
-  candidate1->url = GetCrossOriginUrl("/candidate1.html");
-  candidate1->referrer = blink::mojom::Referrer::New();
-  candidates.push_back(std::move(candidate1));
-
-  prefetcher.ProcessCandidatesForPrefetch(candidates);
-  EXPECT_EQ(1u, delegate->Candidates().size());
-
-  EXPECT_TRUE(prefetcher.IsPrefetchAttemptFailedOrDiscarded(
-      GetCrossOriginUrl("/candidate1.html")));
-}
-
-TEST_F(PrefetcherTest, PrefetcherWithoutDelegate) {
+TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       content::features::kPrefetchUseContentRefactor,

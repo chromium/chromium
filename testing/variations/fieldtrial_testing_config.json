@@ -8748,24 +8748,6 @@
             ]
         }
     ],
-    "PrefetchUseContentRefactor": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefetchUseContentRefactor"
-                    ],
-                    "disable_features": [
-                        "IsolatePrerenders"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreloadCookies": [
         {
             "platforms": [
