@@ -94,8 +94,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableDriveByToT) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  auto locale = std::make_unique<ScopedBrowserLocale>("es");
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(IsDriveModuleEnabled());
 #else
@@ -104,8 +103,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableDriveByToT) {
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, DisableDriveByToT) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("ca");
+  auto locale = std::make_unique<ScopedBrowserLocale>("as");
   EXPECT_FALSE(IsDriveModuleEnabled());
 }
 
@@ -115,29 +113,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, EnableDriveByFlag) {
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
                        DisableDriveByFlag) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  auto locale = std::make_unique<ScopedBrowserLocale>("es");
   EXPECT_FALSE(IsDriveModuleEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableFreByToT) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  EXPECT_TRUE(IsModuleFreEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, DisableFreByToT) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("ca");
-  EXPECT_FALSE(IsModuleFreEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, EnableFreByFlag) {
-  EXPECT_TRUE(IsModuleFreEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest, DisableFreByFlag) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  EXPECT_FALSE(IsModuleFreEnabled());
 }

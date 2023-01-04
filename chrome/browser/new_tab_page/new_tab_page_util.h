@@ -8,6 +8,5 @@
 bool IsRecipeTasksModuleEnabled();
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
-bool IsModuleFreEnabled();
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

@@ -10,6 +10,19 @@
 #include "components/variations/service/variations_service.h"
 
 namespace {
+// TODO(b/244303302): Have ItemSuggest filter out unsupported languages
+// server-side.
+constexpr const char* kDriveLocales[] = {
+    "af",  "am", "ar",    "az",    "bg",     "bn",    "ca",    "cs",    "da",
+    "de",  "el", "en-GB", "en-US", "es-419", "es",    "et",    "fa",    "fi",
+    "fil", "fr", "gu",    "he",    "hi",     "hr",    "hu",    "hy",    "id",
+    "is",  "it", "ja",    "ka",    "kk",     "km",    "kn",    "ko",    "ky",
+    "lo",  "lt", "lv",    "mk",    "ml",     "mn",    "mr",    "ms",    "my",
+    "ne",  "nl", "no",    "pa",    "pl",     "pt-BR", "pt-PT", "ro",    "ru",
+    "si",  "sk", "sl",    "sq",    "sr",     "sv",    "sw",    "ta",    "te",
+    "th",  "tr", "uk",    "ur",    "uz",     "vi",    "zh-CN", "zh-TW",
+};
+
 bool IsOsSupportedForRecipe() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return true;
@@ -48,6 +61,12 @@ bool IsInUS() {
   return g_browser_process->GetApplicationLocale() == "en-US" &&
          GetCountryCode() == "us";
 }
+
+bool IsLocaleSupportedForDrive() {
+  return std::find(std::begin(kDriveLocales), std::end(kDriveLocales),
+                   g_browser_process->GetApplicationLocale()) !=
+         std::end(kDriveLocales);
+}
 }  // namespace
 
 // If feature is overridden manually or by finch, read the feature flag value.
@@ -73,14 +92,5 @@ bool IsDriveModuleEnabled() {
           ntp_features::kNtpDriveModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
   }
-  return IsOsSupportedForDrive() && IsInUS();
-}
-
-bool IsModuleFreEnabled() {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          ntp_features::kNtpModulesFirstRunExperience.name)) {
-    return base::FeatureList::IsEnabled(
-        ntp_features::kNtpModulesFirstRunExperience);
-  }
-  return IsInUS();
+  return IsOsSupportedForDrive() && IsLocaleSupportedForDrive();
 }
