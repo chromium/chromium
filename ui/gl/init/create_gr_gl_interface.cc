@@ -17,7 +17,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -190,7 +190,9 @@ struct BindWithTraits {
     constexpr bool need_flush =
         base::trait_helpers::HasTrait<NeedFlush, Traits...>();
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
+    // If running on Apple silicon, regardless of the architecture, don't
+    // perform this workaround. See https://crbug.com/1131312.
     if (need_flush && base::mac::GetCPUType() == base::mac::CPUType::kIntel &&
         !is_angle) {
       return bind_impl<droppable, slow, /*need_flush=*/true>(func,
