@@ -36,6 +36,7 @@ class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
   MOCK_METHOD2(UpdateDeviceAttributes,
                void(const std::string& asset_id, const std::string& location));
   MOCK_METHOD1(ClearAuth, void(base::OnceClosure callback));
+  MOCK_METHOD(bool, InProgress, (), (const, override));
 };
 
 }  // namespace ash

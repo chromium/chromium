@@ -507,6 +507,11 @@ void EnrollmentScreen::OnCancel() {
     return;
   }
 
+  if (enrollment_helper_ && enrollment_helper_->InProgress()) {
+    // Don't allow cancellation while enrollment is in progress.
+    return;
+  }
+
   // Record cancellation for that one enrollment mode.
   UMA(policy::kMetricEnrollmentCancelled);
 

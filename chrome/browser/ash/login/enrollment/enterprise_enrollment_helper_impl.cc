@@ -217,6 +217,13 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   enrollment_handler_->StartEnrollment();
 }
 
+bool EnterpriseEnrollmentHelperImpl::InProgress() const {
+  // `enrollment_handler_` lives from `DoEnroll` till `OnEnrollmentFinished`
+  // which covers the whole enrollment process whether it ends with success or
+  // failure.
+  return enrollment_handler_ != nullptr;
+}
+
 void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();

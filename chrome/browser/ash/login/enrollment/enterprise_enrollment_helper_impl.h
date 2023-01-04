@@ -49,6 +49,7 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
              const policy::EnrollmentConfig& enrollment_config,
              const std::string& enrolling_user_domain,
              policy::LicenseType license_type) override;
+  bool InProgress() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EnterpriseEnrollmentTest,

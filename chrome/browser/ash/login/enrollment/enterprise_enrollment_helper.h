@@ -118,6 +118,9 @@ class EnterpriseEnrollmentHelper {
   // Calls `callback` on completion.
   virtual void ClearAuth(base::OnceClosure callback) = 0;
 
+  // Returns true if enrollment is in progress.
+  virtual bool InProgress() const = 0;
+
  protected:
   // The user of this class is responsible for clearing auth data in some cases
   // (see comment for EnrollUsingProfile()).
