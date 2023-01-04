@@ -7766,10 +7766,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Group1_20221128",
+                    "name": "Group2_20230104",
                     "params": {
-                        "min_input_stream_available_value_to_ignore": "2"
-                    }
+                        "min_input_stream_available_value_to_ignore": "2",
+                        "min_input_stream_read_size": "2048"
+                    },
+                    "enable_features": [
+                        "OptimizeNetworkBuffers2"
+                    ]
                 }
             ]
         }
