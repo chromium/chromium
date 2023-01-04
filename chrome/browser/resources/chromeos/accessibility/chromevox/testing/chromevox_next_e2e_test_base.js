@@ -134,6 +134,8 @@ ChromeVoxNextE2ETest = class extends E2ETestBase {
     await super.setUpDeferred();
     // Alphabetical based on file path.
     await importModule(
+        'AbstractEarcons', '/chromevox/background/abstract_earcons.js');
+    await importModule(
         'BaseAutomationHandler',
         '/chromevox/background/base_automation_handler.js');
     await importModule(
@@ -156,8 +158,6 @@ ChromeVoxNextE2ETest = class extends E2ETestBase {
         'OutputContextOrder', '/chromevox/background/output/output_types.js');
     await importModule(
         'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule(
-        ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
     await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
 

@@ -8,7 +8,6 @@ import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
 import {LocalStorage} from '../../common/local_storage.js';
-import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {ContentScriptBridge} from '../common/content_script_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
@@ -17,6 +16,7 @@ import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
+import {AbstractEarcons} from './abstract_earcons.js';
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
@@ -53,10 +53,10 @@ import {TtsBackground} from './tts_background.js';
  * @fileoverview The entry point for all ChromeVox related code for the
  * background page.
  */
-
 const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
+
 /** ChromeVox background page. */
 export class Background extends ChromeVoxState {
   constructor() {

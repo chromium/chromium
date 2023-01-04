@@ -9,8 +9,7 @@
  *
  */
 import {LocalStorage} from '../../common/local_storage.js';
-
-import {EarconId} from './earcon_id.js';
+import {EarconId} from '../common/earcon_id.js';
 
 export class AbstractEarcons {
   /**
