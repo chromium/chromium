@@ -16,9 +16,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/gurl.h"
 #include "url/origin.h"
-#include "url/url_constants.h"
 #include "url/url_util.h"
 
 using content::BrowserContext;
@@ -114,17 +112,17 @@ void CannedLocalStorageHelper::UpdateIgnoredEmptyKeysInternal(
     const std::list<content::StorageUsageInfo>& storage_usage_info) {
   non_empty_pending_storage_keys_.clear();
 
-  std::vector<url::Origin> non_empty_origins_list;
-  non_empty_origins_list.reserve(storage_usage_info.size());
-  // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+  std::vector<blink::StorageKey> non_empty_storage_keys_list;
+  non_empty_storage_keys_list.reserve(storage_usage_info.size());
   for (const auto& usage_info : storage_usage_info)
-    non_empty_origins_list.push_back(usage_info.storage_key.origin());
-  const base::flat_set<url::Origin> non_empty_origins(
-      std::move(non_empty_origins_list));
+    non_empty_storage_keys_list.push_back(usage_info.storage_key);
+  const base::flat_set<blink::StorageKey> non_empty_storage_keys(
+      std::move(non_empty_storage_keys_list));
 
   for (const auto& storage_key : pending_storage_keys_) {
-    if (non_empty_origins.contains(storage_key.origin()))
+    if (non_empty_storage_keys.contains(storage_key)) {
       non_empty_pending_storage_keys_.insert(storage_key);
+    }
   }
 
   std::move(done).Run();
