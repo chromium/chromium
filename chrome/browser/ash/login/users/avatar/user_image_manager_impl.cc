@@ -282,8 +282,9 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
         // Will refactor to remove this redundant call after the feature flag
         // IsAvatarsCloudMigrationEnabled is no longer needed.
         user_image_loader::StartWithFilePathAnimated(
-            image_path_, base::BindOnce(&Job::OnLoadImageDone,
-                                        weak_factory_.GetWeakPtr(), false));
+            parent_->background_task_runner_, image_path_,
+            base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
+                           false));
       } else {
         if (g_skip_default_user_image_download) {
           auto user_image = std::make_unique<user_manager::UserImage>(

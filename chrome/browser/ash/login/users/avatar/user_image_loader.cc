@@ -393,9 +393,11 @@ void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb) {
   DecodeAnimation(std::move(loaded_cb), data);
 }
 
-void StartWithFilePathAnimated(const base::FilePath& file_path,
-                               LoadedCallback loaded_cb) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+void StartWithFilePathAnimated(
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    const base::FilePath& file_path,
+    LoadedCallback loaded_cb) {
+  background_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const base::FilePath& file_path) {

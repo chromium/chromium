@@ -57,8 +57,10 @@ void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb);
 // Loads user image from |file_path|. If the image is animated, encode with WebP
 // encoder, otherwise encode with PNG encoder.
 // TODO(b/251083485): Add support for external image from file.
-void StartWithFilePathAnimated(const base::FilePath& file_path,
-                               LoadedCallback loaded_cb);
+void StartWithFilePathAnimated(
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    const base::FilePath& file_path,
+    LoadedCallback loaded_cb);
 
 // Loads the default image fetched from |default_image_url|. If the image is
 // animated, encode with WebP encoder, otherwise encode with PNG encoder.
