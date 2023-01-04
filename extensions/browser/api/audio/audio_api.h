@@ -64,7 +64,7 @@ class AudioGetDevicesFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("audio.getDevices", AUDIO_GETDEVICES)
 
  protected:
-  ~AudioGetDevicesFunction() override {}
+  ~AudioGetDevicesFunction() override = default;
   ResponseAction Run() override;
   void OnResponse(bool success,
                   std::vector<api::audio::AudioDeviceInfo> devices);
@@ -75,7 +75,7 @@ class AudioSetActiveDevicesFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("audio.setActiveDevices", AUDIO_SETACTIVEDEVICES)
 
  protected:
-  ~AudioSetActiveDevicesFunction() override {}
+  ~AudioSetActiveDevicesFunction() override = default;
   ResponseAction Run() override;
   void OnResponse(bool success);
 };
@@ -85,7 +85,7 @@ class AudioSetPropertiesFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("audio.setProperties", AUDIO_SETPROPERTIES)
 
  protected:
-  ~AudioSetPropertiesFunction() override {}
+  ~AudioSetPropertiesFunction() override = default;
   ResponseAction Run() override;
   void OnResponse(bool success);
 };
@@ -95,7 +95,7 @@ class AudioSetMuteFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("audio.setMute", AUDIO_SETMUTE)
 
  protected:
-  ~AudioSetMuteFunction() override {}
+  ~AudioSetMuteFunction() override = default;
   ResponseAction Run() override;
   void OnResponse(bool success);
 };
@@ -105,7 +105,7 @@ class AudioGetMuteFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("audio.getMute", AUDIO_GETMUTE)
 
  protected:
-  ~AudioGetMuteFunction() override {}
+  ~AudioGetMuteFunction() override = default;
   ResponseAction Run() override;
   void OnResponse(bool success, bool is_muted);
 };

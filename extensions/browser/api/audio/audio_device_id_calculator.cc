@@ -16,7 +16,7 @@ AudioDeviceIdCalculator::AudioDeviceIdCalculator(
     content::BrowserContext* context)
     : context_(context) {}
 
-AudioDeviceIdCalculator::~AudioDeviceIdCalculator() {}
+AudioDeviceIdCalculator::~AudioDeviceIdCalculator() = default;
 
 std::string AudioDeviceIdCalculator::GetStableDeviceId(
     uint64_t audio_service_stable_id) {

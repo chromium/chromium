@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
@@ -54,7 +54,7 @@ AudioAPI::AudioAPI(content::BrowserContext* context)
   audio_service_observation_.Observe(service_.get());
 }
 
-AudioAPI::~AudioAPI() {}
+AudioAPI::~AudioAPI() = default;
 
 AudioService* AudioAPI::GetService() const {
   return service_.get();

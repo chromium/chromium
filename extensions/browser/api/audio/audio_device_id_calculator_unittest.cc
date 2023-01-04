@@ -29,7 +29,7 @@ class TestExtensionsBrowserClientWithPrefService
   TestExtensionsBrowserClientWithPrefService& operator=(
       const TestExtensionsBrowserClientWithPrefService&) = delete;
 
-  ~TestExtensionsBrowserClientWithPrefService() override {}
+  ~TestExtensionsBrowserClientWithPrefService() override = default;
 
   // ExtensionsBrowserClient override:
   PrefService* GetPrefServiceForContext(
@@ -51,7 +51,7 @@ class AudioDeviceIdCalculatorTest : public testing::Test {
   AudioDeviceIdCalculatorTest& operator=(const AudioDeviceIdCalculatorTest&) =
       delete;
 
-  ~AudioDeviceIdCalculatorTest() override {}
+  ~AudioDeviceIdCalculatorTest() override = default;
 
   void SetUp() override {
     AudioAPI::RegisterUserPrefs(
