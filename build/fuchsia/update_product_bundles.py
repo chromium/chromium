@@ -26,6 +26,7 @@ _PRODUCT_BUNDLES = [
     'workstation_eng.chromebook-x64',
     'workstation_eng.chromebook-x64-dfv2',
     'workstation_eng.qemu-x64',
+    'workstation_eng.x64',
 ]
 
 # TODO(crbug/1361089): Remove when the old scripts have been deprecated.
