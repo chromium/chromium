@@ -582,6 +582,7 @@ gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 void TexturePassthrough::BindToServiceId(GLuint service_id) {
   if (service_id != 0 && service_id != service_id_) {
     service_id_ = service_id;
@@ -602,6 +603,7 @@ void TexturePassthrough::BindToServiceId(GLuint service_id) {
     glBindTexture(target_, prev_texture);
   }
 }
+#endif
 
 void TexturePassthrough::SetEstimatedSize(size_t size) {
   estimated_size_ = size;
