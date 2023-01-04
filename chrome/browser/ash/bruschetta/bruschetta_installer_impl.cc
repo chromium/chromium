@@ -78,7 +78,9 @@ BruschettaInstallerImpl::~BruschettaInstallerImpl() {
 
 bool BruschettaInstallerImpl::MaybeClose() {
   if (!install_running_) {
-    std::move(close_closure_).Run();
+    if (close_closure_) {
+      std::move(close_closure_).Run();
+    }
     return true;
   }
   return false;

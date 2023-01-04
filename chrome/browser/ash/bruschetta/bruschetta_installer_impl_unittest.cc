@@ -526,13 +526,16 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   download::test::TestDownloadService* download_service_;
   BruschettaDownloadClient download_client_{&profile_};
+  bool destroy_installer_on_completion_ = true;
 
  private:
   // Called when the installer exists, suitable for base::BindOnce.
   void CloseCallback() {
-    // Delete the installer object after it requests closure so we can tell if
-    // it does anything afterwards that assumes it hasn't been deleted yet.
-    installer_.reset();
+    if (destroy_installer_on_completion_) {
+      // Delete the installer object after it requests closure so we can tell if
+      // it does anything afterwards that assumes it hasn't been deleted yet.
+      installer_.reset();
+    }
     run_loop_.Quit();
     run_loop_2_.Quit();
   }
@@ -562,6 +565,17 @@ TEST_F(BruschettaInstallerTest, TwoInstalls) {
   run_loop_.Run();
 
   EXPECT_FALSE(installer_);
+}
+
+TEST_F(BruschettaInstallerTest, MultipleCancelsNoOp) {
+  destroy_installer_on_completion_ = false;
+  // Should be safe to call cancel multiple times.
+  installer_->Cancel();
+  installer_->Cancel();
+  run_loop_.Run();
+  installer_->Cancel();
+  installer_->Cancel();
+  run_loop_2_.Run();
 }
 
 TEST_P(BruschettaInstallerTest, StopDuringInstall) {
