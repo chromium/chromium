@@ -92,58 +92,6 @@ TEST(PersistedTrialTokenTest, TestEquals) {
       PersistedTrialToken("a", expiry, restriction_none, higher_signature));
 }
 
-TEST(PersistedTrialTokenTest, TokenToDictRoundTrip) {
-  PersistedTrialToken token("a", base::Time::Now(),
-                            blink::TrialToken::UsageRestriction::kNone,
-                            "signature");
-  EXPECT_EQ(token, PersistedTrialToken::FromDict(token.AsDict()));
-
-  token = PersistedTrialToken("a", base::Time::Now(),
-                              blink::TrialToken::UsageRestriction::kSubset,
-                              "signature");
-  EXPECT_EQ(token, PersistedTrialToken::FromDict(token.AsDict()));
-}
-
-TEST(PersistedTrialTokenTest, InvalidDictParsing) {
-  // Do not expect an empty dict to parse
-  EXPECT_FALSE(PersistedTrialToken::FromDict(base::Value::Dict()));
-
-  // Test that parsing fails if we remove one of the keys in a valid dict
-  PersistedTrialToken token("a", base::Time::Now(),
-                            blink::TrialToken::UsageRestriction::kNone,
-                            "token_signature");
-  const base::Value::Dict token_dict = token.AsDict();
-  for (const auto entry : token_dict) {
-    base::Value::Dict faulty_dict = token_dict.Clone();
-    faulty_dict.Remove(entry.first);
-    EXPECT_FALSE(PersistedTrialToken::FromDict(faulty_dict))
-        << "Did not expect dict to parse with key " << entry.first
-        << " missing.";
-  }
-
-  // Test that parsing fails if the signature cannot be base-64 decoded
-  base::Value::Dict faulty_dict = token_dict.Clone();
-  faulty_dict.Set("signature", "This is not valid Base64 data!");
-  EXPECT_FALSE(PersistedTrialToken::FromDict(faulty_dict));
-}
-
-TEST(PersistedTrialTokenTest, StreamOperatorTest) {
-  // Ensure that streaming the token produces the same result as converting
-  // to a dict and streaming that.
-  PersistedTrialToken token("a", base::Time::Now(),
-                            blink::TrialToken::UsageRestriction::kSubset,
-                            "signature");
-  std::ostringstream token_stream;
-  token_stream << token;
-  std::string token_str = token_stream.str();
-
-  std::ostringstream dict_stream;
-  dict_stream << token.AsDict();
-  std::string dict_str = dict_stream.str();
-
-  EXPECT_EQ(token_str, dict_str);
-}
-
 }  // namespace
 
 }  // namespace origin_trials

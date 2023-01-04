@@ -13,7 +13,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/origin_trials/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/pref_names.h"

@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/common/content_features.h"

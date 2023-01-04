@@ -119,7 +119,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -724,6 +723,9 @@ const char kLoadCryptoTokenExtension[] =
     "extensions.load_cryptotoken_extension";
 #endif
 
+// Deprecated 10/2022.
+const char kOriginTrialPrefKey[] = "origin_trials.persistent_trials";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 07/2022.
 // The name of a boolean pref that determines whether we can show the folder
@@ -1065,6 +1067,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSuggestedContentInfoDismissedInLauncher,
                                 false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 10/2022.
+  registry->RegisterDictionaryPref(kOriginTrialPrefKey,
+                                   PrefRegistry::LOSSY_PREF);
 
   // Deprecated 11/2022.
   registry->RegisterBooleanPref(kAutofillAssistantEnabled, true);
@@ -1367,7 +1372,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NotifierStateTracker::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
-  origin_trials::PrefServicePersistenceProvider::RegisterProfilePrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
   performance_manager::user_tuning::prefs::RegisterProfilePrefs(registry);
@@ -2083,7 +2087,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   feed::MigrateObsoleteProfilePrefsOct_2022(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(origin_trials::kOriginTrialPrefKey);
+  profile_prefs->ClearPref(kOriginTrialPrefKey);
 
   // Once this migration is complete, the tracked preference
   // `kGoogleServicesLastAccountIdDeprecated` can be removed.
