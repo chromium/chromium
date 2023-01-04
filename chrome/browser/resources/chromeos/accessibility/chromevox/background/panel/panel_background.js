@@ -15,7 +15,8 @@ import {PanelBridge} from '../../common/panel_bridge.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../../common/panel_menu_data.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
-import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {ChromeVoxState} from '../chromevox_state.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
@@ -45,8 +46,8 @@ export class PanelBackground {
       throw 'Trying to create two copies of singleton PanelBackground';
     }
     PanelBackground.instance = new PanelBackground();
-    PanelBackground.stateObserver_ = new PanelStateObserver();
-    ChromeVoxState.addObserver(PanelBackground.stateObserver_);
+    PanelBackground.rangeObserver_ = new PanelRangeObserver();
+    ChromeVoxRange.addObserver(PanelBackground.rangeObserver_);
 
     BridgeHelper.registerHandler(
         TARGET, Action.CLEAR_SAVED_NODE,
@@ -314,11 +315,11 @@ export class PanelBackground {
 /** @type {PanelBackground} */
 PanelBackground.instance;
 
-/** @private {PanelStateObserver} */
-PanelBackground.stateObserver_;
+/** @private {PanelRangeObserver} */
+PanelBackground.rangeObserver_;
 
-/** @implements {ChromeVoxStateObserver} */
-class PanelStateObserver {
+/** @implements {ChromeVoxRangeObserver} */
+class PanelRangeObserver {
   /** @override */
   onCurrentRangeChanged(range, opt_fromEditing) {
     PanelBridge.onCurrentRangeChanged();

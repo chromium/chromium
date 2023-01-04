@@ -12,7 +12,7 @@ import {EarconId} from '../common/earcon_id.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';
-import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -21,7 +21,7 @@ const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/** @implements {ChromeVoxStateObserver} */
+/** @implements {ChromeVoxRangeObserver} */
 export class PageLoadSoundHandler extends BaseAutomationHandler {
   /** @private */
   constructor() {
@@ -36,7 +36,7 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
       this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
       this.addListener_(EventType.LOAD_START, this.onLoadStart);
 
-      ChromeVoxState.addObserver(this);
+      ChromeVoxRange.addObserver(this);
     });
   }
 

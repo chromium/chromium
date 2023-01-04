@@ -21,6 +21,7 @@ import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
 import {ChromeVox} from './chromevox.js';
+import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {ClipboardHandler} from './clipboard_handler.js';
@@ -194,8 +195,8 @@ export class Background extends ChromeVoxState {
     this.previousRange_ = this.currentRange_;
     this.currentRange_ = newRange;
 
-    ChromeVoxState.ready().then(ChromeVoxState.observers.forEach(
-        observer => observer.onCurrentRangeChanged(newRange, opt_fromEditing)));
+    ChromeVoxState.ready().then(
+        ChromeVoxRange.onCurrentRangeChanged(newRange, opt_fromEditing));
 
     if (!this.currentRange_) {
       FocusBounds.set([]);

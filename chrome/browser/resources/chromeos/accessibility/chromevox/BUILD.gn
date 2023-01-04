@@ -61,6 +61,7 @@ chromevox_es6_modules = [
   "background/braille/liblouis.js",
   "background/braille/pan_strategy.js",
   "background/braille/spans.js",
+  "background/chromevox_range.js",
   "background/chromevox_state.js",
   "background/chromevox.js",
   "background/classic_background.js",

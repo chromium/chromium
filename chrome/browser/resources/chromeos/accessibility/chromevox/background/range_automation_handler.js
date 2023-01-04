@@ -13,7 +13,8 @@ import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation
 import {Msgs} from '../common/msgs.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
-import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
+import {ChromeVoxState} from './chromevox_state.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 import {FocusBounds} from './focus_bounds.js';
 import {Output} from './output/output.js';
@@ -26,7 +27,7 @@ const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/** @implements {ChromeVoxStateObserver} */
+/** @implements {ChromeVoxRangeObserver} */
 export class RangeAutomationHandler extends BaseAutomationHandler {
   /** @private */
   constructor() {
@@ -41,7 +42,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     /** @private {number} */
     this.delayedAttributeOutputId_ = -1;
 
-    ChromeVoxState.addObserver(this);
+    ChromeVoxRange.addObserver(this);
   }
 
   static init() {

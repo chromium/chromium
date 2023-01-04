@@ -21,7 +21,8 @@ import {BrailleBackground} from '../braille/braille_background.js';
 import {LibLouis} from '../braille/liblouis.js';
 import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
-import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
+import {ChromeVoxState} from '../chromevox_state.js';
 import {Color} from '../color.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent, OutputNodeSpan} from '../output/output_types.js';
@@ -999,11 +1000,11 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 /**
  * An observer that reacts to ChromeVox range changes that modifies braille
  * table output when over email or url text fields.
- * @implements {ChromeVoxStateObserver}
+ * @implements {ChromeVoxRangeObserver}
  */
-class EditingChromeVoxStateObserver {
+class EditingRangeObserver {
   constructor() {
-    ChromeVoxState.addObserver(this);
+    ChromeVoxRange.addObserver(this);
   }
 
   /**
@@ -1024,7 +1025,5 @@ class EditingChromeVoxStateObserver {
 }
 
 
-/**
- * @private {ChromeVoxStateObserver}
- */
-EditingChromeVoxStateObserver.instance_ = new EditingChromeVoxStateObserver();
+/** @private {ChromeVoxRangeObserver} */
+EditingRangeObserver.instance_ = new EditingRangeObserver();

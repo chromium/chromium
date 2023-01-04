@@ -17,32 +17,7 @@ import {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {UserActionMonitor} from './user_action_monitor.js';
 
-/**
- * An interface implemented by objects to observe ChromeVox state changes.
- * @interface
- */
-export class ChromeVoxStateObserver {
-  /**
-   * @param {CursorRange} range The new range.
-   * @param {boolean=} opt_fromEditing
-   */
-  onCurrentRangeChanged(range, opt_fromEditing) {}
-}
-
 export class ChromeVoxState {
-  /** @param {ChromeVoxStateObserver} observer */
-  static addObserver(observer) {
-    ChromeVoxState.observers.push(observer);
-  }
-
-  /** @param {ChromeVoxStateObserver} observer */
-  static removeObserver(observer) {
-    const index = ChromeVoxState.observers.indexOf(observer);
-    if (index > -1) {
-      ChromeVoxState.observers.splice(index, 1);
-    }
-  }
-
   /** @return {!Promise} */
   static ready() {
     return ChromeVoxState.readyPromise_;
@@ -128,9 +103,6 @@ export class ChromeVoxState {
 
 /** @type {ChromeVoxState} */
 ChromeVoxState.instance;
-
-/** @type {!Array<ChromeVoxStateObserver>} */
-ChromeVoxState.observers = [];
 
 /** @type {!Object<string, constants.Point>} */
 ChromeVoxState.position = {};

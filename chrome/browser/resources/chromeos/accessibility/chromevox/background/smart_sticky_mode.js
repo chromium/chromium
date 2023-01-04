@@ -13,11 +13,12 @@ import {LocalStorage} from '../../common/local_storage.js';
 import {EarconId} from '../common/earcon_id.js';
 
 import {ChromeVox} from './chromevox.js';
-import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
+import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {ChromeVoxPrefs} from './prefs.js';
 
-/** @implements {ChromeVoxStateObserver} */
+/** @implements {ChromeVoxRangeObserver} */
 export class SmartStickyMode {
   constructor() {
     /** @private {boolean} */
@@ -32,7 +33,7 @@ export class SmartStickyMode {
     /** @private {chrome.automation.AutomationNode|undefined} */
     this.ignoredNodeSubtree_;
 
-    ChromeVoxState.addObserver(this);
+    ChromeVoxRange.addObserver(this);
   }
 
   static init() {

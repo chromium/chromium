@@ -23,6 +23,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
     await importModule(
+        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
+    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         'ChromeVoxBackground', '/chromevox/background/classic_background.js');
@@ -2769,7 +2771,7 @@ AX_TEST_F(
     </div>
   `;
       const root = await this.runWithLoadedTree(site);
-      ChromeVoxState.addObserver(new class {
+      ChromeVoxRange.addObserver(new class {
         onCurrentRangeChanged(range) {
           if (!range) {
             ChromeVox.tts.speak('range cleared!');
@@ -2880,7 +2882,7 @@ AX_TEST_F(
       PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = -1;
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree('<button>hi</button>');
-      ChromeVoxState.addObserver(new class {
+      ChromeVoxRange.addObserver(new class {
         onCurrentRangeChanged(range) {
           if (!range) {
             ChromeVox.tts.speak('range cleared!');
@@ -3027,7 +3029,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AudioVideo', async function() {
 AX_TEST_F('ChromeVoxBackgroundTest', 'AlertNoAnnouncement', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree('<button></button>');
-  ChromeVoxState.addObserver(new class {
+  ChromeVoxRange.addObserver(new class {
     onCurrentRangeChanged(range) {
       assertNotReached('Range was changed unexpectedly.');
     }
@@ -3044,7 +3046,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AlertNoAnnouncement', async function() {
 AX_TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree('<button>hello world</button>');
-  ChromeVoxState.addObserver(new class {
+  ChromeVoxRange.addObserver(new class {
     onCurrentRangeChanged(range) {
       assertNotReached('Range was changed unexpectedly.');
     }
