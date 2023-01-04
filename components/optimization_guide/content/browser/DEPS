@@ -5,6 +5,7 @@ include_rules = [
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/no_state_prefetch/browser",
+  "+components/omnibox/browser",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/search_engines",
@@ -15,4 +16,5 @@ include_rules = [
   "+services/metrics/public",
   "+services/service_manager/public",
   "+third_party/blink/public",
+  "+third_party/omnibox_proto",
 ]

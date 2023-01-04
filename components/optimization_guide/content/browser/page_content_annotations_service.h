@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,8 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -96,13 +99,16 @@ enum class PageContentAnnotationsType {
 // A KeyedService that annotates page content.
 class PageContentAnnotationsService : public KeyedService,
                                       public EntityMetadataProvider,
-                                      public history::HistoryServiceObserver {
+                                      public history::HistoryServiceObserver,
+                                      public ZeroSuggestCacheService::Observer {
  public:
   PageContentAnnotationsService(
+      std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
       const std::string& application_locale,
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
+      ZeroSuggestCacheService* zero_suggest_cache_service,
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
       OptimizationGuideLogger* optimization_guide_logger,
@@ -145,6 +151,20 @@ class PageContentAnnotationsService : public KeyedService,
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.
   void OverridePageContentAnnotatorForTesting(PageContentAnnotator* annotator);
+
+  // Specifies whether PageContentAnnotationsService should extract "related
+  // searches" data from the ZPS response cache.
+  bool ShouldExtractRelatedSearchesFromZPSCache();
+
+  // ZeroSuggestCacheService::Observer:
+  void OnZeroSuggestResponseUpdated(
+      const std::string& page_url,
+      const ZeroSuggestCacheService::CacheEntry& response) override;
+
+  // Callback used to extract "related searches" data from cached ZPS responses.
+  void ExtractRelatedSearchesFromZeroSuggestResponse(
+      const ZeroSuggestCacheService::CacheEntry& response,
+      history::QueryURLResult url_result);
 
   OptimizationGuideLogger* optimization_guide_logger() const {
     return optimization_guide_logger_;
@@ -258,6 +278,9 @@ class PageContentAnnotationsService : public KeyedService,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
 
+  // Provider client instance used when parsing cached ZPS response data.
+  std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
+
   // The minimum score that an allowlisted page category must have for it to be
   // persisted.
   const int min_page_category_score_to_persist_;
@@ -280,6 +303,12 @@ class PageContentAnnotationsService : public KeyedService,
       history_service_observation_{this};
   // The task tracker to keep track of tasks to query |history_service|.
   base::CancelableTaskTracker history_service_task_tracker_;
+  // The zero suggest cache service used to fetch cached ZPS response data.
+  const raw_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
+  // The scoped observation to the ZeroSuggestCacheService.
+  base::ScopedObservation<ZeroSuggestCacheService,
+                          PageContentAnnotationsService>
+      zero_suggest_cache_service_observation_{this};
   // The client of continuous_search::mojom::SearchResultExtractor interface
   // used for extracting data from the main frame of Google SRP |web_contents|.
   continuous_search::SearchResultExtractorClient

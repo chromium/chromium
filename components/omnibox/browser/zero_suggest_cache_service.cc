@@ -6,6 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
 
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
 
@@ -56,6 +59,27 @@ CacheEntry::CacheEntry(const std::string& response_json)
 CacheEntry::CacheEntry(const CacheEntry& entry) = default;
 
 CacheEntry::~CacheEntry() = default;
+
+SearchSuggestionParser::SuggestResults CacheEntry::GetSuggestResults(
+    const AutocompleteInput& input,
+    const AutocompleteProviderClient& client) const {
+  SearchSuggestionParser::Results results;
+
+  auto response_data =
+      SearchSuggestionParser::DeserializeJsonData(response_json);
+  if (!response_data) {
+    return results.suggest_results;
+  }
+
+  if (!SearchSuggestionParser::ParseSuggestResults(
+          *response_data, input, client.GetSchemeClassifier(),
+          /*default_result_relevance=*/100, /*is_keyword_result=*/false,
+          &results)) {
+    return results.suggest_results;
+  }
+
+  return results.suggest_results;
+}
 
 size_t CacheEntry::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(response_json);
