@@ -52,6 +52,7 @@ src/common/util/preprocessor.ts
 src/unittests/unit_test.ts
 src/demo/a.spec.ts
 src/demo/json.spec.ts
+src/demo/subcases.spec.ts
 src/demo/a/b.spec.ts
 src/demo/a/b/c.spec.ts
 src/demo/a/b/d.spec.ts
