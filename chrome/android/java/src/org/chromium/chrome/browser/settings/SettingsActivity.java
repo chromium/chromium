@@ -170,6 +170,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     // accessible before transaction completes.
                     .runOnCommit(this::configureWideDisplayStyle)
                     .commit();
+        } else {
+            // Still commit the wide screen configuration without replacing the fragment content.
+            // Using FragmentTransaction so that the config is set after view is created, and before
+            // fragment is shown.
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .runOnCommit(this::configureWideDisplayStyle)
+                    .commit();
         }
 
         setStatusBarColor();
