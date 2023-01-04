@@ -35,6 +35,10 @@ suite('SiteSettingsPage', function() {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: NotificationSetting.ASK,
         },
+        cookie_default_content_setting: {
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: ContentSetting.ALLOW,
+        },
       },
     };
     document.body.appendChild(page);
@@ -118,6 +122,40 @@ suite('SiteSettingsPage', function() {
 
     assertTrue(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
+  });
+
+  test('SiteDataLinkRowSublabel', async function() {
+    setupPage();
+    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
+    flush();
+
+    const siteDataLinkRow =
+        page.shadowRoot!.querySelector('#advancedContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#site-data')!;
+
+    page.set(
+        'prefs.generated.cookie_default_content_setting.value',
+        ContentSetting.BLOCK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsSiteDataBlockedSubLabel'),
+        siteDataLinkRow.subLabel);
+
+    page.set(
+        'prefs.generated.cookie_default_content_setting.value',
+        ContentSetting.SESSION_ONLY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsSiteDataClearOnExitSubLabel'),
+        siteDataLinkRow.subLabel);
+
+    page.set(
+        'prefs.generated.cookie_default_content_setting.value',
+        ContentSetting.ALLOW);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsSiteDataAllowedSubLabel'),
+        siteDataLinkRow.subLabel);
   });
 });
 

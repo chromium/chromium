@@ -62,7 +62,7 @@
       <div>$i18n{siteSettingsContentMore}</div>
     </cr-expand-button>
     <iron-collapse opened="[[contentExpanded_]]">
-      <settings-site-settings-list id="advancedContentList"
+      <settings-site-settings-list id="advancedContentList" prefs="{{prefs}}"
           category-list="[[lists_.contentAdvanced]]"
           focus-config="[[focusConfig]]">
       </settings-site-settings-list>

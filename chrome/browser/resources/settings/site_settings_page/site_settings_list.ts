@@ -74,10 +74,8 @@ class SettingsSiteSettingsListElement extends
 
   static get observers() {
     return [
-      // The prefs object is only populated for the instance of this element
-      // which contains the notifications link row, avoiding non-actionable
-      // firing of the observer.
       'updateNotificationsLabel_(prefs.generated.notification.*)',
+      'updateSiteDataLabel_(prefs.generated.cookie_default_content_setting.*)',
     ];
   }
 
@@ -222,9 +220,11 @@ class SettingsSiteSettingsListElement extends
     const index = this.categoryList.map(e => e.id).indexOf(
         ContentSettingsTypes.NOTIFICATIONS);
 
-    // updateNotificationsLabel_ should only be called for the
-    // site-settings-list instance which contains notifications.
-    assert(index !== -1);
+    // The notification row might not be part of the current site-settings-list
+    // but the class always observes the preference.
+    if (index === -1) {
+      return;
+    }
 
     let label = 'siteSettingsNotificationsBlocked';
     if (state === NotificationSetting.ASK) {
@@ -232,6 +232,34 @@ class SettingsSiteSettingsListElement extends
     } else if (state === NotificationSetting.QUIETER_MESSAGING) {
       label = 'siteSettingsNotificationsPartial';
     }
+    this.set(`categoryList.${index}.subLabel`, this.i18n(label));
+  }
+
+  /**
+   * Update the site data link row label when the default cookies content
+   * setting changes.
+   */
+  private updateSiteDataLabel_() {
+    const state =
+        this.getPref('generated.cookie_default_content_setting').value;
+    const index = this.categoryList.map(e => e.id).indexOf(
+        ContentSettingsTypes.SITE_DATA);
+
+    // The site data row might not be part of the current site-settings-list
+    // but the class always observes the preference.
+    if (index === -1) {
+      return;
+    }
+
+    let label;
+    if (state === ContentSetting.ALLOW) {
+      label = 'siteSettingsSiteDataAllowedSubLabel';
+    } else if (state === ContentSetting.SESSION_ONLY) {
+      label = 'siteSettingsSiteDataClearOnExitSubLabel';
+    } else if (state === ContentSetting.BLOCK) {
+      label = 'siteSettingsSiteDataBlockedSubLabel';
+    }
+    assert(!!label);
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }
 
