@@ -8,6 +8,10 @@ h1 {
   padding: 0;
 }
 
+h2 {
+  font-size: 1em;
+}
+
 .status {
   font-size: 15px;
 }
