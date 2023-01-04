@@ -38,7 +38,6 @@
 #endif
 
 using autofill::AutofillAgent;
-using autofill::AutofillAssistantAgent;
 using autofill::PasswordAutofillAgent;
 using autofill::PasswordGenerationAgent;
 using blink::WebFrame;
