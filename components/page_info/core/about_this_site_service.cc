@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/features.h"
@@ -50,8 +50,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     return absl::nullopt;
   }
 
-  if (!optimization_guide::IsHostValidToFetchFromRemoteOptimizationGuide(
-          url.host())) {
+  if (!optimization_guide::IsValidURLForURLKeyedHint(url)) {
     RecordAboutThisSiteInteraction(
         AboutThisSiteInteraction::kNotShownLocalHost);
     return absl::nullopt;
