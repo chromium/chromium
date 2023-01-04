@@ -83,18 +83,44 @@ base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
                                      const std::string& app_id,
                                      int32_t icon_size_in_px);
 
-// Reads one single icon file for the given `app_id` and `icon_size_in_px`, and
-// returns the compressed icon. If there is a maskable icon file, reads the
-// maskable icon file. Otherwise, reads other icon file. If there is no
-// appropriate icon file, or failed reading the icon file, return nullptr.
+// Returns true if the icon files for the given `app_id` and `size_in_dip`
+// include the foreground and background icon files for all scale factors.
+// Otherwise, returns false.
+bool IsAdaptiveIcon(const base::FilePath& base_path,
+                    const std::string& app_id,
+                    int32_t size_in_dip);
+
+// Returns true if both `foreground_icon_path` and `background_icon_path` are
+// valid. Otherwise, returns false.
+bool IsAdaptiveIcon(const base::FilePath& foreground_icon_path,
+                    const base::FilePath& background_icon_path);
+
+// Returns true if both `iv` has both `foreground_icon_png_data` and
+// `background_icon_png_data`. Otherwise, returns false.
+bool HasAdaptiveIconData(const IconValuePtr& iv);
+
+// Reads icon file for the given `app_id` and `icon_size_in_px`, and
+// returns the compressed icon.
+//
+// * If there is a maskable icon file, reads the maskable icon file.
+// * Otherwise, reads other icon file.
+// * If there is no appropriate icon file, or failed reading the icon file,
+// returns nullptr.
 IconValuePtr ReadOnBackgroundThread(const base::FilePath& base_path,
                                     const std::string& app_id,
                                     int32_t icon_size_in_px);
 
+// Reads the foreground and background icon files for the given `app_id` and
+// `icon_size_in_px`, and returns the compressed icon. If there is no
+// appropriate icon file, or failed reading the icon file, returns nullptr.
+IconValuePtr ReadAdaptiveIconOnBackgroundThread(const base::FilePath& base_path,
+                                                const std::string& app_id,
+                                                int32_t icon_size_in_px);
+
 // Calls ReadOnBackgroundThread to read icon files for all scale factors for
 // the given `app_id` and `size_in_dip`, and returns the compressed icons for
-// all scale factors. The same as ReadOnBackgroundThread, reads the maskable
-// icon files as the higher priority, and if there is no appropriate icon file,
+// all scale factors. Reads the foreground/background icon data as higher
+// priority, then maskable icon files, and if there is no appropriate icon file,
 // or failed reading the icon file, return nullptr for the scale factor.
 std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
     const base::FilePath& base_path,

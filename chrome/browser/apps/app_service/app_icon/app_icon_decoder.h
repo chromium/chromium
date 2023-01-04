@@ -43,7 +43,10 @@ class AppIconDecoder {
   // requests.
   class DecodeRequest : public ImageDecoder::ImageRequest {
    public:
-    DecodeRequest(ui::ResourceScaleFactor scale_factor, AppIconDecoder& host);
+    DecodeRequest(ui::ResourceScaleFactor scale_factor,
+                  AppIconDecoder& host,
+                  gfx::ImageSkia& image_skia,
+                  std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
 
     DecodeRequest(const DecodeRequest&) = delete;
     DecodeRequest& operator=(const DecodeRequest&) = delete;
@@ -57,14 +60,24 @@ class AppIconDecoder {
    private:
     ui::ResourceScaleFactor scale_factor_;
     AppIconDecoder& host_;
+    gfx::ImageSkia& image_skia_;
+    std::set<ui::ResourceScaleFactor>& incomplete_scale_factors_;
   };
 
-  void OnIconRead(std::map<ui::ResourceScaleFactor, IconValuePtr> icon_data);
+  bool SetScaleFactors(
+      const std::map<ui::ResourceScaleFactor, IconValuePtr>& icon_datas);
 
-  void UpdateImageSkia(ui::ResourceScaleFactor scale_factor,
-                       const SkBitmap& bitmap);
+  void OnIconRead(std::map<ui::ResourceScaleFactor, IconValuePtr> icon_datas);
+
+  void UpdateImageSkia(
+      ui::ResourceScaleFactor scale_factor,
+      const SkBitmap& bitmap,
+      gfx::ImageSkia& image_skia,
+      std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
 
   void DiscardDecodeRequest();
+
+  void CompleteWithImageSkia(const gfx::ImageSkia& image_skia);
 
   const base::FilePath base_path_;
   const std::string app_id_;
@@ -72,9 +85,15 @@ class AppIconDecoder {
   base::OnceCallback<void(AppIconDecoder* decoder, IconValuePtr iv)> callback_;
 
   gfx::ImageSkia image_skia_;
-  std::set<ui::ResourceScaleFactor> incomplete_scale_factors_;
+  gfx::ImageSkia foreground_image_skia_;
+  gfx::ImageSkia background_image_skia_;
 
-  bool is_maskable_icon_;
+  std::set<ui::ResourceScaleFactor> incomplete_scale_factors_;
+  std::set<ui::ResourceScaleFactor> foreground_incomplete_scale_factors_;
+  std::set<ui::ResourceScaleFactor> background_incomplete_scale_factors_;
+
+  bool is_maskable_icon_ = false;
+  bool is_adaptive_icon_ = false;
 
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
