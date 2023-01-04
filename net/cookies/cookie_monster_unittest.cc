@@ -2313,6 +2313,67 @@ TEST_F(CookieMonsterTest, DeleteExpiredPartitionedCookiesAfterTimeElapsed) {
   EXPECT_EQ("__Host-A", cookies[0].Name());
 }
 
+TEST_F(CookieMonsterTest, DeleteExpiredAfterTimeElapsed_GetAllCookies) {
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, net::NetLog::Get());
+
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-A=B; secure; path=/",
+                        /*cookie_partition_key=*/absl::nullopt));
+  // Set a cookie with a Max-Age. Since we only parse integers for this
+  // attribute, 1 second is the minimum allowable time.
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-C=D; secure; path=/; max-age=1",
+                        /*cookie_partition_key=*/absl::nullopt));
+
+  GetAllCookiesCallback get_cookies_callback1;
+  cm->GetAllCookiesAsync(get_cookies_callback1.MakeCallback());
+  get_cookies_callback1.WaitUntilDone();
+  ASSERT_EQ(2u, get_cookies_callback1.cookies().size());
+
+  // Sleep for entire Max-Age of the second cookie.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
+  GetAllCookiesCallback get_cookies_callback2;
+  cm->GetAllCookiesAsync(get_cookies_callback2.MakeCallback());
+  get_cookies_callback2.WaitUntilDone();
+
+  ASSERT_EQ(1u, get_cookies_callback2.cookies().size());
+  EXPECT_EQ("__Host-A", get_cookies_callback2.cookies()[0].Name());
+}
+
+TEST_F(CookieMonsterTest,
+       DeleteExpiredPartitionedCookiesAfterTimeElapsed_GetAllCookies) {
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, net::NetLog::Get());
+  auto cookie_partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"));
+
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-A=B; secure; path=/; partitioned",
+                        cookie_partition_key));
+  // Set a cookie with a Max-Age. Since we only parse integers for this
+  // attribute, 1 second is the minimum allowable time.
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-C=D; secure; path=/; max-age=1; partitioned",
+                        cookie_partition_key));
+
+  GetAllCookiesCallback get_cookies_callback1;
+  cm->GetAllCookiesAsync(get_cookies_callback1.MakeCallback());
+  get_cookies_callback1.WaitUntilDone();
+  ASSERT_EQ(2u, get_cookies_callback1.cookies().size());
+
+  // Sleep for entire Max-Age of the second cookie.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
+  GetAllCookiesCallback get_cookies_callback2;
+  cm->GetAllCookiesAsync(get_cookies_callback2.MakeCallback());
+  get_cookies_callback2.WaitUntilDone();
+
+  ASSERT_EQ(1u, get_cookies_callback2.cookies().size());
+  EXPECT_EQ("__Host-A", get_cookies_callback2.cookies()[0].Name());
+}
+
 TEST_F(CookieMonsterTest, DeletePartitionedCookie) {
   auto cm = std::make_unique<CookieMonster>(
       /*store=*/nullptr, net::NetLog::Get());
