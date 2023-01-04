@@ -115,6 +115,11 @@ class ShoppingListUiTabHelper
   // The cluster ID for the current page, if applicable.
   absl::optional<uint64_t> cluster_id_for_page_;
 
+  // A flag indicating whether the initial navigation has committed for the web
+  // contents. This is used to ensure product info is fetched when a tab is
+  // being restored.
+  bool is_initial_navigation_committed_{false};
+
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>

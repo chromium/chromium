@@ -88,8 +88,10 @@ void ShoppingListUiTabHelper::RegisterProfilePrefs(
 void ShoppingListUiTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   if (!load_details.is_in_active_page ||
-      web_contents()->GetLastCommittedURL() ==
-          load_details.previous_main_frame_url) {
+      (web_contents()->GetLastCommittedURL() ==
+           load_details.previous_main_frame_url &&
+       is_initial_navigation_committed_)) {
+    is_initial_navigation_committed_ = true;
     return;
   }
 
