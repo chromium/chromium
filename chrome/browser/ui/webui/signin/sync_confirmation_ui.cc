@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,10 +31,13 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/sync_prefs.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -48,31 +52,64 @@
 namespace {
 const char kSyncBenefitAutofillStringName[] = "syncConfirmationAutofill";
 const char kSyncBenefitBookmarksStringName[] = "syncConfirmationBookmarks";
+const char kSyncBenefitReadingListStringName[] = "syncConfirmationReadingList";
 const char kSyncBenefitExtensionsStringName[] = "syncConfirmationExtensions";
 const char kSyncBenefitHistoryAndMoreStringName[] =
     "syncConfirmationHistoryAndMore";
 const char kSyncBenefitIconNameKey[] = "iconName";
 const char kSyncBenefitTitleKey[] = "title";
 
-std::string GetSyncBenefitsListJSON() {
+bool IsAnyTypeSyncable(PrefService& pref_service,
+                       syncer::UserSelectableTypeSet types) {
+  for (auto type : types) {
+    const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
+    if (!pref_service.IsManagedPreference(pref_name)) {
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
+
+// static
+std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
+    PrefService& pref_service) {
+  using syncer::UserSelectableType;
   base::Value::List sync_benefits_list;
 
-  // TODO(crbug.com/1383163): Select available types from SyncTypesListDisabled.
-  base::Value::Dict bookmarks;
-  bookmarks.Set(kSyncBenefitTitleKey, kSyncBenefitBookmarksStringName);
-  bookmarks.Set(kSyncBenefitIconNameKey, "signin:star-outline");
-  sync_benefits_list.Append(std::move(bookmarks));
+  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kBookmarks,
+                                       UserSelectableType::kReadingList})) {
+    std::string titleKey;
+    if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kBookmarks})) {
+      titleKey = kSyncBenefitBookmarksStringName;
+    } else {
+      titleKey = kSyncBenefitReadingListStringName;
+    }
 
-  base::Value::Dict autofill;
-  autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
-  autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
-  sync_benefits_list.Append(std::move(autofill));
+    base::Value::Dict bookmarks;
+    bookmarks.Set(kSyncBenefitTitleKey, titleKey);
+    bookmarks.Set(kSyncBenefitIconNameKey, "signin:star-outline");
+    sync_benefits_list.Append(std::move(bookmarks));
+  }
 
-  base::Value::Dict extensions;
-  extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
-  extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
-  sync_benefits_list.Append(std::move(extensions));
+  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kAutofill,
+                                       UserSelectableType::kPasswords})) {
+    base::Value::Dict autofill;
+    autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
+    autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
+    sync_benefits_list.Append(std::move(autofill));
+  }
 
+  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kExtensions,
+                                       UserSelectableType::kApps})) {
+    base::Value::Dict extensions;
+    extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
+    extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
+    sync_benefits_list.Append(std::move(extensions));
+  }
+
+  // Even if no associated type is syncable, we still deliberately show "History
+  // and more". So no need to check it.
   base::Value::Dict history_and_more;
   history_and_more.Set(kSyncBenefitTitleKey,
                        kSyncBenefitHistoryAndMoreStringName);
@@ -83,7 +120,6 @@ std::string GetSyncBenefitsListJSON() {
   base::JSONWriter::Write(sync_benefits_list, &json_benefits_list);
   return json_benefits_list;
 }
-}  // namespace
 
 SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
@@ -174,7 +210,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 
-  source->AddString("syncBenefitsList", GetSyncBenefitsListJSON());
+  source->AddString("syncBenefitsList",
+                    GetSyncBenefitsListJSON(*profile_->GetPrefs()));
 
   // Default overrides without placeholders
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -265,6 +302,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
                     IDS_SYNC_CONFIRMATION_SETTINGS_INFO);
   AddStringResource(source, kSyncBenefitBookmarksStringName,
                     IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_BOOKMARKS);
+  AddStringResource(source, kSyncBenefitReadingListStringName,
+                    IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_READING_LIST);
   AddStringResource(source, kSyncBenefitAutofillStringName,
                     IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_AUTOFILL);
   AddStringResource(source, kSyncBenefitExtensionsStringName,

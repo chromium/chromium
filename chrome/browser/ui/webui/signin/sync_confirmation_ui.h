@@ -11,10 +11,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/sync/base/user_selectable_type.h"
 
 class Browser;
 class Profile;
+class PrefService;
 
 namespace content {
 class WebUIDataSource;
@@ -32,6 +33,13 @@ enum class SyncConfirmationStyle;
 // the responsability of the caller to pass the correct message handler.
 class SyncConfirmationUI : public SigninWebDialogUI {
  public:
+  // Exposed for testing
+  // Returns JSON data representing sync benefits that should be presented to
+  // the user, based on which `syncer::UserSelectableType`s are available.
+  // The data format is:
+  // `[{"iconName": "${iron_icon_id}", "title": "${grit_string_id}"}, ...]`
+  static std::string GetSyncBenefitsListJSON(PrefService& pref_service);
+
   explicit SyncConfirmationUI(content::WebUI* web_ui);
 
   SyncConfirmationUI(const SyncConfirmationUI&) = delete;
