@@ -974,11 +974,13 @@ void WorkspaceWindowResizer::CompleteDrag() {
     return;
   }
 
-  // Update the restore bounds of a floated window in case it has changed
-  // displays.
   if (window_state()->IsFloated()) {
-    window_state()->SetRestoreBoundsInParent(
-        details().restore_bounds_in_parent);
+    // Update the restore bounds of a floated window in case it has changed
+    // displays.
+    if (!details().restore_bounds_in_parent.IsEmpty()) {
+      window_state()->SetRestoreBoundsInParent(
+          details().restore_bounds_in_parent);
+    }
     return;
   }
 
