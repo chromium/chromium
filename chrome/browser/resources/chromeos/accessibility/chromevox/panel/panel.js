@@ -89,10 +89,6 @@ export class Panel extends PanelInterface {
     this.speechElement_ = $('speech');
 
     /** @private {boolean} */
-    this.disableRestartTutorialNudgesForTesting_ = false;
-    /** @private {boolean} */
-    this.mockTouchGestureSourceForTesting_ = false;
-    /** @private {boolean} */
     this.tutorialReadyForTesting_ = false;
 
     this.initListeners_();
@@ -157,11 +153,6 @@ export class Panel extends PanelInterface {
   /** @override */
   setPendingCallback(callback) {
     this.pendingCallback_ = callback;
-  }
-
-  /** Enables touch gesture mode for testing. */
-  static setTouchGestureSourceForTesting() {
-    Panel.instance_.mockTouchGestureSourceForTesting_ = true;
   }
 
   /** Adds BackgroundBridge to the global object so that tests can mock it. */
@@ -334,9 +325,7 @@ export class Panel extends PanelInterface {
       this.pendingCallback_ = null;
 
       const eventSourceState = await BackgroundBridge.EventSourceState.get();
-      const touchScreen =
-          (eventSourceState === EventSourceType.TOUCH_GESTURE ||
-           this.mockTouchGestureSourceForTesting_);
+      const touchScreen = (eventSourceState === EventSourceType.TOUCH_GESTURE);
 
       // Build the top-level menus.
       const searchMenu = this.addSearchMenu_('panel_search_menu');
@@ -1280,8 +1269,7 @@ export class Panel extends PanelInterface {
   /** @private */
   onCurrentRangeChanged_() {
     if (this.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
-      if (this.tutorial_ && this.tutorial_.restartNudges &&
-          !this.disableRestartTutorialNudgesForTesting_) {
+      if (this.tutorial_ && this.tutorial_.restartNudges) {
         this.tutorial_.restartNudges();
       }
     }

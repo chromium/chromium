@@ -85,6 +85,10 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     return this.getPanel().instance_.tutorial_;
   }
 
+  disableRestartNudges() {
+    this.getPanel().instance_.tutorial_.restartNudges = null;
+  }
+
   get simpleDoc() {
     return `
       <p>Some web content</p>
@@ -214,10 +218,10 @@ AX_TEST_F(
 // Afterward, general hints will be given about using ChromeVox. Lastly,
 // we will give a hint for exiting the tutorial.
 AX_TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', async function() {
-  this.getPanel().instance_.disableRestartTutorialNudgesForTesting_ = true;
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
+  this.disableRestartNudges();
   const tutorial = this.getTutorial();
   const giveNudge = () => {
     tutorial.giveNudge();
@@ -744,10 +748,10 @@ AX_TEST_F(
     });
 
 AX_TEST_F('ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
-  this.getPanel().instance_.disableRestartTutorialNudgesForTesting_ = true;
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
+  this.disableRestartNudges();
   const tutorial = this.getTutorial();
   const giveNudge = () => {
     tutorial.giveNudge();
