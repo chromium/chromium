@@ -53,7 +53,8 @@ class Worker : public Listener, public Sender {
                               base::WaitableEvent::InitialState::NOT_SIGNALED)),
         channel_handle_(std::move(channel_handle)),
         mode_(mode),
-        ipc_thread_((thread_name + "_ipc").c_str()),
+        ipc_thread_(
+            std::make_unique<base::Thread>((thread_name + "_ipc").c_str())),
         listener_thread_((thread_name + "_listener").c_str()),
         overrided_thread_(nullptr),
         shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -70,7 +71,7 @@ class Worker : public Listener, public Sender {
                               base::WaitableEvent::InitialState::NOT_SIGNALED)),
         channel_handle_(std::move(channel_handle)),
         mode_(mode),
-        ipc_thread_("ipc thread"),
+        ipc_thread_(std::make_unique<base::Thread>("ipc thread")),
         listener_thread_("listener thread"),
         overrided_thread_(nullptr),
         shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -101,16 +102,11 @@ class Worker : public Listener, public Sender {
     // may result in a race conditions. See http://crbug.com/25841.
     WaitableEvent listener_done(
         base::WaitableEvent::ResetPolicy::AUTOMATIC,
-        base::WaitableEvent::InitialState::NOT_SIGNALED),
-        ipc_done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                 base::WaitableEvent::InitialState::NOT_SIGNALED);
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
     ListenerThread()->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Worker::OnListenerThreadShutdown1,
-                       base::Unretained(this), &listener_done, &ipc_done));
+        FROM_HERE, base::BindOnce(&Worker::OnListenerThreadShutdown1,
+                                  base::Unretained(this), &listener_done));
     listener_done.Wait();
-    ipc_done.Wait();
-    ipc_thread_.Stop();
     listener_thread_.Stop();
     is_shutdown_ = true;
   }
@@ -176,7 +172,7 @@ class Worker : public Listener, public Sender {
 
   virtual SyncChannel* CreateChannel() {
     std::unique_ptr<SyncChannel> channel = SyncChannel::Create(
-        TakeChannelHandle(), mode_, this, ipc_thread_.task_runner(),
+        TakeChannelHandle(), mode_, this, ipc_thread_->task_runner(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), true,
         &shutdown_event_);
     return channel.release();
@@ -186,29 +182,33 @@ class Worker : public Listener, public Sender {
     return overrided_thread_ ? overrided_thread_.get() : &listener_thread_;
   }
 
-  const base::Thread& ipc_thread() const { return ipc_thread_; }
+  const base::Thread& ipc_thread() const { return *ipc_thread_.get(); }
 
  private:
   // Called on the listener thread to create the sync channel.
   void OnStart() {
     // Link ipc_thread_, listener_thread_ and channel_ altogether.
-    StartThread(&ipc_thread_, base::MessagePumpType::IO);
+    StartThread(ipc_thread_.get(), base::MessagePumpType::IO);
     channel_.reset(CreateChannel());
     channel_created_->Signal();
     Run();
   }
 
-  void OnListenerThreadShutdown1(WaitableEvent* listener_event,
-                                 WaitableEvent* ipc_event) {
+  void OnListenerThreadShutdown1(WaitableEvent* listener_event) {
+    WaitableEvent ipc_event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
     // SyncChannel needs to be destructed on the thread that it was created on.
     channel_.reset();
 
     base::RunLoop().RunUntilIdle();
 
-    ipc_thread_.task_runner()->PostTask(
+    ipc_thread_->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&Worker::OnIPCThreadShutdown, base::Unretained(this),
-                       listener_event, ipc_event));
+                       listener_event, &ipc_event));
+    ipc_event.Wait();
+    // This destructs `ipc_thread_` on the listener thread.
+    ipc_thread_.reset();
   }
 
   void OnIPCThreadShutdown(WaitableEvent* listener_event,
@@ -248,7 +248,10 @@ class Worker : public Listener, public Sender {
   mojo::ScopedMessagePipeHandle channel_handle_;
   Channel::Mode mode_;
   std::unique_ptr<SyncChannel> channel_;
-  base::Thread ipc_thread_;
+  // This thread is constructed on the main thread, Start() on
+  // `listener_thread_`, and therefore destructed/Stop()'d on the
+  // `listener_thread_` too.
+  std::unique_ptr<base::Thread> ipc_thread_;
   base::Thread listener_thread_;
   raw_ptr<base::Thread> overrided_thread_;
 
