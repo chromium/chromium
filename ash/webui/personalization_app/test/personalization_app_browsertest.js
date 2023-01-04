@@ -16,6 +16,12 @@ GEN('#include "content/public/test/browser_test.h"');
 const ROOT_PAGE = 'chrome://personalization/';
 const WALLPAPER_SUBPAGE = 'chrome://personalization/wallpaper';
 
+// Must be kept in sync with fake_personalization_app_wallpaper_provider.cc.
+const FAKE_ASSET_ID = 77;
+const FAKE_COLLECTION_ID = 'fake_collection_id';
+
+const DEFAULT_WALLPAPER_NAME = 'Default Wallpaper';
+
 class PersonalizationAppBrowserTest extends testing.Test {
   /** @override */
   get browsePreload() {
@@ -43,9 +49,10 @@ class PersonalizationAppBrowserTest extends testing.Test {
 }
 
 /**
- * Wait until |func| returns true.
- * If |timeoutMs| milliseconds elapse, will reject with |message|.
- * Polls every |intervalMs| milliseconds.
+ * Wait until `func` returns a truthy value.
+ * If `timeoutMs` milliseconds elapse, will reject with `message`.
+ * Polls every `intervalMs` milliseconds.
+ * Resolves with the final value of `func`.
  */
 function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
   let rejectTimer = null;
@@ -67,9 +74,10 @@ function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
     }, timeoutMs);
 
     pollTimer = window.setInterval(() => {
-      if (func()) {
+      const value = func();
+      if (value) {
         cleanup();
-        resolve();
+        resolve(value);
       }
     }, intervalMs);
   });
@@ -238,5 +246,59 @@ TEST_F('WallpaperSubpageBrowserTest', 'LoadsCollectionsGrid', () => {
   assertGT(
       collections.offsetHeight, 0,
       'wallpaper-collections grid should have visible height');
+  testDone();
+});
+
+TEST_F('WallpaperSubpageBrowserTest', 'SelectWallpaper', async () => {
+  const subpage = document.querySelector('personalization-router')
+                      .shadowRoot.querySelector('wallpaper-subpage');
+
+  const wallpaperSelected =
+      subpage.shadowRoot.querySelector('wallpaper-selected');
+  const textContainer =
+      wallpaperSelected.shadowRoot.getElementById('textContainer');
+  assertEquals(
+      DEFAULT_WALLPAPER_NAME,
+      textContainer.querySelector('#imageTitle').textContent.trim(),
+      'default wallpaper is shown at first');
+
+  // Select the last wallpaper collection tile.
+  Array
+      .from(subpage.shadowRoot.querySelector('wallpaper-collections')
+                .shadowRoot.querySelectorAll(
+                    `.photo-inner-container[aria-disabled='false']`))
+      .at(-1)
+      .click();
+
+  const wallpaperImages = await waitUntil(
+      () => subpage.shadowRoot.querySelector('wallpaper-images'),
+      'failed selecting wallpaper-images');
+
+  assertFalse(wallpaperImages.hidden, 'wallpaper images now visible');
+  assertGT(
+      wallpaperImages.offsetWidth, 0,
+      'wallpaper-images should have visible width');
+  assertGT(
+      wallpaperImages.offsetHeight, 0,
+      'wallpaper-images should have visible height');
+
+  const gridItem = await waitUntil(
+      () => wallpaperImages.shadowRoot.querySelector(
+          'wallpaper-grid-item:not([placeholder])'),
+      'failed waiting for grid items to load');
+
+  assertFalse(gridItem.selected, 'wallpaper tile does not start selected');
+  gridItem.click();
+
+  await waitUntil(
+      () => textContainer.querySelector('#imageTitle').textContent.trim() ===
+          FAKE_COLLECTION_ID,
+      'failed waiting for text to update after selecting wallpaper');
+
+  assertEquals(
+      FAKE_ASSET_ID.toString(),
+      textContainer.querySelector('span:last-of-type').textContent.trim());
+
+  assertTrue(gridItem.selected, 'wallpaper tile is selected after click');
   testDone();
 });

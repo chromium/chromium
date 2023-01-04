@@ -8,13 +8,17 @@
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 
 #include <stdint.h>
+#include <string>
 
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "base/unguessable_token.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUI;
@@ -123,8 +127,14 @@ class FakePersonalizationAppWallpaperProvider
   void CancelPreviewWallpaper() override;
 
  private:
+  void SendOnWallpaperChanged(const WallpaperInfo& wallpaper_info);
+
+  mojo::Remote<ash::personalization_app::mojom::WallpaperObserver>
+      wallpaper_observer_remote_;
   mojo::Receiver<ash::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};
+  base::WeakPtrFactory<FakePersonalizationAppWallpaperProvider>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace ash::personalization_app
