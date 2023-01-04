@@ -253,12 +253,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
   // before the TextRangeEndpoints does, so when the destructor of the
   // ScopedObserver calls ScopedObserver::RemoveAll on an already deleted
   // AXTreeManager, it crashes.
-  class TextRangeEndpoints : public AXTreeObserver {
+  class COMPONENT_EXPORT(AX_PLATFORM) TextRangeEndpoints
+      : public AXTreeObserver {
    public:
     TextRangeEndpoints();
     ~TextRangeEndpoints() override;
-    const AXPositionInstance& GetStart() const { return start_; }
-    const AXPositionInstance& GetEnd() const { return end_; }
+    const AXPositionInstance& GetStart();
+    const AXPositionInstance& GetEnd();
     void SetStart(AXPositionInstance new_start);
     void SetEnd(AXPositionInstance new_end);
 
@@ -272,11 +273,21 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
     struct DeletionOfInterest {
       AXTreeID tree_id;
       AXNodeID node_id;
+      // Needed to defer validation from OnNodeDeleted to
+      // ValidateEndpointsAfterNodeDeletionIfNeeded.
+      bool validation_needed;
     };
 
     void AdjustEndpointForSubtreeDeletion(AXTree* tree,
                                           const AXNode* const node,
                                           bool is_start_endpoint);
+    // TODO(accessibility): Re-evaluate if we want to continue deferring
+    // validation after the BrowserAccessibilityManager-specific nodes have been
+    // moved to a single unified tree. At this point, deferring will no longer
+    // be necessary as there would be no danger in accessing the tree during
+    // OnNodeDeleted. However, it may still be preferable to defer the
+    // validation to keep work out of unserialize.
+    void ValidateEndpointsAfterNodeDeletionIfNeeded();
 
     AXPositionInstance start_;
     AXPositionInstance end_;
@@ -284,7 +295,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
     absl::optional<DeletionOfInterest> validation_necessary_for_start_;
     absl::optional<DeletionOfInterest> validation_necessary_for_end_;
   };
-  TextRangeEndpoints endpoints_;
+  // This is marked as mutable since endpoints will lazily validate their
+  // positions after a deletion of interest was actually deleted.
+  mutable TextRangeEndpoints endpoints_;
 };
 
 }  // namespace ui

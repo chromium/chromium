@@ -1629,6 +1629,18 @@ AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::~TextRangeEndpoints() {
   SetEnd(AXNodePosition::CreateNullPosition());
 }
 
+const AXPlatformNodeTextRangeProviderWin::AXPositionInstance&
+AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::GetStart() {
+  ValidateEndpointsAfterNodeDeletionIfNeeded();
+  return start_;
+}
+
+const AXPlatformNodeTextRangeProviderWin::AXPositionInstance&
+AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::GetEnd() {
+  ValidateEndpointsAfterNodeDeletionIfNeeded();
+  return end_;
+}
+
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
     AXPositionInstance new_start) {
   bool did_tree_change = start_->tree_id() != new_start->tree_id();
@@ -1693,6 +1705,9 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   DCHECK(tree);
   DCHECK(node);
   DCHECK_EQ(tree->GetAXTreeID(), node->tree()->GetAXTreeID());
+
+  // Validate now if we haven't done so yet.
+  ValidateEndpointsAfterNodeDeletionIfNeeded();
 
   AdjustEndpointForSubtreeDeletion(tree, node, true /* is_start_endpoint */);
   AdjustEndpointForSubtreeDeletion(tree, node, false /* is_start_endpoint */);
@@ -1790,27 +1805,20 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
     AXTree* tree,
     AXNodeID node_id) {
   DCHECK(tree);
+  // We only need validation in the case where a deleted node matches the
+  // previously stored |validation_necessary_for_*|. If this is the case,
+  // mark this any needed so that we force validation before using the endpoint.
 
   if (validation_necessary_for_start_.has_value() &&
       validation_necessary_for_start_->tree_id == tree->GetAXTreeID() &&
       validation_necessary_for_start_->node_id == node_id) {
-    if (!start_->IsNullPosition() && start_->GetAnchor()->IsDataValid())
-      SetStart(start_->AsValidPosition());
-    else
-      SetStart(AXNodePosition::CreateNullPosition());
-
-    validation_necessary_for_start_ = absl::nullopt;
+    validation_necessary_for_start_->validation_needed = true;
   }
 
   if (validation_necessary_for_end_.has_value() &&
       validation_necessary_for_end_->tree_id == tree->GetAXTreeID() &&
       validation_necessary_for_end_->node_id == node_id) {
-    if (!end_->IsNullPosition() && end_->GetAnchor()->IsDataValid())
-      SetEnd(end_->AsValidPosition());
-    else
-      SetEnd(AXNodePosition::CreateNullPosition());
-
-    validation_necessary_for_end_ = absl::nullopt;
+    validation_necessary_for_end_->validation_needed = true;
   }
 }
 
@@ -1819,6 +1827,31 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   if (start_->tree_id() == previous_tree_id ||
       end_->tree_id() == previous_tree_id) {
     RemoveObserver(previous_tree_id);
+  }
+}
+
+// Ensures that our endpoints are always valid (step 2, all scenarios). See
+// comment in header file for more details.
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    ValidateEndpointsAfterNodeDeletionIfNeeded() {
+  if (validation_necessary_for_start_.has_value() &&
+      validation_necessary_for_start_->validation_needed) {
+    if (!start_->IsNullPosition() && start_->GetAnchor()->IsDataValid()) {
+      SetStart(start_->AsValidPosition());
+    } else {
+      SetStart(AXNodePosition::CreateNullPosition());
+    }
+    validation_necessary_for_start_ = absl::nullopt;
+  }
+
+  if (validation_necessary_for_end_.has_value() &&
+      validation_necessary_for_end_->validation_needed) {
+    if (!end_->IsNullPosition() && end_->GetAnchor()->IsDataValid()) {
+      SetEnd(end_->AsValidPosition());
+    } else {
+      SetEnd(AXNodePosition::CreateNullPosition());
+    }
+    validation_necessary_for_end_ = absl::nullopt;
   }
 }
 
