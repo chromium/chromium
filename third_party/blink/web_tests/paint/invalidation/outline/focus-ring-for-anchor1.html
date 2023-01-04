@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<style>
+  body {
+    line-height: 20px;
+  }
+  a {
+    width: 80px;
+    height: 80px;
+    outline: red auto thin;
+    background: yellow;
+  }
+  div {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: yellow;
+  }
+  div.test_div {
+    top: 40px;
+    left: 40px;
+  }
+</style>
+
+<a href="#">Click
+  <div class="test_div" style="background-color: blue;">
+    <div class="test_div" style="background-color: green;"></div>
+  </div>
+</a>
+
+<a href="#" style="display: block; margin-top:160px">Click
+  <div class="test_div" style="background-color: blue; top:230px">
+    <div class="test_div" style="background-color: green; top:40px"></div>
+  </div>
+</a>
+
+<div style="top: 380px; outline: red auto thin;">Click
+  <div class="test_div" style="background-color: blue;">
+    <div class="test_div" style="background-color: green;"></div>
+  </div>
+</div>

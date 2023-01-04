@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 17px;
+    line-height: 20px;
+  }
+  a {
+    width: 80px;
+    height: 80px;
+    outline: red auto thin;
+    background: yellow;
+  }
+  a.relative {
+    position: relative;
+  }
+  a.absolute {
+    position: absolute;
+  }
+  a.block {
+    display: block;
+  }
+  div {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 40px;
+    left: 40px;
+  }
+</style>
+
+<a href="#" class="relative">Click
+  <div style="background-color: blue;">
+    <div style="background-color: green;"></div>
+  </div>
+</a>
+
+<a href="#" class="relative block" style="top:180px;">Click
+  <div style="background-color: blue;">
+    <div style="background-color: green;"></div>
+  </div>
+</a>
+
+<a href="#" class="absolute" style="top:400px;">Click
+  <div style="background-color: blue;">
+    <div style="background-color: green;"></div>
+  </div>
+</a>

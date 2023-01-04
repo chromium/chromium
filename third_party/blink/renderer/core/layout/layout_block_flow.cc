@@ -4702,7 +4702,7 @@ void LayoutBlockFlow::AddOutlineRects(
   LayoutBlock::AddOutlineRects(rects, info, additional_offset,
                                include_block_overflows);
 
-  if (include_block_overflows == NGOutlineType::kIncludeBlockVisualOverflow &&
+  if (ShouldIncludeBlockVisualOverflow(include_block_overflows) &&
       !HasNonVisibleOverflow() && !HasControlClip()) {
     for (RootInlineBox* curr = FirstRootBox(); curr;
          curr = curr->NextRootBox()) {
