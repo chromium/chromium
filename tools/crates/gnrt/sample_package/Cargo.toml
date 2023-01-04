@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [ "foo" ]
+members = [ "bar", "foo" ]
 
 [dependencies]
+baz = { package = "bar", path = "bar", version = "0.1" }
 foo = { path = "foo" }
 num-traits = "0.2"
 once_cell = "1.12"

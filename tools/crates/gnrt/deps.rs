@@ -68,6 +68,9 @@ impl Package {
 pub struct DepOfDep {
     /// This dependency's package name as used by cargo.
     pub package_name: String,
+    /// The name of the lib crate as `use`d by the dependent. This may be the
+    /// same or different than `package_name`.
+    pub use_name: String,
     /// The resolved version of this dependency.
     pub version: Version,
     /// A platform constraint for this dependency, or `None` if it's used on all
@@ -287,6 +290,7 @@ pub fn collect_dependencies(
             }
             let dep_of_dep = DepOfDep {
                 package_name: dep_pkg.name.clone(),
+                use_name: node_dep.lib_name.to_string(),
                 version: dep_pkg.version.clone(),
                 platform,
             };
@@ -382,6 +386,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
 
 struct DependencyEdge<'a> {
     pkg: &'a cargo_metadata::PackageId,
+    lib_name: &'a str,
     kind: DependencyKind,
     target: Option<Platform>,
 }
@@ -422,6 +427,7 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
 
                 Some(DependencyEdge {
                     pkg: &node_dep.pkg,
+                    lib_name: &node_dep.name,
                     kind: dep_kind_info.kind,
                     target: dep_kind_info.target.clone(),
                 })

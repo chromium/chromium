@@ -57,6 +57,7 @@ pub struct RuleConcrete {
     pub deps: Vec<RuleDep>,
     pub dev_deps: Vec<RuleDep>,
     pub build_deps: Vec<RuleDep>,
+    pub aliased_deps: Vec<(String, String)>,
     pub features: Vec<String>,
     pub build_root: Option<String>,
     pub build_script_outputs: Vec<String>,
@@ -170,6 +171,7 @@ fn make_build_file_for_dep(
         deps: Vec::new(),
         dev_deps: Vec::new(),
         build_deps: Vec::new(),
+        aliased_deps: Vec::new(),
         features: Vec::new(),
         build_root: dep.build_script.as_ref().map(|p| to_gn_path(p.as_path())),
         build_script_outputs: build_script_outputs.get(&crate_id).cloned().unwrap_or_default(),
@@ -195,12 +197,30 @@ fn make_build_file_for_dep(
 
             let crate_id = dep_of_dep.third_party_crate_id();
             let normalized_name = crate_id.normalized_name();
+            let dep_use_name = dep_of_dep.use_name.as_str();
             let epoch = crate_id.epoch;
             let rule = format!("//{third_party_path_str}/{normalized_name}/{epoch}:{target_name}");
+
+            if dep_use_name != normalized_name.as_str() {
+                // The package renamed this dep in its manifest. Specify this in
+                // the GN target. Note the `__rlib` suffix: GN's built-in
+                // `aliased_deps` argument refers to GN `rust_library` targets.
+                // Meanwhile we use a GN template wrapper around these targets;
+                // the inner `rust_library` name has this suffix. So
+                // unfortunately we must leak an implementation detail here.
+                //
+                // TODO(crbug.com/1402798): handle alias conflicts between
+                // different dependency kinds
+                rule_template
+                    .aliased_deps
+                    .push((dep_use_name.to_string(), format!("{rule}__rlib")));
+            }
 
             gn_deps.push(RuleDep { cond, rule });
         }
     }
+
+    rule_template.aliased_deps.sort_unstable();
 
     let mut rules: Vec<(String, Rule)> = Vec::new();
 
@@ -391,6 +411,11 @@ fn write_concrete<W: fmt::Write>(
         write_deps(&mut writer, "build_deps", details.build_deps.clone())?;
     }
 
+    if !details.aliased_deps.is_empty() {
+        write!(writer, "aliased_deps = ")?;
+        write_set(&mut writer, details.aliased_deps.iter().map(|(a, b)| (a.as_str(), b.as_str())))?;
+    }
+
     if !details.features.is_empty() {
         write!(writer, "features = ")?;
         write_list(&mut writer, &details.features)?;
@@ -475,6 +500,17 @@ fn write_list<W: fmt::Write, T: fmt::Display, I: IntoIterator<Item = T>>(
         writeln!(writer, "\"{item}\",")?;
     }
     writeln!(writer, "]")
+}
+
+fn write_set<W: fmt::Write, T: fmt::Display, U: fmt::Display, I: IntoIterator<Item = (T, U)>>(
+    mut writer: W,
+    items: I,
+) -> fmt::Result {
+    writeln!(writer, "{{")?;
+    for (left, right) in items.into_iter() {
+        writeln!(writer, "{left} = \"{right}\"")?;
+    }
+    writeln!(writer, "}}")
 }
 
 fn write_str_escaped<W: fmt::Write>(mut writer: W, s: &str) -> fmt::Result {

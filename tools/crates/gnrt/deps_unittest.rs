@@ -21,7 +21,7 @@ fn test() {
 
     let empty_str_slice: &'static [&'static str] = &[];
 
-    expect_eq!(dependencies.len(), 16);
+    expect_eq!(dependencies.len(), 17);
 
     let mut i = 0;
 
@@ -29,6 +29,15 @@ fn test() {
     expect_eq!(dependencies[i].version, Version::new(1, 1, 0));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
+        empty_str_slice
+    );
+
+    i += 1;
+
+    expect_eq!(dependencies[i].package_name, "bar");
+    expect_eq!(dependencies[i].version, Version::new(0, 1, 0));
+    expect_eq!(
+        dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         empty_str_slice
     );
 
@@ -49,11 +58,21 @@ fn test() {
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         empty_str_slice
     );
-    expect_eq!(dependencies[i].dependencies.len(), 1);
+    expect_eq!(dependencies[i].dependencies.len(), 2);
     expect_eq!(
         dependencies[i].dependencies[0],
         DepOfDep {
+            package_name: "bar".to_string(),
+            use_name: "baz".to_string(),
+            version: Version::new(0, 1, 0),
+            platform: None,
+        }
+    );
+    expect_eq!(
+        dependencies[i].dependencies[1],
+        DepOfDep {
             package_name: "time".to_string(),
+            use_name: "time".to_string(),
             version: Version::new(0, 3, 14),
             platform: None,
         }
@@ -81,6 +100,7 @@ fn test() {
         dependencies[i].build_dependencies[0],
         DepOfDep {
             package_name: "autocfg".to_string(),
+            use_name: "autocfg".to_string(),
             version: Version::new(1, 1, 0),
             platform: None,
         }
@@ -128,6 +148,7 @@ fn test() {
         dependencies[i].dependencies[0],
         DepOfDep {
             package_name: "serde_derive".to_string(),
+            use_name: "serde_derive".to_string(),
             version: Version::new(1, 0, 139),
             platform: None,
         }
@@ -148,6 +169,7 @@ fn test() {
         dependencies[i].dependencies[0],
         DepOfDep {
             package_name: "proc-macro2".to_string(),
+            use_name: "proc_macro2".to_string(),
             version: Version::new(1, 0, 40),
             platform: None,
         }
@@ -156,6 +178,7 @@ fn test() {
         dependencies[i].dependencies[1],
         DepOfDep {
             package_name: "quote".to_string(),
+            use_name: "quote".to_string(),
             version: Version::new(1, 0, 20),
             platform: None,
         }
@@ -164,6 +187,7 @@ fn test() {
         dependencies[i].dependencies[2],
         DepOfDep {
             package_name: "syn".to_string(),
+            use_name: "syn".to_string(),
             version: Version::new(1, 0, 98),
             platform: None,
         }
@@ -184,6 +208,7 @@ fn test() {
         dependencies[i].dependencies[0],
         DepOfDep {
             package_name: "proc-macro2".to_string(),
+            use_name: "proc_macro2".to_string(),
             version: Version::new(1, 0, 40),
             platform: None,
         }
@@ -192,6 +217,7 @@ fn test() {
         dependencies[i].dependencies[1],
         DepOfDep {
             package_name: "quote".to_string(),
+            use_name: "quote".to_string(),
             version: Version::new(1, 0, 20),
             platform: None,
         }
@@ -200,6 +226,7 @@ fn test() {
         dependencies[i].dependencies[2],
         DepOfDep {
             package_name: "unicode-ident".to_string(),
+            use_name: "unicode_ident".to_string(),
             version: Version::new(1, 0, 1),
             platform: None,
         }
@@ -220,6 +247,7 @@ fn test() {
         dependencies[i].dependencies[0],
         DepOfDep {
             package_name: "winapi-util".to_string(),
+            use_name: "winapi_util".to_string(),
             version: Version::new(0, 1, 5),
             platform: Some(Platform::from_str("cfg(windows)").unwrap()),
         }
@@ -281,6 +309,7 @@ fn test() {
         dependencies[i].dependencies[0],
         DepOfDep {
             package_name: "winapi".to_string(),
+            use_name: "winapi".to_string(),
             version: Version::new(0, 3, 9),
             platform: Some(Platform::from_str("cfg(windows)").unwrap()),
         }
@@ -297,9 +326,14 @@ fn test() {
         left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
     });
 
-    expect_eq!(dependencies.len(), 2);
+    expect_eq!(dependencies.len(), 3);
 
     let mut i = 0;
+
+    expect_eq!(dependencies[i].package_name, "bar");
+    expect_eq!(dependencies[i].version, Version::new(0, 1, 0));
+
+    i += 1;
 
     expect_eq!(dependencies[i].package_name, "foo");
     expect_eq!(dependencies[i].version, Version::new(0, 1, 0));

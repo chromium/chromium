@@ -43,6 +43,7 @@ fn test() {
                         Condition::Always,
                         "//third_party/rust/bindgen:lib".to_string(),
                     )],
+                    aliased_deps: vec![],
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
@@ -117,6 +118,7 @@ variables = []
                         // dev_deps should *not* show up in the output currently.
                         dev_deps: vec![],
                         build_deps: vec![],
+                        aliased_deps: vec![],
                         features: vec![],
                         build_root: None,
                         build_script_outputs: vec![],
@@ -169,7 +171,7 @@ testonly = true
 "#,
     );
 
-    // A lib rule with conditional deps.
+    // A lib rule with conditional deps and aliases.
     let build_file = BuildFile {
         rules: vec![(
             "lib".to_string(),
@@ -212,6 +214,10 @@ testonly = true
                         Condition::Always,
                         "//third_party/rust/bindgen:lib".to_string(),
                     )],
+                    aliased_deps: vec![
+                        ("renamed1".to_string(), "//third_party/rust/dep1:lib__rlib".to_string()),
+                        ("renamed2".to_string(), "//third_party/rust/dep2:lib__rlib".to_string()),
+                    ],
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
@@ -261,6 +267,10 @@ deps += [
 build_deps = [
 "//third_party/rust/bindgen:lib",
 ]
+aliased_deps = {
+renamed1 = "//third_party/rust/dep1:lib__rlib"
+renamed2 = "//third_party/rust/dep2:lib__rlib"
+}
 features = [
 "std",
 ]
