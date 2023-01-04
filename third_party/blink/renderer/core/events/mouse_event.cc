@@ -351,8 +351,7 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
   if (recordreplay::IsRecordingOrReplaying()) {
-    // NOTE: we can also get absolute location, after calling
-    // `ComputePageLocation`
+    // NOTE: we can also get absolute location, via `ComputePageLocation`
     size_t clientX = client_location_.X();
     size_t clientY = client_location_.Y();
     recordreplay::OnMouseEvent(type().Ascii().c_str(), clientX, clientY);
