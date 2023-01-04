@@ -1345,14 +1345,14 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="ActivateDeskByIndex">
-  <int value="0" label="kDesk1"/>
-  <int value="1" label="kDesk2"/>
-  <int value="2" label="kDesk3"/>
-  <int value="3" label="kDesk4"/>
-  <int value="4" label="kDesk5"/>
-  <int value="5" label="kDesk6"/>
-  <int value="6" label="kDesk7"/>
-  <int value="7" label="kDesk8"/>
+  <int value="0" label="Desk 1"/>
+  <int value="1" label="Desk 2"/>
+  <int value="2" label="Desk 3"/>
+  <int value="3" label="Desk 4"/>
+  <int value="4" label="Desk 5"/>
+  <int value="5" label="Desk 6"/>
+  <int value="6" label="Desk 7"/>
+  <int value="7" label="Desk 8"/>
 </enum>
 
 <enum name="ActivationList">
