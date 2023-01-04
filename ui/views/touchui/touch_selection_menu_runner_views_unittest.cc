@@ -26,7 +26,7 @@ const int kMenuCommandCount = 3;
 #if BUILDFLAG(IS_CHROMEOS)
 // Should match size of |kMenuSelectionCommands| array in
 // touch_selection_menu_runner_views.cc.
-const int kMenuSelectionCommandCount = 1;
+const int kMenuSelectionCommandCount = 2;
 #endif
 
 }  // namespace

@@ -136,6 +136,8 @@ ui::TextEditCommand GetTextEditCommandFromMenuCommand(int command_id,
       break;
     case Textfield::kSelectAll:
       return ui::TextEditCommand::SELECT_ALL;
+    case Textfield::kSelectWord:
+      return ui::TextEditCommand::SELECT_WORD;
   }
   return ui::TextEditCommand::INVALID_COMMAND;
 }
@@ -360,6 +362,14 @@ void Textfield::SelectAll(bool reversed) {
   model_->SelectAll(reversed);
   if (HasSelection() && performing_user_action_)
     UpdateSelectionClipboard();
+  UpdateAfterChange(TextChangeType::kNone, true);
+}
+
+void Textfield::SelectWord() {
+  model_->SelectWord();
+  if (HasSelection() && performing_user_action_) {
+    UpdateSelectionClipboard();
+  }
   UpdateAfterChange(TextChangeType::kNone, true);
 }
 
@@ -1667,6 +1677,8 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::SELECT_ALL:
       return !GetText().empty() &&
              GetSelectedRange().length() != GetText().length();
+    case ui::TextEditCommand::SELECT_WORD:
+      return !GetText().empty();
     case ui::TextEditCommand::TRANSPOSE:
       return editable && !HasSelection() && !model_->HasCompositionText();
     case ui::TextEditCommand::YANK:
@@ -2047,6 +2059,9 @@ Textfield::EditCommandResult Textfield::DoExecuteTextEditCommand(
       break;
     case ui::TextEditCommand::SELECT_ALL:
       SelectAll(false);
+      break;
+    case ui::TextEditCommand::SELECT_WORD:
+      SelectWord();
       break;
     case ui::TextEditCommand::TRANSPOSE:
       changed = cursor_changed = model_->Transpose();

@@ -181,6 +181,11 @@ class VIEWS_EXPORT Textfield : public View,
   // of text that overflows its display area.
   void SelectAll(bool reversed);
 
+  // Selects the word at which the cursor is currently positioned. If there is a
+  // non-empty selection, the selection bounds are extended to their nearest
+  // word boundaries.
+  void SelectWord();
+
   // A convenience method to select the word closest to |point|.
   void SelectWordAt(const gfx::Point& point);
 

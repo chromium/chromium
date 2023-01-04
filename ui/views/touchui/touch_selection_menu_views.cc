@@ -49,6 +49,7 @@ MenuCommand kMenuCommands[] = {
 #if BUILDFLAG(IS_CHROMEOS)
 MenuCommand kMenuSelectCommands[] = {
     {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
+    {ui::TouchEditable::kSelectWord, IDS_APP_SELECT},
 };
 #endif
 

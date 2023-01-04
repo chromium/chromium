@@ -595,6 +595,9 @@ need to be translated for each locale.-->
           Select &amp;All
         </message>
       </if>
+      <message name="IDS_APP_SELECT" desc="The text label of the Select menu item">
+        &amp;Select
+      </message>
       <if expr="not is_macosx">
         <message name="IDS_CONTENT_CONTEXT_EMOJI" desc="The context menu item to display the OS-provided emoji picker.">
           Emoji
