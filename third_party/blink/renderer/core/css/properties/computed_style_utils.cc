@@ -2145,7 +2145,14 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
     CSSValue* axis = view_data.HasDefaultAxis()
                          ? nullptr
                          : CSSIdentifierValue::Create(view_data.GetAxis());
-    return MakeGarbageCollected<cssvalue::CSSViewValue>(axis);
+    auto* inset =
+        view_data.HasDefaultInset()
+            ? nullptr
+            : MakeGarbageCollected<CSSValuePair>(
+                  CSSValue::Create(view_data.GetInset().GetStart(), 1),
+                  CSSValue::Create(view_data.GetInset().GetEnd(), 1),
+                  CSSValuePair::kDropIdenticalValues);
+    return MakeGarbageCollected<cssvalue::CSSViewValue>(axis, inset);
   }
   DCHECK(timeline.IsScroll());
   const StyleTimeline::ScrollData& scroll_data = timeline.GetScroll();

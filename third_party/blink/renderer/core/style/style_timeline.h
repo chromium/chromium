@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
+#include "third_party/blink/renderer/core/style/timeline_inset.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -53,18 +54,24 @@ class CORE_EXPORT StyleTimeline {
    public:
     static TimelineAxis DefaultAxis() { return TimelineAxis::kBlock; }
 
-    ViewData(TimelineAxis axis) : axis_(axis) {}
+    ViewData(TimelineAxis axis, TimelineInset inset)
+        : axis_(axis), inset_(inset) {}
 
     bool operator==(const ViewData& other) const {
-      return axis_ == other.axis_;
+      return axis_ == other.axis_ && inset_ == other.inset_;
     }
     bool operator!=(const ViewData& other) const { return !(*this == other); }
 
     TimelineAxis GetAxis() const { return axis_; }
+    TimelineInset GetInset() const { return inset_; }
     bool HasDefaultAxis() const { return axis_ == DefaultAxis(); }
+    bool HasDefaultInset() const {
+      return inset_.GetStart().IsAuto() && inset_.GetEnd().IsAuto();
+    }
 
    private:
     TimelineAxis axis_;
+    TimelineInset inset_;
   };
 
   explicit StyleTimeline(CSSValueID keyword) : data_(keyword) {}

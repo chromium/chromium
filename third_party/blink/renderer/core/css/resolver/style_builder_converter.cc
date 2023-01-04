@@ -2997,18 +2997,15 @@ Vector<TimelineAxis> StyleBuilderConverter::ConvertViewTimelineAxis(
   return axes;
 }
 
-namespace {
-
-TimelineInset ConvertSingleTimelineInset(StyleResolverState& state,
-                                         const CSSValue& value) {
+TimelineInset StyleBuilderConverter::ConvertSingleTimelineInset(
+    StyleResolverState& state,
+    const CSSValue& value) {
   const CSSValuePair& pair = To<CSSValuePair>(value);
   Length start =
       StyleBuilderConverter::ConvertLengthOrAuto(state, pair.First());
   Length end = StyleBuilderConverter::ConvertLengthOrAuto(state, pair.Second());
   return TimelineInset(start, end);
 }
-
-}  // namespace
 
 Vector<TimelineInset> StyleBuilderConverter::ConvertViewTimelineInset(
     StyleResolverState& state,

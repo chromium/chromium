@@ -193,6 +193,8 @@ class StyleBuilderConverter {
   static UnzoomedLength ConvertUnzoomedLength(StyleResolverState&,
                                               const CSSValue&);
   static float ConvertZoom(const StyleResolverState&, const CSSValue&);
+  static TimelineInset ConvertSingleTimelineInset(StyleResolverState&,
+                                                  const CSSValue&);
   static Length ConvertLengthOrAuto(const StyleResolverState&, const CSSValue&);
   static Length ConvertLengthOrAuto(const StyleResolverState&,
                                     const ScopedCSSValue&);

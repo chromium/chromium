@@ -320,7 +320,8 @@ Timing::Delay MapAnimationTimingDelay(const CSSValue& value) {
 
 }  // namespace
 
-Timing::Delay CSSToStyleMap::MapAnimationDelayStart(const CSSValue& value) {
+Timing::Delay CSSToStyleMap::MapAnimationDelayStart(StyleResolverState& state,
+                                                    const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialDelayStart();
   }
@@ -334,7 +335,13 @@ Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(const CSSValue& value) {
   return MapAnimationTimingDelay(value);
 }
 
+Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(StyleResolverState& state,
+                                                  const CSSValue& value) {
+  return MapAnimationDelayEnd(value);
+}
+
 Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
+    StyleResolverState& state,
     const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialDirection();
@@ -356,6 +363,7 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
 }
 
 absl::optional<double> CSSToStyleMap::MapAnimationDuration(
+    StyleResolverState& state,
     const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSTimingData::InitialDuration();
@@ -367,7 +375,8 @@ absl::optional<double> CSSToStyleMap::MapAnimationDuration(
   return To<CSSPrimitiveValue>(value).ComputeSeconds();
 }
 
-Timing::FillMode CSSToStyleMap::MapAnimationFillMode(const CSSValue& value) {
+Timing::FillMode CSSToStyleMap::MapAnimationFillMode(StyleResolverState& state,
+                                                     const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialFillMode();
   }
@@ -387,7 +396,8 @@ Timing::FillMode CSSToStyleMap::MapAnimationFillMode(const CSSValue& value) {
   }
 }
 
-double CSSToStyleMap::MapAnimationIterationCount(const CSSValue& value) {
+double CSSToStyleMap::MapAnimationIterationCount(StyleResolverState& state,
+                                                 const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialIterationCount();
   }
@@ -399,7 +409,8 @@ double CSSToStyleMap::MapAnimationIterationCount(const CSSValue& value) {
   return To<CSSPrimitiveValue>(value).GetFloatValue();
 }
 
-AtomicString CSSToStyleMap::MapAnimationName(const CSSValue& value) {
+AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
+                                             const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialName();
   }
@@ -411,6 +422,7 @@ AtomicString CSSToStyleMap::MapAnimationName(const CSSValue& value) {
 }
 
 StyleTimeline CSSToStyleMap::MapAnimationTimeline(
+    StyleResolverState& state,
     const ScopedCSSValue& scoped_value) {
   const CSSValue& value = scoped_value.GetCSSValue();
   if (value.IsInitialValue()) {
@@ -434,7 +446,12 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(
     const auto* axis_value = DynamicTo<CSSIdentifierValue>(view_value.Axis());
     TimelineAxis axis = axis_value ? axis_value->ConvertTo<TimelineAxis>()
                                    : StyleTimeline::ViewData::DefaultAxis();
-    return StyleTimeline(StyleTimeline::ViewData(axis));
+    const auto* inset_value = view_value.Inset();
+    TimelineInset inset =
+        inset_value ? StyleBuilderConverter::ConvertSingleTimelineInset(
+                          state, *inset_value)
+                    : TimelineInset();
+    return StyleTimeline(StyleTimeline::ViewData(axis, inset));
   }
 
   DCHECK(value.IsScrollValue());
@@ -452,7 +469,8 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(
   return StyleTimeline(StyleTimeline::ScrollData(axis, scroller));
 }
 
-EAnimPlayState CSSToStyleMap::MapAnimationPlayState(const CSSValue& value) {
+EAnimPlayState CSSToStyleMap::MapAnimationPlayState(StyleResolverState& state,
+                                                    const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialPlayState();
   }
@@ -464,6 +482,7 @@ EAnimPlayState CSSToStyleMap::MapAnimationPlayState(const CSSValue& value) {
 }
 
 CSSTransitionData::TransitionProperty CSSToStyleMap::MapAnimationProperty(
+    StyleResolverState& state,
     const CSSValue& value) {
   if (value.IsInitialValue()) {
     return CSSTransitionData::InitialProperty();
@@ -533,6 +552,12 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
       To<cssvalue::CSSStepsTimingFunctionValue>(value);
   return StepsTimingFunction::Create(steps_timing_function.NumberOfSteps(),
                                      steps_timing_function.GetStepPosition());
+}
+
+scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationTimingFunction(value);
 }
 
 void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,

@@ -67,19 +67,31 @@ class CSSToStyleMap {
                                FillLayer*,
                                const CSSValue&);
 
-  static Timing::Delay MapAnimationDelayStart(const CSSValue&);
+  static Timing::Delay MapAnimationDelayStart(StyleResolverState&,
+                                              const CSSValue&);
   static Timing::Delay MapAnimationDelayEnd(const CSSValue&);
-  static Timing::PlaybackDirection MapAnimationDirection(const CSSValue&);
-  static absl::optional<double> MapAnimationDuration(const CSSValue&);
-  static Timing::FillMode MapAnimationFillMode(const CSSValue&);
-  static double MapAnimationIterationCount(const CSSValue&);
-  static AtomicString MapAnimationName(const CSSValue&);
-  static StyleTimeline MapAnimationTimeline(const ScopedCSSValue&);
-  static EAnimPlayState MapAnimationPlayState(const CSSValue&);
+  static Timing::Delay MapAnimationDelayEnd(StyleResolverState&,
+                                            const CSSValue&);
+  static Timing::PlaybackDirection MapAnimationDirection(StyleResolverState&,
+                                                         const CSSValue&);
+  static absl::optional<double> MapAnimationDuration(StyleResolverState&,
+                                                     const CSSValue&);
+  static Timing::FillMode MapAnimationFillMode(StyleResolverState&,
+                                               const CSSValue&);
+  static double MapAnimationIterationCount(StyleResolverState&,
+                                           const CSSValue&);
+  static AtomicString MapAnimationName(StyleResolverState&, const CSSValue&);
+  static StyleTimeline MapAnimationTimeline(StyleResolverState&,
+                                            const ScopedCSSValue&);
+  static EAnimPlayState MapAnimationPlayState(StyleResolverState&,
+                                              const CSSValue&);
   static CSSTransitionData::TransitionProperty MapAnimationProperty(
+      StyleResolverState&,
       const CSSValue&);
-
   static scoped_refptr<TimingFunction> MapAnimationTimingFunction(
+      const CSSValue&);
+  static scoped_refptr<TimingFunction> MapAnimationTimingFunction(
+      StyleResolverState&,
       const CSSValue&);
 
   static void MapNinePieceImage(StyleResolverState&,

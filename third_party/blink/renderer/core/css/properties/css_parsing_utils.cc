@@ -3976,11 +3976,28 @@ CSSValue* ConsumeViewFunction(CSSParserTokenRange& range,
   }
 
   CSSParserTokenRange block = range.ConsumeBlock();
-  CSSIdentifierValue* axis =
-      ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
-                   CSSValueID::kVertical, CSSValueID::kHorizontal>(block);
+  CSSIdentifierValue* axis = nullptr;
+  CSSValue* inset = nullptr;
 
-  // TODO(crbug.com/1393087): Should parse inset as well.
+  while (!axis || !inset) {
+    if (block.AtEnd()) {
+      break;
+    }
+    if (!axis) {
+      if ((axis = ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
+                               CSSValueID::kVertical, CSSValueID::kHorizontal>(
+               block))) {
+        continue;
+      }
+    }
+    if (!inset) {
+      if ((inset = ConsumeSingleTimelineInset(block, context))) {
+        continue;
+      }
+    }
+    return nullptr;
+  }
+
   if (!block.AtEnd()) {
     return nullptr;
   }
@@ -3990,8 +4007,15 @@ CSSValue* ConsumeViewFunction(CSSParserTokenRange& range,
   if (axis && IsIdent(*axis, CSSValueID::kBlock)) {
     axis = nullptr;
   }
+  if (inset) {
+    auto* inset_pair = DynamicTo<CSSValuePair>(inset);
+    if (IsIdent(inset_pair->First(), CSSValueID::kAuto) &&
+        IsIdent(inset_pair->Second(), CSSValueID::kAuto)) {
+      inset = nullptr;
+    }
+  }
 
-  return MakeGarbageCollected<cssvalue::CSSViewValue>(axis);
+  return MakeGarbageCollected<cssvalue::CSSViewValue>(axis, inset);
 }
 
 CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,

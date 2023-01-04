@@ -15,9 +15,10 @@ namespace cssvalue {
 // https://drafts.csswg.org/scroll-animations-1/#view-notation
 class CORE_EXPORT CSSViewValue : public CSSValue {
  public:
-  CSSViewValue(const CSSValue* axis);
+  CSSViewValue(const CSSValue* axis, const CSSValue* inset);
 
   const CSSValue* Axis() const { return axis_; }
+  const CSSValue* Inset() const { return inset_; }
 
   String CustomCSSText() const;
   bool Equals(const CSSViewValue&) const;
@@ -25,6 +26,7 @@ class CORE_EXPORT CSSViewValue : public CSSValue {
 
  private:
   Member<const CSSValue> axis_;
+  Member<const CSSValue> inset_;
 };
 
 }  // namespace cssvalue

@@ -239,7 +239,7 @@ ScopedCSSValue({{value}}, {{tree_scope}})
   data.{{vector}}.clear();
   for (const CSSValue* list_value : To<CSSValueList>({{remove_tree_scope(property, 'value')}})) {
     const auto& item = {{add_tree_scope(property, '*list_value', 'value.GetTreeScope()')}};
-    data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(item));
+    data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(state, item));
   }
     {% endcall %}
   {% elif property.style_builder_template in ['background_layer', 'mask_layer'] %}
