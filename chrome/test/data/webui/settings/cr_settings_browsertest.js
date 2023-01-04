@@ -653,85 +653,6 @@ TEST_F(
       runMochaSuite('PrivacySandboxAdMeasurementSubpageTests');
     });
 
-var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_guide_page_test.js';
-  }
-};
-
-TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuidePageTests', function() {
-  runMochaSuite('PrivacyGuidePageTests');
-});
-
-TEST_F('CrSettingsPrivacyGuidePageTest', 'MsbbCardNavigations', function() {
-  runMochaSuite('MsbbCardNavigations');
-});
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'HistorySyncCardNavigations', function() {
-      runMochaSuite('HistorySyncCardNavigations');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'SafeBrowsingCardNavigations',
-    function() {
-      runMochaSuite('SafeBrowsingCardNavigations');
-    });
-
-TEST_F('CrSettingsPrivacyGuidePageTest', 'CookiesCardNavigations', function() {
-  runMochaSuite('CookiesCardNavigations');
-});
-
-TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
-  runMochaSuite('PrivacyGuideDialogTests');
-});
-
-var CrSettingsPrivacyGuideFragmentsTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_guide_fragments_test.js';
-  }
-};
-
-TEST_F(
-    'CrSettingsPrivacyGuideFragmentsTest', 'WelcomeFragmentTests', function() {
-      runMochaSuite('WelcomeFragmentTests');
-    });
-
-TEST_F('CrSettingsPrivacyGuideFragmentsTest', 'MsbbFragmentTests', function() {
-  runMochaSuite('MsbbFragmentTests');
-});
-
-TEST_F(
-    'CrSettingsPrivacyGuideFragmentsTest', 'HistorySyncFragmentTests',
-    function() {
-      runMochaSuite('HistorySyncFragmentTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuideFragmentsTest', 'SafeBrowsingFragmentTests',
-    function() {
-      runMochaSuite('SafeBrowsingFragmentTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuideFragmentsTest', 'CookiesFragmentTests', function() {
-      runMochaSuite('CookiesFragmentTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuideFragmentsTest', 'CompletionFragmentTests',
-    function() {
-      runMochaSuite('CompletionFragmentTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuideFragmentsTest',
-    'CompletionFragmentPrivacySandboxRestricted', function() {
-      runMochaSuite('CompletionFragmentPrivacySandboxRestricted');
-    });
-
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -1069,7 +990,31 @@ function registerTest(testName, module, caseName) {
      'AllSites_DisableFirstPartySets',
    ],
  ],
-
+ [
+   'PrivacyGuidePage',
+   'privacy_guide_page_test.js',
+   [
+     'PrivacyGuidePageTests',
+     'MsbbCardNavigations',
+     'HistorySyncCardNavigations',
+     'SafeBrowsingCardNavigations',
+     'CookiesCardNavigations',
+     'PrivacyGuideDialogTests',
+   ],
+ ],
+ [
+   'PrivacyGuideFragments',
+   'privacy_guide_fragments_test.js',
+   [
+     'WelcomeFragmentTests',
+     'MsbbFragmentTests',
+     'HistorySyncFragmentTests',
+     'SafeBrowsingFragmentTests',
+     'CookiesFragmentTests',
+     'CompletionFragmentTests',
+     'CompletionFragmentPrivacySandboxRestricted',
+   ],
+ ],
 ].forEach(test => registerTestSuites(...test));
 
 // TODO(crbug.com/1403969): SecurityPage_SafeBrowsing suite is flaky on Mac.
