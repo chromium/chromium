@@ -586,8 +586,21 @@ void TexturePassthrough::BindToServiceId(GLuint service_id) {
   if (service_id != 0 && service_id != service_id_) {
     service_id_ = service_id;
   }
-  // TODO(blundell): Inline the body of this method here.
-  UpdateStreamTextureServiceId(target(), /*level=*/0);
+
+  if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
+    // Notify the texture that its size has changed.
+    LevelInfo* level_0_info = GetLevelInfo(target_, 0);
+    GLint prev_texture = 0;
+    glGetIntegerv(GetTextureBindingQuery(target_), &prev_texture);
+    glBindTexture(target_, service_id_);
+
+    glTexImage2DExternalANGLE(
+        target_, /*level=*/0, level_0_info->internal_format,
+        level_0_info->width, level_0_info->height, level_0_info->border,
+        level_0_info->format, level_0_info->type);
+
+    glBindTexture(target_, prev_texture);
+  }
 }
 
 void TexturePassthrough::SetEstimatedSize(size_t size) {
@@ -629,24 +642,6 @@ void TexturePassthrough::SetLevelImageInternal(
   }
 }
 #endif
-
-void TexturePassthrough::UpdateStreamTextureServiceId(GLenum target,
-                                                      GLint level) {
-  if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
-    LevelInfo* level_info = GetLevelInfo(target, level);
-    // Notify the texture that its size has changed
-    GLint prev_texture = 0;
-    glGetIntegerv(GetTextureBindingQuery(target_), &prev_texture);
-    glBindTexture(target_, service_id_);
-
-    glTexImage2DExternalANGLE(target_, level, level_info->internal_format,
-                              level_info->width, level_info->height,
-                              level_info->border, level_info->format,
-                              level_info->type);
-
-    glBindTexture(target_, prev_texture);
-  }
-}
 
 TexturePassthrough::LevelInfo* TexturePassthrough::GetLevelInfo(GLenum target,
                                                                 GLint level) {

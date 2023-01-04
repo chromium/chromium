@@ -109,7 +109,6 @@ class GPU_GLES2_EXPORT TexturePassthrough final
                              gl::GLImage* image,
                              GLuint service_id);
 #endif
-  void UpdateStreamTextureServiceId(GLenum target, GLint level);
 
   friend class base::RefCounted<TexturePassthrough>;
 
