@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
@@ -179,7 +178,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     return;
   }
 
-  CGFloat scrollPosition = [self.ntpViewController scrollPosition];
+  CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
   if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
     // Return to Recent tab tile is only shown one time, so subtract it's
@@ -188,14 +187,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
         ReturnToRecentTabHeight() +
         content_suggestions::kReturnToRecentTabSectionBottomMargin;
     if (scrollPosition >
-        tileSectionHeight +
-            [self.headerCollectionInteractionHandler pinnedOffsetY]) {
+        tileSectionHeight + [self.NTPViewController pinnedOffsetY]) {
       scrollPosition -= tileSectionHeight;
     }
   }
 
-  scrollPosition -=
-      self.headerCollectionInteractionHandler.collectionShiftingOffset;
+  scrollPosition -= self.NTPViewController.collectionShiftingOffset;
 
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
 
@@ -326,12 +323,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     offsetFromSavedState = -CGFLOAT_MAX;
   }
 
-  CGFloat minimumOffset = -[self.ntpViewController heightAboveFeed];
+  CGFloat minimumOffset = -[self.NTPViewController heightAboveFeed];
   if (offsetFromSavedState > minimumOffset) {
-    [self.ntpViewController setSavedContentOffset:offsetFromSavedState];
+    [self.NTPViewController setSavedContentOffset:offsetFromSavedState];
   } else {
     // Remove this if NTPs are ever scoped back to the WebState.
-    [self.ntpViewController setContentOffsetToTop];
+    [self.NTPViewController setContentOffsetToTop];
     // Refresh NTP content if there is is no saved scrolled state or when a new
     // NTP is opened. Since the same NTP is being shared across tabs, this
     // ensures that new content is being fetched.
