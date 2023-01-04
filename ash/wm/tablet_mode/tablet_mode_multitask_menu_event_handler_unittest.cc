@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/command_line.h"
@@ -560,6 +561,26 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
   EXPECT_FALSE(multitask_menu_view->partial_button_for_testing());
   EXPECT_TRUE(multitask_menu_view->full_button_for_testing());
   EXPECT_FALSE(multitask_menu_view->float_button_for_testing());
+}
+
+// Tests that showing the menu will dismiss the visual cue (drag bar).
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, DismissCueOnShowMenu) {
+  auto window = CreateAppWindow();
+
+  auto* multitask_cue = TabletModeControllerTestApi()
+                            .tablet_mode_window_manager()
+                            ->tablet_mode_multitask_cue();
+  ASSERT_TRUE(multitask_cue);
+  EXPECT_TRUE(multitask_cue->cue_layer_for_testing());
+
+  ShowMultitaskMenu(*window);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  multitask_cue = TabletModeControllerTestApi()
+                      .tablet_mode_window_manager()
+                      ->tablet_mode_multitask_cue();
+  ASSERT_TRUE(multitask_cue);
+  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
 }
 
 }  // namespace ash

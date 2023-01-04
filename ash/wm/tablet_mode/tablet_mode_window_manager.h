@@ -108,13 +108,13 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  TabletModeMultitaskCue* tablet_mode_multitask_cue() {
+    return tablet_mode_multitask_cue_.get();
+  }
+
   TabletModeMultitaskMenuEventHandler*
   tablet_mode_multitask_menu_event_handler_for_testing() {
     return tablet_mode_multitask_menu_event_handler_.get();
-  }
-
-  TabletModeMultitaskCue* tablet_mode_multitask_cue_for_testing() {
-    return tablet_mode_multitask_cue_.get();
   }
 
  private:

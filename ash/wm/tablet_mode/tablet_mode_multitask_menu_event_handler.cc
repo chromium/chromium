@@ -6,7 +6,10 @@
 
 #include "ash/accelerators/debug_commands.h"
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
@@ -38,6 +41,16 @@ void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
   if (!multitask_menu_) {
     multitask_menu_ =
         std::make_unique<TabletModeMultitaskMenu>(this, active_window);
+
+    // TODO(hewer): Remove this and add the cue as a class variable.
+    auto* multitask_cue = Shell::Get()
+                              ->tablet_mode_controller()
+                              ->tablet_mode_window_manager()
+                              ->tablet_mode_multitask_cue();
+
+    if (multitask_cue) {
+      multitask_cue->DismissCue();
+    }
   }
 }
 
