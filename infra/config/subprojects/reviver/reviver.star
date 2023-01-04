@@ -120,6 +120,7 @@ polymorphic.launcher(
                 os = os.MAC_DEFAULT,
                 cpu = cpu.X86_64,
                 free_space = free_space.standard,
+                ssd = True,
             ),
             testers = [
                 "ci/Mac12 Tests",
