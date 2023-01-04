@@ -597,6 +597,101 @@ build_webui_tests("build") {
 
 ```
 
+### **build_cr_component**
+
+The flow diagram below shows a high level view of how a typical modern
+cr_component is built
+
+![cr_component build pipeline flow diagram](images/webui_build_cr_component.png)
+
+```
+This umbrella rule captures the most common build pipeline
+configuration for building WebUI cr_components and aims to hide the complexity
+of having to define multiple other targets directly. Using build_cr_component()
+is the recommended approach for any code that resides under
+ui/webui/resources/cr_components/.
+
+Under the cover, build_cr_component() defines the following targets
+
+preprocess_if_expr("preprocess")
+html_to_wrapper("html_wrapper_files")
+css_to_wrapper("css_wrapper_files")
+copy("copy_mojo")
+ts_library("build_ts")
+generate_grd("build_grd")
+
+Some targets are only conditionally defined based on build_cr_component() input
+parameters.
+
+Only the ":build_ts" and ":generate_grd" targets are public and can be referred
+to from other parts of the build.
+```
+
+#### **Arguments**
+```
+
+List of files params:
+static_files: Same as build_webui()
+web_component_files: Same as build_webui()
+non_web_component_files: Same as build_webui()
+icons_html_files: Same as build_webui()
+css_files: Same as build_webui()
+mojo_files: Same as build_webui()
+mojo_files_deps: Same as build_webui()
+
+TypeScript (ts_library()) related params:
+tsc_dir: See |output_dir| in ts_library()
+ts_definitions: Same as build_webui()
+ts_deps: Same as build_webui()
+ts_extra_deps: Same as build_webui()
+ts_path_mappings: Same as build_webui()
+ts_use_local_config: Same as build_webui()
+
+Other params:
+grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
+resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
+                      parameter.
+optimize: Optional parameter, defaults to false. If specified it is passed as
+          the |minify| parameter to the underlying html_to_wrapper() and
+          css_to_wrapper() targets.
+```
+
+#### **Example**
+```
+import("//ui/webui/resources/cr_components/build_cr_component.gni")
+
+build_cr_component("build") {
+  grd_prefix = "cr_components_history_clusters"
+
+  web_component_files = [
+    "cluster.ts",
+    "url_visit.ts",
+  ]
+
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "utils.ts",
+  ]
+
+  css_files = [
+    "shared_vars.css",
+  ]
+
+  mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-webui.ts" ]
+
+  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/history_clusters"
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+
+  optimize = optimize_webui
+}
+```
+
 ## Example build configurations
 
 ### **Simple UI with no web components**

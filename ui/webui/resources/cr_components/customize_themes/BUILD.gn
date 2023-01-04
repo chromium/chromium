@@ -3,12 +3,8 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
-import("customize_themes.gni")
+import("../../tools/build_cr_component.gni")
 
 assert(!is_android && !is_ios)
 
@@ -23,61 +19,30 @@ mojom("mojom") {
   webui_module_path = "chrome://resources/cr_components/customize_themes/"
 }
 
-# Output folder used to hold preprocess_if_expr() output.
-preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes_tmp"
+build_cr_component("build") {
+  grd_prefix = "cr_components_customize_themes"
 
-# Output folder used to hold ts_library() output.
-preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
+  static_files = [
+    "colorize.svg",
+    "brush.svg",
+  ]
 
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = preprocess_folder_tmp
-  in_files = ts_files + html_files
-}
+  web_component_files = [
+    "customize_themes.ts",
+    "theme_icon.ts",
+  ]
 
-html_to_wrapper("html_wrapper_files") {
-  deps = [ ":preprocess" ]
-  in_folder = preprocess_folder_tmp
-  out_folder = preprocess_folder_tmp
-  in_files = html_files
-  minify = optimize_webui
-}
+  non_web_component_files = [ "browser_proxy.ts" ]
 
-copy("copy_mojom") {
-  deps = [ ":mojom_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
-  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
-}
+  mojo_files_deps = [ ":mojom_js__generator" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
 
-ts_library("build_ts") {
-  root_dir = preprocess_folder_tmp
-  out_dir = preprocess_folder
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + html_wrapper_files + mojo_files
-
-  deps = [
+  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
-  extra_deps = [
-    ":copy_mojom",
-    ":html_wrapper_files",
-    ":preprocess",
-  ]
-}
 
-generate_grd("build_grdp") {
-  grd_prefix = "cr_components_customize_themes"
-  out_grd = "$target_gen_dir/resources.grdp"
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = [
-    "colorize.svg",
-    "brush.svg",
-  ]
-  public_deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "cr_components/customize_themes"
+  optimize = optimize_webui
 }

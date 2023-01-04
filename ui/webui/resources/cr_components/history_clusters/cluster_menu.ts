@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 import './history_clusters_shared_style.css.js';
-import '../../cr_elements/cr_action_menu/cr_action_menu.js';
-import '../../cr_elements/cr_icon_button/cr_icon_button.js';
-import '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {loadTimeData} from '../../js/load_time_data.js';
 
 import {getTemplate} from './cluster_menu.html.js';
 import {URLVisit} from './history_clusters.mojom-webui.js';
