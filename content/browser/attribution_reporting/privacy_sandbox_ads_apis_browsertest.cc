@@ -62,7 +62,7 @@ class FixedTopicsContentBrowserClient : public ContentBrowserClient {
     return true;
   }
 };
-}
+}  // namespace
 
 class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
  public:

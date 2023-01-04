@@ -169,8 +169,9 @@ base::Value::Dict AttributionReport::ReportBody() const {
             dict.Set("randomized_trigger_rate", data.randomized_trigger_rate);
 
             if (absl::optional<uint64_t> debug_key =
-                    common_source_info.debug_key())
+                    common_source_info.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
+            }
 
             if (absl::optional<uint64_t> debug_key =
                     this->attribution_info().debug_key) {
@@ -196,8 +197,9 @@ base::Value::Dict AttributionReport::ReportBody() const {
             const CommonSourceInfo& common_info =
                 this->attribution_info().source.common_info();
 
-            if (absl::optional<uint64_t> debug_key = common_info.debug_key())
+            if (absl::optional<uint64_t> debug_key = common_info.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
+            }
 
             if (absl::optional<uint64_t> debug_key =
                     this->attribution_info().debug_key) {
@@ -228,11 +230,13 @@ void AttributionReport::SetExternalReportIdForTesting(
 absl::optional<base::Time> AttributionReport::MinReportTime(
     absl::optional<base::Time> a,
     absl::optional<base::Time> b) {
-  if (!a.has_value())
+  if (!a.has_value()) {
     return b;
+  }
 
-  if (!b.has_value())
+  if (!b.has_value()) {
     return a;
+  }
 
   return std::min(*a, *b);
 }

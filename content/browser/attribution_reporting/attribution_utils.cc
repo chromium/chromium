@@ -144,15 +144,17 @@ bool AttributionFilterDataMatch(const attribution_reporting::FilterData& source,
         }
 
         auto source_filter = source.filter_values().find(trigger_filter.first);
-        if (source_filter == source.filter_values().end())
+        if (source_filter == source.filter_values().end()) {
           return true;
+        }
 
         // Desired behavior is to treat any empty set of values as a single
         // unique value itself. This means:
         //  - x:[] match x:[] is false when negated, and true otherwise.
         //  - x:[1,2,3] match x:[] is true when negated, and false otherwise.
-        if (trigger_filter.second.empty())
+        if (trigger_filter.second.empty()) {
           return negated != source_filter->second.empty();
+        }
 
         bool has_intersection = base::ranges::any_of(
             trigger_filter.second, [&](const std::string& value) {

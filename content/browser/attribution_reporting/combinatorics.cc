@@ -16,17 +16,20 @@ int BinomialCoefficient(int n, int k) {
   DCHECK_GE(n, 0);
   DCHECK_GE(k, 0);
 
-  if (k > n)
+  if (k > n) {
     return 0;
+  }
 
   // Speed up some trivial cases.
-  if (k == n || n == 0)
+  if (k == n || n == 0) {
     return 1;
+  }
 
   // BinomialCoefficient(n, k) == BinomialCoefficient(n, n - k),
   // So simplify if possible.
-  if (k > n - k)
+  if (k > n - k) {
     k = n - k;
+  }
 
   // (n choose k) = n (n -1) ... (n - (k - 1)) / k!
   // = mul((n + i - i) / i), i from 1 -> k.
@@ -68,8 +71,9 @@ std::vector<int> GetKCombinationAtIndex(int combination_index, int k) {
 
   std::vector<int> output_k_combination;
   output_k_combination.reserve(k);
-  if (k == 0)
+  if (k == 0) {
     return output_k_combination;
+  }
 
   // To find a_k, iterate candidates upwards from 0 until we've found the
   // maximum a such that (a choose k) <= `combination_index`. Let a_k = a. Use

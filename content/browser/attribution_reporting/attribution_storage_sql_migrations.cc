@@ -28,8 +28,9 @@ bool MigrateToVersion34(sql::Database* db, sql::MetaTable* meta_table) {
   // transactions make it more likely that we'll make forward progress each time
   // Chrome stops.
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   // Create the new aggregatable_report_metadata table with initial_report_time.
   // This follows the steps documented at
@@ -46,8 +47,9 @@ bool MigrateToVersion34(sql::Database* db, sql::MetaTable* meta_table) {
       "report_time INTEGER NOT NULL,"
       "failed_send_attempts INTEGER NOT NULL,"
       "initial_report_time INTEGER NOT NULL)";
-  if (!db->Execute(kNewAggregatableReportMetadataTableSql))
+  if (!db->Execute(kNewAggregatableReportMetadataTableSql)) {
     return false;
+  }
 
   // Transfer the existing aggregatable_report_metadata rows to the new table,
   // using the report_time value for initial_report_time.
@@ -56,19 +58,22 @@ bool MigrateToVersion34(sql::Database* db, sql::MetaTable* meta_table) {
       "aggregation_id,source_id,trigger_time,debug_key,external_report_id,"
       "report_time,failed_send_attempts,report_time "
       "FROM aggregatable_report_metadata";
-  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql))
+  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql)) {
     return false;
+  }
 
   static constexpr char kDropOldAggregatableReportMetadataTableSql[] =
       "DROP TABLE aggregatable_report_metadata";
-  if (!db->Execute(kDropOldAggregatableReportMetadataTableSql))
+  if (!db->Execute(kDropOldAggregatableReportMetadataTableSql)) {
     return false;
+  }
 
   static constexpr char kRenameAggregatableReportMetadataTableSql[] =
       "ALTER TABLE new_aggregatable_report_metadata "
       "RENAME TO aggregatable_report_metadata";
-  if (!db->Execute(kRenameAggregatableReportMetadataTableSql))
+  if (!db->Execute(kRenameAggregatableReportMetadataTableSql)) {
     return false;
+  }
 
   // Create the pre-existing aggregatable_report_metadata table indices on the
   // new table.
@@ -76,20 +81,23 @@ bool MigrateToVersion34(sql::Database* db, sql::MetaTable* meta_table) {
   static constexpr char kAggregateSourceIdIndexSql[] =
       "CREATE INDEX aggregate_source_id_idx "
       "ON aggregatable_report_metadata(source_id)";
-  if (!db->Execute(kAggregateSourceIdIndexSql))
+  if (!db->Execute(kAggregateSourceIdIndexSql)) {
     return false;
+  }
 
   static constexpr char kAggregateTriggerTimeIndexSql[] =
       "CREATE INDEX aggregate_trigger_time_idx "
       "ON aggregatable_report_metadata(trigger_time)";
-  if (!db->Execute(kAggregateTriggerTimeIndexSql))
+  if (!db->Execute(kAggregateTriggerTimeIndexSql)) {
     return false;
+  }
 
   static constexpr char kAggregateReportTimeIndexSql[] =
       "CREATE INDEX aggregate_report_time_idx "
       "ON aggregatable_report_metadata(report_time)";
-  if (!db->Execute(kAggregateReportTimeIndexSql))
+  if (!db->Execute(kAggregateReportTimeIndexSql)) {
     return false;
+  }
 
   meta_table->SetVersionNumber(34);
   return transaction.Commit();
@@ -99,8 +107,9 @@ bool MigrateToVersion35(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // `MigrateToVersion34`.
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static constexpr char kNewRateLimitsTableSql[] =
       "CREATE TABLE new_rate_limits("
@@ -114,8 +123,9 @@ bool MigrateToVersion35(sql::Database* db, sql::MetaTable* meta_table) {
       "reporting_origin TEXT NOT NULL,"
       "time INTEGER NOT NULL,"
       "expiry_time INTEGER NOT NULL)";
-  if (!db->Execute(kNewRateLimitsTableSql))
+  if (!db->Execute(kNewRateLimitsTableSql)) {
     return false;
+  }
 
   // Transfer the existing rows to the new table, inserting `base::Time()`
   // as default values for the expiry_time column.
@@ -124,17 +134,20 @@ bool MigrateToVersion35(sql::Database* db, sql::MetaTable* meta_table) {
       "id,scope,source_id,source_site,source_origin,destination_site,"
       "destination_origin,reporting_origin,time,0 "
       "FROM rate_limits";
-  if (!db->Execute(kPopulateNewRateLimitsTableSql))
+  if (!db->Execute(kPopulateNewRateLimitsTableSql)) {
     return false;
+  }
 
   static constexpr char kDropOldRateLimitsTableSql[] = "DROP TABLE rate_limits";
-  if (!db->Execute(kDropOldRateLimitsTableSql))
+  if (!db->Execute(kDropOldRateLimitsTableSql)) {
     return false;
+  }
 
   static constexpr char kRenameRateLimitsTableSql[] =
       "ALTER TABLE new_rate_limits RENAME TO rate_limits";
-  if (!db->Execute(kRenameRateLimitsTableSql))
+  if (!db->Execute(kRenameRateLimitsTableSql)) {
     return false;
+  }
 
   // Update the expiry_time column for the existing source rows.
   static constexpr char kUpdateSourceExpiryTimeSql[] =
@@ -168,37 +181,43 @@ bool MigrateToVersion35(sql::Database* db, sql::MetaTable* meta_table) {
     update_source_expiry_time_statement.BindTime(0, source_expiry_time);
     update_source_expiry_time_statement.BindInt64(
         1, get_rate_limits_statement.ColumnInt64(0));
-    if (!update_source_expiry_time_statement.Run())
+    if (!update_source_expiry_time_statement.Run()) {
       return false;
+    }
   }
 
-  if (!get_rate_limits_statement.Succeeded())
+  if (!get_rate_limits_statement.Succeeded()) {
     return false;
+  }
 
   // Create the rate_limits table indices on the new table.
   static constexpr char kRateLimitSourceSiteReportingOriginIndexSql[] =
       "CREATE INDEX rate_limit_source_site_reporting_origin_idx "
       "ON rate_limits"
       "(scope,source_site,reporting_origin)";
-  if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql))
+  if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql)) {
     return false;
+  }
 
   static constexpr char kRateLimitReportingOriginIndexSql[] =
       "CREATE INDEX rate_limit_reporting_origin_idx "
       "ON rate_limits(scope,destination_site,source_site)";
-  if (!db->Execute(kRateLimitReportingOriginIndexSql))
+  if (!db->Execute(kRateLimitReportingOriginIndexSql)) {
     return false;
+  }
 
   static constexpr char kRateLimitTimeIndexSql[] =
       "CREATE INDEX rate_limit_time_idx ON rate_limits(time)";
-  if (!db->Execute(kRateLimitTimeIndexSql))
+  if (!db->Execute(kRateLimitTimeIndexSql)) {
     return false;
+  }
 
   static constexpr char kRateLimitImpressionIdIndexSql[] =
       "CREATE INDEX rate_limit_source_id_idx "
       "ON rate_limits(source_id)";
-  if (!db->Execute(kRateLimitImpressionIdIndexSql))
+  if (!db->Execute(kRateLimitImpressionIdIndexSql)) {
     return false;
+  }
 
   meta_table->SetVersionNumber(35);
   return transaction.Commit();
@@ -208,19 +227,22 @@ bool MigrateToVersion36(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // `MigrateToVersion34`.
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static constexpr char kDropOldIndexSql[] = "DROP INDEX sources_by_origin";
-  if (!db->Execute(kDropOldIndexSql))
+  if (!db->Execute(kDropOldIndexSql)) {
     return false;
+  }
 
   static constexpr char kCreateNewIndexSql[] =
       "CREATE INDEX active_sources_by_source_origin "
       "ON sources(source_origin)"
       "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db->Execute(kCreateNewIndexSql))
+  if (!db->Execute(kCreateNewIndexSql)) {
     return false;
+  }
 
   meta_table->SetVersionNumber(36);
   return transaction.Commit();
@@ -230,8 +252,9 @@ bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // `MigrateToVersion34`.
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static constexpr char kNewDedupKeyTableSql[] =
       "CREATE TABLE new_dedup_keys("
@@ -239,8 +262,9 @@ bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
       "report_type INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
       "PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID";
-  if (!db->Execute(kNewDedupKeyTableSql))
+  if (!db->Execute(kNewDedupKeyTableSql)) {
     return false;
+  }
 
   static_assert(static_cast<int>(AttributionReport::Type::kEventLevel) == 0,
                 "update the report type value `0` below");
@@ -252,17 +276,20 @@ bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
       "INSERT INTO new_dedup_keys SELECT "
       "source_id,0,dedup_key "
       "FROM dedup_keys";
-  if (!db->Execute(kPopulateNewDedupKeyTableSql))
+  if (!db->Execute(kPopulateNewDedupKeyTableSql)) {
     return false;
+  }
 
   static constexpr char kDropOldDedupKeyTableSql[] = "DROP TABLE dedup_keys";
-  if (!db->Execute(kDropOldDedupKeyTableSql))
+  if (!db->Execute(kDropOldDedupKeyTableSql)) {
     return false;
+  }
 
   static constexpr char kRenameDedupKeyTableSql[] =
       "ALTER TABLE new_dedup_keys RENAME TO dedup_keys";
-  if (!db->Execute(kRenameDedupKeyTableSql))
+  if (!db->Execute(kRenameDedupKeyTableSql)) {
     return false;
+  }
 
   meta_table->SetVersionNumber(37);
   return transaction.Commit();
@@ -272,8 +299,9 @@ bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // `MigrateToVersion34`.
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static constexpr char kNewSourceTableSql[] =
       "CREATE TABLE new_sources("
@@ -298,8 +326,9 @@ bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
       "aggregatable_budget_consumed INTEGER NOT NULL,"
       "aggregatable_source BLOB NOT NULL,"
       "filter_data BLOB NOT NULL)";
-  if (!db->Execute(kNewSourceTableSql))
+  if (!db->Execute(kNewSourceTableSql)) {
     return false;
+  }
 
   // Transfer the existing rows to the new table, inserting
   // `expiry_time` as default values for the event_report_window_time
@@ -313,17 +342,20 @@ bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
       "source_site,debug_key,aggregatable_budget_consumed,"
       "aggregatable_source,filter_data "
       "FROM sources";
-  if (!db->Execute(kPopulateNewSourceTableSql))
+  if (!db->Execute(kPopulateNewSourceTableSql)) {
     return false;
+  }
 
   static constexpr char kDropOldSourceTableSql[] = "DROP TABLE sources";
-  if (!db->Execute(kDropOldSourceTableSql))
+  if (!db->Execute(kDropOldSourceTableSql)) {
     return false;
+  }
 
   static constexpr char kRenameSourceTableSql[] =
       "ALTER TABLE new_sources RENAME TO sources";
-  if (!db->Execute(kRenameSourceTableSql))
+  if (!db->Execute(kRenameSourceTableSql)) {
     return false;
+  }
 
   // Create the sources table indices on the new table.
   static constexpr char kConversionDestinationIndexSql[] =
@@ -331,29 +363,33 @@ bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
       "ON sources"
       "(event_level_active,aggregatable_active,destination_site,"
       "reporting_origin)";
-  if (!db->Execute(kConversionDestinationIndexSql))
+  if (!db->Execute(kConversionDestinationIndexSql)) {
     return false;
+  }
 
   static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX sources_by_expiry_time "
       "ON sources(expiry_time)";
-  if (!db->Execute(kImpressionExpiryIndexSql))
+  if (!db->Execute(kImpressionExpiryIndexSql)) {
     return false;
+  }
 
   static constexpr char kImpressionOriginIndexSql[] =
       "CREATE INDEX active_sources_by_source_origin "
       "ON sources(source_origin)"
       "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db->Execute(kImpressionOriginIndexSql))
+  if (!db->Execute(kImpressionOriginIndexSql)) {
     return false;
+  }
 
   static constexpr char kImpressionSiteReportingOriginIndexSql[] =
       "CREATE INDEX active_unattributed_sources_by_site_reporting_origin "
       "ON sources(source_site,reporting_origin)"
       "WHERE event_level_active=1 AND num_attributions=0 AND "
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
-  if (!db->Execute(kImpressionSiteReportingOriginIndexSql))
+  if (!db->Execute(kImpressionSiteReportingOriginIndexSql)) {
     return false;
+  }
 
   meta_table->SetVersionNumber(38);
   return transaction.Commit();
@@ -363,8 +399,9 @@ bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // `MigrateToVersion34`.
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   // Create the new aggregatable_report_metadata table with
   // aggregation_coordinator. This follows the steps documented at
@@ -382,8 +419,9 @@ bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
       "failed_send_attempts INTEGER NOT NULL,"
       "initial_report_time INTEGER NOT NULL,"
       "aggregation_coordinator INTEGER NOT NULL)";
-  if (!db->Execute(kNewAggregatableReportMetadataTableSql))
+  if (!db->Execute(kNewAggregatableReportMetadataTableSql)) {
     return false;
+  }
 
   // Transfer the existing aggregatable_report_metadata rows to the new table,
   // using
@@ -399,19 +437,22 @@ bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
       "aggregation_id,source_id,trigger_time,debug_key,external_report_id,"
       "report_time,failed_send_attempts,initial_report_time,0 "
       "FROM aggregatable_report_metadata";
-  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql))
+  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql)) {
     return false;
+  }
 
   static constexpr char kDropOldAggregatableReportMetadataTableSql[] =
       "DROP TABLE aggregatable_report_metadata";
-  if (!db->Execute(kDropOldAggregatableReportMetadataTableSql))
+  if (!db->Execute(kDropOldAggregatableReportMetadataTableSql)) {
     return false;
+  }
 
   static constexpr char kRenameAggregatableReportMetadataTableSql[] =
       "ALTER TABLE new_aggregatable_report_metadata "
       "RENAME TO aggregatable_report_metadata";
-  if (!db->Execute(kRenameAggregatableReportMetadataTableSql))
+  if (!db->Execute(kRenameAggregatableReportMetadataTableSql)) {
     return false;
+  }
 
   // Create the pre-existing aggregatable_report_metadata table indices on the
   // new table.
@@ -419,20 +460,23 @@ bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
   static constexpr char kAggregateSourceIdIndexSql[] =
       "CREATE INDEX aggregate_source_id_idx "
       "ON aggregatable_report_metadata(source_id)";
-  if (!db->Execute(kAggregateSourceIdIndexSql))
+  if (!db->Execute(kAggregateSourceIdIndexSql)) {
     return false;
+  }
 
   static constexpr char kAggregateTriggerTimeIndexSql[] =
       "CREATE INDEX aggregate_trigger_time_idx "
       "ON aggregatable_report_metadata(trigger_time)";
-  if (!db->Execute(kAggregateTriggerTimeIndexSql))
+  if (!db->Execute(kAggregateTriggerTimeIndexSql)) {
     return false;
+  }
 
   static constexpr char kAggregateReportTimeIndexSql[] =
       "CREATE INDEX aggregate_report_time_idx "
       "ON aggregatable_report_metadata(report_time)";
-  if (!db->Execute(kAggregateReportTimeIndexSql))
+  if (!db->Execute(kAggregateReportTimeIndexSql)) {
     return false;
+  }
 
   meta_table->SetVersionNumber(39);
   return transaction.Commit();
@@ -446,32 +490,39 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   DCHECK(meta_table);
 
   base::ThreadTicks start_timestamp;
-  if (base::ThreadTicks::IsSupported())
+  if (base::ThreadTicks::IsSupported()) {
     start_timestamp = base::ThreadTicks::Now();
+  }
 
   if (meta_table->GetVersionNumber() == 33) {
-    if (!MigrateToVersion34(db, meta_table))
+    if (!MigrateToVersion34(db, meta_table)) {
       return false;
+    }
   }
   if (meta_table->GetVersionNumber() == 34) {
-    if (!MigrateToVersion35(db, meta_table))
+    if (!MigrateToVersion35(db, meta_table)) {
       return false;
+    }
   }
   if (meta_table->GetVersionNumber() == 35) {
-    if (!MigrateToVersion36(db, meta_table))
+    if (!MigrateToVersion36(db, meta_table)) {
       return false;
+    }
   }
   if (meta_table->GetVersionNumber() == 36) {
-    if (!MigrateToVersion37(db, meta_table))
+    if (!MigrateToVersion37(db, meta_table)) {
       return false;
+    }
   }
   if (meta_table->GetVersionNumber() == 37) {
-    if (!MigrateToVersion38(db, meta_table))
+    if (!MigrateToVersion38(db, meta_table)) {
       return false;
+    }
   }
   if (meta_table->GetVersionNumber() == 38) {
-    if (!MigrateToVersion39(db, meta_table))
+    if (!MigrateToVersion39(db, meta_table)) {
       return false;
+    }
   }
   // Add similar if () blocks for new versions here.
 

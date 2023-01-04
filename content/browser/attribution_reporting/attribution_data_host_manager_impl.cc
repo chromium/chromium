@@ -261,8 +261,9 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
                          .input_event = input_event,
                          .nav_type = nav_type});
   // Should only be possible with a misbehaving renderer.
-  if (!inserted)
+  if (!inserted) {
     return false;
+  }
 
   data_hosts_in_source_mode_++;
 
@@ -296,8 +297,9 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
 
   // Treat ongoing redirect registrations within a chain as a data host for the
   // purpose of trigger queuing.
-  if (inserted)
+  if (inserted) {
     data_hosts_in_source_mode_++;
+  }
 
   it->second.pending_source_data++;
 
@@ -331,8 +333,9 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
   }
 
   auto redirect_it = redirect_registrations_.find(attribution_src_token);
-  if (redirect_it == redirect_registrations_.end())
+  if (redirect_it == redirect_registrations_.end()) {
     return;
+  }
 
   NavigationRedirectSourceRegistrations& registrations = redirect_it->second;
 
@@ -469,8 +472,9 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   });
   RecordTriggerQueueEvent(TriggerQueueEvent::kEnqueued);
 
-  if (!trigger_timer_.IsRunning())
+  if (!trigger_timer_.IsRunning()) {
     SetTriggerTimer(delay);
+  }
 }
 
 void AttributionDataHostManagerImpl::SetTriggerTimer(base::TimeDelta delay) {
@@ -514,8 +518,9 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
       break;
   }
 
-  if (size_t num = context.num_data_registered())
+  if (size_t num = context.num_data_registered()) {
     base::UmaHistogramExactLinear(histogram_name, num, 101);
+  }
 }
 
 void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
@@ -535,8 +540,9 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
 
   DCHECK_GT(data_hosts_in_source_mode_, 0u);
   data_hosts_in_source_mode_--;
-  if (data_hosts_in_source_mode_ > 0)
+  if (data_hosts_in_source_mode_ > 0) {
     return;
+  }
 
   trigger_timer_.Stop();
 
@@ -567,8 +573,9 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
 
   // The registration may no longer be tracked in the event the navigation
   // failed.
-  if (it == redirect_registrations_.end())
+  if (it == redirect_registrations_.end()) {
     return;
+  }
 
   DCHECK_GT(it->second.pending_source_data, 0u);
   NavigationRedirectSourceRegistrations& registrations = it->second;

@@ -90,8 +90,9 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
     // Get version.
     sql::Statement s(
         db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
-    if (!s.Step())
+    if (!s.Step()) {
       return 0;
+    }
     return s.ColumnInt(0);
   }
 

@@ -288,11 +288,13 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   base::Value::Dict data_body;
   data_body.Set(kAttributionDestination,
                 net::SchemefulSite(trigger.destination_origin()).Serialize());
-  if (absl::optional<uint64_t> debug_key = trigger.registration().debug_key)
+  if (absl::optional<uint64_t> debug_key = trigger.registration().debug_key) {
     data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
+  }
 
-  if (result.source())
+  if (result.source()) {
     SetSourceData(data_body, result.source()->common_info());
+  }
 
   switch (data_type) {
     case DebugDataType::kTriggerNoMatchingSource:
@@ -353,13 +355,15 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
     bool is_debug_cookie_set,
     const AttributionStorage::StoreSourceResult& result) {
-  if (!source.debug_reporting() || source.is_within_fenced_frame())
+  if (!source.debug_reporting() || source.is_within_fenced_frame()) {
     return absl::nullopt;
+  }
 
   absl::optional<DebugDataType> data_type =
       GetReportDataType(result.status, is_debug_cookie_set);
-  if (!data_type)
+  if (!data_type) {
     return absl::nullopt;
+  }
 
   base::Value::List report_body;
   report_body.Append(

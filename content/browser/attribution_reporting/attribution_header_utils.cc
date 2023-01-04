@@ -29,8 +29,9 @@ ParseSourceRegistration(base::Value::Dict registration,
                  attribution_reporting::mojom::SourceRegistrationError>
       reg = attribution_reporting::SourceRegistration::Parse(
           std::move(registration));
-  if (!reg.has_value())
+  if (!reg.has_value()) {
     return base::unexpected(reg.error());
+  }
 
   return StorableSource(std::move(reporting_origin), std::move(*reg),
                         source_time, std::move(source_origin), source_type,

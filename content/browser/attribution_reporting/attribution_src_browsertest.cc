@@ -124,8 +124,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForSourceData(/*num_source_data=*/1);
   const auto& source_data = data_host->source_data();
 
@@ -169,8 +170,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
     EXPECT_TRUE(
         ExecJs(web_contents(), JsReplace(registration_js, register_url)));
-    if (!data_host)
+    if (!data_host) {
       loop.Run();
+    }
     data_host->WaitForSourceData(/*num_source_data=*/1);
     const auto& source_data = data_host->source_data();
     // Regression test for crbug.com/1336797. This will timeout flakily if the
@@ -223,12 +225,14 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
-  if (!source_data_host)
+  if (!source_data_host) {
     source_loop.Run();
+  }
   source_data_host->WaitForSourceData(/*num_source_data=*/1);
 
-  if (!trigger_data_host)
+  if (!trigger_data_host) {
     trigger_loop.Run();
+  }
   trigger_data_host->WaitForTriggerData(/*num_trigger_data=*/1);
 }
 
@@ -503,8 +507,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForSourceData(/*num_source_data=*/2);
   const auto& source_data = data_host->source_data();
 
@@ -538,8 +543,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForSourceData(/*num_source_data=*/1);
   const auto& source_data = data_host->source_data();
 
@@ -600,8 +606,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
 
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForSourceData(/*num_source_data=*/1);
   const auto& source_data = data_host->source_data();
 
@@ -831,8 +838,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
 
   const std::string& js_template = GetParam().second;
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace(js_template, register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
 
   EXPECT_THAT(
@@ -893,8 +901,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
 
   EXPECT_THAT(
@@ -956,8 +965,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
   const auto& trigger_data = data_host->trigger_data();
 
@@ -987,8 +997,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForTriggerData(/*num_trigger_data=*/2);
   const auto& trigger_data = data_host->trigger_data();
 
@@ -1077,8 +1088,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   prerender_helper_.NavigatePrimaryPage(page_url);
   ASSERT_EQ(page_url, web_contents()->GetLastCommittedURL());
 
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForSourceData(/*num_source_data=*/1);
   const auto& source_data = data_host->source_data();
 
@@ -1156,8 +1168,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   ASSERT_EQ(page_url, web_contents()->GetLastCommittedURL());
   ASSERT_TRUE(host_observer.was_activated());
 
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
   const auto& trigger_data = data_host->trigger_data();
 
@@ -1241,8 +1254,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
           "createAttributionSrcImg($1);",
           https_server()->GetURL("c.test", "/register_source_headers.html"))));
 
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
 
   data_host->WaitForSourceData(/*num_source_data=*/1);
   EXPECT_EQ(data_host->source_data().size(), 1u);

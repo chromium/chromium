@@ -291,8 +291,9 @@ class AttributionAggregatableReportGoldenLatestVersionTest
       const std::string& shared_info) {
     absl::optional<std::vector<uint8_t>> encrypted_payload =
         base::Base64Decode(base64_encoded_encrypted_payload);
-    if (!encrypted_payload)
+    if (!encrypted_payload) {
       return {};
+    }
 
     return aggregation_service::DecryptPayloadWithHpke(
         *encrypted_payload, *full_hpke_key_.get(), shared_info);
@@ -411,8 +412,9 @@ std::vector<base::FilePath> GetLegacyVersions() {
                          base::FileEnumerator::DIRECTORIES);
 
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    if (name.BaseName() == base::FilePath(FILE_PATH_LITERAL("latest")))
+    if (name.BaseName() == base::FilePath(FILE_PATH_LITERAL("latest"))) {
       continue;
+    }
 
     input_paths.push_back(std::move(name));
   }
@@ -442,21 +444,24 @@ TEST_P(AttributionAggregatableReportGoldenLegacyVersionTest,
 
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
     base::Value value = ParseJsonFromFile(name);
-    if (!value.is_dict())
+    if (!value.is_dict()) {
       continue;
+    }
 
     const base::Value::Dict& dict = value.GetDict();
     if (const std::string* shared_info = dict.FindString("shared_info")) {
       base::Value shared_info_value = base::test::ParseJson(*shared_info);
       EXPECT_TRUE(shared_info_value.is_dict()) << name;
-      if (!shared_info_value.is_dict())
+      if (!shared_info_value.is_dict()) {
         continue;
+      }
 
       const std::string* version =
           shared_info_value.GetDict().FindString("version");
       EXPECT_TRUE(version) << name;
-      if (!version)
+      if (!version) {
         continue;
+      }
 
       EXPECT_EQ(*version, expected_version) << name;
     }

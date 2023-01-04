@@ -149,11 +149,13 @@ bool IsStorageKeySessionOnly(
   // partition clear data logic uses storage key keyed deletion, while the
   // storage policy uses GURLs. Ideally these would be coalesced.
   const GURL& url = storage_key.origin().GetURL();
-  if (storage_policy->IsStorageProtected(url))
+  if (storage_policy->IsStorageProtected(url)) {
     return false;
+  }
 
-  if (storage_policy->IsStorageSessionOnly(url))
+  if (storage_policy->IsStorageSessionOnly(url)) {
     return true;
+  }
   return false;
 }
 
@@ -331,8 +333,9 @@ absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   const base::TimeDelta kInitialReportDelay = base::Minutes(5);
   const int kDelayFactor = 3;
 
-  if (failed_send_attempts > kMaxFailedSendAttempts)
+  if (failed_send_attempts > kMaxFailedSendAttempts) {
     return absl::nullopt;
+  }
 
   return kInitialReportDelay * std::pow(kDelayFactor, failed_send_attempts - 1);
 }
@@ -368,8 +371,9 @@ AttributionManagerImpl::CreateWithNewDbForTesting(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!AttributionStorageSql::DeleteStorageForTesting(user_data_directory))
+    if (!AttributionStorageSql::DeleteStorageForTesting(user_data_directory)) {
       return nullptr;
+    }
   }
 
   return std::make_unique<AttributionManagerImpl>(
@@ -526,8 +530,9 @@ void AttributionManagerImpl::OnSourceStored(
     AttributionStorage::StoreSourceResult result) {
   RecordStoreSourceStatus(result);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSourceHandled(source, cleared_debug_key, result.status);
+  }
 
   scheduler_timer_.MaybeSet(result.min_fake_report_time);
 
@@ -557,15 +562,17 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
   // Avoid unbounded memory growth with adversarial input.
   bool allowed = size_before_push < max_pending_events_;
   base::UmaHistogramBoolean("Conversions.EnqueueEventAllowed", allowed);
-  if (!allowed)
+  if (!allowed) {
     return;
+  }
 
   pending_events_.push_back(std::move(event));
 
   // Only process the new event if it is the only one in the queue. Otherwise,
   // there's already an async cookie-check in progress.
-  if (size_before_push == 0)
+  if (size_before_push == 0) {
     ProcessEvents();
+  }
 }
 
 void AttributionManagerImpl::ProcessEvents() {
@@ -717,8 +724,9 @@ void AttributionManagerImpl::OnReportStored(
     NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);
+  }
 
   MaybeSendVerboseDebugReport(trigger, is_debug_cookie_set, result);
 }
@@ -790,8 +798,9 @@ void AttributionManagerImpl::OnClearDataComplete() {
   --num_pending_clear_data_tasks_;
 
   // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0)
+  if (num_pending_clear_data_tasks_ == 0) {
     storage_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+  }
 
   NotifySourcesChanged();
   NotifyReportsChanged(AttributionReport::Type::kEventLevel);
@@ -848,8 +857,9 @@ void AttributionManagerImpl::SendReports(
 
     bool inserted = reports_being_sent_.emplace(report.ReportId()).second;
     if (!inserted) {
-      if (web_ui_callback)
+      if (web_ui_callback) {
         web_ui_callback.Run();
+      }
 
       continue;
     }
@@ -864,8 +874,9 @@ void AttributionManagerImpl::SendReports(
       continue;
     }
 
-    if (!web_ui_callback)
+    if (!web_ui_callback) {
       LogMetricsOnReportSend(report, now);
+    }
 
     PrepareToSendReport(
         std::move(report), /*is_debug_report=*/false,
@@ -914,8 +925,9 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
       [](base::OnceClosure done, base::WeakPtr<AttributionManagerImpl> manager,
          AttributionReport::Id report_id,
          absl::optional<base::Time> new_report_time, bool success) {
-        if (done)
+        if (done) {
           std::move(done).Run();
+        }
 
         if (manager && success) {
           manager->MarkReportCompleted(report_id);
@@ -944,8 +956,9 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 
   LogMetricsOnReportCompleted(report, info.status);
 
-  if (info.status == SendResult::Status::kSent)
+  if (info.status == SendResult::Status::kSent) {
     LogMetricsOnReportSent(report);
+  }
 
   NotifyReportSent(/*is_debug_report=*/false, report, info);
 }
@@ -953,8 +966,9 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,
                                               const AttributionReport& report,
                                               SendResult info) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnReportSent(report, /*is_debug_report=*/is_debug_report, info);
+  }
 }
 
 void AttributionManagerImpl::NotifyDebugReportSent(
@@ -962,8 +976,9 @@ void AttributionManagerImpl::NotifyDebugReportSent(
     const int status) {
   // Use the same time for all observers.
   const base::Time time = base::Time::Now();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDebugReportSent(report, status, time);
+  }
 }
 
 void AttributionManagerImpl::AssembleAggregatableReport(
@@ -1024,14 +1039,16 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
 }
 
 void AttributionManagerImpl::NotifySourcesChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSourcesChanged();
+  }
 }
 
 void AttributionManagerImpl::NotifyReportsChanged(
     AttributionReport::Type report_type) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnReportsChanged(report_type);
+  }
 }
 
 void AttributionManagerImpl::NotifyFailedSourceRegistration(
@@ -1050,8 +1067,9 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const StorableSource& source,
     bool is_debug_cookie_set,
     const AttributionStorage::StoreSourceResult& result) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting))
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
     return;
+  }
 
   if (!IsOperationAllowed(storage_partition_.get(),
                           ContentBrowserClient::AttributionReportingOperation::
@@ -1075,8 +1093,9 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const AttributionTrigger& trigger,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting))
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
     return;
+  }
 
   if (!IsOperationAllowed(storage_partition_.get(),
                           ContentBrowserClient::AttributionReportingOperation::

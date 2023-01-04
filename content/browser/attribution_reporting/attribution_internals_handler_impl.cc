@@ -278,8 +278,9 @@ void AttributionInternalsHandlerImpl::AddObserver(
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
     observers_.Add(std::move(observer));
 
-    if (!manager_observation_.IsObservingSource(manager))
+    if (!manager_observation_.IsObservingSource(manager)) {
       manager_observation_.Observe(manager);
+    }
 
     std::move(callback).Run(true);
   } else {
@@ -288,14 +289,16 @@ void AttributionInternalsHandlerImpl::AddObserver(
 }
 
 void AttributionInternalsHandlerImpl::OnSourcesChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer->OnSourcesChanged();
+  }
 }
 
 void AttributionInternalsHandlerImpl::OnReportsChanged(
     AttributionReport::Type report_type) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer->OnReportsChanged(report_type);
+  }
 }
 
 void AttributionInternalsHandlerImpl::OnSourceHandled(
@@ -371,8 +374,9 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
     const AttributionDebugReport& report,
     int status,
     base::Time time) {
-  if (observers_.empty())
+  if (observers_.empty()) {
     return;
+  }
 
   auto web_report = WebUIDebugReport::New();
   web_report->url = report.ReportURL();
@@ -387,8 +391,9 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
           : attribution_internals::mojom::DebugReportStatus::NewNetworkError(
                 net::ErrorToShortString(status));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer->OnDebugReportSent(web_report.Clone());
+  }
 }
 
 // TODO(crbug/1351843): Consider surfacing this error in devtools instead of

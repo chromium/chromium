@@ -101,8 +101,9 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createTrackingPixel($1);", register_url)));
 
-  if (!data_host)
+  if (!data_host) {
     loop.Run();
+  }
 
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
   const auto& trigger_data = data_host->trigger_data();
@@ -130,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
               RegistrationType) {
             data_hosts.push_back(GetRegisteredDataHost(std::move(host)));
-            if (data_hosts.size() == 2)
+            if (data_hosts.size() == 2) {
               loop.Quit();
+            }
           });
 
   GURL register_url = https_server()->GetURL(
@@ -140,8 +142,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createTrackingPixel($1);", register_url)));
 
-  if (data_hosts.size() != 2)
+  if (data_hosts.size() != 2) {
     loop.Run();
+  }
 
   data_hosts.front()->WaitForTriggerData(/*num_trigger_data=*/1);
   const auto& trigger_data1 = data_hosts.front()->trigger_data();

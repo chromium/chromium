@@ -208,8 +208,9 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   // c = the maximum number of reports for a source
   // d = the trigger data cardinality for a source
   for (int num_bars : bars_preceding_each_star) {
-    if (num_bars == 0)
+    if (num_bars == 0) {
       continue;
+    }
 
     auto result = std::div(num_bars - 1, trigger_data_cardinality);
 

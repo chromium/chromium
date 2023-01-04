@@ -152,8 +152,9 @@ struct ExpectedReportWaiter {
   // Waits for a report to be received matching the report url. Verifies that
   // the report url and report body were set correctly.
   void WaitForReport() {
-    if (!response->http_request())
+    if (!response->http_request()) {
       response->WaitForRequest();
+    }
 
     // The embedded test server resolves all urls to 127.0.0.1, so get the real
     // request host from the request headers.
@@ -222,8 +223,9 @@ struct ExpectedDebugReportWaiter {
   // Waits for a report to be received matching the report url. Verifies that
   // the report url and report body were set correctly.
   void WaitForReport() {
-    if (!response->http_request())
+    if (!response->http_request()) {
       response->WaitForRequest();
+    }
 
     // The embedded test server resolves all urls to 127.0.0.1, so get the real
     // request host from the request headers.
@@ -1314,8 +1316,9 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   int count = 0;
   EXPECT_CALL(observer, OnTriggerHandled).WillRepeatedly([&]() {
     count++;
-    if (count < 2)
+    if (count < 2) {
       return;
+    }
     loop.Quit();
   });
 
@@ -1333,11 +1336,13 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
              JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
 
   // Ensure we don't error out processing the redirect chain.
-  if (count < 2)
+  if (count < 2) {
     loop.Run();
+  }
 
-  if (!received_source)
+  if (!received_source) {
     source_loop.Run();
+  }
 }
 class AttributionsPrerenderBrowserTest : public AttributionsBrowserTest {
  public:

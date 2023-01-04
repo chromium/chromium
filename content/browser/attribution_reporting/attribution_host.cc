@@ -57,8 +57,9 @@ class ScopedMapDeleter {
   ScopedMapDeleter(Map* map, const typename Map::key_type& key)
       : map_(map), it_(map_->find(key)) {}
   ~ScopedMapDeleter() {
-    if (*this)
+    if (*this) {
       map_->erase(it_);
+    }
   }
 
   typename Map::iterator* get() { return &it_; }
@@ -101,8 +102,9 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
     const {
   AttributionInputEvent input;
 #if BUILDFLAG(IS_ANDROID)
-  if (input_event_tracker_android_)
+  if (input_event_tracker_android_) {
     input.input_event = input_event_tracker_android_->GetMostRecentEvent();
+  }
 #endif
   return input;
 }
@@ -127,8 +129,9 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   UMA_HISTOGRAM_BOOLEAN("Conversions.ImpressionNavigationHasDeadInitiator",
                         initiator_frame_host == nullptr);
 
-  if (!initiator_frame_host)
+  if (!initiator_frame_host) {
     return;
+  }
 
   // Look up the initiator root's origin which will be used as the impression
   // origin. This works because we won't update the origin for the initiator RFH
@@ -143,8 +146,9 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
                                  .root()
                                  ->current_origin());
 
-  if (!initiator_root_frame_origin)
+  if (!initiator_root_frame_origin) {
     return;
+  }
 
   navigation_info_map_.emplace(
       navigation_handle->GetNavigationId(),
@@ -158,8 +162,9 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 void AttributionHost::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   auto it = navigation_info_map_.find(navigation_handle->GetNavigationId());
-  if (it == navigation_info_map_.end())
+  if (it == navigation_info_map_.end()) {
     return;
+  }
 
   DCHECK(navigation_handle->GetImpression());
 
@@ -171,18 +176,21 @@ void AttributionHost::DidRedirectNavigation(
 
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
-  if (!attribution_manager)
+  if (!attribution_manager) {
     return;
+  }
 
   auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager)
+  if (!data_host_manager) {
     return;
+  }
 
   const std::vector<GURL>& redirect_chain =
       navigation_handle->GetRedirectChain();
 
-  if (redirect_chain.size() < 2)
+  if (redirect_chain.size() < 2) {
     return;
+  }
 
   // The reporting origin should be the origin of the request responsible for
   // initiating this redirect. At this point, the navigation handle reflects the
@@ -191,8 +199,9 @@ void AttributionHost::DidRedirectNavigation(
   absl::optional<SuitableOrigin> reporting_origin =
       SuitableOrigin::Create(redirect_chain[redirect_chain.size() - 2]);
 
-  if (!reporting_origin)
+  if (!reporting_origin) {
     return;
+  }
 
   auto impression = navigation_handle->GetImpression();
   data_host_manager->NotifyNavigationRedirectRegistration(
@@ -215,8 +224,9 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
       AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager) {
     DCHECK(navigation_info_map_.empty());
-    if (navigation_handle->GetImpression())
+    if (navigation_handle->GetImpression()) {
       RecordRegisterImpressionAllowed(false);
+    }
     return;
   }
 
@@ -249,8 +259,9 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   const blink::Impression& impression = *(navigation_handle->GetImpression());
 
   auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager)
+  if (!data_host_manager) {
     return;
+  }
 
   data_host_manager->NotifyNavigationForDataHost(
       impression.attribution_src_token, source_origin, impression.nav_type);
@@ -260,17 +271,20 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
     NavigationHandle* navigation_handle) {
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
-  if (!attribution_manager)
+  if (!attribution_manager) {
     return;
+  }
 
   auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager)
+  if (!data_host_manager) {
     return;
+  }
 
   absl::optional<blink::Impression> impression =
       navigation_handle->GetImpression();
-  if (!impression)
+  if (!impression) {
     return;
+  }
 
   data_host_manager->NotifyNavigationFailure(impression->attribution_src_token);
 }
@@ -327,18 +341,21 @@ void AttributionHost::RegisterDataHost(
   // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
-  if (!attribution_manager)
+  if (!attribution_manager) {
     return;
+  }
 
   AttributionDataHostManager* data_host_manager =
       attribution_manager->GetDataHostManager();
-  if (!data_host_manager)
+  if (!data_host_manager) {
     return;
+  }
 
   absl::optional<SuitableOrigin> top_frame_origin =
       TopFrameOriginForSecureContext();
-  if (!top_frame_origin)
+  if (!top_frame_origin) {
     return;
+  }
 
   data_host_manager->RegisterDataHost(
       std::move(data_host), std::move(*top_frame_origin),
@@ -353,16 +370,19 @@ void AttributionHost::RegisterNavigationDataHost(
   // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
-  if (!attribution_manager)
+  if (!attribution_manager) {
     return;
+  }
 
   AttributionDataHostManager* data_host_manager =
       attribution_manager->GetDataHostManager();
-  if (!data_host_manager)
+  if (!data_host_manager) {
     return;
+  }
 
-  if (!TopFrameOriginForSecureContext())
+  if (!TopFrameOriginForSecureContext()) {
     return;
+  }
 
   if (!data_host_manager->RegisterNavigationDataHost(
           std::move(data_host), attribution_src_token,
@@ -379,11 +399,13 @@ void AttributionHost::BindReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
     RenderFrameHost* rfh) {
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   auto* conversion_host = AttributionHost::FromWebContents(web_contents);
-  if (!conversion_host)
+  if (!conversion_host) {
     return;
+  }
   conversion_host->receivers_.Bind(rfh, std::move(receiver));
 }
 

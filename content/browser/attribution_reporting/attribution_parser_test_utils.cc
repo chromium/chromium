@@ -56,8 +56,9 @@ AttributionParserErrorManager::ErrorWriter
 AttributionParserErrorManager::Error() {
   has_error_ = true;
 
-  if (context_path_.empty())
+  if (context_path_.empty()) {
     *error_stream_ << "input root";
+  }
 
   ErrorWriter writer(*error_stream_);
   for (Context context : context_path_) {

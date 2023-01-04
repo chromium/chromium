@@ -159,10 +159,9 @@ void AttributionReportNetworkSender::OnReportSent(
 
   int response_code = headers ? headers->response_code() : -1;
   bool external_ok = response_code >= 200 && response_code <= 299;
-  Status status =
-      internal_ok && external_ok
-          ? Status::kOk
-          : !internal_ok ? Status::kInternalError : Status::kExternalError;
+  Status status = internal_ok && external_ok ? Status::kOk
+                  : !internal_ok             ? Status::kInternalError
+                                             : Status::kExternalError;
 
   const char* status_metric;
   const char* http_response_or_net_error_code_metric;

@@ -84,8 +84,9 @@ uint64_t AttributionStorageDelegate::SanitizeSourceEventId(
     uint64_t source_event_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!config_.source_event_id_cardinality)
+  if (!config_.source_event_id_cardinality) {
     return source_event_id;
+  }
 
   return source_event_id % *config_.source_event_id_cardinality;
 }

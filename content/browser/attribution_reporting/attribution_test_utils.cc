@@ -226,8 +226,9 @@ ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
 void ConfigurableStorageDelegate::ShuffleReports(
     std::vector<AttributionReport>& reports) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (reverse_reports_on_shuffle_)
+  if (reverse_reports_on_shuffle_) {
     base::ranges::reverse(reports);
+  }
 }
 
 AttributionStorageDelegate::RandomizedResponse
@@ -362,29 +363,33 @@ AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
 }
 
 void MockAttributionManager::NotifySourcesChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSourcesChanged();
+  }
 }
 
 void MockAttributionManager::NotifyReportsChanged(
     AttributionReport::Type report_type) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnReportsChanged(report_type);
+  }
 }
 
 void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
     StorableSource::Result result,
     absl::optional<uint64_t> cleared_debug_key) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSourceHandled(source, cleared_debug_key, result);
+  }
 }
 
 void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
                                               bool is_debug_report,
                                               const SendResult& info) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnReportSent(report, is_debug_report, info);
+  }
 }
 
 void MockAttributionManager::NotifySourceRegistrationFailure(
@@ -403,16 +408,18 @@ void MockAttributionManager::NotifyTriggerHandled(
     const AttributionTrigger& trigger,
     const CreateReportResult& result,
     absl::optional<uint64_t> cleared_debug_key) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);
+  }
 }
 
 void MockAttributionManager::NotifyDebugReportSent(
     const AttributionDebugReport& report,
     const int status,
     const base::Time time) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDebugReportSent(report, status, time);
+  }
 }
 
 void MockAttributionManager::SetDataHostManager(
@@ -429,8 +436,9 @@ SourceObserver::~SourceObserver() = default;
 void SourceObserver::OnDidFinishNavigation(
     NavigationHandle* navigation_handle) {
   if (!navigation_handle->GetImpression()) {
-    if (waiting_for_null_impression_)
+    if (waiting_for_null_impression_) {
       impression_loop_.Quit();
+    }
     return;
   }
 
@@ -446,8 +454,9 @@ void SourceObserver::OnDidFinishNavigation(
 // Waits for |expected_num_impressions_| navigations with impressions, and
 // returns the last impression.
 const blink::Impression& SourceObserver::Wait() {
-  if (num_impressions_ >= expected_num_impressions_)
+  if (num_impressions_ >= expected_num_impressions_) {
     return *last_impression_;
+  }
   impression_loop_.Run();
   return last_impression();
 }

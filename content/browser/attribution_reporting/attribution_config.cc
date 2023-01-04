@@ -9,58 +9,73 @@
 namespace content {
 
 bool AttributionConfig::Validate() const {
-  if (max_sources_per_origin <= 0)
+  if (max_sources_per_origin <= 0) {
     return false;
+  }
 
-  if (source_event_id_cardinality && *source_event_id_cardinality == 0u)
+  if (source_event_id_cardinality && *source_event_id_cardinality == 0u) {
     return false;
+  }
 
-  if (max_destinations_per_source_site_reporting_origin <= 0)
+  if (max_destinations_per_source_site_reporting_origin <= 0) {
     return false;
+  }
 
-  if (!rate_limit.Validate())
+  if (!rate_limit.Validate()) {
     return false;
+  }
 
-  if (!event_level_limit.Validate())
+  if (!event_level_limit.Validate()) {
     return false;
+  }
 
-  if (!aggregate_limit.Validate())
+  if (!aggregate_limit.Validate()) {
     return false;
+  }
 
   return true;
 }
 
 bool AttributionConfig::RateLimitConfig::Validate() const {
-  if (time_window <= base::TimeDelta())
+  if (time_window <= base::TimeDelta()) {
     return false;
+  }
 
-  if (max_source_registration_reporting_origins <= 0)
+  if (max_source_registration_reporting_origins <= 0) {
     return false;
+  }
 
-  if (max_attribution_reporting_origins <= 0)
+  if (max_attribution_reporting_origins <= 0) {
     return false;
+  }
 
-  if (max_attributions <= 0)
+  if (max_attributions <= 0) {
     return false;
+  }
 
   return true;
 }
 
 bool AttributionConfig::EventLevelLimit::Validate() const {
-  if (navigation_source_trigger_data_cardinality == 0u)
+  if (navigation_source_trigger_data_cardinality == 0u) {
     return false;
+  }
 
-  if (event_source_trigger_data_cardinality == 0u)
+  if (event_source_trigger_data_cardinality == 0u) {
     return false;
+  }
 
-  if (max_reports_per_destination <= 0)
+  if (max_reports_per_destination <= 0) {
     return false;
+  }
 
-  if (max_attributions_per_navigation_source <= 0)
+  if (max_attributions_per_navigation_source <= 0) {
     return false;
+  }
 
-  if (max_attributions_per_event_source <= 0)
+  if (max_attributions_per_event_source <= 0) {
     return false;
+  }
 
   if (navigation_source_randomized_response_rate < 0 ||
       navigation_source_randomized_response_rate > 1) {
@@ -76,17 +91,21 @@ bool AttributionConfig::EventLevelLimit::Validate() const {
 }
 
 bool AttributionConfig::AggregateLimit::Validate() const {
-  if (max_reports_per_destination <= 0)
+  if (max_reports_per_destination <= 0) {
     return false;
+  }
 
-  if (aggregatable_budget_per_source <= 0)
+  if (aggregatable_budget_per_source <= 0) {
     return false;
+  }
 
-  if (min_delay < base::TimeDelta())
+  if (min_delay < base::TimeDelta()) {
     return false;
+  }
 
-  if (delay_span < base::TimeDelta())
+  if (delay_span < base::TimeDelta()) {
     return false;
+  }
 
   return true;
 }

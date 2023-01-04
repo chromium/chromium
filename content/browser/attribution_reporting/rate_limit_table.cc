@@ -64,8 +64,9 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "reporting_origin TEXT NOT NULL,"
       "time INTEGER NOT NULL,"
       "expiry_time INTEGER NOT NULL)";
-  if (!db->Execute(kRateLimitTableSql))
+  if (!db->Execute(kRateLimitTableSql)) {
     return false;
+  }
 
   static_assert(static_cast<int>(Scope::kAttribution) == 1,
                 "update `scope=1` clause below");
@@ -74,23 +75,26 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   static constexpr char kRateLimitSourceSiteReportingOriginIndexSql[] =
       "CREATE INDEX rate_limit_source_site_reporting_origin_idx "
       "ON rate_limits(scope,source_site,reporting_origin)";
-  if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql))
+  if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql)) {
     return false;
+  }
 
   // Optimizes calls to `AllowedForReportingOriginLimit()` and
   // `AttributionAllowedForAttributionLimit()`.
   static constexpr char kRateLimitReportingOriginIndexSql[] =
       "CREATE INDEX rate_limit_reporting_origin_idx "
       "ON rate_limits(scope,destination_site,source_site)";
-  if (!db->Execute(kRateLimitReportingOriginIndexSql))
+  if (!db->Execute(kRateLimitReportingOriginIndexSql)) {
     return false;
+  }
 
   // Optimizes calls to |DeleteExpiredRateLimits()|, |ClearAllDataInRange()|,
   // |ClearDataForOriginsInRange()|.
   static constexpr char kRateLimitTimeIndexSql[] =
       "CREATE INDEX rate_limit_time_idx ON rate_limits(time)";
-  if (!db->Execute(kRateLimitTimeIndexSql))
+  if (!db->Execute(kRateLimitTimeIndexSql)) {
     return false;
+  }
 
   // Optimizes calls to |ClearDataForSourceIds()|.
   static constexpr char kRateLimitImpressionIdIndexSql[] =
@@ -127,8 +131,9 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   DCHECK_GE(delete_frequency, base::TimeDelta());
   const base::Time now = base::Time::Now();
   if (now - last_cleared_ >= delete_frequency) {
-    if (!DeleteExpiredRateLimits(db))
+    if (!DeleteExpiredRateLimits(db)) {
       return false;
+    }
     last_cleared_ = now;
   }
 
@@ -194,8 +199,9 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
   statement.BindString(2, common_info.reporting_origin().Serialize());
   statement.BindTime(3, min_timestamp);
 
-  if (!statement.Step())
+  if (!statement.Step()) {
     return RateLimitResult::kError;
+  }
 
   int64_t count = statement.ColumnInt64(0);
 
@@ -252,13 +258,15 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
     // TODO(linnan): Consider adding an early exit query which first checks for
     // the existence of `destination_site` for (source_site, reporting_origin),
     // to avoid querying all of the rows in the case of multiple sources.
-    if (destination_site == serialized_destination_site)
+    if (destination_site == serialized_destination_site) {
       return RateLimitResult::kAllowed;
+    }
 
     destination_sites.insert(std::move(destination_site));
 
-    if (destination_sites.size() == static_cast<size_t>(limit))
+    if (destination_sites.size() == static_cast<size_t>(limit)) {
       return RateLimitResult::kNotAllowed;
+    }
   }
 
   return statement.Succeeded() ? RateLimitResult::kAllowed
@@ -317,13 +325,15 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
     std::string reporting_origin = statement.ColumnString(0);
 
     // The origin isn't new, so it doesn't change the count.
-    if (reporting_origin == serialized_reporting_origin)
+    if (reporting_origin == serialized_reporting_origin) {
       return RateLimitResult::kAllowed;
+    }
 
     reporting_origins.insert(std::move(reporting_origin));
 
-    if (reporting_origins.size() == static_cast<size_t>(max))
+    if (reporting_origins.size() == static_cast<size_t>(max)) {
       return RateLimitResult::kNotAllowed;
+    }
   }
 
   return statement.Succeeded() ? RateLimitResult::kAllowed
@@ -363,16 +373,18 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (filter.is_null())
+  if (filter.is_null()) {
     return ClearAllDataInRange(db, delete_begin, delete_end);
+  }
 
   static constexpr char kDeleteSql[] = "DELETE FROM rate_limits WHERE id=?";
   sql::Statement delete_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
 
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static constexpr char kSelectSql[] =
       // clang-format off
@@ -398,13 +410,15 @@ bool RateLimitTable::ClearDataForOriginsInRange(
       // DELETE to be interleaved in the surrounding SELECT.
       delete_statement.Reset(/*clear_bound_vars=*/false);
       delete_statement.BindInt64(0, rate_limit_id);
-      if (!delete_statement.Run())
+      if (!delete_statement.Run()) {
         return false;
+      }
     }
   }
 
-    if (!select_statement.Succeeded())
-      return false;
+  if (!select_statement.Succeeded()) {
+    return false;
+  }
 
   return transaction.Commit();
 }
@@ -438,8 +452,9 @@ bool RateLimitTable::ClearDataForSourceIds(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static constexpr char kDeleteRateLimitSql[] =
       "DELETE FROM rate_limits WHERE source_id=?";
@@ -449,8 +464,9 @@ bool RateLimitTable::ClearDataForSourceIds(
   for (StoredSource::Id id : source_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, *id);
-    if (!statement.Run())
+    if (!statement.Run()) {
       return false;
+    }
   }
 
   return transaction.Commit();

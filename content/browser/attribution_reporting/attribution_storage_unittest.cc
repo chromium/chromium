@@ -1256,7 +1256,8 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
                         *SuitableOrigin::Deserialize("https://d1.test"))
                     .Build()));
 
-  // Allowed by pending, dropped by unexpired (therefore dropped and not stored).
+  // Allowed by pending, dropped by unexpired (therefore dropped and not
+  // stored).
   EXPECT_EQ(
       store_source("https://s.test", "https://a.r.test", "https://d2.test"),
       StorableSource::Result::kInsufficientUniqueDestinationCapacity);
