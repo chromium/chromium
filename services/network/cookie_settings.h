@@ -258,6 +258,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 
+  // Returns true if there's a matching Storage Access grant that allows access
+  // in this context.
+  bool IsAllowedByStorageAccessGrant(const GURL& url,
+                                     const GURL& first_party_url) const;
+
   ContentSettingsForOneType content_settings_;
   bool block_third_party_cookies_ = false;
   std::set<std::string> secure_origin_cookies_allowed_schemes_;

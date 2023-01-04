@@ -232,10 +232,8 @@ CookieSettings::GetCookieSettingWithMetadata(
         !base::Contains(third_party_cookies_allowed_schemes_,
                         first_party_url.scheme())) {
       // See if a Storage Access permission grant can unblock.
-      if (const ContentSettingPatternSource* match =
-              FindMatchingSetting(url, first_party_url, storage_access_grants_);
-          ShouldConsiderStorageAccessGrants(query_reason) && match &&
-          match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+      if (ShouldConsiderStorageAccessGrants(query_reason) &&
+          IsAllowedByStorageAccessGrant(url, first_party_url)) {
         storage_access_result = net::cookie_util::StorageAccessResult::
             ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
       } else if (overrides.Has(
@@ -380,6 +378,14 @@ bool CookieSettings::HasSessionOnlyOrigins() const {
   return base::ranges::any_of(content_settings_, [](const auto& entry) {
     return entry.GetContentSetting() == CONTENT_SETTING_SESSION_ONLY;
   });
+}
+
+bool CookieSettings::IsAllowedByStorageAccessGrant(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  const ContentSettingPatternSource* match =
+      FindMatchingSetting(url, first_party_url, storage_access_grants_);
+  return match && match->GetContentSetting() == CONTENT_SETTING_ALLOW;
 }
 
 }  // namespace network
