@@ -341,6 +341,7 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"disable-features=" + MetricsFeatures.EMIT_HISTOGRAMS_EARLIER})
     public void testMetadata_androidHistograms() throws Throwable {
         // Wait for a metrics log, since AndroidMetricsProvider only logs this histogram during log
         // collection. Do not assert anything about this histogram before this point (ex. do not

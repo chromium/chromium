@@ -4367,6 +4367,31 @@
             ]
         }
     ],
+    "EmitHistogramsEarlier": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithEmitForIndependentLogs",
+                    "params": {
+                        "emit_for_independent_logs": "true"
+                    },
+                    "enable_features": [
+                        "EmitHistogramsEarlier"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCbdSignOut": [
         {
             "platforms": [
