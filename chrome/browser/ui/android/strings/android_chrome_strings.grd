@@ -3396,26 +3396,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         See content you follow here
       </message>
 
-      <!-- Explore sites strings -->
-      <message name="IDS_EXPLORE_SITES_TITLE" desc="Title of a section showing different categories, each with a number of popular websites">
-        Explore
-      </message>
-      <message name="IDS_EXPLORE_SITES_LOADING_FROM_NET" desc="Caption for an indeterminate loading spinner indicating that we are loading the data from the internet">
-        Finding the best from the web…
-      </message>
-      <message name="IDS_EXPLORE_SITES_LOADING_ERROR" desc="Caption text indicating that a set of site icons and links failed to load.">
-        Can't load this page
-      </message>
-      <message name="IDS_EXPLORE_SITES_LOADING_ERROR_NEXT_STEPS_TAG" desc="Text on an error screen indicating posible steps to resolve the error.">
-        Try:
-      </message>
-      <message name="IDS_EXPLORE_SITES_LOADING_ERROR_NEXT_STEPS_RELOAD" desc="Text on an error screen indicating that reloading the page can fix this error.">
-        Reloading the page
-      </message>
-      <message name="IDS_EXPLORE_SITES_LOADING_ERROR_NEXT_STEPS_CHECK_CONNECTION" desc="Text on an error screen indicating that checking network connection can fix this error.">
-        Checking your internet connection
-      </message>
-
       <!-- Video tutorials -->
       <message name="IDS_VIDEO_TUTORIALS_CARD_CHROME_INTRO" desc="Card text prompting user to learn about an introduction to chrome. Tapping on this card will open a video tutorial.">
         How to use Chrome

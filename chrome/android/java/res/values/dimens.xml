@@ -211,38 +211,6 @@ found in the LICENSE file.
     <dimen name="incognito_ntp_space_between_header_and_description">8dp</dimen>
     <dimen name="incognito_ntp_learn_more_vertical_spacing">22dp</dimen>
 
-    <!-- Explore sites page -->
-    <dimen name="explore_sites_category_padding_vertical">20dp</dimen>
-    <dimen name="explore_sites_category_padding_horizontal">12dp</dimen>
-    <dimen name="explore_sites_category_title_height">24dp</dimen>
-    <dimen name="explore_sites_page_padding">12dp</dimen>
-    <dimen name="explore_sites_category_title_spacing">16dp</dimen>
-    <dimen name="explore_sites_error_image_margin_bottom">40dp</dimen>
-    <dimen name="explore_sites_error_image_margin_top">84dp</dimen>
-    <dimen name="explore_sites_loading_spinny_size">36dp</dimen>
-    <dimen name="explore_sites_loading_spinny_padding">24dp</dimen>
-
-    <dimen name="explore_sites_dense_category_title_height">20dp</dimen>
-    <dimen name="explore_sites_dense_category_title_spacing">8dp</dimen>
-    <dimen name="explore_sites_dense_category_padding_vertical_bottom">12dp</dimen>
-    <dimen name="explore_sites_dense_category_padding_vertical_top">8dp</dimen>
-
-    <dimen name="explore_sites_dense_icon_corner_radius">3dp</dimen>
-    <dimen name="explore_sites_dense_icon_size">32dp</dimen>
-    <dimen name="explore_sites_dense_icon_text_size">16dp</dimen>
-    <dimen name="explore_sites_dense_offline_badge_margin_start">26dp</dimen>
-
-    <dimen name="explore_sites_dense_title_right_icon_margin_start">4dp</dimen>
-    <dimen name="explore_sites_dense_title_right_tile_view_width">108dp</dimen>
-    <dimen name="explore_sites_dense_title_right_tile_view_height">40dp</dimen>
-    <dimen name="explore_sites_dense_title_right_title_margin_start">40dp</dimen>
-    <dimen name="explore_sites_dense_title_right_title_margin_top">4dp</dimen>
-
-    <dimen name="explore_sites_dense_title_bottom_icon_margin_top">4dp</dimen>
-    <dimen name="explore_sites_dense_title_bottom_tile_view_height">72dp</dimen>
-    <dimen name="explore_sites_dense_title_bottom_tile_view_width">64dp</dimen>
-    <dimen name="explore_sites_dense_title_bottom_title_margin_start">40dp</dimen>
-
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">8dp</dimen>
     <dimen name="recent_tabs_group_view_vertical_padding">8dp</dimen>

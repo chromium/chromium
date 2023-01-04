@@ -65,9 +65,6 @@ found in the LICENSE file.
     <!-- Scrollbar colors -->
     <color name="default_scroll_thumb">@color/modern_grey_800_alpha_38</color>
 
-    <!-- Explore Sites colors -->
-    <color name="explore_sites_dense_tile_background_color">#00000000</color>
-
     <!-- Offline indicator v2 colors -->
     <color name="offline_indicator_offline_color">@android:color/black</color>
 

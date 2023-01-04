@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
-#include "chrome/browser/android/explore_sites/explore_sites_bridge.h"
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "chrome/browser/android/explore_sites/url_util.h"
@@ -170,7 +169,7 @@ void ExploreSitesFetcher::Start() {
 }
 
 float ExploreSitesFetcher::DeviceDelegate::GetScaleFactorFromDevice() {
-  return ExploreSitesBridge::GetScaleFactorFromDevice();
+  return 1.5f;
 }
 
 void ExploreSitesFetcher::SetDeviceDelegateForTest(

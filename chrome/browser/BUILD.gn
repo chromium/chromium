@@ -2660,8 +2660,6 @@ static_library("browser") {
       "android/explore_sites/clear_activities_task.h",
       "android/explore_sites/clear_catalog_task.cc",
       "android/explore_sites/clear_catalog_task.h",
-      "android/explore_sites/explore_sites_bridge.cc",
-      "android/explore_sites/explore_sites_bridge.h",
       "android/explore_sites/explore_sites_feature.cc",
       "android/explore_sites/explore_sites_feature.h",
       "android/explore_sites/explore_sites_fetcher.cc",

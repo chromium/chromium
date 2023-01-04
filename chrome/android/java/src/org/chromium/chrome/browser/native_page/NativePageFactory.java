@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
@@ -188,12 +187,6 @@ public class NativePageFactory {
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
         }
 
-        protected NativePage buildExploreSitesPage(Tab tab) {
-            return new ExploreSitesPage(mActivity,
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab,
-                    mTabModelSelector);
-        }
-
         protected NativePage buildHistoryPage(Tab tab, String url) {
             return new HistoryPage(mActivity,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
@@ -257,9 +250,6 @@ public class NativePageFactory {
                 break;
             case NativePageType.RECENT_TABS:
                 page = getBuilder().buildRecentTabsPage(tab);
-                break;
-            case NativePageType.EXPLORE:
-                page = getBuilder().buildExploreSitesPage(tab);
                 break;
             case NativePageType.MANAGEMENT:
                 page = getBuilder().buildManagementPage(tab);
