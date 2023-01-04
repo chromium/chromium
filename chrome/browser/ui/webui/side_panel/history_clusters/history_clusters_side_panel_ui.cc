@@ -14,7 +14,8 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/side_panel_resources.h"
+#include "chrome/grit/side_panel_history_clusters_resources.h"
+#include "chrome/grit/side_panel_history_clusters_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,16 +35,10 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  const webui::ResourcePath kHistoryClustersResources[] = {
-      {"history_clusters/history_clusters.html",
-       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML},
-      {"history_clusters/app.js", IDR_SIDE_PANEL_HISTORY_CLUSTERS_APP_JS},
-      {"history_clusters/app.html.js",
-       IDR_SIDE_PANEL_HISTORY_CLUSTERS_APP_HTML_JS},
-  };
-
   webui::SetupWebUIDataSource(
-      source, kHistoryClustersResources,
+      source,
+      base::make_span(kSidePanelHistoryClustersResources,
+                      kSidePanelHistoryClustersResourcesSize),
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
 }
 

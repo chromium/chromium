@@ -48,6 +48,7 @@ group("resources") {
       "side_panel:resources",
       "side_panel/bookmarks:resources",
       "side_panel/customize_chrome:resources",
+      "side_panel/history_clusters:resources",
       "signin:resources",
       "support_tool:resources",
       "tab_search:resources",

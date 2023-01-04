@@ -6,7 +6,6 @@ non_web_component_files = [ "reading_list/reading_list_api_proxy.ts" ]
 
 # Files holding a Polymer element definition and have an equivalent .html file.
 web_component_files = [
-  "history_clusters/app.ts",
   "read_anything/app.ts",
   "reading_list/app.ts",
   "reading_list/reading_list_item.ts",

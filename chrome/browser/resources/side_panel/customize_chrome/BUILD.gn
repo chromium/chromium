@@ -34,11 +34,6 @@ build_webui("build") {
     "customize_chrome_api_proxy.ts",
   ]
 
-  html_files = []
-  foreach(f, web_component_files) {
-    html_files += [ string_replace(f, ".ts", ".html") ]
-  }
-
   mojo_files_deps = [
     "//chrome/browser/cart:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_js__generator",
