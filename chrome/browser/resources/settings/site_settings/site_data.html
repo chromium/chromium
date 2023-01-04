@@ -34,9 +34,10 @@
 <div class="radio-group">
   <h2>$i18n{privacyPageTitle}</h2>
   <div class="secondary radio-group-sub-heading">$i18n{privacyPageTitle}</div>
-  <settings-radio-group id="defaultGroup"
+  <settings-radio-group id="defaultGroup" no-set-pref
       pref="{{prefs.generated.cookie_default_content_setting}}"
-      selectable-elements="cr-radio-button, settings-collapse-radio-button">
+      selectable-elements="cr-radio-button, settings-collapse-radio-button"
+      on-change="onDefaultRadioChange_">
     <settings-collapse-radio-button id="defaultAllow" no-collapse
         name="[[contentSettingEnum_.ALLOW]]"
         pref="[[prefs.generated.cookie_default_content_setting]]"
@@ -94,3 +95,20 @@
     search-filter="[[searchTerm]]"
     cookies-exception-type="combined">
 </site-list>
+<template is="dom-if" if="[[showDefaultBlockDialog_]]" restamp>
+  <cr-dialog id="defaultBlockDialog" show-on-attach
+      close-text="$i18n{privacyPageTitle}">
+    <div slot="title">$i18n{privacyPageTitle}</div>
+    <div slot="body">$i18n{privacyPageTitle}</div>
+    <div slot="button-container">
+    <cr-button id="defaultBlockDialogCancel" class="cancel-button"
+        on-click="onDefaultBlockDialogCancel_">
+        $i18n{privacyPageTitle}
+    </cr-button>
+    <cr-button id="defaultBlockDialogConfirm" class="action-button"
+        on-click="onDefaultBlockDialogConfirm_">
+        $i18n{privacyPageTitle}
+    </cr-button>
+    </div>
+  </cr-dialog>
+</template>

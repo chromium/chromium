@@ -35,6 +35,7 @@ suite('SiteDataTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-data');
     page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.ALLOW);
     document.body.appendChild(page);
     flush();
   });
@@ -43,19 +44,77 @@ suite('SiteDataTest', function() {
     page.remove();
   });
 
-  test('DefaultSettingChangesUpdatePref', function() {
+  function getDefaultBlockDialog() {
+    return page.shadowRoot!.querySelector('#defaultBlockDialog');
+  }
+
+  test('DefaultSettingAllowUpdatesPref', async function() {
+    // Start from a different state than 'allow'.
+    page.$.defaultSessionOnly.click();
+    assertEquals(
+        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+
+    page.$.defaultAllow.click();
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+  });
+
+  test('DefaultSettingSessionOnlyUpdatesPref', async function() {
     // Default is 'allow'.
     assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
 
     page.$.defaultSessionOnly.click();
     assertEquals(
         page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+  });
+
+  test('DefaultSettingBlockUpdatesPref', async function() {
+    // Default is 'allow'.
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
 
     page.$.defaultBlock.click();
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.BLOCK);
+    flush();
+    // Changing to block requires confirmation in the dialog to take effect.
+    assertTrue(!!getDefaultBlockDialog());
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#defaultBlockDialogConfirm')!.click();
+    await flushTasks();
 
-    page.$.defaultAllow.click();
+    assertFalse(!!getDefaultBlockDialog());
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.BLOCK);
+  });
+
+  test('BlockSiteDataFromAllowDontConfirmDialog', async function() {
+    // Default is 'allow'.
     assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+
+    page.$.defaultBlock.click();
+    flush();
+    assertTrue(!!getDefaultBlockDialog());
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#defaultBlockDialogCancel')!.click();
+    await flushTasks();
+
+    assertFalse(!!getDefaultBlockDialog());
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
+  });
+
+  test('BlockSiteDataFromSessionOnlyDontConfirmDialog', async function() {
+    page.$.defaultSessionOnly.click();
+    assertEquals(
+        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+
+    page.$.defaultBlock.click();
+    flush();
+    assertTrue(!!getDefaultBlockDialog());
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#defaultBlockDialogCancel')!.click();
+    await flushTasks();
+
+    assertFalse(!!getDefaultBlockDialog());
+    assertEquals(
+        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.SESSION_ONLY);
   });
 
   test('PrefChangesUpdateDefaultSetting', function() {
