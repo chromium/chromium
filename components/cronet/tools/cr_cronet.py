@@ -137,9 +137,8 @@ def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
 def get_android_gn_args(is_release):
   return (get_mobile_gn_args('android', is_release) +
           # Keep in sync with //tools/mb/mb_config.pyl cronet_android config.
-          'default_min_sdk_version = 19 ' +
-          'use_errorprone_java_compiler=true ' +
-          'enable_reporting=true ' +
+          'is_cronet_build=true ' + 'default_min_sdk_version = 19 ' +
+          'use_errorprone_java_compiler=true ' + 'enable_reporting=true ' +
           'use_hashed_jni_names=true ')
 
 

@@ -77,6 +77,7 @@
       "is_asan": true,
       "is_clang": true,
       "is_component_build": false,
+      "is_cronet_build": true,
       "is_debug": false,
       "media_use_ffmpeg": false,
       "proprietary_codecs": true,
