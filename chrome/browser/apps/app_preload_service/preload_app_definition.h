@@ -41,6 +41,11 @@ class PreloadAppDefinition {
   // GURL. Must only be called if `GetPlatform()` returns `AppType::kWeb`.
   GURL GetWebAppOriginalManifestUrl() const;
 
+  // Returns the manifest ID of the Web App. This is derived from the package
+  // identifier of the app. Does not attempt to validate the GURL. Must only be
+  // called if `GetPlatform()` returns `AppType::kWeb`.
+  GURL GetWebAppManifestId() const;
+
  private:
   proto::AppProvisioningListAppsResponse_App app_proto_;
 };
