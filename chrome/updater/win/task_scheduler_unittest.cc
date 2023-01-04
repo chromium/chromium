@@ -267,11 +267,13 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
 
   EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
       [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); })));
+  EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event.Signal();
 
   EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
       [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
+  EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 
 TEST_F(TaskSchedulerTests, GetTaskNameList) {

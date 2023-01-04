@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/process_iterator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -84,6 +85,10 @@ base::FilePath StartProcmonLogging();
 // `C:\\tools\\Procmon.exe`, and `pml_file` needs to be a valid path to a
 // procmon PML file returned from `StartProcmonLogging`.
 void StopProcmonLogging(const base::FilePath& pml_file);
+
+// Returns a list of processes matching `executable_name`.
+const base::ProcessIterator::ProcessEntries FindProcesses(
+    const base::FilePath::StringType& executable_name);
 
 // Returns a log string of processes matching `executable_name`.
 base::FilePath::StringType PrintProcesses(

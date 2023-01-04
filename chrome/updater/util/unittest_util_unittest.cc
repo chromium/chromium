@@ -5,19 +5,31 @@
 #include "chrome/updater/util/unittest_util.h"
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
+#include "base/strings/strcat.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/strings/string_number_conversions_win.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
+#include "chrome/updater/win/test/test_strings.h"
 #endif
 
 namespace updater::test {
@@ -109,5 +121,39 @@ TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
   EXPECT_FALSE(base::DirectoryExists(temp_dir.GetPath()));
   EXPECT_TRUE(base::DirectoryExists(temp_path));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST(UnitTestUtil, FindProcesses) {
+  base::CommandLine command_line =
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+
+  // Create a unique name for a shared event to be waited for in the test
+  // process and signaled in this test.
+  const std::wstring event_name =
+      base::StrCat({kTestProcessExecutableName, L"-",
+                    base::NumberToWString(::GetCurrentProcessId())});
+  NamedObjectAttributes attr =
+      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
+
+  base::WaitableEvent event(base::win::ScopedHandle(
+      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
+  ASSERT_NE(event.handle(), nullptr);
+
+  command_line.AppendSwitchNative(kTestEventToWaitOn, attr.name);
+
+  const base::Process process = base::LaunchProcess(command_line, {});
+  ASSERT_TRUE(process.IsValid());
+
+  EXPECT_TRUE(test::WaitFor(
+      base::BindLambdaForTesting([&]() { return process.IsRunning(); })));
+  EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
+
+  event.Signal();
+
+  EXPECT_TRUE(test::WaitFor(
+      base::BindLambdaForTesting([&]() { return !process.IsRunning(); })));
+  EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace updater::test

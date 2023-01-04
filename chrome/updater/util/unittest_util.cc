@@ -347,7 +347,7 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
     LOG(ERROR) << __func__ << ": failed to backup pml file";
 }
 
-base::FilePath::StringType PrintProcesses(
+const base::ProcessIterator::ProcessEntries FindProcesses(
     const base::FilePath::StringType& executable_name) {
   class ExeNameProcessFilter : public base::ProcessFilter {
    public:
@@ -364,15 +364,17 @@ base::FilePath::StringType PrintProcesses(
     const base::FilePath::StringType executable_name_;
   };
 
+  ExeNameProcessFilter exe_name_filter(executable_name);
+  return base::ProcessIterator(&exe_name_filter).Snapshot();
+}
+
+base::FilePath::StringType PrintProcesses(
+    const base::FilePath::StringType& executable_name) {
   base::FilePath::StringType message(FILE_PATH_LITERAL("Found processes:"));
   const base::FilePath::StringType demarcation(72, FILE_PATH_LITERAL('='));
   message += demarcation;
 
-  ExeNameProcessFilter exe_name_filter(executable_name);
-  base::ProcessIterator process_iterator(&exe_name_filter);
-  const base::ProcessIterator::ProcessEntries& process_entries =
-      process_iterator.Snapshot();
-  for (const base::ProcessEntry& entry : process_entries) {
+  for (const base::ProcessEntry& entry : FindProcesses(executable_name)) {
     message += base::StrCat(
         {entry.exe_file(), FILE_PATH_LITERAL(", cmdline="),
          [](base::ProcessId pid) {
