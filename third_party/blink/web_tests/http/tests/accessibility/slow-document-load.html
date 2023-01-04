@@ -6,42 +6,44 @@
 </head>
 <body>
 
+<p>This is a test.</p>
+
 <script>
 async_test((t) => {
-    startTime = new Date();
-    gotMarkDirtyBeforeOneSecond = false;
+    let startTime = new Date();
+    let gotMarkDirtyBeforeOneSecond = false;
 
     accessibilityController.addNotificationListener(
         t.step_func((target, notification) => {
             elapsedTime = new Date() - startTime;
-            if (notification == "MarkDirty" && elapsedTime < 500) {
+            if (notification == "MarkDirty" && elapsedTime < 1000) {
                 // See comment below if you're confused by this
                 gotMarkDirtyBeforeOneSecond = true;
             }
 
             if (notification == "LoadComplete") {
                 accessibilityController.removeNotificationListener();
-                assert_greater_than_equal(elapsedTime, 500);
+                assert_greater_than_equal(elapsedTime, 1000);
                 assert_true(gotMarkDirtyBeforeOneSecond);
                 t.done();
             }
         }));
 
     window.setTimeout(function() {
-        assert_unreached("Did not receive all accessibility notifications");
+        assert_unreached("Did not receive all accessibility notifications:\n* Received MarkDirty=" + gotMarkDirtyBeforeOneSecond + "\n* Received LoadComplete: false");
         t.done();
-    }, 1500);
+    }, 2000);
 }, "This tests that accessibility events will be fired after the first layout, rather than only after the document loads.");
 
 setTimeout(function() {
     // Cause a lifecycle update
-    document.body.click();
+    document.querySelector('p').style.display = 'none';
 }, 0);
 </script>
 
-<!-- This is a cgi script that waits 1 second before loading.
+<!-- This is a cgi script that waits 1.5 second before loading.
      In practice, it seems to sometimes load after less time, so
-     that's why we use 500 ms as the threshold in the tests, above.
+     that's why we use 1000 ms as the threshold in the tests, above.
  -->
 <script src="slow-loading-script.cgi"></script>
 
