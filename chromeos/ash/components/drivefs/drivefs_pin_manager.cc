@@ -144,6 +144,26 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
 
 constexpr int64_t kAverageHostedFileSizeInBytes = 7800;
 
+bool CanPinItem(const mojom::FileMetadata& metadata,
+                const base::FilePath& path) {
+  if (metadata.pinned) {
+    VLOG(2) << "Skipped " << Quote(path) << ": Already pinned";
+    return false;
+  }
+
+  if (metadata.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
+    VLOG(2) << "Skipped " << Quote(path) << ": Cannot be pinned";
+    return false;
+  }
+
+  if (metadata.type == mojom::FileMetadata::Type::kDirectory) {
+    VLOG(2) << "Skipped " << Quote(path) << ": Directory";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
@@ -235,10 +255,13 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
   // Emplace an item with no progress (yet). The progress values will get
   // updated in the `OnSyncingStatusUpdate`.
   const auto [it, ok] = in_progress_items_.try_emplace(path);
-  LOG_IF(ERROR, !ok) << "Cannot add item " << Quote(path)
+  LOG_IF(ERROR, !ok) << "[InProgressSyncingItems] Cannot add item "
+                     << Quote(path)
                      << ": There is already an item with progress "
                      << HumanReadableSize(it->second.transferred) << " / "
                      << HumanReadableSize(it->second.total);
+  VLOG_IF(3, ok) << "[InProgressSyncingItems] Successfully added "
+                 << Quote(path);
   DCHECK_EQ(path, it->first);
 }
 
@@ -255,18 +278,19 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     // In this case, gracefully degrade by responding with the total bytes
     // transferred. This should ideally fail as all syncing operations should be
     // identified as they affect disk space.
-    VLOG(2) << "Cannot remove " << Quote(path);
+    VLOG(2) << "[InProgressSyncingItems] Cannot remove " << Quote(path);
     return total_bytes_transferred_;
   }
 
   DCHECK_EQ(it->first, path);
   const Progress& progress = it->second;
   LOG_IF(ERROR, progress.transferred > total_bytes)
-      << "Progress went backwards from "
+      << "[InProgressSyncingItems] Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
       << HumanReadableSize(total_bytes) << " for " << Quote(path);
   total_bytes_transferred_ += total_bytes - progress.transferred;
   in_progress_items_.erase(it);
+  VLOG(3) << "[InProgressSyncingItems] Successfully removed " << Quote(path);
   return total_bytes_transferred_;
 }
 
@@ -278,7 +302,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
   DCHECK_GE(bytes_to_transfer, 0) << " for " << Quote(path);
 
   if (bytes_transferred < 0) {
-    LOG(ERROR) << "Negative bytes_transferred = "
+    LOG(ERROR) << "[InProgressSyncingItems] Negative bytes_transferred = "
                << HumanReadableSize(bytes_transferred) << " for "
                << Quote(path);
     return total_bytes_transferred_;
@@ -286,10 +310,15 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
 
   Progress& progress = in_progress_items_[path];
   LOG_IF(ERROR, progress.transferred > bytes_transferred)
-      << "Progress went backwards from "
+      << "[InProgressSyncingItems] Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
       << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
   total_bytes_transferred_ += bytes_transferred - progress.transferred;
+  VLOG(3) << "[InProgressSyncingItems] Updating " << Quote(path)
+          << " bytes_transferred (" << HumanReadableSize(progress.transferred)
+          << " -> " << HumanReadableSize(bytes_transferred)
+          << " and bytes_to_transfer (" << HumanReadableSize(progress.total)
+          << " -> " << HumanReadableSize(bytes_to_transfer) << ")";
   progress.transferred = bytes_transferred;
   progress.total = bytes_to_transfer;
   return total_bytes_transferred_;
@@ -312,7 +341,8 @@ DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
   }
 
   VLOG_IF(1, !unstarted_items.empty())
-      << "There are " << unstarted_items.size() << " unstarted items";
+      << "[InProgressSyncingItems] There are " << unstarted_items.size()
+      << " unstarted items";
   return unstarted_items;
 }
 
@@ -414,13 +444,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     const mojom::FileMetadata& md = *item->metadata;
     VLOG(2) << "path: " << Quote(item->path) << ", metadata: " << Quote(md);
 
-    if (md.pinned) {
-      VLOG(2) << "Skipped " << Quote(item->path) << ": Already pinned";
-      continue;
-    }
-
-    if (md.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
-      VLOG(2) << "Skipped " << Quote(item->path) << ": Cannot be pinned";
+    if (!CanPinItem(md, item->path)) {
       continue;
     }
 
@@ -525,10 +549,9 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     const base::FilePath& path = item->path;
     DCHECK(item->metadata);
     const mojom::FileMetadata& md = *item->metadata;
+
     VLOG(2) << "path: " << Quote(path) << ", metadata: " << Quote(md);
-    if (md.pinned) {
-      VLOG(2) << "Skipped " << Quote(md.type) << " " << Quote(path)
-              << ": Already pinned";
+    if (!CanPinItem(md, item->path)) {
       continue;
     }
 
