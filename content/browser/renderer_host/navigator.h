@@ -250,7 +250,8 @@ class CONTENT_EXPORT Navigator {
   // events. Can be nullptr in tests.
   raw_ptr<NavigatorDelegate> delegate_;
 
-  std::unique_ptr<Navigator::NavigationMetricsData> navigation_data_;
+  // Tracks metrics for each navigation.
+  std::unique_ptr<Navigator::NavigationMetricsData> metrics_data_;
 };
 
 }  // namespace content
