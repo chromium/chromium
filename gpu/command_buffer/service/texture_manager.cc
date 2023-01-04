@@ -1905,10 +1905,7 @@ void Texture::SetLevelImage(GLenum target,
 #if BUILDFLAG(IS_ANDROID)
 void Texture::BindToServiceId(GLuint service_id) {
   SetStreamTextureServiceId(service_id);
-  // TODO(crbug.com/1310020): Confirm that this method call is a no-op
-  // and eliminate it.
-  SetLevelImageInternal(target(), /*level=*/0, /*image=*/nullptr,
-                        /*state=*/ImageState::UNBOUND);
+  UpdateCanRenderCondition();
 }
 #endif
 
