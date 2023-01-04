@@ -2279,6 +2279,30 @@ void Vector<T, inlineCapacity, Allocator>::ReallocateBuffer(
   Base::AcquireBuffer(std::move(temp_buffer));
 }
 
+// Erase/EraseIf are based on C++20's uniform container erasure API:
+// - https://eel.is/c++draft/libraryindex#:erase
+// - https://eel.is/c++draft/libraryindex#:erase_if
+template <typename T,
+          wtf_size_t inline_capacity,
+          typename Allocator,
+          typename U>
+wtf_size_t Erase(Vector<T, inline_capacity, Allocator>& v, const U& value) {
+  auto it = std::remove(v.begin(), v.end(), value);
+  wtf_size_t removed = v.end() - it;
+  v.erase(it, v.end());
+  return removed;
+}
+template <typename T,
+          wtf_size_t inline_capacity,
+          typename Allocator,
+          typename Pred>
+wtf_size_t EraseIf(Vector<T, inline_capacity, Allocator>& v, Pred pred) {
+  auto it = std::remove_if(v.begin(), v.end(), pred);
+  wtf_size_t removed = v.end() - it;
+  v.erase(it, v.end());
+  return removed;
+}
+
 }  // namespace WTF
 
 namespace base {

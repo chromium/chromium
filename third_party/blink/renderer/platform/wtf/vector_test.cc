@@ -712,6 +712,18 @@ TEST(VectorTest, IteratorMultipleInsertion) {
   EXPECT_TRUE(std::is_sorted(v.begin(), v.end()));
 }
 
+TEST(VectorTest, WTFErase) {
+  Vector<int> v = {1, 2, 3, 3, 5, 3};
+  WTF::Erase(v, 3);
+  EXPECT_THAT(v, testing::ElementsAre(1, 2, 5));
+}
+
+TEST(VectorTest, WTFEraseIf) {
+  Vector<int> v = {1, 2, 3, 4, 5, 6};
+  WTF::EraseIf(v, [](int x) { return x % 2 == 0; });
+  EXPECT_THAT(v, testing::ElementsAre(1, 3, 5));
+}
+
 static_assert(VectorTraits<int>::kCanCopyWithMemcpy,
               "int should be copied with memcopy.");
 static_assert(VectorTraits<char>::kCanCopyWithMemcpy,
