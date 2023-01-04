@@ -38,6 +38,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -423,6 +424,18 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
             @Override
             public void tabPendingClosure(Tab tab) {
+                notifyBackPressStateChangedInternal();
+            }
+
+            @Override
+            public void onFinishingTabClosure(Tab tab) {
+                // If tab is closed by the site itself rather than user's input,
+                // tabPendingClosure & tabClosureCommitted won't be called.
+                notifyBackPressStateChangedInternal();
+            }
+
+            @Override
+            public void tabRemoved(Tab tab) {
                 notifyBackPressStateChangedInternal();
             }
 
@@ -880,7 +893,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return true;
         }
 
-        if (!mContainerViewModel.get(IS_VISIBLE)) return false;
+        if (!mContainerViewModel.get(IS_VISIBLE)) {
+            assert !BackPressManager.isEnabled() : "Invisible container: Backpress must be handled";
+            return false;
+        }
 
         if (mTabGridDialogController != null && mTabGridDialogController.handleBackPressed()) {
             return true;
@@ -889,7 +905,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         // When the Start surface is showing, we no longer need to call onTabSelecting().
         if (isOnHomepage && mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
 
-        if (mTabModelSelector.getCurrentTab() == null) return false;
+        if (mTabModelSelector.getCurrentTab() == null) {
+            assert !BackPressManager.isEnabled() : "No tab: Backpress must be handled";
+            return false;
+        }
 
         onTabSelecting(mTabModelSelector.getCurrentTabId(), false);
 
