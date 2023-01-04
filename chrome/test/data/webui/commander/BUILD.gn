@@ -2,37 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "../tsconfig_base.json"
-  path_mappings = [
-    "chrome://commander/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/commander/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = [
+build_webui_tests("build") {
+  resource_path_prefix = "commander"
+
+  files = [
     "commander_app_test.ts",
     "test_commander_browser_proxy.ts",
   ]
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/commander:build_ts",
-  ]
-}
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_commander"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "commander"
+  ts_path_mappings =
+      [ "chrome://commander/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/commander/tsc/*",
+                    target_gen_dir) ]
+  ts_deps = [ "//chrome/browser/resources/commander:build_ts" ]
 }
