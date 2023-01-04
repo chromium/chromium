@@ -966,6 +966,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("remove-hidden-attribute.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsRoleChanged) {
+  RunEventTest(FILE_PATH_LITERAL("role-changed.html"));
+}
+
 // TODO(aboxhall): Fix flakiness on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsReportValidityInvalidField \

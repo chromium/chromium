@@ -612,7 +612,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_cssDisplay() {
-        performTest("css-display.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("css-display.html", "css-display-expected-android.txt");
     }
 
     @Test
