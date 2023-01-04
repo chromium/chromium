@@ -6,6 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {CrInputElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -26,6 +27,9 @@ function typeInNickname(nicknameInput: CrInputElement, nickname: string) {
 suite('PaymentsSectionCreditCardEditDialogTest', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      showIbansSettings: true,
+    });
   });
 
   /**
@@ -40,6 +44,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     PaymentsManagerImpl.setInstance(paymentsManager);
 
     const section = document.createElement('settings-payments-section');
+    section.prefs = {autofill: {credit_card_enabled: {value: true}}};
     document.body.appendChild(section);
     await flushTasks();
     return section;
@@ -55,12 +60,44 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Simulate clicking "Add" button in payments section.
     assertFalse(!!section.shadowRoot!.querySelector(
         'settings-credit-card-edit-dialog'));
-    section.$.addCreditCard.click();
+    const addCreditCardButton =
+        section.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+    assertTrue(!!addCreditCardButton);
+    addCreditCardButton.click();
     flush();
     const creditCardDialog =
         section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
-    return creditCardDialog!;
+    return creditCardDialog;
+  }
+
+  /**
+   * Creates the Add Credit Card dialog. Simulate clicking "Credit/Debit card"
+   * option from dropdown list.
+   */
+  async function createAddCreditCardDialogFromDropdown():
+      Promise<SettingsCreditCardEditDialogElement> {
+    const section = await createPaymentsSection(/*creditCards=*/[]);
+    // Simulate clicking "Add" button in payments section.
+    assertFalse(!!section.shadowRoot!.querySelector(
+        'settings-credit-card-edit-dialog'));
+    const dropdownAddPaymentMethodsButton =
+        section.shadowRoot!.querySelector<CrButtonElement>(
+            '#addPaymentMethods');
+    assertTrue(!!dropdownAddPaymentMethodsButton);
+    dropdownAddPaymentMethodsButton.click();
+    flush();
+
+    // Simulate clicking the 'Credit/Debit card' option in the menu.
+    const addCardOption =
+        section.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+    assertTrue(!!addCardOption);
+    addCardOption.click();
+    flush();
+    const creditCardDialog =
+        section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+    assertTrue(!!creditCardDialog);
+    return creditCardDialog;
   }
 
   /**
@@ -80,7 +117,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
-    menuButton!.click();
+    menuButton.click();
     flush();
 
     // Simulate clicking the 'Edit' button in the menu.
@@ -89,7 +126,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const creditCardDialog =
         section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
-    return creditCardDialog!;
+    return creditCardDialog;
   }
 
   function nextYear(): string {
@@ -105,6 +142,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   }
 
   test('add card dialog', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
     const creditCardDialog = await createAddCreditCardDialog();
 
     // Wait for the dialog to open.
@@ -124,13 +164,37 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // enabled.
     assertTrue(!!nicknameInput);
     assertTrue(!!nameInput);
+    assertTrue(!!numberInput);
     // Verify the card number field is autofocused when nickname management is
     // enabled.
-    assertTrue(numberInput!.matches(':focus-within'));
+    assertTrue(numberInput.matches(':focus-within'));
+  });
+
+  test('add card dialog from dropdown list', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: true,
+    });
+    const creditCardDialog = await createAddCreditCardDialogFromDropdown();
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    const nicknameInput = creditCardDialog.$.nicknameInput;
+    const nameInput = creditCardDialog.$.nameInput;
+    const numberInput = creditCardDialog.$.numberInput;
+
+    // Verify the nickname input field is shown when nickname management is
+    // enabled.
+    assertTrue(!!nicknameInput);
+    assertTrue(!!nameInput);
+    assertTrue(!!numberInput);
+    // Verify the card number field is autofocused when nickname management is
+    // enabled.
+    assertTrue(numberInput.matches(':focus-within'));
   });
 
   test('save new card', async function() {
-    const creditCardDialog = await createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialogFromDropdown();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -179,7 +243,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('trim credit card when save', async function() {
-    const creditCardDialog = await createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialogFromDropdown();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -288,7 +352,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('show error message when input nickname is invalid', async function() {
-    const creditCardDialog = await createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialogFromDropdown();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
@@ -371,7 +435,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   test('only show nickname character count when focused', async function() {
-    const creditCardDialog = await createAddCreditCardDialog();
+    const creditCardDialog = await createAddCreditCardDialogFromDropdown();
 
     // Wait for the dialog to open.
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');

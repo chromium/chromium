@@ -1041,6 +1041,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"creditCardExpired", IDS_SETTINGS_CREDIT_CARD_EXPIRED},
     {"editCreditCardTitle", IDS_SETTINGS_EDIT_CREDIT_CARD_TITLE},
     {"addCreditCardTitle", IDS_SETTINGS_ADD_CREDIT_CARD_TITLE},
+    {"addPaymentMethodCreditOrDebitCard",
+     IDS_SETTINGS_ADD_PAYMENT_METHOD_CREDIT_OR_DEBIT_CARD},
+    {"addPaymentMethodIban", IDS_SETTINGS_ADD_PAYMENT_METHOD_IBAN},
     {"migrateCreditCardsLabel", IDS_SETTINGS_MIGRATABLE_CARDS_LABEL},
     {"migratableCardsInfoSingle", IDS_SETTINGS_SINGLE_MIGRATABLE_CARD_INFO},
     {"migratableCardsInfoMultiple",
@@ -1353,6 +1356,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                             SyncServiceFactory::GetForProfile(profile),
                             /*is_test_mode=*/false,
                             /*log_manager=*/nullptr));
+
+  html_source->AddBoolean("showIbansSettings",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillFillIbanFields));
+
   html_source->AddBoolean(
       "fidoAuthenticationAvailableForAutofill",
       IsFidoAuthenticationAvailable(personal_data, web_contents));

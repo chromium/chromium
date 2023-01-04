@@ -5,6 +5,14 @@
     flex: 1;
   }
 
+  .arrow-icon-down {
+    fill: var(--text-color);
+    flex-shrink: 0;
+    margin-inline-start: 6px;
+    margin-inline-end: -6px;
+    width: var(--cr-icon-size);
+  }
+
   #migrateCreditCards {
     border-bottom: var(--cr-separator-line);
     border-top: none;
@@ -59,11 +67,36 @@
 
 <div class="cr-row continuation">
   <h2 class="flex">$i18n{creditCards}</h2>
-  <cr-button id="addCreditCard" class="header-aligned-button"
-      on-click="onAddCreditCardClick_" aria-label="$i18n{addCreditCardTitle}"
-      hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
-    $i18n{add}
-  </cr-button>
+  <template is="dom-if"
+      if="[[!shouldShowIbanSettings_(showIbanSettingsEnabled_)]]">
+    <cr-button id="addCreditCard" class="header-aligned-button"
+        on-click="onAddCreditCardClick_" aria-label="$i18n{addCreditCardTitle}"
+        hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
+      $i18n{add}
+    </cr-button>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowIbanSettings_(showIbanSettingsEnabled_)]]">
+    <cr-button class="header-aligned-button"
+        id="addPaymentMethods" on-click="onAddPaymentMethodClick_"
+        hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
+      $i18n{add}
+      <iron-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></iron-icon>
+    </cr-button>
+    <cr-lazy-render id="paymentMethodsActionMenu">
+      <template>
+        <cr-action-menu role-description="$i18n{menu}">
+          <button id="addCreditCard" class="dropdown-item"
+              on-click="onAddCreditCardClick_">
+            $i18n{addPaymentMethodCreditOrDebitCard}
+          </button>
+          <button id="addIban" class="dropdown-item">
+            $i18n{addPaymentMethodIban}
+          </button>
+        </cr-action-menu>
+      </template>
+    </cr-lazy-render>
+  </template>
 </div>
 <cr-link-row id="migrateCreditCards"
     hidden$="[[!checkIfMigratable_(creditCards,
