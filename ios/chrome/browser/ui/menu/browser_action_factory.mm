@@ -304,7 +304,7 @@
                        type:MenuActionType::StartNewIcognitoSearch
                       block:^{
                         OpenNewTabCommand* command =
-                            [OpenNewTabCommand commandWithIncognito:NO];
+                            [OpenNewTabCommand commandWithIncognito:YES];
                         command.shouldFocusOmnibox = YES;
                         [handler openURLInNewTab:command];
                       }];
