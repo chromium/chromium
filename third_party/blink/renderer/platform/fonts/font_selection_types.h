@@ -172,8 +172,8 @@ static inline const FontSelectionValue& ItalicThreshold() {
   return italicThreshold;
 }
 
-static inline bool isItalic(FontSelectionValue fontWeight) {
-  return fontWeight >= ItalicThreshold();
+static inline bool isItalic(FontSelectionValue fontStyle) {
+  return fontStyle >= ItalicThreshold();
 }
 
 static inline const FontSelectionValue& FontSelectionZeroValue() {

@@ -94,6 +94,8 @@ blink_core_sources("animation") {
     "css_font_size_interpolation_type.h",
     "css_font_stretch_interpolation_type.cc",
     "css_font_stretch_interpolation_type.h",
+    "css_font_style_interpolation_type.cc",
+    "css_font_style_interpolation_type.h",
     "css_font_variation_settings_interpolation_type.cc",
     "css_font_variation_settings_interpolation_type.h",
     "css_font_weight_interpolation_type.cc",

@@ -863,6 +863,11 @@ class ComputedStyle : public ComputedStyleBase,
     return GetFontDescription().Stretch();
   }
 
+  // font-style
+  FontSelectionValue GetFontStyle() const {
+    return GetFontDescription().Style();
+  }
+
   // Child is aligned to the parent by matching the parent’s dominant baseline
   // to the same baseline in the child.
   CORE_EXPORT FontBaseline GetFontBaseline() const;

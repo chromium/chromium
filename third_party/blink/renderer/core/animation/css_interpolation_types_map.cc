@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_size_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_stretch_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_font_style_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_variation_settings_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_weight_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_grid_template_property_interpolation_type.h"
@@ -291,6 +292,10 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kFontStretch:
         applicable_types->push_back(
             std::make_unique<CSSFontStretchInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kFontStyle:
+        applicable_types->push_back(
+            std::make_unique<CSSFontStyleInterpolationType>(used_property));
         break;
       case CSSPropertyID::kFontVariationSettings:
         applicable_types->push_back(

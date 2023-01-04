@@ -174,6 +174,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.FontSizeAdjust() == b.FontSizeAdjust();
     case CSSPropertyID::kFontStretch:
       return a.GetFontStretch() == b.GetFontStretch();
+    case CSSPropertyID::kFontStyle:
+      return a.GetFontStyle() == b.GetFontStyle();
     case CSSPropertyID::kFontVariationSettings:
       return base::ValuesEquivalent(a.GetFontDescription().VariationSettings(),
                                     b.GetFontDescription().VariationSettings());

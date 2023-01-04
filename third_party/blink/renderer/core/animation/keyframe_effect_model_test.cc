@@ -515,7 +515,7 @@ TEST_F(AnimationKeyframeEffectModel, MultipleProperties) {
   keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontStyle, "normal",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontSynthesisWeight, "auto",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
   keyframes[1] = MakeGarbageCollected<StringKeyframe>();
@@ -523,7 +523,7 @@ TEST_F(AnimationKeyframeEffectModel, MultipleProperties) {
   keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "cursive",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontStyle, "oblique",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontSynthesisWeight, "none",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
@@ -534,9 +534,10 @@ TEST_F(AnimationKeyframeEffectModel, MultipleProperties) {
   Interpolation* left_value = FindValue(values, CSSPropertyID::kFontFamily);
   ASSERT_TRUE(left_value);
   ExpectNonInterpolableValue("cursive", left_value);
-  Interpolation* right_value = FindValue(values, CSSPropertyID::kFontStyle);
+  Interpolation* right_value =
+      FindValue(values, CSSPropertyID::kFontSynthesisWeight);
   ASSERT_TRUE(right_value);
-  ExpectNonInterpolableValue("oblique", right_value);
+  ExpectNonInterpolableValue("none", right_value);
 }
 
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
