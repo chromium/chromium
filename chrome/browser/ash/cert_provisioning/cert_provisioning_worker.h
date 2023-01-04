@@ -16,15 +16,14 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace policy {
-class CloudPolicyClient;
-}  // namespace policy
 class Profile;
 class PrefService;
 
@@ -62,7 +61,7 @@ class CertProvisioningWorkerFactory {
       Profile* profile,
       PrefService* pref_service,
       const CertProfile& cert_profile,
-      policy::CloudPolicyClient* cloud_policy_client,
+      CertProvisioningClient* cert_provisioning_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
       base::RepeatingClosure state_change_callback,
       CertProvisioningWorkerCallback result_callback);
@@ -72,7 +71,7 @@ class CertProvisioningWorkerFactory {
       Profile* profile,
       PrefService* pref_service,
       const base::Value::Dict& saved_worker,
-      policy::CloudPolicyClient* cloud_policy_client,
+      CertProvisioningClient* cert_provisioning_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
       base::RepeatingClosure state_change_callback,
       CertProvisioningWorkerCallback result_callback);
@@ -131,7 +130,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
       Profile* profile,
       PrefService* pref_service,
       const CertProfile& cert_profile,
-      policy::CloudPolicyClient* cloud_policy_client,
+      CertProvisioningClient* cert_provisioning_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
       base::RepeatingClosure state_change_callback,
       CertProvisioningWorkerCallback result_callback);
@@ -239,6 +238,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   void OnRemoveKeyDone(chromeos::platform_keys::Status status);
   void OnCleanUpDone();
 
+  CertProvisioningClient::ProvisioningProcess GetProvisioningProcessForClient();
+
   // Returns true if there are no errors and the flow can be continued.
   // |request_type| is the type of the request to which the DM server has
   // responded with the given |status|.
@@ -310,7 +311,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   platform_keys::PlatformKeysService* platform_keys_service_ = nullptr;
   std::unique_ptr<attestation::TpmChallengeKeySubtle>
       tpm_challenge_key_subtle_impl_;
-  policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
+  CertProvisioningClient* const cert_provisioning_client_;
 
   std::unique_ptr<CertProvisioningInvalidator> invalidator_;
 

@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "content/public/browser/browser_context.h"
 #include "net/cert/asn1_util.h"
@@ -68,16 +68,6 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy{
     /*maximum_backoff_ms=*/12 * 60 * 60 * 1000 /* (12 hours) */,
     /*entry_lifetime_ms=*/-1,
     /*always_use_initial_delay=*/false};
-
-std::string CertScopeToString(CertScope cert_scope) {
-  switch (cert_scope) {
-    case CertScope::kUser:
-      return "google/chromeos/user";
-    case CertScope::kDevice:
-      return "google/chromeos/device";
-  }
-  NOTREACHED();
-}
 
 bool ConvertHashingAlgorithm(
     em::HashingAlgorithm input_algo,
@@ -217,13 +207,13 @@ std::unique_ptr<CertProvisioningWorker> CertProvisioningWorkerFactory::Create(
     Profile* profile,
     PrefService* pref_service,
     const CertProfile& cert_profile,
-    policy::CloudPolicyClient* cloud_policy_client,
+    CertProvisioningClient* cert_provisioning_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
     base::RepeatingClosure state_change_callback,
     CertProvisioningWorkerCallback result_callback) {
   RecordEvent(cert_scope, CertProvisioningEvent::kWorkerCreated);
   return std::make_unique<CertProvisioningWorkerImpl>(
-      cert_scope, profile, pref_service, cert_profile, cloud_policy_client,
+      cert_scope, profile, pref_service, cert_profile, cert_provisioning_client,
       std::move(invalidator), std::move(state_change_callback),
       std::move(result_callback));
 }
@@ -234,14 +224,14 @@ CertProvisioningWorkerFactory::Deserialize(
     Profile* profile,
     PrefService* pref_service,
     const base::Value::Dict& saved_worker,
-    policy::CloudPolicyClient* cloud_policy_client,
+    CertProvisioningClient* cert_provisioning_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
     base::RepeatingClosure state_change_callback,
     CertProvisioningWorkerCallback result_callback) {
   auto worker = std::make_unique<CertProvisioningWorkerImpl>(
-      cert_scope, profile, pref_service, CertProfile(), cloud_policy_client,
-      std::move(invalidator), std::move(state_change_callback),
-      std::move(result_callback));
+      cert_scope, profile, pref_service, CertProfile(),
+      cert_provisioning_client, std::move(invalidator),
+      std::move(state_change_callback), std::move(result_callback));
   if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
                                                      worker.get())) {
     RecordEvent(cert_scope,
@@ -265,7 +255,7 @@ CertProvisioningWorkerImpl::CertProvisioningWorkerImpl(
     Profile* profile,
     PrefService* pref_service,
     const CertProfile& cert_profile,
-    policy::CloudPolicyClient* cloud_policy_client,
+    CertProvisioningClient* cert_provisioning_client,
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
     base::RepeatingClosure state_change_callback,
     CertProvisioningWorkerCallback result_callback)
@@ -276,14 +266,14 @@ CertProvisioningWorkerImpl::CertProvisioningWorkerImpl(
       state_change_callback_(std::move(state_change_callback)),
       result_callback_(std::move(result_callback)),
       request_backoff_(&kBackoffPolicy),
-      cloud_policy_client_(cloud_policy_client),
+      cert_provisioning_client_(cert_provisioning_client),
       invalidator_(std::move(invalidator)) {
   CHECK(profile || cert_scope == CertScope::kDevice);
   platform_keys_service_ = GetPlatformKeysService(cert_scope, profile);
   CHECK(platform_keys_service_);
 
   CHECK(pref_service);
-  CHECK(cloud_policy_client_);
+  CHECK(cert_provisioning_client_);
   CHECK(invalidator_);
 }
 
@@ -498,9 +488,8 @@ void CertProvisioningWorkerImpl::OnGenerateKeyForVaDone(
 void CertProvisioningWorkerImpl::StartCsr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cloud_policy_client_->ClientCertProvisioningStartCsr(
-      CertScopeToString(cert_scope_), cert_profile_.profile_id,
-      cert_profile_.policy_version, BytesToStr(public_key_),
+  cert_provisioning_client_->StartCsr(
+      GetProvisioningProcessForClient(),
       base::BindOnce(&CertProvisioningWorkerImpl::OnStartCsrDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -690,10 +679,8 @@ void CertProvisioningWorkerImpl::OnSignCsrDone(
 void CertProvisioningWorkerImpl::FinishCsr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cloud_policy_client_->ClientCertProvisioningFinishCsr(
-      CertScopeToString(cert_scope_), cert_profile_.profile_id,
-      cert_profile_.policy_version, BytesToStr(public_key_),
-      va_challenge_response_, signature_,
+  cert_provisioning_client_->FinishCsr(
+      GetProvisioningProcessForClient(), va_challenge_response_, signature_,
       base::BindOnce(&CertProvisioningWorkerImpl::OnFinishCsrDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -717,9 +704,8 @@ void CertProvisioningWorkerImpl::OnFinishCsrDone(
 void CertProvisioningWorkerImpl::DownloadCert() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cloud_policy_client_->ClientCertProvisioningDownloadCert(
-      CertScopeToString(cert_scope_), cert_profile_.profile_id,
-      cert_profile_.policy_version, BytesToStr(public_key_),
+  cert_provisioning_client_->DownloadCert(
+      GetProvisioningProcessForClient(),
       base::BindOnce(&CertProvisioningWorkerImpl::OnDownloadCertDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -968,6 +954,15 @@ void CertProvisioningWorkerImpl::OnCleanUpDone() {
 
   RecordResult(cert_scope_, state_, prev_state_);
   std::move(result_callback_).Run(cert_profile_, state_);
+}
+
+CertProvisioningClient::ProvisioningProcess
+CertProvisioningWorkerImpl::GetProvisioningProcessForClient() {
+  return CertProvisioningClient::ProvisioningProcess(
+      /*cert_scope=*/cert_scope_,
+      /*cert_profile_id=*/cert_profile_.profile_id,
+      /*policy_version=*/cert_profile_.policy_version,
+      /*public_key=*/public_key_);
 }
 
 void CertProvisioningWorkerImpl::HandleSerialization() {

@@ -19,6 +19,7 @@
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
@@ -101,7 +102,8 @@ CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
   }
 
   return std::make_unique<CertProvisioningSchedulerImpl>(
-      CertScope::kUser, profile, pref_service, cloud_policy_client,
+      CertScope::kUser, profile, pref_service,
+      std::make_unique<CertProvisioningClientImpl>(*cloud_policy_client),
       platform_keys_service, network_state_handler,
       std::make_unique<CertProvisioningUserInvalidatorFactory>(profile));
 }
@@ -125,7 +127,8 @@ CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
 
   return std::make_unique<CertProvisioningSchedulerImpl>(
       CertScope::kDevice, /*profile=*/nullptr, pref_service,
-      cloud_policy_client, platform_keys_service, network_state_handler,
+      std::make_unique<CertProvisioningClientImpl>(*cloud_policy_client),
+      platform_keys_service, network_state_handler,
       std::make_unique<CertProvisioningDeviceInvalidatorFactory>(
           invalidation_service_provider));
 }
@@ -134,14 +137,14 @@ CertProvisioningSchedulerImpl::CertProvisioningSchedulerImpl(
     CertScope cert_scope,
     Profile* profile,
     PrefService* pref_service,
-    policy::CloudPolicyClient* cloud_policy_client,
+    std::unique_ptr<CertProvisioningClient> cert_provisioning_client,
     platform_keys::PlatformKeysService* platform_keys_service,
     NetworkStateHandler* network_state_handler,
     std::unique_ptr<CertProvisioningInvalidatorFactory> invalidator_factory)
     : cert_scope_(cert_scope),
       profile_(profile),
       pref_service_(pref_service),
-      cloud_policy_client_(cloud_policy_client),
+      cert_provisioning_client_(std::move(cert_provisioning_client)),
       platform_keys_service_(platform_keys_service),
       network_state_handler_(network_state_handler),
       certs_with_ids_getter_(cert_scope, platform_keys_service),
@@ -149,7 +152,7 @@ CertProvisioningSchedulerImpl::CertProvisioningSchedulerImpl(
       invalidator_factory_(std::move(invalidator_factory)) {
   CHECK(profile_ || cert_scope_ == CertScope::kDevice);
   CHECK(pref_service_);
-  CHECK(cloud_policy_client_);
+  CHECK(cert_provisioning_client_);
   CHECK(platform_keys_service_);
   CHECK(network_state_handler);
   CHECK(invalidator_factory_);
@@ -303,7 +306,7 @@ void CertProvisioningSchedulerImpl::DeserializeWorkers() {
     std::unique_ptr<CertProvisioningWorker> worker =
         CertProvisioningWorkerFactory::Get()->Deserialize(
             cert_scope_, profile_, pref_service_, saved_worker,
-            cloud_policy_client_, invalidator_factory_->Create(),
+            cert_provisioning_client_.get(), invalidator_factory_->Create(),
             base::BindRepeating(
                 &CertProvisioningSchedulerImpl::OnVisibleStateChanged,
                 weak_factory_.GetWeakPtr()),
@@ -477,7 +480,7 @@ void CertProvisioningSchedulerImpl::CreateCertProvisioningWorker(
   std::unique_ptr<CertProvisioningWorker> worker =
       CertProvisioningWorkerFactory::Get()->Create(
           cert_scope_, profile_, pref_service_, cert_profile,
-          cloud_policy_client_, invalidator_factory_->Create(),
+          cert_provisioning_client_.get(), invalidator_factory_->Create(),
           base::BindRepeating(
               &CertProvisioningSchedulerImpl::OnVisibleStateChanged,
               weak_factory_.GetWeakPtr()),

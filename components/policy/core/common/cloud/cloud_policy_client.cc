@@ -37,14 +37,6 @@ namespace em = enterprise_management;
 // An enum for PSM execution result values.
 using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
-// The type for variables containing an error from DM Server response.
-using CertProvisioningResponseErrorType =
-    enterprise_management::ClientCertificateProvisioningResponse::Error;
-// The namespace that contains convenient aliases for error values, e.g.
-// UNDEFINED, TIMED_OUT, IDENTITY_VERIFICATION_ERROR, CA_ERROR.
-using CertProvisioningResponseError =
-    enterprise_management::ClientCertificateProvisioningResponse;
-
 namespace policy {
 
 namespace {
@@ -901,14 +893,15 @@ void CloudPolicyClient::OnEuiccInfoUploaded(StatusCallback callback,
   RemoveJob(result.job);
 }
 
-void CloudPolicyClient::ClientCertProvisioningStartCsr(
-    const std::string& cert_scope,
-    const std::string& cert_profile_id,
-    const std::string& cert_profile_version,
-    const std::string& public_key,
-    ClientCertProvisioningStartCsrCallback callback) {
+void CloudPolicyClient::ClientCertProvisioningRequest(
+    em::ClientCertificateProvisioningRequest request,
+    ClientCertProvisioningRequestCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
+
+  if (!device_dm_token_.empty()) {
+    request.set_device_dm_token(device_dm_token_);
+  }
 
   std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
       DMServerJobConfiguration>(
@@ -917,98 +910,11 @@ void CloudPolicyClient::ClientCertProvisioningStartCsr(
       /*critical=*/false, DMAuth::FromDMToken(dm_token_),
       /*oauth_token=*/absl::nullopt,
       base::BindOnce(
-          &CloudPolicyClient::OnClientCertProvisioningStartCsrResponse,
+          &CloudPolicyClient::OnClientCertProvisioningRequestResponse,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  em::ClientCertificateProvisioningRequest* request =
-      config->request()->mutable_client_certificate_provisioning_request();
-
-  request->set_certificate_scope(cert_scope);
-  request->set_cert_profile_id(cert_profile_id);
-  request->set_policy_version(cert_profile_version);
-  request->set_public_key(public_key);
-  if (!device_dm_token_.empty()) {
-    request->set_device_dm_token(device_dm_token_);
-  }
-  // Sets the request type, no actual data is required.
-  request->mutable_start_csr_request();
-
-  request_jobs_.push_back(service_->CreateJob(std::move(config)));
-}
-
-void CloudPolicyClient::ClientCertProvisioningFinishCsr(
-    const std::string& cert_scope,
-    const std::string& cert_profile_id,
-    const std::string& cert_profile_version,
-    const std::string& public_key,
-    const std::string& va_challenge_response,
-    const std::string& signature,
-    ClientCertProvisioningFinishCsrCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_registered());
-
-  std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
-      DMServerJobConfiguration>(
-      DeviceManagementService::JobConfiguration::TYPE_CERT_PROVISIONING_REQUEST,
-      this,
-      /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-      /*oauth_token=*/absl::nullopt,
-      base::BindOnce(
-          &CloudPolicyClient::OnClientCertProvisioningFinishCsrResponse,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-
-  em::ClientCertificateProvisioningRequest* const request =
-      config->request()->mutable_client_certificate_provisioning_request();
-
-  request->set_certificate_scope(cert_scope);
-  request->set_cert_profile_id(cert_profile_id);
-  request->set_policy_version(cert_profile_version);
-  request->set_public_key(public_key);
-  if (!device_dm_token_.empty()) {
-    request->set_device_dm_token(device_dm_token_);
-  }
-
-  em::FinishCsrRequest* finish_csr_request =
-      request->mutable_finish_csr_request();
-  if (!va_challenge_response.empty()) {
-    finish_csr_request->set_va_challenge_response(va_challenge_response);
-  }
-  finish_csr_request->set_signature(signature);
-
-  request_jobs_.push_back(service_->CreateJob(std::move(config)));
-}
-
-void CloudPolicyClient::ClientCertProvisioningDownloadCert(
-    const std::string& cert_scope,
-    const std::string& cert_profile_id,
-    const std::string& cert_profile_version,
-    const std::string& public_key,
-    ClientCertProvisioningDownloadCertCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_registered());
-
-  std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
-      DMServerJobConfiguration>(
-      DeviceManagementService::JobConfiguration::TYPE_CERT_PROVISIONING_REQUEST,
-      this,
-      /*critical=*/false, DMAuth::FromDMToken(dm_token_),
-      /*oauth_token=*/absl::nullopt,
-      base::BindOnce(
-          &CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-
-  em::ClientCertificateProvisioningRequest* const request =
-      config->request()->mutable_client_certificate_provisioning_request();
-
-  request->set_certificate_scope(cert_scope);
-  request->set_cert_profile_id(cert_profile_id);
-  request->set_policy_version(cert_profile_version);
-  request->set_public_key(public_key);
-  if (!device_dm_token_.empty()) {
-    request->set_device_dm_token(device_dm_token_);
-  }
-  // Sets the request type, no actual data is required.
-  request->mutable_download_cert_request();
+  *config->request()->mutable_client_certificate_provisioning_request() =
+      std::move(request);
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
@@ -1407,187 +1313,20 @@ void CloudPolicyClient::OnGcmIdUpdated(StatusCallback callback,
   RemoveJob(result.job);
 }
 
-namespace {
-// Checks all error-like fields of a client cert provisioning response. Uses
-// |status| as an input and output parameter. Extracts error and try_again_later
-// fields from the |response| into |response_error| and |try_later|. Returns
-// true if all error-like fields are empty or "ok" and the parsing of the
-// |response| can be continued.
-bool CheckCommonClientCertProvisioningResponse(
-    const em::DeviceManagementResponse& response,
-    policy::DeviceManagementStatus* status,
-    absl::optional<CertProvisioningResponseErrorType>* response_error,
-    absl::optional<int64_t>* try_later) {
-  if (*status != DM_STATUS_SUCCESS) {
-    return false;
-  }
-
-  if (!response.has_client_certificate_provisioning_response()) {
-    *status = DM_STATUS_RESPONSE_DECODING_ERROR;
-    return false;
-  }
-
-  const em::ClientCertificateProvisioningResponse& cert_provisioning_response =
-      response.client_certificate_provisioning_response();
-
-  if (cert_provisioning_response.has_error()) {
-    *response_error = cert_provisioning_response.error();
-    return false;
-  }
-
-  if (cert_provisioning_response.has_try_again_later()) {
-    *try_later = cert_provisioning_response.try_again_later();
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
-
-void CloudPolicyClient::OnClientCertProvisioningStartCsrResponse(
-    ClientCertProvisioningStartCsrCallback callback,
+void CloudPolicyClient::OnClientCertProvisioningRequestResponse(
+    ClientCertProvisioningRequestCallback callback,
     DMServerJobResult result) {
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
   last_dm_status_ = result.dm_status;
-  absl::optional<CertProvisioningResponseErrorType> response_error;
-  absl::optional<int64_t> try_later;
+  if (!result.response.has_client_certificate_provisioning_response()) {
+    last_dm_status_ = DM_STATUS_RESPONSE_DECODING_ERROR;
+  }
 
-  // Single step loop for convenience.
-  do {
-    if (!CheckCommonClientCertProvisioningResponse(
-            result.response, &result.dm_status, &response_error, &try_later)) {
-      break;
-    }
-
-    const em::ClientCertificateProvisioningResponse&
-        cert_provisioning_response =
-            result.response.client_certificate_provisioning_response();
-
-    if (!cert_provisioning_response.has_start_csr_response()) {
-      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
-
-    const em::StartCsrResponse& start_csr_response =
-        cert_provisioning_response.start_csr_response();
-
-    if (!start_csr_response.has_hashing_algorithm() ||
-        !start_csr_response.has_signing_algorithm() ||
-        !start_csr_response.has_data_to_sign()) {
-      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
-
-    if (start_csr_response.signing_algorithm() !=
-        em::SigningAlgorithm::RSA_PKCS1_V1_5) {
-      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
-
-    const std::string empty_str;
-
-    const std::string& invalidation_topic =
-        start_csr_response.has_invalidation_topic()
-            ? start_csr_response.invalidation_topic()
-            : empty_str;
-
-    const std::string& va_challenge = start_csr_response.has_va_challenge()
-                                          ? start_csr_response.va_challenge()
-                                          : empty_str;
-
-    // Everything is ok, run |callback| with data.
-    std::move(callback).Run(result.dm_status, response_error, try_later,
-                            invalidation_topic, va_challenge,
-                            start_csr_response.hashing_algorithm(),
-                            start_csr_response.data_to_sign());
-    return;
-  } while (false);
-
-  // Something went wrong. Return error via |result.dm_status|,
-  // |response_error|, |try_later|.
-  const std::string empty_str;
-  em::HashingAlgorithm hash_algo = {};
-  std::move(callback).Run(result.dm_status, response_error, try_later,
-                          empty_str, empty_str, hash_algo, empty_str);
-}
-
-void CloudPolicyClient::OnClientCertProvisioningFinishCsrResponse(
-    ClientCertProvisioningFinishCsrCallback callback,
-    DMServerJobResult result) {
-  base::ScopedClosureRunner job_cleaner(base::BindOnce(
-      &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
-
-  last_dm_status_ = result.dm_status;
-  absl::optional<CertProvisioningResponseErrorType> response_error;
-  absl::optional<int64_t> try_later;
-
-  // Single step loop for convenience.
-  do {
-    if (!CheckCommonClientCertProvisioningResponse(
-            result.response, &result.dm_status, &response_error, &try_later)) {
-      break;
-    }
-
-    const em::ClientCertificateProvisioningResponse&
-        cert_provisioning_response =
-            result.response.client_certificate_provisioning_response();
-
-    if (!cert_provisioning_response.has_finish_csr_response()) {
-      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
-  } while (false);
-
-  std::move(callback).Run(result.dm_status, response_error, try_later);
-}
-
-void CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse(
-    ClientCertProvisioningDownloadCertCallback callback,
-    DMServerJobResult result) {
-  base::ScopedClosureRunner job_cleaner(base::BindOnce(
-      &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
-
-  last_dm_status_ = result.dm_status;
-  absl::optional<CertProvisioningResponseErrorType> response_error;
-  absl::optional<int64_t> try_later;
-
-  // Single step loop for convenience.
-  do {
-    if (!CheckCommonClientCertProvisioningResponse(
-            result.response, &result.dm_status, &response_error, &try_later)) {
-      break;
-    }
-
-    const em::ClientCertificateProvisioningResponse&
-        cert_provisioning_response =
-            result.response.client_certificate_provisioning_response();
-
-    if (!cert_provisioning_response.has_download_cert_response()) {
-      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
-
-    const em::DownloadCertResponse& download_cert_response =
-        cert_provisioning_response.download_cert_response();
-
-    if (!download_cert_response.has_pem_encoded_certificate()) {
-      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
-
-    // Everything is ok, run |callback| with data.
-    std::move(callback).Run(result.dm_status, response_error, try_later,
-                            download_cert_response.pem_encoded_certificate());
-    return;
-  } while (false);
-
-  // Something went wrong. Return error via |result.dm_status|,
-  // |response_error|, |try_later|.
-  std::move(callback).Run(result.dm_status, response_error, try_later,
-                          std::string());
+  std::move(callback).Run(
+      last_dm_status_,
+      result.response.client_certificate_provisioning_response());
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {

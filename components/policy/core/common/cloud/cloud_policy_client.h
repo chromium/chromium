@@ -86,28 +86,10 @@ class POLICY_EXPORT CloudPolicyClient {
   using ResponseCallback =
       base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
 
-  using ClientCertProvisioningStartCsrCallback = base::OnceCallback<void(
+  using ClientCertProvisioningRequestCallback = base::OnceCallback<void(
       DeviceManagementStatus,
-      absl::optional<
-          enterprise_management::ClientCertificateProvisioningResponse::Error>,
-      absl::optional<int64_t> try_later,
-      const std::string& invalidation_topic,
-      const std::string& va_challenge,
-      enterprise_management::HashingAlgorithm hash_algorithm,
-      const std::string& data_to_sign)>;
-
-  using ClientCertProvisioningFinishCsrCallback = base::OnceCallback<void(
-      DeviceManagementStatus,
-      absl::optional<
-          enterprise_management::ClientCertificateProvisioningResponse::Error>,
-      absl::optional<int64_t> try_later)>;
-
-  using ClientCertProvisioningDownloadCertCallback = base::OnceCallback<void(
-      DeviceManagementStatus,
-      absl::optional<
-          enterprise_management::ClientCertificateProvisioningResponse::Error>,
-      absl::optional<int64_t> try_later,
-      const std::string& pem_encoded_certificate)>;
+      const enterprise_management::ClientCertificateProvisioningResponse&
+          response)>;
 
   using MacAddress = std::array<uint8_t, 6>;
 
@@ -425,49 +407,10 @@ class POLICY_EXPORT CloudPolicyClient {
       std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
       StatusCallback callback);
 
-  // Sends certificate provisioning start csr request. It is Step 1 in the
-  // certificate provisioning flow. |cert_scope| defines if it is a user- or
-  // device-level request, |cert_profile_id| defines for which profile from
-  // policies the request applies, |public_key| is used to build the CSR.
-  // |callback| will be called when the operation completes. It is expected to
-  // receive the CSR and VA challenge.
-  virtual void ClientCertProvisioningStartCsr(
-      const std::string& cert_scope,
-      const std::string& cert_profile_id,
-      const std::string& cert_profile_version,
-      const std::string& public_key,
-      ClientCertProvisioningStartCsrCallback callback);
-
-  // Sends certificate provisioning finish csr request. It is Step 2 in the
-  // certificate provisioning flow. |cert_scope| defines if it is a user- or
-  // device-level request, |cert_profile_id| and |public_key| define the
-  // provisioning flow that should be continued. |va_challenge_response| is a
-  // challenge response to the challenge from the previous step. |signature| is
-  // cryptographic signature of the CSR from the previous step, the algorithm
-  // for it is defined in a corresponding certificate profile. |callback| will
-  // be called when the operation completes. It is expected to receive a
-  // confirmation that the request is accepted.
-  virtual void ClientCertProvisioningFinishCsr(
-      const std::string& cert_scope,
-      const std::string& cert_profile_id,
-      const std::string& cert_profile_version,
-      const std::string& public_key,
-      const std::string& va_challenge_response,
-      const std::string& signature,
-      ClientCertProvisioningFinishCsrCallback callback);
-
-  // Sends certificate provisioning download certificate request. It is Step 3
-  // (final) in the certificate provisioning flow. |cert_scope|,
-  // |cert_profile_id|, |public_key| are the same as for finish csr request.
-  // |callback| will be called when the operation completes. It is expected to
-  // receive a certificate that was issued according to the CSR that was
-  // generated during previous steps.
-  virtual void ClientCertProvisioningDownloadCert(
-      const std::string& cert_scope,
-      const std::string& cert_profile_id,
-      const std::string& cert_profile_version,
-      const std::string& public_key,
-      ClientCertProvisioningDownloadCertCallback callback);
+  // Fills `request.device_dm_token` if available.
+  virtual void ClientCertProvisioningRequest(
+      enterprise_management::ClientCertificateProvisioningRequest request,
+      ClientCertProvisioningRequestCallback callback);
 
   // Used the update the current service account email associated with this
   // policy client and notify observers.
@@ -693,19 +636,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // Callback for EUICC info upload requests.
   void OnEuiccInfoUploaded(StatusCallback callback, DMServerJobResult result);
 
-  // Callback for certificate provisioning start csr requests.
-  void OnClientCertProvisioningStartCsrResponse(
-      ClientCertProvisioningStartCsrCallback callback,
-      DMServerJobResult result);
-
-  // Callback for certificate provisioning finish csr requests.
-  void OnClientCertProvisioningFinishCsrResponse(
-      ClientCertProvisioningFinishCsrCallback callback,
-      DMServerJobResult result);
-
-  // Callback for certificate provisioning download cert requests.
-  void OnClientCertProvisioningDownloadCertResponse(
-      ClientCertProvisioningDownloadCertCallback callback,
+  // Callback for certificate provisioning requests.
+  void OnClientCertProvisioningRequestResponse(
+      ClientCertProvisioningRequestCallback callback,
       DMServerJobResult result);
 
   // Helper to remove a job from request_jobs_.

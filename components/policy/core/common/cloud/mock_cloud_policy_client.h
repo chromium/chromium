@@ -153,28 +153,10 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MOCK_METHOD2(UploadExtensionInstallReport_,
                void(base::Value::Dict&, StatusCallback&));
 
-  MOCK_METHOD5(ClientCertProvisioningStartCsr,
-               void(const std::string& cert_scope,
-                    const std::string& cert_profile_id,
-                    const std::string& cert_profile_version,
-                    const std::string& public_key,
-                    ClientCertProvisioningStartCsrCallback callback));
-
-  MOCK_METHOD7(ClientCertProvisioningFinishCsr,
-               void(const std::string& cert_scope,
-                    const std::string& cert_profile_id,
-                    const std::string& cert_profile_version,
-                    const std::string& public_key,
-                    const std::string& va_challenge_response,
-                    const std::string& signature,
-                    ClientCertProvisioningFinishCsrCallback callback));
-
-  MOCK_METHOD5(ClientCertProvisioningDownloadCert,
-               void(const std::string& cert_scope,
-                    const std::string& cert_profile_id,
-                    const std::string& cert_profile_version,
-                    const std::string& public_key,
-                    ClientCertProvisioningDownloadCertCallback callback));
+  MOCK_METHOD2(
+      ClientCertProvisioningRequest,
+      void(enterprise_management::ClientCertificateProvisioningRequest request,
+           ClientCertProvisioningRequestCallback callback));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);
