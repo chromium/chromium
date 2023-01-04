@@ -69,8 +69,7 @@ using ::testing::Return;
 
 @implementation TestPasswordsMediator
 
-- (OnDeviceEncryptionState)onDeviceEncryptionState:
-    (ChromeBrowserState*)browserState {
+- (OnDeviceEncryptionState)onDeviceEncryptionState {
   return self.encryptionState;
 }
 
@@ -82,9 +81,13 @@ typedef struct {
   bool password_check_enabled;
 } PasswordCheckFeatureStatus;
 
-class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
+// Use this test suite for tests that verify behaviors of
+// PasswordManagerViewController before loading the passwords for the first time
+// has finished. All other tests should go in PasswordManagerViewControllerTest.
+class BasePasswordManagerViewControllerTest
+    : public ChromeTableViewControllerTest {
  protected:
-  PasswordManagerViewControllerTest() = default;
+  BasePasswordManagerViewControllerTest() = default;
 
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
@@ -117,6 +120,7 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
                                          browserState)
                          syncService:SyncServiceFactory::GetForBrowserState(
                                          browserState)];
+    mediator_.encryptionState = OnDeviceEncryptionStateNotShown;
 
     // Inject some fake passwords to pass the loading state.
     PasswordManagerViewController* passwords_controller =
@@ -124,11 +128,6 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
     [passwords_controller setPasswords:{} blockedSites:{}];
-
-    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForUIElementTimeout, ^bool {
-          return [passwords_controller didReceivePasswords];
-        }));
   }
 
   int GetSectionIndex(PasswordSectionIdentifier section) {
@@ -141,11 +140,12 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
         return 2;
       case SectionIdentifierSavedPasswords:
         return 3;
+      case SectionIdentifierOnDeviceEncryption:
+        return 3;
       case SectionIdentifierBlocked:
         return 4;
       case SectionIdentifierExportPasswordsButton:
         return 4;
-      case SectionIdentifierOnDeviceEncryption:
       default:
         // Currently not used in any test.
         // TODO(crbug.com/1323240)
@@ -288,6 +288,15 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
     [GetPasswordManagerViewController() setEditing:editing animated:NO];
   }
 
+  // Blocks the test until passwords have been set for the first time and the
+  // loading spinner was removed from the View Controller.
+  void WaitForPasswordsLoadingCompletion() {
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^bool {
+          return [GetPasswordManagerViewController() didReceivePasswords];
+        }));
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
@@ -296,6 +305,46 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
   TestPasswordsMediator* mediator_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
+};
+
+// Tests receiving an on-device encryption update before passwords finished
+// loading properly display the on-device encryption section after passwords
+// finished loading.
+TEST_F(BasePasswordManagerViewControllerTest,
+       TestUpdateOnDeviceEncryptionBeforeLoadingPasswords) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordUISplit);
+
+  mediator_.encryptionState = OnDeviceEncryptionStateOptedIn;
+
+  PasswordManagerViewController* password_manager =
+      GetPasswordManagerViewController();
+  [password_manager updateOnDeviceEncryptionSessionAndUpdateTableView];
+
+  WaitForPasswordsLoadingCompletion();
+
+  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(2, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierOnDeviceEncryption)));
+
+  [password_manager settingsWillBeDismissed];
+}
+
+// Test suite for PasswordManagerViewController.
+// All tests are run after the passwords were set for the first time and the
+// loading spinner removed. Tests that verify behavior before the spinner is
+// removed must go in BasePasswordManagerViewControllerTest.
+class PasswordManagerViewControllerTest
+    : public BasePasswordManagerViewControllerTest {
+ protected:
+  PasswordManagerViewControllerTest() = default;
+
+  void SetUp() override {
+    BasePasswordManagerViewControllerTest::SetUp();
+
+    WaitForPasswordsLoadingCompletion();
+  }
 };
 
 // Tests default case has no saved sites and no blocked sites.

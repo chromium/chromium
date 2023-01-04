@@ -625,6 +625,9 @@ NSInteger kTrailingSymbolSize = 18;
 }
 
 - (void)reloadData {
+  // Clear the on-device encryption state so it is regenerated on loadModel and
+  // the items added to the tableViewModel if needed.
+  self.onDeviceEncryptionStateInModel = OnDeviceEncryptionStateNotShown;
   [super reloadData];
   [self updateExportPasswordsButton];
 }
@@ -1256,12 +1259,18 @@ NSInteger kTrailingSymbolSize = 18;
 }
 
 - (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
-  if (!_tableIsInSearchMode) {
-    [self
-        updateOnDeviceEncryptionSessionWithUpdateTableView:YES
+  if (_tableIsInSearchMode) {
+    return;
+  }
+  // Only update this section after passwords were loaded.
+  // Once the load finishes, loadModel will update this section.
+  if (!_didReceivePasswords) {
+    return;
+  }
+
+  [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES
                                           withRowAnimation:
                                               UITableViewRowAnimationAutomatic];
-  }
 }
 
 #pragma mark - UISearchControllerDelegate
