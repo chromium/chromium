@@ -18,10 +18,10 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class SuggestionCommonProperties {
     /** Enum for identifying the device type */
-    @IntDef({FormFactor.UNKOWN, FormFactor.PHONE, FormFactor.TABLET})
+    @IntDef({FormFactor.UNKNOWN, FormFactor.PHONE, FormFactor.TABLET})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FormFactor {
-        int UNKOWN = 0;
+        int UNKNOWN = 0;
         int PHONE = 1;
         int TABLET = 2;
     }
