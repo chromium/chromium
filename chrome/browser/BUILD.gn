@@ -617,6 +617,8 @@ static_library("browser") {
     "k_anonymity_service/k_anonymity_service_factory.h",
     "k_anonymity_service/k_anonymity_service_metrics.cc",
     "k_anonymity_service/k_anonymity_service_metrics.h",
+    "k_anonymity_service/k_anonymity_service_storage.cc",
+    "k_anonymity_service/k_anonymity_service_storage.h",
     "k_anonymity_service/k_anonymity_service_urls.h",
     "k_anonymity_service/k_anonymity_trust_token_getter.cc",
     "k_anonymity_service/k_anonymity_trust_token_getter.h",
@@ -1962,6 +1964,7 @@ static_library("browser") {
     ":buildflags",
     ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
+    ":k_anonymity_storage_proto",
     ":ntp_background_proto",
     ":permissions_proto",
     ":resource_prefetch_predictor_proto",
@@ -7818,6 +7821,10 @@ if (is_win) {
     sources = [ "win/titlebar_config.h" ]
     deps = [ "//base" ]
   }
+}
+
+proto_library("k_anonymity_storage_proto") {
+  sources = [ "k_anonymity_service/proto/k_anonymity_storage.proto" ]
 }
 
 proto_library("resource_prefetch_predictor_proto") {

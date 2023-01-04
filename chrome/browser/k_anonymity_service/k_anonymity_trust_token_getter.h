@@ -12,6 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_storage.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -43,13 +44,6 @@ class SimpleURLLoader;
 // expires.
 class KAnonymityTrustTokenGetter {
  public:
-  struct KeyAndNonUniqueUserId {
-    std::string key_commitment;  // trust token key commitment (specific to
-                                 // `non_unique_user_id`)
-    int non_unique_user_id;  // Non-unique ID assigned to this user for k-anon
-                             // reporting
-  };
-
   // Callback where argument tells if the client has the trust token or not.
   using TryGetTrustTokenAndKeyCallback =
       base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>;
@@ -58,7 +52,8 @@ class KAnonymityTrustTokenGetter {
   KAnonymityTrustTokenGetter(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::mojom::TrustTokenQueryAnswerer* answerer);
+      network::mojom::TrustTokenQueryAnswerer* answerer,
+      KAnonymityServiceStorage* storage);
 
   ~KAnonymityTrustTokenGetter();
 
@@ -76,11 +71,6 @@ class KAnonymityTrustTokenGetter {
   void TryGetTrustTokenAndKey(TryGetTrustTokenAndKeyCallback callback);
 
  private:
-  struct KeyAndNonUniqueUserIdWithExpiration {
-    KeyAndNonUniqueUserId key_and_id;
-    base::Time expiration;
-  };
-
   struct PendingRequest {
     explicit PendingRequest(TryGetTrustTokenAndKeyCallback callback);
     ~PendingRequest();
@@ -141,14 +131,13 @@ class KAnonymityTrustTokenGetter {
   void DoCallback(bool status);
 
   signin::AccessTokenInfo access_token_;
-  KeyAndNonUniqueUserIdWithExpiration
-      key_and_non_unique_user_id_with_expiration_;
   base::circular_deque<PendingRequest> pending_callbacks_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   raw_ptr<network::mojom::TrustTokenQueryAnswerer> trust_token_query_answerer_;
+  raw_ptr<KAnonymityServiceStorage> storage_;
   net::IsolationInfo isolation_info_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;

@@ -68,10 +68,12 @@ KAnonymityTrustTokenGetter::PendingRequest::operator=(
 KAnonymityTrustTokenGetter::KAnonymityTrustTokenGetter(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::mojom::TrustTokenQueryAnswerer* answerer)
+    network::mojom::TrustTokenQueryAnswerer* answerer,
+    KAnonymityServiceStorage* storage)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
-      trust_token_query_answerer_(answerer) {
+      trust_token_query_answerer_(answerer),
+      storage_(storage) {
   auth_origin_ =
       url::Origin::Create(GURL(features::kKAnonymityServiceAuthServer.Get()));
   isolation_info_ = net::IsolationInfo::Create(
@@ -153,8 +155,10 @@ void KAnonymityTrustTokenGetter::OnAccessTokenRequestCompleted(
 }
 
 void KAnonymityTrustTokenGetter::CheckTrustTokenKeyCommitment() {
-  if (key_and_non_unique_user_id_with_expiration_.expiration <=
-      base::Time::Now() + kRequestMargin) {
+  absl::optional<KeyAndNonUniqueUserIdWithExpiration> key_commitment =
+      storage_->GetKeyAndNonUniqueUserId();
+  if (!key_commitment ||
+      key_commitment->expiration <= base::Time::Now() + kRequestMargin) {
     FetchNonUniqueUserId();
     return;
   }
@@ -388,10 +392,10 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
   std::string key_commitment_str;
   base::JSONWriter::Write(outer_commitment, &key_commitment_str);
 
-  key_and_non_unique_user_id_with_expiration_ =
-      KeyAndNonUniqueUserIdWithExpiration{
-          KeyAndNonUniqueUserId{key_commitment_str, non_unique_user_id},
-          base::Time::UnixEpoch() + base::Microseconds(max_expiry)};
+  KeyAndNonUniqueUserIdWithExpiration key_commitment{
+      KeyAndNonUniqueUserId{key_commitment_str, non_unique_user_id},
+      base::Time::UnixEpoch() + base::Microseconds(max_expiry)};
+  storage_->UpdateKeyAndNonUniqueUserId(key_commitment);
 
   CheckTrustTokens();
 }
@@ -420,12 +424,14 @@ void KAnonymityTrustTokenGetter::OnHasTrustTokensComplete(
 }
 
 void KAnonymityTrustTokenGetter::FetchTrustToken() {
+  auto key_commitment = storage_->GetKeyAndNonUniqueUserId();
+  DCHECK(key_commitment);
+
   RecordTrustTokenGetterAction(
       KAnonymityTrustTokenGetterAction::kFetchTrustToken);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = auth_origin_.GetURL().Resolve(base::StringPrintf(
-      kIssueTrustTokenPathFmt, key_and_non_unique_user_id_with_expiration_
-                                   .key_and_id.non_unique_user_id));
+      kIssueTrustTokenPathFmt, key_commitment->key_and_id.non_unique_user_id));
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
@@ -441,8 +447,7 @@ void KAnonymityTrustTokenGetter::FetchTrustToken() {
   network::mojom::TrustTokenParamsPtr params =
       network::mojom::TrustTokenParams::New();
   params->type = network::mojom::TrustTokenOperationType::kIssuance;
-  params->custom_key_commitment =
-      key_and_non_unique_user_id_with_expiration_.key_and_id.key_commitment;
+  params->custom_key_commitment = key_commitment->key_and_id.key_commitment;
   resource_request->trust_token_params = *params;
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kKAnonymityServiceGetTokenTrafficAnnotation);
@@ -492,7 +497,9 @@ void KAnonymityTrustTokenGetter::DoCallback(bool status) {
 
   absl::optional<KeyAndNonUniqueUserId> result;
   if (status) {
-    result = key_and_non_unique_user_id_with_expiration_.key_and_id;
+    auto key_commitment = storage_->GetKeyAndNonUniqueUserId();
+    DCHECK(key_commitment);
+    result = key_commitment->key_and_id;
   }
 
   // We call the callback *before* removing the current request from the list.

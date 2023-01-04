@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_storage.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -34,8 +35,6 @@
 namespace {
 
 const char kAuthServer[] = "https://authserver";
-
-using KeyAndNonUniqueUserId = KAnonymityTrustTokenGetter::KeyAndNonUniqueUserId;
 
 class TestTrustTokenQueryAnswerer
     : public network::mojom::TrustTokenQueryAnswerer {
@@ -82,7 +81,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     getter_ = std::make_unique<KAnonymityTrustTokenGetter>(
         IdentityManagerFactory::GetForProfile(profile_.get()),
-        profile_->GetURLLoaderFactory(), &trust_token_answerer_);
+        profile_->GetURLLoaderFactory(), &trust_token_answerer_, &storage_);
     url::Origin auth_origin = url::Origin::Create(GURL(kAuthServer));
     isolation_info_ = net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther, auth_origin, auth_origin,
@@ -244,6 +243,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   std::unique_ptr<KAnonymityTrustTokenGetter> getter_;
   TestTrustTokenQueryAnswerer trust_token_answerer_;
   data_decoder::test::InProcessDataDecoder decoder_;
+  KAnonymityServiceMemoryStorage storage_;
 };
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetNotSignedIn) {
@@ -848,7 +848,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, RecordTokenLatency) {
 
 // Apparently the IdentityManager is sometimes NULL, so we should handle this.
 TEST_F(KAnonymityTrustTokenGetterTest, HandlesMissingServices) {
-  KAnonymityTrustTokenGetter getter(nullptr, nullptr, nullptr);
+  KAnonymityTrustTokenGetter getter(nullptr, nullptr, nullptr, nullptr);
   getter.TryGetTrustTokenAndKey(base::BindLambdaForTesting(
       [](absl::optional<KeyAndNonUniqueUserId> result) {
         EXPECT_FALSE(result);

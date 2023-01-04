@@ -1,0 +1,26 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Protos for persisting K-Anonymity Service keys and tokens.
+
+syntax = "proto3";
+
+package k_anonymity.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+message OHTTPKeyAndExpiration {
+  bytes hpke_key = 1;
+
+  // Time that the data expires in microseconds since the Windows epoch.
+  int64 expiration_us = 2;
+}
+
+message TrustTokenKeyCommitmentWithExpiration {
+  bytes key_commitment = 1;
+  int32 non_unique_id = 2;
+
+  // Time that the data expires in microseconds since the Windows epoch.
+  int64 expiration_us = 3;
+}
