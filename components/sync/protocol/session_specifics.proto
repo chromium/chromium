@@ -87,9 +87,6 @@ message SessionTab {
 }
 
 message TabNavigation {
-  // The index in the NavigationController. If this is -1, it means this
-  // TabNavigation is bogus.
-  // optional int32 index = 1 [default = -1];  // obsolete.
   // The virtual URL, when nonempty, will override the actual URL of the page
   // when we display it to the user.
   optional string virtual_url = 2;
@@ -97,10 +94,6 @@ message TabNavigation {
   optional string referrer = 3;
   // The title of the page.
   optional string title = 4;
-  // Content state is an opaque blob created by WebKit that represents the
-  // state of the page. This includes form entries and scroll position for each
-  // frame.
-  // optional string state = 5;  // obsolete.
   // The core transition type.
   optional SyncEnums.PageTransition page_transition = 6 [default = LINK];
   // If this transition was triggered by a redirect, the redirect type.
@@ -177,6 +170,11 @@ message TabNavigation {
   // The page language as determined by its textual content. An ISO 639 language
   // code (two letters, except for Chinese where a localization is necessary).
   optional string page_language = 30;
+
+  reserved 1;
+  reserved "index";
+  reserved 5;
+  reserved "state";
 }
 
 // Navigation information for a single redirection within a single navigation.

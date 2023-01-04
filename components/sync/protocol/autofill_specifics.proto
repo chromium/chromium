@@ -175,9 +175,10 @@ message AutofillSpecifics {
   // name/value or credit_card) should be present.
   optional AutofillProfileSpecifics profile = 4;
 
-  // Obsolete credit card fields.
-  // optional bytes deprecated_encrypted_credit_card = 5;
-  // optional AutofillCreditCardSpecifics deprecated_credit_card = 6;
+  reserved 5;
+  reserved "encrypted_credit_card";
+  reserved 6;
+  reserved "credit_card";
 }
 
 // TODO(crbug.com/1020740): Deprecated, remove this once dependent change is
