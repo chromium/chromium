@@ -15,6 +15,7 @@
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
 class Browser;
@@ -25,7 +26,6 @@ class TrustSafetySentimentService;
 
 namespace content {
 class BrowsingDataRemover;
-class InterestGroupManager;
 }
 
 namespace content_settings {
@@ -407,9 +407,10 @@ class PrivacySandboxService : public KeyedService {
 
   // Converts the provided list of |top_frames| into eTLD+1s for display, and
   // provides those to |callback|.
-  void ConvertFledgeJoiningTopFramesForDisplay(
+  void ConvertInterestGroupDataKeysForDisplay(
       base::OnceCallback<void(std::vector<std::string>)> callback,
-      std::vector<url::Origin> top_frames);
+      std::vector<content::InterestGroupManager::InterestGroupDataKey>
+          data_keys);
 
   // Contains the logic which powers GetRequiredPromptType(). Static to allow
   // EXPECT_DCHECK_DEATH testing, which does not work well with many of the

@@ -78,27 +78,28 @@ const base::Version kFirstPartySetsVersion("1.2.3");
 
 class TestInterestGroupManager : public content::InterestGroupManager {
  public:
-  void SetInterestGroupJoiningOrigins(const std::vector<url::Origin>& origins) {
-    origins_ = origins;
+  void SetInterestGroupDataKeys(
+      const std::vector<InterestGroupDataKey>& data_keys) {
+    data_keys_ = data_keys;
   }
 
   // content::InterestGroupManager:
   void GetAllInterestGroupJoiningOrigins(
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
-    std::move(callback).Run(origins_);
+    NOTREACHED();
   }
   void GetAllInterestGroupDataKeys(
       base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
       override {
-    std::move(callback).Run({});
+    std::move(callback).Run(data_keys_);
   }
   void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
                                      base::OnceClosure callback) override {
-    std::move(callback).Run();
+    NOTREACHED();
   }
 
  private:
-  std::vector<url::Origin> origins_;
+  std::vector<InterestGroupDataKey> data_keys_;
 };
 
 class MockPrivacySandboxSettings
@@ -852,8 +853,14 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
                                       test_case_4};
 
   for (const auto& origins_to_expected : test_cases) {
-    test_interest_group_manager()->SetInterestGroupJoiningOrigins(
-        {origins_to_expected.first});
+    std::vector<content::InterestGroupManager::InterestGroupDataKey> data_keys;
+    base::ranges::transform(
+        origins_to_expected.first, std::back_inserter(data_keys),
+        [](const auto& origin) {
+          return content::InterestGroupManager::InterestGroupDataKey{
+              url::Origin::Create(GURL("https://embedded.com")), origin};
+        });
+    test_interest_group_manager()->SetInterestGroupDataKeys(data_keys);
 
     bool callback_called = false;
     auto callback = base::BindLambdaForTesting(
