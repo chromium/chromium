@@ -240,9 +240,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            SupportedProvider_OngoingNonPrefetch);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
                            UnsupportedProvider_Prefetch);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
-                           EmitAccessibilityEvents);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, EmitAccessibilityEvents);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitAccessibilityEventsOnButtonFocusHint);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag);
@@ -264,7 +263,7 @@ class AutocompleteController : public AutocompleteProviderListener,
                            PopupStepSelectionWithActions);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            PopupInlineAutocompleteAndTemporaryText);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
 
   // Updates |result_| to reflect the current provider state and fires

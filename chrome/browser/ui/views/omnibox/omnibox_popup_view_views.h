@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CONTENTS_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CONTENTS_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_
 
 #include <stddef.h>
 
@@ -27,17 +27,17 @@ class OmniboxViewViews;
 class WebUIOmniboxPopupView;
 
 // A view representing the contents of the autocomplete popup.
-class OmniboxPopupContentsView : public views::View,
-                                 public OmniboxPopupView,
-                                 public views::WidgetObserver {
+class OmniboxPopupViewViews : public views::View,
+                              public OmniboxPopupView,
+                              public views::WidgetObserver {
  public:
-  METADATA_HEADER(OmniboxPopupContentsView);
-  OmniboxPopupContentsView(OmniboxViewViews* omnibox_view,
-                           OmniboxEditModel* edit_model,
-                           LocationBarView* location_bar_view);
-  OmniboxPopupContentsView(const OmniboxPopupContentsView&) = delete;
-  OmniboxPopupContentsView& operator=(const OmniboxPopupContentsView&) = delete;
-  ~OmniboxPopupContentsView() override;
+  METADATA_HEADER(OmniboxPopupViewViews);
+  OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
+                        OmniboxEditModel* edit_model,
+                        LocationBarView* location_bar_view);
+  OmniboxPopupViewViews(const OmniboxPopupViewViews&) = delete;
+  OmniboxPopupViewViews& operator=(const OmniboxPopupViewViews&) = delete;
+  ~OmniboxPopupViewViews() override;
 
   // Opens a match from the list specified by |index| with the type of tab or
   // window specified by |disposition|.
@@ -99,7 +99,7 @@ class OmniboxPopupContentsView : public views::View,
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
  private:
-  friend class OmniboxPopupContentsViewTest;
+  friend class OmniboxPopupViewViewsTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;
 
@@ -146,4 +146,4 @@ class OmniboxPopupContentsView : public views::View,
   raw_ptr<OmniboxEditModel> edit_model_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CONTENTS_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_

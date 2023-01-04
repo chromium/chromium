@@ -94,8 +94,8 @@
 
 # TODO(crbug.com/1326969): Expects click to deselect text, but click seems like it might not be
 # hitting the right location
--OmniboxPopupContentsViewTest.ClickOmnibox
--OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
+-OmniboxPopupViewViewsTest.ClickOmnibox
+-OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
 
 # TODO(crbug.com/1325427): [paint_preview_compositor_collection_impl.cc(97)] Check failed:
 # SkFontMgr::RefDefault()->countFamilies()

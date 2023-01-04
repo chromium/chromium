@@ -14,8 +14,8 @@
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
--OmniboxPopupContentsViewTest.ClickOmnibox
--OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
+-OmniboxPopupViewViewsTest.ClickOmnibox
+-OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
 -OutOfProcessPPAPITest.Printing
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -SSLUITest.TestCloseTabWithUnsafePopup

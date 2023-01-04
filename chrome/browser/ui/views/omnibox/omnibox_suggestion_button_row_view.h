@@ -13,7 +13,7 @@
 #include "ui/views/view.h"
 
 class OmniboxEditModel;
-class OmniboxPopupContentsView;
+class OmniboxPopupViewViews;
 class OmniboxSuggestionRowButton;
 
 namespace views {
@@ -24,7 +24,7 @@ class Button;
 class OmniboxSuggestionButtonRowView : public views::View {
  public:
   METADATA_HEADER(OmniboxSuggestionButtonRowView);
-  explicit OmniboxSuggestionButtonRowView(OmniboxPopupContentsView* view,
+  explicit OmniboxSuggestionButtonRowView(OmniboxPopupViewViews* view,
                                           OmniboxEditModel* model,
                                           int model_index);
   OmniboxSuggestionButtonRowView(const OmniboxSuggestionButtonRowView&) =
@@ -54,7 +54,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
   void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
-  const raw_ptr<OmniboxPopupContentsView> popup_contents_view_;
+  const raw_ptr<OmniboxPopupViewViews> popup_contents_view_;
   raw_ptr<OmniboxEditModel> model_;
   size_t const model_index_;
 

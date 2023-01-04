@@ -39,7 +39,7 @@
 
 class LocationBarView;
 class OmniboxClient;
-class OmniboxPopupContentsView;
+class OmniboxPopupViewViews;
 
 namespace content {
 class WebContents;
@@ -153,7 +153,7 @@ class OmniboxViewViews
   bool IsCommandIdEnabled(int command_id) const override;
 
   // For testing only.
-  OmniboxPopupContentsView* GetPopupContentsViewForTesting() const {
+  OmniboxPopupViewViews* GetPopupContentsViewForTesting() const {
     return popup_view_.get();
   }
 
@@ -176,8 +176,7 @@ class OmniboxViewViews
       OmniboxViewViewsTest,
       RendererInitiatedFocusPreservesCursorWhenStartingFocused);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
-                           EmitAccessibilityEvents);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, EmitAccessibilityEvents);
   // TODO(tommycli): Remove the rest of these friends after porting these
   // browser tests to unit tests.
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag);
@@ -326,7 +325,7 @@ class OmniboxViewViews
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
 
-  std::unique_ptr<OmniboxPopupContentsView> popup_view_;
+  std::unique_ptr<OmniboxPopupViewViews> popup_view_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
   std::vector<gfx::Range> saved_temporary_selection_;

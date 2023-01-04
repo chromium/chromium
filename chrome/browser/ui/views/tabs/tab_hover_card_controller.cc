@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
@@ -98,7 +98,7 @@ void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
                                ->get_popup_view();
   if (popup_view && popup_view->IsOpen()) {
     widget->StackAboveWidget(
-        static_cast<OmniboxPopupContentsView*>(popup_view)->GetWidget());
+        static_cast<OmniboxPopupViewViews*>(popup_view)->GetWidget());
     return;
   }
 

@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -58,9 +58,9 @@ bool contains(std::string str, std::string substr) {
 class ClickTrackingOverlayView : public views::View {
  public:
   explicit ClickTrackingOverlayView(OmniboxResultView* result) {
-    // |result|'s parent is the OmniboxPopupContentsView, which expects that all
+    // |result|'s parent is the OmniboxPopupViewViews, which expects that all
     // its children are OmniboxResultViews.  So skip over it and add this to the
-    // OmniboxPopupContentsView's parent.
+    // OmniboxPopupViewViews's parent.
     auto* contents = result->parent();
     SetBoundsRect(contents->ConvertRectToParent(result->bounds()));
     contents->parent()->AddChildView(this);
@@ -111,8 +111,9 @@ class TestAXEventObserver : public views::AXEventObserver {
 
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
-    if (!view->GetWidget())
+    if (!view->GetWidget()) {
       return;
+    }
     ui::AXNodeData node_data;
     view->GetAccessibleNodeData(&node_data);
     ax::mojom::Role role = node_data.role;
@@ -165,12 +166,12 @@ class TestAXEventObserver : public views::AXEventObserver {
 
 }  // namespace
 
-class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
+class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
  public:
-  OmniboxPopupContentsViewTest() {}
+  OmniboxPopupViewViewsTest() {}
 
-  OmniboxPopupContentsViewTest(const OmniboxPopupContentsViewTest&) = delete;
-  OmniboxPopupContentsViewTest& operator=(const OmniboxPopupContentsViewTest&) =
+  OmniboxPopupViewViewsTest(const OmniboxPopupViewViewsTest&) = delete;
+  OmniboxPopupViewViewsTest& operator=(const OmniboxPopupViewViewsTest&) =
       delete;
 
   views::Widget* CreatePopupForTestQuery();
@@ -185,9 +186,8 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
   }
   OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
   OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
-  OmniboxPopupContentsView* popup_view() {
-    return static_cast<OmniboxPopupContentsView*>(
-        edit_model()->get_popup_view());
+  OmniboxPopupViewViews* popup_view() {
+    return static_cast<OmniboxPopupViewViews*>(edit_model()->get_popup_view());
   }
 
   SkColor GetSelectedColor(Browser* browser) {
@@ -235,7 +235,7 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
   }
 };
 
-views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
+views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
   EXPECT_TRUE(edit_model()->result().empty());
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
@@ -255,7 +255,7 @@ views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
 }
 
 // Tests widget alignment of the different popup types.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, PopupAlignment) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, PopupAlignment) {
   views::Widget* popup = CreatePopupForTestQuery();
 
 #if defined(USE_AURA)
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, PopupAlignment) {
 }
 
 // Integration test for omnibox popup theming in regular.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, ThemeIntegration) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   UseDefaultTheme();
@@ -316,8 +316,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, ThemeIntegration) {
 }
 
 // Integration test for omnibox popup theming in Incognito.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
-                       ThemeIntegrationInIncognito) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   UseDefaultTheme();
@@ -357,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 #define MAYBE_ClickOmnibox ClickOmnibox
 #endif
 // Test that clicks over the omnibox do not hit the popup.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ClickOmnibox) {
   CreatePopupForTestQuery();
 
   gfx::NativeWindow event_window = browser()->window()->GetNativeWindow();
@@ -419,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
 #define MAYBE_PopupMatchesLocationBarBackground \
   PopupMatchesLocationBarBackground
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_PopupMatchesLocationBarBackground) {
   // In dark mode the omnibox focused and unfocused colors are the same, which
   // makes this test fail; see comments below.
@@ -460,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 #else
 #define MAYBE_EmitAccessibilityEvents EmitAccessibilityEvents
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_EmitAccessibilityEvents) {
   // Creation and population of the popup should not result in a text/name
   // change accessibility event.
@@ -536,11 +535,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 
 // Flaky on Mac: https://crbug.com/1146627.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_EmitAccessibilityEventsOnButtonFocusHint DISABLED_EmitAccessibilityEventsOnButtonFocusHint
+#define MAYBE_EmitAccessibilityEventsOnButtonFocusHint \
+  DISABLED_EmitAccessibilityEventsOnButtonFocusHint
 #else
-#define MAYBE_EmitAccessibilityEventsOnButtonFocusHint EmitAccessibilityEventsOnButtonFocusHint
+#define MAYBE_EmitAccessibilityEventsOnButtonFocusHint \
+  EmitAccessibilityEventsOnButtonFocusHint
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_EmitAccessibilityEventsOnButtonFocusHint) {
   TestAXEventObserver observer;
   CreatePopupForTestQuery();
@@ -597,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        EmitSelectedChildrenChangedAccessibilityEvent) {
   // Create a popup for the matches.
   GetPopupWidget();

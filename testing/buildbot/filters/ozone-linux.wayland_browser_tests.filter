@@ -32,8 +32,8 @@
 
 # Failed:
 -BrowserViewTest.GetAccessibleTabModalDialogTree
--OmniboxPopupContentsViewTest.ClickOmnibox
--OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
+-OmniboxPopupViewViewsTest.ClickOmnibox
+-OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
 -PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt
 -PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable

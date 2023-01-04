@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/browser/ui/views/omnibox/remove_suggestion_bubble.h"
@@ -145,10 +145,9 @@ END_METADATA
 ////////////////////////////////////////////////////////////////////////////////
 // OmniboxResultView, public:
 
-OmniboxResultView::OmniboxResultView(
-    OmniboxPopupContentsView* popup_contents_view,
-    OmniboxEditModel* model,
-    size_t model_index)
+OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_contents_view,
+                                     OmniboxEditModel* model,
+                                     size_t model_index)
     : popup_contents_view_(popup_contents_view),
       model_(model),
       model_index_(model_index),
@@ -362,7 +361,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
     // but this selection event allows the screen reader to get more details
     // about the list and the user's position within it.
     // Limit which selection states fire the events, in order to avoid duplicate
-    // events. Specifically, OmniboxPopupContentsView::ProvideButtonFocusHint()
+    // events. Specifically, OmniboxPopupViewViews::ProvideButtonFocusHint()
     // already fires the correct events when the user tabs to an attached button
     // in the current row.
     if (selection_state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER ||

@@ -16,7 +16,7 @@ class OmniboxEditModel;
 class OmniboxResultView;
 class PrefService;
 
-// The View that's a direct child of the OmniboxPopupContentsView, one per row.
+// The View that's a direct child of the OmniboxPopupViewViews, one per row.
 // This, in turn, has a child OmniboxResultView and an optional header that is
 // painted right above it. The header is not a child of OmniboxResultView
 // because it's logically not part of the result view:

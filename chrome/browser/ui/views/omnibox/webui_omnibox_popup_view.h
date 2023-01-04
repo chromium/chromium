@@ -10,7 +10,7 @@
 
 class RealboxHandler;
 
-// A WebView to display WebUI suggestions in the Views OmniboxPopupContentsView.
+// A WebView to display WebUI suggestions in the Views OmniboxPopupViewViews.
 class WebUIOmniboxPopupView : public views::WebView {
  public:
   METADATA_HEADER(WebUIOmniboxPopupView);

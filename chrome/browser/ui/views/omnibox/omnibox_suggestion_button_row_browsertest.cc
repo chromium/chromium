@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
@@ -119,7 +119,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
   }
 
   bool VerifyUi() override {
-    OmniboxPopupContentsView* popup_view =
+    OmniboxPopupViewViews* popup_view =
         GetOmniboxViewViews()->GetPopupContentsViewForTesting();
     OmniboxEditModel* model = GetOmniboxViewViews()->model();
 
