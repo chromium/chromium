@@ -412,11 +412,6 @@ const char kIOS3PIntentsInIncognitoDescription[] =
     "When enabled, an additional setting lets the user open links from other "
     "apps in Incognito.";
 
-const char kIOSEnablePasswordManagerBrandingUpdateName[] =
-    "Enable new Google Password Manager branding";
-const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
-    "Updates icons, strings, and views for Google Password Manager.";
-
 const char kIOSForceTranslateEnabledName[] = "Allow force translate on iOS.";
 const char kIOSForceTranslateEnabledDescription[] =
     "Enable the translate feature when language detection failed.";

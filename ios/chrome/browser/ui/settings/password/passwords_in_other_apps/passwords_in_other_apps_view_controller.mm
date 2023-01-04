@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 
 #import "base/ios/ios_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
@@ -40,11 +39,6 @@ CGFloat const kContentWidthMultiplier = 0.65;
 CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
-
-BOOL IsPasswordManagerBrandingUpdateEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
-}
 }  // namespace
 
 @interface PasswordsInOtherAppsViewController ()
@@ -100,23 +94,18 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
     _titleText =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
-    if (IsPasswordManagerBrandingUpdateEnabled()) {
-      UIUserInterfaceIdiom idiom =
-          [[UIDevice currentDevice] userInterfaceIdiom];
-      if (idiom == UIUserInterfaceIdiomPad) {
-        _subtitleText = l10n_util::GetNSString(
-            IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD);
-      } else {
-        _subtitleText = l10n_util::GetNSString(
-            IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
-      }
 
-      _bannerName = @"settings_passwords_in_other_apps_banner";
+    UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    if (idiom == UIUserInterfaceIdiomPad) {
+      _subtitleText = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD);
     } else {
       _subtitleText = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE);
-      _bannerName = @"legacy_settings_passwords_in_other_apps_banner";
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
     }
+
+    _bannerName = @"settings_passwords_in_other_apps_banner";
+
     self.bannerStyle = UIUserInterfaceStyleUnspecified;
   }
   return self;

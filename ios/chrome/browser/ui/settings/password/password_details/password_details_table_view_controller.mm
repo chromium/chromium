@@ -50,9 +50,6 @@ using password_manager::metrics_util::LogPasswordSettingsReauthResult;
 using password_manager::metrics_util::PasswordCheckInteraction;
 using password_manager::metrics_util::ReauthResult;
 
-// Padding used between the image and the text labels.
-const CGFloat kWarningIconSize = 20;
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
   SectionIdentifierSite,
@@ -340,15 +337,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 - (SettingsImageDetailTextItem*)changePasswordRecommendationItem {
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeChangePasswordRecommendation];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    item.detailText = l10n_util::GetNSString(
-        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED);
-  } else {
-    item.detailText =
-        l10n_util::GetNSString(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION);
-  }
+  item.detailText = l10n_util::GetNSString(
+      IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED);
   item.image = [self compromisedIcon];
   if (UseSymbols()) {
     item.imageViewTintColor = [UIColor colorNamed:kRedColor];
@@ -622,22 +612,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
                                               kCompromisedPasswordSymbolSize);
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    return [UIImage imageNamed:@"round_settings_unsafe_state"];
-  } else {
-    UIImage* image = [UIImage imageNamed:@"settings_unsafe_state"];
-    UIImage* newImage =
-        [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    UIGraphicsBeginImageContextWithOptions(
-        CGSizeMake(kWarningIconSize, kWarningIconSize), NO, 0.0);
-    [[UIColor colorNamed:kTextSecondaryColor] set];
-    [newImage drawInRect:CGRectMake(0, 0, kWarningIconSize, kWarningIconSize)];
-    newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
-  }
+  return [UIImage imageNamed:@"round_settings_unsafe_state"];
 }
 
 // Shows reauthentication dialog if needed. If the reauthentication is
@@ -941,22 +916,11 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
           toSectionWithIdentifier:sectionForPassword];
 
       if (passwordDetails.isCompromised) {
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::
-                    kIOSEnablePasswordManagerBrandingUpdate)) {
-          [model addItem:[self changePasswordRecommendationItem]
-              toSectionWithIdentifier:sectionForCompromisedInfo];
+        [model addItem:[self changePasswordRecommendationItem]
+            toSectionWithIdentifier:sectionForCompromisedInfo];
 
-          if (passwordDetails.changePasswordURL.is_valid()) {
-            [model addItem:[self changePasswordItem]
-                toSectionWithIdentifier:sectionForCompromisedInfo];
-          }
-        } else {
-          if (passwordDetails.changePasswordURL.is_valid()) {
-            [model addItem:[self changePasswordItem]
-                toSectionWithIdentifier:sectionForCompromisedInfo];
-          }
-          [model addItem:[self changePasswordRecommendationItem]
+        if (passwordDetails.changePasswordURL.is_valid()) {
+          [model addItem:[self changePasswordItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
       }

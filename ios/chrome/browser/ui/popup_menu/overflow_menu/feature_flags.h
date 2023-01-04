@@ -25,9 +25,6 @@ bool IsNewOverflowMenuEnabled();
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
 
-// Whether the new Google Password Manager branding is enabled.
-bool IsPasswordManagerBrandingUpdateEnabled();
-
 // Whether smart sorting the new overflow menu is enabled.
 bool IsSmartSortingNewOverflowMenuEnabled();
 

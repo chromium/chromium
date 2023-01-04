@@ -45,7 +45,6 @@ source_set("infobar_banner") {
     "//ios/chrome/browser/permissions:infobar_delegate",
     "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/web/",

@@ -12,7 +12,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -321,17 +320,9 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPassword) {
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(kMaskedPassword, 1, 1);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    CheckDetailItemTextWithId(
-        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 2, 0);
-    CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 2, 1);
-  } else {
-    CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 2, 0);
-    CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION,
-                              2, 1);
-  }
+  CheckDetailItemTextWithId(
+      IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 2, 0);
+  CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 2, 1);
 }
 
 // Tests that password is shown/hidden.
@@ -509,15 +500,8 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(kMaskedPassword, 1, 1);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    CheckDetailItemTextWithId(
-        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 2, 0);
-  } else {
-    CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION,
-                              2, 0);
-  }
+  CheckDetailItemTextWithId(
+      IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 2, 0);
 }
 
 // Tests federated credential is shown without password value and editing

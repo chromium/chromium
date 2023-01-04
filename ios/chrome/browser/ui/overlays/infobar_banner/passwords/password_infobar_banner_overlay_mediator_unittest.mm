@@ -11,7 +11,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -104,14 +103,7 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
   mediator.consumer = consumer;
 
   // Verify that the infobar icon was set up properly.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
-  } else {
-    EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"],
-                consumer.iconImage);
-  }
+  EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
 }
 
 // Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its

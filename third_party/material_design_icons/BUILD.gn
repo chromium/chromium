@@ -29,7 +29,6 @@ _image_sets = [
   "communication/ic_comment",
   "communication/ic_email",
   "communication/ic_message",
-  "communication/ic_vpn_key",
   "content/ic_link",
   "content/ic_send",
   "content/ic_undo",

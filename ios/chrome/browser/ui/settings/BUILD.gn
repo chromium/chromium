@@ -183,7 +183,6 @@ source_set("settings") {
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp:feature_flags",
-    "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings/autofill",
     "//ios/chrome/browser/ui/settings/bandwidth",

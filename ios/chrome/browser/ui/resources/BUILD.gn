@@ -22,14 +22,6 @@ imageset("module_shadow") {
   ]
 }
 
-imageset("legacy_password_key") {
-  sources = [
-    "legacy_password_key.imageset/Contents.json",
-    "legacy_password_key.imageset/password_key@2x.png",
-    "legacy_password_key.imageset/password_key@3x.png",
-  ]
-}
-
 imageset("password_key") {
   sources = [
     "password_key.imageset/Contents.json",

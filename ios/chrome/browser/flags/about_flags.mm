@@ -857,12 +857,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSynthesizedRestoreSessionName,
      flag_descriptions::kSynthesizedRestoreSessionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kSynthesizedRestoreSession)},
-    {"enable-password-manager-branding-update",
-     flag_descriptions::kIOSEnablePasswordManagerBrandingUpdateName,
-     flag_descriptions::kIOSEnablePasswordManagerBrandingUpdateDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)},
     {"ios-media-permissions-control",
      flag_descriptions::kMediaPermissionsControlName,
      flag_descriptions::kMediaPermissionsControlDescription, flags_ui::kOsIos,

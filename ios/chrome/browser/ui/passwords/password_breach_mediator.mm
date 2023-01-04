@@ -7,13 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_consumer.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_presenter.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -69,35 +67,20 @@ using password_manager::metrics_util::LeakDialogType;
 
     recorder = std::move(metrics_recorder);
 
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::
-                kIOSEnablePasswordManagerBrandingUpdate)) {
-      NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType));
-      NSString* primaryActionString =
-          ShouldCheckPasswords(leakType)
-              ? SysUTF16ToNSString(GetAcceptButtonLabel(leakType))
-              : l10n_util::GetNSString(
-                    IDS_IOS_PASSWORD_LEAK_CHANGE_CREDENTIALS);
+    NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType));
+    NSString* primaryActionString =
+        ShouldCheckPasswords(leakType)
+            ? SysUTF16ToNSString(GetAcceptButtonLabel(leakType))
+            : l10n_util::GetNSString(IDS_IOS_PASSWORD_LEAK_CHANGE_CREDENTIALS);
 
-      NSString* secondaryActionString =
-          ShouldCheckPasswords(leakType) ? l10n_util::GetNSString(IDS_NOT_NOW)
-                                         : nil;
+    NSString* secondaryActionString = ShouldCheckPasswords(leakType)
+                                          ? l10n_util::GetNSString(IDS_NOT_NOW)
+                                          : nil;
 
-      [consumer setTitleString:SysUTF16ToNSString(GetTitle(leakType))
-                 subtitleString:subtitle
-            primaryActionString:primaryActionString
-          secondaryActionString:secondaryActionString];
-    } else {
-      NSString* subtitle = SysUTF16ToNSString(GetDescription(leakType));
-      NSString* primaryActionString =
-          ShouldCheckPasswords(leakType)
-              ? SysUTF16ToNSString(GetAcceptButtonLabel(leakType))
-              : nil;
-      [consumer setTitleString:SysUTF16ToNSString(GetTitle(leakType))
-                 subtitleString:subtitle
-            primaryActionString:primaryActionString
-          secondaryActionString:nil];
-    }
+    [consumer setTitleString:SysUTF16ToNSString(GetTitle(leakType))
+               subtitleString:subtitle
+          primaryActionString:primaryActionString
+        secondaryActionString:secondaryActionString];
   }
   return self;
 }

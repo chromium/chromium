@@ -95,12 +95,6 @@ BASE_FEATURE(kInferConfirmationPasswordField,
              "InferConfirmationPasswordField",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature flag that updates icons, strings, and views for Google Password
-// Manager.
-BASE_FEATURE(kIOSEnablePasswordManagerBrandingUpdate,
-             "IOSEnablePasswordManagerBrandingUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // Removes the list of passwords from the Settings UI and adds a separate
 // Password Manager view.

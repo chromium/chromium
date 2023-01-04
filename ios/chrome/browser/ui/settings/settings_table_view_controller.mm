@@ -15,7 +15,6 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
@@ -105,7 +104,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
 #import "ios/chrome/browser/voice/speech_input_locale_config.h"
@@ -129,7 +127,6 @@ NSString* const kSyncOffImageName = @"sync_and_google_services_sync_off";
 NSString* const kSyncOnImageName = @"sync_and_google_services_sync_on";
 NSString* const kSettingsGoogleServicesImageName = @"settings_google_services";
 NSString* const kSettingsSearchEngineImageName = @"settings_search_engine";
-NSString* const kLegacySettingsPasswordsImageName = @"legacy_settings_passwords";
 NSString* const kSettingsPasswordsImageName =
     @"settings_passwords";
 NSString* const kSettingsAutofillCreditCardImageName =
@@ -877,17 +874,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (TableViewItem*)passwordsDetailItem {
   BOOL passwordsEnabled = _browserState->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
-  BOOL passwordsRebrandingEnabled = base::FeatureList::IsEnabled(
-      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
 
   NSString* passwordsDetail = passwordsEnabled
                                   ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
 
   NSString* passwordsSectionTitle =
-      passwordsRebrandingEnabled
-          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER)
-          : l10n_util::GetNSString(IDS_IOS_PASSWORDS);
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
 
   if (UseSymbols()) {
     _passwordsDetailItem =
@@ -898,14 +891,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
               symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
             accessibilityIdentifier:kSettingsPasswordsCellId];
   } else {
-    NSString* passwordsIconImageName = passwordsRebrandingEnabled
-                                           ? kSettingsPasswordsImageName
-                                           : kLegacySettingsPasswordsImageName;
-
     _passwordsDetailItem = [self detailItemWithType:SettingsItemTypePasswords
                                                text:passwordsSectionTitle
                                          detailText:passwordsDetail
-                                      iconImageName:passwordsIconImageName
+                                      iconImageName:kSettingsPasswordsImageName
                             accessibilityIdentifier:kSettingsPasswordsCellId];
   }
 

@@ -515,11 +515,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   if (UseSymbols()) {
     // Passwords destination.
-    int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
-                              ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
-                              : IDS_IOS_TOOLS_MENU_PASSWORDS;
     self.passwordsDestination = [self
-        createOverflowMenuDestination:passwordTitleID
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
                           destination:overflow_menu::Destination::Passwords
                            symbolName:kPasswordSymbol
                          systemSymbol:NO
@@ -529,11 +526,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Passwords destination.
-    int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
-                              ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
-                              : IDS_IOS_TOOLS_MENU_PASSWORDS;
     self.passwordsDestination = [self
-        createOverflowMenuDestination:passwordTitleID
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
                           destination:overflow_menu::Destination::Passwords
                             imageName:@"overflow_menu_destination_passwords"
                       accessibilityID:kToolsMenuPasswordsId

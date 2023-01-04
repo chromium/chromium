@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 
 #import "base/metrics/user_metrics.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -180,15 +179,9 @@ static NSTimeInterval MFAnimationDuration = 0.2;
     self.keyboardButton.alpha = 0.0;
   }
 
-  NSString* imageName =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-          ? @"password_key"
-          : @"ic_vpn_key";
-
   self.passwordButton = [self
       manualFillButtonWithAction:@selector(passwordButtonPressed:)
-                      ImageNamed:imageName
+                      ImageNamed:@"password_key"
          accessibilityIdentifier:manual_fill::
                                      AccessoryPasswordAccessibilityIdentifier
               accessibilityLabel:l10n_util::GetNSString(

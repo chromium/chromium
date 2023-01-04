@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
 
-#import "base/feature_list.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
@@ -17,14 +15,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// The name of the icon image for the passwords banner.
-NSString* const kLegacyIconImageName = @"legacy_password_key";
-NSString* const kIconImageName = @"password_key";
-
-}  // namespace
 
 @interface PasswordInfobarBannerOverlayMediator ()
 // The password banner config from the request.
@@ -58,12 +48,7 @@ NSString* const kIconImageName = @"password_key";
   if (UseSymbols()) {
     image = CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
   } else {
-    NSString* icon_image_name =
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-            ? kIconImageName
-            : kLegacyIconImageName;
-    image = [UIImage imageNamed:icon_image_name];
+    image = [UIImage imageNamed:@"password_key"];
   }
   return image;
 }

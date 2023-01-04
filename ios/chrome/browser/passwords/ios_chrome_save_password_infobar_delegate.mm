@@ -16,7 +16,6 @@
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
@@ -160,13 +159,6 @@ IOSChromeSavePasswordInfoBarDelegate::FromInfobarDelegate(
 }
 
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetDetailsMessageText() const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    return is_sync_user_ ? l10n_util::GetNSString(IDS_SAVE_PASSWORD_FOOTER)
-                         : @"";
-  }
-
   return is_sync_user_
              ? l10n_util::GetNSStringF(
                    IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL,

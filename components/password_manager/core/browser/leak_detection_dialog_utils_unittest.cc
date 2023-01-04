@@ -95,10 +95,7 @@ struct BulkCheckParams {
 class CredentialLeakDialogUtilsTest : public testing::Test {
  public:
   CredentialLeakDialogUtilsTest() {
-#if BUILDFLAG(IS_IOS)
-    feature_list_.InitAndEnableFeature(
-        features::kIOSEnablePasswordManagerBrandingUpdate);
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     feature_list_.InitAndEnableFeature(
         features::kUnifiedPasswordManagerAndroid);
 #endif
@@ -219,10 +216,7 @@ class BulkCheckCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<BulkCheckParams> {
  public:
   BulkCheckCredentialLeakDialogUtilsTest() {
-#if BUILDFLAG(IS_IOS)
-    feature_list_.InitAndEnableFeature(
-        features::kIOSEnablePasswordManagerBrandingUpdate);
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     feature_list_.InitAndEnableFeature(
         features::kUnifiedPasswordManagerAndroid);
 #endif

@@ -35,15 +35,6 @@ bool IsNewOverflowMenuEnabled() {
   return false;
 }
 
-bool IsPasswordManagerBrandingUpdateEnabled() {
-  if (IsNewOverflowMenuEnabled()) {
-    return base::FeatureList::IsEnabled(
-        password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
-  }
-
-  return false;
-}
-
 bool IsSmartSortingNewOverflowMenuEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kSmartSortingNewOverflowMenu);

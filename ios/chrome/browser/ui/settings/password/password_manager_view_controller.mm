@@ -799,31 +799,19 @@ NSInteger kTrailingSymbolSize = 18;
   TableViewLinkHeaderFooterItem* header =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    if ([self.delegate isSyncingPasswords]) {
-      header.text =
-          l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
-
-      header.urls = @[ [[CrURL alloc]
-          initWithGURL:
-              google_util::AppendGoogleLocaleParam(
-                  GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                  GetApplicationContext()->GetApplicationLocale())] ];
-    } else {
-      header.text =
-          l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
-      header.urls = @[];
-    }
-  } else {
-    header.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
+  if ([self.delegate isSyncingPasswords]) {
+    header.text =
+        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
 
     header.urls = @[ [[CrURL alloc]
         initWithGURL:
             google_util::AppendGoogleLocaleParam(
-                GURL(password_manager::kPasswordManagerAccountDashboardURL),
+                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
                 GetApplicationContext()->GetApplicationLocale())] ];
+  } else {
+    header.text =
+        l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
+    header.urls = @[];
   }
 
   return header;
@@ -1755,19 +1743,8 @@ NSInteger kTrailingSymbolSize = 18;
         _passwordProblemsItem.trailingImageTintColor =
             [UIColor colorNamed:kRedColor];
       } else {
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::
-                    kIOSEnablePasswordManagerBrandingUpdate)) {
-          _passwordProblemsItem.trailingImage =
-              [UIImage imageNamed:@"round_settings_unsafe_state"];
-        } else {
-          UIImage* unSafeIconImage =
-              [[UIImage imageNamed:@"settings_unsafe_state"]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-          _passwordProblemsItem.trailingImage = unSafeIconImage;
-          _passwordProblemsItem.trailingImageTintColor =
-              [UIColor colorNamed:kRedColor];
-        }
+        _passwordProblemsItem.trailingImage =
+            [UIImage imageNamed:@"round_settings_unsafe_state"];
       }
 
       _passwordProblemsItem.accessoryType =
@@ -2092,12 +2069,7 @@ NSInteger kTrailingSymbolSize = 18;
 // Configures the title of this ViewController. Results may vary based on
 // feature flags.
 - (void)setUpTitle {
-  int titleStringID =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-          ? IDS_IOS_PASSWORD_MANAGER
-          : IDS_IOS_PASSWORDS;
-  self.title = l10n_util::GetNSString(titleStringID);
+  self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
 
   if (!ShouldShowSettingsUI()) {
     self.navigationItem.titleView =

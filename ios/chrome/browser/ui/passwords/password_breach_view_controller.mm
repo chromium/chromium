@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
 
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,14 +22,8 @@
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    self.image = [UIImage imageNamed:@"password_breach_illustration"];
-    self.showDismissBarButton = NO;
-  } else {
-    self.image = [UIImage imageNamed:@"legacy_password_breach_illustration"];
-  }
+  self.image = [UIImage imageNamed:@"password_breach_illustration"];
+  self.showDismissBarButton = NO;
 
   [super loadView];
 }

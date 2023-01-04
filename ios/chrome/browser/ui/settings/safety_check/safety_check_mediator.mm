@@ -15,7 +15,6 @@
 #import "base/version.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -42,7 +41,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
@@ -270,12 +268,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       passwordCheckIcon = CustomSymbolTemplateWithPointSize(
           kPasswordSymbol, kLeadingSymbolImagePointSize);
     } else {
-      NSString* imageName = base::FeatureList::IsEnabled(
-                                password_manager::features::
-                                    kIOSEnablePasswordManagerBrandingUpdate)
-                                ? @"password_key"
-                                : @"legacy_password_key";
-      passwordCheckIcon = [[UIImage imageNamed:imageName]
+      passwordCheckIcon = [[UIImage imageNamed:@"password_key"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
 

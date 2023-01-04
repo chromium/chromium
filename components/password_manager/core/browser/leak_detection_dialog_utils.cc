@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 
-#include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
@@ -156,10 +155,7 @@ GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer) {
 }
 
 bool UsesPasswordManagerUpdatedNaming() {
-#if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return password_manager::features::UsesUnifiedPasswordManagerBranding();
 #else
   return true;

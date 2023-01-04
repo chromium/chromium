@@ -39,7 +39,6 @@
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
@@ -109,11 +108,6 @@ enum class PasswordInfoBarType { SAVE, UPDATE };
 
 // Duration for notify user auto-sign in dialog being displayed.
 constexpr int kNotifyAutoSigninDuration = 3;  // seconds
-// Helper to check if password manager rebranding finch flag is enabled.
-BOOL IsPasswordManagerBrandingUpdateEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
-}
 }  // namespace
 
 @interface PasswordController () <SharedPasswordControllerDelegate>
@@ -502,23 +496,13 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 }
 
 - (void)updateGeneratePasswordStrings:(id)sender {
-  NSString* title;
-  NSString* message;
-
-  if (IsPasswordManagerBrandingUpdateEnabled()) {
-    title = [NSString
-        stringWithFormat:@"%@\n%@\n ",
-                         GetNSString(IDS_IOS_SUGGESTED_STRONG_PASSWORD),
-                         self.generatedPotentialPassword];
-    message = l10n_util::GetNSStringF(
-        IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
-        base::SysNSStringToUTF16([self userEmail]));
-  } else {
-    title = [NSString stringWithFormat:@"%@\n%@\n ",
-                                       GetNSString(IDS_IOS_SUGGESTED_PASSWORD),
-                                       self.generatedPotentialPassword];
-    message = GetNSString(IDS_IOS_SUGGESTED_PASSWORD_HINT);
-  }
+  NSString* title =
+      [NSString stringWithFormat:@"%@\n%@\n ",
+                                 GetNSString(IDS_IOS_SUGGESTED_STRONG_PASSWORD),
+                                 self.generatedPotentialPassword];
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
+      base::SysNSStringToUTF16([self userEmail]));
 
   self.actionSheetCoordinator.attributedTitle =
       [[NSMutableAttributedString alloc]
@@ -548,80 +532,9 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
                    decisionHandler:(void (^)(BOOL accept))decisionHandler {
   self.generatedPotentialPassword = generatedPotentialPassword;
 
-  if (IsPasswordManagerBrandingUpdateEnabled()) {
-    [self.passwordSuggestionDispatcher
-        showPasswordSuggestion:generatedPotentialPassword
-               decisionHandler:decisionHandler];
-  } else {
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(updateGeneratePasswordStrings:)
-               name:UIContentSizeCategoryDidChangeNotification
-             object:nil];
-
-    // TODO(crbug.com/886583): add eg tests
-    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:nullptr
-                             title:@""
-                           message:@""
-                              rect:self.baseViewController.view.frame
-                              view:self.baseViewController.view];
-    self.actionSheetCoordinator.popoverArrowDirection = 0;
-    self.actionSheetCoordinator.alertStyle =
-        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-            ? UIAlertControllerStyleAlert
-            : UIAlertControllerStyleActionSheet;
-
-    // Set attributed text.
-    [self updateGeneratePasswordStrings:self];
-
-    __weak PasswordController* weakSelf = self;
-
-    auto popupDismissed = ^{
-      [weakSelf generatePasswordPopupDismissed];
-    };
-
-    auto closeKeyboard = ^{
-      if (!weakSelf.webState) {
-        return;
-      }
-      FormInputAccessoryViewHandler* handler =
-          [[FormInputAccessoryViewHandler alloc] init];
-      NSString* mainFrameID =
-          SysUTF8ToNSString(web::GetMainWebFrameId(weakSelf.webState));
-      [handler setLastFocusFormActivityWebFrameID:mainFrameID];
-      [handler closeKeyboardWithoutButtonPress];
-    };
-
-    NSString* primaryActionString;
-    if (IsPasswordManagerBrandingUpdateEnabled()) {
-      primaryActionString = GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
-    } else {
-      primaryActionString = GetNSString(IDS_IOS_USE_SUGGESTED_PASSWORD);
-    }
-
-    [self.actionSheetCoordinator addItemWithTitle:primaryActionString
-                                           action:^{
-                                             decisionHandler(YES);
-                                             popupDismissed();
-                                             closeKeyboard();
-                                           }
-                                            style:UIAlertActionStyleDefault];
-
-    [self.actionSheetCoordinator addItemWithTitle:GetNSString(IDS_CANCEL)
-                                           action:^{
-                                             decisionHandler(NO);
-                                             popupDismissed();
-                                           }
-                                            style:UIAlertActionStyleCancel];
-
-    // Set 'suggest' as preferred action, as per UX.
-    self.actionSheetCoordinator.alertController.preferredAction =
-        self.actionSheetCoordinator.alertController.actions[0];
-
-    [self.actionSheetCoordinator start];
-  }
+  [self.passwordSuggestionDispatcher
+      showPasswordSuggestion:generatedPotentialPassword
+             decisionHandler:decisionHandler];
 }
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller

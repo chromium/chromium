@@ -138,7 +138,6 @@ source_set("manual_fill_ui") {
     "//net:net",
     "//third_party/material_design_icons:ic_credit_card",
     "//third_party/material_design_icons:ic_place",
-    "//third_party/material_design_icons:ic_vpn_key",
     "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]

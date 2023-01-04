@@ -13,7 +13,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
@@ -176,27 +175,13 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAdd) {
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    CheckSectionFooter(
-        [NSString
-            stringWithFormat:@"%@\n\n%@",
-                             l10n_util::GetNSString(
-                                 IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                             l10n_util::GetNSString(
-                                 IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
-        3);
-  } else {
-    CheckSectionFooter(
-        [NSString stringWithFormat:
-                      @"%@\n\n%@",
-                      l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                      l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING)],
-        3);
-  }
+  CheckSectionFooter(
+      [NSString stringWithFormat:@"%@\n\n%@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
+      3);
 }
 
 // Tests the layout of the view controller when adding a new credential with
@@ -229,27 +214,13 @@ TEST_F(AddPasswordViewControllerTest, TestFooterTextWithSyncingEmail) {
       static_cast<AddPasswordViewController*>(controller());
   [passwords_controller loadModel];
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
-    CheckSectionFooter(
-        [NSString
-            stringWithFormat:@"%@\n\n%@",
-                             l10n_util::GetNSString(
-                                 IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                             l10n_util::GetNSStringF(
-                                 IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
-                                 u"example@gmail.com")],
-        3);
-  } else {
-    CheckSectionFooter(
-        [NSString
-            stringWithFormat:@"%@\n\n%@",
-                             l10n_util::GetNSString(
-                                 IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                             l10n_util::GetNSStringF(
-                                 IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
-                                 u"example@gmail.com")],
-        3);
-  }
+  CheckSectionFooter(
+      [NSString
+          stringWithFormat:@"%@\n\n%@",
+                           l10n_util::GetNSString(
+                               IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                           l10n_util::GetNSStringF(
+                               IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
+                               u"example@gmail.com")],
+      3);
 }

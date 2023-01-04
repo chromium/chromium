@@ -15,7 +15,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 #import "components/history/core/browser/web_history_service.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -130,11 +129,7 @@ static NSDictionary* imageNamesByItemTypes = @{
       @"clear_browsing_data_cookies",
   [NSNumber numberWithInteger:ItemTypeDataTypeCache] :
       @"clear_browsing_data_cached_images",
-  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] :
-      (base::FeatureList::IsEnabled(
-           password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-           ? @"password_key"
-           : @"legacy_password_key"),
+  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] : @"password_key",
   [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
       @"clear_browsing_data_autofill",
 };

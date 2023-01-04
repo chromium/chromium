@@ -364,11 +364,6 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOS3PIntentsInIncognitoName[];
 extern const char kIOS3PIntentsInIncognitoDescription[];
 
-// Title and description for the flag to enable updated password manager
-// branding.
-extern const char kIOSEnablePasswordManagerBrandingUpdateName[];
-extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
-
 // Title and description for the flag to enable force translate when language
 // detection failed.
 extern const char kIOSForceTranslateEnabledName[];

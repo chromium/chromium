@@ -6,7 +6,6 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badges_histograms.h"
@@ -28,12 +27,7 @@ UIImage* GetPasswordImage() {
     return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
                                              kInfobarSymbolPointSize);
   } else {
-    NSString* passwordImageName =
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-            ? @"password_key"
-            : @"legacy_password_key";
-    return [[UIImage imageNamed:passwordImageName]
+    return [[UIImage imageNamed:@"password_key"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   }
 }
