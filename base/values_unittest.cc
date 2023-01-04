@@ -2126,7 +2126,6 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   // Just remove this test when the old API is removed.
 
   std::unique_ptr<DictionaryValue> child(new DictionaryValue);
-  DictionaryValue* original_child = child.get();
   child->SetStringKey("test", "value");
   EXPECT_EQ(1U, child->DictSize());
 
@@ -2135,16 +2134,16 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   EXPECT_EQ("value", *value);
 
   std::unique_ptr<DictionaryValue> base(new DictionaryValue);
-  base->Set("dict", std::move(child));
+  base->GetDict().Set("dict", std::move(child->GetDict()));
   EXPECT_EQ(1U, base->DictSize());
 
-  DictionaryValue* ptr;
-  EXPECT_TRUE(base->GetDictionary("dict", &ptr));
-  EXPECT_EQ(original_child, ptr);
+  DictionaryValue* original_child;
+  EXPECT_TRUE(base->GetDictionary("dict", &original_child));
 
   std::unique_ptr<DictionaryValue> merged(new DictionaryValue);
   merged->MergeDictionary(base.get());
   EXPECT_EQ(1U, merged->DictSize());
+  DictionaryValue* ptr;
   EXPECT_TRUE(merged->GetDictionary("dict", &ptr));
   EXPECT_NE(original_child, ptr);
   value = ptr->GetDict().FindString("test");

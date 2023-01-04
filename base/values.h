@@ -1252,6 +1252,26 @@ class BASE_EXPORT DictionaryValue : public Value {
 
   DictionaryValue();
 
+  // Convenience forms of Set().  These methods will replace any existing
+  // value at that path, even if it has a different type.
+  //
+  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
+  // otherwise.
+  Value* SetString(StringPiece path, StringPiece in_value);
+
+  // These are convenience forms of `Get()`.  The value will be retrieved
+  // and the return value will be true if the path is valid and the value at
+  // the end of the path can be returned in the form specified.
+  // `out_value` is optional and will only be set if non-NULL.
+  //
+  // DEPRECATED: prefer `Value::Dict::FindDict()` (if the path only has one
+  // component, i.e. has no dots), or `Value::Dict::FindDictByDottedPath()`
+  // otherwise.
+  bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
+  bool GetDictionary(StringPiece path, DictionaryValue** out_value);
+
+ private:
   // Sets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
   // into the next DictionaryValue down.  Obviously, "." can't be used
@@ -1265,33 +1285,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
   // otherwise.
   Value* Set(StringPiece path, std::unique_ptr<Value> in_value);
-
-  // Convenience forms of Set().  These methods will replace any existing
-  // value at that path, even if it has a different type.
-  //
-  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
-  // otherwise.
-  Value* SetBoolean(StringPiece path, bool in_value);
-  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
-  // otherwise.
-  Value* SetString(StringPiece path, StringPiece in_value);
-  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
-  // otherwise.
-  Value* SetString(StringPiece path, const std::u16string& in_value);
-
-  // These are convenience forms of `Get()`.  The value will be retrieved
-  // and the return value will be true if the path is valid and the value at
-  // the end of the path can be returned in the form specified.
-  // `out_value` is optional and will only be set if non-NULL.
-  //
-  // DEPRECATED: prefer `Value::Dict::FindDict()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::FindDictByDottedPath()`
-  // otherwise.
-  bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
-  bool GetDictionary(StringPiece path, DictionaryValue** out_value);
 };
 
 // This type of Value represents a list of other Value values.
