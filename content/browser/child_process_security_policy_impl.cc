@@ -1582,7 +1582,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
     // Ensure this is only called on the UI thread, which is the only thread
     // with sufficient information to do the full set of checks.
-    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   } else {
     // For legacy cases, this may be called on multiple threads.
     DCHECK(IsRunningOnExpectedThread());
@@ -1627,7 +1627,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
   if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
     // Ensure this is only called on the UI thread, which is the only thread
     // with sufficient information to do the full set of checks.
-    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   } else {
     // For legacy cases, this may be called on multiple threads.
     DCHECK(IsRunningOnExpectedThread());
