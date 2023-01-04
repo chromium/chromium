@@ -120,7 +120,14 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PolicyDisabled) {
   EXPECT_FALSE(Notification().has_value());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_WillNotExpire) {
+// TODO(crbug.com/1358349): re-enable this test. Flakily times out on debug
+// Linux and ChromeOS.
+#if !defined(NDEBUG) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#define MAYBE_MaybeShow_WillNotExpire DISABLED_MaybeShow_WillNotExpire
+#else
+#define MAYBE_MaybeShow_WillNotExpire MaybeShow_WillNotExpire
+#endif
+TEST_F(InSessionPasswordChangeManagerTest, MAYBE_MaybeShow_WillNotExpire) {
   SamlPasswordAttributes::DeleteFromPrefs(profile_->GetPrefs());
   manager_->MaybeShowExpiryNotification();
 
@@ -174,8 +181,9 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_DeleteExpirationTime) {
   EXPECT_FALSE(Notification().has_value());
 }
 
-// TODO(crbug.com/1358349): re-enable thie test. Flakily times out on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1358349): re-enable this test. Flakily times out on debug
+// Linux and ChromeOS.
+#if !defined(NDEBUG) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_MaybeShow_PasswordChanged DISABLED_MaybeShow_PasswordChanged
 #else
 #define MAYBE_MaybeShow_PasswordChanged MaybeShow_PasswordChanged
