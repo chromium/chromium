@@ -158,8 +158,9 @@ class HistoryClusterElement extends HistoryClusterElementBase {
 
     // This element receives a tabindex, because it's an iron-list item.
     // However, what we really want to do is to pass that focus onto an
-    // eligible child, so we set `delegatesFocus` to true.
-    this.attachShadow({mode: 'open', delegatesFocus: true});
+    // eligible child, so we want to set `delegatesFocus` to true. But
+    // delegatesFocus removes the text selection. So temporarily removing
+    // the delegatesFocus until that issue is fixed.
   }
 
   override connectedCallback() {
