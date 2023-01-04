@@ -1060,40 +1060,35 @@ void FrameLoader::CommitNavigation(
   // initiated from inside the fenced frame. Embedder-initiated navigations
   // use a unique origin (in `FencedFrame::Navigate`), so the requestor is
   // always considered cross-origin by the check (in MPArch).
+  // TODO(crbug.com/1381158): Move the checks for whether fenced frame reporting
+  // metadata should be copied or not, to the browser process.
   bool is_requestor_same_origin =
       !navigation_params->requestor_origin.IsNull() &&
       navigation_params->requestor_origin.IsSameOriginWith(
           WebSecurityOrigin::Create(navigation_params->url));
   if (is_requestor_same_origin) {
-    for (const WebNavigationParams::RedirectInfo& redirect :
-         navigation_params->redirects) {
-      is_requestor_same_origin &=
-          navigation_params->requestor_origin.IsSameOriginWith(
+    // Check if all redirects are same origin with `requestor_origin`.
+    // If there is a cross-origin redirect, renderer will mark the fenced frame
+    // having no associated reporting metadata.
+    auto has_same_origin_with_requestor =
+        [&requestor_origin = std::as_const(
+             navigation_params->requestor_origin)](const auto& redirect) {
+          return requestor_origin.IsSameOriginWith(
               WebSecurityOrigin::Create(redirect.new_url));
-    }
+        };
+    is_requestor_same_origin = base::ranges::all_of(
+        navigation_params->redirects, has_same_origin_with_requestor);
   }
   if (is_requestor_same_origin) {
-    const absl::optional<blink::FencedFrameReporting>&
-        old_fenced_frame_reporting = document_loader_->FencedFrameReporting();
-    // In urn iframes, embedder-initiated navigations may be same-origin, so
-    // this isn't true.
-    if (navigation_params->fenced_frame_reporting) {
+    if (navigation_params->has_fenced_frame_reporting) {
+      // In urn iframes, embedder-initiated navigations may be same-origin, so
+      // this isn't true.
       DCHECK(!frame_->IsFencedFrameRoot() &&
              blink::features::IsAllowURNsInIframeEnabled());
-    }
-
-    if (!navigation_params->fenced_frame_reporting &&
-        old_fenced_frame_reporting) {
-      navigation_params->fenced_frame_reporting.emplace();
-      for (const auto& [destination, event_type_url] :
-           old_fenced_frame_reporting->metadata) {
-        base::flat_map<std::string, GURL> data;
-        for (const auto& [event_type, url] : event_type_url) {
-          data.emplace(event_type.Utf8(), url);
-        }
-        navigation_params->fenced_frame_reporting->metadata.emplace(
-            destination, std::move(data));
-      }
+    } else if (document_loader_->HasFencedFrameReporting()) {
+      // Fenced frame reporting metadata persists across same-origin navigations
+      // initiated from inside the fenced frame.
+      navigation_params->has_fenced_frame_reporting = true;
     }
   }
 

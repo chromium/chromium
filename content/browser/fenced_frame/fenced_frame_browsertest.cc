@@ -4542,12 +4542,19 @@ class FencedFrameReportEventBrowserTest
     // (This should always be false when `!is_embedder_initiated`.
     bool is_opaque = false;
 
+    struct Event {
+      std::string type;
+      std::string reporting_destination;
+    };
     struct Destination {
       // The origin for the navigation.
       std::string origin;
       // The path for the resource to load.
       std::string path;
     };
+
+    // Specifies the reporting destination and event type for reportEvent.
+    Event event{"click", "buyer"};
 
     // The initial navigation destination (may be redirected).
     Destination destination;
@@ -4580,13 +4587,13 @@ class FencedFrameReportEventBrowserTest
         return "This frame did not register reporting metadata.";
       case Step::Result::kNoDestination:
         return "This frame did not register reporting metadata for "
-               "destination*";
+               "destination *";
       case Step::Result::kNoReportingURL:
-        return "This frame did not register reporting url for destination (.*) "
-               "and event_type (.*)";
+        return "This frame did not register reporting url for destination * "
+               "and event_type *";
       case Step::Result::kInvalidReportingURL:
-        return "This frame registered invalid reporting url for destination "
-               "(.*) and event_type (.*)";
+        return "This frame registered invalid reporting url for destination * "
+               "and event_type *";
       default:
         return "";
     }
@@ -4657,13 +4664,17 @@ class FencedFrameReportEventBrowserTest
     EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
     EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
 
-    // Create reporting metadata.
+    // Create valid reporting metadata for buyer.
     ReportingMetadata fenced_frame_reporting;
     GURL reporting_url(
         https_server()->GetURL("c.test", "/_report_event_server.html"));
     fenced_frame_reporting
         .metadata[blink::FencedFrame::ReportingDestination::kBuyer]["click"] =
         reporting_url;
+    // Create reporting metadata with an empty reporting url for seller.
+    fenced_frame_reporting
+        .metadata[blink::FencedFrame::ReportingDestination::kSeller]["click"] =
+        GURL();
     // Get the urn mapping object.
     FencedFrameURLMapping& url_mapping =
         root->current_frame_host()->GetPage().fenced_frame_urls_map();
@@ -4745,7 +4756,7 @@ class FencedFrameReportEventBrowserTest
       auto filter =
           [](const content::WebContentsConsoleObserver::Message& message) {
             return message.log_level ==
-                   blink::mojom::ConsoleMessageLevel::kWarning;
+                   blink::mojom::ConsoleMessageLevel::kError;
           };
       console_observer.SetFilter(base::BindRepeating(filter));
       if (step.report_event_result != Step::Result::kSuccess) {
@@ -4756,23 +4767,27 @@ class FencedFrameReportEventBrowserTest
       // Perform the reportEvent call, with a unique body.
       const char report_event_script[] = R"(
         window.fence.reportEvent({
-          eventType: 'click',
-          eventData: 'click $1',
-          destination: ['buyer'],
+          eventType: $2,
+          eventData: $2 + ' $1',
+          destination: [$3],
         });
       )";
-      EXPECT_TRUE(ExecJs(navigation_target_node,
-                         JsReplace(report_event_script, navigation_index)));
+      EXPECT_TRUE(
+          ExecJs(navigation_target_node,
+                 JsReplace(report_event_script, navigation_index,
+                           step.event.type, step.event.reporting_destination)));
 
       // If relevant, check that the event report succeeded.
       if (step.report_event_result == Step::Result::kSuccess) {
         auto& response = *responses[response_index];
         response.WaitForRequest();
-        EXPECT_EQ(response.http_request()->content,
-                  JsReplace("click $1", navigation_index));
+        EXPECT_EQ(
+            response.http_request()->content,
+            step.event.type + " " + base::NumberToString(navigation_index));
         response.Done();
         response_index++;
       } else {
+        ASSERT_TRUE(console_observer.Wait());
         EXPECT_FALSE(console_observer.messages().empty());
         EXPECT_EQ(console_observer.messages().size(), 1u);
       }
@@ -4793,6 +4808,58 @@ class FencedFrameReportEventBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Fenced frame not in opaque-ads mode should fail reportEvent().
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventNonOpaqueAdsMode) {
+  net::test_server::ControllableHttpResponse response(
+      https_server(), "/_report_event_server.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Set up the embedder and a default mode fenced frame.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'default';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  auto filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      };
+  console_observer.SetFilter(base::BindRepeating(filter));
+  console_observer.SetPattern(
+      GetConsoleWarningPattern(Step::Result::kModeNotOpaque));
+
+  // Perform the reportEvent call, with a unique body.
+  const char report_event_script[] = R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: 'click 0',
+          destination: ['buyer'],
+        });
+      )";
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, JsReplace(report_event_script)));
+
+  // Check console warning.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+
+  // Check that the reporting beacon is not sent.
+  EXPECT_FALSE(response.has_received_request());
+}
+
 // The simplest test case: URN navigation into reportEvent.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventEmbedderURNNavigation) {
@@ -4802,6 +4869,54 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent shouldn't work if there is no associated reporting metadata with
+// the reporting destination.
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventBrowserTest,
+    FencedFrameReportEventNoMetadataForReportingDestination) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .event = {"click", "component-seller"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoDestination,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent shouldn't work if there is no associated reporting url with
+// the event type and the reporting destination.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventNoReportingURLForEventType) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .event = {"invalid-event", "buyer"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kNoReportingURL,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent shouldn't work if the reporting url is invalid.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventInvalidReportingURL) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .event = {"click", "seller"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kInvalidReportingURL,
       },
   };
   RunTest(config);

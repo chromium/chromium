@@ -249,6 +249,11 @@ void FakeLocalFrameHost::DidChangeBaseURL(const ::blink::KURL& url) {}
 void FakeLocalFrameHost::ReceivedDelegatedCapability(
     blink::mojom::DelegatedCapability delegated_capability) {}
 
+void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
+    const WTF::String& event_data,
+    const WTF::String& event_type,
+    blink::FencedFrame::ReportingDestination destination) {}
+
 void FakeLocalFrameHost::CreatePortal(
     mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal,
     mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client,

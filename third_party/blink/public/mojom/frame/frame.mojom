@@ -27,6 +27,7 @@ import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/devtools/inspector_issue.mojom";
 import "third_party/blink/public/mojom/favicon/favicon_url.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
@@ -563,6 +564,21 @@ interface LocalFrameHost {
   // `delegated_capability` is the capability delegated via postMessage().
   // RemoteFrameHost messages already signal the browser via RouteMessageEvent.
   ReceivedDelegatedCapability(DelegatedCapability delegated_capability);
+
+  // See:
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  //
+  // This implements the API:
+  // window.fence.reportEvent({eventType, eventData, destination})
+  //
+  // A document in a fenced frames can invoke the reportEvent API to request the
+  // browser to send `eventData` in a beacon toward the URL registered against
+  // `eventType` by the worklet in registerAdBeacon. Depending on the declared
+  // `destination`, the beacon is sent to either the buyer's or the seller's
+  // registered URL.
+  SendFencedFrameReportingBeacon(string event_data,
+                                 string event_type,
+                                 ReportingDestination destination);
 
   // Sent by the renderer process to request the creation of a new portal.
   // |portal| is the pipe to be used for the Portal object, |client| is the pipe

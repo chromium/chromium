@@ -9,12 +9,12 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/ping_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -97,49 +97,18 @@ void Fence::reportEvent(ScriptState* script_state,
   DCHECK(fenced_frame);
   DCHECK(fenced_frame->GetDocument());
 
-  const absl::optional<blink::FencedFrameReporting>& fenced_frame_reporting =
-      fenced_frame->GetDocument()->Loader()->FencedFrameReporting();
-  if (!fenced_frame_reporting) {
+  bool has_fenced_frame_reporting =
+      fenced_frame->GetDocument()->Loader()->HasFencedFrameReporting();
+  if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
   }
 
   for (const V8FenceReportingDestination& web_destination :
        event->destination()) {
-    blink::FencedFrame::ReportingDestination destination =
-        ToPublicDestination(web_destination);
-
-    const auto metadata_iter =
-        fenced_frame_reporting->metadata.find(destination);
-    if (metadata_iter == fenced_frame_reporting->metadata.end()) {
-      AddConsoleMessage(
-          "This frame did not register reporting metadata for "
-          "destination '" +
-          web_destination.AsString() + "'.");
-      continue;
-    }
-
-    const auto url_iter = metadata_iter->value.find(event->eventType());
-    if (url_iter == metadata_iter->value.end()) {
-      AddConsoleMessage(
-          "This frame did not register reporting url for "
-          "destination '" +
-          web_destination.AsString() + "' and event_type '" +
-          event->eventType() + "'.");
-      continue;
-    }
-
-    KURL url = url_iter->value;
-    if (!url.IsValid() || !url.ProtocolIsInHTTPFamily()) {
-      AddConsoleMessage(
-          "This frame registered invalid reporting url for "
-          "destination '" +
-          web_destination.AsString() + "' and event_type '" +
-          event->eventType() + "'.");
-      continue;
-    }
-
-    PingLoader::SendBeacon(*script_state, frame, url, event->eventData());
+    fenced_frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
+        event->eventData(), event->eventType(),
+        ToPublicDestination(web_destination));
   }
 }
 
@@ -169,7 +138,7 @@ void Fence::AddConsoleMessage(const String& message) {
   DCHECK(DomWindow());
   DomWindow()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
+      mojom::blink::ConsoleMessageLevel::kError, message));
 }
 
 }  // namespace blink
