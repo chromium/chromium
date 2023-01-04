@@ -40,5 +40,11 @@ export class PrivacyGuideWelcomeFragmentElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-guide-welcome-fragment': PrivacyGuideWelcomeFragmentElement;
+  }
+}
+
 customElements.define(
     PrivacyGuideWelcomeFragmentElement.is, PrivacyGuideWelcomeFragmentElement);

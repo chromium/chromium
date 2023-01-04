@@ -23,6 +23,12 @@ import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 
 import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
+export interface PrivacyGuideCompletionFragmentElement {
+  $: {
+    backButton: HTMLElement,
+  };
+}
+
 const PrivacyGuideCompletionFragmentElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 

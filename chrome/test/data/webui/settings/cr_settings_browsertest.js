@@ -658,68 +658,73 @@ TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuidePageTests', function() {
   runMochaSuite('PrivacyGuidePageTests');
 });
 
-TEST_F('CrSettingsPrivacyGuidePageTest', 'MsbbFragmentNavigations', function() {
-  runMochaSuite('MsbbFragmentNavigations');
+TEST_F('CrSettingsPrivacyGuidePageTest', 'MsbbCardNavigations', function() {
+  runMochaSuite('MsbbCardNavigations');
 });
 
 TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'HistorySyncFragmentNavigations',
+    'CrSettingsPrivacyGuidePageTest', 'HistorySyncCardNavigations', function() {
+      runMochaSuite('HistorySyncCardNavigations');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'SafeBrowsingCardNavigations',
     function() {
-      runMochaSuite('HistorySyncFragmentNavigations');
+      runMochaSuite('SafeBrowsingCardNavigations');
     });
+
+TEST_F('CrSettingsPrivacyGuidePageTest', 'CookiesCardNavigations', function() {
+  runMochaSuite('CookiesCardNavigations');
+});
+
+TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
+  runMochaSuite('PrivacyGuideDialogTests');
+});
+
+var CrSettingsPrivacyGuideFragmentsTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_guide_fragments_test.js';
+  }
+};
 
 TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'SafeBrowsingFragmentNavigations',
-    function() {
-      runMochaSuite('SafeBrowsingFragmentNavigations');
+    'CrSettingsPrivacyGuideFragmentsTest', 'WelcomeFragmentTests', function() {
+      runMochaSuite('WelcomeFragmentTests');
     });
 
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'CookiesFragmentNavigations', function() {
-      runMochaSuite('CookiesFragmentNavigations');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'MsbbFragmentMetricsTests', function() {
-      runMochaSuite('MsbbFragmentMetricsTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'HistorySyncFragmentMetricsTests',
-    function() {
-      runMochaSuite('HistorySyncFragmentMetricsTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'SafeBrowsingFragmentMetricsTests',
-    function() {
-      runMochaSuite('SafeBrowsingFragmentMetricsTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'CookiesFragmentMetricsTests',
-    function() {
-      runMochaSuite('CookiesFragmentMetricsTests');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'HistorySyncFragmentTests', function() {
-      runMochaSuite('HistorySyncFragment');
-    });
-
-TEST_F('CrSettingsPrivacyGuidePageTest', 'CompletionFragmentTests', function() {
-  runMochaSuite('CompletionFragment');
+TEST_F('CrSettingsPrivacyGuideFragmentsTest', 'MsbbFragmentTests', function() {
+  runMochaSuite('MsbbFragmentTests');
 });
 
 TEST_F(
-    'CrSettingsPrivacyGuidePageTest',
+    'CrSettingsPrivacyGuideFragmentsTest', 'HistorySyncFragmentTests',
+    function() {
+      runMochaSuite('HistorySyncFragmentTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuideFragmentsTest', 'SafeBrowsingFragmentTests',
+    function() {
+      runMochaSuite('SafeBrowsingFragmentTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuideFragmentsTest', 'CookiesFragmentTests', function() {
+      runMochaSuite('CookiesFragmentTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuideFragmentsTest', 'CompletionFragmentTests',
+    function() {
+      runMochaSuite('CompletionFragmentTests');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuideFragmentsTest',
     'CompletionFragmentPrivacySandboxRestricted', function() {
       runMochaSuite('CompletionFragmentPrivacySandboxRestricted');
     });
-
-TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
-  runMochaSuite('PrivacyGuideDialog');
-});
 
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */

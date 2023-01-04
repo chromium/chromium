@@ -112,6 +112,13 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-guide-safe-browsing-fragment':
+        PrivacyGuideSafeBrowsingFragmentElement;
+  }
+}
+
 customElements.define(
     PrivacyGuideSafeBrowsingFragmentElement.is,
     PrivacyGuideSafeBrowsingFragmentElement);

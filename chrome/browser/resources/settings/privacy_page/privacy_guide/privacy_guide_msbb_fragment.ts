@@ -90,5 +90,11 @@ export class PrivacyGuideMsbbFragmentElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-guide-msbb-fragment': PrivacyGuideMsbbFragmentElement;
+  }
+}
+
 customElements.define(
     PrivacyGuideMsbbFragmentElement.is, PrivacyGuideMsbbFragmentElement);

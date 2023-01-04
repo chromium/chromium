@@ -114,5 +114,10 @@ export class PrivacyGuideCookiesFragmentElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-guide-cookies-fragment': PrivacyGuideCookiesFragmentElement;
+  }
+}
 customElements.define(
     PrivacyGuideCookiesFragmentElement.is, PrivacyGuideCookiesFragmentElement);

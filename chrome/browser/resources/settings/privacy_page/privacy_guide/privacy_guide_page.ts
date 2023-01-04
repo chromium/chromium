@@ -195,17 +195,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         },
       ],
       [
-        PrivacyGuideStep.COMPLETION,
-        {
-          onBackwardNavigation: () => {
-            this.metricsBrowserProxy_.recordAction(
-                'Settings.PrivacyGuide.BackClickCompletion');
-          },
-          previousStep: PrivacyGuideStep.COOKIES,
-          isAvailable: () => true,
-        },
-      ],
-      [
         PrivacyGuideStep.MSBB,
         {
           nextStep: PrivacyGuideStep.HISTORY_SYNC,
@@ -281,6 +270,17 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
           },
           previousStep: PrivacyGuideStep.SAFE_BROWSING,
           isAvailable: () => this.shouldShowCookiesCard_(),
+        },
+      ],
+      [
+        PrivacyGuideStep.COMPLETION,
+        {
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickCompletion');
+          },
+          previousStep: PrivacyGuideStep.COOKIES,
+          isAvailable: () => true,
         },
       ],
     ]);
