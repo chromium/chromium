@@ -116,6 +116,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::CreateAndStartHost",
                "attributes", attributes, "initiator_origin", recorded_url);
 
+  // The initiator WebContents can be different from the WebContents that will
+  // host a prerendered page only when the prerender-in-new-tab runs.
+  DCHECK(attributes.initiator_web_contents);
+  auto& initiator_web_contents =
+      static_cast<WebContentsImpl&>(*attributes.initiator_web_contents);
+  auto& prerender_web_contents = static_cast<WebContentsImpl&>(*web_contents());
+  DCHECK(&initiator_web_contents == &prerender_web_contents ||
+         base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
+
   int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
 
   {
@@ -124,18 +133,16 @@ int PrerenderHostRegistry::CreateAndStartHost(
         base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
                        base::Unretained(this), attributes.prerendering_url));
 
-    // Check whether preloading is enabled. If users disable this
-    // setting, it means users do not want to preload pages.
-    WebContentsImpl& web_contents_impl =
-        static_cast<WebContentsImpl&>(*web_contents());
-    if (web_contents_impl.IsPrerender2Disabled()) {
+    // Check whether preloading is enabled. If users disable this setting, it
+    // means users do not want to preload pages.
+    if (initiator_web_contents.IsPrerender2Disabled()) {
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kPreloadingDisabled);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
     // Don't prerender when the trigger is in the background.
-    if (web_contents_impl.GetVisibility() == Visibility::HIDDEN) {
+    if (initiator_web_contents.GetVisibility() == Visibility::HIDDEN) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(
               PrerenderFinalStatus::kTriggerBackgrounded),
@@ -157,7 +164,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // Don't prerender when the Data Saver setting is enabled.
     if (GetContentClient()->browser()->IsDataSaverEnabled(
-            web_contents_impl.GetBrowserContext())) {
+            prerender_web_contents.GetBrowserContext())) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(PrerenderFinalStatus::kDataSaverEnabled),
           attributes);
@@ -196,9 +203,10 @@ int PrerenderHostRegistry::CreateAndStartHost(
       }
     }
 
-    // Disallow all pages that have an effective URL like host apps and NTP.
-    if (SiteInstanceImpl::HasEffectiveURL(web_contents_impl.GetBrowserContext(),
-                                          web_contents_impl.GetURL())) {
+    // Disallow all pages that have an effective URL like hosted apps and NTP.
+    if (SiteInstanceImpl::HasEffectiveURL(
+            prerender_web_contents.GetBrowserContext(),
+            prerender_web_contents.GetURL())) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(PrerenderFinalStatus::kHasEffectiveUrl),
           attributes);
@@ -266,7 +274,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     }
 
     auto prerender_host = std::make_unique<PrerenderHost>(
-        attributes, web_contents_impl,
+        attributes, prerender_web_contents,
         attempt ? attempt->GetWeakPtr() : nullptr);
     frame_tree_node_id = prerender_host->frame_tree_node_id();
 
@@ -345,19 +353,33 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
         blink::features::kPrerender2SequentialPrerendering));
     DCHECK_EQ(running_prerender_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
 
-    // Don't start the pending prerender in the background tab.
-    if (web_contents()->GetVisibility() == Visibility::HIDDEN) {
-      return RenderFrameHost::kNoFrameTreeNodeId;
-    }
+    for (auto iter = pending_prerenders_.begin();
+         iter != pending_prerenders_.end();) {
+      int host_id = *iter;
 
-    // Skip cancelled requests.
-    while (!pending_prerenders_.empty()) {
-      int host_id = pending_prerenders_.front();
-      pending_prerenders_.pop_front();
-      if (prerender_host_by_frame_tree_node_id_.contains(host_id)) {
-        frame_tree_node_id = host_id;
-        break;
+      // Skip a cancelled request.
+      auto found = prerender_host_by_frame_tree_node_id_.find(host_id);
+      if (found == prerender_host_by_frame_tree_node_id_.end()) {
+        // Remove the cancelled request from the pending queue.
+        iter = pending_prerenders_.erase(iter);
+        continue;
       }
+      PrerenderHost* prerender_host = found->second.get();
+
+      // The initiator WebContents should be alive as it cancels all the
+      // prerendering requests during destruction.
+      DCHECK(prerender_host->initiator_web_contents());
+
+      // Don't start the pending prerender triggered by the background tab.
+      if (prerender_host->initiator_web_contents()->GetVisibility() ==
+          Visibility::HIDDEN) {
+        return RenderFrameHost::kNoFrameTreeNodeId;
+      }
+
+      // Found the request to run.
+      pending_prerenders_.erase(iter);
+      frame_tree_node_id = host_id;
+      break;
     }
 
     if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {

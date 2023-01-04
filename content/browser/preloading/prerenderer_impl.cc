@@ -260,9 +260,9 @@ bool PrerendererImpl::MaybePrerender(
       candidate->url, PrerenderTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", referrer, rfhi.GetLastCommittedOrigin(),
       rfhi.GetLastCommittedURL(), rfhi.GetProcess()->GetID(),
-      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
-      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/absl::nullopt);
+      web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
+      rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK, /*url_match_predicate=*/absl::nullopt);
 
   // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
   // have the same URL but its `target_browsing_context_name_hint` is

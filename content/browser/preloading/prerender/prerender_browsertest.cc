@@ -191,13 +191,12 @@ void ExpectWebContentsIsForNewTabPrerendering(WebContentsImpl& web_contents) {
   // The primary page shows the initial blank page.
   EXPECT_TRUE(web_contents.GetLastCommittedURL().is_empty());
 
+  // The prerendering WebContents should not have an opener to avoid cross-page
+  // scripting during prerendering.
   EXPECT_FALSE(web_contents.HasOpener());
 
-  // In the current implementation, WebContentsImpl needs to be visible to start
-  // prerendering, but actually this WebContents is not visible to users. This
-  // should be fixed. See the TODO comment in the constructor of
-  // PrerenderNewTabHandle for details.
-  EXPECT_FALSE(web_contents.IsHidden());
+  // The prerendering WebContents should be hidden until prerender activation.
+  EXPECT_TRUE(web_contents.IsHidden());
 }
 
 class PrerenderBrowserTest : public ContentBrowserTest,

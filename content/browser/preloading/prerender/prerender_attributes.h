@@ -9,6 +9,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -27,6 +28,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       absl::optional<url::Origin> initiator_origin,
       const GURL& initiator_url,
       int initiator_process_id,
+      base::WeakPtr<WebContents> initiator_web_contents,
       absl::optional<blink::LocalFrameToken> initiator_frame_token,
       int initiator_frame_tree_node_id,
       ukm::SourceId initiator_ukm_id,
@@ -61,6 +63,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is ChildProcessHost::kInvalidUniqueID when prerendering is initiated
   // by the browser.
   int initiator_process_id;
+
+  // This hosts a primary page that is initiating this prerender attempt.
+  base::WeakPtr<WebContents> initiator_web_contents;
 
   // This is absl::nullopt when prerendering is initiated by the browser.
   absl::optional<blink::LocalFrameToken> initiator_frame_token;

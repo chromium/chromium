@@ -53,35 +53,6 @@ void SendCandidate(const GURL& url,
   SendCandidates({url}, remote);
 }
 
-PrerenderAttributes GeneratePrerenderAttributes(
-    const GURL& url,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix,
-    RenderFrameHostImpl* rfh) {
-  if (trigger_type == PrerenderTriggerType::kSpeculationRule) {
-    return PrerenderAttributes(
-        url, trigger_type, embedder_histogram_suffix, Referrer(),
-        rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
-        rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-        rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
-        ui::PAGE_TRANSITION_LINK,
-        /*url_match_predicate=*/absl::nullopt);
-  } else {
-    // TODO(https://crbug.com/1325211): remove initiator_origin and
-    // initiator_frame_token after fixing prerendering activation for
-    // embedder-triggered prerendering in unittests.
-    return PrerenderAttributes(
-        url, trigger_type, embedder_histogram_suffix, Referrer(),
-        /*initiator_origin=*/rfh->GetLastCommittedOrigin(),
-        rfh->GetLastCommittedURL(),
-        /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
-        /*initiator_frame_token=*/rfh->GetFrameToken(),
-        /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-        /*initiator_ukm_id=*/ukm::kInvalidSourceId, ui::PAGE_TRANSITION_LINK,
-        /*url_match_predicate=*/absl::nullopt);
-  }
-}
-
 // This definition is needed because this constant is odr-used in gtest macros.
 // https://en.cppreference.com/w/cpp/language/static#Constant_static_members
 const int kNoFrameTreeNodeId = RenderFrameHost::kNoFrameTreeNodeId;
@@ -223,6 +194,36 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
     // Activate the prerendered page.
     contents()->ActivatePrerenderedPage(kPrerenderingUrl);
+  }
+
+  PrerenderAttributes GeneratePrerenderAttributes(
+      const GURL& url,
+      PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
+      RenderFrameHostImpl* rfh) {
+    if (trigger_type == PrerenderTriggerType::kSpeculationRule) {
+      return PrerenderAttributes(
+          url, trigger_type, embedder_histogram_suffix, Referrer(),
+          rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
+          rfh->GetProcess()->GetID(), contents()->GetWeakPtr(),
+          rfh->GetFrameToken(), rfh->GetFrameTreeNodeId(),
+          rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+          /*url_match_predicate=*/absl::nullopt);
+    } else {
+      // TODO(https://crbug.com/1325211): remove initiator_origin and
+      // initiator_frame_token after fixing prerendering activation for
+      // embedder-triggered prerendering in unittests.
+      return PrerenderAttributes(
+          url, trigger_type, embedder_histogram_suffix, Referrer(),
+          /*initiator_origin=*/rfh->GetLastCommittedOrigin(),
+          rfh->GetLastCommittedURL(),
+          /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
+          contents()->GetWeakPtr(),
+          /*initiator_frame_token=*/rfh->GetFrameToken(),
+          /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+          /*initiator_ukm_id=*/ukm::kInvalidSourceId, ui::PAGE_TRANSITION_LINK,
+          /*url_match_predicate=*/absl::nullopt);
+    }
   }
 
   void ExpectUniqueSampleOfFinalStatus(PrerenderFinalStatus status) {

@@ -19,9 +19,9 @@ class PrerenderNewTabHandle::WebContentsDelegateImpl
   ~WebContentsDelegateImpl() override = default;
 
   bool IsPrerender2Supported(WebContents& web_contents) override {
-    // TODO(crbug.com/1350676): Accordingly check the user preference etc like
-    // the regular WebContentsDelegate implementation.
-    return true;
+    // This should be checked in the initiator's WebContents.
+    NOTREACHED();
+    return false;
   }
 
   // TODO(crbug.com/1350676): Investigate if we have to override other
@@ -47,6 +47,11 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   web_contents_create_params_.opener_render_frame_id =
       initiator_render_frame_host->GetRoutingID();
   web_contents_create_params_.opener_suppressed = true;
+
+  // Set the visibility of the prerendering WebContents to HIDDEN until
+  // prerender activation.
+  web_contents_create_params_.initially_hidden = true;
+
   // TODO(crbug.com/1350676): Consider sharing a pre-created WebContents
   // instance among multiple new-tab-prerenders as an optimization.
   web_contents_ = base::WrapUnique(static_cast<WebContentsImpl*>(
@@ -56,15 +61,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   web_contents_delegate_ = std::make_unique<WebContentsDelegateImpl>();
   web_contents_->SetDelegate(web_contents_delegate_.get());
 
-  // In the current implementation, WebContentsImpl needs to be visible to start
-  // prerendering (see the check in PrerenderHostRegistry::CreateAndStartHost),
-  // but actually this WebContents is not visible to users. This seems
-  // inconsistent.
-  // TODO(crbug.com/1350676): Set the visibility of this WebContents to HIDDEN
-  // until activation and let the WebContents run prerendering even in HIDDEN.
-  // To achieve this, we have to modify the check in PrerenderHostRegistry, and
-  // set `web_contents_create_params_.initially_hidden` above.
-  DCHECK_EQ(web_contents_->GetVisibility(), Visibility::VISIBLE);
+  DCHECK_EQ(web_contents_->GetVisibility(), Visibility::HIDDEN);
 }
 
 PrerenderNewTabHandle::~PrerenderNewTabHandle() {

@@ -241,6 +241,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
+  base::WeakPtr<WebContents> initiator_web_contents() {
+    return attributes_.initiator_web_contents;
+  }
+
   int initiator_frame_tree_node_id() const {
     return attributes_.initiator_frame_tree_node_id;
   }

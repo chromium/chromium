@@ -461,7 +461,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
       url, PrerenderTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", Referrer(),
       rfhi->GetLastCommittedOrigin(), rfhi->GetLastCommittedURL(),
-      rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
+      rfhi->GetProcess()->GetID(), GetWeakPtr(), rfhi->GetFrameToken(),
       rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
       ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt));
