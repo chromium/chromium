@@ -739,12 +739,12 @@ deps = {
   },
 
   'src/chrome/test/data/autofill/captured_sites': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill.git' + '@' + '921fcd595f78fbf62ddcb6df3bae293144156f9a',
+    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill.git' + '@' + 'ffd46b96cdf06437401fec8b68109f036b23d517',
     'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
   'src/chrome/test/data/password/captured_sites': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/password.git' + '@' + '78d725fdd5d4b247272228d8baa7438ce9400379',
+    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/password.git' + '@' + '93dfc8b7199a285a2ed832e607b0e68c5544273a',
     'condition': 'checkout_chromium_password_manager_test_dependencies',
   },
 
