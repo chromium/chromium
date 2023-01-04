@@ -53,6 +53,11 @@ PrefetchStreamingURLLoader::~PrefetchStreamingURLLoader() {
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus", status_);
 }
 
+void PrefetchStreamingURLLoader::SetOnReceivedHeadCallback(
+    base::OnceClosure on_received_head_callback) {
+  on_received_head_callback_ = std::move(on_received_head_callback);
+}
+
 bool PrefetchStreamingURLLoader::Servable(
     base::TimeDelta cacheable_duration) const {
   // If the response hasn't been received yet (meaning response_complete_time_
@@ -149,12 +154,20 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
   }
 
   if (!servable_) {
+    if (on_received_head_callback_) {
+      std::move(on_received_head_callback_).Run();
+    }
+
     return;
   }
 
   head_->navigation_delivery_type =
       network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
   body_ = std::move(body);
+
+  if (on_received_head_callback_) {
+    std::move(on_received_head_callback_).Run();
+  }
 }
 
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
@@ -169,6 +182,10 @@ void PrefetchStreamingURLLoader::OnReceiveRedirect(
   DCHECK(on_prefetch_redirect_callback_);
   on_prefetch_redirect_callback_.Run(redirect_info, *head.get(),
                                      &removed_headers);
+
+  if (on_received_head_callback_) {
+    std::move(on_received_head_callback_).Run();
+  }
 }
 
 void PrefetchStreamingURLLoader::OnUploadProgress(

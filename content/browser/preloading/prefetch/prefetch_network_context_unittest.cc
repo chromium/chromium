@@ -106,7 +106,8 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
       std::make_unique<PrefetchNetworkContext>(
           prefetch_service(),
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/false),
+                       /*use_prefetch_proxy=*/false,
+                       blink::mojom::SpeculationEagerness::kEager),
           referring_origin, main_rfh()->GetGlobalId());
 
   prefetch_network_context->GetURLLoaderFactory();
@@ -139,7 +140,8 @@ TEST_F(PrefetchNetworkContextTest,
       std::make_unique<PrefetchNetworkContext>(
           prefetch_service(),
           PrefetchType(/*use_isolated_network_context=*/false,
-                       /*use_prefetch_proxy=*/false),
+                       /*use_prefetch_proxy=*/false,
+                       blink::mojom::SpeculationEagerness::kEager),
           referring_origin, main_rfh()->GetGlobalId());
 
   prefetch_network_context->GetURLLoaderFactory();

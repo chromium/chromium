@@ -45,11 +45,21 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
       NavigationLoaderInterceptor::FallbackCallback fallback_callback) override;
 
  private:
-  // Gets the prefetch associated with |url| from |PrefetchService|.
-  virtual base::WeakPtr<PrefetchContainer> GetPrefetch(const GURL& url) const;
+  // Gets the prefetch associated with |url| from |PrefetchService|. The
+  // |get_prefetch_callback| is called with this associated prefetch.
+  virtual void GetPrefetch(
+      const GURL& url,
+      base::OnceCallback<void(base::WeakPtr<PrefetchContainer>)>
+          get_prefetch_callback) const;
 
   // Gets the relevant |GetPrefetchOriginProber| from |PrefetchService|.
   virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
+
+  // Checks the prefetch retrieved via |GetPrefetch| to see if it can be used
+  // for |tenative_resource_request|.
+  void OnGotPrefetchToServce(
+      const network::ResourceRequest& tenative_resource_request,
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   void OnProbeComplete(base::WeakPtr<PrefetchContainer> prefetch_container,
                        base::OnceClosure on_success_callback,

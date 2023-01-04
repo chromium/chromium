@@ -123,6 +123,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // context must be copied over to the default network context. These functions
   // are used to check and update the status of this process, as well as record
   // metrics about how long this process takes.
+  bool HasIsolatedCookieCopyStarted() const;
   bool IsIsolatedCookieCopyInProgress() const;
   void OnIsolatedCookieCopyStart();
   void OnIsolatedCookiesReadCompleteAndWriteStart();
@@ -171,6 +172,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // prefetch. This happens when |loader_| fully downloads the requested
   // resource.
   void OnPrefetchComplete();
+
+  // Whether or not |PrefetchService| should block until the head of |this| is
+  // received on a navigation to a matching URL.
+  bool ShouldBlockUntilHeadReceived() const;
 
   // Whether or not |this| is servable.
   bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;

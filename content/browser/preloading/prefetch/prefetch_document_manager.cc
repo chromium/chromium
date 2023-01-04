@@ -148,7 +148,8 @@ void PrefetchDocumentManager::ProcessCandidates(
           bool use_prefetch_proxy = !is_same_origin && private_prefetch;
           prefetches.emplace_back(
               candidate->url,
-              PrefetchType(use_isolated_network_context, use_prefetch_proxy),
+              PrefetchType(use_isolated_network_context, use_prefetch_proxy,
+                           candidate->eagerness),
               *candidate->referrer);
           return true;
         }

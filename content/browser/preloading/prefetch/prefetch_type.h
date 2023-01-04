@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TYPE_H_
 
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
 
@@ -13,7 +14,9 @@ namespace content {
 // handled.
 class CONTENT_EXPORT PrefetchType {
  public:
-  PrefetchType(bool use_isolated_network_context, bool use_prefetch_proxy);
+  PrefetchType(bool use_isolated_network_context,
+               bool use_prefetch_proxy,
+               blink::mojom::SpeculationEagerness eagerness);
   ~PrefetchType();
 
   PrefetchType(const PrefetchType& prefetch_type);
@@ -34,6 +37,9 @@ class CONTENT_EXPORT PrefetchType {
   // Whether prefetches of this type need to use the Prefetch Proxy.
   bool IsProxyRequired() const { return use_prefetch_proxy_; }
 
+  // Returns the eagerness of the prefetch based on the speculation rules API.
+  blink::mojom::SpeculationEagerness GetEagerness() const { return eagerness_; }
+
  private:
   friend CONTENT_EXPORT bool operator==(const PrefetchType& prefetch_type_1,
                                         const PrefetchType& prefetch_type_2);
@@ -41,6 +47,7 @@ class CONTENT_EXPORT PrefetchType {
   bool use_isolated_network_context_;
   bool use_prefetch_proxy_;
   bool proxy_bypassed_for_testing_ = false;
+  blink::mojom::SpeculationEagerness eagerness_;
 };
 
 CONTENT_EXPORT bool operator==(const PrefetchType& prefetch_type_1,

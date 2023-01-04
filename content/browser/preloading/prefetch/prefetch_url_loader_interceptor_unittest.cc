@@ -150,11 +150,15 @@ class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
   int num_probes() const { return origin_prober_->num_probes(); }
 
  private:
-  base::WeakPtr<PrefetchContainer> GetPrefetch(const GURL& url) const override {
+  void GetPrefetch(const GURL& url,
+                   base::OnceCallback<void(base::WeakPtr<PrefetchContainer>)>
+                       get_prefetch_callback) const override {
     const auto& iter = prefetches_.find(url);
-    if (iter == prefetches_.end())
-      return nullptr;
-    return iter->second;
+    if (iter == prefetches_.end()) {
+      std::move(get_prefetch_callback).Run(nullptr);
+      return;
+    }
+    std::move(get_prefetch_callback).Run(iter->second);
   }
 
   PrefetchOriginProber* GetPrefetchOriginProber() const override {
@@ -356,7 +360,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -429,7 +434,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -509,7 +515,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/false,
-                       /*use_prefetch_proxy=*/false),
+                       /*use_prefetch_proxy=*/false,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -602,7 +609,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -649,7 +657,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -702,7 +711,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -770,7 +780,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
@@ -821,7 +832,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
           PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true),
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(), nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 

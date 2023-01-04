@@ -108,10 +108,12 @@ PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
 
 // Please follow go/preloading-dashboard-updates if a new outcome enum or a
 // failure reason enum is added.
-void SetTriggeringOutcomeAndFailureReasonFromStatus(PreloadingAttempt* attempt,
-                                                    PrefetchStatus status) {
+void SetTriggeringOutcomeAndFailureReasonFromStatus(
+    PreloadingAttempt* attempt,
+    absl::optional<PrefetchStatus> old_prefetch_status,
+    PrefetchStatus new_prefetch_status) {
   if (attempt) {
-    switch (status) {
+    switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
         break;
@@ -121,6 +123,19 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(PreloadingAttempt* attempt,
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         break;
       case PrefetchStatus::kPrefetchResponseUsed:
+        if (old_prefetch_status &&
+            old_prefetch_status.value() !=
+                PrefetchStatus::kPrefetchSuccessful &&
+            old_prefetch_status.value() !=
+                PrefetchStatus::kPrefetchUsedNoProbe) {
+          // If the new prefetch status is |kPrefetchResponseUsed| but the
+          // previous status is not |kPrefetchSuccessful|, then temporarily
+          // update the triggering outcome to |kReady| to ensure valid
+          // triggering outcome state transitions. This can occur in cases
+          // where the prefetch is served before the body is fully received.
+          attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
+        }
+
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
         break;
       // A decoy is considered eligible because a network request is made for
@@ -131,7 +146,8 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(PreloadingAttempt* attempt,
       case PrefetchStatus::kPrefetchFailedNetError:
       case PrefetchStatus::kPrefetchFailedNon2XX:
       case PrefetchStatus::kPrefetchFailedMIMENotSupported:
-        attempt->SetFailureReason(ToPreloadingFailureReason(status));
+        attempt->SetFailureReason(
+            ToPreloadingFailureReason(new_prefetch_status));
         break;
       case PrefetchStatus::kPrefetchHeldback:
       // `kPrefetchAllowed` will soon transition into `kPrefetchNotStarted`.
@@ -230,10 +246,12 @@ PrefetchContainer::~PrefetchContainer() {
 }
 
 void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
-  prefetch_status_ = prefetch_status;
   SetHoldbackFromStatus(attempt_.get(), prefetch_status);
-  SetTriggeringOutcomeAndFailureReasonFromStatus(attempt_.get(),
-                                                 prefetch_status);
+  SetTriggeringOutcomeAndFailureReasonFromStatus(
+      attempt_.get(),
+      /*old_prefetch_status=*/prefetch_status_,
+      /*new_prefetch_status=*/prefetch_status);
+  prefetch_status_ = prefetch_status;
 }
 
 PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
@@ -297,6 +315,16 @@ bool PrefetchContainer::HaveDefaultContextCookiesChanged() const {
   if (cookie_listener_)
     return cookie_listener_->HaveCookiesChanged();
   return false;
+}
+
+bool PrefetchContainer::HasIsolatedCookieCopyStarted() const {
+  switch (cookie_copy_status_) {
+    case CookieCopyStatus::kNotStarted:
+      return false;
+    case CookieCopyStatus::kInProgress:
+    case CookieCopyStatus::kCompleted:
+      return true;
+  }
 }
 
 bool PrefetchContainer::IsIsolatedCookieCopyInProgress() const {
@@ -461,6 +489,15 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
   if (completion_status && head)
     fetch_duration_ =
         completion_status->completion_time - head->load_timing.request_start;
+}
+
+bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
+  // Can only block until head if the request has been started using a streaming
+  // URL loader and head hasn't been received yet.
+  if (!streaming_loader_ || streaming_loader_->GetHead()) {
+    return false;
+  }
+  return PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness());
 }
 
 bool PrefetchContainer::IsPrefetchServable(

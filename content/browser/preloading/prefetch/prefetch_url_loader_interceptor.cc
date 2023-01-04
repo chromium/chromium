@@ -94,9 +94,16 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   DCHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
   url_ = tenative_resource_request.url;
-  base::WeakPtr<PrefetchContainer> prefetch_container = GetPrefetch(url_);
-// The |url_| might be different from |prefetch_container->GetURL()| because
-// of No-Vary-Search non-exact url match.
+  GetPrefetch(url_, base::BindOnce(
+                        &PrefetchURLLoaderInterceptor::OnGotPrefetchToServce,
+                        weak_factory_.GetWeakPtr(), tenative_resource_request));
+}
+
+void PrefetchURLLoaderInterceptor::OnGotPrefetchToServce(
+    const network::ResourceRequest& tenative_resource_request,
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  // The |url_| might be different from |prefetch_container->GetURL()| because
+  // of No-Vary-Search non-exact url match.
 #if DCHECK_IS_ON()
   if (prefetch_container) {
     GURL::Replacements replacements;
@@ -106,6 +113,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
               prefetch_container->GetURL().ReplaceComponents(replacements));
   }
 #endif
+
   if (!prefetch_container ||
       !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
       prefetch_container->HaveDefaultContextCookiesChanged()) {
@@ -146,14 +154,18 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
                                                       prefetch_container);
 }
 
-base::WeakPtr<PrefetchContainer> PrefetchURLLoaderInterceptor::GetPrefetch(
-    const GURL& url) const {
+void PrefetchURLLoaderInterceptor::GetPrefetch(
+    const GURL& url,
+    base::OnceCallback<void(base::WeakPtr<PrefetchContainer>)>
+        get_prefetch_callback) const {
   PrefetchService* prefetch_service =
       PrefetchServiceFromFrameTreeNodeId(frame_tree_node_id_);
-  if (!prefetch_service)
-    return nullptr;
+  if (!prefetch_service) {
+    std::move(get_prefetch_callback).Run(nullptr);
+    return;
+  }
 
-  return prefetch_service->GetPrefetchToServe(url);
+  prefetch_service->GetPrefetchToServe(url, std::move(get_prefetch_callback));
 }
 
 PrefetchOriginProber* PrefetchURLLoaderInterceptor::GetPrefetchOriginProber()
