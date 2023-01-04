@@ -9,8 +9,15 @@
 // extensions menu.
 class ExtensionsMenuNavigationHandler {
  public:
+  virtual ~ExtensionsMenuNavigationHandler() = default;
+
+  // Creates and opens the main page in the menu, if it exists.
   virtual void OpenMainPage() = 0;
+
+  // Creates and opens the site permissions page in the menu, if it exists.
   virtual void OpenSitePermissionsPage() = 0;
+
+  // Closes the currently-showing extensions menu, if it exists.
   virtual void CloseBubble() = 0;
 };
 
