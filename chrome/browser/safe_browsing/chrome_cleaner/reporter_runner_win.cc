@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -541,15 +541,6 @@ void SetSwReporterTestingDelegate(SwReporterTestingDelegate* delegate) {
   g_testing_delegate_ = delegate;
 }
 
-bool ReporterTerminatesOnBrowserExit() {
-  // Windows 7 does not allow nested job objects, and the process may already
-  // be in a job (for example when running under a debugger or in Terminal
-  // Server) so only enable this on Windows 8+. The reporter will finish its
-  // scan and upload reports if the user has opted in, but not be able to
-  // prompt for cleanup if UwS is found.
-  return base::win::GetVersion() >= base::win::Version::WIN8;
-}
-
 // This function is called from a worker thread to launch the SwReporter and
 // wait for termination to collect its exit code. This task could be
 // interrupted by a shutdown at any time, so it shouldn't depend on anything
@@ -577,13 +568,10 @@ ReporterRunResult LaunchAndWaitForExit(const SwReporterInvocation& invocation) {
   // Assign the reporter process to a job. If the browser exits before the
   // reporter, the OS will close the job handle and the reporter process.
   base::win::ScopedHandle job;
-  if (ReporterTerminatesOnBrowserExit()) {
-    job.Set(::CreateJobObject(nullptr, nullptr));
-    if (job.IsValid()) {
-      base::SetJobObjectLimitFlags(job.Get(),
-                                   JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE);
-      launch_options.job_handle = job.Get();
-    }
+  job.Set(::CreateJobObject(nullptr, nullptr));
+  if (job.IsValid()) {
+    base::SetJobObjectLimitFlags(job.Get(), JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE);
+    launch_options.job_handle = job.Get();
   }
 
   base::Time start_time = Now();

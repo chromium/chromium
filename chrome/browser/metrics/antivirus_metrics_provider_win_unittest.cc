@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -14,7 +15,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
-#include "base/win/windows_version.h"
 #include "chrome/services/util_win/util_win_impl.h"
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,41 +25,36 @@ namespace {
 void VerifySystemProfileData(const metrics::SystemProfileProto& system_profile,
                              bool expect_unhashed_value,
                              bool second_run) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   // The name of Windows Defender changed sometime in Windows 10, so any of the
   // following is possible.
   constexpr char kWindowsDefender[] = "Windows Defender";
   constexpr char kWindowsDefenderAntivirus[] = "Windows Defender Antivirus";
 
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    bool defender_found = false;
-    uint32_t last_hash = 0xdeadbeef;
-    for (const auto& av : system_profile.antivirus_product()) {
-      if (av.has_product_name_hash())
-        last_hash = av.product_name_hash();
-      if (av.product_name_hash() ==
-          variations::HashName(kWindowsDefender) ||
-          av.product_name_hash() ==
-          variations::HashName(kWindowsDefenderAntivirus)) {
-        defender_found = true;
-        if (expect_unhashed_value) {
-          EXPECT_TRUE(av.has_product_name());
-          EXPECT_TRUE(av.product_name() == kWindowsDefender ||
-                      av.product_name() == kWindowsDefenderAntivirus);
-        } else {
-          EXPECT_FALSE(av.has_product_name());
-        }
-        break;
-      }
+  bool defender_found = false;
+  uint32_t last_hash = 0xdeadbeef;
+  for (const auto& av : system_profile.antivirus_product()) {
+    if (av.has_product_name_hash()) {
+      last_hash = av.product_name_hash();
     }
-    EXPECT_TRUE(defender_found)
-        << "expect_unhashed_value = " << expect_unhashed_value
-        << ", second_run = " << second_run << ", "
-        << system_profile.antivirus_product().size()
-        << " antivirus products found. Last hash is " << last_hash << ".";
+    if (av.product_name_hash() == variations::HashName(kWindowsDefender) ||
+        av.product_name_hash() ==
+            variations::HashName(kWindowsDefenderAntivirus)) {
+      defender_found = true;
+      if (expect_unhashed_value) {
+        EXPECT_TRUE(av.has_product_name());
+        EXPECT_TRUE(av.product_name() == kWindowsDefender ||
+                    av.product_name() == kWindowsDefenderAntivirus);
+      } else {
+        EXPECT_FALSE(av.has_product_name());
+      }
+      break;
+    }
   }
+  EXPECT_TRUE(defender_found)
+      << "expect_unhashed_value = " << expect_unhashed_value
+      << ", second_run = " << second_run << ", "
+      << system_profile.antivirus_product().size()
+      << " antivirus products found. Last hash is " << last_hash << ".";
 }
 
 }  // namespace

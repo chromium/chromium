@@ -262,12 +262,6 @@ MULTIPROCESS_TEST_MAIN(DefaultBehaviourChild) {
 
 // Parent process.
 TEST(ReporterRunnerLaunchTest, ValidateDefaultBehaviour) {
-  if (!safe_browsing::internal::ReporterTerminatesOnBrowserExit()) {
-    // No point testing the default behaviour if we won't run the
-    // TerminateWhileRunning test.
-    GTEST_SKIP();
-  }
-
   base::Process child, grandchild;
   ASSERT_TRUE(
       CreateRunningProcesses("DefaultBehaviourChild", &child, &grandchild));
@@ -303,12 +297,6 @@ MULTIPROCESS_TEST_MAIN(SwReporterChild) {
 
 // Parent process.
 TEST(ReporterRunnerLaunchTest, TerminateWhileRunning) {
-  if (!safe_browsing::internal::ReporterTerminatesOnBrowserExit()) {
-    // Skip the test since the code being tested isn't enabled in this
-    // configuration.
-    GTEST_SKIP();
-  }
-
   base::Process child, grandchild;
   ASSERT_TRUE(CreateRunningProcesses("SwReporterChild", &child, &grandchild));
   ASSERT_TRUE(child.Terminate(/*exit_code=*/0, /*wait=*/false));

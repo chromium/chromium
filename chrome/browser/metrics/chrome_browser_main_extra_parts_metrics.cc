@@ -425,9 +425,6 @@ void RecordIsPinnedToTaskbarHistogram() {
 // here:
 // https://blogs.blackberry.com/en/2017/10/windows-10-parallel-loading-breakdown.
 bool IsParallelDllLoadingEnabled() {
-  // Parallel DLL loading is only available on Windows 10 and above.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path))
     return false;
