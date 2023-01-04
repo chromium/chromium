@@ -59,7 +59,8 @@ const float kNormalFrameTimeoutInFrameIntervals = 25.0f;
 
 // Min delta time between two frames allowed without being dropped if a max
 // frame rate is specified.
-constexpr base::TimeDelta kMinTimeInMsBetweenFrames = base::Milliseconds(5);
+constexpr base::TimeDelta kMinTimeInMsBetweenFrames =
+    base::Milliseconds(VideoTrackAdapter::kMinTimeBetweenFramesMs);
 // If the delta between two frames is bigger than this, we will consider it to
 // be invalid and reset the fps calculation.
 constexpr base::TimeDelta kMaxTimeInMsBetweenFrames = base::Milliseconds(1000);
@@ -363,6 +364,9 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     return;
   }
 
+  // Update the last timestamp since the frame was approved and not dropped.
+  last_time_stamp_ = video_frame->timestamp();
+
   // If the frame is a texture not backed up by GPU memory we don't apply
   // cropping/scaling and deliver the frame as-is, leaving it up to the
   // destination to rescale it. Otherwise, cropping and scaling is soft-applied
@@ -493,7 +497,6 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
 
   // Do not drop frames if max frame rate hasn't been specified.
   if (!settings_.max_frame_rate().has_value()) {
-    last_time_stamp_ = frame.timestamp();
     return false;
   }
 
@@ -502,8 +505,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   // Check if the time since the last frame is completely off.
   if (delta_ms.is_negative() || delta_ms > kMaxTimeInMsBetweenFrames) {
     DVLOG(3) << " reset timestamps";
-    // Reset |last_time_stamp_| and fps calculation.
-    last_time_stamp_ = frame.timestamp();
+    // Reset fps calculation.
     frame_rate_ = settings_.max_frame_rate().value_or(
         MediaStreamVideoSource::kDefaultFrameRate);
     DVLOG(1) << " frame rate filter initialized to " << frame_rate_ << " fps";
@@ -526,7 +528,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
         kResolutionAdapterTimestampTooCloseToPrevious;
     return true;
   }
-  last_time_stamp_ = frame.timestamp();
+
   // Calculate the frame rate using an exponential moving average (EMA) filter.
   // Use a simple filter with 0.1 weight of the current sample.
   frame_rate_ = 100 / delta_ms.InMillisecondsF() + 0.9 * frame_rate_;
