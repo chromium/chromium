@@ -16,7 +16,6 @@ import sys
 from xml.dom import minidom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import diff_util
 import path_util
 
 import histogram_paths
@@ -297,11 +296,6 @@ def UpdateHistogramFromDict(histogram_enum_name, source_enum_values,
   """
   (xml, new_xml) = _GetOldAndUpdatedXml(histogram_enum_name, source_enum_values,
                                         source_enum_path, caller_script_name)
-  if not diff_util.PromptUserToAcceptDiff(
-      xml, new_xml, 'Is the updated version acceptable?'):
-    Log('Cancelled.')
-    return
-
   with io.open(ENUMS_PATH, 'w', encoding='utf-8', newline='') as f:
     f.write(new_xml)
 
