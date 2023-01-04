@@ -2681,6 +2681,9 @@ extern const char kArcEnableVirtioBlkForDataDesc[];
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
+extern const char kAudioFlexibleLoopbackName[];
+extern const char kAudioFlexibleLoopbackDescription[];
+
 extern const char kAudioHFPMicSRName[];
 extern const char kAudioHFPMicSRDescription[];
 

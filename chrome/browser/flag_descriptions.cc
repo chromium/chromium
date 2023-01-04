@@ -4666,6 +4666,11 @@ const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
+const char kAudioFlexibleLoopbackName[] =
+    "ChromeOS flexible loopback API support";
+const char kAudioFlexibleLoopbackDescription[] =
+    "Enable flexible loopback API support in ChromeOS.";
+
 const char kAudioHFPMicSRName[] =
     "Audio super-resolution Bluetooth HFP microphone";
 const char kAudioHFPMicSRDescription[] =

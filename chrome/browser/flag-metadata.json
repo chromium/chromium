@@ -378,6 +378,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "audio-flexible-loopback",
+    "owners": ["aaronyu", "htcheong", "chromeos-audio@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "audio-hfp-mic-sr",
     "owners": [ "paulhsia", "cranelw", "chromeos-audio@google.com" ],
     "expiry_milestone": 120
