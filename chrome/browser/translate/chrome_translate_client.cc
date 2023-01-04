@@ -332,7 +332,15 @@ void ChromeTranslateClient::WebContentsDestroyed() {
   // Translation process can be interrupted.
   // Destroying the TranslateManager now guarantees that it never has to deal
   // with NULL WebContents.
-  translate_manager_.reset();
+  if (translate_manager_) {
+    if (translate_driver_) {
+      translate_driver_->set_translate_manager(nullptr);
+    }
+    if (per_frame_translate_driver_) {
+      per_frame_translate_driver_->set_translate_manager(nullptr);
+    }
+    translate_manager_.reset();
+  }
 }
 
 // TranslateDriver::LanguageDetectionObserver implementation.
