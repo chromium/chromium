@@ -42,10 +42,6 @@ static_library("common") {
     "//net",
     "//url",
   ]
-
-  if (!is_ios) {
-    deps += [ "//components/privacy_sandbox:features" ]
-  }
 }
 
 source_set("unit_tests") {

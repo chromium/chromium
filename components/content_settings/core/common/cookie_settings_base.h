@@ -47,7 +47,7 @@ namespace content_settings {
 //      </html>
 //    </iframe>
 //  </body>
-// </html>
+//</html>
 //
 // When each of these resources get fetched, |top_frame_origin| will always be
 // "https://a.com" and |site_for_cookies| is set the following:
@@ -243,10 +243,9 @@ class CookieSettingsBase {
       content_settings::SettingSource* source,
       QueryReason query_reason) const = 0;
 
-  const bool storage_access_api_enabled_;
-  const bool storage_access_api_grants_unpartitioned_storage_;
-  const bool is_storage_partitioned_;
-  const bool is_privacy_sandbox_v4_enabled_;
+  bool storage_access_api_enabled_;
+  bool storage_access_api_grants_unpartitioned_storage_;
+  bool is_storage_partitioned_;
 };
 
 }  // namespace content_settings

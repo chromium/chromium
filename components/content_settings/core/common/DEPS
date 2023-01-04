@@ -11,5 +11,4 @@ include_rules = [
   "+testing",
   "+third_party/icu/fuzzers/fuzzer_utils.h",
   "+url",
-  "+components/privacy_sandbox/privacy_sandbox_features.h",
 ]

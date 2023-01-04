@@ -24,6 +24,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -33,8 +34,7 @@
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
 #else
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
-
+#include "third_party/blink/public/common/features.h"
 namespace {
 constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
@@ -122,10 +122,6 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   ~CookieSettingsTest() override { settings_map_->ShutdownOnUIThread(); }
 
   void SetUp() override {
-#if !BUILDFLAG(IS_IOS)
-    is_privacy_sandbox_v4_enabled_ =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4);
-#endif
     ContentSettingsRegistry::GetInstance()->ResetForTest();
     CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
@@ -219,7 +215,6 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   const net::SiteForCookies kHttpSiteForCookies;
   const net::SiteForCookies kHttpsSiteForCookies;
   ContentSettingsPattern kAllHttpsSitesPattern;
-  bool is_privacy_sandbox_v4_enabled_ = false;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -426,34 +421,6 @@ TEST_P(CookieSettingsTest, CookiesExplicitSessionOnly) {
                                                     QueryReason::kCookies));
 }
 
-TEST_P(CookieSettingsTest, ThirdPartyExceptionSessionOnly) {
-  cookie_settings_->SetThirdPartyCookieSetting(kBlockedSite,
-                                               CONTENT_SETTING_SESSION_ONLY);
-  EXPECT_EQ(cookie_settings_->IsCookieSessionOnly(kBlockedSite,
-                                                  QueryReason::kCookies),
-            !is_privacy_sandbox_v4_enabled_);
-}
-
-#if !BUILDFLAG(IS_IOS)
-class CookieSettingsTestSandboxV4Enabled : public CookieSettingsTest {
- public:
-  CookieSettingsTestSandboxV4Enabled() {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxSettings4);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(CookieSettingsTestSandboxV4Enabled, ThirdPartyExceptionSessionOnly) {
-  cookie_settings_->SetThirdPartyCookieSetting(kBlockedSite,
-                                               CONTENT_SETTING_SESSION_ONLY);
-  EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite,
-                                                     QueryReason::kCookies));
-}
-#endif
-
 TEST_P(CookieSettingsTest, KeepBlocked) {
   // Keep blocked cookies.
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
@@ -563,24 +530,6 @@ TEST_P(CookieSettingsTest, DeletionWithSubDomains) {
   EXPECT_TRUE(ShouldDeleteCookieOnExit(kSubDomain, true));
 }
 
-TEST_P(CookieSettingsTest, DeleteCookiesWithThirdPartyException) {
-  cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-  cookie_settings_->SetThirdPartyCookieSetting(kHttpsSite,
-                                               CONTENT_SETTING_SESSION_ONLY);
-  EXPECT_EQ(ShouldDeleteCookieOnExit(kDomain, true),
-            !is_privacy_sandbox_v4_enabled_);
-}
-
-#if !BUILDFLAG(IS_IOS)
-TEST_P(CookieSettingsTestSandboxV4Enabled,
-       DeleteCookiesWithThirdPartyException) {
-  cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-  cookie_settings_->SetThirdPartyCookieSetting(kHttpsSite,
-                                               CONTENT_SETTING_SESSION_ONLY);
-  EXPECT_FALSE(ShouldDeleteCookieOnExit(kDomain, true));
-}
-#endif
-
 TEST_P(CookieSettingsTest, CookiesThirdPartyBlockedExplicitAllow) {
   cookie_settings_->SetCookieSetting(kAllowedSite, CONTENT_SETTING_ALLOW);
   prefs_.SetInteger(prefs::kCookieControlsMode,
@@ -626,15 +575,13 @@ TEST_P(CookieSettingsTest, CookiesThirdPartyBlockedAllSitesAllowed) {
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kAllowedSite,
                                                      QueryReason::kCookies));
 
-  // HTTP sites should be allowed, session_only attributes are ignored for
-  // exceptions with secondary pattern.
+  // HTTP sites should be allowed, but session-only.
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kFirstPartySite, kFirstPartySiteForCookies,
       /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides,
       QueryReason::kCookies));
-  EXPECT_EQ(cookie_settings_->IsCookieSessionOnly(kFirstPartySite,
-                                                  QueryReason::kCookies),
-            !is_privacy_sandbox_v4_enabled_);
+  EXPECT_TRUE(cookie_settings_->IsCookieSessionOnly(kFirstPartySite,
+                                                    QueryReason::kCookies));
 
   // Third-party cookies should be blocked.
   EXPECT_EQ(cookie_setting_overrides.Has(
@@ -1058,20 +1005,6 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
-#if !BUILDFLAG(IS_IOS)
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    CookieSettingsTestSandboxV4Enabled,
-    testing::ValuesIn<TestCase>({
-        {"disable_SAA", false, false},
-        {"enable_SAA", true, false},
-        {"disable_SAA_force_3PCs", false, true},
-        {"enable_SAA_force_3PCs", true, true},
-    }),
-    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-#endif
 }  // namespace
 
 }  // namespace content_settings

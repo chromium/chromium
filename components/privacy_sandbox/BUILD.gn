@@ -16,19 +16,12 @@ static_library("privacy_sandbox_prefs") {
   public_deps = [ "//base" ]
 }
 
-static_library("features") {
-  sources = [
-    "privacy_sandbox_features.cc",
-    "privacy_sandbox_features.h",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 source_set("privacy_sandbox") {
   sources = [
     "canonical_topic.cc",
     "canonical_topic.h",
+    "privacy_sandbox_features.cc",
+    "privacy_sandbox_features.h",
     "privacy_sandbox_settings.cc",
     "privacy_sandbox_settings.h",
   ]
@@ -48,10 +41,7 @@ source_set("privacy_sandbox") {
     "//url:url",
   ]
 
-  public_deps = [
-    ":features",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
