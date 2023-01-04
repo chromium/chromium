@@ -4,13 +4,16 @@
 # found in the LICENSE file.
 
 import argparse
+import hashlib
 import json
-import os
+import pathlib
 
-_PATCH = 'cr0'
-_LATEST_VERSION = '12.1-robolectric-8229987.' + _PATCH
 # All instrumented jars + latest non-instrumented one.
 _ROBO_URL_FILES = {
+    'android-all-13-robolectric-9030017.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all/13-robolectric-9030017/android-all-13-robolectric-9030017.jar',
+    'android-all-instrumented-13-robolectric-9030017-i4.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/13-robolectric-9030017-i4/android-all-instrumented-13-robolectric-9030017-i4.jar',
     'android-all-instrumented-12.1-robolectric-8229987-i4.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/12.1-robolectric-8229987-i4/android-all-instrumented-12.1-robolectric-8229987-i4.jar',
     'android-all-instrumented-12-robolectric-7732740-i4.jar':
@@ -35,22 +38,26 @@ _ROBO_URL_FILES = {
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/5.0.2_r3-robolectric-r0-i4/android-all-instrumented-5.0.2_r3-robolectric-r0-i4.jar',
     'android-all-instrumented-4.4_r1-robolectric-r2-i4.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/4.4_r1-robolectric-r2-i4/android-all-instrumented-4.4_r1-robolectric-r2-i4.jar',
-    'android-all-12.1-robolectric-8229987.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all/12.1-robolectric-8229987/android-all-12.1-robolectric-8229987.jar'
 }
 
+
 def do_latest():
-  print(_LATEST_VERSION)
+  # Make the version change every time this file changes.
+  md5 = hashlib.md5()
+  md5.update(pathlib.Path(__file__).read_bytes())
+  file_hash = md5.hexdigest()[:10]
+  # Prefix with the first version from the dict, which should be the
+  # non-instrumented .jar, to make the version string not entirely random.
+  first_file = next(iter(_ROBO_URL_FILES))
+  assert '-instrumented' not in first_file and first_file.endswith('.jar')
+  first_file = first_file[:-len('.jar')]
+  print(f'{first_file}-{file_hash}')
 
 
-def _get_download_url(version):
-  download_urls, name = [], []
-  for robo_name, url in _ROBO_URL_FILES.items():
-    name.append(robo_name)
-    download_urls.append(url)
+def do_get_url():
   partial_manifest = {
-      'url': download_urls,
-      'name': name,
+      'url': list(_ROBO_URL_FILES.values()),
+      'name': list(_ROBO_URL_FILES),
       'ext': '.jar',
   }
   print(json.dumps(partial_manifest))
@@ -58,14 +65,13 @@ def _get_download_url(version):
 
 def main():
   ap = argparse.ArgumentParser()
-  sub = ap.add_subparsers()
+  sub = ap.add_subparsers(required=True)
 
-  latest = sub.add_parser("latest")
+  latest = sub.add_parser('latest')
   latest.set_defaults(func=lambda _opts: do_latest())
 
-  download = sub.add_parser("get_url")
-  download.set_defaults(
-      func=lambda _opts: _get_download_url(os.environ['_3PP_VERSION']))
+  download = sub.add_parser('get_url')
+  download.set_defaults(func=lambda _opts: do_get_url())
 
   opts = ap.parse_args()
   opts.func(opts)
@@ -73,4 +79,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-
