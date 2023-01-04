@@ -65,35 +65,6 @@ OmniboxPedalProvider::OmniboxPedalProvider(
 
 OmniboxPedalProvider::~OmniboxPedalProvider() {}
 
-void OmniboxPedalProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
-  provider_info->push_back(metrics::OmniboxEventProto_ProviderInfo());
-  metrics::OmniboxEventProto_ProviderInfo& new_entry = provider_info->back();
-  // Note: SEARCH is used here because the suggestions that Pedals attach to are
-  // almost exclusively coming from search suggestions (they could in theory
-  // attach to others if the match content were a concept match, but in practice
-  // only search suggestions have the relevant text). PEDAL is not used because
-  // Pedals are not themselves suggestions produced by an autocomplete provider.
-  // This may change. See http://cl/327103601 for context and discussion.
-  new_entry.set_provider(metrics::OmniboxEventProto::SEARCH);
-  new_entry.set_provider_done(true);
-
-  if (field_trial_triggered_ || field_trial_triggered_in_session_) {
-    std::vector<uint32_t> field_trial_hashes;
-    OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(&field_trial_hashes);
-    for (uint32_t trial : field_trial_hashes) {
-      if (field_trial_triggered_)
-        new_entry.mutable_field_trial_triggered()->Add(trial);
-      if (field_trial_triggered_in_session_)
-        new_entry.mutable_field_trial_triggered_in_session()->Add(trial);
-    }
-  }
-}
-
-void OmniboxPedalProvider::ResetSession() {
-  field_trial_triggered_in_session_ = false;
-  field_trial_triggered_ = false;
-}
-
 size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
   size_t total = 0;
   total += base::trace_event::EstimateMemoryUsage(dictionary_);
@@ -142,9 +113,6 @@ OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
   if (found == nullptr || !found->IsReadyToTrigger(input, *client_)) {
     return nullptr;
   }
-
-  field_trial_triggered_ = true;
-  field_trial_triggered_in_session_ = true;
 
   return found;
 }

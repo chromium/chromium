@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -196,11 +197,6 @@ int SearchProvider::CalculateRelevanceForKeywordVerbatim(
              : 1100;
 }
 
-void SearchProvider::ResetSession() {
-  set_field_trial_triggered(false);
-  set_field_trial_triggered_in_session(false);
-}
-
 bool SearchProvider::CanSendCurrentPageURLInRequest(
     const GURL& current_page_url,
     const TemplateURL* template_url,
@@ -251,7 +247,6 @@ void SearchProvider::Start(const AutocompleteInput& input,
   model->Load();
 
   matches_.clear();
-  set_field_trial_triggered(false);
 
   // At this point, we could exit early if the input is on-focus or empty,
   // because offering suggestions in those scenarios is handled by
@@ -459,11 +454,9 @@ void SearchProvider::OnURLLoadComplete(
           *data, GetInput(is_keyword), client()->GetSchemeClassifier(), -1,
           is_keyword, results);
       if (results_updated) {
-        if (!field_trial_triggered()) {
-          set_field_trial_triggered(results->field_trial_triggered);
-        }
-        if (!field_trial_triggered_in_session()) {
-          set_field_trial_triggered_in_session(results->field_trial_triggered);
+        if (results->field_trial_triggered) {
+          client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+              OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
         }
         SortResults(is_keyword, results);
         PrefetchImages(results);

@@ -192,8 +192,6 @@ void AutocompleteProvider::DeleteMatchElement(const AutocompleteMatch& match,
 void AutocompleteProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 }
 
-void AutocompleteProvider::ResetSession() {}
-
 size_t AutocompleteProvider::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(matches_);
 }

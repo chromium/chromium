@@ -127,9 +127,7 @@ ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
     : AutocompleteProvider(AutocompleteProvider::TYPE_CLIPBOARD),
       client_(client),
       clipboard_content_(clipboard_content),
-      current_url_suggested_times_(0),
-      field_trial_triggered_(false),
-      field_trial_triggered_in_session_(false) {
+      current_url_suggested_times_(0) {
   DCHECK(clipboard_content_);
   AddListener(listener);
 }
@@ -139,7 +137,6 @@ ClipboardProvider::~ClipboardProvider() {}
 void ClipboardProvider::Start(const AutocompleteInput& input,
                               bool minimal_changes) {
   matches_.clear();
-  field_trial_triggered_ = false;
 
   // If the user started typing, do not offer clipboard based match.
   if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT)
@@ -216,24 +213,6 @@ void ClipboardProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
   new_entry.set_provider(AsOmniboxEventProviderType());
   new_entry.set_provider_done(done_);
   new_entry.set_times_returned_results_in_session(current_url_suggested_times_);
-
-  if (field_trial_triggered_ || field_trial_triggered_in_session_) {
-    std::vector<uint32_t> field_trial_hashes;
-    OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(&field_trial_hashes);
-    for (uint32_t trial : field_trial_hashes) {
-      if (field_trial_triggered_) {
-        new_entry.mutable_field_trial_triggered()->Add(trial);
-      }
-      if (field_trial_triggered_in_session_) {
-        new_entry.mutable_field_trial_triggered_in_session()->Add(trial);
-      }
-    }
-  }
-}
-
-void ClipboardProvider::ResetSession() {
-  field_trial_triggered_ = false;
-  field_trial_triggered_in_session_ = false;
 }
 
 void ClipboardProvider::AddCreatedMatchWithTracking(
@@ -312,8 +291,6 @@ void ClipboardProvider::OnReceiveClipboardContent(
     // the image may take some time, so just be wary whenever that step happens
     // (e.g OmniboxView::OpenMatch).
     AutocompleteMatch match = NewBlankImageMatch();
-    field_trial_triggered_ = true;
-    field_trial_triggered_in_session_ = true;
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
     NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::URL) !=

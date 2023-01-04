@@ -599,8 +599,6 @@ void AutocompleteResult::AttachPedalsToMatches(
   // Used to ensure we keep only one Pedal of each kind.
   std::unordered_set<OmniboxPedal*> pedals_found;
 
-  provider->set_field_trial_triggered(false);
-
   const size_t max_index = std::min(kMaxPedalMatchIndex, matches_.size());
 
   for (size_t i = 0; i < max_index && pedals_found.size() < kMaxPedalCount;

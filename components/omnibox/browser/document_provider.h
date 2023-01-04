@@ -54,7 +54,6 @@ class DocumentProvider : public AutocompleteProvider {
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
-  void ResetSession() override;
 
   // Registers a client-side preference to enable document suggestions.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -160,12 +159,6 @@ class DocumentProvider : public AutocompleteProvider {
   static std::u16string GetMatchDescription(const std::string& update_time,
                                             const std::string& mimetype,
                                             const std::string& owner);
-
-  // Whether a field trial has triggered for this query and this session,
-  // respectively. Works similarly to BaseSearchProvider, though this class does
-  // not inherit from it.
-  bool field_trial_triggered_;
-  bool field_trial_triggered_in_session_;
 
   // Whether the server has instructed us to backoff for this session (in
   // cases where the corpus is uninteresting).

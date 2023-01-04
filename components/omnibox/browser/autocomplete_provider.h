@@ -273,11 +273,6 @@ class AutocompleteProvider
   // information it wants to |provider_info|.
   virtual void AddProviderInfo(ProvidersInfo* provider_info) const;
 
-  // Called when a new omnibox session starts or the current session ends.
-  // This gives the opportunity to reset the internal state, if any, associated
-  // with the previous session.
-  virtual void ResetSession();
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   //

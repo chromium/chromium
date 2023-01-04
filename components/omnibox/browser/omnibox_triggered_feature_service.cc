@@ -34,6 +34,11 @@ void OmniboxTriggeredFeatureService::RichAutocompletionTypeTriggered(
   rich_autocompletion_types_.insert(rich_autocompletion_type);
 }
 
+bool OmniboxTriggeredFeatureService::GetFeatureTriggered(
+    Feature feature) const {
+  return features_.count(feature);
+}
+
 void OmniboxTriggeredFeatureService::ResetSession() {
   features_.clear();
   rich_autocompletion_types_.clear();

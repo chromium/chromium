@@ -652,7 +652,6 @@ void DocumentProvider::Start(const AutocompleteInput& input,
                              bool minimal_changes) {
   TRACE_EVENT0("omnibox", "DocumentProvider::Start");
   Stop(true, false);
-  field_trial_triggered_ = false;
 
   // Perform various checks - feature is enabled, user is allowed to use the
   // feature, we're not under backoff, etc.
@@ -731,32 +730,12 @@ void DocumentProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
   metrics::OmniboxEventProto_ProviderInfo& new_entry = provider_info->back();
   new_entry.set_provider(metrics::OmniboxEventProto::DOCUMENT);
   new_entry.set_provider_done(done_);
-
-  if (field_trial_triggered_ || field_trial_triggered_in_session_) {
-    std::vector<uint32_t> field_trial_hashes;
-    OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(&field_trial_hashes);
-    for (uint32_t trial : field_trial_hashes) {
-      if (field_trial_triggered_) {
-        new_entry.mutable_field_trial_triggered()->Add(trial);
-      }
-      if (field_trial_triggered_in_session_) {
-        new_entry.mutable_field_trial_triggered_in_session()->Add(trial);
-      }
-    }
-  }
-}
-
-void DocumentProvider::ResetSession() {
-  field_trial_triggered_in_session_ = false;
-  field_trial_triggered_ = false;
 }
 
 DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener,
                                    size_t cache_size)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
-      field_trial_triggered_(false),
-      field_trial_triggered_in_session_(false),
       backoff_for_session_(false),
       client_(client),
       cache_size_(cache_size),
@@ -1063,8 +1042,6 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     if (snippet)
       match.RecordAdditionalInfo("snippet", *snippet);
     matches.push_back(match);
-    field_trial_triggered_ = true;
-    field_trial_triggered_in_session_ = true;
   }
   return matches;
 }

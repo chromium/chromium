@@ -145,10 +145,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   void DeleteMatch(const AutocompleteMatch& match) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
 
-  bool field_trial_triggered_in_session() const {
-    return field_trial_triggered_in_session_;
-  }
-
  protected:
   // The following keys are used to record additional information on matches.
 
@@ -226,15 +222,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   AutocompleteProviderClient* client() { return client_; }
   const AutocompleteProviderClient* client() const { return client_; }
 
-  bool field_trial_triggered() const { return field_trial_triggered_; }
-
-  void set_field_trial_triggered(bool triggered) {
-    field_trial_triggered_ = triggered;
-  }
-  void set_field_trial_triggered_in_session(bool triggered) {
-    field_trial_triggered_in_session_ = triggered;
-  }
-
  private:
   friend class SearchProviderTest;
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, TestDeleteMatch);
@@ -249,16 +236,6 @@ class BaseSearchProvider : public AutocompleteProvider {
                           SuggestionDeletionHandler* handler);
 
   raw_ptr<AutocompleteProviderClient> client_;
-
-  // Whether a field trial, if any, has triggered in the most recent
-  // autocomplete query. This field is set to true only if the suggestion
-  // provider has completed and the response contained
-  // '"google:fieldtrialtriggered":true'.
-  bool field_trial_triggered_;
-
-  // Same as above except that it is maintained across the current Omnibox
-  // session.
-  bool field_trial_triggered_in_session_;
 
   // Each deletion handler in this vector corresponds to an outstanding request
   // that a server delete a personalized suggestion. Making this a vector of

@@ -305,10 +305,6 @@ class BaseSearchProviderTest : public testing::Test,
                     const ExpectedMatch expected_matches[],
                     const ACMatches& matches);
 
-  // Enable or disable the specified Omnibox field trial rule.
-  base::FieldTrial* CreateFieldTrial(const char* field_trial_rule,
-                                     bool enabled);
-
   void ClearAllResults();
 
   // See description above class for details of these fields.
@@ -613,18 +609,6 @@ void BaseSearchProviderTest::CheckMatches(
     SCOPED_TRACE(" Case # " + base::NumberToString(i));
     EXPECT_EQ(kNotApplicable, expected_matches[i].contents);
   }
-}
-
-base::FieldTrial* BaseSearchProviderTest::CreateFieldTrial(
-    const char* field_trial_rule,
-    bool enabled) {
-  std::map<std::string, std::string> params;
-  params[std::string(field_trial_rule)] = enabled ?
-      "true" : "false";
-  variations::AssociateVariationParams(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params);
-  return base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
 }
 
 void BaseSearchProviderTest::ClearAllResults() {
@@ -2525,37 +2509,36 @@ TEST_F(SearchProviderTest, DefaultProviderSuggestRelevanceScoringUrlInput) {
 
 // A basic test that verifies the field trial triggered parsing logic.
 TEST_F(SearchProviderTest, FieldTrialTriggeredParsing) {
-  base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "DefaultGroup");
-  trial->Activate();
+  const auto test = [&](bool trigger) {
+    client_->GetOmniboxTriggeredFeatureService()->ResetSession();
+    QueryForInputAndWaitForFetcherResponses(
+        u"foo", false,
+        "[\"foo\",[\"foo bar\"],[\"\"],[],"
+        "{\"google:suggesttype\":[\"QUERY\"],"
+        "\"google:fieldtrialtriggered\":" +
+            std::string(trigger ? "true" : "false") + "}]",
+        std::string());
 
-  QueryForInputAndWaitForFetcherResponses(
-      u"foo", false,
-      "[\"foo\",[\"foo bar\"],[\"\"],[],"
-      "{\"google:suggesttype\":[\"QUERY\"],"
-      "\"google:fieldtrialtriggered\":true}]",
-      std::string());
-
-  {
     // Check for the match and field trial triggered bits.
     AutocompleteMatch match;
     EXPECT_TRUE(FindMatchWithContents(u"foo bar", &match));
-    ProvidersInfo providers_info;
-    provider_->AddProviderInfo(&providers_info);
-    ASSERT_EQ(1U, providers_info.size());
-    EXPECT_EQ(1, providers_info[0].field_trial_triggered_size());
-    EXPECT_EQ(1, providers_info[0].field_trial_triggered_in_session_size());
-  }
+    EXPECT_EQ(
+        client_->GetOmniboxTriggeredFeatureService()->GetFeatureTriggered(
+            OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature),
+        trigger);
+  };
+
   {
-    // Reset the session and check that bits are reset.
-    provider_->ResetSession();
-    ProvidersInfo providers_info;
-    provider_->AddProviderInfo(&providers_info);
-    ASSERT_EQ(1U, providers_info.size());
-    EXPECT_EQ(0, providers_info[0].field_trial_triggered_size());
-    EXPECT_EQ(0, providers_info[0].field_trial_triggered_in_session_size());
+    SCOPED_TRACE("Feature triggered.");
+    test(true);
+  }
+
+  {
+    SCOPED_TRACE("Feature not triggered.");
+    test(false);
   }
 }
+
 // A basic test that verifies the specific type identifier parsing logic.
 TEST_F(SearchProviderTest, SpecificTypeIdentifierParsing) {
   struct Match {
@@ -2679,7 +2662,7 @@ TEST_F(SearchProviderTest, SpecificTypeIdentifierParsing) {
                                             false, test.provider_response_json,
                                             std::string());
 
-    // Check for the match and field trial triggered bits.
+    // Check for the match and subtypes.
     const ACMatches& matches = provider_->matches();
     ASSERT_FALSE(matches.empty());
     for (const auto& expected_match : test.expected_matches) {

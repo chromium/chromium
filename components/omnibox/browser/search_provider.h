@@ -76,9 +76,6 @@ class SearchProvider : public BaseSearchProvider,
       bool allow_exact_keyword_match,
       bool prefer_keyword);
 
-  // AutocompleteProvider:
-  void ResetSession() override;
-
   // The verbatim score for an input which is not a URL.
   static const int kNonURLVerbatimRelevance = 1300;
 

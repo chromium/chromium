@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
@@ -480,9 +481,6 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  set_field_trial_triggered(false);
-  set_field_trial_triggered_in_session(false);
-
   // Convert the stored response to |matches_|, if applicable.
   SearchSuggestionParser::Results results;
   if (ReadStoredResponse(client(), GetZeroSuggestInput(input, client()),
@@ -558,13 +556,6 @@ void ZeroSuggestProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
   BaseSearchProvider::AddProviderInfo(provider_info);
   if (!matches().empty())
     provider_info->back().set_times_returned_results_in_session(1);
-}
-
-void ZeroSuggestProvider::ResetSession() {
-  // The user has started editing in the omnibox, so leave
-  // |field_trial_triggered_in_session| unchanged and set
-  // |field_trial_triggered| to false since zero suggest is inactive now.
-  set_field_trial_triggered(false);
 }
 
 ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
@@ -707,11 +698,9 @@ void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
   suggestion_groups_map_.clear();
   experiment_stats_v2s_.clear();
 
-  if (!field_trial_triggered()) {
-    set_field_trial_triggered(results.field_trial_triggered);
-  }
-  if (!field_trial_triggered_in_session()) {
-    set_field_trial_triggered_in_session(results.field_trial_triggered);
+  if (results.field_trial_triggered) {
+    client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+        OmniboxTriggeredFeatureService::Feature::kRemoteZeroSuggestFeature);
   }
 
   // Add all the SuggestResults to the map. We display all ZeroSuggest search

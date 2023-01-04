@@ -40,19 +40,6 @@ class OmniboxPedalProvider {
   OmniboxPedal* FindReadyPedalMatch(const AutocompleteInput& input,
                                     const std::u16string& match_text);
 
-  // "Fake" implementation of AutocompleteProvider AddProviderInfo, though this
-  // class is not a true subclass of AutocompleteProvider. This is used
-  // for logging and reporting for our field trial.
-  void AddProviderInfo(ProvidersInfo* provider_info) const;
-
-  // "Fake" implementation of AutocompleteProvider::ResetSession. Resets the
-  // field trial flags.
-  void ResetSession();
-
-  void set_field_trial_triggered(bool triggered) {
-    field_trial_triggered_ = triggered;
-  }
-
   // Estimates memory usage for this and all contained Pedals.
   size_t EstimateMemoryUsage() const;
 
@@ -118,10 +105,6 @@ class OmniboxPedalProvider {
 
   // This holds the tokens currently being matched against.
   OmniboxPedal::TokenSequence match_tokens_;
-
-  // Whether a field trial has triggered for this query and this session
-  bool field_trial_triggered_ = false;
-  bool field_trial_triggered_in_session_ = false;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
