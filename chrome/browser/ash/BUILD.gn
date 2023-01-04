@@ -1083,8 +1083,6 @@ source_set("ash") {
     "file_manager/filesystem_api_util.h",
     "file_manager/fusebox_daemon.cc",
     "file_manager/fusebox_daemon.h",
-    "file_manager/fusebox_mounter.cc",
-    "file_manager/fusebox_mounter.h",
     "file_manager/guest_os_file_tasks.cc",
     "file_manager/guest_os_file_tasks.h",
     "file_manager/io_task.cc",
