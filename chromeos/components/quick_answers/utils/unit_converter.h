@@ -14,7 +14,7 @@ namespace quick_answers {
 // Utility class for unit conversion.
 class UnitConverter {
  public:
-  explicit UnitConverter(const base::Value& rule_set);
+  explicit UnitConverter(const base::Value::List& rule_set);
 
   UnitConverter(const UnitConverter&) = delete;
   UnitConverter& operator=(const UnitConverter&) = delete;
@@ -23,25 +23,26 @@ class UnitConverter {
 
   // Convert the |src_value| from |src_unit| to |dst_unit|.
   const std::string Convert(const double src_value,
-                            const base::Value& src_unit,
-                            const base::Value& dst_unit);
+                            const base::Value::Dict& src_unit,
+                            const base::Value::Dict& dst_unit);
 
   // Find the unit with the closest conversion rate within the preferred range.
   // Return nullptr if no proper unit type found.
-  const base::Value* FindProperDestinationUnit(const base::Value& src_unit,
-                                               const double preferred_range);
+  const base::Value::Dict* FindProperDestinationUnit(
+      const base::Value::Dict& src_unit,
+      const double preferred_range);
 
   // Get the list of conversion rates for the given category.
-  const base::Value* GetConversionForCategory(
+  const base::Value::Dict* GetConversionForCategory(
       const std::string& target_category);
 
-  const base::Value* GetPossibleUnitsForCategory(
+  const base::Value::List* GetPossibleUnitsForCategory(
       const std::string& target_category);
 
  private:
   // Conversion rule set for supported unit types.
   // |rules_set_| needs to outlive the converter.
-  const base::Value& rule_set_;
+  const base::Value::List& rule_set_;
 };
 
 }  // namespace quick_answers

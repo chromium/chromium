@@ -22,21 +22,22 @@ bool IsLinearFormula(const absl::optional<double> rate_a) {
 
 }  // namespace
 
-UnitConverter::UnitConverter(const Value& rule_set) : rule_set_(rule_set) {}
+UnitConverter::UnitConverter(const Value::List& rule_set)
+    : rule_set_(rule_set) {}
 
 UnitConverter::~UnitConverter() = default;
 
 const std::string UnitConverter::Convert(const double src_value,
-                                         const base::Value& src_unit,
-                                         const base::Value& dst_unit) {
+                                         const base::Value::Dict& src_unit,
+                                         const base::Value::Dict& dst_unit) {
   // Validate the inputs.
-  const auto* src_name = src_unit.FindStringPath(kNamePath);
-  const auto src_rate_a = src_unit.FindDoublePath(kConversionRateAPath);
+  const auto* src_name = src_unit.FindStringByDottedPath(kNamePath);
+  const auto src_rate_a = src_unit.FindDoubleByDottedPath(kConversionRateAPath);
   if (!src_name || !IsLinearFormula(src_rate_a)) {
     return std::string();
   }
-  const auto* dst_name = dst_unit.FindStringPath(kNamePath);
-  const auto dst_rate_a = dst_unit.FindDoublePath(kConversionRateAPath);
+  const auto* dst_name = dst_unit.FindStringByDottedPath(kNamePath);
+  const auto dst_rate_a = dst_unit.FindDoubleByDottedPath(kConversionRateAPath);
   if (!dst_name || !IsLinearFormula(dst_rate_a)) {
     return std::string();
   }
@@ -49,12 +50,12 @@ const std::string UnitConverter::Convert(const double src_value,
       GetUnitDisplayText(*dst_name));
 }
 
-const Value* UnitConverter::FindProperDestinationUnit(
-    const Value& src_unit,
+const Value::Dict* UnitConverter::FindProperDestinationUnit(
+    const Value::Dict& src_unit,
     const double preferred_range) {
-  const auto* src_category = src_unit.FindStringPath(kCategoryPath);
-  const auto* src_name = src_unit.FindStringPath(kNamePath);
-  const auto src_rate_a = src_unit.FindDoublePath(kConversionRateAPath);
+  const auto* src_category = src_unit.FindStringByDottedPath(kCategoryPath);
+  const auto* src_name = src_unit.FindStringByDottedPath(kNamePath);
+  const auto src_rate_a = src_unit.FindDoubleByDottedPath(kConversionRateAPath);
   // Make sure the input source unit is valid.
   if (!src_category || !src_name || !IsLinearFormula(src_rate_a))
     return nullptr;
@@ -65,11 +66,12 @@ const Value* UnitConverter::FindProperDestinationUnit(
 
   // Find the unit with closest conversion rate within the preferred range. If
   // no proper unit found, return nullptr.
-  const Value* dst_unit = nullptr;
+  const Value::Dict* dst_unit = nullptr;
   double min_rate = preferred_range;
-  for (const Value& unit : units->GetList()) {
-    const auto* name = unit.FindStringPath(kNamePath);
-    const auto rate_a = unit.FindDoublePath(kConversionRateAPath);
+  for (const Value& unit_value : *units) {
+    const base::Value::Dict& unit = unit_value.GetDict();
+    const auto* name = unit.FindStringByDottedPath(kNamePath);
+    const auto rate_a = unit.FindDoubleByDottedPath(kConversionRateAPath);
     if (*name == *src_name || !rate_a.has_value() || rate_a.value() == 0)
       continue;
     auto rate = GetRatio(rate_a.value(), src_rate_a.value());
@@ -82,26 +84,26 @@ const Value* UnitConverter::FindProperDestinationUnit(
   return dst_unit;
 }
 
-const Value* UnitConverter::GetConversionForCategory(
+const Value::Dict* UnitConverter::GetConversionForCategory(
     const std::string& target_category) {
-  if (rule_set_.GetList().empty())
-    return nullptr;
-  for (const Value& conversion : rule_set_.GetList()) {
-    const auto* category = conversion.FindStringPath(kCategoryPath);
+  for (const Value& conversion : rule_set_) {
+    const base::Value::Dict& conversion_dict = conversion.GetDict();
+    const auto* category =
+        conversion_dict.FindStringByDottedPath(kCategoryPath);
     if (category && *category == target_category)
-      return &conversion;
+      return &conversion_dict;
   }
   return nullptr;
 }
 
-const Value* UnitConverter::GetPossibleUnitsForCategory(
+const Value::List* UnitConverter::GetPossibleUnitsForCategory(
     const std::string& target_category) {
   // Get the list of conversion rate for the category.
   const auto* conversion = GetConversionForCategory(target_category);
   if (!conversion)
     return nullptr;
 
-  return conversion->FindListPath(kUnitsPath);
+  return conversion->FindListByDottedPath(kUnitsPath);
 }
 
 }  // namespace quick_answers

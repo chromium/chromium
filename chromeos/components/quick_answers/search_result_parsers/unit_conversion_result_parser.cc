@@ -35,16 +35,16 @@ bool UnitConversionResultParser::Parse(const Value* result,
     if (ratio.has_value() && ratio.value() > kPreferredRatioRange) {
       const auto* rule = result->FindListPath(kRuleSetPath);
       if (rule) {
-        UnitConverter converter(*rule);
+        UnitConverter converter(rule->GetList());
 
         const auto* src_unit = result->FindPath(kSourceUnitPath);
         if (src_unit) {
-          const auto* dst_unit =
-              converter.FindProperDestinationUnit(*src_unit, ratio.value());
+          const auto* dst_unit = converter.FindProperDestinationUnit(
+              src_unit->GetDict(), ratio.value());
 
           if (dst_unit) {
-            result_string =
-                converter.Convert(src_amount.value(), *src_unit, *dst_unit);
+            result_string = converter.Convert(src_amount.value(),
+                                              src_unit->GetDict(), *dst_unit);
           }
         }
       }
