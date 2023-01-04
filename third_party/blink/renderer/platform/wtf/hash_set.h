@@ -103,8 +103,8 @@ class HashSet {
   // An alternate version of find() that finds the object by hashing and
   // comparing with some other type, to avoid the cost of type
   // conversion. HashTranslator must have the following function members:
-  //   static unsigned hash(const T&);
-  //   static bool equal(const ValueType&, const T&);
+  //   static unsigned GetHash(const T&);
+  //   static bool Equal(const ValueType&, const T&);
   template <typename HashTranslator, typename T>
   iterator Find(const T&) const;
   template <typename HashTranslator, typename T>
@@ -115,13 +115,13 @@ class HashSet {
   template <typename IncomingValueType>
   AddResult insert(IncomingValueType&&);
 
-  // An alternate version of add() that finds the object by hashing and
+  // An alternate version of insert() that finds the object by hashing and
   // comparing with some other type, to avoid the cost of type conversion if
   // the object is already in the table. HashTranslator must have the
   // following function members:
-  //   static unsigned hash(const T&);
-  //   static bool equal(const ValueType&, const T&);
-  //   static translate(ValueType&, T&&, unsigned hashCode);
+  //   static unsigned GetHash(const T&);
+  //   static bool Equal(const ValueType&, const T&);
+  //   static Translate(ValueType&, T&&, unsigned hash_code);
   template <typename HashTranslator, typename T>
   AddResult AddWithTranslator(T&&);
 

@@ -185,10 +185,10 @@ class HashMap {
   MappedType Take(KeyPeekInType);  // efficient combination of get with remove
 
   // An alternate version of find() that finds the object by hashing and
-  // comparing with some other type, to avoid the cost of type
-  // conversion. HashTranslator must have the following function members:
-  //   static unsigned hash(const T&);
-  //   static bool equal(const ValueType&, const T&);
+  // comparing with some other type, to avoid the cost of type conversion.
+  // HashTranslator must have the following function members:
+  //   static unsigned GetHash(const T&);
+  //   static bool Equal(const ValueType&, const T&);
   template <typename HashTranslator, typename T>
   iterator Find(const T&);
   template <typename HashTranslator, typename T>
@@ -320,7 +320,7 @@ struct HashMapValueTraits : KeyValuePairHashTraits<KeyTraits, MappedTraits> {
   }
 };
 
-template <typename ValueTraits, typename HashFunctions, typename Allocator>
+template <typename ValueTraits, typename HashFunctions>
 struct HashMapTranslator {
   STATIC_ONLY(HashMapTranslator);
   template <typename T>
@@ -348,11 +348,6 @@ struct HashMapTranslatorAdapter {
   template <typename T, typename U>
   static bool Equal(const T& a, const U& b) {
     return Translator::Equal(a, b);
-  }
-  template <typename T, typename U, typename V>
-  static void Translate(T& location, U&& key, V&& mapped, unsigned hash_code) {
-    Translator::Translate(location.key, std::forward<U>(key), hash_code);
-    ValueTraits::ValueTraits::store(std::forward<V>(mapped), location.value);
   }
 };
 
@@ -540,8 +535,7 @@ template <typename IncomingKeyType, typename IncomingMappedType>
 typename HashMap<T, U, V, W, X, Allocator>::AddResult
 HashMap<T, U, V, W, X, Allocator>::InlineAdd(IncomingKeyType&& key,
                                              IncomingMappedType&& mapped) {
-  return impl_.template insert<
-      HashMapTranslator<ValueTraits, HashFunctions, Allocator>>(
+  return impl_.template insert<HashMapTranslator<ValueTraits, HashFunctions>>(
       std::forward<IncomingKeyType>(key),
       std::forward<IncomingMappedType>(mapped));
 }
@@ -559,7 +553,7 @@ typename HashMap<T, U, V, W, X, Y>::AddResult HashMap<T, U, V, W, X, Y>::Set(
   AddResult result = InlineAdd(std::forward<IncomingKeyType>(key),
                                std::forward<IncomingMappedType>(mapped));
   if (!result.is_new_entry) {
-    // The inlineAdd call above found an existing hash table entry; we need
+    // The InlineAdd call above found an existing hash table entry; we need
     // to set the mapped value.
     //
     // It's safe to call std::forward again, because |mapped| isn't moved if

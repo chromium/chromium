@@ -586,7 +586,7 @@ struct Mover<T, Allocator, Traits, true> {
   }
 };
 
-template <typename HashFunctions, typename Traits, typename Allocator>
+template <typename HashFunctions>
 class IdentityHashTranslator {
   STATIC_ONLY(IdentityHashTranslator);
 
@@ -741,8 +741,7 @@ class HashTable final
   typedef Value ValueType;
   typedef Extractor ExtractorType;
   typedef KeyTraits KeyTraitsType;
-  typedef IdentityHashTranslator<HashFunctions, Traits, Allocator>
-      IdentityTranslatorType;
+  typedef IdentityHashTranslator<HashFunctions> IdentityTranslatorType;
   typedef HashTableAddResult<HashTable, ValueType> AddResult;
 
   HashTable();
@@ -801,8 +800,16 @@ class HashTable final
   // A special version of insert() that finds the object by hashing and
   // comparing with some other type, to avoid the cost of type conversion if the
   // object is already in the table.
+  // HashTranslator must have the following function members:
+  //   static unsigned GetHash(const T&);
+  //   static bool Equal(const ValueType&, const T&);
+  //   static void Translate(T& location, KeyType&&, ValueType&&);
   template <typename HashTranslator, typename T, typename Extra>
   AddResult insert(T&& key, Extra&&);
+  // Similar to the above, but passes additional `unsigned hash_code`, which
+  // is computed from `HashTranslator::GetHash(key)`, to HashTranslator method
+  //   static Translate(T&, KeyType&&, ValueType&&, unsigned hash_code);
+  // to avoid recomputation of the hash code when needed in the method.
   template <typename HashTranslator, typename T, typename Extra>
   AddResult InsertPassingHashCode(T&& key, Extra&&);
 
@@ -814,6 +821,11 @@ class HashTable final
     return Contains<IdentityTranslatorType>(key);
   }
 
+  // A special version of find() that finds the object by hashing and
+  // comparing with some other type, to avoid the cost of type conversion.
+  // HashTranslator must have the following function members:
+  //   static unsigned GetHash(const T&);
+  //   static bool Equal(const ValueType&, const T&);
   template <typename HashTranslator, typename T>
   iterator Find(const T&);
   template <typename HashTranslator, typename T>
