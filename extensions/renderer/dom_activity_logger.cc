@@ -10,8 +10,8 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/dom_action_types.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/renderer/activity_log_converter_strategy.h"
+#include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "v8/include/v8-isolate.h"
@@ -43,10 +43,9 @@ void AppendV8Value(const std::string& api_name,
 }  // namespace
 
 DOMActivityLogger::DOMActivityLogger(const std::string& extension_id)
-    : extension_id_(extension_id) {
-}
+    : extension_id_(extension_id) {}
 
-DOMActivityLogger::~DOMActivityLogger() {}
+DOMActivityLogger::~DOMActivityLogger() = default;
 
 void DOMActivityLogger::AttachToWorld(int32_t world_id,
                                       const std::string& extension_id) {
@@ -63,8 +62,9 @@ void DOMActivityLogger::AttachToWorld(int32_t world_id,
 void DOMActivityLogger::LogGetter(const WebString& api_name,
                                   const WebURL& url,
                                   const WebString& title) {
-  SendDomActionMessage(api_name.Utf8(), url, title.Utf16(),
-                       DomActionType::GETTER, base::Value::List());
+  GetRendererHost()->AddDOMActionToActivityLog(
+      extension_id_, api_name.Utf8(), base::Value::List(), url, title.Utf16(),
+      DomActionType::GETTER);
 }
 
 void DOMActivityLogger::LogSetter(const WebString& api_name,
@@ -84,8 +84,9 @@ void DOMActivityLogger::logSetter(const WebString& api_name,
   AppendV8Value(api_name_utf8, new_value, args);
   if (!old_value.IsEmpty())
     AppendV8Value(api_name_utf8, old_value, args);
-  SendDomActionMessage(api_name_utf8, url, title.Utf16(), DomActionType::SETTER,
-                       std::move(args));
+  GetRendererHost()->AddDOMActionToActivityLog(
+      extension_id_, api_name_utf8, std::move(args), url, title.Utf16(),
+      DomActionType::SETTER);
 }
 
 void DOMActivityLogger::LogMethod(const WebString& api_name,
@@ -97,8 +98,9 @@ void DOMActivityLogger::LogMethod(const WebString& api_name,
   std::string api_name_utf8 = api_name.Utf8();
   for (int i = 0; i < argc; ++i)
     AppendV8Value(api_name_utf8, argv[i], args);
-  SendDomActionMessage(api_name_utf8, url, title.Utf16(), DomActionType::METHOD,
-                       std::move(args));
+  GetRendererHost()->AddDOMActionToActivityLog(
+      extension_id_, api_name_utf8, std::move(args), url, title.Utf16(),
+      DomActionType::METHOD);
 }
 
 void DOMActivityLogger::LogEvent(const WebString& event_name,
@@ -110,23 +112,17 @@ void DOMActivityLogger::LogEvent(const WebString& event_name,
   std::string event_name_utf8 = event_name.Utf8();
   for (int i = 0; i < argc; ++i)
     args.Append(argv[i].Utf8());
-  SendDomActionMessage(event_name_utf8, url, title.Utf16(),
-                       DomActionType::METHOD, std::move(args));
+  GetRendererHost()->AddDOMActionToActivityLog(
+      extension_id_, event_name_utf8, std::move(args), url, title.Utf16(),
+      DomActionType::METHOD);
 }
 
-void DOMActivityLogger::SendDomActionMessage(const std::string& api_call,
-                                             const GURL& url,
-                                             const std::u16string& url_title,
-                                             DomActionType::Type call_type,
-                                             base::Value::List args) {
-  ExtensionHostMsg_DOMAction_Params params;
-  params.api_call = api_call;
-  params.url = url;
-  params.url_title = url_title;
-  params.call_type = call_type;
-  params.arguments = std::move(args);
-  content::RenderThread::Get()->Send(
-      new ExtensionHostMsg_AddDOMActionToActivityLog(extension_id_, params));
+mojom::RendererHost* DOMActivityLogger::GetRendererHost() {
+  if (!renderer_host_.is_bound()) {
+    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
+        &renderer_host_);
+  }
+  return renderer_host_.get();
 }
 
 }  // namespace extensions

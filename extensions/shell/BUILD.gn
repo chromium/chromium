@@ -42,6 +42,7 @@ source_set("app_shell_lib") {
     "//components/feedback",
     "//components/feedback/content:factory",
     "//components/guest_view/browser",
+    "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",
     "//components/keep_alive_registry",
     "//components/keyed_service/content:content",

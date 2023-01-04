@@ -25,8 +25,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "v8/include/v8-forward.h"
 
-struct ExtensionHostMsg_APIActionOrEvent_Params;
-
 namespace content {
 class MockRenderThread;
 }
@@ -36,6 +34,7 @@ class ExtensionConfiguration;
 }
 
 namespace extensions {
+
 class NativeExtensionBindingsSystem;
 class ScriptContext;
 class ScriptContextSet;
@@ -92,10 +91,12 @@ class TestIPCMessageSender : public IPCMessageSender {
                void(const PortId& port_id, const Message& message));
   MOCK_METHOD2(SendMessageResponsePending,
                void(int routing_id, const PortId& port_id));
-  MOCK_METHOD3(SendActivityLogIPC,
+  MOCK_METHOD5(SendActivityLogIPC,
                void(const ExtensionId& extension_id,
                     IPCMessageSender::ActivityLogCallType call_type,
-                    const ExtensionHostMsg_APIActionOrEvent_Params& params));
+                    const std::string& call_name,
+                    base::Value::List args,
+                    const std::string& extra));
 
   const mojom::RequestParams* last_params() const { return last_params_.get(); }
 

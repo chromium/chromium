@@ -34,6 +34,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/download/public/common/quarantine_connection.h"
+#include "components/guest_view/common/guest_view.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browser_url_handler.h"
@@ -61,6 +62,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
@@ -70,6 +72,9 @@
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+#include "extensions/common/mojom/event_router.mojom.h"
+#include "extensions/common/mojom/guest_view.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -772,9 +777,10 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
   associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
       base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
                           host->GetID()));
-  associated_registry->AddInterface<extensions::mojom::GuestView>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForExtensions,
-                          host->GetID()));
+  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
+      &ExtensionsGuestView::CreateForExtensions, host->GetID()));
+  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
+      &RendererStartupHelper::BindForRenderer, host->GetID()));
 }
 
 }  // namespace extensions

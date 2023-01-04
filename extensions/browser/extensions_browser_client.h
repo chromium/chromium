@@ -473,6 +473,26 @@ class ExtensionsBrowserClient {
       const PermissionSet& desired_permissions,
       PermissionSet* granted_permissions) const;
 
+  virtual void AddAPIActionToActivityLog(
+      content::BrowserContext* browser_context,
+      const ExtensionId& extension_id,
+      const std::string& call_name,
+      base::Value::List args,
+      const std::string& extra);
+  virtual void AddEventToActivityLog(content::BrowserContext* context,
+                                     const ExtensionId& extension_id,
+                                     const std::string& call_name,
+                                     base::Value::List args,
+                                     const std::string& extra);
+  virtual void AddDOMActionToActivityLog(
+      content::BrowserContext* browser_context,
+      const ExtensionId& extension_id,
+      const std::string& call_name,
+      base::Value::List args,
+      const GURL& url,
+      const std::u16string& url_title,
+      int call_type);
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

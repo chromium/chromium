@@ -603,7 +603,6 @@ source_set("browser_sources") {
     "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
     "//extensions/common",
-    "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//google_apis",
@@ -638,7 +637,9 @@ source_set("browser_sources") {
     "//extensions/browser/api/declarative_net_request/flat:extension_ruleset",
     "//extensions/browser/install",
     "//extensions/browser/kiosk",
+    "//extensions/common:mojom",
     "//ipc",
+    "//mojo/public/cpp/bindings",
     "//services/device/public/cpp/usb:usb",
     "//third_party/re2",
   ]

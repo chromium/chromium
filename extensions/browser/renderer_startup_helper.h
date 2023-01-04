@@ -17,13 +17,16 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/renderer.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -39,7 +42,8 @@ class Extension;
 // behavior of this class.
 class RendererStartupHelper : public KeyedService,
                               public content::RenderProcessHostCreationObserver,
-                              public content::RenderProcessHostObserver {
+                              public content::RenderProcessHostObserver,
+                              public mojom::RendererHost {
  public:
   // This class sends messages to all renderers started for |browser_context|.
   explicit RendererStartupHelper(content::BrowserContext* browser_context);
@@ -58,6 +62,22 @@ class RendererStartupHelper : public KeyedService,
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+  // mojom::RendererHost:
+  void AddAPIActionToActivityLog(const ExtensionId& extension_id,
+                                 const std::string& call_name,
+                                 base::Value::List args,
+                                 const std::string& extra) override;
+  void AddEventToActivityLog(const ExtensionId& extension_id,
+                             const std::string& call_name,
+                             base::Value::List args,
+                             const std::string& extra) override;
+  void AddDOMActionToActivityLog(const ExtensionId& extension_id,
+                                 const std::string& call_name,
+                                 base::Value::List args,
+                                 const GURL& url,
+                                 const std::u16string& url_title,
+                                 int32_t call_type) override;
 
   // Sends a message to the specified |process| activating the given extension
   // once the process is initialized. OnExtensionLoaded should have already been
@@ -84,6 +104,10 @@ class RendererStartupHelper : public KeyedService,
   // pass a valid content::RenderProcessHost*.
   mojom::Renderer* GetRenderer(content::RenderProcessHost* process);
 
+  static void BindForRenderer(
+      int process_id,
+      mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
+
  protected:
   // Provide ability for tests to override.
   virtual mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
@@ -100,6 +124,10 @@ class RendererStartupHelper : public KeyedService,
   // Untracks the given process.
   void UntrackProcess(content::RenderProcessHost* process);
 
+  // Return the browser context associated with the renderer.
+  content::BrowserContext* GetRendererBrowserContext();
+
+  // TODO(hferreiro): can be nullptr as in ChromeExtensionMessageFilter?
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Tracks the set of loaded extensions and the processes they are loaded in.
@@ -119,6 +147,9 @@ class RendererStartupHelper : public KeyedService,
   // happens.
   std::map<content::RenderProcessHost*, mojo::AssociatedRemote<mojom::Renderer>>
       process_mojo_map_;
+
+  // Associate each renderer with the RenderProcessHost id.
+  mojo::AssociatedReceiverSet<mojom::RendererHost, int> receivers_;
 };
 
 // Factory for RendererStartupHelpers. Declared here because this header is

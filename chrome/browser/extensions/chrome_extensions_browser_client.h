@@ -11,11 +11,14 @@
 
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -217,9 +220,34 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void AddAdditionalAllowedHosts(
       const PermissionSet& desired_permissions,
       PermissionSet* granted_permissions) const override;
+  void AddAPIActionToActivityLog(content::BrowserContext* browser_context,
+                                 const ExtensionId& extension_id,
+                                 const std::string& call_name,
+                                 base::Value::List args,
+                                 const std::string& extra) override;
+  void AddEventToActivityLog(content::BrowserContext* browser_context,
+                             const ExtensionId& extension_id,
+                             const std::string& call_name,
+                             base::Value::List args,
+                             const std::string& extra) override;
+  void AddDOMActionToActivityLog(content::BrowserContext* browser_context,
+                                 const ExtensionId& extension_id,
+                                 const std::string& call_name,
+                                 base::Value::List args,
+                                 const GURL& url,
+                                 const std::u16string& url_title,
+                                 int call_type) override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;
+
+  void AddAPIActionOrEventToActivityLog(
+      content::BrowserContext* browser_context,
+      const ExtensionId& extension_id,
+      Action::ActionType action_type,
+      const std::string& call_name,
+      base::Value::List args,
+      const std::string& extra);
 
   // Support for ProcessManager.
   std::unique_ptr<ChromeProcessManagerDelegate> process_manager_delegate_;

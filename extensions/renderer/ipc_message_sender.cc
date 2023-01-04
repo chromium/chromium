@@ -5,6 +5,7 @@
 #include "extensions/renderer/ipc_message_sender.h"
 
 #include <map>
+#include <utility>
 
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +19,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/dispatcher.h"
@@ -205,18 +207,19 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         PortContext::ForFrame(routing_id), port_id));
   }
 
-  void SendActivityLogIPC(
-      const ExtensionId& extension_id,
-      ActivityLogCallType call_type,
-      const ExtensionHostMsg_APIActionOrEvent_Params& params) override {
+  void SendActivityLogIPC(const ExtensionId& extension_id,
+                          ActivityLogCallType call_type,
+                          const std::string& call_name,
+                          base::Value::List args,
+                          const std::string& extra) override {
     switch (call_type) {
       case ActivityLogCallType::APICALL:
-        render_thread_->Send(new ExtensionHostMsg_AddAPIActionToActivityLog(
-            extension_id, params));
+        GetRendererHost()->AddAPIActionToActivityLog(extension_id, call_name,
+                                                     std::move(args), extra);
         break;
       case ActivityLogCallType::EVENT:
-        render_thread_->Send(
-            new ExtensionHostMsg_AddEventToActivityLog(extension_id, params));
+        GetRendererHost()->AddEventToActivityLog(extension_id, call_name,
+                                                 std::move(args), extra);
         break;
     }
   }
@@ -242,8 +245,17 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     return event_router_remote_.get();
   }
 
+  mojom::RendererHost* GetRendererHost() {
+    if (!renderer_host_.is_bound()) {
+      render_thread_->GetChannel()->GetRemoteAssociatedInterface(
+          &renderer_host_);
+    }
+    return renderer_host_.get();
+  }
+
   content::RenderThread* const render_thread_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
+  mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
 };
@@ -435,10 +447,15 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         PortContextForCurrentWorker(), port_id));
   }
 
-  void SendActivityLogIPC(
-      const ExtensionId& extension_id,
-      ActivityLogCallType call_type,
-      const ExtensionHostMsg_APIActionOrEvent_Params& params) override {
+  void SendActivityLogIPC(const ExtensionId& extension_id,
+                          ActivityLogCallType call_type,
+                          const std::string& call_name,
+                          base::Value::List args,
+                          const std::string& extra) override {
+    ExtensionHostMsg_APIActionOrEvent_Params params;
+    params.api_call = call_name;
+    params.arguments = std::move(args);
+    params.extra = extra;
     switch (call_type) {
       case ActivityLogCallType::APICALL:
         dispatcher_->Send(new ExtensionHostMsg_AddAPIActionToActivityLog(
@@ -473,7 +490,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
 }  // namespace
 
-IPCMessageSender::IPCMessageSender() {}
+IPCMessageSender::IPCMessageSender() = default;
+
 IPCMessageSender::~IPCMessageSender() = default;
 
 // static

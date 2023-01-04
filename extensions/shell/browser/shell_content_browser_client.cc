@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "components/guest_view/common/guest_view.mojom.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,9 +38,13 @@
 #include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/event_router.mojom.h"
+#include "extensions/common/mojom/guest_view.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/browser/shell_browser_context.h"
 #include "extensions/shell/browser/shell_browser_main_parts.h"
@@ -233,9 +239,10 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
   associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
       base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
                           render_process_host->GetID()));
-  associated_registry->AddInterface<extensions::mojom::GuestView>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForExtensions,
-                          render_process_host->GetID()));
+  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
+      &ExtensionsGuestView::CreateForExtensions, render_process_host->GetID()));
+  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
+      &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
 }
 
 void ShellContentBrowserClient::

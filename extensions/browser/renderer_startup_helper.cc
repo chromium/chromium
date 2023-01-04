@@ -4,6 +4,7 @@
 
 #include "extensions/browser/renderer_startup_helper.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -37,11 +38,11 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 
-using content::BrowserContext;
-
 namespace extensions {
 
 namespace {
+
+using ::content::BrowserContext;
 
 // Returns the current ActivationSequence of |extension| if the extension is
 // Service Worker-based, otherwise returns absl::nullopt.
@@ -86,6 +87,7 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
       GetWorkerActivationSequence(browser_context, extension),
       extension.creation_flags(), extension.guid());
 }
+
 }  // namespace
 
 RendererStartupHelper::RendererStartupHelper(BrowserContext* browser_context)
@@ -355,6 +357,79 @@ mojom::Renderer* RendererStartupHelper::GetRenderer(
     return nullptr;
   return it->second.get();
 }
+
+BrowserContext* RendererStartupHelper::GetRendererBrowserContext() {
+  // `browser_context_` is redirected to remove incognito mode. This method
+  // returns the original browser context associated with the renderer.
+  auto* host = content::RenderProcessHost::FromID(receivers_.current_context());
+  if (!host) {
+    return nullptr;
+  }
+
+  return host->GetBrowserContext();
+}
+
+void RendererStartupHelper::AddAPIActionToActivityLog(
+    const ExtensionId& extension_id,
+    const std::string& call_name,
+    base::Value::List args,
+    const std::string& extra) {
+  auto* browser_context = GetRendererBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
+  ExtensionsBrowserClient::Get()->AddAPIActionToActivityLog(
+      browser_context, extension_id, call_name, std::move(args), extra);
+}
+
+void RendererStartupHelper::AddEventToActivityLog(
+    const ExtensionId& extension_id,
+    const std::string& call_name,
+    base::Value::List args,
+    const std::string& extra) {
+  auto* browser_context = GetRendererBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
+  ExtensionsBrowserClient::Get()->AddEventToActivityLog(
+      browser_context, extension_id, call_name, std::move(args), extra);
+}
+
+void RendererStartupHelper::AddDOMActionToActivityLog(
+    const ExtensionId& extension_id,
+    const std::string& call_name,
+    base::Value::List args,
+    const GURL& url,
+    const std::u16string& url_title,
+    int32_t call_type) {
+  auto* browser_context = GetRendererBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
+  ExtensionsBrowserClient::Get()->AddDOMActionToActivityLog(
+      browser_context, extension_id, call_name, std::move(args), url, url_title,
+      call_type);
+}
+
+// static
+void RendererStartupHelper::BindForRenderer(
+    int process_id,
+    mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver) {
+  auto* host = content::RenderProcessHost::FromID(process_id);
+  if (!host) {
+    return;
+  }
+
+  auto* renderer_startup_helper =
+      RendererStartupHelperFactory::GetForBrowserContext(
+          host->GetBrowserContext());
+  renderer_startup_helper->receivers_.Add(renderer_startup_helper,
+                                          std::move(receiver), process_id);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // static
@@ -379,7 +454,7 @@ RendererStartupHelperFactory::RendererStartupHelperFactory()
 RendererStartupHelperFactory::~RendererStartupHelperFactory() {}
 
 KeyedService* RendererStartupHelperFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+    BrowserContext* context) const {
   return new RendererStartupHelper(context);
 }
 

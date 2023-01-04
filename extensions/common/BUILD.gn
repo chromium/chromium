@@ -89,6 +89,7 @@ mojom("mojom") {
     "mojom/manifest.mojom",
     "mojom/permission_set.mojom",
     "mojom/renderer.mojom",
+    "mojom/renderer_host.mojom",
     "mojom/run_location.mojom",
     "mojom/stack_frame.mojom",
     "mojom/url_pattern_set.mojom",

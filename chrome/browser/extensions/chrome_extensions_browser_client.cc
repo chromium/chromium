@@ -11,12 +11,17 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/extensions/activity_log/activity_action_constants.h"
+#include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/api/favicon/favicon_util.h"
@@ -65,6 +70,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -81,6 +87,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -126,6 +133,32 @@ class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
  private:
   ScopedProfileKeepAlive profile_keep_alive_;
 };
+
+bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
+                              const std::string& extension_id) {
+  // We only send these IPCs if activity logging is enabled, but due to race
+  // conditions (e.g. logging gets disabled but the renderer sends the message
+  // before it gets updated), we still need this check here.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return browser_context &&
+         g_browser_process->profile_manager()->IsValidProfile(
+             browser_context) &&
+         ActivityLog::GetInstance(browser_context) &&
+         ActivityLog::GetInstance(browser_context)->ShouldLog(extension_id);
+}
+
+// Logs an action to the extension activity log for the specified profile.
+void AddActionToExtensionActivityLog(content::BrowserContext* browser_context,
+                                     scoped_refptr<Action> action) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // If the action included a URL, check whether it is for an incognito profile.
+  // The check is performed here so that it can safely be done from the UI
+  // thread.
+  if (action->page_url().is_valid() || !action->page_title().empty()) {
+    action->set_page_incognito(browser_context->IsOffTheRecord());
+  }
+  ActivityLog::GetInstance(browser_context)->LogAction(action);
+}
 
 }  // namespace
 
@@ -794,6 +827,70 @@ void ChromeExtensionsBrowserClient::AddAdditionalAllowedHosts(
                             granted_permissions->scriptable_hosts());
   granted_permissions->SetExplicitHosts(std::move(new_explicit_hosts));
   granted_permissions->SetScriptableHosts(std::move(new_scriptable_hosts));
+}
+
+void ChromeExtensionsBrowserClient::AddAPIActionToActivityLog(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& call_name,
+    base::Value::List args,
+    const std::string& extra) {
+  AddAPIActionOrEventToActivityLog(browser_context, extension_id,
+                                   Action::ACTION_API_CALL, call_name,
+                                   std::move(args), extra);
+}
+
+void ChromeExtensionsBrowserClient::AddEventToActivityLog(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& call_name,
+    base::Value::List args,
+    const std::string& extra) {
+  AddAPIActionOrEventToActivityLog(browser_context, extension_id,
+                                   Action::ACTION_API_EVENT, call_name,
+                                   std::move(args), extra);
+}
+
+void ChromeExtensionsBrowserClient::AddDOMActionToActivityLog(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& call_name,
+    base::Value::List args,
+    const GURL& url,
+    const std::u16string& url_title,
+    int call_type) {
+  if (!ShouldLogExtensionAction(browser_context, extension_id)) {
+    return;
+  }
+
+  auto action = base::MakeRefCounted<Action>(
+      extension_id, base::Time::Now(), Action::ACTION_DOM_ACCESS, call_name);
+  action->set_args(std::move(args));
+  action->set_page_url(url);
+  action->set_page_title(base::UTF16ToUTF8(url_title));
+  action->mutable_other().Set(activity_log_constants::kActionDomVerb,
+                              call_type);
+  AddActionToExtensionActivityLog(browser_context, action);
+}
+
+void ChromeExtensionsBrowserClient::AddAPIActionOrEventToActivityLog(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    Action::ActionType action_type,
+    const std::string& call_name,
+    base::Value::List args,
+    const std::string& extra) {
+  if (!ShouldLogExtensionAction(browser_context, extension_id)) {
+    return;
+  }
+
+  auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
+                                             action_type, call_name);
+  action->set_args(std::move(args));
+  if (!extra.empty()) {
+    action->mutable_other().Set(activity_log_constants::kActionExtra, extra);
+  }
+  AddActionToExtensionActivityLog(browser_context, action);
 }
 
 }  // namespace extensions

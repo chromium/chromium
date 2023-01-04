@@ -60,14 +60,6 @@ class APIActivityLogger : public ObjectBackedNativeHandler {
   void LogForJS(const IPCMessageSender::ActivityLogCallType call_type,
                 const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  // Common implementation method for sending a logging IPC.
-  static void LogInternal(IPCMessageSender* ipc_sender,
-                          const IPCMessageSender::ActivityLogCallType call_type,
-                          const std::string& extension_id,
-                          const std::string& call_name,
-                          base::Value::List arguments,
-                          const std::string& extra);
-
   // Not owned by |this|.
   // This is owned by NativeExtensionBindingsSystem.
   //
