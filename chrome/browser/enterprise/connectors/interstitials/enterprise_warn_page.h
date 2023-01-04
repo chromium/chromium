@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_WARN_PAGE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_WARN_PAGE_H_
 
-#include <memory>
-#include <string>
-
+#include "base/memory/raw_ptr.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
+
+namespace safe_browsing {
+class BaseUIManager;
+}  // namespace safe_browsing
 
 class GURL;
 
@@ -24,8 +27,11 @@ class EnterpriseWarnPage
 
   // |request_url| is the URL which triggered the interstitial page.
   EnterpriseWarnPage(
+      safe_browsing::BaseUIManager* ui_manager,
       content::WebContents* web_contents,
       const GURL& request_url,
+      const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
+          unsafe_resources,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller);
@@ -47,6 +53,9 @@ class EnterpriseWarnPage
   int GetHTMLTemplateId() override;
 
  private:
+  const raw_ptr<safe_browsing::BaseUIManager> ui_manager_;
+  const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
+      unsafe_resources_;
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
 };
 

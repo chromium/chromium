@@ -347,8 +347,26 @@ std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(
 std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
     content::WebContents* web_contents) {
   const GURL kRequestUrl("https://enterprise-warn.example.net");
+
+  auto* ui_manager =
+      g_browser_process->safe_browsing_service()->ui_manager().get();
+
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+  safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
+  resource.url = kRequestUrl;
+  resource.is_subresource = false;
+  resource.is_subframe = false;
+  resource.threat_type = safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+  resource.threat_source = g_browser_process->safe_browsing_service()
+                               ->database_manager()
+                               ->GetThreatSource();
+
   return std::make_unique<EnterpriseWarnPage>(
-      web_contents, kRequestUrl,
+      ui_manager, web_contents, kRequestUrl,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList({resource}),
       std::make_unique<EnterpriseWarnControllerClient>(web_contents,
                                                        kRequestUrl));
 }

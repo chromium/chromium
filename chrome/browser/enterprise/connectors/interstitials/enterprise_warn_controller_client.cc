@@ -48,11 +48,7 @@ void EnterpriseWarnControllerClient::GoBack() {
 }
 
 void EnterpriseWarnControllerClient::Proceed() {
-  // Logic to bypass the warning.
-  // TODO(b/251184055): Uncomment once hook is implemented for URLFiltering
-  // WebProtego
-  // ReputationService::Get(
-  //     Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
-  //     ->SetUserIgnore(request_url_);
-  // Reload();
+  // Already allowlisted when used clicked on proceed.
+  // The reload will just work.
+  Reload();
 }
