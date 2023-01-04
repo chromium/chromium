@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
       ExecJs(shell()->web_contents(),
              base::StringPrintf("document.querySelector('portal').src = '%s';",
                                 portal_url.spec().c_str())));
-  portal_nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(portal_nav_manager.WaitForNavigationFinished());
   EXPECT_TRUE(portal_nav_observer.has_committed());
   EXPECT_FALSE(portal_nav_observer.is_error());
 
