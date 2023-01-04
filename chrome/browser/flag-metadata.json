@@ -727,37 +727,37 @@
   },
   {
     "name": "borealis-big-gl",
-    "owners": [ "danielng" ],
+    "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "borealis-disk-management",
-    "owners": [ "danielng" ],
+    "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "borealis-enabled",
-    "owners": [ "hollingum" ],
+    "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "borealis-force-beta-client",
-    "owners": [ "hollingum" ],
+    "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "borealis-force-double-scale",
-    "owners": [ "hollingum" ],
+    "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "borealis-linux-mode",
-    "owners": [ "hollingum" ],
+    "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "borealis-storage-ballooning",
-    "owners": [ "danielng" ],
+    "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -6923,7 +6923,7 @@
   },
   {
     "name": "vm-per-boot-shader-cache",
-    "owners": [ "endlesspring", "hollingum", "cpelling", "renatopereyra", "davidriley"],
+    "owners": [ "endlesspring@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120
   },
   {
