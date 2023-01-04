@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  * Tests for the DecoderServiceHost.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.N)
 public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusCallback,
                                                DecoderServiceHost.ImagesDecodedCallback {
     // The timeout (in milliseconds) to wait for the decoding.
