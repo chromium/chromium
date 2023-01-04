@@ -35,22 +35,7 @@ base::WaitableEvent EventForSwitch(const base::CommandLine& command_line,
   return base::WaitableEvent(std::move(handle));
 }
 
-}  // namespace
-
-int main(int, char**) {
-  bool success = base::CommandLine::Init(0, nullptr);
-  DCHECK(success);
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  if (command_line->HasSwitch(updater::kEnableLoggingSwitch)) {
-    InitLogging(command_line->HasSwitch(updater::kSystemSwitch)
-                    ? updater::UpdaterScope::kSystem
-                    : updater::UpdaterScope::kUser);
-  }
-
-  updater::NotifyInitializationDoneForTesting();
-
+int DoMain(const base::CommandLine* command_line) {
   if (command_line->HasSwitch(updater::kTestName)) {
     VLOG(1) << "Running for test: "
             << command_line->GetSwitchValueASCII(updater::kTestName);
@@ -60,14 +45,14 @@ int main(int, char**) {
     std::string value =
         command_line->GetSwitchValueASCII(updater::kTestSleepMinutesSwitch);
     int sleep_minutes = 0;
-    if (base::StringToInt(value, &sleep_minutes) && sleep_minutes > 0) {
-      VLOG(1) << "Process is sleeping for " << sleep_minutes << " minutes";
-      ::Sleep(base::Minutes(sleep_minutes).InMilliseconds());
-    } else {
+    if (!base::StringToInt(value, &sleep_minutes) || sleep_minutes <= 0) {
       LOG(ERROR) << "Invalid sleep delay value " << value;
+      NOTREACHED();
     }
-    NOTREACHED();
-    return 1;
+
+    VLOG(1) << "Process is sleeping for " << sleep_minutes << " minutes";
+    ::Sleep(base::Minutes(sleep_minutes).InMilliseconds());
+    return 0;
   }
 
   if (command_line->HasSwitch(updater::kTestEventToSignal)) {
@@ -96,6 +81,26 @@ int main(int, char**) {
     return exit_code;
   }
 
-  VLOG(1) << "Process ended.";
   return 0;
+}
+
+}  // namespace
+
+int main(int, char**) {
+  bool success = base::CommandLine::Init(0, nullptr);
+  DCHECK(success);
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(updater::kEnableLoggingSwitch)) {
+    InitLogging(command_line->HasSwitch(updater::kSystemSwitch)
+                    ? updater::UpdaterScope::kSystem
+                    : updater::UpdaterScope::kUser);
+  }
+
+  updater::NotifyInitializationDoneForTesting();
+
+  int exit_code = DoMain(command_line);
+  VLOG(1) << "Test process ended. Exit code: " << exit_code;
+  return exit_code;
 }
