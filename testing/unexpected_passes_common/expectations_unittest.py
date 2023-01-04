@@ -1214,6 +1214,50 @@ class NarrowSemiStaleExpectationScopeUnittest(fake_filesystem_unittest.TestCase
       self.assertEqual(infile.read(),
                        FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
 
+  def testWildcard(self) -> None:
+    """Regression test to ensure that wildcards are modified correctly."""
+    file_contents = """\
+# tags: [ win ]
+# tags: [ amd intel ]
+# results: [ Failure ]
+
+crbug.com/1234 [ win ] foo/bar* [ Failure ]
+"""
+    with open(self.filename, 'w') as f:
+      f.write(file_contents)
+
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/bar*', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yap: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win ]
+# tags: [ amd intel ]
+# results: [ Failure ]
+
+crbug.com/1234 [ intel win ] foo/bar* [ Failure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, {'crbug.com/1234'})
+
   def testMultipleSteps(self) -> None:
     """Tests that scope narrowing works across multiple steps."""
     amd_stats = data_types.BuildStats()

@@ -137,6 +137,19 @@ class ExpectationUnittest(unittest.TestCase):
     e = data_types.Expectation('foo/test', ['tag2', 'tag1'], 'Failure', 'bug')
     self.assertEqual(e.AsExpectationFileString(),
                      'bug [ tag1 tag2 ] foo/test [ Failure ]')
+    e = data_types.Expectation('foo/*', ['tag2', 'tag1'], 'Failure', 'bug')
+    self.assertEqual(e.AsExpectationFileString(),
+                     'bug [ tag1 tag2 ] foo/* [ Failure ]')
+
+  def testWildcard(self) -> None:
+    e = data_types.Expectation('foo/test', ['tag1'], 'Failure')
+    self.assertFalse(e._IsWildcard())
+    e = data_types.Expectation('foo/\\*', ['tag1'], 'Failure')
+    self.assertFalse(e._IsWildcard())
+    e = data_types.Expectation('foo/*', ['tag1'], 'Failure')
+    self.assertTrue(e._IsWildcard())
+    e = data_types.Expectation('foo/\\*bar/*', ['tag1'], 'Failure')
+    self.assertTrue(e._IsWildcard())
 
 
 class ResultUnittest(unittest.TestCase):
