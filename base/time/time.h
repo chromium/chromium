@@ -411,11 +411,15 @@ class TimeBase {
   static constexpr int64_t kNanosecondsPerSecond =
       kNanosecondsPerMicrosecond * kMicrosecondsPerSecond;
 
-  // Returns true if this object has not been initialized.
+  // TODO(https://crbug.com/1392437): Remove concept of "null" from base::Time.
   //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
-  // interpreted as a "null" value.
+  // interpreted as a "null" value. If you find yourself using this method or
+  // the zero-arg default constructor, please consider using an optional to
+  // express the null state.
+  //
+  // Returns true if this object has not been initialized (probably).
   constexpr bool is_null() const { return us_ == 0; }
 
   // Returns true if this object represents the maximum/minimum time.
@@ -591,6 +595,14 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
     bool HasValidValues() const;
   };
 
+  // TODO(https://crbug.com/1392437): Remove concept of "null" from base::Time.
+  //
+  // Warning: Be careful when writing code that performs math on time values,
+  // since it's possible to produce a valid "zero" result that should not be
+  // interpreted as a "null" value. If you find yourself using this constructor
+  // or the is_null() method, please consider using an optional to express the
+  // null state.
+  //
   // Contains the NULL time. Use Time::Now() to get the current time.
   constexpr Time() : TimeBase(0) {}
 
