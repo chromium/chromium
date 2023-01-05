@@ -41,12 +41,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-namespace {
-// How often we retry to download a custom icon, not counting the first attempt.
-const int MAX_ICON_DOWNLOAD_RETRIES = 1;
-const base::TimeDelta ICON_DOWNLOAD_RETRY_DELAY = base::Seconds(5);
-}  // namespace
-
 namespace web_app {
 
 ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
@@ -269,110 +263,12 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     return;
   }
 
-  if (install_options_.override_icon_url) {
-    FetchCustomIcon(install_options_.override_icon_url.value(), web_contents,
-                    MAX_ICON_DOWNLOAD_RETRIES, std::move(callback));
-    return;
-  }
-
-  FinalizePlaceholderInstall(std::move(callback), absl::nullopt);
-}
-
-void ExternallyManagedAppInstallTask::FetchCustomIcon(
-    const GURL& url,
-    content::WebContents* web_contents,
-    int retries_left,
-    ResultCallback callback) {
-  web_contents->DownloadImage(
-      url,
-      /*is_favicon, whether to not sent/accept cookies*/ true, gfx::Size(),
-      /*max_bitmap_size, 0=unlimited*/ 0,
-      /*bypass_cache*/ false,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnCustomIconFetched,
-                     weak_ptr_factory_.GetWeakPtr(), retries_left, web_contents,
-                     std::move(callback)));
-}
-
-void ExternallyManagedAppInstallTask::OnCustomIconFetched(
-    int retries_left,
-    content::WebContents* web_contents,
-    ResultCallback callback,
-    int id,
-    int http_status_code,
-    const GURL& image_url,
-    const std::vector<SkBitmap>& bitmaps,
-    const std::vector<gfx::Size>& sizes) {
-  if (bitmaps.size() > 0) {
-    // Download succeeded.
-    FinalizePlaceholderInstall(std::move(callback), bitmaps);
-    return;
-  }
-  if (retries_left <= 0) {
-    // Download failed.
-    FinalizePlaceholderInstall(std::move(callback), absl::nullopt);
-    return;
-  }
-  // Retry download.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ExternallyManagedAppInstallTask::FetchCustomIcon,
-                     weak_ptr_factory_.GetWeakPtr(), image_url, web_contents,
-                     retries_left - 1, std::move(callback)),
-      ICON_DOWNLOAD_RETRY_DELAY);
-}
-
-void ExternallyManagedAppInstallTask::FinalizePlaceholderInstall(
-    ResultCallback callback,
-    absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
-        bitmaps) {
-  WebAppInstallInfo web_app_info;
-
-#if defined(CHROMEOS)
-  web_app_info.title =
-      install_options_.override_name
-          ? base::UTF8ToUTF16(install_options_.override_name.value())
-          : install_options_.fallback_app_name
-                ? base::UTF8ToUTF16(install_options_.fallback_app_name.value())
-                : base::UTF8ToUTF16(install_options_.install_url.spec());
-
-  if (bitmaps) {
-    IconsMap icons_map;
-    icons_map.emplace(GURL(install_options_.override_icon_url.value()),
-                      bitmaps.value());
-    PopulateProductIcons(&web_app_info, &icons_map);
-  }
-
-#else   // defined(CHROMEOS)
-  web_app_info.title =
-      install_options_.fallback_app_name
-          ? base::UTF8ToUTF16(install_options_.fallback_app_name.value())
-          : base::UTF8ToUTF16(install_options_.install_url.spec());
-#endif  // defined(CHROMEOS)
-
-  web_app_info.start_url = install_options_.install_url;
-  web_app_info.install_url = install_options_.install_url;
-
-  web_app_info.user_display_mode = install_options_.user_display_mode;
-
-  WebAppInstallFinalizer::FinalizeOptions options(
-      ConvertExternalInstallSourceToInstallSource(
-          install_options_.install_source));
-  // Overwrite fields if we are doing a forced reinstall, because some
-  // values (custom name or icon) might have changed.
-  options.overwrite_existing_manifest_fields = install_options_.force_reinstall;
-
-  options.add_to_applications_menu = install_options_.add_to_applications_menu;
-  options.add_to_desktop = install_options_.add_to_desktop;
-  options.add_to_quick_launch_bar = install_options_.add_to_quick_launch_bar;
-
-  web_app_info.is_placeholder = true;
-
-  install_finalizer_->FinalizeInstall(
-      web_app_info, options,
-      base::BindOnce(
-          &ExternallyManagedAppInstallTask::OnWebAppInstalledWithHooksErrors,
-          weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
-          /*offline_install=*/false, std::move(callback)));
+  command_scheduler_->InstallPlaceholder(
+      install_options_,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
+                     /*offline_install=*/false, std::move(callback)),
+      web_contents->GetWeakPtr());
 }
 
 void ExternallyManagedAppInstallTask::OnWebAppInstalled(
@@ -381,18 +277,6 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
     ResultCallback result_callback,
     const AppId& app_id,
     webapps::InstallResultCode code) {
-  OnWebAppInstalledWithHooksErrors(is_placeholder, offline_install,
-                                   std::move(result_callback), app_id, code,
-                                   OsHooksErrors());
-}
-
-void ExternallyManagedAppInstallTask::OnWebAppInstalledWithHooksErrors(
-    bool is_placeholder,
-    bool offline_install,
-    ResultCallback result_callback,
-    const AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
   if (!IsNewInstall(code)) {
     std::move(result_callback)
         .Run(ExternallyManagedAppManager::InstallResult(code));

@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
+#include "chrome/browser/web_applications/commands/install_placeholder_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
@@ -157,6 +158,24 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
       std::make_unique<ExternallyManagedInstallCommand>(
           external_install_options, std::move(callback), contents,
           std::move(data_retriever)));
+}
+
+void WebAppCommandScheduler::InstallPlaceholder(
+    const ExternalInstallOptions& install_options,
+    OnceInstallCallback callback,
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), AppId(),
+                                  webapps::InstallResultCode::
+                                      kCancelledOnWebAppProviderShuttingDown));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallPlaceholderCommand>(
+          install_options, std::move(callback), web_contents,
+          std::make_unique<WebAppDataRetriever>()));
 }
 
 void WebAppCommandScheduler::PersistFileHandlersUserChoice(

@@ -85,12 +85,18 @@ class WebAppCommandScheduler {
       OnceInstallCallback install_callback,
       const WebAppInstallParams& install_params);
 
-  // Install web apps managed by `ExternallyInstalledAppsManager`.
+  // Install web apps managed by `ExternallyManagedAppManager`.
   void InstallExternallyManagedApp(
       const ExternalInstallOptions& external_install_options,
       OnceInstallCallback callback,
       base::WeakPtr<content::WebContents> contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
+
+  // Install a placeholder app, this is used during externally managed install
+  // flow when url load fails.
+  void InstallPlaceholder(const ExternalInstallOptions& install_options,
+                          OnceInstallCallback callback,
+                          base::WeakPtr<content::WebContents> web_contents);
 
   void PersistFileHandlersUserChoice(const AppId& app_id,
                                      bool allowed,

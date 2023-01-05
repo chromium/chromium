@@ -93,25 +93,6 @@ class ExternallyManagedAppInstallTask {
                           ResultCallback result_callback,
                           absl::optional<AppId> app_id);
 
-  void FetchCustomIcon(const GURL& url,
-                       content::WebContents* web_contents,
-                       int retries_left,
-                       ResultCallback callback);
-
-  void OnCustomIconFetched(int retries_left,
-                           content::WebContents* web_contents,
-                           ResultCallback callback,
-                           int id,
-                           int http_status_code,
-                           const GURL& image_url,
-                           const std::vector<SkBitmap>& bitmaps,
-                           const std::vector<gfx::Size>& sizes);
-
-  void FinalizePlaceholderInstall(
-      ResultCallback callback,
-      absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
-          bitmaps);
-
   void UninstallPlaceholderApp(content::WebContents* web_contents,
                                ResultCallback result_callback,
                                absl::optional<AppId> app_id);
@@ -125,12 +106,6 @@ class ExternallyManagedAppInstallTask {
                          ResultCallback result_callback,
                          const AppId& app_id,
                          webapps::InstallResultCode code);
-  void OnWebAppInstalledWithHooksErrors(bool is_placeholder,
-                                        bool offline_install,
-                                        ResultCallback result_callback,
-                                        const AppId& app_id,
-                                        webapps::InstallResultCode code,
-                                        OsHooksErrors os_hooks_errors);
   void TryAppInfoFactoryOnFailure(
       ResultCallback result_callback,
       ExternallyManagedAppManager::InstallResult result);
