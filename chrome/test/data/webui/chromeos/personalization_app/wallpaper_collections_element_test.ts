@@ -200,7 +200,7 @@ suite('WallpaperCollectionsTest', function() {
     const googlePhotosTile =
         wallpaperCollectionsElement.shadowRoot!
             .querySelector<WallpaperGridItem>(
-                `${WallpaperGridItem.is}[google-photos-tile]`);
+                `${WallpaperGridItem.is}[data-google-photos]`);
     assertTrue(!!googlePhotosTile, 'google photos tile is present');
     assertEquals(
         null, googlePhotosTile.querySelector(managedIconSelector),

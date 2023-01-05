@@ -4,14 +4,37 @@
     opacity: 0.3;
   }
 
-  wallpaper-grid-item[google-photos-tile] .primary-text {
+  wallpaper-grid-item[data-google-photos]::part(image) {
+    height: 64px;
+    margin: 12px;
+    position: absolute;
+    top: 0;
+    width: 64px;
+  }
+
+  wallpaper-grid-item[data-google-photos][aria-disabled='true']::part(image) {
+    /* Background color should stay light even in dark mode. */
+    background-color: white;
+    border-radius: 100%;
+    box-sizing: border-box;
+    filter: grayscale(100%);
+    height: 54px;
+    padding: 4px;
+    width: 54px;
+  }
+
+  wallpaper-grid-item[data-google-photos][aria-disabled='true']::part(textShadow) {
+    display: none;
+  }
+
+  wallpaper-grid-item[data-google-photos] .primary-text {
     align-items: center;
     bottom: calc(8px + var(--cros-annotation-2-line-height));
     display: flex;
     flex-direction: row;
   }
 
-  wallpaper-grid-item[google-photos-tile] iron-icon[icon='personalization:managed'] {
+  wallpaper-grid-item[data-google-photos] iron-icon[icon='personalization:managed'] {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
@@ -20,7 +43,7 @@
     margin-inline-end: 8px;
   }
 
-  wallpaper-grid-item[google-photos-tile][aria-disabled='true'] iron-icon[icon='personalization:managed'] {
+  wallpaper-grid-item[data-google-photos][aria-disabled='true'] iron-icon[icon='personalization:managed'] {
     /* Icon color should stay light even in dark mode.
      * All of the google photos tile is always light.
      */
@@ -28,7 +51,7 @@
     display: block;
   }
 
-  wallpaper-grid-item[google-photos-tile][aria-disabled='true'] p {
+  wallpaper-grid-item[data-google-photos][aria-disabled='true'] p {
     /* Text color should stay light even in dark mode.
      * All of the google photos tile is always light.
      */
@@ -56,14 +79,14 @@
     --wallpaper-grid-item-width: 100%;
   }
 
-  wallpaper-grid-item[google-photos-tile]:not([aria-disabled='true']):not([placeholder]) {
+  wallpaper-grid-item[data-google-photos]:not([aria-disabled='true']):not([placeholder]) {
     /* Always white, even in dark mode.
      * All of the google photos tile is always light.
      */
     --personalization-app-grid-item-background-color: white;
   }
 
-  wallpaper-grid-item[google-photos-tile][aria-disabled='true']:not([placeholder]) {
+  wallpaper-grid-item[data-google-photos][aria-disabled='true']:not([placeholder]) {
     /* Disabled background color should stay light even in dark mode.
      * All of the google photos tile is always light.
      */
@@ -93,7 +116,7 @@
         </template>
         <template is="dom-if" if="[[isGooglePhotosTile_(item)]]">
           <wallpaper-grid-item
-              google-photos-tile
+              data-google-photos
               aria-posinset$="[[getAriaIndex_(index)]]"
               disabled="[[!isSelectableTile_(item)]]"
               index="[[index]]"
