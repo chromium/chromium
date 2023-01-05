@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/apn_migrator.h"
+#include "chrome/browser/ash/net/apn_migrator.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"

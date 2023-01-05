@@ -58,8 +58,6 @@ component("network") {
     "//components/device_event_log",
   ]
   sources = [
-    "apn_migrator.cc",
-    "apn_migrator.h",
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
     "cellular_connection_handler.cc",
@@ -287,7 +285,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
-    "apn_migrator_unittest.cc",
     "auto_connect_handler_unittest.cc",
     "cellular_connection_handler_unittest.cc",
     "cellular_esim_installer_unittest.cc",

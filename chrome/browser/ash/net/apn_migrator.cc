@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/apn_migrator.h"
+#include "chrome/browser/ash/net/apn_migrator.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
@@ -45,6 +45,43 @@ ApnMigrator::ApnMigrator(
 
 ApnMigrator::~ApnMigrator() = default;
 
+void ApnMigrator::NetworkListChanged() {
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetVisibleNetworkListByType(
+      NetworkTypePattern::Cellular(), &network_list);
+  for (const NetworkState* network : network_list) {
+    if (network->IsNonShillCellularNetwork()) {
+      continue;
+    }
+
+    if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
+            network->iccid())) {
+      if (!ash::features::IsApnRevampEnabled()) {
+        continue;
+      }
+      // Network needs to be migrated to the APN revamp
+      MigrateNetwork(*network);
+      continue;
+    }
+
+    if (!ash::features::IsApnRevampEnabled()) {
+      // Clear UserApnList so that Shill knows to use legacy APN selection
+      // logic.
+      SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
+      continue;
+    }
+    if (const base::Value::List* custom_apn_list =
+            network_metadata_store_->GetPreRevampCustomApnList(
+                network->guid())) {
+      SetShillUserApnListForNetwork(*network, custom_apn_list);
+      continue;
+    }
+
+    base::Value::List empty_user_apn_list;
+    SetShillUserApnListForNetwork(*network, &empty_user_apn_list);
+  }
+}
+
 void ApnMigrator::SetShillUserApnListForNetwork(
     const NetworkState& network,
     const base::Value::List* apn_list) {
@@ -86,43 +123,6 @@ void ApnMigrator::OnGetManagedProperties(std::string iccid,
   // be migrated
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
   iccids_in_migration_.erase(iccid);
-}
-
-void ApnMigrator::NetworkListChanged() {
-  NetworkStateHandler::NetworkStateList network_list;
-  network_state_handler_->GetVisibleNetworkListByType(
-      NetworkTypePattern::Cellular(), &network_list);
-  for (const NetworkState* network : network_list) {
-    if (network->IsNonShillCellularNetwork()) {
-      continue;
-    }
-
-    if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
-            network->iccid())) {
-      if (!ash::features::IsApnRevampEnabled()) {
-        continue;
-      }
-      // Network needs to be migrated to the APN revamp
-      MigrateNetwork(*network);
-      continue;
-    }
-
-    if (!ash::features::IsApnRevampEnabled()) {
-      // Clear UserApnList so that Shill knows to use legacy APN selection
-      // logic.
-      SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
-      continue;
-    }
-    if (const base::Value::List* custom_apn_list =
-            network_metadata_store_->GetPreRevampCustomApnList(
-                network->guid())) {
-      SetShillUserApnListForNetwork(*network, custom_apn_list);
-      continue;
-    }
-
-    base::Value::List empty_user_apn_list;
-    SetShillUserApnListForNetwork(*network, &empty_user_apn_list);
-  }
 }
 
 }  // namespace ash

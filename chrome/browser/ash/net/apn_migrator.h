@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_APN_MIGRATOR_H_
-#define CHROMEOS_ASH_COMPONENTS_NETWORK_APN_MIGRATOR_H_
+#ifndef CHROME_BROWSER_ASH_NET_APN_MIGRATOR_H_
+#define CHROME_BROWSER_ASH_NET_APN_MIGRATOR_H_
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +16,9 @@ class ManagedNetworkConfigurationHandler;
 class NetworkMetadataStore;
 class NetworkStateHandler;
 
+// Handles migrating cellular networks' Access Point Names from the pre-revamp
+// format to the revamped format (see go/launch/4210741) the first time each
+// network is discovered with the kApnRevamp flag enabled.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
     : public NetworkStateHandlerObserver {
  public:
@@ -64,4 +67,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_APN_MIGRATOR_H_
+#endif  // CHROME_BROWSER_ASH_NET_APN_MIGRATOR_H_
