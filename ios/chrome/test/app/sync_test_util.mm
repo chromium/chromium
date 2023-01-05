@@ -9,10 +9,8 @@
 
 #import "base/bind.h"
 #import "base/check.h"
-#import "base/files/file_path.h"
 #import "base/guid.h"
 #import "base/memory/ptr_util.h"
-#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -92,11 +90,7 @@ bool IsFakeSyncServerSetUp() {
 
 void SetUpFakeSyncServer() {
   DCHECK(!gSyncFakeServer);
-
-  base::FilePath dir_path;
-  DCHECK(base::PathService::Get(base::DIR_APP_DATA, &dir_path))
-      << "couldn't create directory for Sync Fake Server";
-  gSyncFakeServer = new fake_server::FakeServer(dir_path);
+  gSyncFakeServer = new fake_server::FakeServer();
   OverrideSyncNetwork(fake_server::CreateFakeServerHttpPostProviderFactory(
       gSyncFakeServer->AsWeakPtr()));
 }
