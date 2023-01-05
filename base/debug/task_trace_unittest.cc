@@ -19,8 +19,7 @@ namespace debug {
 TEST(TaskTraceTest, NoTask) {
   TaskTrace task_trace;
   EXPECT_TRUE(task_trace.empty());
-  std::array<const void*, 4> addresses = {0};
-  EXPECT_EQ(task_trace.GetAddresses(addresses), 0ul);
+  EXPECT_EQ(task_trace.AddressesForTesting().size(), 0ul);
 }
 
 class ThreeTasksTest {
@@ -36,8 +35,8 @@ class ThreeTasksTest {
   void TaskA() {
     TaskTrace task_trace;
     EXPECT_FALSE(task_trace.empty());
-    std::array<const void*, 4> addresses = {0};
-    EXPECT_EQ(task_trace.GetAddresses(addresses), 1ul);
+    base::span<const void* const> addresses = task_trace.AddressesForTesting();
+    EXPECT_EQ(addresses.size(), 1ul);
     task_a_address = addresses[0];
     task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskB,
                                                     base::Unretained(this)));
@@ -46,8 +45,8 @@ class ThreeTasksTest {
   void TaskB() {
     TaskTrace task_trace;
     EXPECT_FALSE(task_trace.empty());
-    std::array<const void*, 4> addresses = {0};
-    EXPECT_EQ(task_trace.GetAddresses(addresses), 2ul);
+    base::span<const void* const> addresses = task_trace.AddressesForTesting();
+    EXPECT_EQ(addresses.size(), 2ul);
     task_b_address = addresses[0];
     EXPECT_EQ(addresses[1], task_a_address);
     task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskC,
@@ -57,8 +56,8 @@ class ThreeTasksTest {
   void TaskC() {
     TaskTrace task_trace;
     EXPECT_FALSE(task_trace.empty());
-    std::array<const void*, 4> addresses;
-    EXPECT_EQ(task_trace.GetAddresses(addresses), 3ul);
+    base::span<const void* const> addresses = task_trace.AddressesForTesting();
+    EXPECT_EQ(addresses.size(), 3ul);
     EXPECT_EQ(addresses[1], task_b_address);
     EXPECT_EQ(addresses[2], task_a_address);
   }

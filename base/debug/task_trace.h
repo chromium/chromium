@@ -49,10 +49,8 @@ class BASE_EXPORT TaskTrace {
   // Resolves trace to symbols and returns as string.
   std::string ToString() const;
 
-  // Reads the list of addresses currently in the task trace into `addresses`,
-  // and returns the maximum length of addresses that could have been read,
-  // which may differ from `addresses.size()`.
-  size_t GetAddresses(span<const void*> addresses) const;
+  // Returns the list of addresses in the task trace for testing.
+  base::span<const void* const> AddressesForTesting() const;
 
  private:
   absl::optional<StackTrace> stack_trace_;

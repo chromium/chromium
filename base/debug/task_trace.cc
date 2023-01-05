@@ -93,16 +93,12 @@ std::string TaskTrace::ToString() const {
   return stream.str();
 }
 
-size_t TaskTrace::GetAddresses(span<const void*> addresses) const {
+base::span<const void* const> TaskTrace::AddressesForTesting() const {
+  if (empty())
+    return {};
   size_t count = 0;
-  if (empty()) {
-    return count;
-  }
-  const void* const* current_addresses = stack_trace_->Addresses(&count);
-  for (size_t i = 0; i < count && i < addresses.size(); ++i) {
-    addresses[i] = current_addresses[i];
-  }
-  return count;
+  const void* const* addresses = stack_trace_->Addresses(&count);
+  return {addresses, count};
 }
 
 std::ostream& operator<<(std::ostream& os, const TaskTrace& task_trace) {
