@@ -280,6 +280,9 @@ BrowserContext* EventRouter::GetIncognitoContextIfAccessible(
     return nullptr;
   if (!IncognitoInfo::IsSplitMode(extension))
     return nullptr;
+  if (!util::IsIncognitoEnabled(extension_id, browser_context_)) {
+    return nullptr;
+  }
 
   return GetIncognitoContext();
 }

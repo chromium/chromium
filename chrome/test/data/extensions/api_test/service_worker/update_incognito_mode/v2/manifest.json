@@ -1,0 +1,9 @@
+{
+  "name": "Extension with runtime.onInstalled listener",
+  "manifest_version": 3,
+  "version": "0.2",
+  "incognito": "split",
+  "background": {
+    "service_worker": "script.js"
+  }
+}
