@@ -322,7 +322,7 @@ void ExecuteTaskAfterMimeTypesCollected(
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
     std::unique_ptr<std::vector<std::string>> mime_types) {
   if (task.task_type == TASK_TYPE_ARC_APP &&
-      !ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
+      !ash::features::ShouldArcFileTasksUseAppService()) {
     apps::RecordAppLaunchMetrics(profile, apps::AppType::kArc, task.app_id,
                                  apps::LaunchSource::kFromFileManager,
                                  apps::LaunchContainer::kLaunchContainerWindow);
@@ -566,7 +566,7 @@ void UpdateDefaultTask(Profile* profile,
     return;
 
   std::string task_id = TaskDescriptorToId(task_descriptor);
-  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+  if (ash::features::ShouldArcFileTasksUseAppService() &&
       task_descriptor.task_type == TASK_TYPE_ARC_APP) {
     // Task IDs for Android apps are stored in a legacy format (app id:
     // "<package>/<activity>", task id: "view"). For ARC app task descriptors
@@ -796,7 +796,7 @@ bool ExecuteFileTask(Profile* profile,
   if (task.task_type == TASK_TYPE_ARC_APP ||
       task.task_type == TASK_TYPE_WEB_APP ||
       task.task_type == TASK_TYPE_FILE_HANDLER ||
-      (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+      (ash::features::ShouldGuestOsFileTasksUseAppService() &&
        (task.task_type == TASK_TYPE_CROSTINI_APP ||
         task.task_type == TASK_TYPE_PLUGIN_VM_APP))) {
     // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
@@ -810,7 +810,7 @@ bool ExecuteFileTask(Profile* profile,
     return true;
   }
 
-  if (!ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+  if (!ash::features::ShouldGuestOsFileTasksUseAppService() &&
       (task.task_type == TASK_TYPE_CROSTINI_APP ||
        task.task_type == TASK_TYPE_PLUGIN_VM_APP)) {
     DCHECK_EQ(kGuestOsAppActionID, task.action_id);
@@ -912,12 +912,18 @@ void FindExtensionAndAppTasks(Profile* profile,
   // extension file_browser_handlers.
   FindAppServiceTasks(profile, entries, file_urls, tasks);
 
-  // 3. Find and append Guest OS tasks.
-  FindGuestOsTasks(
-      profile, entries, file_urls, tasks,
-      // Done. Apply post-filtering and callback.
-      base::BindOnce(PostProcessFoundTasks, profile, entries,
-                     std::move(callback), std::move(resulting_tasks)));
+  // 3. Find and append Guest OS tasks directly if Guest OS file tasks aren't
+  // provided by App Service.
+  if (!ash::features::ShouldGuestOsFileTasksUseAppService()) {
+    FindGuestOsTasks(
+        profile, entries, file_urls, tasks,
+        // Done. Apply post-filtering and callback.
+        base::BindOnce(PostProcessFoundTasks, profile, entries,
+                       std::move(callback), std::move(resulting_tasks)));
+  } else {
+    PostProcessFoundTasks(profile, entries, std::move(callback),
+                          std::move(resulting_tasks));
+  }
 }
 
 void FindAllTypesOfTasks(Profile* profile,
@@ -926,18 +932,15 @@ void FindAllTypesOfTasks(Profile* profile,
                          FindTasksCallback callback) {
   DCHECK(profile);
   auto resulting_tasks = std::make_unique<ResultingTasks>();
-
-  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
-    // Skip FindArcTasks and FindGuestOsTasks since these tasks are now found in
-    // App Service.
-    FindAppServiceTasks(profile, entries, file_urls, &resulting_tasks->tasks);
-    PostProcessFoundTasks(profile, entries, std::move(callback),
-                          std::move(resulting_tasks));
-  } else {
-    // 1. Find and append ARC handler tasks.
+  if (!ash::features::ShouldArcFileTasksUseAppService()) {
+    // 1. Find and append ARC handler tasks if ARC file tasks aren't
+    // provided by App Service.
     FindArcTasks(profile, entries, file_urls, std::move(resulting_tasks),
                  base::BindOnce(&FindExtensionAndAppTasks, profile, entries,
                                 file_urls, std::move(callback)));
+  } else {
+    FindExtensionAndAppTasks(profile, entries, file_urls, std::move(callback),
+                             std::move(resulting_tasks));
   }
 }
 
@@ -965,7 +968,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
                                             file_path.Extension(),
                                             &default_task)) {
       default_tasks.insert(default_task);
-      if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+      if (ash::features::ShouldArcFileTasksUseAppService() &&
           default_task.task_type == TASK_TYPE_ARC_APP) {
         // Default preference Task Descriptors for Android apps are stored in a
         // legacy format (app id: "<package>/<activity>", action id: "view"). To

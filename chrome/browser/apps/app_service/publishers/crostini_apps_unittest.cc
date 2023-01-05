@@ -165,7 +165,7 @@ TEST_F(CrostiniAppsTest, AppReadinessUpdatesWhenCrostiniDisabled) {
 
 TEST_F(CrostiniAppsTest, CrostiniIntentFilterHasExtensionsFromPrefs) {
   base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kArcAndGuestOsFileTasksUseAppService};
+      ash::features::kGuestOsFileTasksUseAppService};
 
   std::string mime_type = "test/mime1";
   std::string extension = "test_extension";

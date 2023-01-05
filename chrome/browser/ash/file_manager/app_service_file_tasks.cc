@@ -237,8 +237,10 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kExtension,
       apps::AppType::kStandaloneBrowserChromeApp,
       apps::AppType::kStandaloneBrowserExtension};
-  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
+  if (ash::features::ShouldArcFileTasksUseAppService()) {
     supported_app_types.push_back(apps::AppType::kArc);
+  }
+  if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
     supported_app_types.push_back(apps::AppType::kCrostini);
     supported_app_types.push_back(apps::AppType::kPluginVm);
   }
@@ -335,16 +337,14 @@ void ExecuteAppServiceTask(
     intent_files.push_back(std::move(file));
   }
 
-  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
-    DCHECK(task.task_type == TASK_TYPE_ARC_APP ||
-           task.task_type == TASK_TYPE_WEB_APP ||
-           task.task_type == TASK_TYPE_FILE_HANDLER ||
-           task.task_type == TASK_TYPE_CROSTINI_APP ||
-           task.task_type == TASK_TYPE_PLUGIN_VM_APP);
-  } else {
-    DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
-           task.task_type == TASK_TYPE_FILE_HANDLER);
-  }
+  DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
+         task.task_type == TASK_TYPE_FILE_HANDLER ||
+         (ash::features::ShouldArcFileTasksUseAppService() &&
+          task.task_type == TASK_TYPE_ARC_APP) ||
+         (ash::features::ShouldGuestOsFileTasksUseAppService() &&
+          (task.task_type == TASK_TYPE_CROSTINI_APP ||
+           task.task_type == TASK_TYPE_PLUGIN_VM_APP)));
+
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, std::move(intent_files));
   intent->activity_name = task.action_id;

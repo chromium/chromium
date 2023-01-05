@@ -82,7 +82,7 @@ apps::IntentFilters CreateIntentFilterForCrostini(
   // the app can support. We find these extension types by checking what
   // extensions correspond to the app's supported mime types.
   std::vector<std::string> extension_types;
-  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
+  if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
     extension_types = mime_types_service->GetExtensionTypesFromMimeTypes(
         mime_types_set, registration.VmName(), registration.ContainerName());
   }

@@ -343,7 +343,8 @@ class AppServiceFileTasksTestEnabled : public AppServiceFileTasksTest {
   AppServiceFileTasksTestEnabled() {
     feature_list_.InitWithFeatures(
         {blink::features::kFileHandlingAPI,
-         ash::features::kArcAndGuestOsFileTasksUseAppService},
+         ash::features::kArcFileTasksUseAppService,
+         ash::features::kGuestOsFileTasksUseAppService},
         {});
   }
 };
@@ -352,7 +353,8 @@ class AppServiceFileTasksTestDisabled : public AppServiceFileTasksTest {
  public:
   AppServiceFileTasksTestDisabled() {
     feature_list_.InitWithFeatures(
-        {}, {ash::features::kArcAndGuestOsFileTasksUseAppService});
+        {}, {ash::features::kArcFileTasksUseAppService,
+             ash::features::kGuestOsFileTasksUseAppService});
   }
 };
 
@@ -374,7 +376,7 @@ TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceArcApp) {
   ASSERT_EQ(0U, tasks.size());
 }
 
-// Crostini apps should not be found when kArcAndGuestOsFileTasksUseAppService
+// Crostini apps should not be found when kGuestOsFileTasksUseAppService
 // is disabled.
 TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceCrostiniApp) {
   std::string text_mime_type = "text/plain";
@@ -390,7 +392,7 @@ TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceCrostiniApp) {
   ASSERT_EQ(0U, tasks.size());
 }
 
-// PluginVm apps should not be found when kArcAndGuestOsFileTasksUseAppService
+// PluginVm apps should not be found when kGuestOsFileTasksUseAppService
 // is disabled.
 TEST_F(AppServiceFileTasksTestDisabled, FindAppServicePluginVmApp) {
   std::string file_name = "foo.txt";

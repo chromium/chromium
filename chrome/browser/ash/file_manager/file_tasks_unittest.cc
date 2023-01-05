@@ -625,7 +625,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 TEST_F(FileManagerFileTaskPreferencesTest,
        ChooseAndSetDefault_MatchesWithAlternateAppServiceTaskDescriptorForm) {
   base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kArcAndGuestOsFileTasksUseAppService};
+      ash::features::kArcFileTasksUseAppService};
 
   std::string package = "com.example.gallery";
   std::string activity = "com.example.gallery.OpenActivity";
@@ -670,7 +670,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 TEST_F(FileManagerFileTaskPreferencesTest,
        UpdateDefaultTask_ConvertsArcAppServiceTaskDescriptorToStandardTaskId) {
   base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kArcAndGuestOsFileTasksUseAppService};
+      ash::features::kArcFileTasksUseAppService};
 
   std::string package = "com.example.gallery";
   std::string activity = "com.example.gallery.OpenActivity";

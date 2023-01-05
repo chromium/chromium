@@ -2195,10 +2195,15 @@ BASE_FEATURE(kPerUserMetrics,
              "PerUserMetricsConsent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows Files App to find and execute tasks using App Service for Arc and
-// Guest OS apps.
-BASE_FEATURE(kArcAndGuestOsFileTasksUseAppService,
-             "ArcAndGuestOsFileTasksUseAppService",
+// Allows Files App to find and execute tasks using App Service for ARC apps.
+BASE_FEATURE(kArcFileTasksUseAppService,
+             "ArcFileTasksUseAppService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allows Files App to find and execute tasks using App Service for Guest OS
+// apps.
+BASE_FEATURE(kGuestOsFileTasksUseAppService,
+             "GuestOsFileTasksUseAppService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3175,8 +3180,12 @@ bool IsWmModeEnabled() {
   return base::FeatureList::IsEnabled(kWmMode);
 }
 
-bool ShouldArcAndGuestOsFileTasksUseAppService() {
-  return base::FeatureList::IsEnabled(kArcAndGuestOsFileTasksUseAppService);
+bool ShouldArcFileTasksUseAppService() {
+  return base::FeatureList::IsEnabled(kArcFileTasksUseAppService);
+}
+
+bool ShouldGuestOsFileTasksUseAppService() {
+  return base::FeatureList::IsEnabled(kGuestOsFileTasksUseAppService);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {
