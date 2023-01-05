@@ -10,8 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bit_cast.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -726,6 +731,24 @@ void TestYUVRed(const char* file_name,
   EXPECT_NEAR(decoded_pixel.z(), 0, kMinError);  // B
 }
 
+void DecodeTask(const SharedBuffer* data, base::RepeatingClosure* done) {
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+
+  scoped_refptr<SharedBuffer> data_copy = SharedBuffer::Create();
+  data_copy->Append(*data);
+  decoder->SetData(std::move(data_copy), true);
+
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->FrameCount(), 1u);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+
+  done->Run();
+}
+
 }  // namespace
 
 TEST(AnimatedAVIFTests, ValidImages) {
@@ -1028,6 +1051,43 @@ TEST(StaticAVIFTests, IncrementalDecoding) {
     }
     previous_size = step.size;
   }
+}
+
+// Reproduces crbug.com/1402841. Decodes a large AVIF image 104 times in
+// parallel from base::ThreadPool. Should not cause temporary deadlock of
+// base::ThreadPool.
+TEST(StaticAVIFTests, ParallelDecoding) {
+  // The base::test::TaskEnvironment constructor creates a base::ThreadPool
+  // instance with 4 foreground threads. The number 4 comes from the
+  // test::TaskEnvironment::kNumForegroundThreadPoolThreads constant.
+  base::test::TaskEnvironment task_environment;
+
+  // This test image is fast to decode (all neutral gray pixels) and its
+  // allocation size is large enough to cause
+  // media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels() to pick
+  // n_tasks > 1 if AVIFImageDecoder did not pass disable_threading=true to it.
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/gray1024x704.avif");
+  ASSERT_TRUE(data.get());
+
+  // Task timeout in tests is 30 seconds (see https://crrev.com/c/1949028).
+  // Four blocking tasks cause a temporary deadlock (1.2 seconds) of
+  // base::ThreadPool, so we need at least 30 / 1.2 * 4 = 100 decodes for the
+  // test to time out without the bug fix. We add a margin of 4 decodes, i.e.,
+  // (30 / 1.2 + 1) * 4 = 104.
+  const size_t n_decodes = 104;
+  base::WaitableEvent event;
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      n_decodes,
+      base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
+
+  for (size_t i = 0; i < n_decodes; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(DecodeTask, base::Unretained(data.get()), &barrier));
+  }
+
+  event.Wait();
 }
 
 TEST(StaticAVIFTests, AlphaHasNoIspeProperty) {
