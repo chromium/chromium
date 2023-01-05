@@ -4,6 +4,7 @@
     --footer-margin: 24px;
     --tangible-sync-dialog-illustration-url:
         url(./images/tangible_sync_dialog_illustration.svg);
+    --tangible-sync-window-illustration-width: 17vw;
     --tangible-sync-window-left-illustration-url:
         url(./images/tangible_sync_window_left_illustration.svg);
     --tangible-sync-window-right-illustration-url:
@@ -12,6 +13,33 @@
     --sync-benefit-icon-color: var(--google-blue-600);
     color: var(--cr-primary-text-color);
     display: block;
+  }
+
+  @keyframes left-illustration-slide-animation {
+    0% {
+      transform: translateX(calc(-1 * var(--tangible-sync-window-illustration-width)));
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes right-illustration-slide-animation {
+    0% {
+      transform: translateX(var(--tangible-sync-window-illustration-width));
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fade-in-animation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 100%;
+    }
   }
 
   .secondary {
@@ -399,20 +427,31 @@
   }
 
   #tangible-sync-window-left-illustration {
+    animation-duration: 500ms;
+    animation-name: left-illustration-slide-animation, fade-in-animation;
     content: var(--tangible-sync-window-left-illustration-url);
     left: 0;
+    transition-timing-function: ease-in-out;
   }
 
   #tangible-sync-window-right-illustration {
+    animation-duration: 500ms;
+    animation-name: right-illustration-slide-animation, fade-in-animation;
     content: var(--tangible-sync-window-right-illustration-url);
     right: 0;
+    transition-timing-function: ease-in-out;
   }
 
-  .tangible-sync-window-illustration {
+  #tangible-sync-window-left-illustration,
+  #tangible-sync-window-right-illustration {
     max-width: 320px;
     position: absolute;
     top: 0;
-    width: 17vw;
+    width: var(--tangible-sync-window-illustration-width)
+  }
+
+  .fade-in {
+    animation: 500ms ease-in-out fade-in-animation;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -582,11 +621,9 @@
 <template is="dom-if" if="[[isTangibleSync_]]">
   <div class$="tangible-sync [[getMainContainerClass_()]]">
     <img id="tangible-sync-dialog-illustration" hidden="[[!isModalDialog_]]">
-    <img id="tangible-sync-window-left-illustration"
-      class="tangible-sync-window-illustration" hidden="[[isModalDialog_]]">
-    <img id="tangible-sync-window-right-illustration"
-      class="tangible-sync-window-illustration" hidden="[[isModalDialog_]]">
-    <div id="contentContainer">
+    <img id="tangible-sync-window-left-illustration" hidden="[[isModalDialog_]]">
+    <img id="tangible-sync-window-right-illustration" hidden="[[isModalDialog_]]">
+    <div id="contentContainer" class$="[[getAnimationClass_()]]">
       <div id="avatarContainer">
         <img id="avatar" alt="" src="[[accountImageSrc_]]">
         <div class="work-badge" id="badge" hidden="[[!showEnterpriseBadge_]]">
@@ -615,7 +652,7 @@
       </div>
     </div>
   </div>
-  <div class="action-row tangible-sync">
+  <div class$="action-row tangible-sync [[getAnimationClass_()]]">
     <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
     <div id="tangible-sync-button-container"
         class$="action-container [[getButtonContainerClass_()]]">

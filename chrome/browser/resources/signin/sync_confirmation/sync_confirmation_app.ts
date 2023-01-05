@@ -174,6 +174,10 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     return isSigninInterceptFre ? 'signin-intercept-design' : '';
   }
 
+  private getAnimationClass_() {
+    return !this.isModalDialog_ ? 'fade-in' : '';
+  }
+
   private isModalDialogWithoutTangibleSync_(): boolean {
     return this.isModalDialog_ && !this.isTangibleSync_;
   }
