@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -38,9 +37,6 @@ using signin_metrics::PromoAction;
 @property(nonatomic, strong) SigninCoordinator* userSigninCoordinator;
 // Manager that handles sign-in add account UI.
 @property(nonatomic, strong) AddAccountSigninManager* addAccountSigninManager;
-// Manager that handles interactions to add identities.
-@property(nonatomic, strong)
-    ChromeIdentityInteractionManager* identityInteractionManager;
 // View where the sign-in button was displayed.
 @property(nonatomic, assign) AccessPoint accessPoint;
 // Promo button used to trigger the sign-in.

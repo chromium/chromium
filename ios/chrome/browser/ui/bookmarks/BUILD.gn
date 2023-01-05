@@ -77,7 +77,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/legacy_bookmarks:core",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",

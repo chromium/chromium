@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_utils_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/testing/nserror_util.h"
 #import "ui/base/models/tree_node_iterator.h"
 #import "url/gurl.h"

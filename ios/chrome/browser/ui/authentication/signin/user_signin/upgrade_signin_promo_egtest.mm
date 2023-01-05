@@ -29,10 +29,6 @@
 
 namespace {
 
-// Capability name for canOfferExtendedChromeSyncPromos.
-const NSString* kCanOfferExtendedChromeSyncPromos = [NSString
-    stringWithUTF8String:kCanOfferExtendedChromeSyncPromosCapabilityName];
-
 void VerifySigninPromoSufficientlyVisible() {
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -49,9 +45,9 @@ void VerifySigninPromoSufficientlyVisible() {
 
 ios::CapabilitiesDict* GetCapabilitiesDictionary(
     SystemIdentityCapabilityResult result) {
-  int intResult = static_cast<int>(result);
   return @{
-    @(kCanOfferExtendedChromeSyncPromosCapabilityName) : @(intResult),
+    @(kCanOfferExtendedChromeSyncPromosCapabilityName) :
+        @(static_cast<int>(result)),
   };
 }
 
