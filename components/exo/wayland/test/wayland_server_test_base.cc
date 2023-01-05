@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
-#include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/server.h"
 #include "testing/gtest/include/gtest/gtest.h"

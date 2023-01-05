@@ -208,8 +208,6 @@ source_set("test_support") {
     "mock_vsync_timing_observer.h",
     "test/exo_test_base.cc",
     "test/exo_test_base.h",
-    "test/exo_test_base_views.cc",
-    "test/exo_test_base_views.h",
     "test/exo_test_data_exchange_delegate.cc",
     "test/exo_test_data_exchange_delegate.h",
     "test/exo_test_helper.cc",

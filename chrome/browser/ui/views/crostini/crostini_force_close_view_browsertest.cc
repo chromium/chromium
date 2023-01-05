@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "components/exo/shell_surface.h"
-#include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "content/public/test/browser_test.h"
