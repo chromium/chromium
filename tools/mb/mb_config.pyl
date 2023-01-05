@@ -685,14 +685,6 @@
         'build1': 'gpu_tests_release_bot_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_reclient',
       },
-      'Comparison Linux (reclient vs reclient remote links)(large)': {
-        'build1': 'gpu_tests_release_bot_no_nacl_reclient',
-        'build2': 'gpu_tests_release_bot_remote_links_large_reclient',
-      },
-      'Comparison Linux (reclient vs reclient remote links)(medium)': {
-        'build1': 'gpu_tests_release_bot_no_nacl_reclient',
-        'build2': 'gpu_tests_release_bot_remote_links_medium_reclient',
-      },
       'Comparison Linux (reclient vs reclient remote links)(small)': {
         'build1': 'gpu_tests_release_bot_no_nacl_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_small_reclient',
@@ -2763,14 +2755,6 @@
       'gpu_tests', 'release_bot_reclient',
     ],
 
-    'gpu_tests_release_bot_remote_links_large_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_large', 'disable_nacl',
-    ],
-
-    'gpu_tests_release_bot_remote_links_medium_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_medium', 'disable_nacl',
-    ],
-
     'gpu_tests_release_bot_remote_links_reclient': [
       'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links',
     ],
@@ -4776,16 +4760,6 @@
 
     'use_remoteexec_links': {
       'gn_args': 'use_remoteexec_links=true',
-    },
-
-    # Temporary configuration for testing remote linking on different worker sizes
-    'use_remoteexec_links_large': {
-      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_large.cfg" concurrent_links=50',
-    },
-
-    # Temporary configuration for testing remote linking on different worker sizes
-    'use_remoteexec_links_medium': {
-      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_medium.cfg" concurrent_links=50',
     },
 
     # Temporary configuration for testing remote linking on different worker sizes

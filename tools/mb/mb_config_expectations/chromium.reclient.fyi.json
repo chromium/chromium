@@ -22,60 +22,6 @@
       }
     }
   },
-  "Comparison Linux (reclient vs reclient remote links)(large)": {
-    "build1": {
-      "gn_args": {
-        "dcheck_always_on": false,
-        "enable_nacl": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "use_remoteexec": true
-      }
-    },
-    "build2": {
-      "gn_args": {
-        "concurrent_links": 50,
-        "dcheck_always_on": false,
-        "enable_nacl": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_large.cfg",
-        "use_remoteexec": true,
-        "use_remoteexec_links": true
-      }
-    }
-  },
-  "Comparison Linux (reclient vs reclient remote links)(medium)": {
-    "build1": {
-      "gn_args": {
-        "dcheck_always_on": false,
-        "enable_nacl": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "use_remoteexec": true
-      }
-    },
-    "build2": {
-      "gn_args": {
-        "concurrent_links": 50,
-        "dcheck_always_on": false,
-        "enable_nacl": false,
-        "ffmpeg_branding": "Chrome",
-        "is_component_build": false,
-        "is_debug": false,
-        "proprietary_codecs": true,
-        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_medium.cfg",
-        "use_remoteexec": true,
-        "use_remoteexec_links": true
-      }
-    }
-  },
   "Comparison Linux (reclient vs reclient remote links)(small)": {
     "build1": {
       "gn_args": {

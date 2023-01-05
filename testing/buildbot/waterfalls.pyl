@@ -5290,22 +5290,6 @@
           'all'
         ],
       },
-      'Comparison Linux (reclient vs reclient remote links)(large)': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Comparison Linux (reclient vs reclient remote links)(medium)': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
       'Comparison Linux (reclient vs reclient remote links)(small)': {
         'mixins': [
           'isolate_profile_data',

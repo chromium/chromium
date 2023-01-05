@@ -6,16 +6,6 @@
       "all"
     ]
   },
-  "Comparison Linux (reclient vs reclient remote links)(large)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "Comparison Linux (reclient vs reclient remote links)(medium)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "Comparison Linux (reclient vs reclient remote links)(small)": {
     "additional_compile_targets": [
       "all"
