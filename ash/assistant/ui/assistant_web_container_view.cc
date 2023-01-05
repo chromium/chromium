@@ -18,7 +18,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
@@ -40,10 +39,6 @@ constexpr int kMinWindowMarginDip = 48;
 AssistantWebContainerView::AssistantWebContainerView(
     AssistantWebViewDelegate* web_container_view_delegate)
     : web_container_view_delegate_(web_container_view_delegate) {
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   InitLayout();
 }
 
@@ -90,7 +85,6 @@ void AssistantWebContainerView::DidStopLoading() {
   constexpr int kTopPaddingDip = 8;
   contents_view_ptr_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(kTopPaddingDip, 0, 0, 0)));
-  SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
 void AssistantWebContainerView::DidSuppressNavigation(
@@ -165,8 +159,6 @@ void AssistantWebContainerView::InitLayout() {
 void AssistantWebContainerView::RemoveContents() {
   if (!contents_view_ptr_)
     return;
-
-  SetFocusBehavior(FocusBehavior::NEVER);
 
   // Remove back button.
   web_container_view_delegate_->UpdateBackButtonVisibility(
