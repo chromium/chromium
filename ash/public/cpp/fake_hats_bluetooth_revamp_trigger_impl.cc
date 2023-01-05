@@ -11,7 +11,7 @@ FakeHatsBluetoothRevampTriggerImpl::FakeHatsBluetoothRevampTriggerImpl() =
     default;
 
 void FakeHatsBluetoothRevampTriggerImpl::TryToShowSurvey() {
-  try_to_show_survey_called_ = true;
+  try_to_show_survey_count_++;
 }
 
 }  // namespace ash

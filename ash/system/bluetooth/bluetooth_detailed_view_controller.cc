@@ -113,6 +113,10 @@ void BluetoothDetailedViewController::OnPropertiesUpdated(
 
 void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(new_state);
+
+  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
+    hats_bluetooth_revamp_trigger->TryToShowSurvey();
+  }
 }
 
 void BluetoothDetailedViewController::OnPairNewDeviceRequested() {

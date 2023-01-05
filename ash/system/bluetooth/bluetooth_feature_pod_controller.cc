@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -81,6 +82,10 @@ void BluetoothFeaturePodController::OnIconPressed() {
   const bool is_toggled = IsButtonToggled();
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
 
+  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
+    hats_bluetooth_revamp_trigger->TryToShowSurvey();
+  }
+
   if (is_toggled) {
     TrackToggleUMA(/*target_toggle_state=*/false);
     return;
@@ -98,6 +103,10 @@ void BluetoothFeaturePodController::OnLabelPressed() {
   TrackDiveInUMA();
   if (!IsButtonToggled()) {
     remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
+  }
+
+  if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
+    hats_bluetooth_revamp_trigger->TryToShowSurvey();
   }
   tray_controller_->ShowBluetoothDetailedView();
 }

@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_FAKE_HATS_BLUETOOTH_REVAMP_TRIGGER_IMPL_H_
 #define ASH_PUBLIC_CPP_FAKE_HATS_BLUETOOTH_REVAMP_TRIGGER_IMPL_H_
 
+#include <memory>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 
@@ -21,14 +23,14 @@ class ASH_PUBLIC_EXPORT FakeHatsBluetoothRevampTriggerImpl
       const FakeHatsBluetoothRevampTriggerImpl&) = delete;
   ~FakeHatsBluetoothRevampTriggerImpl() override = default;
 
-  bool try_to_show_survey_called() const { return try_to_show_survey_called_; }
+  size_t try_to_show_survey_count() const { return try_to_show_survey_count_; }
 
   // HatsBluetoothRevampTrigger:
   void TryToShowSurvey() override;
 
  private:
-  // True if `TryToShowSurvey()` was called.
-  bool try_to_show_survey_called_ = false;
+  // Keeps track of how many times `TryToShowSurvey()` was called.
+  size_t try_to_show_survey_count_ = 0;
 };
 
 }  // namespace ash

@@ -183,8 +183,8 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
     return bluetooth_config_test_helper()->fake_device_operation_handler();
   }
 
-  FakeHatsBluetoothRevampTriggerImpl* fake_trigger_impl() {
-    return fake_trigger_impl_.get();
+  size_t GetTryToShowSurveyCount() {
+    return fake_trigger_impl_->try_to_show_survey_count();
   }
 
  private:
@@ -246,23 +246,26 @@ TEST_F(BluetoothDetailedViewControllerTest,
 TEST_F(BluetoothDetailedViewControllerTest,
        ChangesBluetoothEnabledStateWhenTogglePressed) {
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  EXPECT_EQ(0u, GetTryToShowSurveyCount());
 
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
 
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
+  EXPECT_EQ(2u, GetTryToShowSurveyCount());
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,
        OnPairNewDeviceRequestedOpensBluetoothDialogWithHatsTrigger) {
-  EXPECT_FALSE(fake_trigger_impl()->try_to_show_survey_called());
+  EXPECT_EQ(0u, GetTryToShowSurveyCount());
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
   bluetooth_detailed_view_delegate()->OnPairNewDeviceRequested();
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
-  EXPECT_TRUE(fake_trigger_impl()->try_to_show_survey_called());
+  EXPECT_EQ(1u, GetTryToShowSurveyCount());
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,
