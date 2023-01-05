@@ -53,11 +53,11 @@ class DIPSDatabase {
              const TimestampRange& stateful_bounce_times,
              const TimestampRange& bounce_times);
 
-  absl::optional<StateValue> Read(const std::string& site) const;
+  absl::optional<StateValue> Read(const std::string& site);
 
   // Note: this doesn't clear expired interactions from the database unlike the
   // other database querying methods.
-  std::vector<std::string> GetAllSitesForTesting() const;
+  std::vector<std::string> GetAllSitesForTesting();
 
   // Returns all sites which bounced the user and aren't protected from DIPS.
   //
@@ -65,10 +65,7 @@ class DIPSDatabase {
   // - it's still in its grace period after the first bounce
   // - it received user interaction before the first bounce
   // - it received user interaction in the grace period after the first bounce
-  //
-  // If a site is protected by an interaction, it won't be returned by this
-  // query until that interaction expires after interaction_ttl.
-  std::vector<std::string> GetSitesThatBounced() const;
+  std::vector<std::string> GetSitesThatBounced();
 
   // Returns all sites which used storage and aren't protected from DIPS.
   //
@@ -76,10 +73,7 @@ class DIPSDatabase {
   // - it's still in its grace period after the first storage
   // - it received user interaction before the first storage
   // - it received user interaction in the grace period after the first storage
-  //
-  // If a site is protected by an interaction, it won't be returned by this
-  // query until that interaction expires after interaction_ttl.
-  std::vector<std::string> GetSitesThatUsedStorage() const;
+  std::vector<std::string> GetSitesThatUsedStorage();
 
   // Returns all sites which statefully bounced the user and aren't protected
   // from DIPS.
@@ -89,10 +83,7 @@ class DIPSDatabase {
   // - it received user interaction before the first stateful bounce
   // - it received user interaction in the grace period after the first stateful
   //   bounce
-  //
-  // If a site is protected by an interaction, it won't be returned by this
-  // query until that interaction expires after interaction_ttl.
-  std::vector<std::string> GetSitesThatBouncedWithState() const;
+  std::vector<std::string> GetSitesThatBouncedWithState();
 
   // Deletes all rows in the database whose interactions have expired out.
   //
@@ -124,7 +115,7 @@ class DIPSDatabase {
                           const DIPSEventRemovalType type);
 
   // Returns the number of entries present in the database.
-  size_t GetEntryCount() const;
+  size_t GetEntryCount();
 
   // If the number of entries in the database is greater than
   // |GetMaxEntries()|, garbage collect. Returns the number of entries deleted
@@ -142,7 +133,7 @@ class DIPSDatabase {
   }
 
   // Checks that the internal SQLite database is initialized.
-  bool CheckDBInit() const;
+  bool CheckDBInit();
 
   size_t GetMaxEntries() const { return max_entries_; }
   size_t GetPurgeEntries() const { return purge_entries_; }
@@ -174,7 +165,7 @@ class DIPSDatabase {
                              const DIPSEventRemovalType type);
   bool RemoveEmptyRows();
 
-  void LogDatabaseMetrics() const;
+  void LogDatabaseMetrics();
 
  private:
   // Callback for database errors.
