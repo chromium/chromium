@@ -24,12 +24,17 @@ td {
   padding: 1px 4px;
 }
 
+cr-tab-box {
+  width: inherit;
+}
+
 div[slot='panel'] {
   padding-bottom: 10px;
 }
 
 div[slot='panel'] > div {
   display: flex;
+  width: 100vw;
 }
 
 div[slot='panel'] > div > div {
