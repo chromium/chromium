@@ -158,16 +158,6 @@ void TrackNameRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
   SetProcessTrackDescriptor(process_start_timestamp_);
 }
 
-void TrackNameRecorder::WillClearIncrementalState(
-    const perfetto::DataSourceBase::ClearIncrementalStateArgs&) {
-  // We periodically re-set the process track descriptor to keep track of
-  // changing process labels. Note that this leads to the descriptor being
-  // written twice, once before the state reset and once immediately after.
-  // TODO(khokhlov): Make it possible to set the track descriptor but not
-  // write it to the trace to save a little trace size here.
-  SetProcessTrackDescriptor(process_start_timestamp_);
-}
-
 void TrackNameRecorder::OnThreadNameChanged(const char* name) {
   // If tracing is not initialized, the thread name is lost, but this should
   // never happen outside of tests.

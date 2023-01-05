@@ -2107,6 +2107,15 @@ void TraceLog::UpdateProcessLabel(int label_id,
   if (!current_label.length())
     return RemoveProcessLabel(label_id);
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (perfetto::Tracing::IsInitialized()) {
+    auto track = perfetto::ProcessTrack::Current();
+    auto desc = track.Serialize();
+    desc.mutable_process()->add_process_labels(current_label);
+    perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+  }
+#endif
+
   AutoLock lock(lock_);
   process_labels_[label_id] = current_label;
 }

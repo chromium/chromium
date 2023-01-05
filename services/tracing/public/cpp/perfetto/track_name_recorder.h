@@ -30,8 +30,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
   // perfetto::TrackEventSessionObserver implementation
   void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
   void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
-  void WillClearIncrementalState(
-      const perfetto::DataSourceBase::ClearIncrementalStateArgs&) override;
 
   // base::ThreadIdNameManager::Observer implementation.
   void OnThreadNameChanged(const char* name) override;
