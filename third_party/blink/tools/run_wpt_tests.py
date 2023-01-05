@@ -130,13 +130,25 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
     def wpt_binary(self):
         if self.options.use_upstream_wpt:
             return os.path.join(self._upstream_dir, "wpt")
-        return super().wpt_binary
+        default_wpt_binary = os.path.join(common.SRC_DIR, "third_party",
+                                          "wpt_tools", "wpt", "wpt")
+        return os.environ.get("WPT_BINARY", default_wpt_binary)
 
     @property
     def wpt_root_dir(self):
         if self.options.use_upstream_wpt:
             return self._upstream_dir
-        return super().wpt_root_dir
+        return self.path_finder.path_from_web_tests(
+            self.path_finder.wpt_prefix())
+
+    @property
+    def output_directory(self):
+        return self.path_finder.path_from_chromium_base(
+            'out', self.options.target)
+
+    @property
+    def mojo_js_directory(self):
+        return self.fs.join(self.output_directory, 'gen')
 
     @property
     def rest_args(self):
@@ -281,7 +293,8 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         self.port.show_results_html_file(results_file)
 
     def clean_up_after_test_run(self):
-        super().clean_up_after_test_run()
+        if self._include_filename:
+            self.fs.remove(self._include_filename)
         # Avoid having a dangling reference to the temp directory
         # which was deleted
         self._tmp_dir = None

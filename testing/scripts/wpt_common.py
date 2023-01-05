@@ -51,26 +51,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self._include_filename = None
         self.layout_test_results_subdir = 'layout-test-results'
 
-    @property
-    def wpt_binary(self):
-        default_wpt_binary = os.path.join(
-            common.SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
-        return os.environ.get("WPT_BINARY", default_wpt_binary)
-
-    @property
-    def wpt_root_dir(self):
-        return self.path_finder.path_from_web_tests(
-            self.path_finder.wpt_prefix())
-
-    @property
-    def output_directory(self):
-        return self.path_finder.path_from_chromium_base('out',
-                                                        self.options.target)
-
-    @property
-    def mojo_js_directory(self):
-        return self.fs.join(self.output_directory, 'gen')
-
     def add_extra_arguments(self, parser):
         parser.add_argument(
             '-t',
@@ -363,10 +343,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             command.extend(['--wpt-report',
                             self.wptreport])
         return common.run_command(command)
-
-    def clean_up_after_test_run(self):
-        if self._include_filename:
-            self.fs.remove(self._include_filename)
 
     def wpt_product_name(self):
         raise NotImplementedError
