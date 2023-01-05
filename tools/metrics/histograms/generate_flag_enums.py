@@ -30,7 +30,7 @@ def get_entries_from_unit_test(outdir: str) -> list[str]:
   """
   subprocess.run(['autoninja', '-C', outdir, 'unit_tests'])
   run_test_command = subprocess.run([
-      'out/Default/unit_tests',
+      os.path.join(outdir, unit_tests),
       '--gtest_filter=AboutFlagsHistogramTest.CheckHistograms'
   ],
                                     capture_output=True,
