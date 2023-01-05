@@ -2308,8 +2308,20 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
       continue;
     }
 
-    // We match the video device and the media controller by the driver
-    // field. The mtk-vcodec driver does not fill the card and bus fields
+    // Match the video device and the media controller by the bus_info
+    // field. This works better than the driver field if there are multiple
+    // instances of the same decoder driver in the system. However old MediaTek
+    // drivers didn't fill in the bus_info field for the media device.
+    if (strlen(reinterpret_cast<const char*>(caps.bus_info)) > 0 &&
+        strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
+        strncmp(reinterpret_cast<const char*>(caps.bus_info),
+                reinterpret_cast<const char*>(media_info.bus_info),
+                sizeof(caps.driver))) {
+      continue;
+    }
+
+    // Fall back to matching the video device and the media controller by the
+    // driver field. The mtk-vcodec driver does not fill the card and bus fields
     // properly, so those won't work.
     if (strncmp(reinterpret_cast<const char*>(caps.driver),
                 reinterpret_cast<const char*>(media_info.driver),
