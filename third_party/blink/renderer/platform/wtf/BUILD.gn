@@ -243,10 +243,6 @@ component("wtf") {
     ]
   }
 
-  if (!is_mac && (current_cpu == "x86" || current_cpu == "x64")) {
-    sources += [ "text/copy_lchars_from_uchar_source.cc" ]
-  }
-
   if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.
 
