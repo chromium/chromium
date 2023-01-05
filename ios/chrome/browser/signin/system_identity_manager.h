@@ -108,7 +108,7 @@ class SystemIdentityManager {
   void RemoveObserver(SystemIdentityManagerObserver* observer);
 
   // Returns whether signin is supported by the provider.
-  virtual bool IsSigninSupported();
+  virtual bool IsSigninSupported() = 0;
 
   // Handles open URL authentication callback. Should be called within
   // `-[UISceneDelegate application:openURLContexts:]` context. Returns

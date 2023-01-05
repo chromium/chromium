@@ -62,11 +62,6 @@ void SystemIdentityManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool SystemIdentityManager::IsSigninSupported() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
-}
-
 void SystemIdentityManager::FireIdentityListChanged(bool notify_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
