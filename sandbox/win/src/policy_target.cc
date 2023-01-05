@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/policy_target.h"
 
+#include <ntstatus.h>
 #include <stddef.h>
 
 #include "sandbox/win/src/crosscall_client.h"

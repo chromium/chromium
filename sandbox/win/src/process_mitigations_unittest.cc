@@ -6,6 +6,7 @@
 
 #include <excpt.h>
 #include <ktmw32.h>
+#include <ntstatus.h>
 #include <windows.h>
 
 #include "base/files/file_util.h"

@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/signed_policy.h"
 
+#include <ntstatus.h>
 #include <stdint.h>
 
 #include <string>

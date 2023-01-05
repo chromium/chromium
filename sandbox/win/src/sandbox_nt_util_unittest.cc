@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/sandbox_nt_util.h"
 
+#include <ntstatus.h>
 #include <windows.h>
 
 #include <memory>

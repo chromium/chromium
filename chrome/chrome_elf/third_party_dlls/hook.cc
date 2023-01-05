@@ -8,6 +8,7 @@
 #include <limits>
 
 #include <assert.h>
+#include <ntstatus.h>
 
 #include "chrome/chrome_elf/crash/crash_helper.h"
 #include "chrome/chrome_elf/hook_util/hook_util.h"

@@ -6,6 +6,7 @@
 
 #include "sandbox/win/src/service_resolver.h"
 
+#include <ntstatus.h>
 #include <stddef.h>
 
 #include <memory>

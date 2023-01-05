@@ -4,7 +4,9 @@
 
 #include "chrome/chrome_cleaner/engines/common/registry_util.h"
 
+#include <ntstatus.h>
 #include <windows.h>
+
 #include <algorithm>
 #include <memory>
 #include <sstream>

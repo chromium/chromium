@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/process_thread_policy.h"
 
+#include <ntstatus.h>
 #include <stdint.h>
 
 #include <memory>

@@ -4,6 +4,7 @@
 
 #include "chrome/chrome_cleaner/engines/broker/scanner_sandbox_interface.h"
 
+#include <ntstatus.h>
 #include <windows.h>
 
 #include <string>

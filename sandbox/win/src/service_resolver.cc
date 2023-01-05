@@ -4,6 +4,8 @@
 
 #include "sandbox/win/src/service_resolver.h"
 
+#include <ntstatus.h>
+
 #include "base/win/pe_image.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/sandbox_nt_util.h"

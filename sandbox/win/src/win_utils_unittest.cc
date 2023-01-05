@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <ntstatus.h>
 #include <psapi.h>
 
 #include <vector>

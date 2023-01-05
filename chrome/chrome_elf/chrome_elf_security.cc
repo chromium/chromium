@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <assert.h>
+#include <ntstatus.h>
 #include <versionhelpers.h>  // windows.h must be before
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/current_module.h"
-
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_util.h"

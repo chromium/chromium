@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/sandbox_nt_util.h"
 
+#include <ntstatus.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -295,7 +296,7 @@ NTSTATUS CopyNameAndAttributes(
     size_t* out_name_len,
     uint32_t* attributes) {
   if (!InitHeap())
-    return NTSTATUS_NO_MEMORY;
+    return STATUS_NO_MEMORY;
 
   DCHECK_NT(out_name);
   DCHECK_NT(out_name_len);

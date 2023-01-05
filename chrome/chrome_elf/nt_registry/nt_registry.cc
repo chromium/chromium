@@ -5,6 +5,7 @@
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 
 #include <assert.h>
+#include <ntstatus.h>
 #include <stdlib.h>
 
 #include <memory>

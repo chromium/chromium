@@ -4,6 +4,8 @@
 
 #include "sandbox/win/src/target_interceptions.h"
 
+#include <ntstatus.h>
+
 #include "base/win/static_constants.h"
 #include "sandbox/win/src/interception_agent.h"
 #include "sandbox/win/src/sandbox_factory.h"

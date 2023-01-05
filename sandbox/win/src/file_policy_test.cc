@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 
+#include <ntstatus.h>
 #include <windows.h>
 #include <winioctl.h>
 

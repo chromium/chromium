@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/engines/broker/cleaner_sandbox_interface.h"
 
+#include <ntstatus.h>
+
 #include <limits>
 #include <memory>
 #include <string>
@@ -881,7 +883,7 @@ TEST(CleanerSandboxInterface, TerminateProcessTest) {
   // Double check the process is still around.
   DWORD exit_code = 420042;
   EXPECT_EQ(TRUE, ::GetExitCodeProcess(test_process.Handle(), &exit_code));
-  EXPECT_EQ(STILL_ACTIVE, exit_code);
+  EXPECT_EQ(DWORD{STILL_ACTIVE}, exit_code);
 
   // Unprotect the process and kill it.
   process_protector.Release();
@@ -918,7 +920,7 @@ TEST(CleanerSandboxInterface, TerminateProcessTest_ChromeProcess) {
   // Make sure the process is actually still running.
   DWORD exit_code = 4711;
   EXPECT_EQ(TRUE, ::GetExitCodeProcess(test_process.Handle(), &exit_code));
-  EXPECT_EQ(STILL_ACTIVE, exit_code);
+  EXPECT_EQ(DWORD{STILL_ACTIVE}, exit_code);
 
   test_process.Terminate(0, false);
   *command_line = original_command_line;

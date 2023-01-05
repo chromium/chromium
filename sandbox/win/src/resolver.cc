@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/resolver.h"
 
+#include <ntstatus.h>
 #include <stddef.h>
 
 #include "base/win/pe_image.h"
@@ -20,7 +21,7 @@ NTSTATUS ResolverThunk::Init(const void* target_module,
                              void* thunk_storage,
                              size_t storage_bytes) {
   if (!thunk_storage || 0 == storage_bytes || !target_module || !target_name)
-    return NTSTATUS_INVALID_PARAMETER;
+    return STATUS_INVALID_PARAMETER;
 
   if (storage_bytes < GetThunkSize())
     return STATUS_BUFFER_TOO_SMALL;
@@ -47,7 +48,7 @@ NTSTATUS ResolverThunk::ResolveInterceptor(const void* interceptor_module,
                                            const void** address) {
   DCHECK_NT(address);
   if (!interceptor_module)
-    return NTSTATUS_INVALID_PARAMETER;
+    return STATUS_INVALID_PARAMETER;
 
   base::win::PEImage pe(interceptor_module);
   if (!pe.VerifyMagic())

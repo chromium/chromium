@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/engines/target/cleaner_engine_requests_proxy.h"
 
+#include <ntstatus.h>
+
 #include <limits>
 #include <memory>
 #include <string>

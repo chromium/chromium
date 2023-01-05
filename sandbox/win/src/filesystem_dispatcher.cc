@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/filesystem_dispatcher.h"
 
+#include <ntstatus.h>
 #include <stdint.h>
 
 #include "sandbox/win/src/crosscall_client.h"

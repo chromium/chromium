@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/resolver.h"
 
+#include <ntstatus.h>
 #include <stddef.h>
 
 // For placement new. This file must not depend on the CRT at runtime, but

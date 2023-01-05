@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/signed_interception.h"
 
+#include <ntstatus.h>
 #include <stdint.h>
 
 #include "sandbox/win/src/crosscall_client.h"
