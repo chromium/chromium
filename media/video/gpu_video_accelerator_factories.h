@@ -160,9 +160,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   // May be called on any thread.
   virtual void NotifyEncoderSupportKnown(base::OnceClosure callback) = 0;
 
-  // Caller owns returned pointer, but should call Destroy() on it (instead of
-  // directly deleting) for proper destruction, as per the
-  // VideoEncodeAccelerator interface.
   virtual std::unique_ptr<VideoEncodeAccelerator>
   CreateVideoEncodeAccelerator() = 0;
 

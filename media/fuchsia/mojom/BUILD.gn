@@ -12,6 +12,10 @@ mojom("fuchsia_media") {
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
+  export_class_attribute = "MEDIA_EXPORT"
+  export_define = "IS_MEDIA_IMPL=1"
+  export_header = "media/base/media_export.h"
+
   shared_cpp_typemaps = {
     types = [
       {

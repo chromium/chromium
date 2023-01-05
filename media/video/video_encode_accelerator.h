@@ -456,7 +456,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual bool IsGpuFrameResizeSupported();
 
  protected:
-  // Do not delete directly; use Destroy() or own it with a scoped_ptr, which
+  // Do not delete directly; use Destroy() or own it with a unique_ptr, which
   // will Destroy() it properly by default.
   virtual ~VideoEncodeAccelerator();
 };
