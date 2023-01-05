@@ -597,6 +597,10 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     // Check for blocked sites.
     page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!.click();
     await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.BlockedSitesOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     const blockedSitesList =
         page.shadowRoot!.querySelector('#blockedSitesList')!;
     let blockedSites = blockedSitesList.querySelector('dom-repeat');
@@ -614,8 +618,11 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     const item =
         currentSitesSection.querySelector('privacy-sandbox-interest-item')!;
     item.shadowRoot!.querySelector('cr-button')!.click();
-    // TODO(b/264379989): Test for recorded metric for blocked site.
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteRemoved',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Assert the site is no longer visible.
     assertEquals(
@@ -635,7 +642,10 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals(2, blockedItems.length);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
-    // TODO(b/264379989): Test for recorded metric for allowed site.
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteAdded',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Allow second blocked site.
     blockedItems =
@@ -644,7 +654,9 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals('test-site-two.com', blockedSites.items![0].site!);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
-    // TODO(b/264379989): Test for recorded metric for allowed site.
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteAdded',
+        await metricsBrowserProxy.whenCalled('recordAction'));
 
     // Assert all blocked sites are gone.
     assertEquals(
@@ -671,6 +683,7 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
   let page: SettingsPrivacySandboxFledgeSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   const sitesList: string[] = [];
   const sitesCount: number =
@@ -695,6 +708,8 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
       blockedSites: [],
     });
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
@@ -726,6 +741,10 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
     // Check for blocked sites.
     page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!.click();
     await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.BlockedSitesOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     const blockedSitesList =
         page.shadowRoot!.querySelector('#blockedSitesList')!;
     const blockedSites = blockedSitesList.querySelector('dom-repeat');
@@ -744,6 +763,10 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
     assertTrue(isVisible(seeAllSites));
     seeAllSites!.click();
     await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.AllSitesOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     const allCurrentSites = currentSitesSection.querySelectorAll('dom-repeat');
     assertTrue(!!currentSites);
     assertEquals(2, allCurrentSites.length);
@@ -763,7 +786,10 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
     assertEquals(sitesCount, items.length);
     items[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
-    // TODO(b/264379989): Test for recorded metric for allowed site.
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteRemoved',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Check that a site from "See all sites" section move to the main one.
     assertEquals(
@@ -790,7 +816,10 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
     items[SettingsPrivacySandboxFledgeSubpageElement.maxFledgeSites]!
         .shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
-    // TODO(b/264379989): Test for recorded metric for allowed site.
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteRemoved',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Check that "See all sites" section was removed.
     assertFalse(isChildVisible(page, '#seeAllSites'));
@@ -806,7 +835,10 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
     assertEquals(2, blockedItems.length);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
-    // TODO(b/264379989): Test for recorded metric for allowed site.
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteAdded',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Allow second blocked site.
     blockedItems =
@@ -815,7 +847,9 @@ suite('PrivacySandboxFledgeSubpageSeeAllSitesTests', function() {
     assertEquals(sitesList[sitesCount - 1], blockedSites.items![0].site!);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
-    // TODO(b/264379989): Test for recorded metric for allowed site.
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.SiteAdded',
+        await metricsBrowserProxy.whenCalled('recordAction'));
 
     // Assert all blocked sites are gone.
     assertEquals(

@@ -110,6 +110,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
       seeAllSitesExpanded_: {
         type: Boolean,
         value: false,
+        observer: 'onSeeAllSitesExpanded_',
       },
 
       blockedSitesExpanded_: {
@@ -221,10 +222,18 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     // versa.
     this.privacySandboxBrowserProxy_.setFledgeJoiningAllowed(
         interest.site!, /*allowed=*/ interest.removed);
-    // TODO(b/264379989): Record metrics when blocking/unblocking sites.
+
+    this.metricsBrowserProxy_.recordAction(
+        interest.removed ? 'Settings.PrivacySandbox.Fledge.SiteAdded' :
+                           'Settings.PrivacySandbox.Fledge.SiteRemoved');
   }
 
-  // TODO(b/264379989): Record a metric when expanding "More sites" section.
+  private onSeeAllSitesExpanded_() {
+    if (this.seeAllSitesExpanded_) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Fledge.AllSitesOpened');
+    }
+  }
 
   private onBlockedSitesExpanded_() {
     if (this.blockedSitesExpanded_) {
