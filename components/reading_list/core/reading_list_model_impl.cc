@@ -60,9 +60,11 @@ void ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
 
 ReadingListModelImpl::ReadingListModelImpl(
     std::unique_ptr<ReadingListModelStorage> storage_layer,
+    syncer::StorageType sync_storage_type,
     base::Clock* clock)
     : ReadingListModelImpl(
           std::move(storage_layer),
+          sync_storage_type,
           clock,
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::READING_LIST,
@@ -70,11 +72,12 @@ ReadingListModelImpl::ReadingListModelImpl(
 
 ReadingListModelImpl::ReadingListModelImpl(
     std::unique_ptr<ReadingListModelStorage> storage_layer,
+    syncer::StorageType sync_storage_type,
     base::Clock* clock,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : storage_layer_(std::move(storage_layer)),
       clock_(clock),
-      sync_bridge_(clock, std::move(change_processor)) {
+      sync_bridge_(sync_storage_type, clock, std::move(change_processor)) {
   DCHECK(clock_);
   DCHECK(storage_layer_);
 
@@ -309,6 +312,11 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
     observer.ReadingListDidApplyChanges(this);
 }
 
+void ReadingListModelImpl::SyncDeleteAllEntriesAndSyncMetadata() {
+  DeleteAllEntries();
+  storage_layer_->DeleteAllEntriesAndSyncMetadata();
+}
+
 bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
@@ -536,11 +544,13 @@ ReadingListModelImpl::BeginBatchUpdatesWithSyncMetadata() {
 // static
 std::unique_ptr<ReadingListModelImpl> ReadingListModelImpl::BuildNewForTest(
     std::unique_ptr<ReadingListModelStorage> storage_layer,
+    syncer::StorageType sync_storage_type,
     base::Clock* clock,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor) {
   CHECK_IS_TEST();
-  return base::WrapUnique(new ReadingListModelImpl(
-      std::move(storage_layer), clock, std::move(change_processor)));
+  return base::WrapUnique(
+      new ReadingListModelImpl(std::move(storage_layer), sync_storage_type,
+                               clock, std::move(change_processor)));
 }
 
 ReadingListSyncBridge* ReadingListModelImpl::GetSyncBridgeForTest() {

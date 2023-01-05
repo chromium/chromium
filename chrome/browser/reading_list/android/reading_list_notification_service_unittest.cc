@@ -19,6 +19,7 @@
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/sync/base/storage_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -61,8 +62,8 @@ class ReadingListNotificationServiceTest : public testing::Test {
     auto storage = std::make_unique<FakeReadingListModelStorage>();
     base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
         storage->AsWeakPtr();
-    reading_list_model_ =
-        std::make_unique<ReadingListModelImpl>(std::move(storage), &clock_);
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified, &clock_);
     // Complete the initial model load from storage.
     storage_ptr->TriggerLoadCompletion();
 

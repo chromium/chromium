@@ -9,6 +9,7 @@
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/sync/base/storage_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -72,8 +73,8 @@ class ReadingListModelTest : public ReadingListModelObserver,
     base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
         storage->AsWeakPtr();
 
-    model_ =
-        std::make_unique<ReadingListModelImpl>(std::move(storage), &clock_);
+    model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified, &clock_);
     model_->AddObserver(this);
 
     return storage_ptr;

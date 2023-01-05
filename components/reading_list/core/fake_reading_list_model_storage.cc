@@ -70,3 +70,5 @@ std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate>
 FakeReadingListModelStorage::EnsureBatchCreated() {
   return std::make_unique<FakeScopedBatchUpdate>(observer_);
 }
+
+void FakeReadingListModelStorage::DeleteAllEntriesAndSyncMetadata() {}

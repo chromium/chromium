@@ -19,6 +19,7 @@ namespace {
 
 using testing::_;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 MATCHER_P(EntryHasUrl, expected_url, "") {
@@ -112,6 +113,29 @@ TEST_F(ReadingListModelStorageImplTest, RemoveEntry) {
   ReadingListModelStorageImpl third_storage(shared_store_factory_);
   EXPECT_THAT(LoadStorageAndWait(&third_storage, &clock_)->first,
               ElementsAre(EntryHasUrl(GURL("http://example2.com/"))));
+}
+
+TEST_F(ReadingListModelStorageImplTest, DeleteAllEntriesAndSyncMetadata) {
+  ReadingListModelStorageImpl storage(shared_store_factory_);
+  ASSERT_TRUE(LoadStorageAndWait(&storage, &clock_).has_value());
+  storage.EnsureBatchCreated()->SaveEntry(
+      ReadingListEntry(GURL("http://example1.com/"), "Title 1", clock_.Now()));
+  storage.EnsureBatchCreated()->SaveEntry(
+      ReadingListEntry(GURL("http://example2.com/"), "Title 2", clock_.Now()));
+
+  // There should be two entries in storage.
+  ReadingListModelStorageImpl second_storage(shared_store_factory_);
+  ASSERT_THAT(LoadStorageAndWait(&second_storage, &clock_)->first,
+              UnorderedElementsAre(EntryHasUrl(GURL("http://example1.com/")),
+                                   EntryHasUrl(GURL("http://example2.com/"))));
+
+  // Delete everything.
+  second_storage.DeleteAllEntriesAndSyncMetadata();
+
+  // To verify the deletion, use a third storage with the same underlying
+  // in-memory leveldb.
+  ReadingListModelStorageImpl third_storage(shared_store_factory_);
+  EXPECT_THAT(LoadStorageAndWait(&third_storage, &clock_)->first, IsEmpty());
 }
 
 }  // namespace

@@ -56,6 +56,11 @@ class ReadingListModelStorage {
   // the batch update has completed.
   virtual std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() = 0;
 
+  // A robust way to bulk delete all data and sync metadata in storage. The same
+  // behavior could be theoretically achieved by deleting entries individually,
+  // but this specialized API is just more robust.
+  virtual void DeleteAllEntriesAndSyncMetadata() = 0;
+
   class ScopedBatchUpdate {
    public:
     ScopedBatchUpdate() = default;

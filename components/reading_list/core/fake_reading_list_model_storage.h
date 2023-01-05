@@ -62,6 +62,7 @@ class FakeReadingListModelStorage
   // ReadingListModelStorage implementation.
   void Load(base::Clock* clock, LoadCallback load_cb) override;
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
+  void DeleteAllEntriesAndSyncMetadata() override;
 
  private:
   const raw_ptr<Observer> observer_ = nullptr;

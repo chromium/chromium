@@ -13,6 +13,7 @@
 #import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/sync/base/storage_type.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
@@ -87,7 +88,8 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
                web::BrowserState*) -> std::unique_ptr<KeyedService> {
               DCHECK(storage.get());
               return std::make_unique<ReadingListModelImpl>(
-                  std::move(storage), base::DefaultClock::GetInstance());
+                  std::move(storage), syncer::StorageType::kUnspecified,
+                  base::DefaultClock::GetInstance());
             },
             base::OwnedRef(std::move(storage))));
     browser_state_ = builder.Build();

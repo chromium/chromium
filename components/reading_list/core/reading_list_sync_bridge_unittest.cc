@@ -8,10 +8,12 @@
 #include <set>
 #include <utility>
 
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
+#include "components/sync/base/storage_type.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +22,7 @@
 namespace {
 
 using testing::_;
+using testing::SizeIs;
 
 MATCHER_P3(MatchesSpecifics,
            expected_title,
@@ -88,16 +91,38 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
+syncer::ModelTypeStore::RecordList ReadAllDataFromModelTypeStore(
+    syncer::ModelTypeStore* store) {
+  syncer::ModelTypeStore::RecordList result;
+  base::RunLoop loop;
+  store->ReadAllData(base::BindLambdaForTesting(
+      [&](const absl::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::ModelTypeStore::RecordList> records) {
+        EXPECT_FALSE(error.has_value()) << error->ToString();
+        result = std::move(*records);
+        loop.Quit();
+      }));
+  loop.Run();
+  return result;
+}
+
 }  // namespace
 
 class ReadingListSyncBridgeTest : public testing::Test {
  protected:
   ReadingListSyncBridgeTest() {
+    ResetModelAndBridge(syncer::StorageType::kUnspecified);
+  }
+
+  void ResetModelAndBridge(syncer::StorageType storage_type) {
+    std::unique_ptr<syncer::ModelTypeStore> model_type_store =
+        syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    underlying_in_memory_store_ = model_type_store.get();
     model_ = ReadingListModelImpl::BuildNewForTest(
         std::make_unique<ReadingListModelStorageImpl>(
             syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
-                syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest())),
-        &clock_, processor_.CreateForwardingProcessor());
+                std::move(model_type_store))),
+        storage_type, &clock_, processor_.CreateForwardingProcessor());
 
     // Wait until the model loads.
     base::RunLoop().RunUntilIdle();
@@ -113,6 +138,8 @@ class ReadingListSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  // ModelTypeStore is owned by |model_|.
+  syncer::ModelTypeStore* underlying_in_memory_store_ = nullptr;
   std::unique_ptr<ReadingListModelImpl> model_;
 };
 
@@ -284,6 +311,70 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneRemove) {
                                           std::move(delete_changes));
   EXPECT_FALSE(error.has_value());
   EXPECT_EQ(0ul, model_->size());
+}
+
+TEST_F(ReadingListSyncBridgeTest, DisableSyncWithUnspecifiedStorage) {
+  ResetModelAndBridge(syncer::StorageType::kUnspecified);
+  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
+                            reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_EQ(1ul, model_->size());
+  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  EXPECT_EQ(1ul, model_->size());
+}
+
+TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorage) {
+  ResetModelAndBridge(syncer::StorageType::kAccount);
+  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
+                            reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_EQ(1ul, model_->size());
+  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  EXPECT_EQ(0ul, model_->size());
+}
+
+TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
+  ResetModelAndBridge(syncer::StorageType::kAccount);
+
+  // Write some orphan or unexpected data directly onto the underlying
+  // ModelTypeStore, which should be rare but may be possible due to bugs or
+  // edge cases.
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      underlying_in_memory_store_->CreateWriteBatch();
+  write_batch->WriteData("orphan-data-key", "orphan-data-value");
+  absl::optional<syncer::ModelError> error;
+  base::RunLoop loop;
+  underlying_in_memory_store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindLambdaForTesting(
+          [&loop](const absl::optional<syncer::ModelError>& error) {
+            EXPECT_FALSE(error.has_value()) << error->ToString();
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
+              SizeIs(1));
+
+  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+
+  EXPECT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
+              SizeIs(0));
+}
+
+TEST_F(ReadingListSyncBridgeTest, PauseSyncWithAccountStorage) {
+  ResetModelAndBridge(syncer::StorageType::kAccount);
+  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
+                            reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_EQ(1ul, model_->size());
+  // A null metadata change list means sync is paused (rather than permanently
+  // disabled).
+  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  EXPECT_EQ(1ul, model_->size());
 }
 
 TEST_F(ReadingListSyncBridgeTest, CompareEntriesForSync) {

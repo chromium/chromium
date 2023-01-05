@@ -16,6 +16,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/sync/base/storage_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,8 +64,8 @@ class ReadingListManagerImplTest : public testing::Test {
     base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
         storage->AsWeakPtr();
 
-    reading_list_model_ =
-        std::make_unique<ReadingListModelImpl>(std::move(storage), &clock_);
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified, &clock_);
     manager_ =
         std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
     manager_->AddObserver(observer());

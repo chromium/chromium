@@ -37,7 +37,8 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
   auto storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
   auto reading_list_model = std::make_unique<ReadingListModelImpl>(
-      std::move(storage), base::DefaultClock::GetInstance());
+      std::move(storage), syncer::StorageType::kUnspecified,
+      base::DefaultClock::GetInstance());
 
   if (!base::FeatureList::IsEnabled(
           reading_list::switches::kReadingListEnableDualReadingListModel)) {
@@ -51,6 +52,7 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
       std::move(store_factory_for_account_storage));
   auto reading_list_model_for_account_storage =
       std::make_unique<ReadingListModelImpl>(std::move(account_storage),
+                                             syncer::StorageType::kAccount,
                                              base::DefaultClock::GetInstance());
   return std::make_unique<reading_list::DualReadingListModel>(
       /*local_or_syncable_model=*/std::move(reading_list_model),

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/sync/base/storage_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
@@ -31,6 +32,7 @@ class ReadingListModelImpl;
 class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   ReadingListSyncBridge(
+      syncer::StorageType storage_type,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
@@ -137,10 +139,15 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   // should be.
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  // Invoked when sync is paused or permanently stopped.
+  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                delete_metadata_change_list) override;
+
  private:
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
 
+  const syncer::StorageType storage_type_;
   const raw_ptr<base::Clock> clock_;
   raw_ptr<ReadingListModelImpl> model_ = nullptr;
 

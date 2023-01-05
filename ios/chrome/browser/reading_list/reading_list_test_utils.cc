@@ -10,6 +10,7 @@
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/sync/base/storage_type.h"
 
 namespace {
 
@@ -37,7 +38,8 @@ std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
   auto storage = std::make_unique<FakeReadingListModelStorage>();
   base::WeakPtr<FakeReadingListModelStorage> storage_ptr = storage->AsWeakPtr();
   auto reading_list_model = std::make_unique<ReadingListModelImpl>(
-      std::move(storage), base::DefaultClock::GetInstance());
+      std::move(storage), syncer::StorageType::kUnspecified,
+      base::DefaultClock::GetInstance());
   // Complete the initial model load from storage.
   storage_ptr->TriggerLoadCompletion(CloneEntries(initial_entries));
   return reading_list_model;

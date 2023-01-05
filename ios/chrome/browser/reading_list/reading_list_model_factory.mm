@@ -18,6 +18,7 @@
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
 #import "components/reading_list/core/reading_list_pref_names.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/sync/base/storage_type.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -69,7 +70,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
   auto storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
   auto reading_list_model = std::make_unique<ReadingListModelImpl>(
-      std::move(storage), base::DefaultClock::GetInstance());
+      std::move(storage), syncer::StorageType::kUnspecified,
+      base::DefaultClock::GetInstance());
   if (!base::FeatureList::IsEnabled(
           reading_list::switches::kReadingListEnableDualReadingListModel)) {
     return reading_list_model;
@@ -82,6 +84,7 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
       std::move(store_factory_for_account_storage));
   auto reading_list_model_for_account_storage =
       std::make_unique<ReadingListModelImpl>(std::move(account_storage),
+                                             syncer::StorageType::kAccount,
                                              base::DefaultClock::GetInstance());
   return std::make_unique<reading_list::DualReadingListModel>(
       /*local_or_syncable_model=*/std::move(reading_list_model),
