@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
-#import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -47,9 +46,6 @@ class NewTabPageTabHelperTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        IOSChromeContentSuggestionsServiceFactory::GetInstance(),
-        IOSChromeContentSuggestionsServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());

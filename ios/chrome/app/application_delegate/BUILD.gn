@@ -63,7 +63,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",

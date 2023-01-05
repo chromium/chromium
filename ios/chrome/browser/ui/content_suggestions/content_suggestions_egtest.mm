@@ -82,25 +82,19 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 + (void)setUpHelper {
   [self closeAllTabs];
-
-  [NewTabPageAppInterface setUpService];
 }
 
 + (void)tearDown {
   [self closeAllTabs];
-
-  [NewTabPageAppInterface resetService];
 
   [super tearDown];
 }
 
 - (void)setUp {
   [super setUp];
-  [NewTabPageAppInterface makeSuggestionsAvailable];
 }
 
 - (void)tearDown {
-  [NewTabPageAppInterface disableSuggestions];
   [ChromeEarlGrey clearBrowsingHistory];
   [super tearDown];
 }

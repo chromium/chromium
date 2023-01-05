@@ -140,7 +140,6 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/net",
-    "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/paths",

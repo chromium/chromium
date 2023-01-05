@@ -1,7 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
-  "^ios_chrome_content_suggestions_service_factory_util.mm": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
-}
-

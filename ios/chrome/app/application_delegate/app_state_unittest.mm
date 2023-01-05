@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -251,9 +250,6 @@ class AppStateTest : public BlockCleanupTest {
   void SetUp() override {
     BlockCleanupTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        IOSChromeContentSuggestionsServiceFactory::GetInstance(),
-        IOSChromeContentSuggestionsServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
   }
 

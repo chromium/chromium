@@ -60,7 +60,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/ntp_snippets:ntp_snippets",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/search_engines:search_engines",
     "//ios/chrome/browser/url:constants",

@@ -8,31 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // App interface for the NTP.
-// TODO(crbug.com/1299373): Separate content suggestions functions into
-// ContentSuggestionsAppInterface interface and move this to /ui/ntp.
 @interface NewTabPageAppInterface : NSObject
-
-// Sets the fake service up.
-+ (void)setUpService;
-
-// Resets the service to the real, non-fake service to avoid leaking the fake.
-+ (void)resetService;
-
-// Marks the suggestions as available.
-+ (void)makeSuggestionsAvailable;
-
-// Disables the suggestions.
-+ (void)disableSuggestions;
-
-// Adds `numberOfSuggestions` suggestions to the list of suggestions provided.
-// The suggestions have the name "chromium<suggestionNumber>" and the url
-// http://chromium/<suggestionNumber>.
-+ (void)addNumberOfSuggestions:(NSInteger)numberOfSuggestions
-      additionalSuggestionsURL:(NSURL*)URL;
-
-// Add one particular suggestion, following the convention explained above, with
-// `suggestionNumber`.
-+ (void)addSuggestionNumber:(NSInteger)suggestionNumber;
 
 // Returns the short name of the default search engine.
 + (NSString*)defaultSearchEngine;

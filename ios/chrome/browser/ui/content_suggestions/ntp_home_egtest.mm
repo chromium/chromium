@@ -148,8 +148,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 - (void)setUp {
   [super setUp];
-  [NewTabPageAppInterface setUpService];
-  [NewTabPageAppInterface makeSuggestionsAvailable];
   [ChromeEarlGreyAppInterface
       setBoolValue:YES
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
@@ -521,10 +519,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 - (void)DISABLED_testPositionRestored {
   [self addMostVisitedTile];
 
-  // Add suggestions to be able to scroll on iPad.
-  [NewTabPageAppInterface addNumberOfSuggestions:15
-                        additionalSuggestionsURL:nil];
-
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
@@ -552,11 +546,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // is selected.
 - (void)testPositionRestoredWithShiftingOffset {
   [self addMostVisitedTile];
-
-  // Add suggestions to be able to scroll on iPad.
-  [NewTabPageAppInterface addNumberOfSuggestions:15
-                        additionalSuggestionsURL:nil];
-
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, 50)];
@@ -589,10 +578,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // TODO(crbug.com/1364725): Fix small jump when focusing pinned omnibox.
 - (void)DISABLED_testPositionRestoredWithoutShiftingOffset {
   [self addMostVisitedTile];
-
-  // Add suggestions to be able to scroll on iPad.
-  [NewTabPageAppInterface addNumberOfSuggestions:15
-                        additionalSuggestionsURL:nil];
 
   // Scroll enough to naturally pin the omnibox to the top.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
