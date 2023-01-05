@@ -128,15 +128,6 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
 
   static PeekOutType Peek(const MemberType& value) { return value; }
 
-  static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
-    return *x;
-  }
-
-  static IteratorConstReferenceType GetToReferenceConstConversion(
-      IteratorConstGetType x) {
-    return *x;
-  }
-
   template <typename U>
   static void Store(const U& value, MemberType& storage) {
     storage = value;

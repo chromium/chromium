@@ -360,7 +360,7 @@ class HashTableConstIterator final {
     return position_;
   }
   typename Traits::IteratorConstReferenceType operator*() const {
-    return Traits::GetToReferenceConstConversion(Get());
+    return *Get();
   }
   GetType operator->() const { return Get(); }
 
@@ -501,9 +501,7 @@ class HashTableIterator final {
   // default copy, assignment and destructor are OK
 
   GetType Get() const { return const_cast<GetType>(iterator_.Get()); }
-  typename Traits::IteratorReferenceType operator*() const {
-    return Traits::GetToReferenceConversion(Get());
-  }
+  typename Traits::IteratorReferenceType operator*() const { return *Get(); }
   GetType operator->() const { return Get(); }
 
   iterator& operator++() {
@@ -2260,7 +2258,7 @@ struct HashTableConstIteratorAdapter {
     return const_cast<GetType>(SourceGetType(impl_.Get()));
   }
   typename Traits::IteratorConstReferenceType operator*() const {
-    return Traits::GetToReferenceConstConversion(Get());
+    return *Get();
   }
   GetType operator->() const { return Get(); }
 
@@ -2305,9 +2303,7 @@ struct HashTableIteratorAdapter {
   GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.get()));
   }
-  typename Traits::IteratorReferenceType operator*() const {
-    return Traits::GetToReferenceConversion(Get());
-  }
+  typename Traits::IteratorReferenceType operator*() const { return *Get(); }
   GetType operator->() const { return Get(); }
 
   HashTableIteratorAdapter& operator++() {

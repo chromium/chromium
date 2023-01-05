@@ -99,13 +99,6 @@ struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
   using IteratorConstGetType = const PersistentType*;
   using IteratorReferenceType = PersistentType&;
   using IteratorConstReferenceType = const PersistentType&;
-  static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
-    return *x;
-  }
-  static IteratorConstReferenceType GetToReferenceConstConversion(
-      IteratorConstGetType x) {
-    return *x;
-  }
 
   using PeekOutType = T*;
 

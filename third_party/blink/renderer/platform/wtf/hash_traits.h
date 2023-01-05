@@ -131,13 +131,6 @@ struct GenericHashTraits
   typedef const T* IteratorConstGetType;
   typedef T& IteratorReferenceType;
   typedef const T& IteratorConstReferenceType;
-  static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
-    return *x;
-  }
-  static IteratorConstReferenceType GetToReferenceConstConversion(
-      IteratorConstGetType x) {
-    return *x;
-  }
 
   template <typename IncomingValueType>
   static void Store(IncomingValueType&& value, T& storage) {
@@ -273,13 +266,6 @@ struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
   typedef const scoped_refptr<P>* IteratorConstGetType;
   typedef scoped_refptr<P>& IteratorReferenceType;
   typedef const scoped_refptr<P>& IteratorConstReferenceType;
-  static IteratorReferenceType GetToReferenceConversion(IteratorGetType x) {
-    return *x;
-  }
-  static IteratorConstReferenceType GetToReferenceConstConversion(
-      IteratorConstGetType x) {
-    return *x;
-  }
 
   static void Store(scoped_refptr<P> value, scoped_refptr<P>& storage) {
     storage = std::move(value);
