@@ -13,11 +13,6 @@
 namespace ios {
 namespace provider {
 
-// Returns whether signin is supported by the provider. If this returns
-// false, then the manager returned by `CreateSystemIdentityManager()`
-// will be a null object.
-bool IsSigninSupported();
-
 // Creates a new SystemIdentityManager instance. Returns null if signin
 // is not supported by the application.
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager(

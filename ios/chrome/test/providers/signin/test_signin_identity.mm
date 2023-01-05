@@ -12,10 +12,6 @@
 namespace ios {
 namespace provider {
 
-bool IsSigninSupported() {
-  return true;
-}
-
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager(
     id<SingleSignOnService> sso_service) {
   return std::make_unique<FakeSystemIdentityManager>();

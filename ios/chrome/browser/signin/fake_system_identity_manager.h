@@ -77,6 +77,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       HandleMDMNotificationCallback callback);
 
   // SystemIdentityManager implementation.
+  bool IsSigninSupported() final;
   bool HandleSessionOpenURLContexts(
       UIScene* scene,
       NSSet<UIOpenURLContext*>* url_contexts) final;

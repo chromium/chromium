@@ -31,6 +31,7 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
   ~ChromiumSystemIdentityManager() final;
 
   // SystemIdentityManager implementation.
+  bool IsSigninSupported() final;
   bool HandleSessionOpenURLContexts(
       UIScene* scene,
       NSSet<UIOpenURLContext*>* url_contexts) final;
@@ -73,6 +74,11 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
 ChromiumSystemIdentityManager::ChromiumSystemIdentityManager() = default;
 
 ChromiumSystemIdentityManager::~ChromiumSystemIdentityManager() = default;
+
+bool ChromiumSystemIdentityManager::IsSigninSupported() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return false;
+}
 
 bool ChromiumSystemIdentityManager::HandleSessionOpenURLContexts(
     UIScene* scene,
@@ -189,10 +195,6 @@ bool ChromiumSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,
 }
 
 }  // anonymous namespace
-
-bool IsSigninSupported() {
-  return false;
-}
 
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager(
     id<SingleSignOnService> sso_service) {

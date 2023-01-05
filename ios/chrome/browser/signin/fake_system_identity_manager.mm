@@ -146,6 +146,11 @@ FakeSystemIdentityManager::CreateRefreshAccessTokenFailure(
   return details.error;
 }
 
+bool FakeSystemIdentityManager::IsSigninSupported() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return true;
+}
+
 bool FakeSystemIdentityManager::HandleSessionOpenURLContexts(
     UIScene* scene,
     NSSet<UIOpenURLContext*>* url_contexts) {
