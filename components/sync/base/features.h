@@ -68,10 +68,6 @@ BASE_DECLARE_FEATURE(kSyncResetPollIntervalOnStart);
 // If enabled, Segmentation data type will be synced.
 BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
 
-// If enabled, interested data types, excluding Wallet and Offer, will be sent
-// to the Sync Server as part of DeviceInfo.
-BASE_DECLARE_FEATURE(kSyncSendInterestedDataTypes);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether warning should be shown in sync settings page when lacros
 // side-by-side mode is enabled.

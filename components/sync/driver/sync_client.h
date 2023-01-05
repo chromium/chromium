@@ -56,7 +56,7 @@ class SyncClient {
       SyncService* sync_service) = 0;
 
   virtual invalidation::InvalidationService* GetInvalidationService() = 0;
-  virtual syncer::SyncInvalidationsService* GetSyncInvalidationsService() = 0;
+  virtual SyncInvalidationsService* GetSyncInvalidationsService() = 0;
   virtual TrustedVaultClient* GetTrustedVaultClient() = 0;
   virtual scoped_refptr<ExtensionsActivity> GetExtensionsActivity() = 0;
 

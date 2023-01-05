@@ -40,12 +40,12 @@ class SyncApiComponentFactory {
   // and |sync_invalidation_service| are different invalidations. SyncEngine
   // handles incoming invalidations from both of them (if provided).
   // |sync_invalidation_service| is a new sync-specific invalidations service
-  // and it may be nullptr if it is disabled or not supported. In future, there
-  // will leave only one invalidation service.
+  // and must not be null. In future, there will be only one invalidation
+  // service.
   virtual std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       invalidation::InvalidationService* invalidator,
-      syncer::SyncInvalidationsService* sync_invalidation_service) = 0;
+      SyncInvalidationsService* sync_invalidation_service) = 0;
 
   // Clears all local transport data. Upon calling this, the deletion is
   // guaranteed to finish before a new engine returned by |CreateSyncEngine()|

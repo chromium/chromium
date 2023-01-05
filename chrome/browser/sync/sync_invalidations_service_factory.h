@@ -22,8 +22,6 @@ class SyncInvalidationsServiceFactory : public ProfileKeyedServiceFactory {
   SyncInvalidationsServiceFactory& operator=(
       const SyncInvalidationsServiceFactory&) = delete;
 
-  // Returned value may be nullptr in case if sync invalidations are disabled or
-  // not supported.
   static syncer::SyncInvalidationsService* GetForProfile(Profile* profile);
 
   static SyncInvalidationsServiceFactory* GetInstance();

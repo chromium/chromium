@@ -71,7 +71,6 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testSyncInvalidationsEnabled)]) {
-    config.features_enabled.push_back(syncer::kSyncSendInterestedDataTypes);
     config.features_enabled.push_back(syncer::kUseSyncInvalidations);
   }
   return config;

@@ -107,8 +107,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // nullptr (e.g. if sync is disabled on the command line).
   syncer::SyncService* GetSyncService();
 
-  // Gets the SyncInvalidationsService of the underlying original profile. May
-  // return nullptr (e.g. if sync invalidations are not enabled).
+  // Gets the SyncInvalidationsService of the underlying original profile.
   syncer::SyncInvalidationsService* GetSyncInvalidationsService();
 
   // Unregisters for notifications from all notifications coming from the sync

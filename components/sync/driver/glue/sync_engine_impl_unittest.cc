@@ -199,7 +199,7 @@ class SyncEngineImplTest : public testing::Test {
         .WillByDefault(Return(
             ByMove(ActiveDevicesInvalidationInfo::CreateUninitialized())));
     backend_ = std::make_unique<SyncEngineImpl>(
-        "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
+        "dummyDebugName", &invalidator_, &mock_sync_invalidations_service_,
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
@@ -285,12 +285,6 @@ class SyncEngineImplTest : public testing::Test {
   }
 
  protected:
-  // Used to initialize SyncEngineImpl. Returns nullptr if there is no sync
-  // invalidations service enabled.
-  virtual SyncInvalidationsService* GetSyncInvalidationsService() {
-    return nullptr;
-  }
-
   void DownloadReady(ModelTypeSet succeeded_types, ModelTypeSet failed_types) {
     engine_types_.PutAll(succeeded_types);
 
@@ -319,25 +313,20 @@ class SyncEngineImplTest : public testing::Test {
   ModelTypeSet engine_types_;
   ModelTypeSet enabled_types_;
   base::OnceClosure quit_loop_;
-  testing::NiceMock<MockInvalidationService> invalidator_;
+  NiceMock<MockInvalidationService> invalidator_;
+  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
  public:
   SyncEngineImplWithSyncInvalidationsTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncSendInterestedDataTypes,
-                              kUseSyncInvalidations},
+        /*enabled_features=*/{kUseSyncInvalidations},
         /*disabled_features=*/{});
   }
 
  protected:
-  SyncInvalidationsService* GetSyncInvalidationsService() override {
-    return &mock_sync_invalidations_service_;
-  }
-
   base::test::ScopedFeatureList override_features_;
-  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
@@ -345,19 +334,13 @@ class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
  public:
   SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncSendInterestedDataTypes,
-                              kUseSyncInvalidations,
+        /*enabled_features=*/{kUseSyncInvalidations,
                               kUseSyncInvalidationsForWalletAndOffer},
         /*disabled_features=*/{});
   }
 
-  SyncInvalidationsService* GetSyncInvalidationsService() override {
-    return &mock_sync_invalidations_service_;
-  }
-
  protected:
   base::test::ScopedFeatureList override_features_;
-  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 // Test basic initialization with no initial types (first time initialization).

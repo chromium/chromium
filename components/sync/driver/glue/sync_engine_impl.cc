@@ -140,11 +140,10 @@ SyncEngineImpl::SyncEngineImpl(
 #endif
       active_devices_provider_(std::move(active_devices_provider)) {
   DCHECK(prefs_);
+  DCHECK(sync_invalidations_service_);
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
-  if (sync_invalidations_service_) {
-    sync_invalidations_service_->AddTokenObserver(this);
-  }
+  sync_invalidations_service_->AddTokenObserver(this);
 }
 
 SyncEngineImpl::~SyncEngineImpl() {
@@ -184,9 +183,7 @@ void SyncEngineImpl::Initialize(InitParams params) {
   // If the new invalidations system (SyncInvalidationsService) is fully
   // enabled, then the SyncService doesn't need to communicate with the old
   // InvalidationService anymore.
-  if (invalidator_ &&
-      base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
+  if (invalidator_ && base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
       base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer)) {
     DCHECK(!invalidation_handler_registered_);
     invalidator_->RegisterInvalidationHandler(this);
@@ -254,15 +251,13 @@ void SyncEngineImpl::StartSyncingWithServer() {
 }
 
 void SyncEngineImpl::StartHandlingInvalidations() {
-  if (sync_invalidations_service_) {
-    // Sync invalidation service must be subscribed to data types by this time.
-    // Without that, incoming invalidations would be filtered out.
-    DCHECK(sync_invalidations_service_->GetInterestedDataTypes().has_value());
+  // Sync invalidation service must be subscribed to data types by this time.
+  // Without that, incoming invalidations would be filtered out.
+  DCHECK(sync_invalidations_service_->GetInterestedDataTypes().has_value());
 
-    // Adding a listener several times is safe. Only first adding replays last
-    // incoming messages.
-    sync_invalidations_service_->AddListener(this);
-  }
+  // Adding a listener several times is safe. Only first adding replays last
+  // incoming messages.
+  sync_invalidations_service_->AddListener(this);
 }
 
 void SyncEngineImpl::SetEncryptionPassphrase(
@@ -318,13 +313,14 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
     invalidator_->UnregisterInvalidationHandler(this);
     invalidator_ = nullptr;
   }
-  if (sync_invalidations_service_) {
-    // It's safe to call RemoveListener even if AddListener wasn't called
-    // before.
-    sync_invalidations_service_->RemoveListener(this);
-    sync_invalidations_service_->RemoveTokenObserver(this);
-    sync_invalidations_service_ = nullptr;
-  }
+
+  // It's safe to call RemoveListener even if AddListener wasn't called
+  // before.
+  DCHECK(sync_invalidations_service_);
+  sync_invalidations_service_->RemoveListener(this);
+  sync_invalidations_service_->RemoveTokenObserver(this);
+  sync_invalidations_service_ = nullptr;
+
   last_enabled_types_.Clear();
   invalidation_handler_registered_ = false;
 
@@ -639,8 +635,7 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
 #endif
   // kUseSyncInvalidations means that the new invalidations system is
   // used for all data types except Wallet and Offer, so only keep these types.
-  if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
+  if (base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     invalidation_enabled_types.RetainAll(
         {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }

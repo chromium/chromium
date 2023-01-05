@@ -450,8 +450,7 @@ void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
     const std::string& payload,
     const ModelTypeSet& interested_data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
-         base::FeatureList::IsEnabled(kUseSyncInvalidations));
+  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
   const IncomingInvalidationStatus status =
       DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types);
   RecordIncomingInvalidationStatus(status);

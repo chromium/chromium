@@ -163,11 +163,7 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
     service->AddObserver(this);
     service->AddProtocolEventObserver(this);
 
-    SyncInvalidationsService* invalidations_service =
-        GetSyncInvalidationsService();
-    if (invalidations_service) {
-      invalidations_service->AddListener(this);
-    }
+    GetSyncInvalidationsService()->AddListener(this);
 
     is_registered_ = true;
   }
@@ -400,12 +396,7 @@ void SyncInternalsMessageHandler::UnregisterModelNotifications() {
   if (is_registered_) {
     service->RemoveObserver(this);
     service->RemoveProtocolEventObserver(this);
-
-    SyncInvalidationsService* invalidations_service =
-        GetSyncInvalidationsService();
-    if (invalidations_service) {
-      invalidations_service->RemoveListener(this);
-    }
+    GetSyncInvalidationsService()->RemoveListener(this);
 
     is_registered_ = false;
   }

@@ -9,15 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,7 +24,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/stop_source.h"
@@ -253,19 +247,6 @@ class SyncServiceImplTest : public ::testing::Test {
   raw_ptr<SyncClientMock> sync_client_;  // Owned by |service_|.
   // The controllers are owned by |service_|.
   std::map<ModelType, FakeDataTypeController*> controller_map_;
-};
-
-class SyncServiceImplTestWithSyncInvalidationsServiceCreated
-    : public SyncServiceImplTest {
- public:
-  SyncServiceImplTestWithSyncInvalidationsServiceCreated() {
-    override_features_.InitAndEnableFeature(kSyncSendInterestedDataTypes);
-  }
-
-  ~SyncServiceImplTestWithSyncInvalidationsServiceCreated() override = default;
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 // Verify that the server URLs are sane.
@@ -1145,8 +1126,7 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   EXPECT_FALSE(service()->GetDisableReasons().Empty());
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
-       ShouldSendDataTypesToSyncInvalidationsService) {
+TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START,
                 /*registered_types_and_transport_mode_support=*/
@@ -1161,8 +1141,7 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   EXPECT_TRUE(engine()->started_handling_invalidations());
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
-       ShouldEnableAndDisableInvalidationsForSessions) {
+TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START,
                 {{SESSIONS, false}, {TYPED_URLS, false}});
@@ -1176,8 +1155,7 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
-       ShouldNotSubscribeToProxyTypes) {
+TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START,
                 /*registered_types_and_transport_mode_support=*/
@@ -1194,7 +1172,7 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   InitializeForNthSync();
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
+TEST_F(SyncServiceImplTest,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
@@ -1202,14 +1180,14 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   InitializeForFirstSync();
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
+TEST_F(SyncServiceImplTest,
        ShouldNotStartListeningInvalidationsWhenLocalSyncEnabled) {
   CreateServiceWithLocalSyncBackend();
   EXPECT_CALL(*sync_invalidations_service(), StartListening()).Times(0);
   InitializeForFirstSync();
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
+TEST_F(SyncServiceImplTest,
        ShouldNotStopListeningPermanentlyOnShutdownBrowserAndKeepData) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
@@ -1219,7 +1197,7 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
   ShutdownAndDeleteService();
 }
 
-TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
+TEST_F(SyncServiceImplTest,
        ShouldStopListeningPermanentlyOnDisableSyncAndClearData) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);

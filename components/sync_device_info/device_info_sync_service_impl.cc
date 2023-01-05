@@ -30,6 +30,7 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
   DCHECK(local_device_info_provider);
   DCHECK(device_info_prefs);
   DCHECK(device_info_sync_client_);
+  DCHECK(sync_invalidations_service_);
 
   // Make a copy of the channel to avoid relying on argument evaluation order.
   const version_info::Channel channel =
@@ -44,10 +45,8 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
                                              channel)),
       std::move(device_info_prefs));
 
-  if (sync_invalidations_service_) {
-    sync_invalidations_service_->AddTokenObserver(this);
-    sync_invalidations_service_->SetInterestedDataTypesHandler(this);
-  }
+  sync_invalidations_service_->AddTokenObserver(this);
+  sync_invalidations_service_->SetInterestedDataTypesHandler(this);
 }
 
 DeviceInfoSyncServiceImpl::~DeviceInfoSyncServiceImpl() = default;
@@ -86,10 +85,8 @@ void DeviceInfoSyncServiceImpl::OnInterestedDataTypesChanged() {
 }
 
 void DeviceInfoSyncServiceImpl::Shutdown() {
-  if (sync_invalidations_service_) {
-    sync_invalidations_service_->RemoveTokenObserver(this);
-    sync_invalidations_service_->SetInterestedDataTypesHandler(nullptr);
-  }
+  sync_invalidations_service_->RemoveTokenObserver(this);
+  sync_invalidations_service_->SetInterestedDataTypesHandler(nullptr);
 }
 
 }  // namespace syncer

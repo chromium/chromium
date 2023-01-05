@@ -213,7 +213,7 @@ class SingleClientWithSyncSendInterestedDataTypesTest
  public:
   SingleClientWithSyncSendInterestedDataTypesTest()
       : SingleClientSyncInvalidationsTestBase(
-            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes},
+            /*enabled_features=*/{},
             /*disabled_features=*/{
                 syncer::kUseSyncInvalidations,
                 syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
@@ -253,8 +253,7 @@ class SingleClientWithUseSyncInvalidationsTest
  public:
   SingleClientWithUseSyncInvalidationsTest()
       : SingleClientSyncInvalidationsTestBase(
-            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
-                                  syncer::kUseSyncInvalidations},
+            /*enabled_features=*/{syncer::kUseSyncInvalidations},
             /*disabled_features=*/{
                 syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
 
@@ -537,8 +536,7 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
  public:
   SingleClientWithUseSyncInvalidationsForWalletAndOfferTest()
       : SingleClientSyncInvalidationsTestBase(
-            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
-                                  syncer::kUseSyncInvalidations,
+            /*enabled_features=*/{syncer::kUseSyncInvalidations,
                                   syncer::
                                       kUseSyncInvalidationsForWalletAndOffer},
             /*disabled_features=*/{}) {}
@@ -692,51 +690,5 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
-    : public SyncTest {
- public:
-  SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitWithFeatureState(
-        syncer::kSyncSendInterestedDataTypes, !content::IsPreTest());
-  }
-
-  // Disable configuration refresher to make it sure that clients receive
-  // invalidations correctly during browser startup.
-  bool UseConfigurationRefresher() override { return false; }
-
-  std::string GetLocalCacheGuid() {
-    syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
-    return prefs.GetCacheGuid();
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-// PRE_* tests aren't supported on Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(
-    SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes,
-    PRE_ShouldResendDeviceInfoWithInterestedDataTypes) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid())))
-                  .Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes,
-    ShouldResendDeviceInfoWithInterestedDataTypes) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-
-  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  ElementsAre(InterestedDataTypesContain(syncer::NIGORI)))
-                  .Wait());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

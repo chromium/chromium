@@ -8,7 +8,6 @@
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/sync/base/features.h"
 #import "components/sync/invalidations/sync_invalidations_service_impl.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/gcm/instance_id/ios_chrome_instance_id_profile_service_factory.h"
@@ -46,10 +45,6 @@ SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
-    return nullptr;
-  }
-
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 

@@ -111,8 +111,7 @@ class FCMHandlerTest : public testing::Test {
     ON_CALL(mock_instance_id_driver_, GetInstanceID(kSyncInvalidationsAppId))
         .WillByDefault(Return(&mock_instance_id_));
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncSendInterestedDataTypes,
-                              kUseSyncInvalidations},
+        /*enabled_features=*/{kUseSyncInvalidations},
         /*disabled_features=*/{});
   }
 

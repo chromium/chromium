@@ -9,7 +9,6 @@
 
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
@@ -58,11 +57,7 @@ class SyncServiceImplBundle {
   }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
-    if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes)) {
-      return &sync_invalidations_service_;
-    } else {
-      return nullptr;
-    }
+    return &sync_invalidations_service_;
   }
 
   MockTrustedVaultClient* trusted_vault_client() {

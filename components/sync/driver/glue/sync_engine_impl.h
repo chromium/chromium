@@ -52,6 +52,7 @@ class SyncEngineImpl : public SyncEngine,
  public:
   using Status = SyncStatus;
 
+  // |sync_invalidations_service| must not be null.
   SyncEngineImpl(const std::string& name,
                  invalidation::InvalidationService* invalidator,
                  SyncInvalidationsService* sync_invalidations_service,
@@ -213,10 +214,6 @@ class SyncEngineImpl : public SyncEngine,
   raw_ptr<invalidation::InvalidationService> invalidator_ = nullptr;
   bool invalidation_handler_registered_ = false;
 
-  // Sync invalidation service, it may be nullptr if sync invalidations are
-  // disabled or not supported. It doesn't need to have the same as
-  // |invalidation_handler_registered_| flag as the service doesn't have topics
-  // to unsibscribe.
   raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 
   ModelTypeSet last_enabled_types_;
