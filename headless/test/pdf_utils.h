@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -30,9 +31,9 @@ class PDFPageBitmap {
   uint32_t GetPixelRGB(const gfx::Point& pt) const;
   uint32_t GetPixelRGB(int x, int y) const;
 
-  bool CheckRect(uint32_t rect_color, uint32_t bkgr_color, int margins);
-  bool CheckRect(uint32_t rect_color, uint32_t bkgr_color) {
-    return CheckRect(rect_color, bkgr_color, /*margins=*/0);
+  bool CheckColoredRect(SkColor rect_color, SkColor bkgr_color, int margins);
+  bool CheckColoredRect(SkColor rect_color, SkColor bkgr_color) {
+    return CheckColoredRect(rect_color, bkgr_color, /*margins=*/0);
   }
 
   int width() const { return bitmap_size_.width(); }

@@ -718,6 +718,8 @@ test("headless_browsertests") {
     "//v8:external_startup_data",
   ]
   sources = [
+    "test/bitmap_utils.cc",
+    "test/bitmap_utils.h",
     "test/capture_std_stream.cc",
     "test/capture_std_stream.h",
     "test/headless_browser_browsertest.cc",

@@ -5,9 +5,13 @@
 #include "headless/test/pdf_utils.h"
 
 #include "base/logging.h"
+#include "headless/test/bitmap_utils.h"
 #include "pdf/pdf.h"
 #include "printing/units.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -66,55 +70,16 @@ uint32_t PDFPageBitmap::GetPixelRGB(int x, int y) const {
          | (bitmap_data_[pixel_index + 2] << 16);  // R
 }
 
-bool PDFPageBitmap::CheckRect(uint32_t rect_color,
-                              uint32_t bkgr_color,
-                              int margins) {
-  gfx::Rect body(bitmap_size_);
-  if (margins) {
-    body.Inset(margins);
-  }
+bool PDFPageBitmap::CheckColoredRect(SkColor rect_color,
+                                     SkColor bkgr_color,
+                                     int margins) {
+  SkBitmap bitmap;
+  SkImageInfo info = SkImageInfo::MakeN32(
+      bitmap_size_.width(), bitmap_size_.height(), kOpaque_SkAlphaType);
+  size_t rowBytes = bitmap_size_.width() * kColorChannels;
+  CHECK(bitmap.installPixels(info, bitmap_data_.data(), rowBytes));
 
-  // Build color rectangle by including every pixel with the specified
-  // rectangle color into a rectangle.
-  gfx::Rect rect;
-  for (int y = body.y(); y < body.bottom(); y++) {
-    for (int x = body.x(); x < body.right(); x++) {
-      uint32_t color = GetPixelRGB(x, y);
-      if (color == rect_color) {
-        gfx::Rect pixel_rect(x, y, 1, 1);
-        if (rect.IsEmpty()) {
-          rect = pixel_rect;
-        } else {
-          rect.Union(pixel_rect);
-        }
-      }
-    }
-  }
-
-  // Verify that all pixels outside the found color rectangle are of
-  // the specified background color, and the ones that are inside
-  // the found rectangle are all of the rectangle color.
-  for (int y = body.y(); y < body.bottom(); y++) {
-    for (int x = body.x(); x < body.right(); x++) {
-      gfx::Point pt(x, y);
-      uint32_t color = GetPixelRGB(pt);
-      if (rect.Contains(pt)) {
-        if (color != rect_color) {
-          LOG(ERROR) << "pt=" << pt.ToString() << " color=" << color
-                     << ", expected rect color=" << rect_color;
-          return false;
-        }
-      } else {
-        if (color != bkgr_color) {
-          LOG(ERROR) << "pt=" << pt.ToString() << " color=" << color
-                     << ", expected bkgr color=" << bkgr_color;
-          return false;
-        }
-      }
-    }
-  }
-
-  return true;
+  return headless::CheckColoredRect(bitmap, rect_color, bkgr_color, margins);
 }
 
 }  // namespace headless

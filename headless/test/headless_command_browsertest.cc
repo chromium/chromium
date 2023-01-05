@@ -22,6 +22,7 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_web_contents.h"
+#include "headless/test/bitmap_utils.h"
 #include "headless/test/capture_std_stream.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
@@ -209,10 +210,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTest, Screenshot) {
   ASSERT_EQ(800, bitmap.width());
   ASSERT_EQ(600, bitmap.height());
 
-  // Expect white background and a centered blue rectangle.
-  EXPECT_EQ(SkColorSetRGB(0xff, 0xff, 0xff), bitmap.getColor(1, 1));
-  EXPECT_EQ(SkColorSetRGB(0xff, 0xff, 0xff), bitmap.getColor(800 - 1, 600 - 1));
-  EXPECT_EQ(SkColorSetRGB(0x00, 0x00, 0xff), bitmap.getColor(800 / 2, 1));
+  // Expect a centered blue rectangle on white background.
+  EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
+                               SkColorSetRGB(0xff, 0xff, 0xff)));
 }
 
 class HeadlessScreenshotWithBackgroundCommandBrowserTest
@@ -246,10 +246,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotWithBackgroundCommandBrowserTest,
   ASSERT_EQ(800, bitmap.width());
   ASSERT_EQ(600, bitmap.height());
 
-  // Expect red background and a centered blue rectangle.
-  EXPECT_EQ(SkColorSetRGB(0xff, 0x00, 0x00), bitmap.getColor(1, 1));
-  EXPECT_EQ(SkColorSetRGB(0xff, 0x00, 0x00), bitmap.getColor(800 - 1, 600 - 1));
-  EXPECT_EQ(SkColorSetRGB(0x00, 0x00, 0xff), bitmap.getColor(800 / 2, 1));
+  // Expect a centered blue rectangle on red background.
+  EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
+                               SkColorSetRGB(0xff, 0x00, 0x00)));
 }
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
@@ -294,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfCommandBrowserTest, PrintToPdf) {
   ASSERT_TRUE(page_bitmap.Render(pdf_data, 0));
 
   // Expect blue rectangle on white background.
-  EXPECT_TRUE(page_bitmap.CheckRect(0x0000ff, 0xffffff));
+  EXPECT_TRUE(page_bitmap.CheckColoredRect(0xff0000ff, 0xffffffff));
 }
 
 class HeadlessPrintToPdfWithBackgroundCommandBrowserTest
@@ -327,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfWithBackgroundCommandBrowserTest,
   ASSERT_TRUE(page_bitmap.Render(pdf_data, 0));
 
   // Expect blue rectangle on red background sans margin.
-  EXPECT_TRUE(page_bitmap.CheckRect(0x0000ff, 0xff0000, 120));
+  EXPECT_TRUE(page_bitmap.CheckColoredRect(0xff0000ff, 0xffff0000, 120));
 }
 
 #endif  // BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
