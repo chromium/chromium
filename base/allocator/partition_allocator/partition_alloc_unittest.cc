@@ -2027,14 +2027,14 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   for (i = 0; i < num_partition_pages_needed; ++i)
     first_super_page_pages[i] = GetFullSlotSpan(kTestAllocSize);
 
-  uintptr_t slot_spart_start =
+  uintptr_t slot_span_start =
       SlotSpan::ToSlotSpanStart(first_super_page_pages[0]);
   EXPECT_EQ(PartitionPageSize() +
                 partition_alloc::internal::ReservedTagBitmapSize() +
                 partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-            slot_spart_start & kSuperPageOffsetMask);
+            slot_span_start & kSuperPageOffsetMask);
   uintptr_t super_page =
-      slot_spart_start - PartitionPageSize() -
+      slot_span_start - PartitionPageSize() -
       partition_alloc::internal::ReservedTagBitmapSize() -
       partition_alloc::internal::ReservedFreeSlotBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
