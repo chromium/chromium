@@ -166,13 +166,12 @@ TEST_F(UsageTimeLimitProcessorInternalTest, OverrideValid) {
   base::Value::Dict override_one;
   override_one.Set("action",
                    ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_one.Set("created_at_millis", base::Value(created_at_millis));
+  override_one.Set("created_at_millis", created_at_millis);
 
   base::Value::Dict override_two;
   override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.Set(
-      "created_at_millis",
-      base::Value(utils::CreatePolicyTimestamp("1 Jan 2018 9:00:00")));
+  override_two.Set("created_at_millis",
+                   utils::CreatePolicyTimestamp("1 Jan 2018 9:00:00"));
 
   base::Value::List overrides;
   overrides.Append(std::move(override_one));
@@ -198,26 +197,24 @@ TEST_F(UsageTimeLimitProcessorInternalTest, OverrideWithDurationValid) {
   std::string created_at_millis =
       utils::CreatePolicyTimestamp("1 Jan 2018 10:00:00");
   base::Value::Dict action_specific_data;
-  action_specific_data.Set("duration_mins", base::Value(30));
+  action_specific_data.Set("duration_mins", 30);
 
   base::Value::Dict override_one;
   override_one.Set("action",
                    ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_one.Set("created_at_millis", base::Value(created_at_millis));
+  override_one.Set("created_at_millis", created_at_millis);
   override_one.Set("action_specific_data", std::move(action_specific_data));
 
   base::Value::Dict override_two;
   override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.Set(
-      "created_at_millis",
-      base::Value(utils::CreatePolicyTimestamp("1 Jan 2018 9:00:00")));
+  override_two.Set("created_at_millis",
+                   utils::CreatePolicyTimestamp("1 Jan 2018 9:00:00"));
 
   base::Value::Dict override_three;
   override_three.Set("action",
                      ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_three.Set(
-      "created_at_millis",
-      base::Value(utils::CreatePolicyTimestamp("1 Jan 2018 8:00:00")));
+  override_three.Set("created_at_millis",
+                     utils::CreatePolicyTimestamp("1 Jan 2018 8:00:00"));
 
   base::Value::List overrides;
   overrides.Append(std::move(override_one));
@@ -245,20 +242,20 @@ TEST_F(UsageTimeLimitProcessorInternalTest, MultipleOverrides) {
   base::Value::Dict override_one;
   override_one.Set("action",
                    ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_one.Set("created_at_millis", base::Value("1000000"));
+  override_one.Set("created_at_millis", "1000000");
 
   base::Value::Dict override_two;
   override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.Set("created_at_millis", base::Value("999999"));
+  override_two.Set("created_at_millis", "999999");
 
   base::Value::Dict override_three;
   override_two.Set("action", ValueFromAction(TimeLimitOverride::Action::kLock));
-  override_two.Set("created_at_millis", base::Value("900000"));
+  override_two.Set("created_at_millis", "900000");
 
   base::Value::Dict override_four;
   override_two.Set("action",
                    ValueFromAction(TimeLimitOverride::Action::kUnlock));
-  override_two.Set("created_at_millis", base::Value("1200000"));
+  override_two.Set("created_at_millis", "1200000");
 
   base::Value::List overrides;
   overrides.Append(std::move(override_one));

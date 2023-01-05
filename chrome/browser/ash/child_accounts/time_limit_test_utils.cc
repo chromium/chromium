@@ -128,20 +128,9 @@ void AddTimeWindowLimit(base::Value::Dict* policy,
                         base::TimeDelta start_time,
                         base::TimeDelta end_time,
                         base::Time last_updated) {
-  base::Value::Dict* time_window_limit = policy->FindDict(kTimeWindowLimit);
-  if (!time_window_limit) {
-    time_window_limit =
-        &policy->Set(kTimeWindowLimit, base::Value::Dict())->GetDict();
-  }
-
+  base::Value::Dict* time_window_limit = policy->EnsureDict(kTimeWindowLimit);
   base::Value::List* window_limit_entries =
-      time_window_limit->FindList(kWindowLimitEntries);
-  if (!window_limit_entries) {
-    window_limit_entries =
-        &time_window_limit->Set(kWindowLimitEntries, base::Value::List())
-             ->GetList();
-  }
-
+      time_window_limit->EnsureList(kWindowLimitEntries);
   window_limit_entries->Append(
       CreateTimeWindow(day, start_time, end_time, last_updated));
 }
@@ -149,34 +138,22 @@ void AddTimeWindowLimit(base::Value::Dict* policy,
 void AddOverride(base::Value::Dict* policy,
                  usage_time_limit::TimeLimitOverride::Action action,
                  base::Time created_at) {
-  base::Value* overrides =
-      policy->Find(usage_time_limit::TimeLimitOverride::kOverridesDictKey);
-  if (!overrides) {
-    overrides =
-        policy->Set(usage_time_limit::TimeLimitOverride::kOverridesDictKey,
-                    base::Value::List());
-  }
-
+  base::Value::List* overrides = policy->EnsureList(
+      usage_time_limit::TimeLimitOverride::kOverridesDictKey);
   usage_time_limit::TimeLimitOverride new_override(action, created_at,
                                                    absl::nullopt);
-  overrides->Append(base::Value(new_override.ToDictionary()));
+  overrides->Append(new_override.ToDictionary());
 }
 
 void AddOverrideWithDuration(base::Value::Dict* policy,
                              usage_time_limit::TimeLimitOverride::Action action,
                              base::Time created_at,
                              base::TimeDelta duration) {
-  base::Value* overrides =
-      policy->Find(usage_time_limit::TimeLimitOverride::kOverridesDictKey);
-  if (!overrides) {
-    overrides =
-        policy->Set(usage_time_limit::TimeLimitOverride::kOverridesDictKey,
-                    base::Value::List());
-  }
-
+  base::Value::List* overrides = policy->EnsureList(
+      usage_time_limit::TimeLimitOverride::kOverridesDictKey);
   usage_time_limit::TimeLimitOverride new_override(action, created_at,
                                                    duration);
-  overrides->Append(base::Value(new_override.ToDictionary()));
+  overrides->Append(new_override.ToDictionary());
 }
 
 std::string PolicyToString(const base::Value::Dict& policy) {
