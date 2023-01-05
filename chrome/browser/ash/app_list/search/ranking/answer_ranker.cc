@@ -88,7 +88,7 @@ void AnswerRanker::UpdateResultRanks(ResultsMap& results,
   if (provider == ProviderType::kOmnibox) {
     for (auto& result : new_results) {
       if (result->display_type() == DisplayType::kAnswerCard) {
-        result->scoring().filter = true;
+        result->scoring().set_filtered(true);
       }
     }
   }
@@ -140,7 +140,7 @@ void AnswerRanker::PromoteChosenAnswer() {
   chosen_answer_->SetDisplayType(DisplayType::kAnswerCard);
   chosen_answer_->SetMultilineTitle(true);
   chosen_answer_->SetIconDimension(kAnswerCardIconDimension);
-  chosen_answer_->scoring().filter = false;
+  chosen_answer_->scoring().set_filtered(false);
 }
 
 }  // namespace app_list

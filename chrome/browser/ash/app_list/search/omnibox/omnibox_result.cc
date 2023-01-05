@@ -145,7 +145,7 @@ void OmniboxResult::UpdateRelevance() {
   double title_relevance = CalculateTitleRelevance();
   if (fuzzy_match_cutoff_enabled) {
     if (title_relevance < kRelevanceThreshold) {
-      scoring().filter = true;
+      scoring().set_filtered(true);
     }
     set_relevance(normalized_autocomplete_relevance);
   } else {

@@ -250,7 +250,7 @@ TEST_F(OmniboxResultTest, Basic) {
   EXPECT_EQ(kExampleContents, result->details());
   EXPECT_EQ(kExampleDescription, result->title());
   EXPECT_EQ(kAppListRelevance, result->relevance());
-  EXPECT_FALSE(result->scoring().filter);
+  EXPECT_FALSE(result->scoring().filtered());
 
   result->Open(0);
   EXPECT_EQ(kExampleUrl, GetLastOpenedUrl().spec());
@@ -488,8 +488,8 @@ TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchCutoff) {
 
   EXPECT_EQ(kAppListRelevance, result_high_fuzzy_relevance->relevance());
   EXPECT_EQ(kAppListRelevance, result_low_fuzzy_relevance->relevance());
-  EXPECT_TRUE(result_low_fuzzy_relevance->scoring().filter);
-  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filter);
+  EXPECT_TRUE(result_low_fuzzy_relevance->scoring().filtered());
+  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filtered());
 }
 
 TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchRelevance) {
@@ -510,9 +510,9 @@ TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchRelevance) {
             result_high_fuzzy_relevance->relevance());
   EXPECT_EQ(kAppListRelevance / 2, result_low_fuzzy_relevance->relevance());
   EXPECT_EQ(kAppListRelevance / 2, result_empty_query->relevance());
-  EXPECT_FALSE(result_low_fuzzy_relevance->scoring().filter);
-  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filter);
-  EXPECT_FALSE(result_empty_query->scoring().filter);
+  EXPECT_FALSE(result_low_fuzzy_relevance->scoring().filtered());
+  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filtered());
+  EXPECT_FALSE(result_empty_query->scoring().filtered());
 }
 
 }  // namespace app_list::test

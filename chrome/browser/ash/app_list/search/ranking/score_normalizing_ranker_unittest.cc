@@ -72,7 +72,7 @@ TEST_F(ScoreNormalizingRankerTest, UpdateResultRanks) {
   // are ordered by relevance after normalization.
   const auto& app_results = results[ResultType::kInstalledApp];
   for (size_t i = 0; i < 4; ++i) {
-    EXPECT_GT(app_results[i]->scoring().normalized_relevance, 0.0);
+    EXPECT_GT(app_results[i]->scoring().normalized_relevance(), 0.0);
   }
 
   std::vector<ChromeSearchResult*> ordered_app_results;
@@ -82,8 +82,8 @@ TEST_F(ScoreNormalizingRankerTest, UpdateResultRanks) {
 
   std::sort(ordered_app_results.begin(), ordered_app_results.end(),
             [](const auto& r1, const auto& r2) {
-              return r1->scoring().normalized_relevance >
-                     r2->scoring().normalized_relevance;
+              return r1->scoring().normalized_relevance() >
+                     r2->scoring().normalized_relevance();
             });
 
   std::vector<std::string> ordered_app_result_ids;
@@ -96,8 +96,8 @@ TEST_F(ScoreNormalizingRankerTest, UpdateResultRanks) {
 
   // File results should not have been scored.
   const auto& file_results = results[ResultType::kFileSearch];
-  EXPECT_FLOAT_EQ(file_results[0]->scoring().normalized_relevance, 0.0);
-  EXPECT_FLOAT_EQ(file_results[1]->scoring().normalized_relevance, 0.0);
+  EXPECT_FLOAT_EQ(file_results[0]->scoring().normalized_relevance(), 0.0);
+  EXPECT_FLOAT_EQ(file_results[1]->scoring().normalized_relevance(), 0.0);
 }
 
 }  // namespace app_list::test

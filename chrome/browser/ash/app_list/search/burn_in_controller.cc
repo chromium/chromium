@@ -61,9 +61,10 @@ void BurnInController::UpdateResults(ResultsMap& results,
         ids_to_burnin_iteration_.end()) {
       // Result has been seen before. Set burnin_iteration, since the result
       // object has changed since last seen.
-      result->scoring().burnin_iteration = ids_to_burnin_iteration_[result_id];
+      result->scoring().set_burnin_iteration(
+          ids_to_burnin_iteration_[result_id]);
     } else {
-      result->scoring().burnin_iteration = burnin_iteration_counter_;
+      result->scoring().set_burnin_iteration(burnin_iteration_counter_);
       ids_to_burnin_iteration_[result_id] = burnin_iteration_counter_;
     }
   }

@@ -152,8 +152,8 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
     // results can technically be destroyed at any time.
     std::sort(best_matches_.begin(), best_matches_.end(),
               [](const auto& a, const auto& b) {
-                const int a_rank = a->scoring().best_match_rank;
-                const int b_rank = b->scoring().best_match_rank;
+                const int a_rank = a->scoring().best_match_rank();
+                const int b_rank = b->scoring().best_match_rank();
                 // Sort order: 0, 1, 2, 3, ... then -1.
                 // N.B. (a ^ b) < 0 checks for opposite sign.
                 return (a_rank ^ b_rank) < 0 ? a_rank > b_rank
@@ -161,15 +161,15 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
               });
     std::sort(best_matches_.begin() + kNumBestMatchesToStabilize,
               best_matches_.end(), [](const auto& a, const auto& b) {
-                return a->scoring().normalized_relevance >
-                       b->scoring().normalized_relevance;
+                return a->scoring().normalized_relevance() >
+                       b->scoring().normalized_relevance();
               });
   }
 
   // For the first kNumBestMatches of best_matches_, renumber their best match
   // rank.
   for (size_t i = 0; i < std::min(kNumBestMatches, best_matches_.size()); ++i) {
-    best_matches_[i]->scoring().best_match_rank = i;
+    best_matches_[i]->scoring().set_best_match_rank(i);
     best_matches_[i]->SetBestMatch(true);
   }
 
@@ -177,7 +177,7 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
   // and remove them from the vector.
   if (best_matches_.size() > kNumBestMatches) {
     for (size_t i = kNumBestMatches; i < best_matches_.size(); ++i) {
-      best_matches_[i]->scoring().best_match_rank = -1;
+      best_matches_[i]->scoring().set_best_match_rank(-1);
       best_matches_[i]->SetBestMatch(false);
     }
     best_matches_.resize(kNumBestMatches);

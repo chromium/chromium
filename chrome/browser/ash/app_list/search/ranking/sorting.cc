@@ -43,8 +43,8 @@ void SortResults(std::vector<ChromeSearchResult*>& results,
   std::sort(
       results.begin(), results.end(),
       [&](const ChromeSearchResult* a, const ChromeSearchResult* b) {
-        const int a_best_match_rank = a->scoring().best_match_rank;
-        const int b_best_match_rank = b->scoring().best_match_rank;
+        const int a_best_match_rank = a->scoring().best_match_rank();
+        const int b_best_match_rank = b->scoring().best_match_rank();
         if (a_best_match_rank != b_best_match_rank) {
           // First, sort by best match. All best matches are brought to
           // the front of the list and ordered by best_match_rank.
@@ -76,18 +76,20 @@ void SortResults(std::vector<ChromeSearchResult*>& results,
           return false;
         }
 
-        if (a->scoring().burnin_iteration != b->scoring().burnin_iteration) {
+        if (a->scoring().burnin_iteration() !=
+            b->scoring().burnin_iteration()) {
           // Next, sort by burn-in iteration number. This has no effect on
           // results which arrive pre-burn-in. For post-burn-in results
           // for a given category, later-arriving results are placed below
           // earlier-arriving results.
           // This happens before sorting on display_score, as a trade-off
           // between ranking accuracy and UX pop-in mitigation.
-          return a->scoring().burnin_iteration < b->scoring().burnin_iteration;
+          return a->scoring().burnin_iteration() <
+                 b->scoring().burnin_iteration();
         }
 
-        if (a->scoring().continue_rank != b->scoring().continue_rank) {
-          return a->scoring().continue_rank > b->scoring().continue_rank;
+        if (a->scoring().continue_rank() != b->scoring().continue_rank()) {
+          return a->scoring().continue_rank() > b->scoring().continue_rank();
         }
 
         // Lastly, sort by display score.

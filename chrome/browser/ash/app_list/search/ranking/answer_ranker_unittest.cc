@@ -42,7 +42,7 @@ bool AnswerFieldsAreSet(const std::unique_ptr<ChromeSearchResult>& result) {
   return result->display_type() == ash::SearchResultDisplayType::kAnswerCard &&
          result->multiline_title() &&
          result->icon().dimension == kAnswerCardIconDimension &&
-         !result->scoring().filter;
+         !result->scoring().filtered();
 }
 
 }  // namespace
@@ -64,8 +64,8 @@ TEST(AnswerRankerTest, SelectAndFilterOmnibox) {
   EXPECT_TRUE(AnswerFieldsAreSet(results[1]));
 
   // Others are filtered out.
-  EXPECT_TRUE(results[0]->scoring().filter);
-  EXPECT_TRUE(results[2]->scoring().filter);
+  EXPECT_TRUE(results[0]->scoring().filtered());
+  EXPECT_TRUE(results[2]->scoring().filtered());
 }
 
 // Tests that a best match shortcut is selected.
@@ -152,7 +152,7 @@ TEST(AnswerRankerTest, SelectedAnswerNotChangedAfterBurnIn) {
 
   const auto& omnibox_results = results_map[ResultType::kOmnibox];
   ASSERT_EQ(omnibox_results.size(), 1u);
-  EXPECT_TRUE(omnibox_results[0]->scoring().filter);
+  EXPECT_TRUE(omnibox_results[0]->scoring().filtered());
 }
 
 }  // namespace app_list::test

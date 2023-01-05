@@ -69,7 +69,7 @@ void FtrlRanker::UpdateResultRanks(ResultsMap& results, ProviderType provider) {
       ftrl_->Score(std::move(ids), std::move(expert_scores));
   DCHECK_EQ(new_results.size(), result_scores.size());
   for (size_t i = 0; i < new_results.size(); ++i)
-    new_results[i]->scoring().ftrl_result_score = result_scores[i];
+    new_results[i]->scoring().set_ftrl_result_score(result_scores[i]);
 }
 
 void FtrlRanker::UpdateCategoryRanks(const ResultsMap& results,
@@ -114,10 +114,10 @@ std::vector<double> ResultScoringShim::GetResultRanks(const ResultsMap& results,
     double score;
     switch (member_) {
       case ResultScoringShim::ScoringMember::kNormalizedRelevance:
-        score = result->scoring().normalized_relevance;
+        score = result->scoring().normalized_relevance();
         break;
       case ResultScoringShim::ScoringMember::kMrfuResultScore:
-        score = result->scoring().mrfu_result_score;
+        score = result->scoring().mrfu_result_score();
         break;
     }
     scores.push_back(score);
@@ -149,13 +149,13 @@ std::vector<double> BestResultCategoryRanker::GetCategoryRanks(
     // Ignore best match, answer card results, and filtered results for the
     // purposes of deciding category scores, because they are not displayed in
     // their category.
-    if (result->best_match() || result->scoring().filter ||
+    if (result->best_match() || result->scoring().filtered() ||
         result->display_type() ==
             ChromeSearchResult::DisplayType::kAnswerCard) {
       continue;
     }
     current_category_scores_[result->category()] =
-        std::max(result->scoring().normalized_relevance,
+        std::max(result->scoring().normalized_relevance(),
                  current_category_scores_[result->category()]);
   }
 

@@ -562,7 +562,7 @@ class AutotestPrivateSearchTest
           std::make_unique<app_list::TestResult>(
               ids[i], display_types[i], categories[i], best_match_ranks[i],
               /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]);
-      test_result->scoring().override_filter_for_test = true;
+      test_result->scoring().override_filter_for_test(true);
       results.emplace_back(std::move(test_result));
     }
     return results;

@@ -42,11 +42,11 @@ void RemovedResultsRanker::UpdateResultRanks(ResultsMap& results,
   const bool proto_initialized = initialized();
   for (const auto& result : it->second) {
     if (!proto_initialized) {
-      result->scoring().filter =
-          result->display_type() != DisplayType::kRecentApps;
+      result->scoring().set_filtered(result->display_type() !=
+                                     DisplayType::kRecentApps);
     } else {
-      result->scoring().filter =
-          (*proto_)->removed_ids().contains(result->id());
+      result->scoring().set_filtered(
+          (*proto_)->removed_ids().contains(result->id()));
     }
   }
 }

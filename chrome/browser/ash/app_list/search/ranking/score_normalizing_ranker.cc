@@ -59,8 +59,8 @@ void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   for (auto& result : it->second) {
-    result->scoring().normalized_relevance =
-        normalizer_.Normalize(provider_string, result->relevance());
+    result->scoring().set_normalized_relevance(
+        normalizer_.Normalize(provider_string, result->relevance()));
   }
 }
 

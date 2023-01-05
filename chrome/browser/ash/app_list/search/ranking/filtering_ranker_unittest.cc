@@ -90,11 +90,11 @@ TEST_F(FilteringRankerTest, DeduplicateDriveFilesAndTabs) {
   ranker.Start(u"query", results, categories);
   ranker.UpdateResultRanks(results, ProviderType::kKeyboardShortcut);
 
-  EXPECT_FALSE(results[drive][0]->scoring().filter);
-  EXPECT_TRUE(results[drive][1]->scoring().filter);
-  EXPECT_FALSE(results[drive][2]->scoring().filter);
-  EXPECT_FALSE(results[drive][3]->scoring().filter);
-  EXPECT_FALSE(results[drive][4]->scoring().filter);
+  EXPECT_FALSE(results[drive][0]->scoring().filtered());
+  EXPECT_TRUE(results[drive][1]->scoring().filtered());
+  EXPECT_FALSE(results[drive][2]->scoring().filtered());
+  EXPECT_FALSE(results[drive][3]->scoring().filtered());
+  EXPECT_FALSE(results[drive][4]->scoring().filtered());
 }
 
 // Test that answers of certain kinds (that tend to over-trigger) aren't shown
@@ -118,11 +118,11 @@ TEST_F(FilteringRankerTest, FilterOmniboxResults) {
   ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // All results except dictionary and translate answers are allowed.
-  EXPECT_FALSE(results[web][0]->scoring().filter);
-  EXPECT_TRUE(results[web][1]->scoring().filter);
-  EXPECT_FALSE(results[web][2]->scoring().filter);
-  EXPECT_TRUE(results[web][3]->scoring().filter);
-  EXPECT_FALSE(results[web][4]->scoring().filter);
+  EXPECT_FALSE(results[web][0]->scoring().filtered());
+  EXPECT_TRUE(results[web][1]->scoring().filtered());
+  EXPECT_FALSE(results[web][2]->scoring().filtered());
+  EXPECT_TRUE(results[web][3]->scoring().filtered());
+  EXPECT_FALSE(results[web][4]->scoring().filtered());
 }
 
 }  // namespace app_list::test

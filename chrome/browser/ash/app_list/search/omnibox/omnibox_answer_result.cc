@@ -197,7 +197,7 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
           {CreateStringTextItem(temperature->second)});
     } else {
       // If the temperature can't be parsed, don't display this result.
-      scoring().filter = true;
+      scoring().set_filtered(true);
     }
 
     if (search_result_->description_a11y_label.has_value()) {

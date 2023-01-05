@@ -38,7 +38,7 @@ void MrfuResultRanker::UpdateResultRanks(ResultsMap& results,
     return;
 
   for (auto& result : it->second)
-    result->scoring().mrfu_result_score = mrfu_->Get(result->id());
+    result->scoring().set_mrfu_result_score(mrfu_->Get(result->id()));
 }
 
 void MrfuResultRanker::Train(const LaunchData& launch) {

@@ -21,13 +21,13 @@ void ContinueRanker::UpdateResultRanks(ResultsMap& results,
   // giving them a higher continue_rank.
   if (provider == ProviderType::kZeroStateFile) {
     for (auto& result : it->second)
-      result->scoring().continue_rank = 1;
+      result->scoring().set_continue_rank(1);
   } else if (provider == ProviderType::kZeroStateDrive) {
     for (auto& result : it->second)
-      result->scoring().continue_rank = 2;
+      result->scoring().set_continue_rank(2);
   } else if (provider == ProviderType::kZeroStateHelpApp) {
     for (auto& result : it->second)
-      result->scoring().continue_rank = 3;
+      result->scoring().set_continue_rank(3);
   }
 }
 

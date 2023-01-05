@@ -41,7 +41,7 @@ void DeduplicateResults(ResultsMap& results,
 
   for (auto& result : second_results) {
     if (first_ids.contains(result->id()))
-      result->scoring().filter = true;
+      result->scoring().set_filtered(true);
   }
 }
 
@@ -62,7 +62,7 @@ void DeduplicateDriveFilesAndTabs(ResultsMap& results) {
   for (auto& result : drive_results) {
     const auto& drive_id = result->DriveId();
     if (drive_id && drive_tab_ids.contains(drive_id.value()))
-      result->scoring().filter = true;
+      result->scoring().set_filtered(true);
   }
 }
 
@@ -87,7 +87,7 @@ void FilterOmniboxResults(ResultsMap& results, const std::u16string& query) {
               CrosApiSearchResult::AnswerType::kTranslation;
       if (omnibox_result->display_type() == DisplayType::kAnswerCard &&
           is_type_dictionary_or_translation)
-        scoring.filter = true;
+        scoring.set_filtered(true);
     }
   }
 
@@ -111,9 +111,10 @@ void FilterOmniboxResults(ResultsMap& results, const std::u16string& query) {
   // but never remove best matches  or answer cards.
   for (size_t i = kMaxOmniboxResults; i < omnibox_results.size(); ++i) {
     auto& scoring = omnibox_results[i]->scoring();
-    if (scoring.best_match_rank == -1 &&
-        omnibox_results[i]->display_type() != DisplayType::kAnswerCard)
-      scoring.filter = true;
+    if (scoring.best_match_rank() == -1 &&
+        omnibox_results[i]->display_type() != DisplayType::kAnswerCard) {
+      scoring.set_filtered(true);
+    }
   }
 }
 

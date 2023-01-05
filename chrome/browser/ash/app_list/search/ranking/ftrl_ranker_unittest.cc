@@ -170,9 +170,9 @@ TEST_F(ResultScoringShimTest, Rank) {
 
   auto results = MakeResults({"a", "b", "c"});
   ASSERT_EQ(results.size(), 3u);
-  results[0]->scoring().normalized_relevance = 0.2;
-  results[1]->scoring().normalized_relevance = 0.5;
-  results[2]->scoring().normalized_relevance = 0.1;
+  results[0]->scoring().set_normalized_relevance(0.2);
+  results[1]->scoring().set_normalized_relevance(0.5);
+  results[2]->scoring().set_normalized_relevance(0.1);
 
   ResultsMap results_map;
   results_map[ResultType::kInstalledApp] = std::move(results);

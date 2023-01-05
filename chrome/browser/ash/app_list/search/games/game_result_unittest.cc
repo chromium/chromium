@@ -164,7 +164,7 @@ TEST_F(GameResultTest, Icons) {
                             app_discovery_service_.get(), no_icon_app, 0.6,
                             u"SomeGame");
 
-  EXPECT_TRUE(no_icon_result.scoring().filter);
+  EXPECT_TRUE(no_icon_result.scoring().filtered());
 }
 
 TEST_F(GameResultTest, OpensDeepLinkURLWhenAppNotFound) {

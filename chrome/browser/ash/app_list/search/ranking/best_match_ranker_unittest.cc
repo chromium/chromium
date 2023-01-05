@@ -46,7 +46,7 @@ class BestMatchRankerTest : public testing::Test {
     std::transform(ranker_.best_matches_.begin(), ranker_.best_matches_.end(),
                    std::back_inserter(actual_ids_ranks),
                    [](auto res) -> const std::pair<std::string, int> {
-                     return {res->id(), res->scoring().best_match_rank};
+                     return {res->id(), res->scoring().best_match_rank()};
                    });
     EXPECT_THAT(actual_ids_ranks, ElementsAreArray(expected_ids_ranks));
   }
@@ -81,7 +81,7 @@ TEST_F(BestMatchRankerTest, ResultThresholdingAndSorting) {
 
   for (const auto& res : results) {
     result_map_ids.push_back(res->id());
-    result_map_ranks.push_back(res->scoring().best_match_rank);
+    result_map_ranks.push_back(res->scoring().best_match_rank());
     shared_metadata_best_match_status.push_back(res->best_match());
   }
 
@@ -218,7 +218,7 @@ TEST_F(BestMatchRankerTest, ProviderReturnsMoreThanOnceResultDemoted) {
 
   for (const auto& res : results) {
     result_map_ids.push_back(res->id());
-    result_map_ranks.push_back(res->scoring().best_match_rank);
+    result_map_ranks.push_back(res->scoring().best_match_rank());
     shared_metadata_best_match_status.push_back(res->best_match());
   }
 

@@ -189,7 +189,7 @@ void SearchControllerImpl::InvokeResultAction(
     ranker_manager_->Remove(result);
     // We need to update the currently published results to not include the
     // just-removed result. Manually set the result as filtered and re-publish.
-    result->scoring().filter = true;
+    result->scoring().set_filtered(true);
     Publish();
   }
 }

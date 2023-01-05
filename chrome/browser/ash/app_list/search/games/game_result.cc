@@ -127,7 +127,7 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
   LogIconLoadStatus(error);
   if (error != apps::DiscoveryError::kSuccess) {
     // Don't display results that have no icon.
-    scoring().filter = true;
+    scoring().set_filtered(true);
     return;
   }
 
