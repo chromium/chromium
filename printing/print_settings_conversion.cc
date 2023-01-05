@@ -228,6 +228,22 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     settings->set_rasterize_pdf_dpi(rasterize_pdf_dpi.value());
   }
 
+  // Set margin type before setting printable area. `SetPrintableAreaIfValid()`
+  // calls `PrintSettings::SetPrinterPrintableArea()`, which requires the margin
+  // type to be set first.
+  mojom::MarginType margin_type = static_cast<mojom::MarginType>(
+      job_settings.FindInt(kSettingMarginsType)
+          .value_or(static_cast<int>(mojom::MarginType::kDefaultMargins)));
+  if (margin_type < mojom::MarginType::kMinValue ||
+      margin_type > mojom::MarginType::kMaxValue) {
+    margin_type = mojom::MarginType::kDefaultMargins;
+  }
+  settings->set_margin_type(margin_type);
+
+  if (margin_type == mojom::MarginType::kCustomMargins) {
+    settings->SetCustomMargins(GetCustomMarginsFromJobSettings(job_settings));
+  }
+
   PrintSettings::RequestedMedia requested_media;
   const base::Value::Dict* media_size_value =
       job_settings.FindDict(kSettingMediaSize);
@@ -250,19 +266,6 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     }
   }
   settings->set_requested_media(requested_media);
-
-  mojom::MarginType margin_type = static_cast<mojom::MarginType>(
-      job_settings.FindInt(kSettingMarginsType)
-          .value_or(static_cast<int>(mojom::MarginType::kDefaultMargins)));
-  if (margin_type < mojom::MarginType::kMinValue ||
-      margin_type > mojom::MarginType::kMaxValue) {
-    margin_type = mojom::MarginType::kDefaultMargins;
-  }
-  settings->set_margin_type(margin_type);
-
-  if (margin_type == mojom::MarginType::kCustomMargins) {
-    settings->SetCustomMargins(GetCustomMarginsFromJobSettings(job_settings));
-  }
 
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 

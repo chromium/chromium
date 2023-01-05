@@ -92,6 +92,13 @@ const char kPrinterSettingsWithImageableArea[] = R"({
   "dpiVertical": 300,
 })";
 
+const char kCustomMargins[] = R"({
+  "marginBottom": 10,
+  "marginLeft": 30,
+  "marginRight": 20,
+  "marginTop": 80
+})";
+
 }  // namespace
 
 TEST(PrintSettingsConversionTest, InvalidSettings) {
@@ -198,6 +205,30 @@ TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
   ASSERT_TRUE(settings);
   EXPECT_TRUE(settings->page_setup_device_units().physical_size().IsEmpty());
   EXPECT_TRUE(settings->page_setup_device_units().printable_area().IsEmpty());
+}
+
+TEST(PrintSettingsConversionTest, WithCustomMarginsAndImageableArea) {
+  // Test imageable area with custom margins.
+#if BUILDFLAG(IS_MAC)
+  static constexpr gfx::Size kExpectedSize{595, 842};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 510, 839};
+  const PageMargins kExpectedPageMargins(0, 0, 30, 20, 80, 10);
+#else
+  static constexpr gfx::Size kExpectedSize{2480, 3508};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 2126, 3496};
+  const PageMargins kExpectedPageMargins(0, 0, 125, 83, 333, 42);
+#endif
+
+  base::Value::Dict dict =
+      base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
+  dict.Set("marginsType", static_cast<int>(mojom::MarginType::kCustomMargins));
+  dict.Set("marginsCustom", base::test::ParseJson(kCustomMargins));
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
+  ASSERT_TRUE(settings);
+  const PageSetup& page_setup = settings->page_setup_device_units();
+  EXPECT_EQ(page_setup.physical_size(), kExpectedSize);
+  EXPECT_EQ(page_setup.printable_area(), kExpectedPrintableArea);
+  EXPECT_TRUE(page_setup.effective_margins().Equals(kExpectedPageMargins));
 }
 
 TEST(PrintSettingsConversionTest, MissingDeviceName) {
