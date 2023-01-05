@@ -17,11 +17,11 @@ import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
+import {SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 
 import {getTemplate} from './os_signout_dialog.html.js';
-import {SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 
 export interface OsSettingsSignoutDialogElement {
   $: {

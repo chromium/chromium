@@ -14,9 +14,8 @@ import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chr
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
 
 import {getTemplate} from './os_remove_saved_device_dialog.html.js';
 import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
