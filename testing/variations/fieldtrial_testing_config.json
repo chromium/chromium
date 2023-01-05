@@ -2145,21 +2145,6 @@
             ]
         }
     ],
-    "CacheMacSandboxProfiles": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheMacSandboxProfiles"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheTransparency": [
         {
             "platforms": [
