@@ -66,6 +66,17 @@ suite('SiteSettingsPage', function() {
         defaultSettingLabel(ContentSetting.IMPORTANT_CONTENT, 'a', 'b', 'c'));
   });
 
+  // TODO(crbug.com/1378703): Remove the test once PrivacySandboxSettings4
+  // has been rolled out.
+  test('CookiesLinkRowLabel', function() {
+    const labelExpected =
+        loadTimeData.getString('thirdPartyCookiesLinkRowLabel');
+    const labelActual =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!.label;
+    assertEquals(labelExpected, labelActual);
+  });
+
   test('CookiesLinkRowSublabel', async function() {
     setupPage();
     await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
@@ -186,6 +197,14 @@ suite('PrivacySandboxSettings4Disabled', function() {
 
     assertFalse(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
+  });
+
+  test('CookiesLinkRowLabel', function() {
+    const labelExpected = loadTimeData.getString('siteSettingsCookies');
+    const labelActual =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!.label;
+    assertEquals(labelExpected, labelActual);
   });
 });
 

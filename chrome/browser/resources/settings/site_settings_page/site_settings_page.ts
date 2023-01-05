@@ -116,7 +116,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
     {
       route: routes.COOKIES,
       id: Id.COOKIES,
-      label: 'siteSettingsCookies',
+      label: loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
+          'thirdPartyCookiesLinkRowLabel' :
+          'siteSettingsCookies',
       icon: 'settings:cookie',
       enabledLabel: 'siteSettingsCookiesAllowed',
       disabledLabel: 'siteSettingsBlocked',
