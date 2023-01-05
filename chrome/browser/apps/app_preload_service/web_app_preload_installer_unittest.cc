@@ -126,11 +126,13 @@ TEST_F(WebAppPreloadInstallerTest, DISABLED_InstallOverUserApp) {
   ASSERT_TRUE(found);
 }
 
-// TODO(b/263437253): fix up once supporting libraries are in place.
-TEST_F(WebAppPreloadInstallerTest, DISABLED_GetAppId) {
+TEST_F(WebAppPreloadInstallerTest, GetAppId) {
   WebAppPreloadInstaller installer(profile());
 
   proto::AppProvisioningListAppsResponse_App app;
+  app.set_package_id("web:https://cursive.apps.chrome/");
+  app.mutable_web_extras()->set_original_manifest_url(
+      "https://cursive.apps.chrome/manifest.json");
 
   ASSERT_EQ(installer.GetAppId(PreloadAppDefinition(app)),
             "apignacaigpffemhdbhmnajajaccbckh");

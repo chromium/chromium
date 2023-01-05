@@ -126,12 +126,10 @@ void WebAppPreloadInstaller::InstallApp(
                      weak_ptr_factory_.GetWeakPtr(), app, std::move(callback)));
 }
 
-// TODO(b/263437253): fix up once supporting libraries are in place.
 std::string WebAppPreloadInstaller::GetAppId(
     const PreloadAppDefinition& app) const {
   // The app's "Web app manifest ID" is the equivalent of the unhashed app ID.
-  // return web_app::GenerateAppIdFromUnhashed(app.GetWebAppManifestId());
-  return "";
+  return web_app::GenerateAppIdFromUnhashed(app.GetWebAppManifestId().spec());
 }
 
 void WebAppPreloadInstaller::InstallAppImpl(
