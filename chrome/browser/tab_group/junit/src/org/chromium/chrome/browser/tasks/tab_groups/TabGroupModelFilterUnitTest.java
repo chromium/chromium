@@ -301,6 +301,30 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void addTab_ToNewGroup_NotAtEnd() {
+        Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, Tab.INVALID_TAB_ID);
+        doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
+        assertThat(mTabGroupModelFilter.getCount(), equalTo(4));
+
+        // Add a tab to the model not at the end and ensure the indexes are updated correctly for
+        // all other tabs and groups.
+        addTabToTabModel(1, newTab);
+
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
+        assertThat(mTabGroupModelFilter.getCount(), equalTo(5));
+        assertThat(mTabGroupModelFilter.getTotalTabCount(), equalTo(7));
+
+        assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
+        assertThat(mTabGroupModelFilter.indexOf(newTab), equalTo(1));
+        assertThat(mTabGroupModelFilter.indexOf(mTab2), equalTo(2));
+        assertThat(mTabGroupModelFilter.indexOf(mTab3), equalTo(2));
+        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(3));
+        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(4));
+        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(4));
+    }
+
+    @Test
     public void addTab_SetRootId() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, TAB1_ID);
 
