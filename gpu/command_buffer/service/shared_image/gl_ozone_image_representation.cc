@@ -58,9 +58,9 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
         case 0:
           return gfx::BufferPlane::Y;
         case 1:
-          return gfx::BufferPlane::V;
-        case 2:
           return gfx::BufferPlane::U;
+        case 2:
+          return gfx::BufferPlane::V;
       }
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
       switch (plane_index) {
