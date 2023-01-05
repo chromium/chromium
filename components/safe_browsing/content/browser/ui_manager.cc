@@ -314,12 +314,23 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
   BaseUIManager::OnBlockingPageDone(resources, proceed, web_contents,
                                     main_frame_url, showed_interstitial);
   if (proceed && !resources.empty()) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled((kRealTimeUrlFilteringForEnterprise)) &&
+        resources[0].threat_type ==
+            safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
+      delegate_->TriggerUrlFilteringInterstitialExtensionEventIfDesired(
+          web_contents, main_frame_url, "ENTERPRISE_WARNED_BYPASS",
+          resources[0].rt_lookup_response);
+      return;
+    }
+#endif
     delegate_->TriggerSecurityInterstitialProceededExtensionEventIfDesired(
         web_contents, main_frame_url,
         GetThreatTypeStringForInterstitial(resources[0].threat_type),
         /*net_error_code=*/0);
   }
 }
+
 // Static.
 GURL SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
     const security_interstitials::UnsafeResource& resource) {
