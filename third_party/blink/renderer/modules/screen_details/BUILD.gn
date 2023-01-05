@@ -4,14 +4,14 @@
 
 import("//third_party/blink/renderer/modules/modules.gni")
 
-blink_modules_sources("screen_enumeration") {
+blink_modules_sources("screen_details") {
   sources = [
     "screen_detailed.cc",
     "screen_detailed.h",
     "screen_details.cc",
     "screen_details.h",
-    "window_screens.cc",
-    "window_screens.h",
+    "window_screen_details.cc",
+    "window_screen_details.h",
   ]
 
   public_deps = [

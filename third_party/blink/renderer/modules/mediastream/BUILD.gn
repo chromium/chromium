@@ -120,7 +120,7 @@ blink_modules_sources("mediastream") {
     "//services/viz/public/cpp/gpu:gpu",
     "//third_party/blink/public/common",
     "//third_party/blink/renderer/modules/imagecapture:imagecapture",
-    "//third_party/blink/renderer/modules/screen_enumeration:screen_enumeration",
+    "//third_party/blink/renderer/modules/screen_details:screen_details",
     "//third_party/libyuv:libyuv",
   ]
   allow_circular_includes_from =

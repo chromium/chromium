@@ -1,6 +1,6 @@
 specific_include_rules = {
   "screen_details_browsertest\.cc": [
-    "+content/browser/screen_enumeration/screen_details_test_utils.h",
+    "+content/browser/screen_details/screen_details_test_utils.h",
   ],
   "window_management_browsertest\.cc": [
     "+ash/shell.h",

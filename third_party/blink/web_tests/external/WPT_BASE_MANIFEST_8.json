@@ -588473,10 +588473,10 @@
       }
      ]
     ],
-    "screen_enumeration_permission.https.window.js": [
+    "permission.https.window.js": [
      "32596fac9ea3bdbbcdad3d6fd6f15a0e9b0664b7",
      [
-      "screen-details/screen_enumeration_permission.https.window.html",
+      "screen-details/permission.https.window.html",
       {
        "script_metadata": [
         [

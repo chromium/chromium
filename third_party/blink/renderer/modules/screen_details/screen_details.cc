@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
+#include "third_party/blink/renderer/modules/screen_details/screen_details.h"
 
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screen_detailed.h"
+#include "third_party/blink/renderer/modules/screen_details/screen_detailed.h"
 #include "ui/display/screen_info.h"
 
 namespace blink {

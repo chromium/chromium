@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_WINDOW_SCREENS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_WINDOW_SCREENS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_DETAILS_WINDOW_SCREEN_DETAILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_DETAILS_WINDOW_SCREEN_DETAILS_H_
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -22,13 +22,13 @@ class ScreenDetails;
 
 // Supplements LocalDOMWindow with a ScreenDetails interface.
 // https://w3c.github.io/window-placement/
-class WindowScreens final : public GarbageCollected<WindowScreens>,
-                            public ExecutionContextLifecycleObserver,
-                            public Supplement<LocalDOMWindow> {
+class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
+                                  public ExecutionContextLifecycleObserver,
+                                  public Supplement<LocalDOMWindow> {
  public:
   static const char kSupplementName[];
 
-  explicit WindowScreens(LocalDOMWindow* window);
+  explicit WindowScreenDetails(LocalDOMWindow* window);
 
   // Web-exposed interface:
   static ScriptPromise getScreenDetails(ScriptState* script_state,
@@ -44,7 +44,7 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
 
  private:
   // Returns the supplement, creating one as needed.
-  static WindowScreens* From(LocalDOMWindow* window);
+  static WindowScreenDetails* From(LocalDOMWindow* window);
 
   // Requests permission to resolve the returned Screens interface promise.
   ScriptPromise GetScreenDetails(ScriptState* script_state,
@@ -60,4 +60,4 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_WINDOW_SCREENS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_DETAILS_WINDOW_SCREEN_DETAILS_H_

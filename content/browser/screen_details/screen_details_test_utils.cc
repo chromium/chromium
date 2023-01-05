@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/screen_enumeration/screen_details_test_utils.h"
+#include "content/browser/screen_details/screen_details_test_utils.h"
 
 #include "base/ranges/algorithm.h"
 #include "ui/display/display.h"

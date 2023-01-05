@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
+#include "third_party/blink/renderer/modules/screen_details/window_screen_details.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -11,32 +11,33 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
+#include "third_party/blink/renderer/modules/screen_details/screen_details.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
 // static
-const char WindowScreens::kSupplementName[] = "WindowScreens";
+const char WindowScreenDetails::kSupplementName[] = "WindowScreenDetails";
 
-WindowScreens::WindowScreens(LocalDOMWindow* window)
+WindowScreenDetails::WindowScreenDetails(LocalDOMWindow* window)
     : ExecutionContextLifecycleObserver(window),
       Supplement<LocalDOMWindow>(*window),
       permission_service_(window) {}
 
 // static
-ScriptPromise WindowScreens::getScreenDetails(ScriptState* script_state,
-                                              LocalDOMWindow& window,
-                                              ExceptionState& exception_state) {
+ScriptPromise WindowScreenDetails::getScreenDetails(
+    ScriptState* script_state,
+    LocalDOMWindow& window,
+    ExceptionState& exception_state) {
   return From(&window)->GetScreenDetails(script_state, exception_state);
 }
 
-void WindowScreens::ContextDestroyed() {
+void WindowScreenDetails::ContextDestroyed() {
   screen_details_.Clear();
 }
 
-void WindowScreens::Trace(Visitor* visitor) const {
+void WindowScreenDetails::Trace(Visitor* visitor) const {
   visitor->Trace(screen_details_);
   visitor->Trace(permission_service_);
   ExecutionContextLifecycleObserver::Trace(visitor);
@@ -44,17 +45,19 @@ void WindowScreens::Trace(Visitor* visitor) const {
 }
 
 // static
-WindowScreens* WindowScreens::From(LocalDOMWindow* window) {
-  auto* supplement = Supplement<LocalDOMWindow>::From<WindowScreens>(window);
+WindowScreenDetails* WindowScreenDetails::From(LocalDOMWindow* window) {
+  auto* supplement =
+      Supplement<LocalDOMWindow>::From<WindowScreenDetails>(window);
   if (!supplement) {
-    supplement = MakeGarbageCollected<WindowScreens>(window);
+    supplement = MakeGarbageCollected<WindowScreenDetails>(window);
     Supplement<LocalDOMWindow>::ProvideTo(*window, supplement);
   }
   return supplement;
 }
 
-ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
+ScriptPromise WindowScreenDetails::GetScreenDetails(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
@@ -73,8 +76,9 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
   auto permission_descriptor = CreatePermissionDescriptor(
       mojom::blink::PermissionName::WINDOW_MANAGEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto callback = WTF::BindOnce(&WindowScreens::OnPermissionRequestComplete,
-                                WrapPersistent(this), WrapPersistent(resolver));
+  auto callback =
+      WTF::BindOnce(&WindowScreenDetails::OnPermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver));
 
   // Only allow the user prompts when the frame has a transient activation.
   // Otherwise, resolve or reject the promise with the current permission state.
@@ -92,7 +96,7 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
   return resolver->Promise();
 }
 
-void WindowScreens::OnPermissionRequestComplete(
+void WindowScreenDetails::OnPermissionRequestComplete(
     ScriptPromiseResolver* resolver,
     mojom::blink::PermissionStatus status) {
   if (!resolver->GetScriptState()->ContextIsValid())

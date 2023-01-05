@@ -6,7 +6,7 @@
 // https://w3c.github.io/window-placement/
 [
     SecureContext,
-    ImplementedAs=WindowScreens
+    ImplementedAs=WindowScreenDetails
 ] partial interface Window {
   [CallWith=ScriptState, Measure, RaisesException] Promise<ScreenDetails> getScreenDetails();
 };

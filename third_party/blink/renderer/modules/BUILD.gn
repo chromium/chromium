@@ -134,7 +134,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/remoteplayback",
     "//third_party/blink/renderer/modules/sanitizer_api",
     "//third_party/blink/renderer/modules/scheduler",
-    "//third_party/blink/renderer/modules/screen_enumeration",
+    "//third_party/blink/renderer/modules/screen_details",
     "//third_party/blink/renderer/modules/screen_orientation",
     "//third_party/blink/renderer/modules/sensor",
     "//third_party/blink/renderer/modules/service_worker",

@@ -337,7 +337,6 @@ third_party/blink/renderer/modules/manifest 3 1
 third_party/blink/renderer/modules/mediarecorder 9 1
 third_party/blink/renderer/modules/peerconnection 3 3
 third_party/blink/renderer/modules/scheduler 1 1
-third_party/blink/renderer/modules/screen_enumeration 3 2
 third_party/blink/renderer/modules/virtualkeyboard 6 3
 third_party/blink/renderer/modules/webcodecs 3 2
 third_party/blink/renderer/modules/window_controls_overlay 3 3

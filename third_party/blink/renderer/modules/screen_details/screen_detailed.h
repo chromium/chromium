@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREEN_DETAILED_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREEN_DETAILED_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_DETAILS_SCREEN_DETAILED_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_DETAILS_SCREEN_DETAILED_H_
 
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -37,7 +37,7 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   String label() const;
 
   // Attributes exposed for HDR canvas.
-  // https://github.com/w3c/ColorWeb-CG/blob/master/hdr_html_canvas_element.md
+  // https://github.com/w3c/ColorWeb-CG/blob/main/hdr_html_canvas_element.md
   float highDynamicRangeHeadroom() const;
   float redPrimaryX() const;
   float redPrimaryY() const;
@@ -58,4 +58,4 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREEN_DETAILED_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_DETAILS_SCREEN_DETAILED_H_
