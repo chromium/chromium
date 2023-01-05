@@ -299,6 +299,10 @@
     "META": {"sizes": {"includes": [5],}},
     "includes": [1931],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/reading_list/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1932],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/side_panel_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1935],

@@ -93,7 +93,7 @@ TEST_F('ReadingListAppTest', 'All', function() {
 var ReadAnythingAppTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js';
+    return 'chrome://read-anything-side-panel.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js';
   }
 
   /** @override */

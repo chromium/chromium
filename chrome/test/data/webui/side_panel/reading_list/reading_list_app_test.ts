@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://read-later.top-chrome/reading_list/app.js';
+import 'chrome://read-later.top-chrome/app.js';
 
-import {ReadingListAppElement} from 'chrome://read-later.top-chrome/reading_list/app.js';
-import {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/reading_list/reading_list.mojom-webui.js';
-import {ReadingListApiProxyImpl} from 'chrome://read-later.top-chrome/reading_list/reading_list_api_proxy.js';
-import {ReadingListItemElement} from 'chrome://read-later.top-chrome/reading_list/reading_list_item.js';
+import {ReadingListAppElement} from 'chrome://read-later.top-chrome/app.js';
+import {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
+import {ReadingListApiProxyImpl} from 'chrome://read-later.top-chrome/reading_list_api_proxy.js';
+import {ReadingListItemElement} from 'chrome://read-later.top-chrome/reading_list_item.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://read-later.top-chrome/read_anything/app.js';
+import 'chrome://read-anything-side-panel.top-chrome/read_anything/app.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ReadAnythingElement} from 'chrome://read-later.top-chrome/read_anything/app.js';
+import {ReadAnythingElement} from 'chrome://read-anything-side-panel.top-chrome/read_anything/app.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('ReadAnythingAppTest', () => {

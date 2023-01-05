@@ -14,7 +14,10 @@ ts_library("build_ts") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/bookmarks/tsc/*",
             target_gen_dir),
-    "chrome://read-later.top-chrome/*|" +
+    "chrome://read-later.top-chrome/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/reading_list/tsc/*",
+            target_gen_dir),
+    "chrome://read-anything-side-panel.top-chrome/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/side_panel/tsc/*",
                     target_gen_dir),
     "chrome://webui-test/*|" +
@@ -44,6 +47,7 @@ ts_library("build_ts") {
     "..:build_ts",
     "//chrome/browser/resources/side_panel:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
+    "//chrome/browser/resources/side_panel/reading_list:build_ts",
   ]
 }
 

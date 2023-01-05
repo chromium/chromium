@@ -291,7 +291,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
   private onItemFocus_(e: Event) {
     this.$.selector.selected =
-        (e.currentTarget as ReadingListItemElement).dataset.url!;
+        (e.currentTarget as ReadingListItemElement).dataset['url']!;
   }
 
   private shouldShowHr_(): boolean {

@@ -1,0 +1,37 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "side_panel_reading_list"
+
+  static_files = [
+    "reading_list.html",
+    "images/read_later_empty_dark.svg",
+    "images/read_later_empty.svg",
+  ]
+
+  web_component_files = [
+    "app.ts",
+    "reading_list_item.ts",
+  ]
+
+  non_web_component_files = [ "reading_list_api_proxy.ts" ]
+
+  icons_html_files = [ "icons.html" ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings_js__generator" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom-webui.js" ]
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+}

@@ -19,8 +19,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/side_panel_resources.h"
-#include "chrome/grit/side_panel_resources_map.h"
+#include "chrome/grit/side_panel_reading_list_resources.h"
+#include "chrome/grit/side_panel_reading_list_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -70,7 +70,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   webui::SetupWebUIDataSource(
-      source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
+      source,
+      base::make_span(kSidePanelReadingListResources,
+                      kSidePanelReadingListResourcesSize),
       IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
 }
 

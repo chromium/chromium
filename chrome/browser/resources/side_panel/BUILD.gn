@@ -42,18 +42,11 @@ preprocess_if_expr("preprocess_gen") {
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = html_files + icons_html_files
+  in_files = html_files
 }
 
 mojo_root_folder =
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel"
-
-copy("copy_mojo_reading_list") {
-  deps = [ "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings_js__generator" ]
-  sources = [ "$mojo_root_folder/reading_list/reading_list.mojom-webui.js" ]
-  outputs =
-      [ "$target_gen_dir/$preprocess_folder/reading_list/{{source_file_part}}" ]
-}
 
 copy("copy_mojo_user_notes") {
   deps = [ "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_js__generator" ]
@@ -71,7 +64,6 @@ ts_library("build_ts") {
   definitions = [
     "read_anything/read_anything.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   deps = [
     "//third_party/polymer/v3_0:library",
@@ -80,7 +72,6 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":copy_mojo_reading_list",
     ":copy_mojo_user_notes",
     ":preprocess_gen",
     ":preprocess_src",
@@ -89,9 +80,6 @@ ts_library("build_ts") {
 
 generate_grd("build_grd") {
   input_files = [
-    "images/read_later_empty_dark.svg",
-    "images/read_later_empty.svg",
-    "reading_list/reading_list.html",
     "read_anything/read_anything.html",
     "user_notes/user_notes.html",
   ]
