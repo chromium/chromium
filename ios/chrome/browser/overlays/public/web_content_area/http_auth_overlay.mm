@@ -36,8 +36,9 @@ const size_t kTextFieldIndexPassword = 1;
 std::unique_ptr<OverlayResponse> CreateHttpAuthResponse(
     std::unique_ptr<OverlayResponse> alert_response) {
   AlertResponse* alert_info = alert_response->GetInfo<AlertResponse>();
-  if (!alert_info || alert_info->tapped_button_index() != kButtonIndexOk)
+  if (!alert_info || alert_info->tapped_button_row_index() != kButtonIndexOk) {
     return nullptr;
+  }
 
   NSArray<NSString*>* text_field_values = alert_info->text_field_values();
   return OverlayResponse::CreateWithInfo<HTTPAuthOverlayResponseInfo>(
@@ -84,10 +85,10 @@ void HTTPAuthOverlayRequestConfig::CreateAuxiliaryData(
   NSString* ok_label =
       l10n_util::GetNSStringWithFixup(IDS_LOGIN_DIALOG_OK_BUTTON_LABEL);
   NSString* cancel_label = l10n_util::GetNSString(IDS_CANCEL);
-  const std::vector<ButtonConfig> alert_button_configs{
-      ButtonConfig(ok_label, kHttpAuthSignInTappedActionName),
-      ButtonConfig(cancel_label, kHttpAuthCancelTappedActionName,
-                   UIAlertActionStyleCancel)};
+  const std::vector<std::vector<ButtonConfig>> alert_button_configs{
+      {ButtonConfig(ok_label, kHttpAuthSignInTappedActionName)},
+      {ButtonConfig(cancel_label, kHttpAuthCancelTappedActionName,
+                    UIAlertActionStyleCancel)}};
   AlertRequest::CreateForUserData(
       user_data, alert_title, alert_message,
       /*accessibility_identifier=*/nil, alert_text_field_configs,

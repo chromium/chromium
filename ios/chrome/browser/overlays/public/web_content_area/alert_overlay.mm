@@ -36,12 +36,13 @@ ButtonConfig::ButtonConfig(const ButtonConfig& copy) = default;
 
 OVERLAY_USER_DATA_SETUP_IMPL(AlertRequest);
 
-AlertRequest::AlertRequest(NSString* title,
-                           NSString* message,
-                           NSString* accessibility_identifier,
-                           NSArray<TextFieldConfiguration*>* text_field_configs,
-                           const std::vector<ButtonConfig>& button_configs,
-                           ResponseConverter response_converter)
+AlertRequest::AlertRequest(
+    NSString* title,
+    NSString* message,
+    NSString* accessibility_identifier,
+    NSArray<TextFieldConfiguration*>* text_field_configs,
+    const std::vector<std::vector<ButtonConfig>>& button_configs,
+    ResponseConverter response_converter)
     : title_(title),
       message_(message),
       accessibility_identifier_(accessibility_identifier),
@@ -59,9 +60,11 @@ AlertRequest::~AlertRequest() = default;
 
 OVERLAY_USER_DATA_SETUP_IMPL(AlertResponse);
 
-AlertResponse::AlertResponse(size_t tapped_button_index,
+AlertResponse::AlertResponse(size_t tapped_button_row_index,
+                             size_t tapped_button_column_index,
                              NSArray<NSString*>* text_field_values)
-    : tapped_button_index_(tapped_button_index),
+    : tapped_button_row_index_(tapped_button_row_index),
+      tapped_button_column_index_(tapped_button_column_index),
       text_field_values_(text_field_values) {}
 
 AlertResponse::~AlertResponse() = default;

@@ -18,6 +18,8 @@ source_set("web_content_area") {
     "java_script_dialog_overlay_utils.mm",
     "java_script_prompt_dialog_overlay.h",
     "java_script_prompt_dialog_overlay.mm",
+    "permissions_dialog_overlay.h",
+    "permissions_dialog_overlay.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -27,10 +29,12 @@ source_set("web_content_area") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/dialogs",
     "//ios/chrome/browser/ui/elements",
     "//ios/web/public",
+    "//ios/web/public/permissions",
     "//ui/base",
     "//url",
   ]
@@ -53,6 +57,7 @@ source_set("unit_tests") {
     "java_script_confirm_dialog_overlay_unittest.mm",
     "java_script_dialog_overlay_utils_unittest.mm",
     "java_script_prompt_dialog_overlay_unittest.mm",
+    "permissions_dialog_overlay_unittest.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

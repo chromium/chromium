@@ -31,7 +31,9 @@ TEST_F(ConfirmationOverlayResponseUtilTest, AlertConfirmConversion) {
       GetConfirmationResponseConverter(kOkButtonIndex);
 
   std::unique_ptr<OverlayResponse> confirmed_alert_response =
-      OverlayResponse::CreateWithInfo<AlertResponse>(kOkButtonIndex, nil);
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          /*tapped_button_row_index=*/kOkButtonIndex,
+          /*tapped_button_column_index=*/0, nil);
   std::unique_ptr<OverlayResponse> confirmed_response =
       converter.Run(std::move(confirmed_alert_response));
   ASSERT_TRUE(confirmed_response);
@@ -49,7 +51,9 @@ TEST_F(ConfirmationOverlayResponseUtilTest, AlertDenyConversion) {
       GetConfirmationResponseConverter(kOkButtonIndex);
 
   std::unique_ptr<OverlayResponse> denied_alert_response =
-      OverlayResponse::CreateWithInfo<AlertResponse>(kOkButtonIndex + 1, nil);
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          /*tapped_button_row_index=*/kOkButtonIndex + 1,
+          /*tapped_button_column_index=*/0, nil);
   std::unique_ptr<OverlayResponse> denied_response =
       converter.Run(std::move(denied_alert_response));
   ASSERT_TRUE(denied_response);

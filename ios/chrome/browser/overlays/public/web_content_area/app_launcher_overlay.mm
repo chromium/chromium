@@ -29,8 +29,9 @@ const size_t kButtonIndexOk = 0;
 std::unique_ptr<OverlayResponse> CreateAllowAppLaunchResponse(
     std::unique_ptr<OverlayResponse> alert_response) {
   AlertResponse* alert_info = alert_response->GetInfo<AlertResponse>();
-  if (!alert_info || alert_info->tapped_button_index() != kButtonIndexOk)
+  if (!alert_info || alert_info->tapped_button_row_index() != kButtonIndexOk) {
     return nullptr;
+  }
 
   return OverlayResponse::CreateWithInfo<AllowAppLaunchResponse>();
 }
@@ -57,9 +58,9 @@ void AppLaunchConfirmationRequest::CreateAuxiliaryData(
       is_repeated_request()
           ? l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_ALLOW)
           : l10n_util::GetNSString(IDS_IOS_APP_LAUNCHER_OPEN_APP_BUTTON_LABEL);
-  const std::vector<ButtonConfig> alert_button_configs{
-      ButtonConfig(allow_button_title),
-      ButtonConfig(reject_button_title, UIAlertActionStyleCancel)};
+  const std::vector<std::vector<ButtonConfig>> alert_button_configs{
+      {ButtonConfig(allow_button_title)},
+      {ButtonConfig(reject_button_title, UIAlertActionStyleCancel)}};
   AlertRequest::CreateForUserData(
       user_data, /*title=*/nil, alert_message, /*accessibility_identifier=*/nil,
       /*text_field_configs=*/nil, alert_button_configs,

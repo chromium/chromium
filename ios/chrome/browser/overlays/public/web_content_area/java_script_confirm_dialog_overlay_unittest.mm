@@ -80,14 +80,15 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, ButtonConfigSetup) {
   std::unique_ptr<OverlayRequest> confirm_request = CreateRequest();
   AlertRequest* confirm_config = confirm_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(confirm_config);
-  const std::vector<ButtonConfig>& confirm_button_configs =
+  const std::vector<std::vector<ButtonConfig>>& confirm_button_configs =
       confirm_config->button_configs();
   ASSERT_EQ(2U, confirm_button_configs.size());
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_OK), confirm_button_configs[0].title);
-  EXPECT_EQ(UIAlertActionStyleDefault, confirm_button_configs[0].style);
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL),
-              confirm_button_configs[1].title);
-  EXPECT_EQ(UIAlertActionStyleCancel, confirm_button_configs[1].style);
+  const ButtonConfig& ok_button = confirm_button_configs[0][0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_OK), ok_button.title);
+  EXPECT_EQ(UIAlertActionStyleDefault, ok_button.style);
+  const ButtonConfig& cancel_button = confirm_button_configs[1][0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL), cancel_button.title);
+  EXPECT_EQ(UIAlertActionStyleCancel, cancel_button.style);
 }
 
 // Tests that the blocking option is successfully added.
@@ -101,11 +102,12 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, BlockingOptionSetup) {
   std::unique_ptr<OverlayRequest> confirm_request = CreateRequest();
   AlertRequest* confirm_config = confirm_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(confirm_config);
-  const std::vector<ButtonConfig>& confirm_button_configs =
+  const std::vector<std::vector<ButtonConfig>>& confirm_button_configs =
       confirm_config->button_configs();
   ASSERT_FALSE(confirm_button_configs.empty());
-  EXPECT_NSEQ(blocking_option_title, confirm_button_configs.back().title);
-  EXPECT_EQ(UIAlertActionStyleDestructive, confirm_button_configs.back().style);
+  const ButtonConfig& button_config = confirm_button_configs.back()[0];
+  EXPECT_NSEQ(blocking_option_title, button_config.title);
+  EXPECT_EQ(UIAlertActionStyleDestructive, button_config.style);
 }
 
 // Tests that a confirmation alert is correctly converted to a
@@ -118,7 +120,8 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, ResponseConversionOk) {
   // Simulate a response where the OK button is tapped.
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_index=*/0, @[ @"" ]);
+          /*tapped_button_row_index=*/0, /*tapped_button_column_index=*/0,
+          @[ @"" ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));
@@ -142,7 +145,8 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, ResponseConversionCancel) {
   // Simulate a response where the Cancel button is tapped.
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_index=*/1, @[ @"" ]);
+          /*tapped_button_row_index=*/1,
+          /*tapped_button_column_index=*/0, @[ @"" ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));
@@ -172,7 +176,8 @@ TEST_F(JavaScriptConfirmDialogOverlayTest,
   size_t blocking_option_button_index = config->button_configs().size() - 1;
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          blocking_option_button_index, @[ @"" ]);
+          /*tapped_button_row_index=*/blocking_option_button_index,
+          /*tapped_button_column_index=*/0, @[ @"" ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));

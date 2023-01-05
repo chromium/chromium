@@ -92,14 +92,15 @@ TEST_F(JavaScriptPromptDialogOverlayTest, ButtonConfigSetup) {
   std::unique_ptr<OverlayRequest> prompt_request = CreateRequest();
   AlertRequest* prompt_config = prompt_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(prompt_config);
-  const std::vector<ButtonConfig>& prompt_button_configs =
+  const std::vector<std::vector<ButtonConfig>>& prompt_button_configs =
       prompt_config->button_configs();
   ASSERT_EQ(2U, prompt_button_configs.size());
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_OK), prompt_button_configs[0].title);
-  EXPECT_EQ(UIAlertActionStyleDefault, prompt_button_configs[0].style);
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL),
-              prompt_button_configs[1].title);
-  EXPECT_EQ(UIAlertActionStyleCancel, prompt_button_configs[1].style);
+  ButtonConfig ok_button = prompt_button_configs[0][0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_OK), ok_button.title);
+  EXPECT_EQ(UIAlertActionStyleDefault, ok_button.style);
+  ButtonConfig cancel_button = prompt_button_configs[1][0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL), cancel_button.title);
+  EXPECT_EQ(UIAlertActionStyleCancel, cancel_button.style);
 }
 
 // Tests that the blocking option is successfully added.
@@ -113,11 +114,12 @@ TEST_F(JavaScriptPromptDialogOverlayTest, BlockingOptionSetup) {
   std::unique_ptr<OverlayRequest> prompt_request = CreateRequest();
   AlertRequest* prompt_config = prompt_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(prompt_config);
-  const std::vector<ButtonConfig>& prompt_button_configs =
+  const std::vector<std::vector<ButtonConfig>>& prompt_button_configs =
       prompt_config->button_configs();
   ASSERT_FALSE(prompt_button_configs.empty());
-  EXPECT_NSEQ(blocking_option_title, prompt_button_configs.back().title);
-  EXPECT_EQ(UIAlertActionStyleDestructive, prompt_button_configs.back().style);
+  ButtonConfig button = prompt_button_configs.back()[0];
+  EXPECT_NSEQ(blocking_option_title, button.title);
+  EXPECT_EQ(UIAlertActionStyleDestructive, button.style);
 }
 
 // Tests that a prompt alert is correctly converted to a
@@ -131,7 +133,8 @@ TEST_F(JavaScriptPromptDialogOverlayTest, PromptResponseConversionOk) {
   NSString* user_input = @"user_input";
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_index=*/0, @[ user_input ]);
+          /*tapped_button_row_index=*/0,
+          /*tapped_button_column_index=*/0, @[ user_input ]);
 
   // Since the OK button is tapped, the kConfirm action should be used and the
   // text field input should be supplied to the JavaScriptAlertDialogResponse.
@@ -159,7 +162,8 @@ TEST_F(JavaScriptPromptDialogOverlayTest, ResponseConversionCancel) {
   NSString* user_input = @"user_input";
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_index=*/1, @[ user_input ]);
+          /*tapped_button_row_index=*/1,
+          /*tapped_button_column_index=*/0, @[ user_input ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));
@@ -190,7 +194,8 @@ TEST_F(JavaScriptPromptDialogOverlayTest, ResponseConversionBlockDialogs) {
   size_t blocking_option_button_index = config->button_configs().size() - 1;
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          blocking_option_button_index, @[ @"user_input" ]);
+          /*tapped_button_row_index=*/blocking_option_button_index,
+          /*tapped_button_column_index=*/0, @[ @"user_input" ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));

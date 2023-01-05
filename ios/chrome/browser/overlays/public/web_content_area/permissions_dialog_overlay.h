@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_PERMISSIONS_DIALOG_OVERLAY_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_PERMISSIONS_DIALOG_OVERLAY_H_
 
-#import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_response_info.h"
-#import "ios/web/public/permissions/permissions.h"
+#import "url/gurl.h"
 
 // Configuration object for OverlayRequests for dialogs that ask for camera or
 // microphone permissions.
@@ -23,7 +23,7 @@ class API_AVAILABLE(ios(15.0)) PermissionsDialogRequest
 
  private:
   OVERLAY_USER_DATA_SETUP(PermissionsDialogRequest);
-  PermissionsDialogRequest(NSString* website,
+  PermissionsDialogRequest(const GURL& url,
                            NSArray<NSNumber*>* requested_permissions);
 
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;

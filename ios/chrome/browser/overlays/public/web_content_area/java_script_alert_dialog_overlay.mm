@@ -38,7 +38,7 @@ std::unique_ptr<OverlayResponse> CreateDialogResponse(
 
   JavaScriptAlertDialogResponse::Action action =
       JavaScriptAlertDialogResponse::Action::kConfirm;
-  size_t button_index = alert_response->tapped_button_index();
+  size_t button_index = alert_response->tapped_button_row_index();
   if (button_index == kAlertBlockButtonIndex) {
     action = JavaScriptAlertDialogResponse::Action::kBlockDialogs;
   }
@@ -69,10 +69,11 @@ void JavaScriptAlertDialogRequest::CreateAuxiliaryData(
   NSString* alert_title = DialogTitle(is_main_frame_, message());
   NSString* alert_message = DialogMessage(is_main_frame_, message());
 
-  std::vector<ButtonConfig> button_configs{
-      ButtonConfig(l10n_util::GetNSString(IDS_OK))};
+  std::vector<std::vector<ButtonConfig>> button_configs{
+      {ButtonConfig(l10n_util::GetNSString(IDS_OK))}};
   if (ShouldAddBlockDialogsButton(web_state())) {
-    button_configs.push_back(BlockDialogsButtonConfig());
+    button_configs.push_back(
+        std::vector<ButtonConfig>{BlockDialogsButtonConfig()});
   }
 
   AlertRequest::CreateForUserData(user_data, alert_title, alert_message,

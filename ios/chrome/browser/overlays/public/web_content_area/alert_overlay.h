@@ -108,8 +108,9 @@ class AlertRequest : public OverlayRequestConfig<AlertRequest> {
   NSArray<TextFieldConfiguration*>* text_field_configs() const {
     return text_field_configs_;
   }
-  // The button titles.  All alerts must have at least one button.
-  const std::vector<ButtonConfig>& button_configs() const {
+  // The button styles, titles and placement, with each child vector being a
+  // horizontal list of buttons.  All alerts must have at least one button.
+  const std::vector<std::vector<ButtonConfig>>& button_configs() const {
     return button_configs_;
   }
   // Callback that converts an alert-specific OverlayResponse to one exposing
@@ -121,7 +122,7 @@ class AlertRequest : public OverlayRequestConfig<AlertRequest> {
  private:
   OVERLAY_USER_DATA_SETUP(AlertRequest);
 
-  // Constructor called by CreateForUserData().  All arguments are copied to the
+  // Constructor called by CreateForUserData(). All arguments are copied to the
   // ivars below.  `title`, `message`, or both must be non-empty strings.
   // `button_configs` must contain at least one ButtonConfig.
   // `response_converter` must be non-null.
@@ -129,14 +130,14 @@ class AlertRequest : public OverlayRequestConfig<AlertRequest> {
                NSString* message,
                NSString* accessibility_identifier,
                NSArray<TextFieldConfiguration*>* text_field_configs,
-               const std::vector<ButtonConfig>& button_configs,
+               const std::vector<std::vector<ButtonConfig>>& button_configs,
                ResponseConverter response_converter);
 
   NSString* title_ = nil;
   NSString* message_ = nil;
   NSString* accessibility_identifier_ = nil;
   NSArray<TextFieldConfiguration*>* text_field_configs_ = nil;
-  const std::vector<ButtonConfig> button_configs_;
+  const std::vector<std::vector<ButtonConfig>> button_configs_;
   ResponseConverter response_converter_;
 };
 
@@ -145,17 +146,23 @@ class AlertResponse : public OverlayResponseInfo<AlertResponse> {
  public:
   ~AlertResponse() override;
 
-  // The index of the button tapped by the user to close the dialog.
-  size_t tapped_button_index() const { return tapped_button_index_; }
+  // The row index of the button tapped by the user to close the dialog.
+  size_t tapped_button_row_index() const { return tapped_button_row_index_; }
+  // The column index of the button tapped by the user to close the dialog.
+  size_t tapped_button_column_index() const {
+    return tapped_button_column_index_;
+  }
   // The values of the text fields when the button was tapped.
   NSArray<NSString*>* text_field_values() const { return text_field_values_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(AlertResponse);
-  AlertResponse(size_t tapped_button_index,
+  AlertResponse(size_t tapped_button_row_index,
+                size_t tapped_button_column_index,
                 NSArray<NSString*>* text_field_values);
 
-  const size_t tapped_button_index_ = 0;
+  const size_t tapped_button_row_index_ = 0;
+  const size_t tapped_button_column_index_ = 0;
   NSArray<NSString*>* text_field_values_ = nil;
 };
 

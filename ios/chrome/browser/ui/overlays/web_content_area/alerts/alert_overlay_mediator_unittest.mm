@@ -27,7 +27,8 @@ using alert_overlays::ButtonConfig;
 
 namespace {
 // Alert setup consts.
-const size_t kButtonIndexOk = 0;
+const size_t kButtonIndexOkRow = 1;
+const size_t kButtonIndexOkCol = 0;
 const size_t kTextFieldIndex = 0;
 
 // Recorded when OK button is tapped.
@@ -59,7 +60,8 @@ std::unique_ptr<OverlayResponse> CreateFakeResponse(
     std::unique_ptr<OverlayResponse> alert_response) {
   AlertResponse* alert_info = alert_response->GetInfo<AlertResponse>();
   return OverlayResponse::CreateWithInfo<FakeResponseInfo>(
-      alert_info->tapped_button_index() == kButtonIndexOk,
+      alert_info->tapped_button_row_index() == kButtonIndexOkRow &&
+          alert_info->tapped_button_column_index() == kButtonIndexOkCol,
       alert_info->text_field_values()[kTextFieldIndex]);
 }
 
@@ -83,9 +85,10 @@ class FakeRequestConfig : public OverlayResponseInfo<FakeRequestConfig> {
            autocapitalizationType:UITextAutocapitalizationTypeSentences
                   secureTextEntry:NO],
     ];
-    const std::vector<ButtonConfig> button_configs{
-        ButtonConfig(@"OK", kOKTappedUserActionName),
-        ButtonConfig(@"Cancel", UIAlertActionStyleCancel)};
+    const std::vector<std::vector<ButtonConfig>> button_configs{
+        {ButtonConfig(@"First Row")},
+        {ButtonConfig(@"OK", kOKTappedUserActionName),
+         ButtonConfig(@"Cancel", UIAlertActionStyleCancel)}};
     AlertRequest::CreateForUserData(user_data, @"title", @"message",
                                     @"accessibility_identifier",
                                     text_field_configs, button_configs,
@@ -139,9 +142,14 @@ TEST_F(AlertOverlayMediatorTest, SetUpConsumer) {
               consumer_.alertAccessibilityIdentifier);
   EXPECT_NSEQ(alert_request->text_field_configs(),
               consumer_.textFieldConfigurations);
+  ASSERT_EQ(2U, alert_request->button_configs().size());
+  ASSERT_EQ(1U, alert_request->button_configs()[0].size());
+  ASSERT_EQ(2U, alert_request->button_configs()[1].size());
+  // TODO(crbug.com/1356768): Update when consumer supports multiple buttons on
+  // a row.
   for (size_t i = 0; i < alert_request->button_configs().size(); ++i) {
     AlertAction* consumer_action = consumer_.actions[i];
-    const ButtonConfig& button_config = alert_request->button_configs()[i];
+    const ButtonConfig& button_config = alert_request->button_configs()[i][0];
     EXPECT_NSEQ(button_config.title, consumer_action.title);
     EXPECT_EQ(button_config.style, consumer_action.style);
   }
@@ -157,7 +165,9 @@ TEST_F(AlertOverlayMediatorTest, ResponseConversion) {
   mediator_.dataSource = data_source;
 
   // Simulate a tap on the OK button.
-  AlertAction* ok_button_action = consumer_.actions[kButtonIndexOk];
+  // TODO(crbug.com/1356768): Update when consumer supports multiple buttons on
+  // a row.
+  AlertAction* ok_button_action = consumer_.actions[kButtonIndexOkRow];
   ASSERT_TRUE(ok_button_action.handler);
   ok_button_action.handler(ok_button_action);
 
@@ -175,7 +185,9 @@ TEST_F(AlertOverlayMediatorTest, ResponseConversion) {
 // Tests UMA user action recording.
 TEST_F(AlertOverlayMediatorTest, UserActionRecording) {
   // Tapping OK button records User Action.
-  AlertAction* ok_button_action = consumer_.actions[kButtonIndexOk];
+  // TODO(crbug.com/1356768): Update when consumer supports multiple buttons on
+  // a row.
+  AlertAction* ok_button_action = consumer_.actions[kButtonIndexOkRow];
   base::UserActionTester user_action_tester;
   EXPECT_EQ(0, user_action_tester.GetActionCount(kOKTappedUserActionName));
   ok_button_action.handler(ok_button_action);

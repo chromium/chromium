@@ -631,12 +631,12 @@ TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   EXPECT_NSEQ(@"Stop Download?", config->title());
   EXPECT_FALSE(config->message());
   ASSERT_EQ(2U, config->button_configs().size());
-  EXPECT_NSEQ(@"Stop", config->button_configs()[0].title);
-  EXPECT_EQ(kDownloadCloseActionName,
-            config->button_configs()[0].user_action_name);
-  EXPECT_NSEQ(@"Continue", config->button_configs()[1].title);
-  EXPECT_EQ(kDownloadDoNotCloseActionName,
-            config->button_configs()[1].user_action_name);
+  alert_overlays::ButtonConfig stop_button = config->button_configs()[0][0];
+  EXPECT_NSEQ(@"Stop", stop_button.title);
+  EXPECT_EQ(kDownloadCloseActionName, stop_button.user_action_name);
+  alert_overlays::ButtonConfig continue_button = config->button_configs()[1][0];
+  EXPECT_NSEQ(@"Continue", continue_button.title);
+  EXPECT_EQ(kDownloadDoNotCloseActionName, continue_button.user_action_name);
 
   // Stop to avoid holding a dangling pointer to destroyed task.
   queue->CancelAllRequests();
@@ -679,12 +679,12 @@ TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
   EXPECT_NSEQ(@"This will stop all progress for your current download.",
               config->message());
   ASSERT_EQ(2U, config->button_configs().size());
-  EXPECT_NSEQ(@"OK", config->button_configs()[0].title);
-  EXPECT_EQ(kDownloadReplaceActionName,
-            config->button_configs()[0].user_action_name);
-  EXPECT_NSEQ(@"Cancel", config->button_configs()[1].title);
-  EXPECT_EQ(kDownloadDoNotReplaceActionName,
-            config->button_configs()[1].user_action_name);
+  alert_overlays::ButtonConfig ok_button = config->button_configs()[0][0];
+  EXPECT_NSEQ(@"OK", ok_button.title);
+  EXPECT_EQ(kDownloadReplaceActionName, ok_button.user_action_name);
+  alert_overlays::ButtonConfig cancel_button = config->button_configs()[1][0];
+  EXPECT_NSEQ(@"Cancel", cancel_button.title);
+  EXPECT_EQ(kDownloadDoNotReplaceActionName, cancel_button.user_action_name);
 
   queue->CancelAllRequests();
   @autoreleasepool {
@@ -722,12 +722,12 @@ TEST_F(DownloadManagerCoordinatorTest,
   EXPECT_NSEQ(@"This will stop all progress for your current download.",
               config->message());
   ASSERT_EQ(2U, config->button_configs().size());
-  EXPECT_NSEQ(@"OK", config->button_configs()[0].title);
-  EXPECT_EQ(kDownloadReplaceActionName,
-            config->button_configs()[0].user_action_name);
-  EXPECT_NSEQ(@"Cancel", config->button_configs()[1].title);
-  EXPECT_EQ(kDownloadDoNotReplaceActionName,
-            config->button_configs()[1].user_action_name);
+  alert_overlays::ButtonConfig ok_button = config->button_configs()[0][0];
+  EXPECT_NSEQ(@"OK", ok_button.title);
+  EXPECT_EQ(kDownloadReplaceActionName, ok_button.user_action_name);
+  alert_overlays::ButtonConfig cancel_button = config->button_configs()[1][0];
+  EXPECT_NSEQ(@"Cancel", cancel_button.title);
+  EXPECT_EQ(kDownloadDoNotReplaceActionName, cancel_button.user_action_name);
 
   queue->CancelAllRequests();
   @autoreleasepool {

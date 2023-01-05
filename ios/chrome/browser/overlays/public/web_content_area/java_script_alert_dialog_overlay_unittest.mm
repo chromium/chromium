@@ -83,11 +83,13 @@ TEST_F(JavaScriptAlertDialogOverlayTest, ButtonConfigSetup) {
   std::unique_ptr<OverlayRequest> alert_request = CreateRequest();
   AlertRequest* alert_config = alert_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(alert_config);
-  const std::vector<ButtonConfig>& alert_button_configs =
+  const std::vector<std::vector<ButtonConfig>>& alert_button_configs =
       alert_config->button_configs();
   ASSERT_EQ(1U, alert_button_configs.size());
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_OK), alert_button_configs[0].title);
-  EXPECT_EQ(UIAlertActionStyleDefault, alert_button_configs[0].style);
+  ASSERT_EQ(1U, alert_button_configs[0].size());
+  ButtonConfig button_config = alert_button_configs[0][0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_OK), button_config.title);
+  EXPECT_EQ(UIAlertActionStyleDefault, button_config.style);
 }
 
 // Tests that the blocking option is successfully added.
@@ -101,11 +103,12 @@ TEST_F(JavaScriptAlertDialogOverlayTest, BlockingOptionSetup) {
   std::unique_ptr<OverlayRequest> alert_request = CreateRequest();
   AlertRequest* alert_config = alert_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(alert_config);
-  const std::vector<ButtonConfig>& alert_button_configs =
+  const std::vector<std::vector<ButtonConfig>>& alert_button_configs =
       alert_config->button_configs();
   ASSERT_FALSE(alert_button_configs.empty());
-  EXPECT_NSEQ(blocking_option_title, alert_button_configs.back().title);
-  EXPECT_EQ(UIAlertActionStyleDestructive, alert_button_configs.back().style);
+  ButtonConfig button_config = alert_button_configs.back()[0];
+  EXPECT_NSEQ(blocking_option_title, button_config.title);
+  EXPECT_EQ(UIAlertActionStyleDestructive, button_config.style);
 }
 
 // Tests that an alert is correctly converted to a JavaScriptAlertDialogResponse
@@ -118,7 +121,8 @@ TEST_F(JavaScriptAlertDialogOverlayTest, ResponseConversionOk) {
   // Simulate a response where the OK button is tapped.
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_index=*/0, @[ @"" ]);
+          /*tapped_button_row_index=*/0, /*tapped_button_column_index=*/0,
+          @[ @"" ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));
@@ -147,7 +151,7 @@ TEST_F(JavaScriptAlertDialogOverlayTest, ResponseConversionBlockDialogs) {
   size_t blocking_option_button_index = config->button_configs().size() - 1;
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          blocking_option_button_index, @[ @"" ]);
+          blocking_option_button_index, 0, @[ @"" ]);
 
   std::unique_ptr<OverlayResponse> response =
       config->response_converter().Run(std::move(alert_response));

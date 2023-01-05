@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/permissions_dialog_overlay.h"
 
+#import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/permissions/permissions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,8 +20,9 @@ using alert_overlays::AlertResponse;
 using alert_overlays::ButtonConfig;
 
 namespace {
-// The index of the "Don't Allow" button in the alert button array.
-const size_t kButtonIndexDontAllow = 0;
+
+// The column index of the button that the user clicks to grant permissions.
+const size_t kPermissionsGrantedButtonIndex = 1;
 
 // Creates an permissions dialog response for a dialog, containing a boolean
 // `capture_allow()` indicating ther user's answer on the media capture request;
@@ -25,10 +30,14 @@ const size_t kButtonIndexDontAllow = 0;
 std::unique_ptr<OverlayResponse> CreatePermissionsDialogResponse(
     std::unique_ptr<OverlayResponse> response) API_AVAILABLE(ios(15.0)) {
   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
-  size_t button_index = alert_response->tapped_button_index();
+  if (!alert_response) {
+    return nullptr;
+  }
+  size_t button_index = alert_response->tapped_button_column_index();
   return OverlayResponse::CreateWithInfo<PermissionsDialogResponse>(
-      button_index != kButtonIndexDontAllow);
+      /*capture_allow=*/button_index == kPermissionsGrantedButtonIndex);
 }
+
 }  // namespace
 
 #pragma mark - PermissionsDialogRequest
@@ -36,23 +45,29 @@ std::unique_ptr<OverlayResponse> CreatePermissionsDialogResponse(
 OVERLAY_USER_DATA_SETUP_IMPL(PermissionsDialogRequest);
 
 PermissionsDialogRequest::PermissionsDialogRequest(
-    NSString* website,
+    const GURL& url,
     NSArray<NSNumber*>* requested_permissions) {
   // Computes the dialog message based on the website and permissions requested.
-  // TODO(crbug.com/1356768): Add strings to ios_strings.grd and retrieve from
-  // there.
-  NSString* typeString;
-  BOOL cameraCapturing =
+  int string_id_for_permission = 0;
+  BOOL camera_permission_requested =
       [requested_permissions containsObject:@(web::PermissionCamera)];
-  BOOL micCapturing =
+  BOOL mic_permission_requested =
       [requested_permissions containsObject:@(web::PermissionMicrophone)];
-  if (cameraCapturing) {
-    typeString = micCapturing ? @"Microphone and Camera" : @"Camera";
+  if (camera_permission_requested && mic_permission_requested) {
+    string_id_for_permission =
+        IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA_AND_MICROPHONE;
+  } else if (camera_permission_requested) {
+    string_id_for_permission =
+        IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA;
+  } else if (mic_permission_requested) {
+    string_id_for_permission =
+        IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE;
   } else {
-    typeString = @"Microphone";
-    message_ = [NSString stringWithFormat:@"\"%@\" Would Like To Access %@",
-                                          website, typeString];
+    NOTREACHED();
   }
+  message_ = l10n_util::GetNSStringF(
+      IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE, base::UTF8ToUTF16(url.host()),
+      l10n_util::GetStringUTF16(string_id_for_permission));
 }
 
 PermissionsDialogRequest::~PermissionsDialogRequest() = default;
@@ -60,11 +75,12 @@ PermissionsDialogRequest::~PermissionsDialogRequest() = default;
 void PermissionsDialogRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   // Conrigure buttons.
-  NSString* dont_allow_label = @"Don't Allow";
-  NSString* allow_label = @"Allow";
-  const std::vector<ButtonConfig> button_configs{
-      ButtonConfig(dont_allow_label, UIAlertActionStyleCancel),
-      ButtonConfig(allow_label, UIAlertActionStyleDefault)};
+  std::vector<std::vector<ButtonConfig>> button_configs{
+      {ButtonConfig(l10n_util::GetNSString(
+                        IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY),
+                    UIAlertActionStyleCancel),
+       ButtonConfig(l10n_util::GetNSString(
+           IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT))}};
   // Create the alert config with the buttons and other information.
   AlertRequest::CreateForUserData(
       user_data, message(), nil, kPermissionsDialogAccessibilityIdentifier, nil,

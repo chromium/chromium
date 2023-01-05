@@ -64,16 +64,21 @@ using alert_overlays::AlertResponse;
   AlertRequest* alertRequest = self.alertRequest;
   if (!alertRequest || !alertRequest->button_configs().size())
     return nil;
-  const std::vector<alert_overlays::ButtonConfig>& buttonConfigs =
+  const std::vector<std::vector<alert_overlays::ButtonConfig>>& buttonConfigs =
       alertRequest->button_configs();
+  // TODO(crbug.com/1356768): Currently the consumer could only display all the
+  // buttons verfically of buttons, so we only use the actions from the first
+  // column of each row of the button configs. Update this part when the
+  // consumer supports supporting multiple buttons on each row.
   size_t buttonCount = buttonConfigs.size();
   NSMutableArray<AlertAction*>* actions =
       [[NSMutableArray<AlertAction*> alloc] initWithCapacity:buttonCount];
   for (size_t i = 0; i < buttonCount; ++i) {
     [actions addObject:[AlertAction
-                           actionWithTitle:buttonConfigs[i].title
-                                     style:buttonConfigs[i].style
-                                   handler:[self actionForButtonAtIndex:i]]];
+                           actionWithTitle:buttonConfigs[i][0].title
+                                     style:buttonConfigs[i][0].style
+                                   handler:[self actionForButtonAtIndexRow:i
+                                                                    column:0]]];
   }
   return actions;
 }
@@ -102,15 +107,16 @@ using alert_overlays::AlertResponse;
 
 #pragma mark - Private
 
-// Sets a completion OverlayResponse after the button at `tappedButtonIndex`
-// was tapped.
-- (void)setCompletionResponse:(size_t)tappedButtonIndex {
+// Sets a completion OverlayResponse after the button at `tappedButtonIndexRow`
+// and `tappedButtonIndexColumn` was tapped.
+- (void)setCompletionResponseWithRow:(size_t)tappedButtonIndexRow
+                              column:(size_t)tappedButtonIndexColumn {
   AlertRequest* alertRequest = self.alertRequest;
   if (!alertRequest)
     return;
   std::unique_ptr<OverlayResponse> alertResponse =
-      OverlayResponse::CreateWithInfo<AlertResponse>(tappedButtonIndex,
-                                                     self.textFieldValues);
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          tappedButtonIndexRow, tappedButtonIndexColumn, self.textFieldValues);
   self.request->GetCallbackManager()->SetCompletionResponse(
       alertRequest->response_converter().Run(std::move(alertResponse)));
   // The response converter should convert the AlertResponse into a feature-
@@ -120,17 +126,18 @@ using alert_overlays::AlertResponse;
   DCHECK(!convertedResponse || !convertedResponse->GetInfo<AlertResponse>());
 }
 
-// Returns the action block for the button at `index`.
-- (void (^)(AlertAction* action))actionForButtonAtIndex:(size_t)index {
+// Returns the action block for the button at index `row` and `column`.
+- (void (^)(AlertAction* action))actionForButtonAtIndexRow:(size_t)row
+                                                    column:(size_t)column {
   __weak __typeof__(self) weakSelf = self;
   base::StringPiece actionName =
-      self.alertRequest->button_configs()[index].user_action_name;
+      self.alertRequest->button_configs()[row][column].user_action_name;
   return ^(AlertAction*) {
     if (!actionName.empty()) {
       base::RecordComputedAction(actionName.data());
     }
     __typeof__(self) strongSelf = weakSelf;
-    [strongSelf setCompletionResponse:index];
+    [strongSelf setCompletionResponseWithRow:row column:column];
     [strongSelf.delegate stopOverlayForMediator:strongSelf];
   };
 }

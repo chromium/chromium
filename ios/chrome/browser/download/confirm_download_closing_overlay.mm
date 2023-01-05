@@ -21,18 +21,18 @@ OVERLAY_USER_DATA_SETUP_IMPL(ConfirmDownloadClosingRequest);
 
 void ConfirmDownloadClosingRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
-  const std::vector<alert_overlays::ButtonConfig> buttons{
-      alert_overlays::ButtonConfig(
+  const std::vector<std::vector<alert_overlays::ButtonConfig>> buttons{
+      {alert_overlays::ButtonConfig(
           l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_STOP),
-          kDownloadCloseActionName),
-      alert_overlays::ButtonConfig(
+          kDownloadCloseActionName)},
+      {alert_overlays::ButtonConfig(
           l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CONTINUE),
-          kDownloadDoNotCloseActionName, UIAlertActionStyleCancel)};
+          kDownloadDoNotCloseActionName, UIAlertActionStyleCancel)}};
   alert_overlays::AlertRequest::CreateForUserData(
       user_data,
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANCEL_CONFIRMATION),
       /*message=*/nil,
       /*accessibility_identifier=*/nil,
       /*text_fields=*/nil, buttons,
-      GetConfirmationResponseConverter(/*confirm_button_index=*/0));
+      GetConfirmationResponseConverter(/*confirm_button_row_index=*/0));
 }

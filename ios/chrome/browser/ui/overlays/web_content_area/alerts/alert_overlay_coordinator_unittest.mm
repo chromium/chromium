@@ -34,7 +34,8 @@ NSString* const kButtonTitle = @"button_title";
 
 // Creates an AlertRequest for use in tests.
 std::unique_ptr<OverlayRequest> CreateAlertRequest() {
-  const std::vector<ButtonConfig> button_configs{ButtonConfig(kButtonTitle)};
+  const std::vector<std::vector<ButtonConfig>> button_configs{
+      {ButtonConfig(kButtonTitle)}};
   return OverlayRequest::CreateWithConfig<AlertRequest>(
       kTitle, kMessage, kAccessibilityIdentifier, nil, button_configs,
       base::BindRepeating(^std::unique_ptr<OverlayResponse>(

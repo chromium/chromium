@@ -43,7 +43,7 @@ std::unique_ptr<OverlayResponse> CreateDialogResponse(
   JavaScriptPromptDialogResponse::Action action =
       JavaScriptPromptDialogResponse::Action::kCancel;
   NSString* user_input = nil;
-  size_t button_index = alert_response->tapped_button_index();
+  size_t button_index = alert_response->tapped_button_row_index();
   if (button_index == kButtonIndexOk) {
     action = JavaScriptPromptDialogResponse::Action::kConfirm;
     user_input = [alert_response->text_field_values() firstObject];
@@ -91,12 +91,13 @@ void JavaScriptPromptDialogRequest::CreateAuxiliaryData(
            autocapitalizationType:UITextAutocapitalizationTypeSentences
                   secureTextEntry:NO] ];
   // Add the buttons.
-  std::vector<ButtonConfig> button_configs{
-      ButtonConfig(l10n_util::GetNSString(IDS_OK)),
-      ButtonConfig(l10n_util::GetNSString(IDS_CANCEL),
-                   UIAlertActionStyleCancel)};
+  std::vector<std::vector<ButtonConfig>> button_configs{
+      {ButtonConfig(l10n_util::GetNSString(IDS_OK))},
+      {ButtonConfig(l10n_util::GetNSString(IDS_CANCEL),
+                    UIAlertActionStyleCancel)}};
   if (ShouldAddBlockDialogsButton(web_state())) {
-    button_configs.push_back(BlockDialogsButtonConfig());
+    button_configs.push_back(
+        std::vector<ButtonConfig>{BlockDialogsButtonConfig()});
   }
 
   // Create the alert config.
