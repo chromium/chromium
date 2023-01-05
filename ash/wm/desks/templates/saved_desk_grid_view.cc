@@ -16,7 +16,7 @@
 #include "base/i18n/string_compare.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

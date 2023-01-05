@@ -18,7 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/view.h"

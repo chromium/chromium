@@ -11,13 +11,12 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
-#include "ash/wm/window_util.h"
 #include "base/guid.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
-#include "components/app_restore/window_properties.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 

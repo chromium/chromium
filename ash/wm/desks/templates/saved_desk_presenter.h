@@ -13,7 +13,10 @@
 #include "base/scoped_observation.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
-#include "ui/aura/window.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
