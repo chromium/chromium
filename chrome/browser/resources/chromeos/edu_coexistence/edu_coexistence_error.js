@@ -23,6 +23,7 @@ Polymer({
   /** @override */
   ready() {
     this.$$('edu-coexistence-button').newOobeStyleEnabled = true;
+    this.$$('edu-coexistence-template').showButtonFooter(true);
   },
 
   /**
