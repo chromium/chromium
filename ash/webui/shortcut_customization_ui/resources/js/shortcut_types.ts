@@ -28,6 +28,8 @@ export enum Modifier {
 }
 
 export type TextAcceleratorPart = AcceleratorInfoTypes.TextAcceleratorPart;
+export type TextAcceleratorPartType =
+    AcceleratorInfoTypes.TextAcceleratorPartType;
 export const TextAcceleratorPartType =
     AcceleratorInfoTypes.TextAcceleratorPartType;
 

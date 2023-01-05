@@ -105,7 +105,9 @@ export class AcceleratorSubsectionElement extends
     // subsection's accelerators are kept distinct from each other.
     const tempAccelRowData: AcceleratorRowData[] = [];
     layoutInfos!.forEach((layoutInfo) => {
-      const acceleratorInfos = this.lookupManager.getAcceleratorInfos(
+      // TODO(michaelcheco): Conditionally lookup standard/text accelerators
+      // when text accelerator ui is implemented.
+      const acceleratorInfos = this.lookupManager.getStandardAcceleratorInfos(
           layoutInfo.source, layoutInfo.action);
       acceleratorInfos.filter((accel) => {
         // Hide accelerators that are default and disabled.
