@@ -72,6 +72,9 @@
     },
   ],
   facets: {
-    "fuchsia.test.deprecated-allowed-packages": [ "web_engine_with_webui" ]
+    "fuchsia.test.deprecated-allowed-packages": [
+      "web_engine",
+      "web_engine_with_webui",
+    ],
   },
 }
