@@ -65,11 +65,6 @@ export class OutputInterface {
   formatMessage_(data, token, tree, options) {}
 
   /**
-   * @param {!outputTypes.OutputFormattingData} data
-   */
-  formatPrecedingBullet_(data) {}
-
-  /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
    * @param {!outputTypes.OutputEventType} type

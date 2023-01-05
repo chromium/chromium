@@ -113,7 +113,7 @@ export class OutputFormatter {
     } else if (token === 'listNestedLevel') {
       this.formatListNestedLevel_(this.params_);
     } else if (token === 'precedingBullet') {
-      this.output_.formatPrecedingBullet_(this.params_);
+      this.formatPrecedingBullet_(this.params_);
     } else if (tree.firstChild) {
       this.output_.formatCustomFunction_(this.params_, token, tree, options);
     }
@@ -644,6 +644,27 @@ export class OutputFormatter {
     const text =
         PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
     this.output_.append_(buff, text);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @private
+   */
+  formatPrecedingBullet_(data) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+
+    let current = node;
+    if (current.role === RoleType.INLINE_TEXT_BOX) {
+      current = current.parent;
+    }
+    if (!current || current.role !== RoleType.STATIC_TEXT) {
+      return;
+    }
+    current = current.previousSibling;
+    if (current && current.role === RoleType.LIST_MARKER) {
+      this.output_.append_(buff, current.name || '');
+    }
   }
 
   /**

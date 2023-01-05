@@ -670,24 +670,6 @@ export class Output {
   }
 
   /** @override */
-  formatPrecedingBullet_(data) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-
-    let current = node;
-    if (current.role === RoleType.INLINE_TEXT_BOX) {
-      current = current.parent;
-    }
-    if (!current || current.role !== RoleType.STATIC_TEXT) {
-      return;
-    }
-    current = current.previousSibling;
-    if (current && current.role === RoleType.LIST_MARKER) {
-      this.append_(buff, current.name || '');
-    }
-  }
-
-  /** @override */
   formatCustomFunction_(data, token, tree, options) {
     const buff = data.outputBuffer;
     const node = data.node;
