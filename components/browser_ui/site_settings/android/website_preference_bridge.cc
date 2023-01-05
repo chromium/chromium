@@ -502,9 +502,9 @@ static void JNI_WebsitePreferenceBridge_RevokeObjectPermission(
     const JavaParamRef<jstring>& jobject) {
   GURL origin(ConvertJavaStringToUTF8(env, jorigin));
   DCHECK(origin.is_valid());
-  std::unique_ptr<base::DictionaryValue> object = base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(ConvertJavaStringToUTF8(env, jobject)));
-  DCHECK(object);
+  std::unique_ptr<base::Value> object =
+      base::JSONReader::ReadDeprecated(ConvertJavaStringToUTF8(env, jobject));
+  DCHECK(object && object->is_dict());
   permissions::ObjectPermissionContextBase* context = GetChooserContext(
       jbrowser_context_handle,
       static_cast<ContentSettingsType>(content_settings_type));
