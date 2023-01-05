@@ -2593,7 +2593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -3610,7 +3610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2023-01-10">
+    units="ms" expires_after="2024-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -3620,7 +3620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.TabletMode" units="ms"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -5041,7 +5041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Exit" units="%"
-    expires_after="2023-01-10">
+    expires_after="2024-01-10">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
