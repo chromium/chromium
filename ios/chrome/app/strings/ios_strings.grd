@@ -2903,6 +2903,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SHOW_PASSWORD_VIEW_SITE" desc="Label indicating that the text displayed below is the site on which the associated password was saved. The password is displayed in the same view, but under a different label. [Length: 20em] [iOS only]">
         Site
       </message>
+      <message name="IDS_IOS_SHOW_PASSWORD_VIEW_SITES" desc="Label indicating that the texts displayed next to it are the sites on which the associated password was saved. The password is displayed in the same view, but under a different label. [Length: 20em] [iOS only]">
+        Sites
+      </message>
       <message name="IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME" desc="Label indicating that the text displayed below is the username to which a saved password corresponds. The password is displayed in the same view, but under a different label. [Length: 20em] [iOS only]">
         Username
       </message>

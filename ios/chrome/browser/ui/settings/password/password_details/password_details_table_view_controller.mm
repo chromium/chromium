@@ -232,8 +232,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     (PasswordDetails*)passwordDetails {
   TableViewStackedDetailsItem* item =
       [[TableViewStackedDetailsItem alloc] initWithType:ItemTypeWebsite];
-  // TODO(crbug.com/1358982): Update text to "Sites".
-  item.titleText = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
+  item.titleText = l10n_util::GetNSString(
+      IsPasswordGroupingEnabled() ? IDS_IOS_SHOW_PASSWORD_VIEW_SITES
+                                  : IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
   item.detailTexts = passwordDetails.websites;
 
   return item;
