@@ -956,10 +956,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::ConfigureSwap();
     ash::InitializeKstaled();
-
-    // If we're in an experimental group that locks the browser text we will do
-    // that now.
-    ash::LockMainProgramText();
 #endif
   }
 
