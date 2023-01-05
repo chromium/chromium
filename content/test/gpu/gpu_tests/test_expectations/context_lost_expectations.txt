@@ -126,6 +126,11 @@ crbug.com/1297151 [ mac intel debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
+# Frequent failures on Mac AMD ASAN there are frequent timeout failures even
+# with RetryOnFailure and no obvious cause.
+crbug.com/1399895 [ mac amd release asan ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1399895 [ mac amd release asan ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
@@ -149,15 +154,6 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
-
-# Flaking on Mac / Linux
-crbug.com/1399895 [ mac amd release asan ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
-
-# Flakily not getting WebGL blocked on context loss
-
-# Failing on android N5
-
-# Flaking on Linux FYI Release
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
