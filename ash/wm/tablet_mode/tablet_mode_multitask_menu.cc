@@ -214,33 +214,29 @@ void TabletModeMultitaskMenu::AnimateFadeOut() {
       .SetOpacity(view_layer, 0.0f, gfx::Tween::LINEAR);
 }
 
-void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool show) {
-  // Drag up can start from anywhere in the menu; simply save `initial_y` to
-  // update drag relative to it.
-  initial_y_ = initial_y;
-  if (show) {
+void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
+  if (down) {
     // If we are dragging down, the menu hasn't been created yet, so match the
-    // bottom of the menu with `initial_y`.
-    const float transform_y = initial_y - menu_view_->bounds().bottom();
+    // bottom of the menu with `initial_y` and save it as `initial_y_`.
+    const float translation_y = initial_y - menu_view_->bounds().bottom();
+    initial_y_ = menu_view_->bounds().bottom();
     menu_view_->layer()->SetTransform(
-        gfx::Transform::MakeTranslation(0, transform_y));
+        gfx::Transform::MakeTranslation(0, translation_y));
+  } else {
+    // Drag up can start from anywhere in the menu; simply save `initial_y` to
+    // update drag relative to it.
+    initial_y_ = initial_y;
   }
 }
 
-void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool show) {
-  float transform_y;
-  if (show) {
-    // Continue to match the menu bottom with `current_y`.
-    transform_y = current_y - menu_view_->bounds().bottom();
-    // Stop translating the menu if the drag moves out of bounds.
-    if (transform_y >= 0.f) {
-      return;
-    }
-  } else {
-    transform_y = current_y - initial_y_;
+void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
+  const float translation_y = current_y - initial_y_;
+  // Stop translating the menu if the drag moves out of bounds.
+  if (down && translation_y >= 0.f) {
+    return;
   }
   menu_view_->layer()->SetTransform(
-      gfx::Transform::MakeTranslation(0, transform_y));
+      gfx::Transform::MakeTranslation(0, translation_y));
 }
 
 void TabletModeMultitaskMenu::EndDrag() {

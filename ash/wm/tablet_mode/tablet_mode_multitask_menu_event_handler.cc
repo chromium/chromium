@@ -137,10 +137,10 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       }
       if (!multitask_menu_ && details.scroll_y_hint() > 0) {
         MaybeCreateMultitaskMenu(active_window);
-        multitask_menu_->BeginDrag(window_location.y(), /*show=*/true);
+        multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
       } else if (multitask_menu_ && details.scroll_y_hint() < 0) {
-        multitask_menu_->BeginDrag(window_location.y(), /*show=*/false);
+        multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
         event->SetHandled();
       }
       break;
@@ -150,13 +150,13 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       // menu open. If we are scrolling up, we only handle events inside the
       // menu to avoid consuming them before `OnWidgetActivationChanged()`.
       if (multitask_menu_ && details.scroll_y() > 0) {
-        multitask_menu_->UpdateDrag(window_location.y(), /*show=*/true);
+        multitask_menu_->UpdateDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
       } else if (multitask_menu_ && details.scroll_y() < 0 &&
                  gfx::RectF(
                      multitask_menu_->widget()->GetWindowBoundsInScreen())
                      .Contains(screen_location)) {
-        multitask_menu_->UpdateDrag(window_location.y(), /*show=*/false);
+        multitask_menu_->UpdateDrag(window_location.y(), /*down=*/false);
         event->SetHandled();
       }
       break;

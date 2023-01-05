@@ -50,10 +50,10 @@ class ASH_EXPORT TabletModeMultitaskMenu
   void AnimateFadeOut();
 
   // Actions called by the event handler, where `initial_y` and `current_y` are
-  // in `window_`'s coordinates. If `show` is true, we are dragging down to show
+  // in `window_`'s coordinates. If `down` is true, we are dragging down to show
   // the menu, else we are dragging up to hide the menu.
-  void BeginDrag(float initial_y, bool show);
-  void UpdateDrag(float current_y, bool show);
+  void BeginDrag(float initial_y, bool down);
+  void UpdateDrag(float current_y, bool down);
   void EndDrag();
 
   // Calls the event handler to destroy `this`.
