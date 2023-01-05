@@ -2,17 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [ "chrome://webui-test/*|" +
-                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                target_gen_dir) ]
-  in_files = [
+build_webui_tests("build") {
+  resource_path_prefix = "js"
+
+  files = [
     "color_utils_test.ts",
     "cr_test.ts",
     "custom_element_test.ts",
@@ -24,22 +19,9 @@ ts_library("build_ts") {
     "static_types_test.ts",
     "util_test.ts",
   ]
-
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-
-  deps = [
-    "..:build_ts",
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_js"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "js"
 }

@@ -3,40 +3,19 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
 assert(!is_android)
 assert(is_chrome_branded)
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://cast-feedback/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/media_router/cast_feedback/tsc/*",
-            target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = [ "cast_feedback_ui_test.ts" ]
-
-  definitions = [ "//tools/typescript/definitions/feedback_private.d.ts" ]
-
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/media_router/cast_feedback:build_ts",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "media_router"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+build_webui_tests("build") {
   resource_path_prefix = "media_router"
+
+  files = [ "cast_feedback_ui_test.ts" ]
+
+  ts_path_mappings = [ "chrome://cast-feedback/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/media_router/cast_feedback/tsc/*",
+                           target_gen_dir) ]
+  ts_definitions = [ "//tools/typescript/definitions/feedback_private.d.ts" ]
+  ts_deps = [ "//chrome/browser/resources/media_router/cast_feedback:build_ts" ]
 }

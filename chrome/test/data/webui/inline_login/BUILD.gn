@@ -2,51 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
 assert(is_chromeos_ash || is_win || is_mac)
 
-preprocessed_folder = "$target_gen_dir/preprocessed"
+build_webui_tests("build") {
+  resource_path_prefix = "inline_login"
 
-test_files = [
-  "inline_login_test.ts",
-  "inline_login_test_util.ts",
-]
-
-if (is_chromeos_ash) {
-  test_files += [
-    "arc_account_picker_page_test.ts",
-    "inline_login_signin_blocked_by_policy_page_test.ts",
-    "inline_login_welcome_page_test.ts",
+  files = [
+    "inline_login_test.ts",
+    "inline_login_test_util.ts",
   ]
-}
 
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = preprocessed_folder
-  out_manifest = "$target_gen_dir/preprocessed_manifest.json"
-  in_files = test_files
-}
+  if (is_chromeos_ash) {
+    files += [
+      "arc_account_picker_page_test.ts",
+      "inline_login_signin_blocked_by_policy_page_test.ts",
+      "inline_login_welcome_page_test.ts",
+    ]
+  }
 
-ts_library("build_ts") {
-  root_dir = preprocessed_folder
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
+  ts_path_mappings = [
     "chrome://chrome-signin/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir),
     "chrome://chrome-signin/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/inline_login/tsc/*",
                     target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
   ]
+
   if (is_chromeos_ash) {
-    path_mappings += [
+    ts_path_mappings += [
       "chrome://chrome-signin/arc_account_picker/*|" +
           rebase_path(
               "//chrome/browser/resources/chromeos/arc_account_picker/*",
@@ -57,19 +43,5 @@ ts_library("build_ts") {
     ]
   }
 
-  in_files = test_files
-  deps = [
-    "..:build_ts",
-    "//chrome/browser/resources/inline_login:build_ts",
-  ]
-  extra_deps = [ ":preprocess" ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_inline_login"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "inline_login"
+  ts_deps = [ "//chrome/browser/resources/inline_login:build_ts" ]
 }
