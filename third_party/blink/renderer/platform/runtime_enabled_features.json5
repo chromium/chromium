@@ -1044,7 +1044,6 @@
     {
       name: "DisplayCutoutAPI",
       public: true,
-      settable_from_internals: true,
     },
     {
       // When a Web application calls getDisplayMedia() and asks for video,
@@ -1075,7 +1074,6 @@
         "ChromeOS_Lacros": "",
         "default": "experimental",
       },
-      settable_from_internals: true,
       base_feature: "DocumentPictureInPictureAPI",
     },
     {
@@ -2037,7 +2035,6 @@
     },
     {
       name: "OverscrollCustomization",
-      settable_from_internals: true,
       status: "experimental",
     },
     // The following are developer opt-outs and opt-ins for page freezing. If
@@ -2446,7 +2443,6 @@
     },
     {
       name: "ScrollEndEvents",
-      settable_from_internals: true,
       status: "experimental",
     },
     {
@@ -2580,7 +2576,6 @@
       // renderer cc touch event filter, ensuring that events will be passed
       // onto the renderer main thread.
       name: "SkipTouchEventFilter",
-      settable_from_internals: true,
       base_feature: "SkipTouchEventFilter",
       status: "stable",
     },
