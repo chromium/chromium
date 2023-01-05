@@ -23,7 +23,9 @@ class ASH_PUBLIC_EXPORT SensorDisabledNotificationDelegate {
 
   enum class Sensor {
     kCamera,
+    kMinValue = kCamera,
     kMicrophone,
+    kMaxValue = kMicrophone,
   };
 
   // Returns a list of names of the applications that have attempted to use the
