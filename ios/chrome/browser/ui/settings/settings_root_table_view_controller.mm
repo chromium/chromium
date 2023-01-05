@@ -188,6 +188,17 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)willMoveToParentViewController:(UIViewController*)parent {
   [super willMoveToParentViewController:parent];
+
+  // When the view controller is in editing mode, setEditing might get called
+  // after this, which could show the toolbar based on the requirements of the
+  // view controller that is being popped out of the navigation controller. This
+  // can leave the new top view controller with a toolbar when it doesn't
+  // require one. Disabling editing mode to avoid this. See crbug.com/1404111 as
+  // an example.
+  if (parent == nullptr && self.isEditing) {
+    [self setEditing:NO animated:NO];
+  }
+
   [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
