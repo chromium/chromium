@@ -1383,7 +1383,7 @@ void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
   if (!ftn)
     return;
 
-  AddIssueToIssueStorage(frame, issue->clone());
+  AddIssueToIssueStorage(frame, issue->Clone());
   DispatchToAgents(ftn, &protocol::AuditsHandler::OnIssueAdded, issue);
 }
 

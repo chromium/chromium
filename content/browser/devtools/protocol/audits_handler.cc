@@ -72,7 +72,7 @@ DispatchResponse AuditsHandler::Enable() {
 void AuditsHandler::OnIssueAdded(
     const protocol::Audits::InspectorIssue* issue) {
   if (enabled_) {
-    frontend_->IssueAdded(issue->clone());
+    frontend_->IssueAdded(issue->Clone());
   }
 }
 

@@ -36,7 +36,7 @@ void LogHandler::EntryAdded(Log::LogEntry* entry) {
   if (!enabled_) {
     return;
   }
-  frontend_->EntryAdded(entry->clone());
+  frontend_->EntryAdded(entry->Clone());
 }
 
 }  // namespace protocol
