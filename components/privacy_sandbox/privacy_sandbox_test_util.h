@@ -77,6 +77,7 @@ enum class InputKey {
   kAdMeasurementReportingOrigin = 4,
   kAdMeasurementSourceOrigin = 5,
   kAdMeasurementDestinationOrigin = 6,
+  kAccessingOrigin = 7,
 };
 
 // Defines the expected output of the functions under test, when the profile is
@@ -87,6 +88,9 @@ enum class OutputKey {
   kIsFledgeAllowed = 3,
   kIsAttributionReportingAllowed = 4,
   kMaySendAttributionReport = 5,
+  kIsSharedStorageAllowed = 6,
+  kIsSharedStorageSelectURLAllowed = 7,
+  kIsPrivateAggregationAllowed = 8,
 };
 
 // To allow multiple input keys to map to the same value, without having to

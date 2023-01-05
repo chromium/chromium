@@ -197,6 +197,44 @@ void CheckOutput(
                     source_origin, destination_origin, reporting_origin));
       return;
     }
+
+    case (OutputKey::kIsSharedStorageAllowed): {
+      SCOPED_TRACE("Check Output: kIsSharedStorageAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsSharedStorageAllowed(
+                                  top_frame_origin, accessing_origin));
+      return;
+    }
+
+    case (OutputKey::kIsSharedStorageSelectURLAllowed): {
+      SCOPED_TRACE("Check Output: IsSharedStorageSelectURLAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+                    top_frame_origin, accessing_origin));
+      return;
+    }
+
+    case (OutputKey::kIsPrivateAggregationAllowed): {
+      SCOPED_TRACE("Check Output: IsPrivateAggregationAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsPrivateAggregationAllowed(
+                    top_frame_origin, reporting_origin));
+      return;
+    }
   }
 }
 

@@ -359,6 +359,14 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
 bool PrivacySandboxSettings::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed.
+    return IsAllowed(GetPrivacySandboxAllowedStatus()) &&
+           IsAllowed(GetSiteAccessAllowedStatus(top_frame_origin,
+                                                accessing_origin.GetURL()));
+  }
+
   // Ensures that Shared Storage is only allowed if both Privacy Sandbox is
   // enabled and full cookie access is enabled for this context.
   return IsPrivacySandboxEnabledForContext(top_frame_origin,
@@ -368,14 +376,24 @@ bool PrivacySandboxSettings::IsSharedStorageAllowed(
 bool PrivacySandboxSettings::IsSharedStorageSelectURLAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
-  // TODO(crbug.com/1378703): Respect appropriate M1 pref and site data settings
-  // when release 4 is enabled.
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed.
+    return IsFledgeAllowed(top_frame_origin, accessing_origin);
+  }
+
   return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
 }
 
 bool PrivacySandboxSettings::IsPrivateAggregationAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed.
+    return IsAttributionReportingAllowed(top_frame_origin, reporting_origin);
+  }
+
   return IsPrivacySandboxEnabledForContext(top_frame_origin,
                                            reporting_origin.GetURL());
 }
