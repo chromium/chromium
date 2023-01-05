@@ -16,6 +16,7 @@ class TabParams {
         ITabParams parcel = new ITabParams();
         parcel.tabProxy = tab.getTabProxy();
         parcel.tabGuid = tab.getGuid();
+        parcel.uri = tab.getUri();
         parcel.navigationControllerProxy = tab.getTabNavigationControllerProxy();
 
         return parcel;

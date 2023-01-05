@@ -316,6 +316,10 @@ public class BrowserImpl extends IBrowser.Stub {
         } else {
             boolean setActiveResult = setActiveTab(createTab());
             assert setActiveResult;
+            try {
+                onTabInitializationCompleted();
+            } catch (RemoteException e) {
+            }
         }
     }
 
@@ -355,7 +359,11 @@ public class BrowserImpl extends IBrowser.Stub {
 
     @CalledByNative
     private void onRestoreCompleted() throws RemoteException {
-        mClient.onRestoreCompleted();
+        mClient.onTabInitializationCompleted();
+    }
+
+    private void onTabInitializationCompleted() throws RemoteException {
+        mClient.onTabInitializationCompleted();
     }
 
     @Override
@@ -378,10 +386,6 @@ public class BrowserImpl extends IBrowser.Stub {
         }
     }
 
-    long getNativeBrowser() {
-        return mNativeBrowser;
-    }
-
     void updateAllTabsViewAttachedState() {
         for (Object tab : getTabs()) {
             ((TabImpl) tab).updateViewAttachedStateFromBrowser();
@@ -392,6 +396,10 @@ public class BrowserImpl extends IBrowser.Stub {
         for (Object tab : getTabs()) {
             ((TabImpl) tab).updateFromBrowser();
         }
+    }
+
+    long getNativeBrowser() {
+        return mNativeBrowser;
     }
 
     public BrowserFragmentImpl getBrowserFragment() {

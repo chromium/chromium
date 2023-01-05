@@ -4,6 +4,7 @@
 
 package org.chromium.webengine;
 
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -18,11 +19,13 @@ import org.chromium.webengine.interfaces.ITabObserverDelegate;
 class TabObserverDelegate extends ITabObserverDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private Tab mTab;
     private ObserverList<TabObserver> mTabObservers = new ObserverList<TabObserver>();
 
-    public TabObserverDelegate() {
+    public TabObserverDelegate(Tab tab) {
         // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
+        mTab = tab;
     }
 
     /**
@@ -48,6 +51,7 @@ class TabObserverDelegate extends ITabObserverDelegate.Stub {
     @Override
     public void notifyVisibleUriChanged(@NonNull String uri) {
         mHandler.post(() -> {
+            mTab.setDisplayUri(Uri.parse(uri));
             for (TabObserver observer : mTabObservers) {
                 observer.onVisibleUriChanged(uri);
             }

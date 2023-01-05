@@ -134,6 +134,14 @@ class Tab {
         return mId;
     }
 
+    String getUri() {
+        try {
+            return mImpl.getUri();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     void setBrowser(Browser browser) {
         mBrowser = browser;
     }

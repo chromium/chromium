@@ -41,9 +41,9 @@ public class TabNavigationController {
         }
     };
 
-    TabNavigationController(ITabNavigationControllerProxy tabNavigationControllerProxy, Tab tab) {
+    TabNavigationController(ITabNavigationControllerProxy tabNavigationControllerProxy) {
         mTabNavigationControllerProxy = tabNavigationControllerProxy;
-        mNavigationObserverDelegate = new NavigationObserverDelegate(tab);
+        mNavigationObserverDelegate = new NavigationObserverDelegate();
         try {
             mTabNavigationControllerProxy.setNavigationObserverDelegate(
                     mNavigationObserverDelegate);

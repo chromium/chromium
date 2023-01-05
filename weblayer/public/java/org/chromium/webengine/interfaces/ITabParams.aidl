@@ -10,5 +10,6 @@ import org.chromium.webengine.interfaces.ITabNavigationControllerProxy;
 parcelable ITabParams {
     ITabProxy tabProxy;
     String tabGuid;
+    String uri;
     ITabNavigationControllerProxy navigationControllerProxy;
 }

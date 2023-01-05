@@ -408,6 +408,12 @@ public final class TabImpl extends ITab.Stub {
         return mId;
     }
 
+    @Override
+    public String getUri() {
+        StrictModeWorkaround.apply();
+        return mWebContents.getVisibleUrl().getSpec();
+    }
+
     /**
      * Called when this TabImpl is attached to the BrowserViewController.
      */

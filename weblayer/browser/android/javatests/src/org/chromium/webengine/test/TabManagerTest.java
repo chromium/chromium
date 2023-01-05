@@ -131,12 +131,10 @@ public class TabManagerTest {
         WebEngine webEngine = runOnUiThreadBlocking(
                 () -> mActivityTestRule.getWebSandbox().createWebEngine(params))
                                       .get();
-        runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine.getFragment()));
         Tab activeTab = webEngine.getTabManager().getActiveTab();
         String url = getTestDataURL("simple_page.html");
         mActivityTestRule.navigateAndWait(activeTab, url);
         // Shutdown the sandbox.
-        runOnUiThreadBlocking(() -> mActivityTestRule.detachFragment(webEngine.getFragment()));
         runOnUiThreadBlocking(() -> {
             try {
                 mActivityTestRule.getWebSandbox().shutdown();
@@ -151,16 +149,16 @@ public class TabManagerTest {
         WebSandbox sandbox =
                 runOnUiThreadBlocking(() -> WebSandbox.create(ContextUtils.getApplicationContext()))
                         .get();
-        // Recreate a fragment with the same params.
+        // Recreate a WebEngine with the same params.
         WebEngine webEngine2 = runOnUiThreadBlocking(() -> sandbox.createWebEngine(params)).get();
-        runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine2.getFragment()));
         Tab newActiveTab = webEngine2.getTabManager().getActiveTab();
+
+        Assert.assertEquals(url, newActiveTab.getDisplayUri().toString());
+        Assert.assertEquals(newActiveTab.getGuid(), activeTab.getGuid());
+
         Set<Tab> allTabs = webEngine2.getTabManager().getAllTabs();
         Assert.assertEquals(1, allTabs.size());
-        Assert.assertTrue(allTabs.contains(newActiveTab));
-        // TODO(crbug.com/1398388): Set url for tab after restoring from persistence ID.
-        // Assert.assertEquals(newActiveTab.getDisplayUri().toString(), url);
-        Assert.assertEquals(activeTab.getGuid(), newActiveTab.getGuid());
+        Assert.assertEquals(newActiveTab, allTabs.iterator().next());
     }
 
     private static final class TabHolder {

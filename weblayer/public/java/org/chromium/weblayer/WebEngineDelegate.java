@@ -41,12 +41,22 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
             TabManagerDelegate tabManagerDelegate = new TabManagerDelegate(browser);
 
             WebEngineDelegate webEngineDelegate = new WebEngineDelegate(browser);
-            try {
-                client.onDelegatesReady(webEngineDelegate, fragmentEventsDelegate,
-                        tabManagerDelegate, cookieManagerDelegate);
-            } catch (RemoteException e) {
-                throw new RuntimeException("Failed to initialize WebEngineDelegate", e);
-            }
+
+            browser.registerTabInitializationCallback(new TabInitializationCallback() {
+                @Override
+                public void onTabInitializationCompleted() {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        try {
+                            client.onDelegatesReady(webEngineDelegate, fragmentEventsDelegate,
+                                    tabManagerDelegate, cookieManagerDelegate);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException("Failed to initialize WebEngineDelegate", e);
+                        }
+                    });
+                }
+            });
+
+            browser.initializeState();
         });
     }
 

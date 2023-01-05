@@ -86,4 +86,6 @@ interface ITab {
 
   // Added in 93
   void setExternalIntentInIncognitoCallbackClient(IExternalIntentInIncognitoCallbackClient client) = 33;
+
+  String getUri() = 34;
 }

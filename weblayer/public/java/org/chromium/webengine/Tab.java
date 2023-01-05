@@ -28,19 +28,21 @@ import java.util.List;
 public class Tab {
     private ITabProxy mTabProxy;
     private TabNavigationController mTabNavigationController;
-    private TabObserverDelegate mTabObserverDelegate = new TabObserverDelegate();
+    private TabObserverDelegate mTabObserverDelegate;
     private String mGuid;
-    private Uri mUri = Uri.EMPTY;
+    private Uri mUri;
 
     Tab(@NonNull ITabParams tabParams) {
         assert tabParams.tabProxy != null;
         assert tabParams.tabGuid != null;
         assert tabParams.navigationControllerProxy != null;
+        assert tabParams.uri != null;
 
         mTabProxy = tabParams.tabProxy;
         mGuid = tabParams.tabGuid;
-        mTabNavigationController =
-                new TabNavigationController(tabParams.navigationControllerProxy, this);
+        mUri = Uri.parse(tabParams.uri);
+        mTabObserverDelegate = new TabObserverDelegate(this);
+        mTabNavigationController = new TabNavigationController(tabParams.navigationControllerProxy);
 
         try {
             mTabProxy.setTabObserverDelegate(mTabObserverDelegate);

@@ -47,7 +47,7 @@ class Browser {
     private IBrowser mImpl;
     private final ObserverList<TabListCallback> mTabListCallbacks;
 
-    private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
+    private final ObserverList<TabInitializationCallback> mTabInitializationCallbacks;
 
     private static int sMaxNavigationsPerTabForInstanceState;
 
@@ -78,15 +78,17 @@ class Browser {
     protected Browser() {
         mImpl = null;
         mTabListCallbacks = null;
-        mBrowserRestoreCallbacks = null;
+        mTabInitializationCallbacks = null;
     }
 
     // Constructor for browserfragment to inject the {@code tabListCallback} on startup.
     Browser(IBrowser impl) {
         mImpl = impl;
         mTabListCallbacks = new ObserverList<TabListCallback>();
-        mBrowserRestoreCallbacks = new ObserverList<BrowserRestoreCallback>();
+        mTabInitializationCallbacks = new ObserverList<TabInitializationCallback>();
+    }
 
+    void initializeState() {
         try {
             mImpl.setClient(new BrowserClientImpl());
         } catch (RemoteException e) {
@@ -333,25 +335,25 @@ class Browser {
     }
 
     /**
-     * Adds a BrowserRestoreCallback.
+     * Adds a TabInitializationCallback.
      *
-     * @param callback The BrowserRestoreCallback.
+     * @param callback The TabInitializationCallback.
      */
-    public void registerBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
+    public void registerTabInitializationCallback(@NonNull TabInitializationCallback callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        mBrowserRestoreCallbacks.addObserver(callback);
+        mTabInitializationCallbacks.addObserver(callback);
     }
 
     /**
-     * Removes a BrowserRestoreCallback.
+     * Removes a TabInitializationCallback.
      *
-     * @param callback The BrowserRestoreCallback.
+     * @param callback The TabInitializationCallback.
      */
-    public void unregisterBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
+    public void unregisterTabInitializationCallback(@NonNull TabInitializationCallback callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        mBrowserRestoreCallbacks.removeObserver(callback);
+        mTabInitializationCallbacks.removeObserver(callback);
     }
 
     /**
@@ -471,9 +473,9 @@ class Browser {
         }
 
         @Override
-        public void onRestoreCompleted() {
-            for (BrowserRestoreCallback callback : mBrowserRestoreCallbacks) {
-                callback.onRestoreCompleted();
+        public void onTabInitializationCompleted() {
+            for (TabInitializationCallback callback : mTabInitializationCallbacks) {
+                callback.onTabInitializationCompleted();
             }
         }
     }
