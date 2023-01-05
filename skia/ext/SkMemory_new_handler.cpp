@@ -11,7 +11,7 @@
 #include "base/process/memory.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypes.h"
-#include "third_party/skia/include/private/SkMalloc.h"
+#include "third_party/skia/include/private/base/SkMalloc.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
