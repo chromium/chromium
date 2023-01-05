@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Button element with "readonly" attribute shouldn't be barred from constraint validation assert_true: expected true got false
+Harness: the test ran to completion.
+
