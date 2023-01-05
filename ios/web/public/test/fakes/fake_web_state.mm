@@ -310,6 +310,10 @@ bool FakeWebState::IsBeingDestroyed() const {
   return false;
 }
 
+bool FakeWebState::IsWebPageInFullscreenMode() const {
+  return false;
+}
+
 const FaviconStatus& FakeWebState::GetFaviconStatus() const {
   return favicon_status_;
 }

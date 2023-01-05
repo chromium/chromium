@@ -752,6 +752,10 @@ bool WebStateImpl::RealizedWebState::IsEvicted() const {
   return ![web_controller_ isViewAlive];
 }
 
+bool WebStateImpl::RealizedWebState::IsWebPageInFullscreenMode() const {
+  return [web_controller_ isWebPageInFullscreenMode];
+}
+
 const FaviconStatus& WebStateImpl::RealizedWebState::GetFaviconStatus() const {
   static const FaviconStatus missing_favicon_status;
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();

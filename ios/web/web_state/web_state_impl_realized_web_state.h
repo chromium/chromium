@@ -161,6 +161,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   bool IsVisible() const;
   bool IsCrashed() const;
   bool IsEvicted() const;
+  bool IsWebPageInFullscreenMode() const;
   const FaviconStatus& GetFaviconStatus() const;
   void SetFaviconStatus(const FaviconStatus& favicon_status);
   int GetNavigationItemCount() const;

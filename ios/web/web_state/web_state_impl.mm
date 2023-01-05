@@ -543,6 +543,10 @@ bool WebStateImpl::IsBeingDestroyed() const {
   return is_being_destroyed_;
 }
 
+bool WebStateImpl::IsWebPageInFullscreenMode() const {
+  return LIKELY(pimpl_) ? pimpl_->IsWebPageInFullscreenMode() : false;
+}
+
 const FaviconStatus& WebStateImpl::GetFaviconStatus() const {
   return LIKELY(pimpl_) ? pimpl_->GetFaviconStatus()
                         : saved_->GetFaviconStatus();

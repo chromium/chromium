@@ -55,6 +55,9 @@ void PageloadForegroundDurationTabHelper::UpdateForAppDidBackground() {
   // Return early if not currently active WebState.
   if (!web_state_->IsVisible())
     return;
+  if (web_state_->IsWebPageInFullscreenMode()) {
+    web_state_->CloseMediaPresentations();
+  }
   RecordUkmIfInForeground();
 }
 

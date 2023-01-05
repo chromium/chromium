@@ -80,6 +80,7 @@ class FakeWebState : public WebState {
   bool IsCrashed() const override;
   bool IsEvicted() const override;
   bool IsBeingDestroyed() const override;
+  bool IsWebPageInFullscreenMode() const override;
   const FaviconStatus& GetFaviconStatus() const final;
   void SetFaviconStatus(const FaviconStatus& favicon_status) final;
   int GetNavigationItemCount() const override;
