@@ -60,6 +60,11 @@ base::Value CreateBlockedTopicEntry(const CanonicalTopic& topic) {
 
 }  // namespace
 
+// static
+bool PrivacySandboxSettings::IsAllowed(Status status) {
+  return status == Status::kAllowed;
+}
+
 PrivacySandboxSettings::PrivacySandboxSettings(
     std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
@@ -97,7 +102,10 @@ PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 bool PrivacySandboxSettings::IsTopicsAllowed() const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return IsM1PrivacySandboxApiEnabled(prefs::kPrivacySandboxM1TopicsEnabled);
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed.
+    return IsAllowed(GetM1PrivacySandboxApiEnabledStatus(
+        prefs::kPrivacySandboxM1TopicsEnabled));
   }
 
   // Topics API calculation should be prevented if the user has blocked 3PC
@@ -120,7 +128,10 @@ bool PrivacySandboxSettings::IsTopicsAllowedForContext(
     const GURL& url) const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return IsTopicsAllowed() && IsAccessAllowed(top_frame_origin, url);
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed due to site access blocked.
+    return IsTopicsAllowed() &&
+           IsAllowed(GetSiteAccessAllowedStatus(top_frame_origin, url));
   }
 
   // If the Topics API is disabled completely, it is not available in any
@@ -203,9 +214,12 @@ bool PrivacySandboxSettings::IsAttributionReportingAllowed(
     const url::Origin& reporting_origin) const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return IsM1PrivacySandboxApiEnabled(
-               prefs::kPrivacySandboxM1AdMeasurementEnabled) &&
-           IsAccessAllowed(top_frame_origin, reporting_origin.GetURL());
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed.
+    return IsAllowed(GetM1PrivacySandboxApiEnabledStatus(
+               prefs::kPrivacySandboxM1AdMeasurementEnabled)) &&
+           IsAllowed(GetSiteAccessAllowedStatus(top_frame_origin,
+                                                reporting_origin.GetURL()));
   }
 
   return IsPrivacySandboxEnabledForContext(top_frame_origin,
@@ -330,9 +344,12 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party) const {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return IsM1PrivacySandboxApiEnabled(
-               prefs::kPrivacySandboxM1FledgeEnabled) &&
-           IsAccessAllowed(top_frame_origin, auction_party.GetURL());
+    // TODO(crbug.com/1395437): Record metrics here when privacy sandbox is not
+    // allowed.
+    return IsAllowed(GetM1PrivacySandboxApiEnabledStatus(
+               prefs::kPrivacySandboxM1FledgeEnabled)) &&
+           IsAllowed(GetSiteAccessAllowedStatus(top_frame_origin,
+                                                auction_party.GetURL()));
   }
 
   return IsPrivacySandboxEnabledForContext(top_frame_origin,
@@ -364,12 +381,8 @@ bool PrivacySandboxSettings::IsPrivateAggregationAllowed(
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
-  // If the delegate is restricting access the Privacy Sandbox is disabled.
-  if (delegate_->IsPrivacySandboxRestricted()) {
-    return false;
-  }
-
-  if (delegate_->IsIncognitoProfile()) {
+  PrivacySandboxSettings::Status status = GetPrivacySandboxAllowedStatus();
+  if (!IsAllowed(status)) {
     return false;
   }
 
@@ -477,7 +490,8 @@ void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {
   }
 }
 
-bool PrivacySandboxSettings::IsAccessAllowed(
+PrivacySandboxSettings::Status
+PrivacySandboxSettings::GetSiteAccessAllowedStatus(
     const url::Origin& top_frame_origin,
     const GURL& url) const {
   // Relying on |host_content_settings_map_| instead of |cookie_settings_|
@@ -485,22 +499,35 @@ bool PrivacySandboxSettings::IsAccessAllowed(
   // access Site data (aka ContentSettingsType::COOKIES) without considering any
   // 3P cookie blocking setting.
   return content_settings::CookieSettingsBase::IsAllowed(
-      host_content_settings_map_->GetContentSetting(
-          url, top_frame_origin.GetURL(), ContentSettingsType::COOKIES));
+             host_content_settings_map_->GetContentSetting(
+                 url, top_frame_origin.GetURL(), ContentSettingsType::COOKIES))
+             ? Status::kAllowed
+             : Status::kSiteDataAccesssDisallowed;
 }
 
-bool PrivacySandboxSettings::IsM1PrivacySandboxApiEnabled(
+PrivacySandboxSettings::Status
+PrivacySandboxSettings::GetPrivacySandboxAllowedStatus() const {
+  if (delegate_->IsIncognitoProfile()) {
+    return Status::kIncognitoProfile;
+  }
+
+  if (IsPrivacySandboxRestricted()) {
+    return Status::kRestricted;
+  }
+
+  return Status::kAllowed;
+}
+
+PrivacySandboxSettings::Status
+PrivacySandboxSettings::GetM1PrivacySandboxApiEnabledStatus(
     const std::string& pref_name) const {
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
 
-  if (delegate_->IsIncognitoProfile()) {
-    return false;
-  }
-
-  if (IsPrivacySandboxRestricted()) {
-    return false;
+  PrivacySandboxSettings::Status status = GetPrivacySandboxAllowedStatus();
+  if (!IsAllowed(status)) {
+    return status;
   }
 
   // For Measurement and Relevance APIs, we explicitly do not require the
@@ -508,10 +535,12 @@ bool PrivacySandboxSettings::IsM1PrivacySandboxApiEnabled(
   // allow for local testing.
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
-    return true;
+    return Status::kAllowed;
   }
 
-  return pref_service_->GetBoolean(pref_name);
+  status = (pref_service_->GetBoolean(pref_name)) ? Status::kAllowed
+                                                  : Status::kApisDisabled;
+  return status;
 }
 
 }  // namespace privacy_sandbox

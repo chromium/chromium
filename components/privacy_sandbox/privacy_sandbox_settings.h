@@ -236,13 +236,31 @@ class PrivacySandboxSettings : public KeyedService {
   void SetTopicsDataAccessibleFromNow() const;
 
  private:
+  enum class Status {
+    kAllowed,
+    kRestricted,
+    kIncognitoProfile,
+    kApisDisabled,
+    kSiteDataAccesssDisallowed,
+    kMaxValue = kSiteDataAccesssDisallowed,
+  };
+
+  static bool IsAllowed(Status status);
+
   // Whether the site associated with the URL is allowed to access privacy
   // sandbox APIs within the context of |top_frame_origin|.
-  bool IsAccessAllowed(const url::Origin& top_frame_origin,
-                       const GURL& url) const;
+  Status GetSiteAccessAllowedStatus(const url::Origin& top_frame_origin,
+                                    const GURL& url) const;
+
+  // Whether the privacy sandbox APIs can be allowed given the current
+  // environment. For example, the privacy sandbox is always disabled in
+  // Incognito and for restricted accounts.
+  Status GetPrivacySandboxAllowedStatus() const;
+
   // Whether the privacy sandbox associated with  the |pref_name| is enabled.
-  // For individual sites, check as well with IsSiteDataAllowed.
-  bool IsM1PrivacySandboxApiEnabled(const std::string& pref_name) const;
+  // For individual sites, check as well with GetSiteAccessAllowedStatus.
+  Status GetM1PrivacySandboxApiEnabledStatus(
+      const std::string& pref_name) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
