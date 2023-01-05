@@ -873,12 +873,13 @@ class GraphView {
           if (!enter.empty()) {
             nodesAddedOrRemoved = true;
           }
+          const graphView = this;
           return enter.append('circle')
               .attr('r', 5)
               .attr('stroke', node => getNodeColor(node))
-              .on('dblclick', node => this.onNodeDoubleClicked_(node))
-              .on('mousedown', node => this.onNodeClicked_(node))
-              .on('mouseenter', node => {
+              .on('dblclick', (_, node) => this.onNodeDoubleClicked_(node))
+              .on('mousedown', (_, node) => this.onNodeClicked_(node))
+              .on('mouseenter', (_, node) => {
                 this.hoveredNodeManager_.setHoveredNode(node);
                 this.syncEdgeColors();
               })
@@ -888,23 +889,29 @@ class GraphView {
               })
               .call(d3.drag()
                   .on('start', () => this.hoveredNodeManager_.setDragging(true))
-                  .on('drag', (event, node) => {
-                    this.reheatSimulation(/* shouldEase */ false);
-                    d3.select(enter.nodes()[idx]).classed('locked', true);
+                  // It is necessary to use function instead of => to capture
+                  // the actual circle element in 'this' for d3 v6+.
+                  .on('drag', function(event, node) {
+                    graphView.reheatSimulation(/* shouldEase */ false);
+                    // eslint-disable-next-line no-invalid-this
+                    d3.select(this).classed('locked', true);
                     // Fix the node's position after it has been dragged.
                     node.fx = event.x;
                     node.fy = event.y;
                   })
                   .on('end', () => this.hoveredNodeManager_.setDragging(false)))
-              .on('click', (event, node) => {
+              // It is necessary to use function instead of => to capture
+              // the actual circle element in 'this' for d3 v6+.
+              .on('click', function(event, node) {
                 if (event.defaultPrevented) {
                   return; // Skip drag events.
                 }
-                const pageNode = d3.select(enter.nodes()[idx]);
+                // eslint-disable-next-line no-invalid-this
+                const pageNode = d3.select(this);
                 if (pageNode.classed('locked')) {
                   node.fx = null;
                   node.fy = null;
-                  this.reheatSimulation(/* shouldEase */ true);
+                  graphView.reheatSimulation(/* shouldEase */ true);
                 } else {
                   node.fx = node.x;
                   node.fy = node.y;
