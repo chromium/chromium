@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview This file is the entry point for custom elements and other
+ * modules that should be lazily loaded in the ChromeOS Settings frontend app.
+ * This should include:
+ *  - Top-level pages that exist in the "Advanced" section.
+ *  - All subpages
+ */
+
 import '../strings.m.js';
 import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_arc_adb.js';
@@ -24,7 +32,6 @@ import './guest_os/guest_os_container_select.js';
 import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './guest_os/guest_os_shared_paths.js';
-import './os_a11y_page/os_a11y_page.js';
 import './os_a11y_page/manage_a11y_page.js';
 import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/display_and_magnification_page.js';

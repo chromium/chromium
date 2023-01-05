@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview The main entry point for the ChromeOS Settings SWA. This
+ * imports all of the necessary modules and custom elements to load the page.
+ */
+
 import '../strings.m.js';
 import '../prefs/prefs.js';
 import './device_page/audio.js';
@@ -46,6 +51,7 @@ import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
 import './personalization_page/personalization_page.js';
 import './os_a11y_page/change_dictation_locale_dialog.js';
+import './os_a11y_page/os_a11y_page.js';
 import './os_about_page/channel_switcher_dialog.js';
 import './os_about_page/detailed_build_info.js';
 import './os_about_page/os_about_page.js';
@@ -120,6 +126,11 @@ import * as settingMojomWebui from '../mojom-webui/setting.mojom-webui.js';
 
 import * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 
+/**
+ * With the optimize_webui() build step, the generated JS files are bundled
+ * into a single JS file. The exports below are necessary so they can be
+ * imported into browser tests.
+ */
 export {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 export {PageType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
