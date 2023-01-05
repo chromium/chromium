@@ -125,20 +125,18 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch(optimization_guide::switches::
-                          kDisableCheckingUserPermissionsForTesting);
-    cmd->AppendSwitchASCII(optimization_guide::switches::kFetchHintsOverride,
+    cmd->AppendSwitch(switches::kDisableCheckingUserPermissionsForTesting);
+    cmd->AppendSwitchASCII(switches::kFetchHintsOverride,
                            "whatever.com,somehost.com");
     cmd->AppendSwitchASCII(
-        optimization_guide::switches::kOptimizationGuideServiceGetModelsURL,
+        switches::kOptimizationGuideServiceGetModelsURL,
         models_server_
-            ->GetURL(GURL(optimization_guide::
-                              kOptimizationGuideServiceGetModelsDefaultURL)
-                         .host(),
+            ->GetURL(GURL(kOptimizationGuideServiceGetModelsDefaultURL).host(),
                      "/")
             .spec());
     cmd->AppendSwitchASCII("host-rules", "MAP * 127.0.0.1");
     cmd->AppendSwitchASCII("force-variation-ids", "4");
+    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
   }
 
   void SetResponseType(
@@ -248,7 +246,7 @@ class PredictionManagerBrowserTest : public testing::WithParamInterface<bool>,
         {optimization_guide::features::kOptimizationHints, {}},
         {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
-         {{"fetch_startup_delay_ms", "2000"}}},
+         {{"fetch_startup_delay_ms", "8000"}}},
     };
     if (ShouldEnableInstallWideModelStore()) {
       enabled_features.emplace_back(
@@ -263,8 +261,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PredictionManagerBrowserTest,
                          /*use_install_wide_model_store=*/testing::Bool());
 
-// Flaky on ASAN bots and linux-chromeos-dbg, see https://crbug.com/1403389/.
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER)
+// Flaky on linux-chromeos-dbg, see https://crbug.com/1403389/.
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_ComponentUpdatesPrefDisabled DISABLED_ComponentUpdatesPrefDisabled
 #else
 #define MAYBE_ComponentUpdatesPrefDisabled ComponentUpdatesPrefDisabled
@@ -305,8 +303,6 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
   SetResponseType(
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
   base::HistogramTester histogram_tester;
-  content::NetworkConnectionChangeSimulator().SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_2G);
 
   RegisterWithKeyedService(&model_file_observer);
   RetryForHistogramUntilCountReached(
@@ -326,8 +322,7 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
 }
 
 // TODO(crbug.com/1402697): Flaky on linux-chromeos-chrome bot.
-// TODO(crbug.com/1402228): Also flaky on ASAN bots.
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_PredictionModelFetchFailed DISABLED_PredictionModelFetchFailed
 #else
 #define MAYBE_PredictionModelFetchFailed PredictionModelFetchFailed
