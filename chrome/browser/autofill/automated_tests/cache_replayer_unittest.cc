@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/proto/server.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -389,122 +388,6 @@ bool ProtobufsEqual(const U& u, const V& v) {
   return u_serialized == v_serialized;
 }
 
-TEST(AutofillCacheReplayerTest, ProtobufConversion) {
-  AutofillRandomizedFormMetadata form_metadata;
-  form_metadata.mutable_id()->set_encoded_bits("foobar");
-
-  AutofillRandomizedFieldMetadata field_metadata;
-  field_metadata.mutable_id()->set_encoded_bits("foobarbaz");
-
-  // Form 1 (fields 101, 102), Form 2 (fields 201).
-  LegacyEnv::Query legacy_query;
-  {
-    legacy_query.set_client_version("DummyClient");
-    auto* form1 = legacy_query.add_form();
-    form1->set_signature(1);
-    form1->mutable_form_metadata()->CopyFrom(form_metadata);
-    auto* field101 = form1->add_field();
-    field101->set_signature(101);
-    field101->set_name("field_101");
-    field101->set_type("text");
-    field101->mutable_field_metadata()->CopyFrom(field_metadata);
-    auto* field102 = form1->add_field();
-    field102->set_signature(102);
-    field102->set_name("field_102");
-    field102->set_type("text");
-
-    auto* form2 = legacy_query.add_form();
-    form2->set_signature(2);
-    auto* field201 = form2->add_field();
-    field201->set_signature(201);
-    field201->set_name("field_201");
-    field201->set_type("text");
-
-    legacy_query.add_experiments(50);
-    legacy_query.add_experiments(51);
-  }
-
-  ApiEnv::Query api_query;
-  {
-    auto* form1 = api_query.add_forms();
-    form1->set_signature(1);
-    form1->mutable_metadata()->CopyFrom(form_metadata);
-    auto* field101 = form1->add_fields();
-    field101->set_signature(101);
-    field101->set_name("field_101");
-    field101->set_control_type("text");
-    field101->mutable_metadata()->CopyFrom(field_metadata);
-    auto* field102 = form1->add_fields();
-    field102->set_signature(102);
-    field102->set_name("field_102");
-    field102->set_control_type("text");
-
-    auto* form2 = api_query.add_forms();
-    form2->set_signature(2);
-    auto* field201 = form2->add_fields();
-    field201->set_signature(201);
-    field201->set_name("field_201");
-    field201->set_control_type("text");
-
-    api_query.add_experiments(50);
-    api_query.add_experiments(51);
-  }
-
-  LegacyEnv::Response legacy_response;
-  {
-    auto* field101 = legacy_response.add_field();
-    field101->set_overall_type_prediction(101);
-    auto* field101_prediction = field101->add_predictions();
-    field101_prediction->set_type(101);
-    field101_prediction->set_may_use_prefilled_placeholder(true);
-    field101_prediction = field101->add_predictions();
-    field101_prediction->set_type(1010);
-    field101_prediction->set_may_use_prefilled_placeholder(true);
-    // Todo: Password requirements
-    auto* field102 = legacy_response.add_field();
-    field102->set_overall_type_prediction(102);
-    auto* field102_prediction = field102->add_predictions();
-    field102_prediction->set_type(102);
-    field102_prediction->set_may_use_prefilled_placeholder(false);
-
-    auto* field201 = legacy_response.add_field();
-    field201->set_overall_type_prediction(201);
-    field201->add_predictions()->set_type(201);
-  }
-
-  ApiEnv::Response api_response;
-  {
-    auto* form1 = api_response.add_form_suggestions();
-    auto* field101 = form1->add_field_suggestions();
-    field101->set_field_signature(101);
-    field101->add_predictions()->set_type(101);
-    field101->add_predictions()->set_type(1010);
-    field101->set_may_use_prefilled_placeholder(true);
-    // Todo: Password requirements
-    auto* field102 = form1->add_field_suggestions();
-    field102->set_field_signature(102);
-    field102->add_predictions()->set_type(102);
-    field102->set_may_use_prefilled_placeholder(false);
-
-    auto* form2 = api_response.add_form_suggestions();
-    auto* field201 = form2->add_field_suggestions();
-    field201->set_field_signature(201);
-    field201->add_predictions()->set_type(201);
-  }
-
-  // Verify equivalence of converted queries.
-  EXPECT_TRUE(ProtobufsEqual(api_query, api_query));
-  EXPECT_TRUE(ProtobufsEqual(api_query, ConvertQuery<ApiEnv>(api_query)));
-  EXPECT_TRUE(ProtobufsEqual(api_query, ConvertQuery<LegacyEnv>(legacy_query)));
-
-  // Verify equivalence of converted responses.
-  EXPECT_TRUE(ProtobufsEqual(api_response, api_response));
-  EXPECT_TRUE(ProtobufsEqual(api_response,
-                             ConvertResponse<ApiEnv>(api_response, api_query)));
-  EXPECT_TRUE(ProtobufsEqual(
-      api_response, ConvertResponse<LegacyEnv>(legacy_response, legacy_query)));
-}
-
 // Test suite for Query response retrieval test.
 class AutofillCacheReplayerGetResponseForQueryTest
     : public testing::TestWithParam<RequestType> {};
@@ -600,7 +483,7 @@ TEST(AutofillCacheReplayerTest,
   form_to_add.fields = {LightField{1234, 1}};
   const AutofillPageQueryRequest query_request_for_key =
       MakeQueryRequestResponsePair({form_to_add}).first;
-  const std::string key = GetKeyFromQuery<ApiEnv>(query_request_for_key);
+  const std::string key = GetKeyFromQuery(query_request_for_key);
 
   const char invalid_http[] = "Dumb Nonsense That Doesn't Have a HTTP Header";
   ServerCacheReplayer cache_replayer(ServerCache{{key, invalid_http}});
@@ -619,7 +502,7 @@ TEST(AutofillCacheReplayerTest,
   form_to_add.fields = {LightField{1234, 1}};
   const AutofillPageQueryRequest query_request_for_key =
       MakeQueryRequestResponsePair({form_to_add}).first;
-  const std::string key = GetKeyFromQuery<ApiEnv>(query_request_for_key);
+  const std::string key = GetKeyFromQuery(query_request_for_key);
 
   const char http_without_body[] = "Test HTTP Header\r\n\r\n";
   ServerCacheReplayer cache_replayer(ServerCache{{key, http_without_body}});
