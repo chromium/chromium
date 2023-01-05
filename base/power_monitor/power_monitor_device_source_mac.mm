@@ -28,6 +28,22 @@ int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
   return thermal_state_observer_->GetCurrentSpeedLimit();
 }
 
+void PowerMonitorDeviceSource::GetBatteryState() {
+  DCHECK(battery_level_provider_);
+  // base::Unretained is safe because the callback is immediately invoked
+  // inside `BatteryLevelProvider::GetBatteryState()`.
+  battery_level_provider_->GetBatteryState(
+      base::BindOnce(&PowerMonitorDeviceSource::OnBatteryStateReceived,
+                     base::Unretained(this)));
+}
+
+void PowerMonitorDeviceSource::OnBatteryStateReceived(
+    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
+  is_on_battery_ =
+      battery_state.has_value() && !battery_state->is_external_power_connected;
+  PowerMonitorSource::ProcessPowerEvent(PowerMonitorSource::POWER_STATE_EVENT);
+}
+
 void PowerMonitorDeviceSource::PlatformInit() {
   power_manager_port_ = IORegisterForSystemPower(
       this,
@@ -42,24 +58,13 @@ void PowerMonitorDeviceSource::PlatformInit() {
       kCFRunLoopCommonModes);
 
   battery_level_provider_ = BatteryLevelProvider::Create();
-
-  // Create and add the power-source-change event source to the runloop.
+  // Get the initial state for `is_on_battery_` and register for all future
+  // power-source-change events.
+  GetBatteryState();
+  // base::Unretained is safe because `this` owns `power_source_event_source_`,
+  // which exclusively owns the callback.
   power_source_event_source_.Start(base::BindRepeating(
-      [](PowerMonitorDeviceSource* self,
-         BatteryLevelProvider* battery_level_provider) {
-        battery_level_provider->GetBatteryState(base::BindOnce(
-            [](PowerMonitorDeviceSource* self,
-               const absl::optional<BatteryLevelProvider::BatteryState>&
-                   battery_state) {
-              self->is_on_battery_ =
-                  battery_state.has_value() &&
-                  !battery_state->is_external_power_connected;
-              PowerMonitorSource::ProcessPowerEvent(
-                  PowerMonitorSource::POWER_STATE_EVENT);
-            },
-            Unretained(self)));
-      },
-      Unretained(this), battery_level_provider_.get()));
+      &PowerMonitorDeviceSource::GetBatteryState, base::Unretained(this)));
 
   thermal_state_observer_ = std::make_unique<ThermalStateObserverMac>(
       BindRepeating(&PowerMonitorSource::ProcessThermalEvent),
