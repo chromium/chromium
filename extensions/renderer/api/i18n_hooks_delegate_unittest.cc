@@ -16,11 +16,6 @@ namespace extensions {
 
 using I18nHooksDelegateTest = NativeExtensionBindingsSystemUnittest;
 
-// NOTE(devlin): This test lives in //chrome (rather than //extensions) since
-// the feature is defined at the chrome level (in
-// chrome/common/extensions/api/i18n.json). However, all the custom bindings
-// for i18n live at the //extensions level. We should move these to all be in
-// the same location.
 TEST_F(I18nHooksDelegateTest, TestI18nGetMessage) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
   RegisterExtension(extension);
