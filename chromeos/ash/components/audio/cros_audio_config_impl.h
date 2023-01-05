@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       std::vector<mojom::AudioDevicePtr>* output_devices_out,
       std::vector<mojom::AudioDevicePtr>* input_devices_out) const override;
   mojom::MuteState GetInputMuteState() const override;
+  void SetOutputMuted(bool muted) override;
   void SetOutputVolumePercent(int8_t volume) override;
   void SetActiveDevice(uint64_t device_id) override;
 

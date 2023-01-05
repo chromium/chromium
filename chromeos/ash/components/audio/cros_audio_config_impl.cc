@@ -115,6 +115,15 @@ mojom::MuteState CrosAudioConfigImpl::GetInputMuteState() const {
   return mojom::MuteState::kNotMuted;
 }
 
+void CrosAudioConfigImpl::SetOutputMuted(bool muted) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  if (audio_handler->IsOutputMutedByPolicy()) {
+    return;
+  }
+
+  audio_handler->SetOutputMute(muted);
+}
+
 void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   audio_handler->SetOutputVolumePercent(volume);

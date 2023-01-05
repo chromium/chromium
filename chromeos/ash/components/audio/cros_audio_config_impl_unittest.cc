@@ -116,8 +116,17 @@ class CrosAudioConfigImplTest : public testing::Test {
     return fake_observer;
   }
 
+  bool GetDeviceMuted(const uint64_t id) {
+    return cras_audio_handler_->IsOutputMutedForDevice(id);
+  }
+
   void SimulateSetActiveDevice(const uint64_t& device_id) {
     remote_->SetActiveDevice(device_id);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateSetOutputMuted(bool muted) {
+    remote_->SetOutputMuted(muted);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -336,9 +345,18 @@ TEST_F(CrosAudioConfigImplTest, GetOutputMuteState) {
       fake_observer->last_audio_system_properties_.value()->output_mute_state);
 }
 
-TEST_F(CrosAudioConfigImplTest, GetOutputMuteStateMutedByPolicy) {
+TEST_F(CrosAudioConfigImplTest, HandleOutputMuteStateMutedByPolicy) {
   SetOutputMuteState(mojom::MuteState::kMutedByPolicy);
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  EXPECT_EQ(
+      mojom::MuteState::kMutedByPolicy,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+
+  // Simulate attempting to change mute state while policy is enabled.
+  SimulateSetOutputMuted(/*muted=*/true);
+  SimulateSetOutputMuted(/*muted=*/false);
   ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
   ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
   EXPECT_EQ(
@@ -574,6 +592,33 @@ TEST_F(CrosAudioConfigImplTest, HandleInputMuteState) {
   ASSERT_EQ(
       mojom::MuteState::kNotMuted,
       fake_observer->last_audio_system_properties_.value()->input_mute_state);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetOutputMuted) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // Test default audio node list.
+  SetAudioNodes({kInternalSpeaker, kHDMIOutput});
+  SetActiveOutputNodes({kInternalSpeakerId});
+  EXPECT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+  EXPECT_FALSE(GetDeviceMuted(kInternalSpeakerId));
+  EXPECT_FALSE(GetDeviceMuted(kHDMIOutputId));
+
+  SimulateSetOutputMuted(/*muted=*/true);
+  EXPECT_EQ(
+      mojom::MuteState::kMutedByUser,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+  EXPECT_TRUE(GetDeviceMuted(kInternalSpeakerId));
+  EXPECT_FALSE(GetDeviceMuted(kHDMIOutputId));
+
+  SimulateSetOutputMuted(/*muted=*/false);
+  EXPECT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+  EXPECT_FALSE(GetDeviceMuted(kInternalSpeakerId));
+  EXPECT_FALSE(GetDeviceMuted(kHDMIOutputId));
 }
 
 }  // namespace ash::audio_config
