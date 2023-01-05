@@ -104,6 +104,9 @@ class ParentAccessUIHandlerImpl
       kids::platform::parentaccess::client::proto::ParentAccessToken>
       parent_access_token_;
 
+  // The params for this instance of the Parent Access UI.
+  const parent_access_ui::mojom::ParentAccessParamsPtr params_;
+
   // Tracks the current state of the webUI, which is used for logging purposes.
   std::unique_ptr<ParentAccessStateTracker> state_tracker_;
 
