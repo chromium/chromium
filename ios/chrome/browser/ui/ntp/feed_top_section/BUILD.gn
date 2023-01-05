@@ -31,5 +31,6 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
 }

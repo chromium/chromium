@@ -986,14 +986,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
 
-  // Disable Discover Feed Top Sync promo because it causes the NTP content
-  // offset to be wrong in EG tests.
-  // TODO(crbug.com/1403077): Reenable the discover feed sync promo feature
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [ChromeEarlGreyUI openNewTabMenu];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
