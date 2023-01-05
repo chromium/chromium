@@ -53,6 +53,8 @@ BUG_REPORT_URL = ('https://crbug.com and run'
                   ' tools/clang/scripts/process_crashreports.py'
                   ' (only works inside Google) which will upload a report')
 
+LIBXML2_VERSION = 'libxml2-v2.9.12'
+
 win_sdk_dir = None
 def GetWinSDKDir():
   """Get the location of the current SDK."""
@@ -262,6 +264,30 @@ def AddZlibToPath():
   return zlib_dir
 
 
+class LibXmlDirs:
+  def __init__(self):
+    self.unzip_dir = LLVM_BUILD_TOOLS_DIR
+    # When unpacked in `unzip_dir`, this will be the directory where the
+    # sources are found.
+    self.src_dir = os.path.join(self.unzip_dir, LIBXML2_VERSION)
+    # The lib is built in a directory under its sources.
+    self.build_dir = os.path.join(self.src_dir, 'build')
+    # The lib is installed in a directory under where its built.
+    self.install_dir = os.path.join(self.build_dir, 'install')
+    # The full path to installed include files.
+    self.include_dir = os.path.join(self.install_dir, 'include', 'libxml2')
+    # The full path to installed lib files.
+    self.lib_dir = os.path.join(self.install_dir, 'lib')
+
+
+def GetLibXml2Dirs():
+  """Gets the set of directories where LibXml2 is located.
+
+  Includes the diractories where the source is unpacked, where it is built,
+  and installed."""
+  return LibXmlDirs()
+
+
 def BuildLibXml2():
   """Download and build libxml2"""
   # The .tar.gz on GCS was uploaded as follows.
@@ -273,17 +299,13 @@ def BuildLibXml2():
   # $ gsutil cp -n -a public-read libxml2-$VER.tar.gz \
   #   gs://chromium-browser-clang/tools
 
-  libxml2_version = 'libxml2-v2.9.12'
-  libxml2_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, libxml2_version)
-  if os.path.exists(libxml2_dir):
-    RmTree(libxml2_dir)
-  zip_name = libxml2_version + '.tar.gz'
-  DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
-  os.chdir(libxml2_dir)
-  os.mkdir('build')
-  os.chdir('build')
-
-  libxml2_install_dir = os.path.join(libxml2_dir, 'build', 'install')
+  dirs = GetLibXml2Dirs()
+  if os.path.exists(dirs.src_dir):
+    RmTree(dirs.src_dir)
+  zip_name = LIBXML2_VERSION + '.tar.gz'
+  DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, dirs.unzip_dir)
+  os.mkdir(dirs.build_dir)
+  os.chdir(dirs.build_dir)
 
   # Disable everything except WITH_TREE and WITH_OUTPUT, both needed by LLVM's
   # WindowsManifestMerger.
@@ -341,14 +363,13 @@ def BuildLibXml2():
       msvc_arch='x64')
   RunCommand(['ninja', 'install'], msvc_arch='x64')
 
-  libxml2_include_dir = os.path.join(libxml2_install_dir, 'include', 'libxml2')
   if sys.platform == 'win32':
-    libxml2_lib = os.path.join(libxml2_install_dir, 'lib', 'libxml2s.lib')
+    libxml2_lib = os.path.join(dirs.lib_dir, 'libxml2s.lib')
   else:
-    libxml2_lib = os.path.join(libxml2_install_dir, 'lib', 'libxml2.a')
+    libxml2_lib = os.path.join(dirs.lib_dir, 'libxml2.a')
   extra_cmake_flags = [
       '-DLLVM_ENABLE_LIBXML2=FORCE_ON',
-      '-DLIBXML2_INCLUDE_DIR=' + libxml2_include_dir.replace('\\', '/'),
+      '-DLIBXML2_INCLUDE_DIR=' + dirs.include_dir.replace('\\', '/'),
       '-DLIBXML2_LIBRARIES=' + libxml2_lib.replace('\\', '/'),
       '-DLIBXML2_LIBRARY=' + libxml2_lib.replace('\\', '/'),
 
