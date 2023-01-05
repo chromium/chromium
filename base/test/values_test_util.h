@@ -59,6 +59,8 @@ class IsJsonMatcher {
  public:
   explicit IsJsonMatcher(base::StringPiece json);
   explicit IsJsonMatcher(const base::Value& value);
+  explicit IsJsonMatcher(const base::Value::Dict& value);
+  explicit IsJsonMatcher(const base::Value::List& value);
   IsJsonMatcher(const IsJsonMatcher& other);
   ~IsJsonMatcher();
 

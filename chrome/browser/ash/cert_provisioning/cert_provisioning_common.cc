@@ -138,17 +138,17 @@ CertProfile::CertProfile() = default;
 CertProfile::~CertProfile() = default;
 
 absl::optional<CertProfile> CertProfile::MakeFromValue(
-    const base::Value& value) {
+    const base::Value::Dict& value) {
   static_assert(kVersion == 5, "This function should be updated");
 
-  const std::string* id = value.FindStringKey(kCertProfileIdKey);
-  const std::string* name = value.FindStringKey(kCertProfileNameKey);
+  const std::string* id = value.FindString(kCertProfileIdKey);
+  const std::string* name = value.FindString(kCertProfileNameKey);
   const std::string* policy_version =
-      value.FindStringKey(kCertProfilePolicyVersionKey);
+      value.FindString(kCertProfilePolicyVersionKey);
   absl::optional<bool> is_va_enabled =
-      value.FindBoolKey(kCertProfileIsVaEnabledKey);
+      value.FindBool(kCertProfileIsVaEnabledKey);
   absl::optional<int> renewal_period_sec =
-      value.FindIntKey(kCertProfileRenewalPeroidSec);
+      value.FindInt(kCertProfileRenewalPeroidSec);
 
   if (!id || !policy_version) {
     return absl::nullopt;

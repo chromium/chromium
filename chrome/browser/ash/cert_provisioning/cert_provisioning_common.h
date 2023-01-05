@@ -92,7 +92,8 @@ const char kCertProfilePolicyVersionKey[] = "policy_version";
 const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
 
 struct CertProfile {
-  static absl::optional<CertProfile> MakeFromValue(const base::Value& value);
+  static absl::optional<CertProfile> MakeFromValue(
+      const base::Value::Dict& value);
 
   CertProfile();
   // For tests.

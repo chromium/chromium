@@ -50,7 +50,7 @@ namespace em = ::enterprise_management;
 
 using attestation::MockTpmChallengeKeySubtle;
 using ::base::test::IsJson;
-using ::base::test::ParseJson;
+using ::base::test::ParseJsonDict;
 using ::base::test::RunOnceCallback;
 using ::chromeos::platform_keys::HashAlgorithm;
 using ::chromeos::platform_keys::KeyAttributeType;
@@ -1647,7 +1647,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
   StrictMock<PrefServiceObserver> pref_observer(
       &testing_pref_service_, GetPrefNameForSerialization(kCertScope));
-  base::Value pref_val;
+  base::Value::Dict pref_val;
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -1665,7 +1665,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
 
-    pref_val = ParseJson(base::StringPrintf(
+    pref_val = ParseJsonDict(base::StringPrintf(
         R"({
           "cert_profile_1": {
             "cert_profile": {
@@ -1705,9 +1705,9 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
-        *pref_val.GetDict().FindDict(kCertProfileId),
-        &cert_provisioning_client_, MakeInvalidator(&mock_invalidator),
-        GetStateChangeCallback(), GetResultCallback());
+        *pref_val.FindDict(kCertProfileId), &cert_provisioning_client_,
+        MakeInvalidator(&mock_invalidator), GetStateChangeCallback(),
+        GetResultCallback());
   }
 
   // Retry start csr request, receive response, try sign challenge.
@@ -1718,7 +1718,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
 
-    pref_val = ParseJson("{}");
+    pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
@@ -1746,7 +1746,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
                                    kChallengeResponse, kSignature,
                                    /*callback=*/_));
 
-    pref_val = ParseJson(base::StringPrintf(
+    pref_val = ParseJsonDict(base::StringPrintf(
         R"({
           "cert_profile_1": {
             "cert_profile": {
@@ -1788,9 +1788,9 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
-        *pref_val.GetDict().FindDict(kCertProfileId),
-        &cert_provisioning_client_, std::move(mock_invalidator_obj),
-        GetStateChangeCallback(), GetResultCallback());
+        *pref_val.FindDict(kCertProfileId), &cert_provisioning_client_,
+        std::move(mock_invalidator_obj), GetStateChangeCallback(),
+        GetResultCallback());
   }
 
   // Retry download cert request, receive response, try import certificate.
@@ -1803,7 +1803,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
 
-    pref_val = ParseJson("{}");
+    pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
@@ -1829,7 +1829,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
-  base::Value pref_val;
+  base::Value::Dict pref_val;
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -1845,7 +1845,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
 
-    pref_val = ParseJson(base::StringPrintf(
+    pref_val = ParseJsonDict(base::StringPrintf(
         R"({
           "cert_profile_1": {
             "cert_profile": {
@@ -1865,7 +1865,7 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
 
     EXPECT_START_CSR_CA_ERROR(StartCsr);
 
-    pref_val = ParseJson("{}");
+    pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     EXPECT_CALL(callback_observer_,
@@ -1951,7 +1951,7 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
-  base::Value pref_val;
+  base::Value::Dict pref_val;
 
   {
     testing::InSequence seq;
@@ -1965,7 +1965,7 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
 
-    pref_val = ParseJson(base::StringPrintf(
+    pref_val = ParseJsonDict(base::StringPrintf(
         R"({
           "cert_profile_1": {
             "cert_profile": {
@@ -1989,7 +1989,7 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
   }
 
   {
-    pref_val = ParseJson("{}");
+    pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
     worker->Stop(CertProvisioningWorkerState::kCanceled);

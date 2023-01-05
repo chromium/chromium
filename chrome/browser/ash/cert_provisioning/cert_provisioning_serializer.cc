@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_serializer.h"
 
+#include <string>
+
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/prefs/pref_service.h"
@@ -39,20 +42,20 @@ bool ConvertToEnum(int value, T* dst) {
 }
 
 template <typename T>
-bool DeserializeEnumValue(const base::Value::Dict& parent_value,
+bool DeserializeEnumValue(const base::Value::Dict& parent_dict,
                           const char* value_name,
                           T* dst) {
-  const absl::optional<int> serialized_enum = parent_value.FindInt(value_name);
-  if (!serialized_enum) {
+  absl::optional<int> serialized_enum = parent_dict.FindInt(value_name);
+  if (!serialized_enum.has_value()) {
     return false;
   }
   return ConvertToEnum<T>(*serialized_enum, dst);
 }
 
-bool DeserializeStringValue(const base::Value::Dict& parent_value,
+bool DeserializeStringValue(const base::Value::Dict& parent_dict,
                             const char* value_name,
                             std::string* dst) {
-  const std::string* serialized_string = parent_value.FindString(value_name);
+  const std::string* serialized_string = parent_dict.FindString(value_name);
   if (!serialized_string) {
     return false;
   }
@@ -60,22 +63,21 @@ bool DeserializeStringValue(const base::Value::Dict& parent_value,
   return true;
 }
 
-bool DeserializeBoolValue(const base::Value::Dict& parent_value,
+bool DeserializeBoolValue(const base::Value::Dict& parent_dict,
                           const char* value_name,
                           bool* dst) {
-  const absl::optional<bool> serialized_bool =
-      parent_value.FindBool(value_name);
-  if (!serialized_bool) {
+  absl::optional<bool> serialized_bool = parent_dict.FindBool(value_name);
+  if (!serialized_bool.has_value()) {
     return false;
   }
   *dst = *serialized_bool;
   return true;
 }
 
-bool DeserializeRenewalPeriod(const base::Value::Dict& parent_value,
+bool DeserializeRenewalPeriod(const base::Value::Dict& parent_dict,
                               const char* value_name,
                               base::TimeDelta* dst) {
-  absl::optional<int> serialized_time = parent_value.FindInt(value_name);
+  absl::optional<int> serialized_time = parent_dict.FindInt(value_name);
   *dst = base::Seconds(serialized_time.value_or(0));
   return true;
 }
@@ -91,19 +93,19 @@ base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
 
   if (!profile.renewal_period.is_zero()) {
     result.Set(kKeyNameCertProfileRenewalPeriod,
-               static_cast<int>(profile.renewal_period.InSeconds()));
+               base::saturated_cast<int>(profile.renewal_period.InSeconds()));
   }
 
   return result;
 }
 
-bool DeserializeCertProfile(const base::Value::Dict& parent_value,
+bool DeserializeCertProfile(const base::Value::Dict& parent_dict,
                             const char* value_name,
                             CertProfile* dst) {
   static_assert(CertProfile::kVersion == 5, "This function should be updated");
 
   const base::Value::Dict* serialized_profile =
-      parent_value.FindDict(value_name);
+      parent_dict.FindDict(value_name);
 
   if (!serialized_profile) {
     return false;
@@ -128,15 +130,14 @@ bool DeserializeCertProfile(const base::Value::Dict& parent_value,
   return is_ok;
 }
 
-base::Value SerializePublicKey(const std::vector<uint8_t>& public_key) {
-  return base::Value(base::Base64Encode(public_key));
+std::string SerializePublicKey(const std::vector<uint8_t>& public_key) {
+  return base::Base64Encode(public_key);
 }
 
-bool DeserializePublicKey(const base::Value::Dict& parent_value,
+bool DeserializePublicKey(const base::Value::Dict& parent_dict,
                           const char* value_name,
                           std::vector<uint8_t>* dst) {
-  const std::string* serialized_public_key =
-      parent_value.FindString(value_name);
+  const std::string* serialized_public_key = parent_dict.FindString(value_name);
 
   if (!serialized_public_key) {
     return false;

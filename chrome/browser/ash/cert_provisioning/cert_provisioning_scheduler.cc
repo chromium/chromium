@@ -557,12 +557,13 @@ absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
   const base::Value& profile_list = pref_service_->GetValue(pref_name_);
 
   for (const base::Value& cur_profile : profile_list.GetList()) {
-    const CertProfileId* id = cur_profile.FindStringKey(kCertProfileIdKey);
+    const base::Value::Dict& cur_profile_dict = cur_profile.GetDict();
+    const CertProfileId* id = cur_profile_dict.FindString(kCertProfileIdKey);
     if (!id || (*id != cert_profile_id)) {
       continue;
     }
 
-    return CertProfile::MakeFromValue(cur_profile);
+    return CertProfile::MakeFromValue(cur_profile_dict);
   }
 
   return absl::nullopt;
@@ -575,7 +576,8 @@ std::vector<CertProfile> CertProvisioningSchedulerImpl::GetCertProfiles() {
 
   std::vector<CertProfile> result_profiles;
   for (const base::Value& cur_profile : profile_list.GetList()) {
-    absl::optional<CertProfile> p = CertProfile::MakeFromValue(cur_profile);
+    absl::optional<CertProfile> p =
+        CertProfile::MakeFromValue(cur_profile.GetDict());
     if (!p) {
       LOG(WARNING) << "Failed to parse certificate profile";
       continue;

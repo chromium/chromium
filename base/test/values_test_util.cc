@@ -217,6 +217,12 @@ IsJsonMatcher::IsJsonMatcher(base::StringPiece json)
 IsJsonMatcher::IsJsonMatcher(const base::Value& value)
     : expected_value_(value.Clone()) {}
 
+IsJsonMatcher::IsJsonMatcher(const base::Value::Dict& value)
+    : expected_value_(base::Value(value.Clone())) {}
+
+IsJsonMatcher::IsJsonMatcher(const base::Value::List& value)
+    : expected_value_(base::Value(value.Clone())) {}
+
 IsJsonMatcher::IsJsonMatcher(const IsJsonMatcher& other)
     : expected_value_(other.expected_value_.Clone()) {}
 
