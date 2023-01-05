@@ -60,6 +60,7 @@ test_files = [
   "esim_rename_dialog_test.js",
   "fake_cros_audio_config_test.js",
   "fake_input_method_private.js",
+  "fake_input_device_settings_provider_test.js",
   "fake_language_settings_private.js",
   "fake_media_devices.js",
   "fake_metrics_private.js",
