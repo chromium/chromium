@@ -348,6 +348,7 @@ AuraSurface::~AuraSurface() {
   if (surface_) {
     surface_->RemoveSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasAuraSurfaceKey, false);
+    wm::SetTooltipText(surface_->window(), nullptr);
   }
 }
 
