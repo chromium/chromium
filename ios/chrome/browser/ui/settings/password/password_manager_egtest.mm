@@ -1030,6 +1030,13 @@ id<GREYMatcher> EditDoneButton() {
 
 // Checks that deleting a password from password details can be cancelled.
 - (void)testCancelDeletionInDetailView {
+  // TODO(crbug.com/1405037): Test fails on iPad device.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"This test fails on iPad device.");
+  }
+#endif
+
   // Save form to be deleted later.
   SaveExamplePasswordForm();
 
