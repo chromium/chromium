@@ -6841,3 +6841,4 @@ crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.http
 # Sheriff 2023-01-05
 # Previously also linked with crbug.com/1249176
 crbug.com/1361956 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Pass Failure Timeout ]
+crbug.com/1354433 [ Win ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Pass Failure ]
