@@ -3371,6 +3371,15 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_LABEL" desc="Label of the link row that leads to the third-party cookies page" translateable="false">
     Nam condimentum
   </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="Subabel for third-party cookies link row stating that third-party cookies are allowed with no exceptions" translateable="false">
+    Enabled Vestibulum ante mi, feugiat eget velit id
+  </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="Subabel for third-party cookies link row stating that third-party cookies are disabled in incognito mode with no exceptions" translateable="false">
+    Disabled Incognito Vestibulum ante mi, feugiat eget velit id
+  </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="Subabel for third-party cookies link row stating that third-party cookies are disabled with no exceptions" translateable="false">
+    Disabled Vestibulum ante mi, feugiat eget velit id
+  </message>
   <message name="IDS_SETTINGS_COOKIES_CONTROLS" desc="Title of the general cookies control section.">
     General settings
   </message>

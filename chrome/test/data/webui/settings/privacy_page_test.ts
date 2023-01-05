@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SettingsPrefsElement, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -67,8 +67,6 @@ suite('PrivacyPage', function() {
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  const testLabels: string[] = ['test label 1', 'test label 2'];
-
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
@@ -86,7 +84,6 @@ suite('PrivacyPage', function() {
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
@@ -123,20 +120,31 @@ suite('PrivacyPage', function() {
   });
 
   test('cookiesLinkRowSublabel', async function() {
-    await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
-    flush();
+    page.set(
+        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
     assertEquals(
+        page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
         page.shadowRoot!
             .querySelector<CrLinkRowElement>(
-                '#thirdPartyCookiesLinkRow')!.subLabel,
-        testLabels[0]);
+                '#thirdPartyCookiesLinkRow')!.subLabel);
 
-    webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.INCOGNITO_ONLY);
     assertEquals(
+        page.i18n('thirdPartyCookiesLinkRowSublabelDisabledInIncognito'),
         page.shadowRoot!
             .querySelector<CrLinkRowElement>(
-                '#thirdPartyCookiesLinkRow')!.subLabel,
-        testLabels[1]);
+                '#thirdPartyCookiesLinkRow')!.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    assertEquals(
+        page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
+        page.shadowRoot!
+            .querySelector<CrLinkRowElement>(
+                '#thirdPartyCookiesLinkRow')!.subLabel);
   });
 
   test('ContentSettingsVisibility', async function() {
@@ -225,15 +233,15 @@ suite(`PrivacySandbox4Disabled`, function() {
     await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
     flush();
     assertEquals(
+        testLabels[0],
         page.shadowRoot!.querySelector<CrLinkRowElement>(
-                            '#cookiesLinkRow')!.subLabel,
-        testLabels[0]);
+                            '#cookiesLinkRow')!.subLabel);
 
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
     assertEquals(
+        testLabels[1],
         page.shadowRoot!.querySelector<CrLinkRowElement>(
-                            '#cookiesLinkRow')!.subLabel,
-        testLabels[1]);
+                            '#cookiesLinkRow')!.subLabel);
   });
 
   test('privacySandboxRestricted', function() {

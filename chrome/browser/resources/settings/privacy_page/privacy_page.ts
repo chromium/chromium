@@ -23,7 +23,7 @@ import './privacy_guide/privacy_guide_dialog.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -37,7 +37,7 @@ import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
-import {ChooserType, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
+import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
 import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './privacy_page.html.js';
@@ -473,6 +473,21 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     return this.safetyCheckNotificationPermissionsEnabled_ ?
         this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :
         this.i18n('siteSettingsDefaultBehaviorDescription');
+  }
+
+  private computeThirdPartyCookiesSublabel_(): string {
+    const currentCookieSetting =
+        this.getPref('profile.cookie_controls_mode').value;
+    switch (currentCookieSetting) {
+      case CookieControlsMode.OFF:
+        return this.i18n('thirdPartyCookiesLinkRowSublabelEnabled');
+      case CookieControlsMode.INCOGNITO_ONLY:
+        return this.i18n('thirdPartyCookiesLinkRowSublabelDisabledInIncognito');
+      case CookieControlsMode.BLOCK_THIRD_PARTY:
+        return this.i18n('thirdPartyCookiesLinkRowSublabelDisabled');
+      default:
+        assertNotReached();
+    }
   }
 
   private isPrivacySandboxSettings3Enabled_(): boolean {
