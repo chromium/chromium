@@ -611,7 +611,14 @@ class DeleteWatcher : public BaseWatcher {
 
   ~DeleteWatcher() override { DCHECK(!controller_); }
 
+  bool HasController() const { return !!controller_; }
+
   void OnFileCanWriteWithoutBlocking(int /* fd */) override {
+    ClearController();
+  }
+
+ protected:
+  void ClearController() {
     DCHECK(owned_controller_);
     controller_ = nullptr;
     owned_controller_.reset();
@@ -657,13 +664,15 @@ class NestedPumpWatcher : public MessagePumpGlib::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override {}
 };
 
-class QuitWatcher : public BaseWatcher {
+class QuitWatcher : public DeleteWatcher {
  public:
-  QuitWatcher(MessagePumpGlib::FdWatchController* controller,
+  QuitWatcher(std::unique_ptr<MessagePumpGlib::FdWatchController> controller,
               base::OnceClosure quit_closure)
-      : BaseWatcher(controller), quit_closure_(std::move(quit_closure)) {}
+      : DeleteWatcher(std::move(controller)),
+        quit_closure_(std::move(quit_closure)) {}
 
-  void OnFileCanReadWithoutBlocking(int /* fd */) override {
+  void OnFileCanReadWithoutBlocking(int fd) override {
+    ClearController();
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
@@ -682,7 +691,7 @@ void WriteFDWrapper(const int fd,
 }  // namespace
 
 // Tests that MessagePumpGlib::FdWatcher::OnFileCanReadWithoutBlocking is not
-// called for a READ_WRITE event, when the controller is destroyed in
+// called for a READ_WRITE event, and that the controller is destroyed in
 // OnFileCanWriteWithoutBlocking callback.
 TEST_F(MessagePumpGLibFdWatchTest, DeleteWatcher) {
   auto pump = std::make_unique<MessagePumpGlib>();
@@ -696,6 +705,7 @@ TEST_F(MessagePumpGLibFdWatchTest, DeleteWatcher) {
                             &watcher);
 
   SimulateEvent(pump.get(), controller);
+  EXPECT_FALSE(watcher.HasController());
 }
 
 // Tests that MessagePumpGlib::FdWatcher::OnFileCanReadWithoutBlocking is not
@@ -717,8 +727,8 @@ TEST_F(MessagePumpGLibFdWatchTest, NestedPumpWatcher) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
   std::unique_ptr<MessagePumpGlib> pump(new MessagePumpGlib);
-  MessagePumpGlib::FdWatchController controller(FROM_HERE);
   NestedPumpWatcher watcher;
+  MessagePumpGlib::FdWatchController controller(FROM_HERE);
   pump->WatchFileDescriptor(pipefds_[1], false, MessagePumpGlib::WATCH_READ,
                             &controller, &watcher);
 
@@ -731,16 +741,19 @@ TEST_F(MessagePumpGLibFdWatchTest, QuitWatcher) {
   MessagePumpGlib* pump = new MessagePumpGlib();
   SingleThreadTaskExecutor executor(WrapUnique(pump));
   RunLoop run_loop;
-  MessagePumpGlib::FdWatchController controller(FROM_HERE);
-  QuitWatcher delegate(&controller, run_loop.QuitClosure());
-  WaitableEvent event;
-  auto watcher = std::make_unique<WaitableEventWatcher>();
+
+  auto owned_controller =
+      std::make_unique<MessagePumpGlib::FdWatchController>(FROM_HERE);
+  MessagePumpGlib::FdWatchController* controller = owned_controller.get();
+  QuitWatcher delegate(std::move(owned_controller), run_loop.QuitClosure());
 
   pump->WatchFileDescriptor(pipefds_[0], false, MessagePumpGlib::WATCH_READ,
-                            &controller, &delegate);
+                            controller, &delegate);
 
   // Make the IO thread wait for |event| before writing to pipefds[1].
   const char buf = 0;
+  WaitableEvent event;
+  auto watcher = std::make_unique<WaitableEventWatcher>();
   WaitableEventWatcher::EventCallback write_fd_task =
       BindOnce(&WriteFDWrapper, pipefds_[1], &buf, 1);
   io_runner()->PostTask(
