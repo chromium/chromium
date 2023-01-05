@@ -1620,9 +1620,9 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
        ++i) {
     auto suggestion = results->suggest_results[i];
 
-    const auto& image_url = suggestion.image_url();
+    GURL image_url = GURL(suggestion.entity_info().image_url());
     if (!image_url.is_empty())
-      prefetch_image_urls.push_back(image_url);
+      prefetch_image_urls.push_back(std::move(image_url));
 
     if (suggestion.answer())
       suggestion.answer()->AddImageURLsTo(&prefetch_image_urls);

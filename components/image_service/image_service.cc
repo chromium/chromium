@@ -177,9 +177,10 @@ class ImageService::SuggestEntityImageURLFetcher {
     for (const auto& result : results.suggest_results) {
       // TODO(tommycli): `entity_id_` is not used yet, because it's always
       // empty right now.
-      if (result.image_url().is_valid() &&
+      GURL url(result.entity_info().image_url());
+      if (url.is_valid() &&
           base::i18n::ToLower(result.match_contents()) == search_query_) {
-        return std::move(callback_).Run(result.image_url());
+        return std::move(callback_).Run(std::move(url));
       }
     }
 

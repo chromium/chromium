@@ -255,7 +255,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& match_contents,
     const std::u16string& match_contents_prefix,
     const std::u16string& annotation,
-    const omnibox::EntityInfo& entity_info,
+    omnibox::EntityInfo entity_info,
     const std::string& deletion_url,
     bool from_keyword,
     int relevance,
@@ -271,15 +271,14 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
              deletion_url),
       suggestion_(suggestion),
       match_contents_prefix_(match_contents_prefix),
-      image_url_(GURL(entity_info.image_url())),
-      entity_info_(entity_info),
+      entity_info_(std::move(entity_info)),
       should_prefetch_(should_prefetch),
       should_prerender_(should_prerender) {
-  annotation_ = !entity_info.annotation().empty()
-                    ? base::UTF8ToUTF16(entity_info.annotation())
+  annotation_ = !entity_info_.annotation().empty()
+                    ? base::UTF8ToUTF16(entity_info_.annotation())
                     : annotation;
-  match_contents_ = !entity_info.name().empty()
-                        ? base::UTF8ToUTF16(entity_info.name())
+  match_contents_ = !entity_info_.name().empty()
+                        ? base::UTF8ToUTF16(entity_info_.name())
                         : match_contents;
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
@@ -851,9 +850,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
       results->suggest_results.push_back(SuggestResult(
           suggestion, match_type, subtypes[index],
           base::CollapseWhitespace(match_contents, false),
-          match_contents_prefix, annotation, entity_info, deletion_url,
-          is_keyword_result, relevance, relevances != nullptr, should_prefetch,
-          should_prerender, trimmed_input));
+          match_contents_prefix, annotation, std::move(entity_info),
+          deletion_url, is_keyword_result, relevance, relevances != nullptr,
+          should_prefetch, should_prerender, trimmed_input));
 
       if (answer_parsed_successfully) {
         results->suggest_results.back().SetAnswer(answer);
