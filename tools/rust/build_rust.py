@@ -127,7 +127,8 @@ def Configure(llvm_libs_root):
 
     subs = {}
     subs['INSTALL_DIR'] = quote_string(str(RUST_TOOLCHAIN_OUT_DIR))
-    subs['LLVM_ROOT'] = quote_string(str(llvm_libs_root))
+    subs['LLVM_LIB_ROOT'] = quote_string(str(llvm_libs_root))
+    subs['LLVM_BIN'] = quote_string(str(os.path.join(LLVM_BUILD_DIR, 'bin')))
     subs['PACKAGE_VERSION'] = GetPackageVersionForBuild()
 
     # ...and apply substitutions, writing to config.toml in Rust tree.
@@ -137,7 +138,34 @@ def Configure(llvm_libs_root):
 
 def RunXPy(sub, args, build_mac_arm, gcc_toolchain_path, verbose):
     ''' Run x.py, Rust's build script'''
+    # We append to these flags, make sure they exist.
+    ENV_FLAGS = [
+        'CFLAGS',
+        'CXXFLAGS',
+        'LDFLAGS',
+        'RUSTFLAGS_BOOTSTRAP',
+        'RUSTFLAGS_NOT_BOOTSTRAP',
+    ]
+
     RUSTENV = collections.defaultdict(str, os.environ)
+    for f in ENV_FLAGS:
+        RUSTENV.setdefault(f, '')
+
+    # The TARGET is consumed by the cc crate for building C/C++ sources, the
+    # CARGO_BUILD_TARGET is used for building Rust sources.
+    if sys.platform == 'win32':
+        RUSTENV['TARGET'] = 'x86_64-pc-windows-msvc'
+        RUSTENV['CARGO_BUILD_TARGET'] = 'x86_64-pc-windows-msvc'
+    elif sys.platform == 'darwin':
+        if build_mac_arm or platform.machine() == 'arm64':
+            RUSTENV['TARGET'] = 'arm64-apple-darwin'
+            RUSTENV['CARGO_BUILD_TARGET'] = 'arm64-apple-darwin'
+        else:
+            RUSTENV['TARGET'] = 'amd64-apple-darwin'
+            RUSTENV['CARGO_BUILD_TARGET'] = 'amd64-apple-darwin'
+    else:
+        RUSTENV['TARGET'] = 'x86_64-unknown-linux-gnu'
+        RUSTENV['CARGO_BUILD_TARGET'] = 'x86_64-unknown-linux-gnu'
 
     ##### For C/C++ compilation steps #####
     # The Rust toolchain does include some C/C++ code, and these env vars

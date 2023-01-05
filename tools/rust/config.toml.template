@@ -33,16 +33,38 @@ vendor = true
 # with the rust compiler we build.
 profiler = true
 
-target = ["x86_64-unknown-linux-gnu"]
-
 [install]
 prefix = "$INSTALL_DIR"
 sysconfdir = "etc"
 
+[target.x86_64-pc-windows-msvc]
+llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
+ranlib = "$LLVM_BIN/llvm-ranlib"
+ar = "$LLVM_BIN/llvm-lib"
+cc = "$LLVM_BIN/clang-cl"
+cxx = "$LLVM_BIN/clang-cl"
+# linker will be the system link.exe.
+
+[target.arm64-apple-darwin]
+llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
+ranlib = "$LLVM_BIN/llvm-ranlib"
+ar = "$LLVM_BIN/llvm-ar"
+cc = "$LLVM_BIN/clang"
+cxx = "$LLVM_BIN/clang++"
+linker = "$LLVM_BIN/clang"
+
+[target.amd64-apple-darwin]
+llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
+ranlib = "$LLVM_BIN/llvm-ranlib"
+ar = "$LLVM_BIN/llvm-ar"
+cc = "$LLVM_BIN/clang"
+cxx = "$LLVM_BIN/clang++"
+linker = "$LLVM_BIN/clang"
+
 [target.x86_64-unknown-linux-gnu]
-cc = "$LLVM_ROOT/bin/clang"
-cxx = "$LLVM_ROOT/bin/clang++"
-ar = "$LLVM_ROOT/bin/llvm-ar"
-ranlib = "$LLVM_ROOT/bin/llvm-ranlib"
-linker = "$LLVM_ROOT/bin/clang"
-llvm-config = "$LLVM_ROOT/bin/llvm-config"
+llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
+ranlib = "$LLVM_BIN/llvm-ranlib"
+ar = "$LLVM_BIN/llvm-ar"
+cc = "$LLVM_BIN/clang"
+cxx = "$LLVM_BIN/clang++"
+linker = "$LLVM_BIN/clang"
