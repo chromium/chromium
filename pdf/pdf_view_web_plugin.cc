@@ -693,7 +693,7 @@ bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  int identifier) {
   ResetRecentlySentFindUpdate();
   find_identifier_ = identifier;
-  engine_->StartFind(search_text.Utf8(), case_sensitive);
+  engine_->StartFind(search_text.Utf16(), case_sensitive);
   return true;
 }
 

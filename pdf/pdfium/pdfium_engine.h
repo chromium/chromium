@@ -106,7 +106,7 @@ class PDFiumEngine : public PDFEngine,
       const std::vector<int>& page_numbers,
       const blink::WebPrintParams& print_params) override;
   void PrintEnd() override;
-  void StartFind(const std::string& text, bool case_sensitive) override;
+  void StartFind(const std::u16string& text, bool case_sensitive) override;
   bool SelectFindResult(bool forward) override;
   void StopFind() override;
   void ZoomUpdated(double new_zoom_level) override;
@@ -723,7 +723,7 @@ class PDFiumEngine : public PDFEngine,
   gfx::Point mouse_middle_button_last_position_;
 
   // The current text used for searching.
-  std::string current_find_text_;
+  std::u16string current_find_text_;
   // The results found.
   std::vector<PDFiumRange> find_results_;
   // Whether a search is in progress.

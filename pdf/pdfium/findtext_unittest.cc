@@ -92,7 +92,7 @@ TEST_P(FindTextTest, FindText) {
   ASSERT_TRUE(engine);
 
   ExpectInitialSearchResults(client, 10);
-  engine->StartFind("o", /*case_sensitive=*/true);
+  engine->StartFind(u"o", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindHyphenatedText) {
@@ -102,7 +102,7 @@ TEST_P(FindTextTest, FindHyphenatedText) {
   ASSERT_TRUE(engine);
 
   ExpectInitialSearchResults(client, 6);
-  engine->StartFind("application", /*case_sensitive=*/true);
+  engine->StartFind(u"application", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindLineBreakText) {
@@ -112,7 +112,7 @@ TEST_P(FindTextTest, FindLineBreakText) {
   ASSERT_TRUE(engine);
 
   ExpectInitialSearchResults(client, 1);
-  engine->StartFind("is the first system", /*case_sensitive=*/true);
+  engine->StartFind(u"is the first system", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindSimpleQuotationMarkText) {
@@ -122,7 +122,7 @@ TEST_P(FindTextTest, FindSimpleQuotationMarkText) {
   ASSERT_TRUE(engine);
 
   ExpectInitialSearchResults(client, 2);
-  engine->StartFind("don't", /*case_sensitive=*/true);
+  engine->StartFind(u"don't", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindFancyQuotationMarkText) {
@@ -134,8 +134,7 @@ TEST_P(FindTextTest, FindFancyQuotationMarkText) {
   ExpectInitialSearchResults(client, 2);
 
   // don't, using right apostrophe instead of a single quotation mark
-  std::u16string term = {'d', 'o', 'n', 0x2019, 't'};
-  engine->StartFind(base::UTF16ToUTF8(term), /*case_sensitive=*/true);
+  engine->StartFind(u"don\u2019t", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindHiddenCroppedText) {
@@ -146,7 +145,7 @@ TEST_P(FindTextTest, FindHiddenCroppedText) {
 
   // The word "Hello" is cropped out.
   ExpectInitialSearchResults(client, 0);
-  engine->StartFind("Hello", /*case_sensitive=*/true);
+  engine->StartFind(u"Hello", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindVisibleCroppedText) {
@@ -157,7 +156,7 @@ TEST_P(FindTextTest, FindVisibleCroppedText) {
 
   // Only one instance of the word "world" is visible. The other is cropped out.
   ExpectInitialSearchResults(client, 1);
-  engine->StartFind("world", /*case_sensitive=*/true);
+  engine->StartFind(u"world", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, FindVisibleCroppedTextRepeatedly) {
@@ -169,9 +168,9 @@ TEST_P(FindTextTest, FindVisibleCroppedTextRepeatedly) {
   // Only one instance of the word "world" is visible. The other is cropped out.
   // These 2 find operations should not trigger https://crbug.com/1344057.
   ExpectInitialSearchResults(client, 1);
-  engine->StartFind("worl", /*case_sensitive=*/true);
+  engine->StartFind(u"worl", /*case_sensitive=*/true);
   ExpectInitialSearchResults(client, 1);
-  engine->StartFind("world", /*case_sensitive=*/true);
+  engine->StartFind(u"world", /*case_sensitive=*/true);
 }
 
 TEST_P(FindTextTest, SelectFindResult) {
@@ -181,7 +180,7 @@ TEST_P(FindTextTest, SelectFindResult) {
   ASSERT_TRUE(engine);
 
   ExpectInitialSearchResults(client, 4);
-  engine->StartFind("world", /*case_sensitive=*/true);
+  engine->StartFind(u"world", /*case_sensitive=*/true);
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
   EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(_, _)).Times(0);
@@ -206,7 +205,7 @@ TEST_P(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
   ASSERT_TRUE(engine);
 
   ExpectInitialSearchResults(client, 4);
-  engine->StartFind("world", /*case_sensitive=*/false);
+  engine->StartFind(u"world", /*case_sensitive=*/false);
 
   {
     InSequence sequence;

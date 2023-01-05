@@ -1757,7 +1757,7 @@ bool PDFiumEngine::OnChar(const blink::WebKeyboardEvent& event) {
   return rv;
 }
 
-void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
+void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   // If the caller asks StartFind() to search for no text, then this is an
   // error on the part of the caller. The `blink::FindInPage` code guarantees it
   // is not empty, so this should never happen.
@@ -1795,15 +1795,14 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
   int current_page = next_page_to_search_;
 
   if (pages_[current_page]->available()) {
-    std::u16string str = base::UTF8ToUTF16(text);
     // Don't use PDFium to search for now, since it doesn't support unicode
     // text. Leave the code for now to avoid bit-rot, in case it's fixed later.
     // The extra parens suppress a -Wunreachable-code warning.
     if ((false)) {
-      SearchUsingPDFium(str, case_sensitive, first_search,
+      SearchUsingPDFium(text, case_sensitive, first_search,
                         character_to_start_searching_from, current_page);
     } else {
-      SearchUsingICU(str, case_sensitive, first_search,
+      SearchUsingICU(text, case_sensitive, first_search,
                      character_to_start_searching_from, current_page);
     }
 
@@ -3779,7 +3778,7 @@ gfx::Size PDFiumEngine::ApplyDocumentLayout(
 
   // Store the current find index so that we can resume finding at that
   // particular index after we have recomputed the find results.
-  std::string current_find_text = current_find_text_;
+  std::u16string current_find_text = current_find_text_;
   resume_find_index_ = current_find_index_;
 
   // Save the current page.

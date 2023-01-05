@@ -307,7 +307,7 @@ class PDFEngine {
       const std::vector<int>& page_index,
       const blink::WebPrintParams& print_params) = 0;
   virtual void PrintEnd() = 0;
-  virtual void StartFind(const std::string& text, bool case_sensitive) = 0;
+  virtual void StartFind(const std::u16string& text, bool case_sensitive) = 0;
   virtual bool SelectFindResult(bool forward) = 0;
   virtual void StopFind() = 0;
   virtual void ZoomUpdated(double new_zoom_level) = 0;
