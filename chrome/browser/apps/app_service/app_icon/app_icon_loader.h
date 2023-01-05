@@ -37,6 +37,7 @@ namespace extensions {
 class Extension;
 }
 
+class ArcAppListPrefs;
 class Profile;
 
 namespace web_app {
@@ -128,12 +129,22 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
                                       ui::ResourceScaleFactor scale_factor);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Requests a compressed icon data with `scale_factor` for an ARC app
+  // identified by `app_id`.
+  void GetArcAppCompressedIconData(const std::string& app_id,
+                                   ArcAppListPrefs* arc_prefs,
+                                   ui::ResourceScaleFactor scale_factor);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   friend class base::RefCounted<AppIconLoader>;
 
   ~AppIconLoader();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnGetArcAppCompressedIconData(arc::mojom::RawIconPngDataPtr icon);
+
   std::unique_ptr<arc::IconDecodeRequest> CreateArcIconDecodeRequest(
       base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,
       const std::vector<uint8_t>& icon_png_data);

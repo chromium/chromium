@@ -652,8 +652,10 @@ void ArcAppListPrefs::ClearIconRequestRecord() {
   request_icon_recorded_.clear();
 }
 
-void ArcAppListPrefs::RequestIcon(const std::string& app_id,
-                                  const ArcAppIconDescriptor& descriptor) {
+void ArcAppListPrefs::RequestIcon(
+    const std::string& app_id,
+    const ArcAppIconDescriptor& descriptor,
+    base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback) {
   DCHECK_NE(app_id, arc::kPlayStoreAppId);
 
   // ArcSessionManager can be terminated during test tear down, before callback
@@ -688,15 +690,18 @@ void ArcAppListPrefs::RequestIcon(const std::string& app_id,
     return;
   }
 
-  SendIconRequest(app_id, *app_info, descriptor);
+  SendIconRequest(app_id, *app_info, descriptor, std::move(callback));
 }
 
-void ArcAppListPrefs::SendIconRequest(const std::string& app_id,
-                                      const AppInfo& app_info,
-                                      const ArcAppIconDescriptor& descriptor) {
+void ArcAppListPrefs::SendIconRequest(
+    const std::string& app_id,
+    const AppInfo& app_info,
+    const ArcAppIconDescriptor& descriptor,
+    base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)>
+        icon_data_callback) {
   auto callback =
       base::BindOnce(&ArcAppListPrefs::OnIcon, weak_ptr_factory_.GetWeakPtr(),
-                     app_id, descriptor);
+                     app_id, descriptor, std::move(icon_data_callback));
   if (app_info.icon_resource_id.empty()) {
     auto* app_instance =
         ARC_GET_INSTANCE_FOR_METHOD(app_connection_holder(), GetAppIcon);
@@ -717,10 +722,21 @@ void ArcAppListPrefs::SendIconRequest(const std::string& app_id,
   }
 }
 
+void ArcAppListPrefs::RequestRawIconData(
+    const std::string& app_id,
+    const ArcAppIconDescriptor& descriptor,
+    base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback) {
+  RequestIcon(app_id, descriptor, std::move(callback));
+}
+
 void ArcAppListPrefs::MaybeRequestIcon(const std::string& app_id,
                                        const ArcAppIconDescriptor& descriptor) {
-  if (!IsIconRequestRecorded(app_id, descriptor))
-    RequestIcon(app_id, descriptor);
+  if (!IsIconRequestRecorded(app_id, descriptor)) {
+    RequestIcon(
+        app_id, descriptor,
+        base::BindOnce(&ArcAppListPrefs::InstallIcon,
+                       weak_ptr_factory_.GetWeakPtr(), app_id, descriptor));
+  }
 }
 
 void ArcAppListPrefs::SetNotificationsEnabled(const std::string& app_id,
@@ -1596,7 +1612,10 @@ void ArcAppListPrefs::AddAppAndShortcut(
   // Send pending requests in case app becomes visible.
   if (!app_old_info || !app_old_info->ready) {
     for (const auto& descriptor : request_icon_recorded_[app_id])
-      RequestIcon(app_id, descriptor);
+      RequestIcon(
+          app_id, descriptor,
+          base::BindOnce(&ArcAppListPrefs::InstallIcon,
+                         weak_ptr_factory_.GetWeakPtr(), app_id, descriptor));
   }
 
   if (app_ready) {
@@ -2075,9 +2094,11 @@ void ArcAppListPrefs::OnPackageRemoved(const std::string& package_name) {
     observer.OnPackageRemoved(package_name, true);
 }
 
-void ArcAppListPrefs::OnIcon(const std::string& app_id,
-                             const ArcAppIconDescriptor& descriptor,
-                             arc::mojom::RawIconPngDataPtr icon) {
+void ArcAppListPrefs::OnIcon(
+    const std::string& app_id,
+    const ArcAppIconDescriptor& descriptor,
+    base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback,
+    arc::mojom::RawIconPngDataPtr icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!icon || !icon->icon_png_data.has_value() ||
@@ -2091,25 +2112,7 @@ void ArcAppListPrefs::OnIcon(const std::string& app_id,
     return;
   }
 
-  InstallIcon(app_id, descriptor, std::move(icon));
-}
-
-void ArcAppListPrefs::OnIconLoaded(const std::string& app_id,
-                                   const ArcAppIconDescriptor& descriptor,
-                                   arc::mojom::RawIconPngDataPtr icon) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (icon->icon_png_data->empty()) {
-    LOG(WARNING) << "Cannot fetch icon for " << app_id;
-    return;
-  }
-
-  if (!IsRegistered(app_id)) {
-    VLOG(2) << "Request to update icon for non-registered app: " << app_id;
-    return;
-  }
-
-  InstallIcon(app_id, descriptor, std::move(icon));
+  std::move(callback).Run(std::move(icon));
 }
 
 void ArcAppListPrefs::OnTaskCreated(int32_t task_id,

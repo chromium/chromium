@@ -361,7 +361,14 @@ class ArcAppListPrefs : public KeyedService,
   void SetLaunchRequestTimeForTesting(const std::string& app_id,
                                       base::Time timestamp);
 
-  // Calls RequestIcon if no request is recorded.
+  // Calls RequestIcon to get the raw icon data.
+  void RequestRawIconData(
+      const std::string& app_id,
+      const ArcAppIconDescriptor& descriptor,
+      base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback);
+
+  // Calls RequestIcon if no request is recorded, and installs the icon files in
+  // the ARC folder of the profile directory.
   void MaybeRequestIcon(const std::string& app_id,
                         const ArcAppIconDescriptor& descriptor);
 
@@ -477,10 +484,8 @@ class ArcAppListPrefs : public KeyedService,
   void OnPackageRemoved(const std::string& package_name) override;
   void OnIcon(const std::string& app_id,
               const ArcAppIconDescriptor& descriptor,
+              base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback,
               arc::mojom::RawIconPngDataPtr icon);
-  void OnIconLoaded(const std::string& app_id,
-                    const ArcAppIconDescriptor& descriptor,
-                    arc::mojom::RawIconPngDataPtr icon);
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
@@ -580,13 +585,17 @@ class ArcAppListPrefs : public KeyedService,
   // bridge service is not ready, then defer this request until the app gets
   // available. Once new icon is installed notifies an observer
   // OnAppIconUpdated.
-  void RequestIcon(const std::string& app_id,
-                   const ArcAppIconDescriptor& descriptor);
+  void RequestIcon(
+      const std::string& app_id,
+      const ArcAppIconDescriptor& descriptor,
+      base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback);
 
   // Sends icon request via mojom. It supports different icon's dimensions.
-  void SendIconRequest(const std::string& app_id,
-                       const AppInfo& app,
-                       const ArcAppIconDescriptor& descriptor);
+  void SendIconRequest(
+      const std::string& app_id,
+      const AppInfo& app,
+      const ArcAppIconDescriptor& descriptor,
+      base::OnceCallback<void(arc::mojom::RawIconPngDataPtr)> callback);
 
   // This checks if app is not registered yet and in this case creates
   // non-launchable app entry. In case app is already registered then updates

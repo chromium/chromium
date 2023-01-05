@@ -123,6 +123,15 @@ void GetChromeAppCompressedIconData(content::BrowserContext* context,
                                     LoadIconCallback callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Requests a compressed icon data for an ARC app identified by `app_id`.
+void GetArcAppCompressedIconData(content::BrowserContext* context,
+                                 const std::string& app_id,
+                                 int size_in_dip,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 LoadIconCallback callback);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Loads an icon from a FilePath. If that fails, it calls the fallback.
 //
 // The file named by |path| might be empty, not found or otherwise unreadable.

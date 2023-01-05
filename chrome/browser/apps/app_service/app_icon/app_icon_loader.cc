@@ -50,6 +50,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -630,6 +631,43 @@ void AppIconLoader::GetChromeAppCompressedIconData(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AppIconLoader::GetArcAppCompressedIconData(
+    const std::string& app_id,
+    ArcAppListPrefs* arc_prefs,
+    ui::ResourceScaleFactor scale_factor) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(arc_prefs);
+
+  arc_prefs->RequestRawIconData(
+      app_id, ArcAppIconDescriptor(size_hint_in_dip_, scale_factor),
+      base::BindOnce(&AppIconLoader::OnGetArcAppCompressedIconData,
+                     base::WrapRefCounted(this)));
+}
+
+void AppIconLoader::OnGetArcAppCompressedIconData(
+    arc::mojom::RawIconPngDataPtr icon) {
+  auto iv = std::make_unique<IconValue>();
+  if (!icon) {
+    std::move(callback_).Run(std::move(iv));
+    return;
+  }
+
+  iv->icon_type = IconType::kCompressed;
+
+  // Save the raw icon for the non-adaptive icon, or the generated standard icon
+  // done by the ARC side for the adaptive icon if missing the foreground and
+  // background icon data.
+  iv->compressed = std::move(icon->icon_png_data.value());
+  if (icon->is_adaptive_icon) {
+    // For the adaptive icon, save the foreground and background icon data.
+    iv->foreground_icon_png_data =
+        std::move(icon->foreground_icon_png_data.value());
+    iv->background_icon_png_data =
+        std::move(icon->background_icon_png_data.value());
+  }
+  std::move(callback_).Run(std::move(iv));
+}
+
 std::unique_ptr<arc::IconDecodeRequest>
 AppIconLoader::CreateArcIconDecodeRequest(
     base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,

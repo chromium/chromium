@@ -40,6 +40,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/grit/app_icon_resources.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #endif
@@ -529,6 +530,29 @@ void GetChromeAppCompressedIconData(content::BrowserContext* context,
       context, scale_factor);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void GetArcAppCompressedIconData(content::BrowserContext* context,
+                                 const std::string& app_id,
+                                 int size_in_dip,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 LoadIconCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(context);
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context);
+  if (!prefs) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return;
+  }
+
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
+          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
+          IconEffects::kNone, kInvalidIconResource, std::move(callback));
+  icon_loader->GetArcAppCompressedIconData(app_id, prefs, scale_factor);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void LoadIconFromFileWithFallback(
     IconType icon_type,
