@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_FIND_IN_PAGE_JAVA_SCRIPT_FIND_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_FIND_IN_PAGE_JAVA_SCRIPT_FIND_TAB_HELPER_H_
 
 #include <Foundation/Foundation.h>
 
@@ -12,18 +12,19 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@class FindInPageController;
+@class JavaScriptFindInPageController;
 @class FindInPageModel;
 @protocol FindInPageResponseDelegate;
 
 // Adds support for the "Find in page" feature.
-class FindTabHelper : public web::WebStateObserver,
-                      public web::WebStateUserData<FindTabHelper> {
+class JavaScriptFindTabHelper
+    : public web::WebStateObserver,
+      public web::WebStateUserData<JavaScriptFindTabHelper> {
  public:
-  FindTabHelper(const FindTabHelper&) = delete;
-  FindTabHelper& operator=(const FindTabHelper&) = delete;
+  JavaScriptFindTabHelper(const JavaScriptFindTabHelper&) = delete;
+  JavaScriptFindTabHelper& operator=(const JavaScriptFindTabHelper&) = delete;
 
-  ~FindTabHelper() override;
+  ~JavaScriptFindTabHelper() override;
 
   enum FindDirection {
     FORWARD,
@@ -70,13 +71,13 @@ class FindTabHelper : public web::WebStateObserver,
 
  private:
   friend class FindTabHelperTest;
-  friend class web::WebStateUserData<FindTabHelper>;
+  friend class web::WebStateUserData<JavaScriptFindTabHelper>;
 
   // Private constructor used by CreateForWebState().
-  FindTabHelper(web::WebState* web_state);
+  JavaScriptFindTabHelper(web::WebState* web_state);
 
-  // Create the FindInPageController for `web_state`. Only called if/when
-  // the WebState is realized.
+  // Create the JavaScriptFindInPageController for `web_state`. Only called
+  // if/when the WebState is realized.
   void CreateFindInPageController(web::WebState* web_state);
 
   // web::WebStateObserver.
@@ -86,9 +87,10 @@ class FindTabHelper : public web::WebStateObserver,
                            web::NavigationContext* navigation_context) override;
 
   // The ObjC find in page controller (nil if the WebState is not realized).
-  FindInPageController* controller_ = nil;
+  JavaScriptFindInPageController* controller_ = nil;
 
-  // The delegate to register with FindInPageController when it is created.
+  // The delegate to register with JavaScriptFindInPageController when it is
+  // created.
   __weak id<FindInPageResponseDelegate> response_delegate_ = nil;
 
   // Manage the registration of this instance as a WebStateObserver.
@@ -98,4 +100,4 @@ class FindTabHelper : public web::WebStateObserver,
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_JAVA_SCRIPT_FIND_TAB_HELPER_H_

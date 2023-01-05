@@ -4,7 +4,7 @@
 
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 
-#import "ios/web/public/find_in_page/find_in_page_manager.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,7 +24,8 @@ void FindInPageManagerDelegateBridge::DidHighlightMatches(WebState* web_state,
   if ([delegate_ respondsToSelector:@selector
                  (findInPageManager:
                      didHighlightMatchesOfQuery:withMatchCount:forWebState:)]) {
-    [delegate_ findInPageManager:web::FindInPageManager::FromWebState(web_state)
+    [delegate_ findInPageManager:web::JavaScriptFindInPageManager::FromWebState(
+                                     web_state)
         didHighlightMatchesOfQuery:query
                     withMatchCount:match_count
                        forWebState:web_state];
@@ -37,7 +38,8 @@ void FindInPageManagerDelegateBridge::DidSelectMatch(WebState* web_state,
   if ([delegate_ respondsToSelector:@selector
                  (findInPageManager:
                      didSelectMatchAtIndex:withContextString:forWebState:)]) {
-    [delegate_ findInPageManager:web::FindInPageManager::FromWebState(web_state)
+    [delegate_ findInPageManager:web::JavaScriptFindInPageManager::FromWebState(
+                                     web_state)
            didSelectMatchAtIndex:index
                withContextString:context_string
                      forWebState:web_state];

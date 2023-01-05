@@ -12,7 +12,7 @@
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -36,7 +36,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/common/uikit_ui_util.h"
-#import "ios/web/find_in_page/find_in_page_manager_impl.h"
+#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -279,8 +279,8 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
 
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
-  web::FindInPageManagerImpl::CreateForWebState(web_state);
-  FindTabHelper::CreateForWebState(web_state);
+  web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
+  JavaScriptFindTabHelper::CreateForWebState(web_state);
 
   // No Find in Page.
   web_state->SetContentIsHTML(false);
@@ -293,7 +293,8 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
   EXPECT_FALSE(CanPerform(@"keyCommand_findPrevious"));
 
   // Find UI active.
-  FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
+  JavaScriptFindTabHelper* helper =
+      JavaScriptFindTabHelper::FromWebState(web_state);
   helper->SetFindUIActive(YES);
   EXPECT_TRUE(CanPerform(@"keyCommand_findNext"));
   EXPECT_TRUE(CanPerform(@"keyCommand_findPrevious"));
@@ -844,8 +845,8 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 TEST_F(KeyCommandsProviderTest, ValidateCommands) {
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
-  web::FindInPageManagerImpl::CreateForWebState(web_state);
-  FindTabHelper::CreateForWebState(web_state);
+  web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
+  JavaScriptFindTabHelper::CreateForWebState(web_state);
 
   // Can Find in Page.
   web_state->SetContentIsHTML(true);

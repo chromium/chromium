@@ -4,7 +4,7 @@
 
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 
-#import "ios/web/find_in_page/find_in_page_manager_impl.h"
+#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/crw_fake_find_in_page_manager_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -21,7 +21,7 @@ class FindInPageManagerDelegateBridgeTest : public PlatformTest {
   FindInPageManagerDelegateBridgeTest()
       : delegate_([[CRWFakeFindInPageManagerDelegate alloc] init]),
         bridge_(std::make_unique<FindInPageManagerDelegateBridge>(delegate_)) {
-    FindInPageManagerImpl::CreateForWebState(&fake_web_state_);
+    JavaScriptFindInPageManagerImpl::CreateForWebState(&fake_web_state_);
   }
 
   CRWFakeFindInPageManagerDelegate* delegate_ = nil;

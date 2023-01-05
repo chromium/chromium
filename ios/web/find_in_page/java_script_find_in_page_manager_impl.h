@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_IMPL_H_
-#define IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_IMPL_H_
+#ifndef IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_IMPL_H_
+#define IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_IMPL_H_
 
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#import "ios/web/find_in_page/find_in_page_request.h"
-#import "ios/web/public/find_in_page/find_in_page_manager.h"
+#import "ios/web/find_in_page/java_script_find_in_page_request.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,11 +27,11 @@ namespace web {
 class WebState;
 class WebFrame;
 
-class FindInPageManagerImpl : public FindInPageManager,
-                              public web::WebStateObserver {
+class JavaScriptFindInPageManagerImpl : public JavaScriptFindInPageManager,
+                                        public web::WebStateObserver {
  public:
-  explicit FindInPageManagerImpl(web::WebState* web_state);
-  ~FindInPageManagerImpl() override;
+  explicit JavaScriptFindInPageManagerImpl(web::WebState* web_state);
+  ~JavaScriptFindInPageManagerImpl() override;
 
   // Need to overload FindInPageManager::CreateForWebState() as the default
   // implementation inherited from WebStateUserData<FindInPageManager> would
@@ -46,7 +46,7 @@ class FindInPageManagerImpl : public FindInPageManager,
   void SetDelegate(FindInPageManagerDelegate* delegate) override;
 
  private:
-  friend class web::WebStateUserData<FindInPageManagerImpl>;
+  friend class web::WebStateUserData<JavaScriptFindInPageManagerImpl>;
 
   // Executes find logic for `FindInPageSearch` option.
   void StartSearch(NSString* query);
@@ -81,11 +81,11 @@ class FindInPageManagerImpl : public FindInPageManager,
 
  protected:
   // Holds the state of the most recent find in page request.
-  FindInPageRequest last_find_request_;
+  JavaScriptFindInPageRequest last_find_request_;
   FindInPageManagerDelegate* delegate_ = nullptr;
   web::WebState* web_state_ = nullptr;
-  base::WeakPtrFactory<FindInPageManagerImpl> weak_factory_;
+  base::WeakPtrFactory<JavaScriptFindInPageManagerImpl> weak_factory_;
 };
 }  // namespace web
 
-#endif  // IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_IMPL_H_
+#endif  // IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_IMPL_H_

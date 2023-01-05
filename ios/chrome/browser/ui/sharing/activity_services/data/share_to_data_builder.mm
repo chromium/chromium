@@ -8,7 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -69,7 +69,8 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
     userAgent = visibleItem->GetUserAgentType();
   }
 
-  FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
+  JavaScriptFindTabHelper* helper =
+      JavaScriptFindTabHelper::FromWebState(web_state);
   BOOL is_page_searchable =
       (helper && helper->CurrentPageSupportsFindInPage() &&
        !helper->IsFindUIActive());

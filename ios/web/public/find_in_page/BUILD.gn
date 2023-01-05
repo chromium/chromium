@@ -9,9 +9,9 @@ source_set("find_in_page") {
   ]
 
   sources = [
-    "find_in_page_manager.h",
     "find_in_page_manager_delegate.h",
     "find_in_page_manager_delegate_bridge.h",
+    "java_script_find_in_page_manager.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

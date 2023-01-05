@@ -24,10 +24,10 @@ source_set("find_in_page") {
     "find_in_page_java_script_feature.h",
     "find_in_page_java_script_feature.mm",
     "find_in_page_manager_delegate_bridge.mm",
-    "find_in_page_manager_impl.h",
-    "find_in_page_manager_impl.mm",
-    "find_in_page_request.h",
-    "find_in_page_request.mm",
+    "java_script_find_in_page_manager_impl.h",
+    "java_script_find_in_page_manager_impl.mm",
+    "java_script_find_in_page_request.h",
+    "java_script_find_in_page_request.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -82,8 +82,8 @@ source_set("find_in_page_unittests") {
   sources = [
     "find_in_page_js_unittest.mm",
     "find_in_page_manager_delegate_bridge_unittest.mm",
-    "find_in_page_manger_impl_unittest.mm",
-    "find_in_page_request_unittest.mm",
+    "java_script_find_in_page_manager_impl_unittest.mm",
+    "java_script_find_in_page_request_unittest.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

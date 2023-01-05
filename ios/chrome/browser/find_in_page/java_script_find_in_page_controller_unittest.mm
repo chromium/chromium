@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
@@ -41,9 +41,9 @@ namespace {
 const char kFindInPageUkmSearchMatchesEvent[] = "IOS.FindInPageSearchMatches";
 const char kFindInPageUkmSearchMetric[] = "HasMatches";
 
-class FindInPageControllerTest : public PlatformTest {
+class JavaScriptFindInPageControllerTest : public PlatformTest {
  protected:
-  FindInPageControllerTest()
+  JavaScriptFindInPageControllerTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
@@ -52,12 +52,12 @@ class FindInPageControllerTest : public PlatformTest {
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
   }
-  ~FindInPageControllerTest() override {}
+  ~JavaScriptFindInPageControllerTest() override {}
 
   void SetUp() override {
     PlatformTest::SetUp();
     find_in_page_controller_ =
-        [[FindInPageController alloc] initWithWebState:web_state()];
+        [[JavaScriptFindInPageController alloc] initWithWebState:web_state()];
     delegate_ = [[TestFindInPageResponseDelegate alloc] init];
     find_in_page_controller_.responseDelegate = delegate_;
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
@@ -75,14 +75,14 @@ class FindInPageControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
-  FindInPageController* find_in_page_controller_ = nil;
+  JavaScriptFindInPageController* find_in_page_controller_ = nil;
   TestFindInPageResponseDelegate* delegate_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
 // Loads html that contains "some string", searches for it, and ensures UKM has
 // logged the search as having found a match.
-TEST_F(FindInPageControllerTest, VerifyUKMLoggedTrue) {
+TEST_F(JavaScriptFindInPageControllerTest, VerifyUKMLoggedTrue) {
   test_ukm_recorder_.Purge();
   web::test::LoadHtml(@"<html><p>some string</p></html>", web_state());
   [find_in_page_controller_ findStringInPage:@"some string"];
@@ -101,7 +101,7 @@ TEST_F(FindInPageControllerTest, VerifyUKMLoggedTrue) {
 
 // Loads html that contains "some string", searches for something that does not
 // match, and ensures UKM has not logged the search as having found a match.
-TEST_F(FindInPageControllerTest, VerifyUKMLoggedFalse) {
+TEST_F(JavaScriptFindInPageControllerTest, VerifyUKMLoggedFalse) {
   test_ukm_recorder_.Purge();
   web::test::LoadHtml(@"<html><p>some string</p></html>", web_state());
   [find_in_page_controller_ findStringInPage:@"nothing"];
@@ -118,4 +118,4 @@ TEST_F(FindInPageControllerTest, VerifyUKMLoggedFalse) {
   test_ukm_recorder_.ExpectEntryMetric(entry, kFindInPageUkmSearchMetric,
                                        false);
 }
-}
+}  // namespace

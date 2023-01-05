@@ -25,7 +25,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/url_util.h"
 #import "ios/web/download/crw_web_view_download.h"
-#import "ios/web/find_in_page/find_in_page_manager_impl.h"
+#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/history_state_util.h"
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
@@ -293,7 +293,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     web::BrowserState* browserState = _webStateImpl->GetBrowserState();
     _certVerificationController = [[CRWCertVerificationController alloc]
         initWithBrowserState:browserState];
-    web::FindInPageManagerImpl::CreateForWebState(_webStateImpl);
+    web::JavaScriptFindInPageManagerImpl::CreateForWebState(_webStateImpl);
     web::TextFragmentsManagerImpl::CreateForWebState(_webStateImpl);
 
     if (base::FeatureList::IsEnabled(

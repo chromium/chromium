@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/find_in_page/find_in_page_manager_impl.h"
+#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -25,41 +25,46 @@
 namespace web {
 
 // static
-FindInPageManagerImpl::FindInPageManagerImpl(WebState* web_state)
+JavaScriptFindInPageManagerImpl::JavaScriptFindInPageManagerImpl(
+    WebState* web_state)
     : web_state_(web_state), weak_factory_(this) {
   web_state_->AddObserver(this);
 }
 
-void FindInPageManagerImpl::CreateForWebState(WebState* web_state) {
+void JavaScriptFindInPageManagerImpl::CreateForWebState(WebState* web_state) {
   DCHECK(web_state);
   if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           std::make_unique<FindInPageManagerImpl>(web_state));
+    web_state->SetUserData(
+        UserDataKey(),
+        std::make_unique<JavaScriptFindInPageManagerImpl>(web_state));
   }
 }
 
-FindInPageManagerImpl::~FindInPageManagerImpl() {
+JavaScriptFindInPageManagerImpl::~JavaScriptFindInPageManagerImpl() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
 }
 
-FindInPageManagerDelegate* FindInPageManagerImpl::GetDelegate() {
+FindInPageManagerDelegate* JavaScriptFindInPageManagerImpl::GetDelegate() {
   return delegate_;
 }
-void FindInPageManagerImpl::SetDelegate(FindInPageManagerDelegate* delegate) {
+void JavaScriptFindInPageManagerImpl::SetDelegate(
+    FindInPageManagerDelegate* delegate) {
   delegate_ = delegate;
 }
 
-void FindInPageManagerImpl::WebFrameDidBecomeAvailable(WebState* web_state,
-                                                       WebFrame* web_frame) {
+void JavaScriptFindInPageManagerImpl::WebFrameDidBecomeAvailable(
+    WebState* web_state,
+    WebFrame* web_frame) {
   const std::string frame_id = web_frame->GetFrameId();
   last_find_request_.AddFrame(web_frame);
 }
 
-void FindInPageManagerImpl::WebFrameWillBecomeUnavailable(WebState* web_state,
-                                                          WebFrame* web_frame) {
+void JavaScriptFindInPageManagerImpl::WebFrameWillBecomeUnavailable(
+    WebState* web_state,
+    WebFrame* web_frame) {
   int match_count =
       last_find_request_.GetMatchCountForFrame(web_frame->GetFrameId());
   last_find_request_.RemoveFrame(web_frame->GetFrameId());
@@ -72,12 +77,13 @@ void FindInPageManagerImpl::WebFrameWillBecomeUnavailable(WebState* web_state,
   }
 }
 
-void FindInPageManagerImpl::WebStateDestroyed(WebState* web_state) {
+void JavaScriptFindInPageManagerImpl::WebStateDestroyed(WebState* web_state) {
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }
 
-void FindInPageManagerImpl::Find(NSString* query, FindInPageOptions options) {
+void JavaScriptFindInPageManagerImpl::Find(NSString* query,
+                                           FindInPageOptions options) {
   DCHECK(CanSearchContent());
 
   switch (options) {
@@ -94,7 +100,7 @@ void FindInPageManagerImpl::Find(NSString* query, FindInPageOptions options) {
   }
 }
 
-void FindInPageManagerImpl::StartSearch(NSString* query) {
+void JavaScriptFindInPageManagerImpl::StartSearch(NSString* query) {
   base::RecordAction(base::UserMetricsAction(kFindActionName));
   std::set<WebFrame*> all_frames =
       web_state_->GetWebFramesManager()->GetAllWebFrames();
@@ -104,17 +110,19 @@ void FindInPageManagerImpl::StartSearch(NSString* query) {
     // Call asyncronously to match behavior if find was successful in frames.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&FindInPageManagerImpl::LastFindRequestCompleted,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &JavaScriptFindInPageManagerImpl::LastFindRequestCompleted,
+            weak_factory_.GetWeakPtr()));
     return;
   }
 
   for (WebFrame* frame : all_frames) {
     bool result = FindInPageJavaScriptFeature::GetInstance()->Search(
         frame, base::SysNSStringToUTF8(query),
-        base::BindOnce(&FindInPageManagerImpl::ProcessFindInPageResult,
-                       weak_factory_.GetWeakPtr(), frame->GetFrameId(),
-                       last_find_request_.GetRequestId()));
+        base::BindOnce(
+            &JavaScriptFindInPageManagerImpl::ProcessFindInPageResult,
+            weak_factory_.GetWeakPtr(), frame->GetFrameId(),
+            last_find_request_.GetRequestId()));
 
     if (!result) {
       // Calling JavaScript function failed or the frame does not support
@@ -124,14 +132,15 @@ void FindInPageManagerImpl::StartSearch(NSString* query) {
         // Call asyncronously to match behavior if find was done in frames.
         GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
-            base::BindOnce(&FindInPageManagerImpl::LastFindRequestCompleted,
-                           weak_factory_.GetWeakPtr()));
+            base::BindOnce(
+                &JavaScriptFindInPageManagerImpl::LastFindRequestCompleted,
+                weak_factory_.GetWeakPtr()));
       }
     }
   }
 }
 
-void FindInPageManagerImpl::StopFinding() {
+void JavaScriptFindInPageManagerImpl::StopFinding() {
   last_find_request_.Reset(/*new_query=*/nil,
                            /*new_pending_frame_call_count=*/0);
 
@@ -145,11 +154,11 @@ void FindInPageManagerImpl::StopFinding() {
   }
 }
 
-bool FindInPageManagerImpl::CanSearchContent() {
+bool JavaScriptFindInPageManagerImpl::CanSearchContent() {
   return web_state_->ContentIsHTML();
 }
 
-void FindInPageManagerImpl::ProcessFindInPageResult(
+void JavaScriptFindInPageManagerImpl::ProcessFindInPageResult(
     const std::string& frame_id,
     const int unique_id,
     absl::optional<int> result_matches) {
@@ -173,9 +182,9 @@ void FindInPageManagerImpl::ProcessFindInPageResult(
     // JavaScript. Call pumpSearch to continue find.
     if (result_matches.value() == find_in_page::kFindInPagePending) {
       FindInPageJavaScriptFeature::GetInstance()->Pump(
-          frame,
-          base::BindOnce(&FindInPageManagerImpl::ProcessFindInPageResult,
-                         weak_factory_.GetWeakPtr(), frame_id, unique_id));
+          frame, base::BindOnce(
+                     &JavaScriptFindInPageManagerImpl::ProcessFindInPageResult,
+                     weak_factory_.GetWeakPtr(), frame_id, unique_id));
       return;
     }
 
@@ -187,7 +196,7 @@ void FindInPageManagerImpl::ProcessFindInPageResult(
   }
 }
 
-void FindInPageManagerImpl::LastFindRequestCompleted() {
+void JavaScriptFindInPageManagerImpl::LastFindRequestCompleted() {
   if (delegate_) {
     delegate_->DidHighlightMatches(web_state_,
                                    last_find_request_.GetTotalMatchCount(),
@@ -203,7 +212,8 @@ void FindInPageManagerImpl::LastFindRequestCompleted() {
   }
 }
 
-void FindInPageManagerImpl::SelectDidFinish(const base::Value* result) {
+void JavaScriptFindInPageManagerImpl::SelectDidFinish(
+    const base::Value* result) {
   std::string match_context_string;
   if (result && result->is_dict()) {
     // Get updated match count.
@@ -240,31 +250,31 @@ void FindInPageManagerImpl::SelectDidFinish(const base::Value* result) {
   }
 }
 
-void FindInPageManagerImpl::SelectNextMatch() {
+void JavaScriptFindInPageManagerImpl::SelectNextMatch() {
   base::RecordAction(base::UserMetricsAction(kFindNextActionName));
   if (last_find_request_.GoToNextMatch()) {
     SelectCurrentMatch();
   }
 }
 
-void FindInPageManagerImpl::SelectPreviousMatch() {
+void JavaScriptFindInPageManagerImpl::SelectPreviousMatch() {
   base::RecordAction(base::UserMetricsAction(kFindPreviousActionName));
   if (last_find_request_.GoToPreviousMatch()) {
     SelectCurrentMatch();
   }
 }
 
-void FindInPageManagerImpl::SelectCurrentMatch() {
+void JavaScriptFindInPageManagerImpl::SelectCurrentMatch() {
   web::WebFrame* frame =
       GetWebFrameWithId(web_state_, last_find_request_.GetSelectedFrameId());
   if (frame) {
     FindInPageJavaScriptFeature::GetInstance()->SelectMatch(
         frame, last_find_request_.GetCurrentSelectedMatchFrameIndex(),
-        base::BindOnce(&FindInPageManagerImpl::SelectDidFinish,
+        base::BindOnce(&JavaScriptFindInPageManagerImpl::SelectDidFinish,
                        weak_factory_.GetWeakPtr()));
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(FindInPageManager)
+WEB_STATE_USER_DATA_KEY_IMPL(JavaScriptFindInPageManager)
 
 }  // namespace web

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/find_in_page/find_in_page_request.h"
+#import "ios/web/find_in_page/java_script_find_in_page_request.h"
 
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/web_test.h"
@@ -14,9 +14,9 @@
 
 namespace web {
 
-class FindInPageRequestTest : public WebTest {
+class JavaScriptFindInPageRequestTest : public WebTest {
  protected:
-  FindInPageRequestTest() {
+  JavaScriptFindInPageRequestTest() {
     auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
     request_.AddFrame(main_frame.get());
     auto frame_with_two_matches =
@@ -26,12 +26,12 @@ class FindInPageRequestTest : public WebTest {
     request_.SetMatchCountForFrame(1, kMainFakeFrameId);
     request_.SetMatchCountForFrame(2, kChildFakeFrameId);
   }
-  FindInPageRequest request_;
+  JavaScriptFindInPageRequest request_;
 };
 
-// Tests that FindInPageRequest properly clears its properties in respond to a
-// Reset() call.
-TEST_F(FindInPageRequestTest, Reset) {
+// Tests that JavaScriptFindInPageRequest properly clears its properties in
+// respond to a Reset() call.
+TEST_F(JavaScriptFindInPageRequestTest, Reset) {
   EXPECT_EQ(3, request_.GetTotalMatchCount());
 
   EXPECT_TRUE(request_.GoToFirstMatch());
@@ -49,9 +49,9 @@ TEST_F(FindInPageRequestTest, Reset) {
   EXPECT_EQ(-1, request_.GetMatchCountForSelectedFrame());
 }
 
-// Tests that FindinPageRequest properly decrements `pending_frame_call_count_`
-// properly.
-TEST_F(FindInPageRequestTest, AllFindResponsesReturned) {
+// Tests that JavaScriptFindInPageRequest properly decrements
+// `pending_frame_call_count_` properly.
+TEST_F(JavaScriptFindInPageRequestTest, AllFindResponsesReturned) {
   request_.DidReceiveFindResponseFromOneFrame();
   EXPECT_FALSE(request_.AreAllFindResponsesReturned());
 
@@ -59,9 +59,9 @@ TEST_F(FindInPageRequestTest, AllFindResponsesReturned) {
   EXPECT_TRUE(request_.AreAllFindResponsesReturned());
 }
 
-// Tests that FindInPageRequest GoToNextMatch() is able to traverse all matches
-// in multiple frames.
-TEST_F(FindInPageRequestTest, GoToNext) {
+// Tests that JavaScriptFindInPageRequest GoToNextMatch() is able to traverse
+// all matches in multiple frames.
+TEST_F(JavaScriptFindInPageRequestTest, GoToNext) {
   request_.GoToFirstMatch();
 
   EXPECT_EQ(0, request_.GetCurrentSelectedMatchFrameIndex());
@@ -83,9 +83,9 @@ TEST_F(FindInPageRequestTest, GoToNext) {
   EXPECT_EQ(0, request_.GetCurrentSelectedMatchPageIndex());
 }
 
-// Tests that FindInPageRequest GoToPreviousMatch() is able to traverse all
-// matches in multiple frames.
-TEST_F(FindInPageRequestTest, GoToPrevious) {
+// Tests that JavaScriptFindInPageRequest GoToPreviousMatch() is able to
+// traverse all matches in multiple frames.
+TEST_F(JavaScriptFindInPageRequestTest, GoToPrevious) {
   request_.GoToFirstMatch();
 
   EXPECT_EQ(0, request_.GetCurrentSelectedMatchFrameIndex());
@@ -107,9 +107,10 @@ TEST_F(FindInPageRequestTest, GoToPrevious) {
   EXPECT_EQ(0, request_.GetCurrentSelectedMatchPageIndex());
 }
 
-// Tests that FindInPageRequest returns the correct relative match count within
-// a frame and total match count when traversing matches in multiple frames.
-TEST_F(FindInPageRequestTest, RelativeMatchCount) {
+// Tests that JavaScriptFindInPageRequest returns the correct relative match
+// count within a frame and total match count when traversing matches in
+// multiple frames.
+TEST_F(JavaScriptFindInPageRequestTest, RelativeMatchCount) {
   request_.GoToFirstMatch();
 
   EXPECT_EQ(3, request_.GetTotalMatchCount());
@@ -121,11 +122,11 @@ TEST_F(FindInPageRequestTest, RelativeMatchCount) {
   EXPECT_EQ(2, request_.GetMatchCountForSelectedFrame());
 }
 
-// Tests that FindInPageRequest returns the correct relative match count within
-// a frame and total match count when a frame is removed. Also tests that going
-// to the next match after removing the currently selected frame produces the
-// expected relative and total selected match index.
-TEST_F(FindInPageRequestTest, RemoveFrame) {
+// Tests that JavaScriptFindInPageRequest returns the correct relative match
+// count within a frame and total match count when a frame is removed. Also
+// tests that going to the next match after removing the currently selected
+// frame produces the expected relative and total selected match index.
+TEST_F(JavaScriptFindInPageRequestTest, RemoveFrame) {
   request_.GoToFirstMatch();
 
   EXPECT_EQ(3, request_.GetTotalMatchCount());
@@ -141,10 +142,10 @@ TEST_F(FindInPageRequestTest, RemoveFrame) {
   EXPECT_EQ(0, request_.GetCurrentSelectedMatchPageIndex());
 }
 
-// Tests that FindInPageRequest returns the correct relative match count within
-// a frame and total match count when the match count for the currently selected
-// frame changes.
-TEST_F(FindInPageRequestTest, SetMatchCountForSelectedFrame) {
+// Tests that JavaScriptFindInPageRequest returns the correct relative match
+// count within a frame and total match count when the match count for the
+// currently selected frame changes.
+TEST_F(JavaScriptFindInPageRequestTest, SetMatchCountForSelectedFrame) {
   request_.GoToFirstMatch();
   request_.SetMatchCountForSelectedFrame(5);
 
@@ -152,10 +153,10 @@ TEST_F(FindInPageRequestTest, SetMatchCountForSelectedFrame) {
   EXPECT_EQ(5, request_.GetMatchCountForSelectedFrame());
 }
 
-// Tests that FindInPageRequest returns the currently selected match index
-// relative to the frame and the total are correct when the total matches and
-// the relative match index change.
-TEST_F(FindInPageRequestTest, SetCurrentSelectedMatchIndex) {
+// Tests that JavaScriptFindInPageRequest returns the currently selected match
+// index relative to the frame and the total are correct when the total matches
+// and the relative match index change.
+TEST_F(JavaScriptFindInPageRequestTest, SetCurrentSelectedMatchIndex) {
   request_.GoToFirstMatch();
   request_.SetMatchCountForSelectedFrame(5);
   request_.SetCurrentSelectedMatchFrameIndex(1);
@@ -164,10 +165,10 @@ TEST_F(FindInPageRequestTest, SetCurrentSelectedMatchIndex) {
   EXPECT_EQ(1, request_.GetCurrentSelectedMatchPageIndex());
 }
 
-// Tests that FindInPageRequest returns the correct match count within
+// Tests that JavaScriptFindInPageRequest returns the correct match count within
 // a frame and total match count when the match count for a not currently
 // selected frame changes.
-TEST_F(FindInPageRequestTest, SetMatchCountForFrame) {
+TEST_F(JavaScriptFindInPageRequestTest, SetMatchCountForFrame) {
   request_.GoToFirstMatch();
 
   EXPECT_EQ(3, request_.GetTotalMatchCount());

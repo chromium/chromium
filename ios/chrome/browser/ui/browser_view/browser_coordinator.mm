@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
@@ -1536,9 +1536,10 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->GetActiveWebState();
 
   if (currentWebState) {
-    FindTabHelper* findTabHelper = FindTabHelper::FromWebState(currentWebState);
-    if (findTabHelper->IsFindUIActive()) {
-      findTabHelper->StopFinding();
+    JavaScriptFindTabHelper* helper =
+        JavaScriptFindTabHelper::FromWebState(currentWebState);
+    if (helper->IsFindUIActive()) {
+      helper->StopFinding();
     } else {
       [self.findBarCoordinator stop];
       self.findBarCoordinator = nil;
@@ -1549,7 +1550,7 @@ enum class ToolbarKind {
 - (void)showFindUIIfActive {
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  auto* findHelper = FindTabHelper::FromWebState(currentWebState);
+  auto* findHelper = JavaScriptFindTabHelper::FromWebState(currentWebState);
   if (findHelper && findHelper->IsFindUIActive() &&
       !_toolbarAccessoryPresenter.isPresenting) {
     DCHECK(!self.findBarCoordinator);
@@ -1571,7 +1572,8 @@ enum class ToolbarKind {
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(currentWebState);
-  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
+  JavaScriptFindTabHelper* helper =
+      JavaScriptFindTabHelper::FromWebState(currentWebState);
   helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
 
   if (!self.browser->GetBrowserState()->IsOffTheRecord())
@@ -1583,8 +1585,8 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(currentWebState);
   // TODO(crbug.com/603524): Reshow find bar if necessary.
-  FindTabHelper::FromWebState(currentWebState)
-      ->ContinueFinding(FindTabHelper::FORWARD);
+  JavaScriptFindTabHelper::FromWebState(currentWebState)
+      ->ContinueFinding(JavaScriptFindTabHelper::FORWARD);
 }
 
 - (void)findPreviousStringInPage {
@@ -1592,8 +1594,8 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(currentWebState);
   // TODO(crbug.com/603524): Reshow find bar if necessary.
-  FindTabHelper::FromWebState(currentWebState)
-      ->ContinueFinding(FindTabHelper::REVERSE);
+  JavaScriptFindTabHelper::FromWebState(currentWebState)
+      ->ContinueFinding(JavaScriptFindTabHelper::REVERSE);
 }
 
 #pragma mark - FindInPageCommands Helpers
@@ -1605,7 +1607,7 @@ enum class ToolbarKind {
     return NO;
   }
 
-  auto* helper = FindTabHelper::FromWebState(currentWebState);
+  auto* helper = JavaScriptFindTabHelper::FromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage() &&
           !helper->IsFindUIActive());
 }

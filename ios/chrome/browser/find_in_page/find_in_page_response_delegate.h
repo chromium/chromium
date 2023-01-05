@@ -7,7 +7,7 @@
 
 @class FindInPageModel;
 
-// Delegate class to relay responses of FindInPageController calls to
+// Delegate class to relay responses of JavaScriptFindInPageController calls to
 // BrowserViewController.
 @protocol FindInPageResponseDelegate
 @optional

@@ -4,6 +4,6 @@ include_rules = [
 
 specific_include_rules = {
   "key_commands_provider_unittest\.mm": [
-    "+ios/web/find_in_page/find_in_page_manager_impl.h",
+    "+ios/web/find_in_page/java_script_find_in_page_manager_impl.h",
   ],
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/find_bar/find_in_page_controller_app_interface.h"
+#import "ios/chrome/browser/ui/find_bar/java_script_find_in_page_controller_app_interface.h"
 
 #import <TestLib/EarlGreyImpl/EarlGrey.h>
 
@@ -10,4 +10,4 @@
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(FindInPageControllerAppInterface)
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(JavaScriptFindInPageControllerAppInterface)

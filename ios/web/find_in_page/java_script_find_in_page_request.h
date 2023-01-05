@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_REQUEST_H_
-#define IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_REQUEST_H_
+#ifndef IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_REQUEST_H_
+#define IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_REQUEST_H_
 
 #include <list>
 #include <map>
@@ -17,11 +17,11 @@ namespace web {
 
 class WebFrame;
 
-// Keeps track of the state of a FindInPageManager::Find() request.
-class FindInPageRequest {
+// Keeps track of the state of a JavaScriptFindInPageManager::Find() request.
+class JavaScriptFindInPageRequest {
  public:
-  FindInPageRequest();
-  ~FindInPageRequest();
+  JavaScriptFindInPageRequest();
+  ~JavaScriptFindInPageRequest();
   // Clears properties and sets new `query` and `pending_frame_call_count`.
   void Reset(NSString* query, int pending_frame_call_count);
   int GetTotalMatchCount() const;

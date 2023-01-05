@@ -614,7 +614,7 @@ test("ios_web_inttests") {
   ]
   sources = [
     "browser_state_web_view_partition_inttest.mm",
-    "find_in_page/find_in_page_manager_inttest.mm",
+    "find_in_page/java_script_find_in_page_manager_inttest.mm",
     "navigation/crw_error_page_helper_inttest.mm",
     "navigation/crw_wk_navigation_handler_inttest.mm",
     "navigation/history_state_operations_inttest.mm",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
 
 #import <UIKit/UIKit.h>
 
@@ -13,10 +13,11 @@
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/find_in_page/constants.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
-#import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -25,11 +26,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSString* const kFindBarTextFieldWillBecomeFirstResponderNotification =
-    @"kFindBarTextFieldWillBecomeFirstResponderNotification";
-NSString* const kFindBarTextFieldDidResignFirstResponderNotification =
-    @"kFindBarTextFieldDidResignFirstResponderNotification";
 
 namespace {
 // Keeps find in page search term to be shared between different tabs. Never
@@ -41,9 +37,9 @@ static NSString* gSearchTerm;
 // TODO(crbug.com/1395828): This is a temporary workaround. The context string
 // announcement might still fail. A retry mechanism needs to be implemented.
 const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
-}
+}  // namespace
 
-@interface FindInPageController () <CRWFindInPageManagerDelegate>
+@interface JavaScriptFindInPageController () <CRWFindInPageManagerDelegate>
 
 // The web view's scroll view.
 - (CRWWebViewScrollViewProxy*)webViewScrollView;
@@ -60,9 +56,9 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
                    atPoint:(CGPoint)point;
 @end
 
-@implementation FindInPageController {
+@implementation JavaScriptFindInPageController {
   // Object that manages searches and match traversals.
-  web::FindInPageManager* _findInPageManager;
+  web::JavaScriptFindInPageManager* _findInPageManager;
 
   // Access to the web view from the web state.
   id<CRWWebViewProxy> _webViewProxy;
@@ -100,7 +96,8 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
     _findInPageModel = [[FindInPageModel alloc] init];
     _findInPageDelegateBridge =
         std::make_unique<web::FindInPageManagerDelegateBridge>(self);
-    _findInPageManager = web::FindInPageManager::FromWebState(_webState);
+    _findInPageManager =
+        web::JavaScriptFindInPageManager::FromWebState(_webState);
     _findInPageManager->SetDelegate(_findInPageDelegateBridge.get());
 
     _webViewProxy = _webState->GetWebViewProxy();
@@ -179,8 +176,8 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
   // to avoid WKWebView crash on deallocation due to outstanding completion
   // handler.
   if (_findStringStarted) {
-      _findInPageManager->StopFinding();
-      _findStringStarted = NO;
+    _findInPageManager->StopFinding();
+    _findStringStarted = NO;
   }
 }
 
@@ -201,7 +198,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 
 #pragma mark - CRWFindInPageManagerDelegate
 
-- (void)findInPageManager:(web::FindInPageManager*)manager
+- (void)findInPageManager:(web::JavaScriptFindInPageManager*)manager
     didHighlightMatchesOfQuery:(NSString*)query
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState {
@@ -215,7 +212,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
-- (void)findInPageManager:(web::FindInPageManager*)manager
+- (void)findInPageManager:(web::JavaScriptFindInPageManager*)manager
     didSelectMatchAtIndex:(NSInteger)index
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState {

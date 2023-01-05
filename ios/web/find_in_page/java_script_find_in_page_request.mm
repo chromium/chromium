@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/find_in_page/find_in_page_request.h"
+#import "ios/web/find_in_page/java_script_find_in_page_request.h"
 
 #import <Foundation/Foundation.h>
 
@@ -14,12 +14,12 @@
 
 namespace web {
 
-FindInPageRequest::FindInPageRequest() {}
+JavaScriptFindInPageRequest::JavaScriptFindInPageRequest() {}
 
-FindInPageRequest::~FindInPageRequest() {}
+JavaScriptFindInPageRequest::~JavaScriptFindInPageRequest() {}
 
-void FindInPageRequest::Reset(NSString* new_query_,
-                              int new_pending_frame_call_count) {
+void JavaScriptFindInPageRequest::Reset(NSString* new_query_,
+                                        int new_pending_frame_call_count) {
   unique_id_++;
   selected_frame_id_ = frame_order_.end();
   selected_match_index_in_selected_frame_ = -1;
@@ -30,7 +30,7 @@ void FindInPageRequest::Reset(NSString* new_query_,
   }
 }
 
-int FindInPageRequest::GetTotalMatchCount() const {
+int JavaScriptFindInPageRequest::GetTotalMatchCount() const {
   int matches = 0;
   for (auto pair : frame_match_count_) {
     matches += pair.second;
@@ -38,14 +38,14 @@ int FindInPageRequest::GetTotalMatchCount() const {
   return matches;
 }
 
-int FindInPageRequest::GetRequestId() const {
+int JavaScriptFindInPageRequest::GetRequestId() const {
   return unique_id_;
 }
-NSString* FindInPageRequest::GetRequestQuery() const {
+NSString* JavaScriptFindInPageRequest::GetRequestQuery() const {
   return query_;
 }
 
-bool FindInPageRequest::GoToFirstMatch() {
+bool JavaScriptFindInPageRequest::GoToFirstMatch() {
   for (auto frame_id = frame_order_.begin(); frame_id != frame_order_.end();
        ++frame_id) {
     if (frame_match_count_[*frame_id] > 0) {
@@ -57,7 +57,7 @@ bool FindInPageRequest::GoToFirstMatch() {
   return false;
 }
 
-bool FindInPageRequest::GoToNextMatch() {
+bool JavaScriptFindInPageRequest::GoToNextMatch() {
   if (GetTotalMatchCount() == 0) {
     return false;
   }
@@ -89,7 +89,7 @@ bool FindInPageRequest::GoToNextMatch() {
   return true;
 }
 
-bool FindInPageRequest::GoToPreviousMatch() {
+bool JavaScriptFindInPageRequest::GoToPreviousMatch() {
   if (GetTotalMatchCount() == 0) {
     return false;
   }
@@ -121,33 +121,36 @@ bool FindInPageRequest::GoToPreviousMatch() {
   return true;
 }
 
-int FindInPageRequest::GetMatchCountForFrame(const std::string& frame_id) {
+int JavaScriptFindInPageRequest::GetMatchCountForFrame(
+    const std::string& frame_id) {
   if (frame_match_count_.find(frame_id) == frame_match_count_.end()) {
     return -1;
   }
   return frame_match_count_[frame_id];
 }
 
-void FindInPageRequest::SetMatchCountForFrame(int match_count,
-                                              const std::string& frame_id) {
+void JavaScriptFindInPageRequest::SetMatchCountForFrame(
+    int match_count,
+    const std::string& frame_id) {
   frame_match_count_[frame_id] = match_count;
 }
 
-int FindInPageRequest::GetMatchCountForSelectedFrame() {
+int JavaScriptFindInPageRequest::GetMatchCountForSelectedFrame() {
   if (selected_frame_id_ == frame_order_.end()) {
     return -1;
   }
   return frame_match_count_[*selected_frame_id_];
 }
 
-void FindInPageRequest::SetMatchCountForSelectedFrame(int match_count) {
+void JavaScriptFindInPageRequest::SetMatchCountForSelectedFrame(
+    int match_count) {
   if (selected_frame_id_ == frame_order_.end()) {
     return;
   }
   frame_match_count_[*selected_frame_id_] = match_count;
 }
 
-int FindInPageRequest::GetCurrentSelectedMatchPageIndex() {
+int JavaScriptFindInPageRequest::GetCurrentSelectedMatchPageIndex() {
   if (selected_match_index_in_selected_frame_ == -1) {
     return -1;
   }
@@ -160,22 +163,22 @@ int FindInPageRequest::GetCurrentSelectedMatchPageIndex() {
   return total_match_index;
 }
 
-std::string FindInPageRequest::GetSelectedFrameId() {
+std::string JavaScriptFindInPageRequest::GetSelectedFrameId() {
   if (selected_frame_id_ == frame_order_.end()) {
     return std::string();
   }
   return *selected_frame_id_;
 }
 
-int FindInPageRequest::GetCurrentSelectedMatchFrameIndex() const {
+int JavaScriptFindInPageRequest::GetCurrentSelectedMatchFrameIndex() const {
   return selected_match_index_in_selected_frame_;
 }
 
-void FindInPageRequest::SetCurrentSelectedMatchFrameIndex(int index) {
+void JavaScriptFindInPageRequest::SetCurrentSelectedMatchFrameIndex(int index) {
   selected_match_index_in_selected_frame_ = index;
 }
 
-void FindInPageRequest::RemoveFrame(const std::string& frame_id) {
+void JavaScriptFindInPageRequest::RemoveFrame(const std::string& frame_id) {
   if (IsSelectedFrame(frame_id)) {
     // If currently selecting match in frame that will become unavailable,
     // there will no longer be a selected match. Reset to unselected match
@@ -187,7 +190,7 @@ void FindInPageRequest::RemoveFrame(const std::string& frame_id) {
   frame_match_count_.erase(frame_id);
 }
 
-void FindInPageRequest::AddFrame(WebFrame* web_frame) {
+void JavaScriptFindInPageRequest::AddFrame(WebFrame* web_frame) {
   frame_match_count_[web_frame->GetFrameId()] = 0;
   if (web_frame->IsMainFrame()) {
     // Main frame matches should show up first.
@@ -198,15 +201,15 @@ void FindInPageRequest::AddFrame(WebFrame* web_frame) {
   }
 }
 
-void FindInPageRequest::DidReceiveFindResponseFromOneFrame() {
+void JavaScriptFindInPageRequest::DidReceiveFindResponseFromOneFrame() {
   pending_frame_call_count_--;
 }
 
-bool FindInPageRequest::AreAllFindResponsesReturned() {
+bool JavaScriptFindInPageRequest::AreAllFindResponsesReturned() {
   return pending_frame_call_count_ == 0;
 }
 
-bool FindInPageRequest::IsSelectedFrame(const std::string& frame_id) {
+bool JavaScriptFindInPageRequest::IsSelectedFrame(const std::string& frame_id) {
   if (selected_frame_id_ == frame_order_.end()) {
     return false;
   }

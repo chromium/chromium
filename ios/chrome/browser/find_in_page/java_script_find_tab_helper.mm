@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_in_page_controller.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-FindTabHelper::FindTabHelper(web::WebState* web_state) {
+JavaScriptFindTabHelper::JavaScriptFindTabHelper(web::WebState* web_state) {
   DCHECK(web_state);
   observation_.Observe(web_state);
 
@@ -24,9 +24,9 @@ FindTabHelper::FindTabHelper(web::WebState* web_state) {
   }
 }
 
-FindTabHelper::~FindTabHelper() {}
+JavaScriptFindTabHelper::~JavaScriptFindTabHelper() {}
 
-void FindTabHelper::SetResponseDelegate(
+void JavaScriptFindTabHelper::SetResponseDelegate(
     id<FindInPageResponseDelegate> response_delegate) {
   if (!controller_) {
     response_delegate_ = response_delegate;
@@ -35,11 +35,11 @@ void FindTabHelper::SetResponseDelegate(
   }
 }
 
-void FindTabHelper::StartFinding(NSString* search_term) {
+void JavaScriptFindTabHelper::StartFinding(NSString* search_term) {
   [controller_ findStringInPage:search_term];
 }
 
-void FindTabHelper::ContinueFinding(FindDirection direction) {
+void JavaScriptFindTabHelper::ContinueFinding(FindDirection direction) {
   if (direction == FORWARD) {
     [controller_ findNextStringInPage];
 
@@ -51,56 +51,58 @@ void FindTabHelper::ContinueFinding(FindDirection direction) {
   }
 }
 
-void FindTabHelper::StopFinding() {
+void JavaScriptFindTabHelper::StopFinding() {
   SetFindUIActive(false);
   [controller_ disableFindInPage];
 }
 
-FindInPageModel* FindTabHelper::GetFindResult() const {
+FindInPageModel* JavaScriptFindTabHelper::GetFindResult() const {
   return controller_.findInPageModel;
 }
 
-bool FindTabHelper::CurrentPageSupportsFindInPage() const {
+bool JavaScriptFindTabHelper::CurrentPageSupportsFindInPage() const {
   return [controller_ canFindInPage];
 }
 
-bool FindTabHelper::IsFindUIActive() const {
+bool JavaScriptFindTabHelper::IsFindUIActive() const {
   return controller_.findInPageModel.enabled;
 }
 
-void FindTabHelper::SetFindUIActive(bool active) {
+void JavaScriptFindTabHelper::SetFindUIActive(bool active) {
   controller_.findInPageModel.enabled = active;
 }
 
-void FindTabHelper::PersistSearchTerm() {
+void JavaScriptFindTabHelper::PersistSearchTerm() {
   [controller_ saveSearchTerm];
 }
 
-void FindTabHelper::RestoreSearchTerm() {
+void JavaScriptFindTabHelper::RestoreSearchTerm() {
   [controller_ restoreSearchTerm];
 }
 
-void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {
+void JavaScriptFindTabHelper::CreateFindInPageController(
+    web::WebState* web_state) {
   DCHECK(!controller_);
-  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
+  controller_ =
+      [[JavaScriptFindInPageController alloc] initWithWebState:web_state];
   if (response_delegate_) {
     controller_.responseDelegate = response_delegate_;
     response_delegate_ = nil;
   }
 }
 
-void FindTabHelper::WebStateRealized(web::WebState* web_state) {
+void JavaScriptFindTabHelper::WebStateRealized(web::WebState* web_state) {
   CreateFindInPageController(web_state);
 }
 
-void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
+void JavaScriptFindTabHelper::WebStateDestroyed(web::WebState* web_state) {
   observation_.Reset();
 
   [controller_ detachFromWebState];
   controller_ = nil;
 }
 
-void FindTabHelper::DidFinishNavigation(
+void JavaScriptFindTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (navigation_context->IsSameDocument()) {
@@ -111,4 +113,4 @@ void FindTabHelper::DidFinishNavigation(
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(FindTabHelper)
+WEB_STATE_USER_DATA_KEY_IMPL(JavaScriptFindTabHelper)

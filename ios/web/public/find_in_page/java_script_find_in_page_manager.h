@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
-#define IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
+#ifndef IOS_WEB_PUBLIC_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_H_
+#define IOS_WEB_PUBLIC_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_H_
 
 #import "ios/web/public/web_state_user_data.h"
 
@@ -30,7 +30,8 @@ enum class FindInPageOptions {
 };
 
 // Manager for searching text on a page. Supports searching within all iframes.
-class FindInPageManager : public web::WebStateUserData<FindInPageManager> {
+class JavaScriptFindInPageManager
+    : public web::WebStateUserData<JavaScriptFindInPageManager> {
  public:
   // Searches for string `query`. Executes new search or traverses results based
   // on `options`. `query` must not be null if `options` is `FindInPageSearch`.
@@ -56,15 +57,16 @@ class FindInPageManager : public web::WebStateUserData<FindInPageManager> {
   virtual FindInPageManagerDelegate* GetDelegate() = 0;
   virtual void SetDelegate(FindInPageManagerDelegate* delegate) = 0;
 
-  FindInPageManager(const FindInPageManager&) = delete;
-  FindInPageManager& operator=(const FindInPageManager&) = delete;
+  JavaScriptFindInPageManager(const JavaScriptFindInPageManager&) = delete;
+  JavaScriptFindInPageManager& operator=(const JavaScriptFindInPageManager&) =
+      delete;
 
-  ~FindInPageManager() override {}
+  ~JavaScriptFindInPageManager() override {}
 
   WEB_STATE_USER_DATA_KEY_DECL();
 
  protected:
-  FindInPageManager() {}
+  JavaScriptFindInPageManager() {}
 };
 
 }  // namespace web

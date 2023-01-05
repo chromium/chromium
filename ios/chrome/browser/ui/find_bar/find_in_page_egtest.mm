@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
-#import "ios/chrome/browser/ui/find_bar/find_in_page_controller_app_interface.h"
+#import "ios/chrome/browser/ui/find_bar/java_script_find_in_page_controller_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -70,7 +70,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
   [super setUp];
 
   // Clear saved search term.
-  [FindInPageControllerAppInterface clearSearchTerm];
+  [JavaScriptFindInPageControllerAppInterface clearSearchTerm];
 
   // Setup find in page test URL.
   std::map<GURL, std::string> responses;

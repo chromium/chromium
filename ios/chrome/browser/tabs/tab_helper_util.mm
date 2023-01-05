@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/download/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
@@ -123,7 +123,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   IOSChromeSyncedTabDelegate::CreateForWebState(web_state);
   InfoBarManagerImpl::CreateForWebState(web_state);
   BlockedPopupTabHelper::CreateForWebState(web_state);
-  FindTabHelper::CreateForWebState(web_state);
+  JavaScriptFindTabHelper::CreateForWebState(web_state);
   ITunesUrlsHandlerTabHelper::CreateForWebState(web_state);
   HistoryTabHelper::CreateForWebState(web_state);
   LoadTimingTabHelper::CreateForWebState(web_state);

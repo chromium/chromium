@@ -6,7 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
-#import "ios/web/public/find_in_page/find_in_page_manager.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_find_in_page_manager_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -21,8 +21,8 @@
 #endif
 
 using base::test::ios::kWaitForJSCompletionTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Page with text "Main frame body" and iframe with src URL equal to the URL
@@ -30,15 +30,14 @@ namespace {
 const char kFindPageUrl[] = "/iframe?";
 // URL of iframe with text contents "iframe iframe text".
 const char kFindInPageIFrameUrl[] = "/echo-query?iframe iframe text";
-}
+}  // namespace
 
 namespace web {
 
-// Tests the FindInPageManager and verifies that values passed to
+// Tests the JavaScriptFindInPageManager and verifies that values passed to
 // FindInPageManagerDelegate are correct.
-class FindInPageManagerTest : public WebTestWithWebState {
+class JavaScriptFindInPageManagerTest : public WebTestWithWebState {
  protected:
-
   void SetUp() override {
     WebTestWithWebState::SetUp();
 
@@ -52,9 +51,9 @@ class FindInPageManagerTest : public WebTestWithWebState {
     GetFindInPageManager()->SetDelegate(&delegate_);
   }
 
-  // Returns the FindInPageManager associated with `web_state()`.
-  FindInPageManager* GetFindInPageManager() {
-    return web::FindInPageManager::FromWebState(web_state());
+  // Returns the JavaScriptFindInPageManager associated with `web_state()`.
+  JavaScriptFindInPageManager* GetFindInPageManager() {
+    return web::JavaScriptFindInPageManager::FromWebState(web_state());
   }
 
   // Waits until the delegate receives `index` from
@@ -74,7 +73,7 @@ class FindInPageManagerTest : public WebTestWithWebState {
 
 // Tests that find in page returns a single match for text which exists only in
 // the main frame.
-TEST_F(FindInPageManagerTest, FindMatchInMainFrame) {
+TEST_F(JavaScriptFindInPageManagerTest, FindMatchInMainFrame) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
@@ -96,7 +95,7 @@ TEST_F(FindInPageManagerTest, FindMatchInMainFrame) {
 
 // Checks that find in page finds text that exists within the main frame and
 // an iframe.
-TEST_F(FindInPageManagerTest, FindMatchInMainFrameAndIFrame) {
+TEST_F(JavaScriptFindInPageManagerTest, FindMatchInMainFrameAndIFrame) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
@@ -116,7 +115,7 @@ TEST_F(FindInPageManagerTest, FindMatchInMainFrameAndIFrame) {
 
 // Checks that find in page returns no matches for text not contained on the
 // page.
-TEST_F(FindInPageManagerTest, FindNoMatch) {
+TEST_F(JavaScriptFindInPageManagerTest, FindNoMatch) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
@@ -136,7 +135,7 @@ TEST_F(FindInPageManagerTest, FindNoMatch) {
 
 // Tests FindInPageNext iteration when matches exist in both the main frame and
 // an iframe.
-TEST_F(FindInPageManagerTest, FindForwardIterateThroughAllMatches) {
+TEST_F(JavaScriptFindInPageManagerTest, FindForwardIterateThroughAllMatches) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
@@ -165,7 +164,7 @@ TEST_F(FindInPageManagerTest, FindForwardIterateThroughAllMatches) {
 
 // Tests FindInPagePrevious iteration when matches exist in both the main frame
 // and an iframe.
-TEST_F(FindInPageManagerTest, FindBackwardsIterateThroughAllMatches) {
+TEST_F(JavaScriptFindInPageManagerTest, FindBackwardsIterateThroughAllMatches) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
@@ -193,7 +192,7 @@ TEST_F(FindInPageManagerTest, FindBackwardsIterateThroughAllMatches) {
 }
 
 // Tests FindInPageNext iteration when matches exist in only an iframe.
-TEST_F(FindInPageManagerTest, FindIterateThroughIframeMatches) {
+TEST_F(JavaScriptFindInPageManagerTest, FindIterateThroughIframeMatches) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
@@ -218,7 +217,7 @@ TEST_F(FindInPageManagerTest, FindIterateThroughIframeMatches) {
 
 // Tests FindInPageNext and FindInPagePrevious iteration while passing null
 // query.
-TEST_F(FindInPageManagerTest, FindIterationWithNullQuery) {
+TEST_F(JavaScriptFindInPageManagerTest, FindIterationWithNullQuery) {
   std::string url_spec =
       kFindPageUrl +
       base::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
