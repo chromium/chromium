@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -64,6 +65,16 @@ TwentyEightDayActiveUseCaseImpl::GenerateImportRequestBody() {
   }
 
   return import_request;
+}
+
+bool TwentyEightDayActiveUseCaseImpl::IsEnabledCheckIn() {
+  return base::FeatureList::IsEnabled(
+      features::kDeviceActiveClient28DayActiveCheckIn);
+}
+
+bool TwentyEightDayActiveUseCaseImpl::IsEnabledCheckMembership() {
+  return base::FeatureList::IsEnabled(
+      features::kDeviceActiveClient28DayActiveCheckMembership);
 }
 
 bool TwentyEightDayActiveUseCaseImpl::SavePsmIdToDateMap(base::Time cur_ts) {

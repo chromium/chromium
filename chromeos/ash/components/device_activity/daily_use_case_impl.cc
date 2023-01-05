@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -55,4 +56,12 @@ FresnelImportDataRequest DailyUseCaseImpl::GenerateImportRequestBody() {
   return import_request;
 }
 
+bool DailyUseCaseImpl::IsEnabledCheckIn() {
+  return true;
+}
+
+bool DailyUseCaseImpl::IsEnabledCheckMembership() {
+  return base::FeatureList::IsEnabled(
+      features::kDeviceActiveClientDailyCheckMembership);
+}
 }  // namespace ash::device_activity

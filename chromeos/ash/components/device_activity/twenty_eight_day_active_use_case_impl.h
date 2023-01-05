@@ -39,6 +39,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // DeviceActiveUseCase:
   FresnelImportDataRequest GenerateImportRequestBody() override;
 
+  // Whether current device active use case check-in is enabled or not.
+  bool IsEnabledCheckIn() override;
+
+  // Whether current device active use case check membership is enabled or not.
+  bool IsEnabledCheckMembership() override;
+
   // For example, the 28 day lookback queries on 01/28/2022 will generate the
   // vector of psm ids for days 01, 02, 03, 04, 05, 06, ..., 28 of January 2022.
   bool SavePsmIdToDateMap(base::Time cur_ts) override;

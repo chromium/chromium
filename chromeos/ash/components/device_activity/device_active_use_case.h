@@ -72,6 +72,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // privacy.
   virtual FresnelImportDataRequest GenerateImportRequestBody() = 0;
 
+  // Whether current device active use case check-in is enabled or not.
+  virtual bool IsEnabledCheckIn() = 0;
+
+  // Whether current device active use case check membership is enabled or not.
+  virtual bool IsEnabledCheckMembership() = 0;
+
   // Method used to reset the non constant saved state of the device active use
   // case. The state should be cleared after reporting device actives.
   void ClearSavedState();

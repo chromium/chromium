@@ -35,6 +35,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
 
   // DeviceActiveUseCase:
   FresnelImportDataRequest GenerateImportRequestBody() override;
+
+   // Whether current device active use case check-in is enabled or not.
+  bool IsEnabledCheckIn() override;
+
+ // Whether current device active use case check membership is enabled or not.
+  bool IsEnabledCheckMembership() override;
+
 };
 
 }  // namespace ash::device_activity
