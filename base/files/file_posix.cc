@@ -4,11 +4,19 @@
 
 #include "base/files/file.h"
 
+// The only 32-bit platform that uses this file is Android. On Android APIs
+// >= 21, this standard define is the right way to express that you want a
+// 64-bit offset in struct stat, and the stat64 struct and functions aren't
+// useful.
+#define _FILE_OFFSET_BITS 64
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -594,8 +602,6 @@ File::Error File::GetLastFileError() {
   return base::File::OSErrorToFileError(errno);
 }
 
-#if BUILDFLAG(IS_BSD) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_NACL) || \
-    BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 21)
 int File::Stat(const char* path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return stat(path, sb);
@@ -608,19 +614,5 @@ int File::Lstat(const char* path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return lstat(path, sb);
 }
-#else
-int File::Stat(const char* path, stat_wrapper_t* sb) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return stat64(path, sb);
-}
-int File::Fstat(int fd, stat_wrapper_t* sb) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return fstat64(fd, sb);
-}
-int File::Lstat(const char* path, stat_wrapper_t* sb) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return lstat64(path, sb);
-}
-#endif
 
 }  // namespace base

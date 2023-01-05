@@ -18,20 +18,11 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_BSD) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_NACL) || \
-    BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 21)
 struct stat;
-namespace base {
-typedef struct stat stat_wrapper_t;
-}
-#elif BUILDFLAG(IS_POSIX)
-struct stat64;
-namespace base {
-typedef struct stat64 stat_wrapper_t;
-}
-#endif
 
 namespace base {
+
+using stat_wrapper_t = struct stat;
 
 // Thin wrapper around an OS-level file.
 // Note that this class does not provide any support for asynchronous IO, other
