@@ -8245,11 +8245,8 @@ void WebContentsImpl::NotifySwappedFromRenderManagerWithoutFallbackContent(
 void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
     RenderFrameHostImpl* old_frame,
     RenderFrameHostImpl* new_frame) {
-  // Only fire RenderViewHostChanged if it is
-  // related to our FrameTree, as observers cannot deal with events coming
-  // from non-primary FrameTree.
-  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
-  // and fire events for all frame trees.
+  // Only notify about RenderViewHost changes if it is related to our FrameTree,
+  // as observers cannot deal with events coming from non-primary FrameTree.
   if (!new_frame->IsInPrimaryMainFrame()) {
     return;
   }
