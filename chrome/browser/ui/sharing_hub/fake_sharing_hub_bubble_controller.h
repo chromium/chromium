@@ -24,6 +24,10 @@ class FakeSharingHubBubbleController : public SharingHubBubbleController {
                                  std::vector<SharingHubAction> third_party);
   ~FakeSharingHubBubbleController();
 
+  // Test API:
+  void SetFirstPartyActions(std::vector<SharingHubAction> actions);
+  void SetThirdPartyActions(std::vector<SharingHubAction> actions);
+
   // SharingHubBubbleController:
   void HideBubble() override {}
   void ShowBubble(share::ShareAttempt) override {}

@@ -122,6 +122,18 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
     return concrete_actions;
   }
 
+  views::Label* GetThirdPartySectionHeader() {
+    std::vector<views::View*> labels = DescendantsMatchingPredicate(
+        bubble(), base::BindRepeating(&ViewHasClassName, "Label"));
+    for (auto* view : labels) {
+      views::Label* label = static_cast<views::Label*>(view);
+      if (label->GetText() == u"Share link to") {
+        return label;
+      }
+    }
+    return nullptr;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{share::kDesktopSharePreview};
 
@@ -161,4 +173,15 @@ TEST_F(SharingHubBubbleTest, ClickingActionsCallsController) {
   ASSERT_GE(actions.size(), 3u);
   EXPECT_CALL(*controller(), OnActionSelected(2, true, testing::_));
   Click(actions[2]);
+}
+
+TEST_F(SharingHubBubbleTest, ThirdPartyHeaderWhenActionsPresent) {
+  ShowBubble();
+  EXPECT_TRUE(GetThirdPartySectionHeader());
+}
+
+TEST_F(SharingHubBubbleTest, NoThirdPartyHeaderWhenNoActionsPresent) {
+  controller()->SetThirdPartyActions({});
+  ShowBubble();
+  EXPECT_FALSE(GetThirdPartySectionHeader());
 }

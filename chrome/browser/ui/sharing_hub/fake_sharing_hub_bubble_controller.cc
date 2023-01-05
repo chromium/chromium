@@ -12,6 +12,16 @@ FakeSharingHubBubbleController::FakeSharingHubBubbleController(
     : first_party_actions_(first_party), third_party_actions_(third_party) {}
 FakeSharingHubBubbleController::~FakeSharingHubBubbleController() = default;
 
+void FakeSharingHubBubbleController::SetFirstPartyActions(
+    std::vector<SharingHubAction> actions) {
+  first_party_actions_ = actions;
+}
+
+void FakeSharingHubBubbleController::SetThirdPartyActions(
+    std::vector<SharingHubAction> actions) {
+  third_party_actions_ = actions;
+}
+
 SharingHubBubbleView* FakeSharingHubBubbleController::sharing_hub_bubble_view()
     const {
   return nullptr;

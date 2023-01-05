@@ -38,6 +38,34 @@ constexpr int kActionButtonGroup = 0;
 
 constexpr int kInterItemPadding = 4;
 
+void AddActions(views::View* container,
+                SharingHubBubbleViewImpl* owner,
+                const std::vector<SharingHubAction>& actions) {
+  for (const auto& action : actions) {
+    auto* view = container->AddChildView(
+        std::make_unique<SharingHubBubbleActionButton>(owner, action));
+    view->SetGroup(kActionButtonGroup);
+  }
+}
+
+views::Label* AddThirdPartySectionHeader(views::View* container) {
+  container->AddChildView(std::make_unique<views::Separator>());
+
+  constexpr int kIndent = 12;
+  constexpr int kLabelLineHeight = 40;
+
+  auto* share_link_label =
+      new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL),
+                       views::style::CONTEXT_DIALOG_BODY_TEXT);
+  share_link_label->SetLineHeight(kLabelLineHeight);
+  share_link_label->SetMultiLine(true);
+  share_link_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  share_link_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kIndent, 0, kIndent)));
+  return container->AddChildView(share_link_label);
+}
+
 }  // namespace
 
 SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
@@ -98,10 +126,12 @@ void SharingHubBubbleViewImpl::OnThemeChanged() {
   LocationBarBubbleDelegateView::OnThemeChanged();
   if (GetWidget()) {
     set_color(GetColorProvider()->GetColor(ui::kColorMenuBackground));
-    share_link_label_->SetBackgroundColor(
-        GetColorProvider()->GetColor(ui::kColorMenuBackground));
-    share_link_label_->SetEnabledColor(
-        GetColorProvider()->GetColor(ui::kColorMenuItemForeground));
+    if (share_link_label_) {
+      share_link_label_->SetBackgroundColor(
+          GetColorProvider()->GetColor(ui::kColorMenuBackground));
+      share_link_label_->SetEnabledColor(
+          GetColorProvider()->GetColor(ui::kColorMenuItemForeground));
+    }
   }
 }
 
@@ -159,32 +189,11 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kInterItemPadding));
 
-  for (const auto& action : first_party_actions) {
-    auto* view = action_list_view->AddChildView(
-        std::make_unique<SharingHubBubbleActionButton>(this, action));
-    view->SetGroup(kActionButtonGroup);
-  }
+  AddActions(action_list_view, this, first_party_actions);
 
-  action_list_view->AddChildView(std::make_unique<views::Separator>());
-
-  constexpr int kIndent = 12;
-  constexpr int kLabelLineHeight = 40;
-
-  auto* share_link_label =
-      new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL),
-                       views::style::CONTEXT_DIALOG_BODY_TEXT);
-  share_link_label->SetLineHeight(kLabelLineHeight);
-  share_link_label->SetMultiLine(true);
-  share_link_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  share_link_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kIndent, 0, kIndent)));
-  share_link_label_ = action_list_view->AddChildView(share_link_label);
-
-  for (const auto& action : third_party_actions) {
-    auto* view = action_list_view->AddChildView(
-        std::make_unique<SharingHubBubbleActionButton>(this, action));
-    view->SetGroup(kActionButtonGroup);
+  if (!third_party_actions.empty()) {
+    share_link_label_ = AddThirdPartySectionHeader(action_list_view);
+    AddActions(action_list_view, this, third_party_actions);
   }
 
   MaybeSizeToContents();
