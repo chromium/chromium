@@ -94949,13 +94949,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="19" label="LogoutTabHelper::DidFinishNavigation"/>
 </enum>
 
-<enum name="SourceIdConsistency">
-  <int value="0" label="Consistent"/>
-  <int value="1" label="ContainsInvalid"/>
-  <int value="2" label="NonUnique"/>
-  <int value="3" label="ContainsInvalidAndNonUnique"/>
-</enum>
-
 <enum name="SpareProcessMaybeTakeAction">
   <int value="0" label="NoSparePresent"/>
   <int value="1" label="MismatchedBrowserContext"/>

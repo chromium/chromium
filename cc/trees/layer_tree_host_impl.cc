@@ -201,30 +201,6 @@ void PopulateMetadataContentColorUsage(
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SourceIdConsistency : int {
-  kConsistent = 0,
-  kContainsInvalid = 1,
-  kNonUnique = 2,
-  kInvalidAndNonUnique = 3,
-  kMaxValue = kInvalidAndNonUnique,
-};
-
-void RecordSourceIdConsistency(bool all_valid, bool all_unique) {
-  SourceIdConsistency consistency =
-      all_unique ? (all_valid ? SourceIdConsistency::kConsistent
-                              : SourceIdConsistency::kContainsInvalid)
-                 : (all_valid ? SourceIdConsistency::kNonUnique
-                              : SourceIdConsistency::kInvalidAndNonUnique);
-
-  // TODO(crbug.com/1062764): we're sometimes seeing unexpected values for the
-  // ukm::SourceId. We'll use this histogram to track how often it happens so
-  // we can properly (de-)prioritize a fix.
-  UMA_HISTOGRAM_ENUMERATION("Event.LatencyInfo.Debug.SourceIdConsistency",
-                            consistency);
-}
-
 // Dump verbose log with
 // --vmodule=layer_tree_host_impl=3 for renderer only, or
 // --vmodule=layer_tree_host_impl=4 for all clients.
@@ -2757,17 +2733,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
     ApplyFirstScrollTracking(metadata.latency_info.front(),
                              metadata.frame_token);
-    ukm::SourceId exemplar = metadata.latency_info.front().ukm_source_id();
-    bool all_valid = true;
-    bool all_unique = true;
     for (auto& latency : metadata.latency_info) {
       latency.AddLatencyNumberWithTimestamp(
           ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT, draw_time);
-      all_valid &= latency.ukm_source_id() != ukm::kInvalidSourceId;
-      all_unique &= latency.ukm_source_id() == exemplar;
     }
-
-    RecordSourceIdConsistency(all_valid, all_unique);
   }
   ui::LatencyInfo::TraceIntermediateFlowEvents(
       metadata.latency_info,

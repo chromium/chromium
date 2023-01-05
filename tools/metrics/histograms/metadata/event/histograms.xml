@@ -1596,19 +1596,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.LatencyInfo.Debug.SourceIdConsistency"
-    enum="SourceIdConsistency" expires_after="2020-09-01">
-  <owner>tommckee@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    When tracking input event latency, we expect to associate some number of
-    latency records (instances of ui::LatencyInfo) with a CompositorFrame. Each
-    record is associated to a particular navigation through its ukm::SourceId
-    property. This histogram tracks how often the records of an individual frame
-    have varying or invalid source ids. See crbug.com/1062764.
-  </summary>
-</histogram>
-
 <histogram name="Event.MaxDragDistance.{ToolType}" units="dips"
     expires_after="never">
 <!-- expires-never: Needed for long-term tracking of dragging vs clicking behavior. -->
