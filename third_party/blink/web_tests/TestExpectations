@@ -5372,9 +5372,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-e
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-color-profile-lossy.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure ]
 
-# Flakes that surfaced on the mac12 and mac12-arm64 waterfall
-crbug.com/1249176 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass ]
-
 # Sheriff 2022-07-04
 crbug.com/1341689 [ Linux ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
@@ -6839,3 +6836,7 @@ crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclud
 
 # Sheriff 2023-01-04
 crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Pass Timeout ]
+
+# Sheriff 2023-01-05
+# Previously also linked with crbug.com/1249176
+crbug.com/1361956 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Pass Failure Timeout ]
