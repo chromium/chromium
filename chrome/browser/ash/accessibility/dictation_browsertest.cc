@@ -1428,7 +1428,9 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartInsertBefore) {
                                          "This is a simple test.");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartSelectBetween) {
+// TODO(https://crbug.com/1405140): Flaky.
+IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
+                       DISABLED_SmartSelectBetween) {
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForSelectionChanged("select from this to test");
   SendFinalResultAndWaitForEditableValue("Hello world", "Hello world.");
