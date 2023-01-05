@@ -5,7 +5,6 @@
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
@@ -76,14 +75,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   UpdateRoutes({media_route_cast});
   base::RunLoop().RunUntilIdle();
 
-// Recorded once from the route created when pressing submit, and then again
-// when we manually call `UpdateRoutes`.
-// TODO(b/262287112): AccessCodeCast.Discovery.DeviceDurationOnRoute is
-// recorded twice for saved devices browser tests on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
+  // Recorded once from the route created when pressing submit.
   histogram_tester.ExpectTotalCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 1);
-#endif
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(), DisconnectAndRemoveSink(_));
   UpdateRoutes({});
