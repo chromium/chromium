@@ -7,13 +7,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 assert(is_chromeos_ash)
 
-copy("braille_ime_manifest") {
-  sources = [ "manifest.json" ]
-  outputs = [
-    "$root_out_dir/resources/chromeos/accessibility/braille_ime/manifest.json",
-  ]
-}
-
 js_type_check("closure_compile") {
   deps = [
     ":braille_ime",
