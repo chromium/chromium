@@ -101,6 +101,8 @@ struct EventHolder {
   std::wstring name;
 };
 
+// Creates a waitable event with default attributes for the current process,
+// test, and test scope.
 EventHolder CreateWaitableEventForTest();
 
 }  // namespace updater::test

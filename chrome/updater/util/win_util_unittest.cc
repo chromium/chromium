@@ -23,10 +23,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
@@ -181,6 +183,10 @@ TEST(WinUtil, RunDeElevated_Exe) {
       RunDeElevated(test_process_cmd_line.GetProgram().value(),
                     test_process_cmd_line.GetArgumentsString()));
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+
+  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
+    return test::FindProcesses(kTestProcessExecutableName).empty();
+  })));
 }
 
 TEST(WinUtil, GetOSVersion) {
