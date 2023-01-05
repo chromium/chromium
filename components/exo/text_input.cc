@@ -132,7 +132,9 @@ void TextInput::SetTypeModeFlags(ui::TextInputType type,
                                  bool should_do_learning) {
   if (!input_method_)
     return;
-  bool changed = (input_type_ != type);
+  bool changed = (input_type_ != type) || (input_mode_ != mode) ||
+                 (flags_ != flags) ||
+                 (should_do_learning_ != should_do_learning);
   input_type_ = type;
   input_mode_ = mode;
   flags_ = flags;
