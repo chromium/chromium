@@ -134,7 +134,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   gpu::SyncToken sync_token1(gpu::CommandBufferNamespace::GPU_IO,
                              gpu::CommandBufferId::FromUnsafeValue(0x123),
                              0x42);
-  auto mailbox = gpu::Mailbox::Generate();
+  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   constexpr gfx::Size size(64, 64);
   TransferableResource gl_resource = TransferableResource::MakeGpu(
       mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size, RGBA_8888,
@@ -215,7 +215,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   gpu::SyncToken sync_token1(gpu::CommandBufferNamespace::GPU_IO,
                              gpu::CommandBufferId::FromUnsafeValue(0x123),
                              0x42);
-  auto mailbox = gpu::Mailbox::Generate();
+  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   constexpr gfx::Size size(64, 64);
   TransferableResource gl_resource = TransferableResource::MakeGpu(
       mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size, RGBA_8888,

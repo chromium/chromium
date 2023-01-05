@@ -127,7 +127,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
   SharedImageVideoProvider::ImageRecord MakeImageRecord(
       bool* release_cb_called_flag = nullptr) {
     SharedImageVideoProvider::ImageRecord record;
-    record.mailbox = gpu::Mailbox::Generate();
+    record.mailbox = gpu::Mailbox::GenerateForSharedImage();
     if (release_cb_called_flag)
       *release_cb_called_flag = false;
     record.release_cb = base::BindOnce(

@@ -417,7 +417,7 @@ TEST_F(CanvasResourceProviderTest,
   provider->TryEnableSingleBuffering();
   EXPECT_TRUE(provider->IsSingleBuffered());
 
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(
           mailbox, viz::ReleaseCallback(), gpu::SyncToken(), kInfo,

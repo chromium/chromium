@@ -41,8 +41,8 @@ viz::ResourceId CreateAndImportResource(
     gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB()) {
   constexpr gfx::Size size(64, 64);
   auto transfer_resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
-      viz::RGBA_8888, false /* is_overlay_candidate */);
+      gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
+      sync_token, size, viz::RGBA_8888, false /* is_overlay_candidate */);
   transfer_resource.color_space = std::move(color_space);
   return resource_provider->ImportResource(transfer_resource,
                                            base::DoNothing());

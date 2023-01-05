@@ -83,7 +83,7 @@ class GLTextureMailboxTest : public testing::Test {
     glClear(GL_COLOR_BUFFER_BIT);
     ::gles2::GetGLContext()->SwapBuffers(1);
 
-    Mailbox mailbox = Mailbox::Generate();
+    Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
     gl1_.decoder()->TakeFrontBuffer(mailbox);
 
     gl2_.MakeCurrent();
@@ -369,7 +369,7 @@ TEST_F(GLTextureMailboxTest, TakeFrontBuffer) {
   glClearColor(0, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   ::gles2::GetGLContext()->SwapBuffers(1);
-  Mailbox mailbox = Mailbox::Generate();
+  Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
   gl2_.decoder()->TakeFrontBuffer(mailbox);
 
   gl1_.MakeCurrent();
@@ -396,7 +396,7 @@ TEST_F(GLTextureMailboxTest, TakeFrontBuffer) {
   glClear(GL_COLOR_BUFFER_BIT);
   glFlush();
 
-  Mailbox mailbox2 = Mailbox::Generate();
+  Mailbox mailbox2 = Mailbox::GenerateLegacyMailboxForTesting();
   gl2_.decoder()->TakeFrontBuffer(mailbox2);
 
   gl1_.MakeCurrent();
@@ -507,7 +507,7 @@ TEST_F(GLTextureMailboxTest, FrontBufferChangeColor) {
     glClear(GL_COLOR_BUFFER_BIT);
     ::gles2::GetGLContext()->SwapBuffers(1);
 
-    Mailbox mailbox = Mailbox::Generate();
+    Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
     gl1_.decoder()->TakeFrontBuffer(mailbox);
 
     // Normally, consumers of TakeFrontBuffer() must supply their own
@@ -536,7 +536,7 @@ TEST_F(GLTextureMailboxTest, FrontBufferSamplerParameters) {
   glClearColor(0, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   ::gles2::GetGLContext()->SwapBuffers(1);
-  Mailbox mailbox = Mailbox::Generate();
+  Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
   gl2_.decoder()->TakeFrontBuffer(mailbox);
 
   gl1_.MakeCurrent();
@@ -574,7 +574,7 @@ TEST_F(GLTextureMailboxTest, TakeFrontBufferMultipleContexts) {
     glClearColor(1 - i % 2, i % 2, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     ::gles2::GetGLContext()->SwapBuffers(0, 1);
-    mailbox[i] = Mailbox::Generate();
+    mailbox[i] = Mailbox::GenerateLegacyMailboxForTesting();
     other_gl[i].decoder()->TakeFrontBuffer(mailbox[i]);
     // Make sure both "other gl" are in the same share group.
     if (!options.share_group_manager)

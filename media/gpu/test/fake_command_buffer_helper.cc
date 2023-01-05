@@ -169,7 +169,7 @@ gpu::Mailbox FakeCommandBufferHelper::CreateMailbox(GLuint service_id) {
   DCHECK(service_ids_.count(service_id));
   if (!has_stub_)
     return gpu::Mailbox();
-  return gpu::Mailbox::Generate();
+  return gpu::Mailbox::GenerateForSharedImage();
 }
 
 void FakeCommandBufferHelper::SetWillDestroyStubCB(

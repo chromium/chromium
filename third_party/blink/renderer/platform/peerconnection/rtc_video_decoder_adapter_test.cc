@@ -363,7 +363,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::TestWithParam<bool> {
   void FinishDecodeOnMediaThread(uint32_t timestamp) {
     DCHECK(media_thread_.task_runner()->BelongsToCurrentThread());
     gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-    mailbox_holders[0].mailbox = gpu::Mailbox::Generate();
+    mailbox_holders[0].mailbox = gpu::Mailbox::GenerateForSharedImage();
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::WrapNativeTextures(
             media::PIXEL_FORMAT_ARGB, mailbox_holders,

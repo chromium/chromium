@@ -63,7 +63,7 @@ class ResourcePoolTest : public testing::Test {
 
   void SetBackingOnResource(const ResourcePool::InUsePoolResource& resource) {
     auto backing = std::make_unique<StubGpuBacking>();
-    backing->mailbox = gpu::Mailbox::Generate();
+    backing->mailbox = gpu::Mailbox::GenerateForSharedImage();
     backing->mailbox_sync_token.Set(
         gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
     resource.set_gpu_backing(std::move(backing));

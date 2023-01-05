@@ -65,7 +65,7 @@ class OverlayStateObserverImplTest : public testing::Test {
 
 TEST_F(OverlayStateObserverImplTest, StateChange) {
   // Create a OverlayStateObserverImpl & register a mailbox to listen to
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   auto overlay_state_observer_subscription = OverlayStateObserverImpl::Create(
       &mock_overlay_state_service, mailbox,
       base::BindRepeating(&OverlayStateObserverImplTest::OnStateChanged,
@@ -86,7 +86,7 @@ TEST_F(OverlayStateObserverImplTest, StateChange) {
   EXPECT_EQ(promoted_, true);
 
   // Set overlay state for another mailbox & ensure no callback
-  gpu::Mailbox mailbox2 = gpu::Mailbox::Generate();
+  gpu::Mailbox mailbox2 = gpu::Mailbox::GenerateForSharedImage();
   mock_overlay_state_service.SetOverlayState(mailbox2, false);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(callback_count_, 2);

@@ -81,7 +81,7 @@ class MailboxManagerTest : public GpuServiceTest {
 TEST_F(MailboxManagerTest, Basic) {
   Texture* texture = CreateTexture();
 
-  Mailbox name = Mailbox::Generate();
+  Mailbox name = Mailbox::GenerateLegacyMailboxForTesting();
   manager_->ProduceTexture(name, texture);
   EXPECT_EQ(texture, manager_->ConsumeTexture(name));
 
@@ -97,7 +97,7 @@ TEST_F(MailboxManagerTest, Basic) {
 TEST_F(MailboxManagerTest, ProduceMultipleMailbox) {
   Texture* texture = CreateTexture();
 
-  Mailbox name1 = Mailbox::Generate();
+  Mailbox name1 = Mailbox::GenerateLegacyMailboxForTesting();
 
   manager_->ProduceTexture(name1, texture);
   EXPECT_EQ(texture, manager_->ConsumeTexture(name1));
@@ -107,7 +107,7 @@ TEST_F(MailboxManagerTest, ProduceMultipleMailbox) {
   EXPECT_EQ(texture, manager_->ConsumeTexture(name1));
 
   // Can produce again, with a different mailbox.
-  Mailbox name2 = Mailbox::Generate();
+  Mailbox name2 = Mailbox::GenerateLegacyMailboxForTesting();
   manager_->ProduceTexture(name2, texture);
 
   // Still available under all mailboxes.
@@ -126,7 +126,7 @@ TEST_F(MailboxManagerTest, ProduceMultipleTexture) {
   Texture* texture1 = CreateTexture();
   Texture* texture2 = CreateTexture();
 
-  Mailbox name = Mailbox::Generate();
+  Mailbox name = Mailbox::GenerateLegacyMailboxForTesting();
 
   manager_->ProduceTexture(name, texture1);
   EXPECT_EQ(texture1, manager_->ConsumeTexture(name));

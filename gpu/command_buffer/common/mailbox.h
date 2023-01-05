@@ -44,7 +44,13 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   bool IsSharedImage() const;
 
   // Generate a unique unguessable mailbox name.
+  // TODO(crbug.com/1382031): Make this method private and friend existing
+  // callers.
   static Mailbox Generate();
+
+  // Generate a legacy mailbox for usage in tests of production code that
+  // still interacts with the legacy mailbox system.
+  static Mailbox GenerateLegacyMailboxForTesting() { return Generate(); }
 
   // Generate a unique unguessable mailbox name for use with the SharedImage
   // system.

@@ -156,7 +156,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     CHECK_LT(handle.native_pixmap_handle.buffer_index,
              collection_it->second->GetNumBuffers());
 
-    auto result = gpu::Mailbox::Generate();
+    auto result = gpu::Mailbox::GenerateForSharedImage();
     mailboxes_.insert(result);
     return result;
   }

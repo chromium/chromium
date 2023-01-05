@@ -32,7 +32,7 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   auto backing = std::make_unique<StubGpuBacking>();
-  backing->mailbox = gpu::Mailbox::Generate();
+  backing->mailbox = gpu::Mailbox::GenerateForSharedImage();
   resource.set_gpu_backing(std::move(backing));
   return nullptr;
 }

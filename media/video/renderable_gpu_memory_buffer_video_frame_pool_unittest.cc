@@ -42,7 +42,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                          gpu::SyncToken& sync_token) override {
     DoCreateSharedImage(gpu_memory_buffer, plane, color_space, surface_origin,
                         alpha_type, usage);
-    mailbox = gpu::Mailbox::Generate();
+    mailbox = gpu::Mailbox::GenerateForSharedImage();
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,
