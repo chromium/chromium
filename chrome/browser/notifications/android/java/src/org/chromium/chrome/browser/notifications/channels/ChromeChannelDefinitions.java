@@ -124,7 +124,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     }
 
     // Map defined in static inner class so it's only initialized lazily.
-    @RequiresApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
     private static class PredefinedChannels {
         /**
          * Definitions for predefined channels. Any channel listed in STARTUP must have an entry in
