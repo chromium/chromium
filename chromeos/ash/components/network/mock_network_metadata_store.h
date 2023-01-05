@@ -22,6 +22,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkMetadataStore
 
   // MockNetworkMetadataStore:
   MOCK_METHOD1(GetCustomApnList, const base::Value::List*(const std::string&));
+  MOCK_METHOD1(GetPreRevampCustomApnList,
+               const base::Value::List*(const std::string&));
 };
 
 }  // namespace ash

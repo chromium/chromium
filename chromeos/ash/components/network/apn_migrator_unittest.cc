@@ -177,7 +177,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
 
   // For the migrated network, the routine should not check for the current
   // custom APN list, but rather just resets the UserApnList.
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(0);
   base::Value::Dict expected_onc1 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid1, /*user_apn_list=*/nullptr);
@@ -190,7 +191,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
       .Times(1);
 
   // Ensure that the function does not modify the non-migrated network.
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid2))
       .Times(0);
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_2, _, _, _))
@@ -237,11 +239,13 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
       .Times(0);
 
   // Return nullptr and empty list for the first two networks.
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
       .WillOnce(Return(nullptr));
   base::Value::List empty_apn_list;
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid2))
       .Times(1)
       .WillOnce(Return(&empty_apn_list));
 
@@ -253,7 +257,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
   base::Value::List populated_apn_list;
   populated_apn_list.Append(std::move(custom_apn_1));
   populated_apn_list.Append(std::move(custom_apn_2));
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid3))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid3))
       .Times(1)
       .WillOnce(Return(&populated_apn_list));
 
@@ -315,11 +320,13 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
       .WillOnce(Return(false));
 
   // Simulate that all networks do not have custom APNs
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
       .WillOnce(Return(nullptr));
   base::Value::List empty_apn_list;
-  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid2))
       .Times(1)
       .WillOnce(Return(&empty_apn_list));
 
@@ -381,7 +388,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworks) {
     base::Value::List populated_apn_list;
     populated_apn_list.Append(std::move(custom_apn_1));
     populated_apn_list.Append(std::move(custom_apn_2));
-    EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+    EXPECT_CALL(*network_metadata_store(),
+                GetPreRevampCustomApnList(kTestCellularGuid1))
         .Times(1)
         .WillOnce(Return(&populated_apn_list));
     EXPECT_CALL(*managed_network_configuration_handler(),
@@ -407,7 +415,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworks) {
         .Times(1)
         .WillOnce(Return(false));
 
-    EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+    EXPECT_CALL(*network_metadata_store(),
+                GetPreRevampCustomApnList(kTestCellularGuid1))
         .Times(0);
     EXPECT_CALL(*managed_network_configuration_handler(),
                 GetManagedProperties(LoginState::Get()->primary_user_hash(),

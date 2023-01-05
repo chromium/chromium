@@ -63,7 +63,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   }
 
   const base::Value::List* custom_apn_list =
-      network_metadata_store_->GetCustomApnList(network.guid());
+      network_metadata_store_->GetPreRevampCustomApnList(network.guid());
   if (!custom_apn_list || custom_apn_list->empty()) {
     base::Value::List empty_apn_list;
     SetShillUserApnListForNetwork(network, &empty_apn_list);
@@ -114,7 +114,8 @@ void ApnMigrator::NetworkListChanged() {
       continue;
     }
     if (const base::Value::List* custom_apn_list =
-            network_metadata_store_->GetCustomApnList(network->guid())) {
+            network_metadata_store_->GetPreRevampCustomApnList(
+                network->guid())) {
       SetShillUserApnListForNetwork(*network, custom_apn_list);
       continue;
     }
