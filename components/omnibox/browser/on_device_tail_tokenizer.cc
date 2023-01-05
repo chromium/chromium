@@ -159,6 +159,19 @@ void OnDeviceTailTokenizer::InitAmbiguousMap() {
   }
 }
 
+bool OnDeviceTailTokenizer::IsBeginQueryTokenId(TokenId token_id) const {
+  return token_id == TokenToId(kBeginQueryToken);
+}
+
+bool OnDeviceTailTokenizer::IsEndQueryTokenId(TokenId token_id) const {
+  return token_id == TokenToId(kEndQueryToken);
+}
+
+OnDeviceTailTokenizer::TokenId OnDeviceTailTokenizer::GetEndQueryTokenId()
+    const {
+  return TokenToId(kEndQueryToken);
+}
+
 bool OnDeviceTailTokenizer::IsAmbiguousToken(const std::string& token) const {
   return ambiguous_tokens_.find(token) != ambiguous_tokens_.end();
 }

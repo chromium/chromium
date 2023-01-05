@@ -70,6 +70,11 @@ class OnDeviceTailTokenizer {
   // Returns the size of the vocabulary.
   size_t vocab_size() const { return token_to_id_.size(); }
 
+  // Special query token related helpers.
+  bool IsEndQueryTokenId(TokenId token_id) const;
+  bool IsBeginQueryTokenId(TokenId token_id) const;
+  TokenId GetEndQueryTokenId() const;
+
  private:
   // Determines if the given token is ambiguous.
   bool IsAmbiguousToken(const std::string& token) const;

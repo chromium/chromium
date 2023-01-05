@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,9 +17,9 @@ using ::testing::ElementsAreArray;
 
 namespace {
 
-const int kNumLayer = 1;
-const int kStateSize = 512;
-const int kEmbeddingDim = 64;
+constexpr int kNumLayer = 1;
+constexpr int kStateSize = 512;
+constexpr int kEmbeddingDim = 64;
 
 base::FilePath GetTestFilePath(const std::string& filename) {
   base::FilePath file_path;
@@ -30,10 +31,31 @@ base::FilePath GetTestFilePath(const std::string& filename) {
 
 }  // namespace
 
+class OnDeviceTailModelExecutorPublic : public OnDeviceTailModelExecutor {
+ public:
+  using OnDeviceTailModelExecutor::BeamNode;
+  using OnDeviceTailModelExecutor::CandidateQueue;
+  using OnDeviceTailModelExecutor::RnnCellStates;
+  using OnDeviceTailModelExecutor::RnnStepOutput;
+  using OnDeviceTailModelExecutor::RunRnnStep;
+  using OnDeviceTailModelExecutor::TokenIdAndProb;
+
+  using OnDeviceTailModelExecutor::CreateNewBeams;
+  using OnDeviceTailModelExecutor::EncodePreviousQuery;
+  using OnDeviceTailModelExecutor::GetLogProbability;
+  using OnDeviceTailModelExecutor::GetRootBeamNode;
+  using OnDeviceTailModelExecutor::InsertBeamNodeToCandidateQueue;
+
+  using OnDeviceTailModelExecutor::prev_query_cache_;
+  using OnDeviceTailModelExecutor::rnn_step_cache_;
+  using OnDeviceTailModelExecutor::tokenizer_;
+  using OnDeviceTailModelExecutor::vocab_size_;
+};
+
 class OnDeviceTailModelExecutorTest : public ::testing::Test {
  public:
   OnDeviceTailModelExecutorTest() {
-    executor_ = std::make_unique<OnDeviceTailModelExecutor>();
+    executor_ = std::make_unique<OnDeviceTailModelExecutorPublic>();
     EXPECT_TRUE(executor_->Init(GetTestFilePath("test_tail_model.tflite"),
                                 GetTestFilePath("vocab_test.txt"), kStateSize,
                                 kNumLayer, kEmbeddingDim));
@@ -52,7 +74,27 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
     return result;
   }
 
-  std::unique_ptr<OnDeviceTailModelExecutor> executor_;
+  OnDeviceTailModelExecutorPublic::RnnStepOutput GetRnnStepOutputCache(
+      const OnDeviceTailTokenizer::TokenIds& token_ids) {
+    OnDeviceTailModelExecutorPublic::RnnStepOutput result;
+    auto iter = executor_->rnn_step_cache_.Get(token_ids);
+    if (iter != executor_->rnn_step_cache_.end()) {
+      result = iter->second;
+    }
+    return result;
+  }
+
+  static void AreBeamNodesEqual(
+      const OnDeviceTailModelExecutorPublic::BeamNode& b1,
+      const OnDeviceTailModelExecutorPublic::BeamNode& b2) {
+    EXPECT_EQ(b1.token_ids, b2.token_ids);
+    EXPECT_EQ(b1.rnn_step_cache_key, b2.rnn_step_cache_key);
+    EXPECT_EQ(b1.constraint_prefix, b2.constraint_prefix);
+    EXPECT_EQ(b1.states, b2.states);
+    EXPECT_NEAR(b1.log_prob, b2.log_prob, 0.01f);
+  }
+
+  std::unique_ptr<OnDeviceTailModelExecutorPublic> executor_;
 };
 
 TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
@@ -66,4 +108,262 @@ TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
   EXPECT_NE(encoding1, encoding2);
   EXPECT_EQ(GetPrevQueryCache(ids1), encoding1);
   EXPECT_EQ(GetPrevQueryCache(ids2), encoding2);
+}
+
+TEST_F(OnDeviceTailModelExecutorTest, TestRunRnnStep) {
+  OnDeviceTailTokenizer::TokenIds cache_key1({16, 17, 18}),
+      cache_key2({16, 17, 19}), prev_query_ids({16, 17});
+  OnDeviceTailTokenizer::TokenId input_id1 = 18, input_id2 = 19;
+  OnDeviceTailModelExecutorPublic::RnnCellStates previous_states(kNumLayer,
+                                                                 kStateSize);
+  std::vector<float> prev_query_encoding(kEmbeddingDim);
+  for (size_t i = 0; i < prev_query_encoding.size(); i++) {
+    prev_query_encoding[i] = (i + 1) * 0.001;
+  }
+
+  OnDeviceTailModelExecutorPublic::RnnStepOutput output1, output2;
+  EXPECT_TRUE(executor_->RunRnnStep(cache_key1, input_id1, prev_query_encoding,
+                                    previous_states, &output1));
+  EXPECT_TRUE(executor_->RunRnnStep(cache_key2, input_id2, prev_query_encoding,
+                                    previous_states, &output2));
+  EXPECT_NE(output1.probs, output2.probs);
+  EXPECT_NE(output1.states.c_i, output2.states.c_i);
+  EXPECT_NE(output1.states.m_i, output2.states.m_i);
+  EXPECT_EQ(GetRnnStepOutputCache(cache_key1), output1);
+  EXPECT_EQ(GetRnnStepOutputCache(cache_key2), output2);
+}
+
+TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
+  OnDeviceTailModelExecutorPublic::RnnStepOutput output(kNumLayer, kStateSize,
+                                                        executor_->vocab_size_);
+  OnDeviceTailModelExecutorPublic::BeamNode current_beam(kNumLayer, kStateSize),
+      expected_beam(kNumLayer, kStateSize);
+
+  output.states.c_i[0][10] = -0.77;
+  output.states.m_i[0][11] = 0.88;
+  current_beam.token_ids = {16, 17};
+  current_beam.rnn_step_cache_key = {14, 15, 16, 17};
+  current_beam.log_prob =
+      OnDeviceTailModelExecutorPublic::GetLogProbability(0.9);
+
+  expected_beam.states = output.states;
+  expected_beam.constraint_prefix = "";
+
+  size_t max_num_suggestions = 3;
+  float log_prob_threshold =
+      OnDeviceTailModelExecutorPublic::GetLogProbability(0.3);
+
+  {
+    OnDeviceTailModelExecutorPublic::CandidateQueue partial_candidates,
+        completed_candidates;
+
+    output.probs[19] = 0.8;
+    output.probs[20] = 0.7;
+    output.probs[21] = 0.6;
+    output.probs[22] = 0.3;
+    output.probs[executor_->tokenizer_->GetEndQueryTokenId()] = 0.7;
+    executor_->CreateNewBeams(output, current_beam, max_num_suggestions,
+                              log_prob_threshold, &partial_candidates,
+                              &completed_candidates);
+    EXPECT_EQ(3U, partial_candidates.size());
+    EXPECT_EQ(1U, completed_candidates.size());
+
+    expected_beam.token_ids = {16, 17,
+                               executor_->tokenizer_->GetEndQueryTokenId()};
+    expected_beam.rnn_step_cache_key = {
+        14, 15, 16, 17, executor_->tokenizer_->GetEndQueryTokenId()};
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.7);
+    AreBeamNodesEqual(expected_beam, completed_candidates.top());
+
+    expected_beam.token_ids = {16, 17, 21};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 21};
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.6);
+    AreBeamNodesEqual(expected_beam, partial_candidates.top());
+
+    partial_candidates.pop();
+    expected_beam.token_ids = {16, 17, 20};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 20};
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.7);
+    AreBeamNodesEqual(expected_beam, partial_candidates.top());
+
+    partial_candidates.pop();
+    expected_beam.token_ids = {16, 17, 19};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 19};
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.8);
+    AreBeamNodesEqual(expected_beam, partial_candidates.top());
+  }
+
+  // With constraint prefix set.
+  {
+    OnDeviceTailModelExecutorPublic::CandidateQueue partial_candidates,
+        completed_candidates;
+    current_beam.constraint_prefix = "a";
+    output.probs[19] = 0.9;
+    output.probs[20] = 0.8;
+    output.probs[21] = 0.7;
+    output.probs[261] = 0.08;  // token#261: "ab"
+    output.probs[262] = 0.07;  // token#262: "ac"
+    output.probs[263] = 0.01;  // token#262: "ad"
+
+    executor_->CreateNewBeams(output, current_beam, max_num_suggestions,
+                              log_prob_threshold, &partial_candidates,
+                              &completed_candidates);
+
+    expected_beam.token_ids = {16, 17, 262};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 262};
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * (0.07 / 0.16));
+
+    EXPECT_EQ(2U, partial_candidates.size());
+    EXPECT_EQ(0U, completed_candidates.size());
+
+    AreBeamNodesEqual(expected_beam, partial_candidates.top());
+    partial_candidates.pop();
+
+    expected_beam.token_ids = {16, 17, 261};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 261};
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * (0.08 / 0.16));
+    AreBeamNodesEqual(expected_beam, partial_candidates.top());
+  }
+}
+
+TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
+  OnDeviceTailModelExecutorPublic::RnnCellStates states(kNumLayer, kStateSize);
+  states.c_i[0][10] = -0.77;
+  states.m_i[0][11] = 0.88;
+
+  OnDeviceTailModelExecutorPublic::BeamNode current_beam(kNumLayer, kStateSize),
+      expected_beam(kNumLayer, kStateSize);
+  current_beam.token_ids = {16, 17};
+  current_beam.rnn_step_cache_key = {14, 15, 16, 17};
+  current_beam.log_prob =
+      OnDeviceTailModelExecutorPublic::GetLogProbability(0.9);
+
+  size_t max_num_suggestions = 2;
+  float log_prob_threshold =
+      OnDeviceTailModelExecutorPublic::GetLogProbability(0.5);
+
+  // Empty candidate queue.
+  {
+    OnDeviceTailModelExecutorPublic::CandidateQueue queue;
+    OnDeviceTailModelExecutorPublic::TokenIdAndProb token_id_and_prob{18, 0.8};
+    expected_beam.token_ids = {16, 17, 18};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 18};
+    expected_beam.states = states;
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.8);
+
+    executor_->InsertBeamNodeToCandidateQueue(token_id_and_prob, states,
+                                              current_beam, log_prob_threshold,
+                                              max_num_suggestions, &queue);
+    EXPECT_EQ(1U, queue.size());
+    AreBeamNodesEqual(expected_beam, queue.top());
+  }
+
+  // Candidate queue with already 2 candidates inside.
+  {
+    OnDeviceTailModelExecutorPublic::CandidateQueue queue;
+    OnDeviceTailModelExecutorPublic::TokenIdAndProb token_id_and_prob{18, 0.8};
+    expected_beam.token_ids = {16, 17, 18};
+    expected_beam.rnn_step_cache_key = {14, 15, 16, 17, 18};
+    expected_beam.states = states;
+    expected_beam.log_prob =
+        OnDeviceTailModelExecutorPublic::GetLogProbability(0.9 * 0.8);
+
+    OnDeviceTailModelExecutorPublic::BeamNode beam1(kNumLayer, kStateSize),
+        beam2(kNumLayer, kStateSize);
+
+    beam1.token_ids = {19};
+    beam1.log_prob = OnDeviceTailModelExecutorPublic::GetLogProbability(0.5);
+    beam2.token_ids = {20};
+    beam2.log_prob = OnDeviceTailModelExecutorPublic::GetLogProbability(0.4);
+    queue.emplace(beam1);
+    queue.emplace(beam2);
+
+    executor_->InsertBeamNodeToCandidateQueue(token_id_and_prob, states,
+                                              current_beam, log_prob_threshold,
+                                              max_num_suggestions, &queue);
+    EXPECT_EQ(2U, queue.size());
+    EXPECT_EQ(beam1.token_ids, queue.top().token_ids);
+    queue.pop();
+    AreBeamNodesEqual(expected_beam, queue.top());
+  }
+}
+
+TEST_F(OnDeviceTailModelExecutorTest, TestGetRootBeamNode) {
+  OnDeviceTailTokenizer::Tokenization tokenization;
+  tokenization.unambiguous_ids = {257, 468, 469, 470};
+  tokenization.unambiguous_prefix = "ackageail";
+  tokenization.constraint_prefix = "a";
+
+  OnDeviceTailTokenizer::TokenIds prev_query_token_ids = {474, 475};
+  std::vector<float> expected_prev_query_encoding(kEmbeddingDim);
+  expected_prev_query_encoding[1] = 0.66;
+  expected_prev_query_encoding[11] = 0.77;
+  expected_prev_query_encoding[31] = 0.88;
+  executor_->prev_query_cache_.Put(prev_query_token_ids,
+                                   expected_prev_query_encoding);
+
+  OnDeviceTailModelExecutorPublic::RnnStepOutput rnn_output(
+      kNumLayer, kStateSize, executor_->vocab_size_);
+  OnDeviceTailModelExecutorPublic::RnnCellStates states(kNumLayer, kStateSize);
+  states.c_i[0][25] = 25;
+  states.m_i[0][35] = 35;
+  rnn_output.states = states;
+  rnn_output.probs[0] = 0.7;
+  rnn_output.probs[10] = 0.6;
+  OnDeviceTailTokenizer::TokenIds rnn_step_cache_key = {474, 475, 257, 468,
+                                                        469};
+  executor_->rnn_step_cache_.Put(rnn_step_cache_key, rnn_output);
+
+  std::vector<float> prev_query_encoding;
+  OnDeviceTailModelExecutorPublic::BeamNode root_beam, expected_beam;
+
+  expected_beam.token_ids = tokenization.unambiguous_ids;
+  rnn_step_cache_key.emplace_back(470);
+  expected_beam.rnn_step_cache_key = rnn_step_cache_key;
+  expected_beam.states = states;
+  expected_beam.constraint_prefix = "a";
+
+  executor_->GetRootBeamNode(tokenization, prev_query_token_ids,
+                             &prev_query_encoding, &root_beam);
+  EXPECT_EQ(expected_prev_query_encoding, prev_query_encoding);
+  AreBeamNodesEqual(expected_beam, root_beam);
+}
+
+TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
+  std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
+
+  {
+    predictions = executor_->GenerateSuggestionsForPrefix(
+        /*prefix =*/"faceb", /*previous_query=*/"",
+        /*max_num_suggestions =*/5, /*max_rnn_steps =*/20,
+        /*probability_threshold =*/0.05);
+    EXPECT_FALSE(predictions.empty());
+    EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "facebook",
+                                 base::CompareCase::SENSITIVE));
+  }
+
+  {
+    predictions = executor_->GenerateSuggestionsForPrefix(
+        /*prefix =*/"", /*previous_query=*/"snapchat",
+        /*max_num_suggestions =*/5, /*max_rnn_steps =*/20,
+        /*probability_threshold =*/0.05);
+    EXPECT_TRUE(predictions.empty());
+  }
+
+  {
+    predictions = executor_->GenerateSuggestionsForPrefix(
+        /*prefix =*/"faceb", /*previous_query=*/"snapchat",
+        /*max_num_suggestions =*/5, /*max_rnn_steps =*/20,
+        /*probability_threshold =*/0.05);
+    EXPECT_FALSE(predictions.empty());
+    EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "facebook",
+                                 base::CompareCase::SENSITIVE));
+  }
 }
