@@ -22,7 +22,8 @@ class ChromeBrowserStateManager;
 @interface PushNotificationAccountContext : NSObject
 // A dictionary that maps the string value of a push notification client id to
 // the perf service value for that push notification enable feature.
-@property(nonatomic, copy) NSDictionary<NSString*, NSNumber*>* preferenceMap;
+@property(nonatomic, readonly)
+    NSDictionary<NSString*, NSNumber*>* preferenceMap;
 // A counter that stores the number of times a given account is used across
 // BrowserStates.
 @property(nonatomic, readonly) NSUInteger occurrencesAcrossBrowserStates;

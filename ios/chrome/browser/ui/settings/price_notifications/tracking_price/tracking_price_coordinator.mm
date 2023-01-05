@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_mediator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -42,7 +44,8 @@
   self.viewController = [[TrackingPriceViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
-  self.mediator = [[TrackingPriceMediator alloc] init];
+  self.mediator = [[TrackingPriceMediator alloc]
+      initWithBrowserState:self.browser->GetBrowserState()];
   self.mediator.consumer = self.viewController;
   self.viewController.modelDelegate = self.mediator;
   [self.baseNavigationController pushViewController:self.viewController

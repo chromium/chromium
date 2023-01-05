@@ -27,6 +27,11 @@ PushNotificationService::GetPushNotificationClientManager() {
   return client_manager_.get();
 }
 
+PushNotificationAccountContext* PushNotificationService::GetAccountContext(
+    NSString* account_id) {
+  return context_manager_.contextMap[account_id];
+}
+
 void PushNotificationService::InitializeAccountContextManager(
     ios::ChromeBrowserStateManager* manager) {
   context_manager_ = [[PushNotificationAccountContextManager alloc]
@@ -60,7 +65,6 @@ void PushNotificationService::RegisterBrowserStatePrefs(
     feature_push_notification_permission.Set(
         base::NumberToString(static_cast<int>(client_id)), false);
   }
-
   registry->RegisterDictionaryPref(
       prefs::kFeaturePushNotificationPermissions,
       std::move(feature_push_notification_permission));

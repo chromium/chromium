@@ -19,6 +19,8 @@
 
 @property(nonatomic, assign) NSUInteger occurrencesAcrossBrowserStates;
 
+@property(nonatomic, strong) NSDictionary<NSString*, NSNumber*>* preferenceMap;
+
 @end
 
 @implementation PushNotificationAccountContext

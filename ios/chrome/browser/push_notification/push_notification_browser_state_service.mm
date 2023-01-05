@@ -7,7 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/browser_state_info_cache.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 
@@ -42,8 +45,10 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
 }  // namespace
 
 PushNotificationBrowserStateService::PushNotificationBrowserStateService(
-    signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {
+    signin::IdentityManager* identity_manager,
+    base::FilePath browser_state_path)
+    : identity_manager_(identity_manager),
+      browser_state_path_(browser_state_path) {
   identity_manager->AddObserver(this);
 }
 
@@ -98,4 +103,19 @@ void PushNotificationBrowserStateService::OnPrimaryAccountChanged(
       break;
     }
   }
+}
+
+const PushNotificationAccountContext*
+PushNotificationBrowserStateService::GetAccountContext() {
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+
+  BrowserStateInfoCache* info_cache = GetApplicationContext()
+                                          ->GetChromeBrowserStateManager()
+                                          ->GetBrowserStateInfoCache();
+  size_t index =
+      info_cache->GetIndexOfBrowserStateWithPath(browser_state_path_);
+  NSString* gaia_id = base::SysUTF8ToNSString(
+      info_cache->GetGAIAIdOfBrowserStateAtIndex(index));
+  return service->GetAccountContext(gaia_id);
 }

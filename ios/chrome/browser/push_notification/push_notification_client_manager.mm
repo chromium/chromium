@@ -87,7 +87,5 @@ void PushNotificationClientManager::RegisterActionableNotifications() {
 
 std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
-  // TODO(crbug.com/1353801): Once Chrome has a push notification enabled
-  // feature, add that feature's PushNotificationClientId to this vector.
-  return {};
+  return {PushNotificationClientId::kCommerce};
 }

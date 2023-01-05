@@ -13,10 +13,6 @@
 // push notification's `push_notification_client_id` for the
 // PushNotificationClientManager to accurately associate the notification to the
 // desired feature.
-enum class PushNotificationClientId {
-  // TODO(crbug.com/1353801): Once Chrome has a push notification enabled
-  // feature, add that feature's identifier to this class.
-  kCommerce = 1
-};
+enum class PushNotificationClientId { kCommerce = 1 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_ID_H_

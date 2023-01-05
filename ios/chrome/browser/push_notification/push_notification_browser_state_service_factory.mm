@@ -56,7 +56,7 @@ PushNotificationBrowserStateServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(browser_state);
 
   return std::make_unique<PushNotificationBrowserStateService>(
-      identity_manager);
+      identity_manager, browser_state->GetStatePath());
 }
 
 bool PushNotificationBrowserStateServiceFactory::ServiceIsNULLWhileTesting()
