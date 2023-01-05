@@ -443,9 +443,12 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
       shouldAllowOverscrollActionsForOverscrollActionsController:self];
   const BOOL isCurrentlyProcessingOverscroll =
       self.overscrollState != OverscrollState::NO_PULL_STARTED;
+  const BOOL fullscreenModeDisablesOverscrollActions =
+      [_webViewProxy isWebPageInFullscreenMode];
   return isCurrentlyProcessingOverscroll ||
          (isScrolledToTop && isMinimumTimeBetweenScrollRespected &&
-          delegateAllowOverscrollActions && !isZooming);
+          delegateAllowOverscrollActions && !isZooming &&
+          !fullscreenModeDisablesOverscrollActions);
 }
 
 - (void)scrollViewDidEndDraggingWillDecelerate:(BOOL)decelerate

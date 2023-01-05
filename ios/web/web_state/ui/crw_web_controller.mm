@@ -1918,6 +1918,10 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     CrFullscreenState fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
     [_containerView updateWebViewContentViewFullscreenState:fullScreenState];
+    // Update state for `fullscreenModeOn` so that we can expose the current
+    // status of fullscreen mode through different interfaces.
+    _webPageInFullscreenMode =
+        fullScreenState == CrFullscreenState::kInFullscreen;
     base::UmaHistogramEnumeration(kFullScreenStateHistogram, fullScreenState);
   }
 #endif  // defined (__IPHONE_16_0)

@@ -92,6 +92,10 @@ class WebStateImpl;
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
     BOOL keepsRenderProcessAlive;
 
+// Whether or not the web page is in fullscreen mode.
+@property(nonatomic, readonly, getter=isWebPageInFullscreenMode)
+    BOOL webPageInFullscreenMode;
+
 // Designated initializer. Initializes web controller with `webState`. The
 // calling code must retain the ownership of `webState`.
 - (instancetype)initWithWebState:(web::WebStateImpl*)webState;

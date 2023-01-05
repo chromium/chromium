@@ -44,6 +44,9 @@
 // Returns the webview's gesture recognizers.
 @property(nonatomic, readonly) NSArray* gestureRecognizers;
 
+// A Boolean value indicating whether or not the web page is in fullscreen mode.
+@property(nonatomic, readonly) BOOL isWebPageInFullscreenMode;
+
 // Adds a webview gesture recognizers.
 - (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;
 

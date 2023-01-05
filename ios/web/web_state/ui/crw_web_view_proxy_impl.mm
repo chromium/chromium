@@ -207,4 +207,8 @@ UIView* GetFirstResponderSubview(UIView* view) {
   [_webController showMenuWithItems:items rect:rect];
 }
 
+- (BOOL)isWebPageInFullscreenMode {
+  return [_webController isWebPageInFullscreenMode];
+}
+
 @end
