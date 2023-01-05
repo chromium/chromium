@@ -24,10 +24,10 @@ class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
-@protocol PinnedTabsCommands;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
@@ -125,7 +125,7 @@ enum class TabGridPageConfiguration {
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
-@property(nonatomic, weak) id<PinnedTabsCommands> pinnedTabsDelegate;
+@property(nonatomic, weak) id<TabCollectionCommands> pinnedTabsDelegate;
 
 // Handles drag and drop interactions that require the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler>

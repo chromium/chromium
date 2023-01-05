@@ -93,6 +93,14 @@ source_set("tab_grid") {
   ]
 }
 
+source_set("tab_collection_commands") {
+  sources = [ "tab_collection_commands.h" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("tab_grid_ui_constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -135,6 +143,7 @@ source_set("tab_grid_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":tab_collection_commands",
     ":tab_grid_paging",
     ":tab_grid_ui_constants",
     "grid:grid_ui",

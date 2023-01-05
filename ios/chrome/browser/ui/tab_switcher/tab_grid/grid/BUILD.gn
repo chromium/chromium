@@ -60,6 +60,7 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",

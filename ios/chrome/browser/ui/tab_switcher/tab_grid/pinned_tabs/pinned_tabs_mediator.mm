@@ -283,7 +283,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
                       withItem:CreateItem(webState)];
 }
 
-#pragma mark - PinnedTabsCommands
+#pragma mark - TabCollectionCommands
 
 - (void)selectItemWithID:(NSString*)itemID {
   int index =
