@@ -42,3 +42,6 @@ per-file *cookie*=file://net/cookies/OWNERS
 # Private Network Access
 per-file private_network_access*=titouan@chromium.org
 per-file private_network_access*=lyf@chromium.org
+
+# WebTransport
+per-file web_transport*=file://net/OWNERS
