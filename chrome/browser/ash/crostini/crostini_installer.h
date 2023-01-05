@@ -92,16 +92,10 @@ class CrostiniInstaller : public KeyedService,
 
   // CrostiniManager::RestartObserver:
   void OnStageStarted(crostini::mojom::InstallerState stage) override;
-  void OnComponentLoaded(crostini::CrostiniResult result) override;
   void OnDiskImageCreated(bool success,
                           CrostiniResult result,
                           int64_t disk_size_available) override;
-  void OnVmStarted(bool success) override;
-  void OnLxdStarted(CrostiniResult result) override;
   void OnContainerDownloading(int32_t download_percent) override;
-  void OnContainerCreated(crostini::CrostiniResult result) override;
-  void OnContainerSetup(bool success) override;
-  void OnContainerStarted(crostini::CrostiniResult result) override;
 
   // Return true if internal state allows starting installation.
   bool CanInstall();
