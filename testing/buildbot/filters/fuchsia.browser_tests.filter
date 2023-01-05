@@ -612,6 +612,3 @@
 
 # TODO(crbug.com/1348646): `navigator.platform` returns the empty string.
 -ReduceUserAgentPlatformBrowserTest.NavigatorPlatform
-
-# TODO(crbug.com/1402836): Fuchsia is not included in the policy definitions.
--PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase
