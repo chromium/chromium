@@ -13144,7 +13144,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -21093,7 +21094,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -21298,7 +21300,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -21334,7 +21337,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
