@@ -192,16 +192,6 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
   base::CommandLine command_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
-  const std::wstring event_name =
-      base::StrCat({kTestProcessExecutableName, L"-",
-                    base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr =
-      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
-
-  base::WaitableEvent event(base::win::ScopedHandle(
-      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
-  ASSERT_NE(event.handle(), nullptr);
-
   command_line.AppendSwitchNative(kTestEventToWaitOn, L"%1");
   command_line.AppendSwitchNative(kTestExitCode, L"%2");
 
@@ -210,8 +200,10 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
       command_line.GetCommandLineStringWithUnsafeInsertSequences(),
       app_command_web));
 
+  test::EventHolder event_holder(test::CreateWaitableEventForTest());
+
   ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
-      base::win::ScopedVariant(attr.name.c_str()),
+      base::win::ScopedVariant(event_holder.name.c_str()),
       base::win::ScopedVariant(L"999"), base::win::ScopedVariant::kEmptyVariant,
       base::win::ScopedVariant::kEmptyVariant,
       base::win::ScopedVariant::kEmptyVariant,
@@ -224,7 +216,7 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
   EXPECT_EQ(status, COMMAND_STATUS_RUNNING);
 
-  event.Signal();
+  event_holder.event.Signal();
 
   WaitForUpdateCompletion(app_command_web);
 

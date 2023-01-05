@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_iterator.h"
+#include "base/synchronization/waitable_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -94,6 +95,13 @@ const base::ProcessIterator::ProcessEntries FindProcesses(
 base::FilePath::StringType PrintProcesses(
     const base::FilePath::StringType& executable_name);
 #endif
+
+struct EventHolder {
+  base::WaitableEvent event;
+  std::wstring name;
+};
+
+EventHolder CreateWaitableEventForTest();
 
 }  // namespace updater::test
 

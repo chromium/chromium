@@ -108,17 +108,9 @@ class TaskSchedulerTests : public ::testing::Test {
 
     // Create a unique name for a shared event to be waited for in this process
     // and signaled in the test process to confirm it was scheduled and ran.
-    const std::wstring event_name =
-        base::StrCat({kTestProcessExecutableName, L"-",
-                      base::NumberToWString(::GetCurrentProcessId())});
-    NamedObjectAttributes attr =
-        GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
+    test::EventHolder event_holder(test::CreateWaitableEventForTest());
 
-    base::WaitableEvent event(base::win::ScopedHandle(
-        ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
-    ASSERT_NE(event.handle(), nullptr);
-
-    command_line.AppendSwitchNative(kTestEventToSignal, attr.name);
+    command_line.AppendSwitchNative(kTestEventToSignal, event_holder.name);
     EXPECT_TRUE(task_scheduler_->RegisterTask(
         kTaskName1, kTaskDescription1, command_line, trigger_type, false));
     if (trigger_type != TaskScheduler::TRIGGER_TYPE_NOW) {
@@ -131,7 +123,8 @@ class TaskSchedulerTests : public ::testing::Test {
       return info;
     }();
 
-    EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+    EXPECT_TRUE(
+        event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
     EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
         [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
 
@@ -252,17 +245,9 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
 
   // Create a unique name for a shared event to be waited for in the task and
   // signaled in this test.
-  const std::wstring event_name =
-      base::StrCat({kTestProcessExecutableName, L"-",
-                    base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr =
-      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
+  test::EventHolder event_holder(test::CreateWaitableEventForTest());
 
-  base::WaitableEvent event(base::win::ScopedHandle(
-      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
-  ASSERT_NE(event.handle(), nullptr);
-
-  command_line.AppendSwitchNative(kTestEventToWaitOn, attr.name);
+  command_line.AppendSwitchNative(kTestEventToWaitOn, event_holder.name);
   EXPECT_TRUE(
       task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1, command_line,
                                     TaskScheduler::TRIGGER_TYPE_NOW, false));
@@ -271,7 +256,7 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
       [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); })));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
-  event.Signal();
+  event_holder.event.Signal();
 
   EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
       [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));

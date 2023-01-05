@@ -129,17 +129,9 @@ TEST(UnitTestUtil, FindProcesses) {
 
   // Create a unique name for a shared event to be waited for in the test
   // process and signaled in this test.
-  const std::wstring event_name =
-      base::StrCat({kTestProcessExecutableName, L"-",
-                    base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr =
-      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
+  EventHolder event_holder(CreateWaitableEventForTest());
 
-  base::WaitableEvent event(base::win::ScopedHandle(
-      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
-  ASSERT_NE(event.handle(), nullptr);
-
-  command_line.AppendSwitchNative(kTestEventToWaitOn, attr.name);
+  command_line.AppendSwitchNative(kTestEventToWaitOn, event_holder.name);
 
   const base::Process process = base::LaunchProcess(command_line, {});
   ASSERT_TRUE(process.IsValid());
@@ -148,7 +140,7 @@ TEST(UnitTestUtil, FindProcesses) {
       base::BindLambdaForTesting([&]() { return process.IsRunning(); })));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
-  event.Signal();
+  event_holder.event.Signal();
 
   EXPECT_TRUE(test::WaitFor(
       base::BindLambdaForTesting([&]() { return !process.IsRunning(); })));
