@@ -14,16 +14,10 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/feature_list.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/free_deleter.h"
 
 namespace base {
-
-// Enables backgrounding hidden renderers on Mac.
-BASE_FEATURE(kMacAllowBackgroundingProcesses,
-             "MacAllowBackgroundingProcesses",
-             FEATURE_DISABLED_BY_DEFAULT);
 
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
@@ -39,7 +33,7 @@ Time Process::CreationTime() const {
 }
 
 bool Process::CanBackgroundProcesses() {
-  return FeatureList::IsEnabled(kMacAllowBackgroundingProcesses);
+  return true;
 }
 
 bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {

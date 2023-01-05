@@ -5006,6 +5006,12 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
     DCHECK(!child_process_launcher_->IsStarting());
 #if BUILDFLAG(IS_ANDROID)
     child_process_launcher_->SetRenderProcessPriority(priority_);
+#elif BUILDFLAG(IS_MAC)
+    if (base::FeatureList::IsEnabled(
+            features::kMacAllowBackgroundingRenderProcesses)) {
+      child_process_launcher_->SetProcessBackgrounded(
+          priority_.is_background());
+    }
 #else
     child_process_launcher_->SetProcessBackgrounded(priority_.is_background());
 #endif

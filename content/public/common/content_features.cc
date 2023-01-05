@@ -1477,6 +1477,11 @@ BASE_FEATURE(kIOSurfaceCapturer,
              "IOSurfaceCapturer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables backgrounding hidden renderers on Mac.
+BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
+             "MacAllowBackgroundingRenderProcesses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMacSyscallSandbox,
              "MacSyscallSandbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
