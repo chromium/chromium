@@ -25,6 +25,7 @@ import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeM
 import {QueueMode} from '../common/tts_types.js';
 
 import {ISearchUI} from './i_search_ui.js';
+import {MenuManager} from './menu_manager.js';
 import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 import {PanelMode, PanelModeInfo} from './panel_mode.js';
@@ -46,11 +47,8 @@ export class Panel extends PanelInterface {
     /** @private {!PanelMode} */
     this.mode_ = PanelMode.COLLAPSED;
 
-    /**
-     * The array of top-level menus.
-     * @private {!Array<PanelMenu>}
-     */
-    this.menus_ = [];
+    /** @private {!MenuManager} */
+    this.menuManager_ = new MenuManager();
 
     /** @private {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
     this.nodeMenuDictionary_ = {};
@@ -480,8 +478,8 @@ export class Panel extends PanelInterface {
       if (this.sessionState_ !== 'IN_SESSION') {
         tabsMenu.disable();
         // Disable commands that contain the property 'denyOOBE'.
-        for (let i = 0; i < this.menus_.length; ++i) {
-          const menu = this.menus_[i];
+        for (let i = 0; i < this.menuManager_.menus.length; ++i) {
+          const menu = this.menuManager_.menus[i];
           for (let j = 0; j < menu.items.length; ++j) {
             const item = menu.items[j];
             if (CommandStore.denySignedOut(
@@ -531,10 +529,10 @@ export class Panel extends PanelInterface {
 
       // Activate either the specified menu or the search menu.
       // Search menu can be null, since it is hidden behind a flag.
-      let selectedMenu = this.searchMenu_ || this.menus_[0];
-      for (let i = 0; i < this.menus_.length; i++) {
-        if (this.menus_[i].menuMsg === opt_activateMenuTitle) {
-          selectedMenu = this.menus_[i];
+      let selectedMenu = this.searchMenu_ || this.menuManager_.menus[0];
+      for (let i = 0; i < this.menuManager_.menus.length; i++) {
+        if (this.menuManager_.menus[i].menuMsg === opt_activateMenuTitle) {
+          selectedMenu = this.menuManager_.menus[i];
         }
       }
 
@@ -570,8 +568,8 @@ export class Panel extends PanelInterface {
    * @private
    */
   clearMenus_() {
-    while (this.menus_.length) {
-      const menu = this.menus_.pop();
+    while (this.menuManager_.menus.length) {
+      const menu = this.menuManager_.menus.pop();
       $('menu-bar').removeChild(menu.menuBarItemElement);
       $('menus_background').removeChild(menu.menuContainerElement);
     }
@@ -596,7 +594,7 @@ export class Panel extends PanelInterface {
     menu.menuBarItemElement.addEventListener(
         'mouseup', event => this.onMouseUpOnMenuTitle_(menu, event), false);
     $('menus_background').appendChild(menu.menuContainerElement);
-    this.menus_.push(menu);
+    this.menuManager_.menus.push(menu);
     return menu;
   }
 
@@ -755,7 +753,7 @@ export class Panel extends PanelInterface {
     menu.menuBarItemElement.addEventListener(
         'mouseup', event => this.onMouseUpOnMenuTitle_(menu, event));
     $('menus_background').appendChild(menu.menuContainerElement);
-    this.menus_.push(menu);
+    this.menuManager_.menus.push(menu);
     this.nodeMenuDictionary_[menuData.menuId] = menu;
   }
 
@@ -796,7 +794,7 @@ export class Panel extends PanelInterface {
         'mouseup', event => this.onMouseUpOnMenuTitle_(this.searchMenu_, event),
         false);
     $('menus_background').appendChild(this.searchMenu_.menuContainerElement);
-    this.menus_.push(this.searchMenu_);
+    this.menuManager_.menus.push(this.searchMenu_);
     return this.searchMenu_;
   }
 
@@ -848,8 +846,8 @@ export class Panel extends PanelInterface {
    */
   advanceActiveMenuBy_(delta) {
     let activeIndex = -1;
-    for (let i = 0; i < this.menus_.length; i++) {
-      if (this.activeMenu_ === this.menus_[i]) {
+    for (let i = 0; i < this.menuManager_.menus.length; i++) {
+      if (this.activeMenu_ === this.menuManager_.menus[i]) {
         activeIndex = i;
         break;
       }
@@ -857,12 +855,13 @@ export class Panel extends PanelInterface {
 
     if (activeIndex >= 0) {
       activeIndex += delta;
-      activeIndex = (activeIndex + this.menus_.length) % this.menus_.length;
+      activeIndex = (activeIndex + this.menuManager_.menus.length) %
+          this.menuManager_.menus.length;
     } else {
       if (delta >= 0) {
         activeIndex = 0;
       } else {
-        activeIndex = this.menus_.length - 1;
+        activeIndex = this.menuManager_.menus.length - 1;
       }
     }
 
@@ -871,7 +870,8 @@ export class Panel extends PanelInterface {
       return;
     }
 
-    this.activateMenu_(this.menus_[activeIndex], true /* activateFirstItem */);
+    this.activateMenu_(
+        this.menuManager_.menus[activeIndex], true /* activateFirstItem */);
   }
 
   /**
@@ -882,9 +882,9 @@ export class Panel extends PanelInterface {
    * @private
    */
   findEnabledMenuIndex_(startIndex, delta) {
-    const endIndex = (delta > 0) ? this.menus_.length : -1;
+    const endIndex = (delta > 0) ? this.menuManager_.menus.length : -1;
     while (startIndex !== endIndex) {
-      if (this.menus_[startIndex].enabled) {
+      if (this.menuManager_.menus[startIndex].enabled) {
         return startIndex;
       }
       startIndex += delta;
@@ -1235,8 +1235,8 @@ export class Panel extends PanelInterface {
     this.activateMenu_(this.searchMenu_, false /* activateFirstItem */);
     // Populate.
     if (query) {
-      for (let i = 0; i < this.menus_.length; ++i) {
-        const menu = this.menus_[i];
+      for (let i = 0; i < this.menuManager_.menus.length; ++i) {
+        const menu = this.menuManager_.menus[i];
         if (menu === this.searchMenu_ || menu instanceof PanelNodeMenu) {
           continue;
         }
