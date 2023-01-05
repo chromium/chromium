@@ -6807,6 +6807,8 @@ crbug.com/1401318 [ Debug Linux ] external/wpt/dom/events/scrolling/scrollend-ev
 
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
+# Temporarily disable to unblock WebRTC roll. Two of the expectations will go from FAIL to PASS.
+crbug.com/webrtc/14175 external/wpt/webrtc/RTCRtpReceiver-getStats.https.html [ Pass Failure ]
 
 # image-set() failures (sheriff 2022-12-16)
 external/wpt/css/css-images/image-set/image-set-empty-url-rendering.html [ Failure Pass ]
