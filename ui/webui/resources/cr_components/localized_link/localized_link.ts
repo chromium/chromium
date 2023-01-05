@@ -20,8 +20,8 @@
  * string with a link and sometimes returns a normal string.
  */
 
-import '../../cr_elements/cr_shared_vars.css.js';
-import '../../cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';

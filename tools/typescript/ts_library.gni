@@ -123,6 +123,12 @@ template("ts_library") {
       "chrome://resources/cr_components/managed_dialog/managed_dialog.js|" + rebase_path(
               "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/managed_dialog/managed_dialog.d.ts",
               target_gen_dir),
+      "chrome://resources/cr_components/localized_link/localized_link.js|" + rebase_path(
+              "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/localized_link/localized_link.d.ts",
+              target_gen_dir),
+      "//resources/cr_components/localized_link/localized_link.js|" + rebase_path(
+              "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/localized_link/localized_link.d.ts",
+              target_gen_dir),
 
       "chrome://resources/*|" +
           rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",

@@ -51,6 +51,7 @@ generate_grd("build_grd") {
       "cr_components/app_management:build_grdp",
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
+      "cr_components/localized_link:build_grdp",
       "cr_components/managed_dialog:build_grdp",
       "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
@@ -62,6 +63,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/customize_themes/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
+      "$target_gen_dir/cr_components/localized_link/resources.grdp",
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
       "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
@@ -140,10 +142,6 @@ group("preprocess") {
     "cr_elements:preprocess",
     "js:preprocess",
   ]
-
-  if (include_polymer) {
-    public_deps += [ "cr_components:preprocess" ]
-  }
 }
 
 # TypeScript targets
@@ -166,13 +164,6 @@ ts_library("library") {
 
   foreach(f, ts_files) {
     in_files += [ "js/" + f ]
-  }
-
-  if (include_polymer) {
-    in_files += [
-      "cr_components/localized_link/localized_link.html.ts",
-      "cr_components/localized_link/localized_link.ts",
-    ]
   }
 
   definitions = [
