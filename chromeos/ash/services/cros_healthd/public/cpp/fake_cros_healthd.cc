@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/bind.h"
@@ -128,6 +129,15 @@ void FakeCrosHealthd::SetProbeProcessInfoResponseForTesting(
 void FakeCrosHealthd::SetProbeMultipleProcessInfoResponseForTesting(
     mojom::MultipleProcessResultPtr& result) {
   multiple_process_response_.Swap(&result);
+}
+
+void FakeCrosHealthd::SetExpectedLastPassedDiagnosticsParametersForTesting(
+    base::Value::Dict expected_parameters) {
+  expected_passed_parameters_ = std::move(expected_parameters);
+}
+
+bool FakeCrosHealthd::DidExpectedDiagnosticsParametersMatch() {
+  return expected_passed_parameters_ == actual_passed_parameters_;
 }
 
 void FakeCrosHealthd::SetCallbackDelay(base::TimeDelta delay) {
@@ -497,6 +507,11 @@ void FakeCrosHealthd::GetRoutineUpdate(
     mojom::DiagnosticRoutineCommandEnum command,
     bool include_output,
     GetRoutineUpdateCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("id", id);
+  actual_passed_parameters_.Set("command", static_cast<int32_t>(command));
+  actual_passed_parameters_.Set("include_output", include_output);
+
   routine_update_params_ =
       FakeCrosHealthd::RoutineUpdateParams(id, command, include_output);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -512,6 +527,12 @@ void FakeCrosHealthd::GetRoutineUpdate(
 
 void FakeCrosHealthd::RunUrandomRoutine(mojom::NullableUint32Ptr length_seconds,
                                         RunUrandomRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!length_seconds.is_null()) {
+    actual_passed_parameters_.Set("length_seconds",
+                                  static_cast<int>(length_seconds->value));
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kUrandom;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -521,6 +542,8 @@ void FakeCrosHealthd::RunUrandomRoutine(mojom::NullableUint32Ptr length_seconds,
 
 void FakeCrosHealthd::RunBatteryCapacityRoutine(
     RunBatteryCapacityRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryCapacity;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -530,6 +553,8 @@ void FakeCrosHealthd::RunBatteryCapacityRoutine(
 
 void FakeCrosHealthd::RunBatteryHealthRoutine(
     RunBatteryHealthRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryHealth;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -540,6 +565,13 @@ void FakeCrosHealthd::RunBatteryHealthRoutine(
 void FakeCrosHealthd::RunSmartctlCheckRoutine(
     mojom::NullableUint32Ptr percentage_used_threshold,
     RunSmartctlCheckRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!percentage_used_threshold.is_null()) {
+    actual_passed_parameters_.Set(
+        "percentage_used_threshold",
+        static_cast<int>(percentage_used_threshold->value));
+  }
+
   last_run_routine_ =
       mojom::DiagnosticRoutineEnum::kSmartctlCheckWithPercentageUsed;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -552,6 +584,14 @@ void FakeCrosHealthd::RunAcPowerRoutine(
     mojom::AcPowerStatusEnum expected_status,
     const absl::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("expected_status",
+                                static_cast<int32_t>(expected_status));
+  if (expected_power_type.has_value()) {
+    actual_passed_parameters_.Set("expected_power_type",
+                                  expected_power_type.value());
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kAcPower;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -562,6 +602,12 @@ void FakeCrosHealthd::RunAcPowerRoutine(
 void FakeCrosHealthd::RunCpuCacheRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunCpuCacheRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!length_seconds.is_null()) {
+    actual_passed_parameters_.Set("length_seconds",
+                                  static_cast<int>(length_seconds->value));
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kCpuCache;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -572,6 +618,12 @@ void FakeCrosHealthd::RunCpuCacheRoutine(
 void FakeCrosHealthd::RunCpuStressRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunCpuStressRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!length_seconds.is_null()) {
+    actual_passed_parameters_.Set("length_seconds",
+                                  static_cast<int>(length_seconds->value));
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kCpuStress;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -582,6 +634,12 @@ void FakeCrosHealthd::RunCpuStressRoutine(
 void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!length_seconds.is_null()) {
+    actual_passed_parameters_.Set("length_seconds",
+                                  static_cast<int>(length_seconds->value));
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -592,6 +650,10 @@ void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
 void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("wear_level_threshold",
+                                static_cast<int>(wear_level_threshold));
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -602,6 +664,12 @@ void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
 void FakeCrosHealthd::RunNvmeWearLevelRoutine(
     mojom::NullableUint32Ptr wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!wear_level_threshold.is_null()) {
+    actual_passed_parameters_.Set(
+        "wear_level_threshold", static_cast<int>(wear_level_threshold->value));
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -612,6 +680,10 @@ void FakeCrosHealthd::RunNvmeWearLevelRoutine(
 void FakeCrosHealthd::RunNvmeSelfTestRoutine(
     mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
     RunNvmeSelfTestRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("nvme_self_test_type",
+                                static_cast<int>(nvme_self_test_type));
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeSelfTest;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -623,6 +695,8 @@ void FakeCrosHealthd::RunDiskReadRoutine(mojom::DiskReadRoutineTypeEnum type,
                                          uint32_t length_seconds,
                                          uint32_t file_size_mb,
                                          RunDiskReadRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kDiskRead;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -633,6 +707,12 @@ void FakeCrosHealthd::RunDiskReadRoutine(mojom::DiskReadRoutineTypeEnum type,
 void FakeCrosHealthd::RunPrimeSearchRoutine(
     mojom::NullableUint32Ptr length_seconds,
     RunPrimeSearchRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (!length_seconds.is_null()) {
+    actual_passed_parameters_.Set("length_seconds",
+                                  static_cast<int>(length_seconds->value));
+  }
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kPrimeSearch;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -644,6 +724,13 @@ void FakeCrosHealthd::RunBatteryDischargeRoutine(
     uint32_t length_seconds,
     uint32_t maximum_discharge_percent_allowed,
     RunBatteryDischargeRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("length_seconds",
+                                static_cast<int>(length_seconds));
+  actual_passed_parameters_.Set(
+      "maximum_discharge_percent_allowed",
+      static_cast<int>(maximum_discharge_percent_allowed));
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryDischarge;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -655,6 +742,13 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
     uint32_t length_seconds,
     uint32_t minimum_charge_percent_required,
     RunBatteryChargeRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("length_seconds",
+                                static_cast<int>(length_seconds));
+  actual_passed_parameters_.Set(
+      "minimum_charge_percent_required",
+      static_cast<int>(minimum_charge_percent_required));
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBatteryCharge;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -663,6 +757,7 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
 }
 
 void FakeCrosHealthd::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kMemory;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -672,66 +767,77 @@ void FakeCrosHealthd::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
 
 void FakeCrosHealthd::RunLanConnectivityRoutine(
     RunLanConnectivityRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kLanConnectivity;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunSignalStrengthRoutine(
     RunSignalStrengthRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kSignalStrength;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunGatewayCanBePingedRoutine(
     RunGatewayCanBePingedRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kGatewayCanBePinged;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunHasSecureWiFiConnectionRoutine(
     RunHasSecureWiFiConnectionRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kHasSecureWiFiConnection;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunDnsResolverPresentRoutine(
     RunDnsResolverPresentRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kDnsResolverPresent;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunDnsLatencyRoutine(
     RunDnsLatencyRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kDnsLatency;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunDnsResolutionRoutine(
     RunDnsResolutionRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kDnsResolution;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunCaptivePortalRoutine(
     RunCaptivePortalRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kCaptivePortal;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunHttpFirewallRoutine(
     RunHttpFirewallRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kHttpFirewall;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunHttpsFirewallRoutine(
     RunHttpsFirewallRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kHttpsFirewall;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunHttpsLatencyRoutine(
     RunHttpsLatencyRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kHttpsLatency;
   std::move(callback).Run(run_routine_response_.Clone());
 }
@@ -739,40 +845,51 @@ void FakeCrosHealthd::RunHttpsLatencyRoutine(
 void FakeCrosHealthd::RunVideoConferencingRoutine(
     const absl::optional<std::string>& stun_server_hostname,
     RunVideoConferencingRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  if (stun_server_hostname.has_value()) {
+    actual_passed_parameters_.Set("stun_server_hostname",
+                                  stun_server_hostname.value());
+  }
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kVideoConferencing;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunArcHttpRoutine(RunArcHttpRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kArcHttp;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunArcPingRoutine(RunArcPingRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kArcPing;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunArcDnsResolutionRoutine(
     RunArcDnsResolutionRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kArcDnsResolution;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunSensitiveSensorRoutine(
     RunSensitiveSensorRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kSensitiveSensor;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunFingerprintRoutine(
     RunFingerprintRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kFingerprint;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunFingerprintAliveRoutine(
     RunFingerprintAliveRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kFingerprintAlive;
   std::move(callback).Run(run_routine_response_.Clone());
 }
@@ -780,6 +897,8 @@ void FakeCrosHealthd::RunFingerprintAliveRoutine(
 void FakeCrosHealthd::RunPrivacyScreenRoutine(
     bool target_state,
     RunPrivacyScreenRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("target_state", target_state);
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kPrivacyScreen;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -792,12 +911,17 @@ void FakeCrosHealthd::RunLedLitUpRoutine(
     mojom::LedColor color,
     mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
     RunLedLitUpRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("name", static_cast<int32_t>(name));
+  actual_passed_parameters_.Set("color", static_cast<int32_t>(color));
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kLedLitUp;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
 void FakeCrosHealthd::RunEmmcLifetimeRoutine(
     RunEmmcLifetimeRoutineCallback callback) {
+  actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kEmmcLifetime;
   std::move(callback).Run(run_routine_response_.Clone());
 }
@@ -807,6 +931,11 @@ void FakeCrosHealthd::RunAudioSetVolumeRoutine(
     uint8_t volume,
     bool mute_on,
     RunAudioSetVolumeRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("node_id", static_cast<int>(node_id));
+  actual_passed_parameters_.Set("volume", static_cast<int>(volume));
+  actual_passed_parameters_.Set("mute_on", mute_on);
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioSetVolume;
   std::move(callback).Run(run_routine_response_.Clone());
 }
@@ -816,6 +945,11 @@ void FakeCrosHealthd::RunAudioSetGainRoutine(
     uint8_t gain,
     bool mute_on,
     RunAudioSetGainRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("node_id", static_cast<int>(node_id));
+  actual_passed_parameters_.Set("gain", static_cast<int>(gain));
+  actual_passed_parameters_.Set("mute_on", mute_on);
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioSetGain;
   std::move(callback).Run(run_routine_response_.Clone());
 }

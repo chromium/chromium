@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -131,6 +132,15 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // ProbeMultipleProcessInfo IPCs received.
   void SetProbeMultipleProcessInfoResponseForTesting(
       mojom::MultipleProcessResultPtr& result);
+
+  // Set expectation about the parameter that is passed to a call of
+  // a Diagnostics routine (`Run*Routine`) and `GetRoutineUpdate`.
+  void SetExpectedLastPassedDiagnosticsParametersForTesting(
+      base::Value::Dict expected_parameters);
+
+  // Verifies that the actual passed parameters to Diagnostic
+  // routines match the previously set expectations.
+  bool DidExpectedDiagnosticsParametersMatch();
 
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
@@ -442,6 +452,11 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
   absl::optional<RoutineUpdateParams> routine_update_params_;
+
+  // Expectation of the passed parameters.
+  base::Value::Dict expected_passed_parameters_;
+  // Actually passed parameter.
+  base::Value::Dict actual_passed_parameters_;
 
   // Allow |this| to call the methods on the NetworkDiagnosticsRoutines
   // interface.
