@@ -691,6 +691,17 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
     sync_service_impl->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
             GetFakeServer()->AsWeakPtr()));
+    // TODO(crbug.com/1331206): use GCM driver directly to deliver
+    // invalidations.
+    syncer::SyncInvalidationsServiceImpl* sync_invalidations_service =
+        static_cast<syncer::SyncInvalidationsServiceImpl*>(
+            SyncInvalidationsServiceFactory::GetForProfile(profile));
+    if (sync_invalidations_service) {
+      profile_to_fcm_handler_map_[profile] =
+          sync_invalidations_service->GetFCMHandlerForTesting();
+      fake_server_sync_invalidation_sender_->AddFCMHandler(
+          sync_invalidations_service->GetFCMHandlerForTesting());
+    }
   }
 
   SyncServiceImplHarness::SigninType signin_type =
@@ -972,9 +983,6 @@ void SyncTest::OnWillCreateBrowserContextServices(
           context,
           base::BindRepeating(&SyncTest::CreateProfileInvalidationProvider,
                               &profile_to_fcm_network_handler_map_));
-  SyncInvalidationsServiceFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&SyncTest::CreateSyncInvalidationsService,
-                                   base::Unretained(this)));
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&FakeSyncGCMDriver::Build));
 
@@ -1022,40 +1030,6 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
               -> std::unique_ptr<invalidation::InvalidationService> {
             return std::make_unique<invalidation::FakeInvalidationService>();
           }));
-}
-
-std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
-    content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
-    return nullptr;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(context);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  if (profile->GetPath() == ProfileManager::GetSystemProfilePath())
-    return nullptr;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-  gcm::GCMDriver* gcm_driver =
-      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
-  instance_id::InstanceIDDriver* instance_id_driver =
-      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver();
-  auto service = std::make_unique<syncer::SyncInvalidationsServiceImpl>(
-      gcm_driver, instance_id_driver);
-
-  // If |fake_server_sync_invalidation_sender_| hasn't been created yet, it's
-  // likely for the profile which is used only on Android. Created FCM
-  // handlers will be added later once |fake_server_sync_invalidation_sender_|
-  // is initialized.
-  profile_to_fcm_handler_map_[profile] = service->GetFCMHandlerForTesting();
-  if (fake_server_sync_invalidation_sender_) {
-    fake_server_sync_invalidation_sender_->AddFCMHandler(
-        service->GetFCMHandlerForTesting());
-  }
-
-  return std::move(service);
 }
 
 void SyncTest::ResetSyncForPrimaryAccount() {

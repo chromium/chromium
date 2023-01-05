@@ -322,9 +322,6 @@ class SyncTest : public PlatformBrowserTest {
           profile_to_fcm_network_handler_map,
       content::BrowserContext* context);
 
-  std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
-      content::BrowserContext* context);
-
 #if !BUILDFLAG(IS_ANDROID)
   // Called when the |browser| was removed externally. This just marks the
   // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
