@@ -235,7 +235,6 @@ std::ostream& operator<<(std::ostream& out, const SetupError error) {
     PRINT(CannotRetrieveSearchResults)
     PRINT(CannotPinItem)
     PRINT(NotEnoughSpace)
-    PRINT(SearchQueryNotBound)
 #undef PRINT
   }
 
@@ -491,11 +490,8 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     return Complete(SetupError::kNotEnoughSpace);
   }
 
-  if (!search_query_.is_bound()) {
-    return Complete(SetupError::kSearchQueryNotBound);
-  }
-
   NotifyProgress();
+  DCHECK(search_query_);
   search_query_->GetNextPage(
       base::BindOnce(&DriveFsPinManager::OnSearchResultForSizeCalculation,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -591,12 +587,8 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     return;
   }
 
-  if (!search_query_.is_bound()) {
-    return Complete(SetupError::kSearchQueryNotBound);
-  }
-
-  VLOG(1) << "All items in current batch are already pinned";
   VLOG(1) << "Getting next batch of items...";
+  DCHECK(search_query_);
   search_query_->GetNextPage(
       base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -677,11 +669,9 @@ void DriveFsPinManager::ReportTotalBytesTransferred(
 }
 
 void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
-  if (!search_query_.is_bound()) {
-    return Complete(SetupError::kSearchQueryNotBound);
-  }
-
   if (remaining_items == 0) {
+    VLOG(1) << "Getting next batch of items...";
+    DCHECK(search_query_);
     search_query_->GetNextPage(
         base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
                        weak_ptr_factory_.GetWeakPtr()));

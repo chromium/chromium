@@ -51,7 +51,6 @@ enum class SetupError {
   kCannotRetrieveSearchResults,
   kCannotPinItem,
   kNotEnoughSpace,
-  kSearchQueryNotBound,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
