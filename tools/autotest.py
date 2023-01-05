@@ -49,6 +49,7 @@ DEBUG = False
 # Those test suites should be manually added here.
 _OTHER_TEST_TARGETS = [
     '//chrome/test:browser_tests',
+    '//chrome/test:interactive_ui_tests',
     '//chrome/test:unit_tests',
 ]
 
