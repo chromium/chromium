@@ -746,6 +746,81 @@ TEST_P(AutofillPerfectFillingMetricsTest,
       BucketsAre(test_case.credit_card_buckets));
 }
 
+struct SuggestionOriginPerfectFillingTestCase {
+  std::string description;
+  std::vector<Field> fields;
+  bool expected_metric_value;
+};
+
+class SuggestionOriginPerfectFillingMetricsTest
+    : public AutofillMetricsTest,
+      public ::testing::WithParamInterface<
+          SuggestionOriginPerfectFillingTestCase> {
+ public:
+  std::vector<test::FieldDescription> GetFields(std::vector<Field> fields) {
+    std::vector<test::FieldDescription> fields_to_return;
+    for (const auto& field : fields) {
+      test::FieldDescription f;
+      if (field.value) {
+        f.value = field.value;
+      } else if (field.field_type == CREDIT_CARD_NAME_FULL) {
+        f.value = u"Elvis Aaron Presley";
+      } else if (field.field_type == CREDIT_CARD_NUMBER) {
+        f.value = u"01230123012399";
+      } else {
+        NOTREACHED();
+      }
+      f.role = field.field_type;
+      f.is_autofilled = field.is_autofilled;
+      fields_to_return.push_back(f);
+    }
+    return fields_to_return;
+  }
+};
+
+TEST_P(SuggestionOriginPerfectFillingMetricsTest,
+       PerfectFilling_TouchToFill_CreditCards) {
+  SuggestionOriginPerfectFillingTestCase test_case = GetParam();
+  std::vector<Field> fields{{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER}};
+  FormData form =
+      test::GetFormData({.description_for_logging = test_case.description,
+                         .fields = GetFields(test_case.fields),
+                         .unique_renderer_id = test::MakeFormRendererId(),
+                         .main_frame_origin = url::Origin::Create(
+                             autofill_client_->form_origin())});
+
+  std::vector<ServerFieldType> field_types;
+  for (const auto& f : test_case.fields) {
+    field_types.push_back(f.field_type);
+  }
+
+  autofill_manager().AddSeenForm(form, field_types);
+
+  base::HistogramTester histogram_tester;
+  autofill_manager().SetSuggestionOriginMetricState(
+      AutofillSuggestionMethod::KTouchToFillCreditCard);
+  SubmitForm(form);
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                "Autofill.TouchToFill.CreditCard.PerfectFilling",
+                test_case.expected_metric_value),
+            1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillMetricsTest,
+    SuggestionOriginPerfectFillingMetricsTest,
+    testing::Values(
+        // Test that we log the perfect filling metric correctly for an address
+        // form in which every field is autofilled.
+        SuggestionOriginPerfectFillingTestCase{
+            "PerfectFillingForCreditCardForm_AutofilledFromTTF",
+            {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER}},
+            true},
+        SuggestionOriginPerfectFillingTestCase{
+            "PerfectFillingForCreditCardForm_NotAllAutofilledFromTTF",
+            {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER, false}},
+            false}));
+
 // Test the emission of collisions between NUMERIC_QUANTITY and server
 // predictions as well as the potential false positives.
 TEST_F(AutofillMetricsTest, NumericQuantityCollision) {

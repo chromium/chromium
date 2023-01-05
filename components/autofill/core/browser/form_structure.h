@@ -50,6 +50,19 @@ enum class PasswordAttribute {
   kPasswordAttributesCount
 };
 
+// Enum which reflects where the user-selected suggestions comes from:
+// touch to fill bottom sheet, keyboard accessory, etc.
+// Add other use cases here as needed.
+// TODO(crbug.com/1405145): Add other origins for autofill and set them where
+// appropriate.
+enum class AutofillSuggestionMethod {
+  // The suggestion origin is not set.
+  kUnknown = 0,
+  // The suggestion comes from the payments bottom sheet.
+  KTouchToFillCreditCard = 1,
+  kMaxValue = KTouchToFillCreditCard
+};
+
 // The structure of forms and fields, represented by their signatures, on a
 // page. These are sequence containers to reflect their order in the DOM.
 using FormAndFieldSignatures =
@@ -261,7 +274,8 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       bool did_show_suggestions,
       bool observed_submission,
-      const FormInteractionCounts& form_interaction_counts) const;
+      const FormInteractionCounts& form_interaction_counts,
+      autofill::AutofillSuggestionMethod suggestion_origin) const;
 
   // Log the quality of the heuristics and server predictions for this form
   // structure, if autocomplete attributes are present on the fields (they are

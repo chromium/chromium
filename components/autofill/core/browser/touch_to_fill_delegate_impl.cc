@@ -143,6 +143,8 @@ void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
   CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
   manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
                                         query_form_, query_field_, card);
+  manager_->SetSuggestionOriginMetricState(
+      AutofillSuggestionMethod::KTouchToFillCreditCard);
 }
 
 void TouchToFillDelegateImpl::OnDismissed() {

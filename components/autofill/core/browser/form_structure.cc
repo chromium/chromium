@@ -969,7 +969,8 @@ void FormStructure::LogQualityMetrics(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool did_show_suggestions,
     bool observed_submission,
-    const FormInteractionCounts& form_interaction_counts) const {
+    const FormInteractionCounts& form_interaction_counts,
+    AutofillSuggestionMethod autofill_suggestion_method) const {
   // Use the same timestamp on UKM Metrics generated within this method's scope.
   AutofillMetrics::UkmTimestampPin timestamp_pin(form_interactions_ukm_logger);
 
@@ -1284,6 +1285,11 @@ void FormStructure::LogQualityMetrics(
       if (card_form) {
         AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
                                                    perfect_filling);
+      }
+      if (autofill_suggestion_method ==
+          AutofillSuggestionMethod::KTouchToFillCreditCard) {
+        AutofillMetrics::LogTouchToFillCreditCardPerfectFilling(
+            perfect_filling);
       }
     }
 
