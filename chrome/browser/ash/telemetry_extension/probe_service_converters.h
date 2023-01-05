@@ -31,6 +31,12 @@ crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
 crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint64Ptr input);
 
+crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::AudioInfoPtr input);
+
+crosapi::mojom::ProbeAudioResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::AudioResultPtr input);
+
 crosapi::mojom::ProbeBatteryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BatteryInfoPtr input);
 
@@ -155,6 +161,12 @@ crosapi::mojom::Int64ValuePtr Convert(int64_t input);
 crosapi::mojom::UInt32ValuePtr Convert(uint32_t input);
 
 crosapi::mojom::UInt64ValuePtr Convert(uint64_t input);
+
+crosapi::mojom::ProbeAudioInputNodeInfoPtr ConvertAudioInputNodePtr(
+    cros_healthd::mojom::AudioNodeInfoPtr input);
+
+crosapi::mojom::ProbeAudioOutputNodeInfoPtr ConvertAudioOutputNodePtr(
+    cros_healthd::mojom::AudioNodeInfoPtr input);
 
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {

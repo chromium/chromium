@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/telemetry_extension/probe_service_converters.h"
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -46,7 +47,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       crosapi::mojom::ProbeCategoryEnum::kBluetooth,
       crosapi::mojom::ProbeCategoryEnum::kSystem,
       crosapi::mojom::ProbeCategoryEnum::kNetwork,
-      crosapi::mojom::ProbeCategoryEnum::kTpm};
+      crosapi::mojom::ProbeCategoryEnum::kTpm,
+      crosapi::mojom::ProbeCategoryEnum::kAudio};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -63,7 +65,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
           cros_healthd::mojom::ProbeCategoryEnum::kSystem,
           cros_healthd::mojom::ProbeCategoryEnum::kNetwork,
-          cros_healthd::mojom::ProbeCategoryEnum::kTpm));
+          cros_healthd::mojom::ProbeCategoryEnum::kTpm,
+          cros_healthd::mojom::ProbeCategoryEnum::kAudio));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -115,6 +118,134 @@ TEST(ProbeServiceConverters, UInt64ValuePtr) {
   constexpr uint64_t kValue = (1ULL << 63) + 3000000000;
   EXPECT_EQ(ConvertProbePtr(cros_healthd::mojom::NullableUint64::New(kValue)),
             crosapi::mojom::UInt64Value::New(kValue));
+}
+
+TEST(ProbeServiceConverters, AudioNodeInputInfoPtr) {
+  constexpr uint64_t kId = 42;
+  constexpr char kName[] = "Internal Mic";
+  constexpr char kDeviceName[] = "HDA Intel PCH: CA0132 Analog:0,0";
+  constexpr bool kActive = true;
+  constexpr uint8_t kInputNodeGain = 1;
+
+  auto input_node = cros_healthd::mojom::AudioNodeInfo::New();
+  input_node->id = kId;
+  input_node->name = kName;
+  input_node->device_name = kDeviceName;
+  input_node->active = kActive;
+  input_node->input_node_gain = kInputNodeGain;
+
+  EXPECT_EQ(ConvertAudioInputNodePtr(std::move(input_node)),
+            crosapi::mojom::ProbeAudioInputNodeInfo::New(
+                kId, kName, kDeviceName, kActive, kInputNodeGain));
+
+  EXPECT_EQ(ConvertAudioInputNodePtr(nullptr),
+            crosapi::mojom::ProbeAudioInputNodeInfoPtr());
+}
+
+TEST(ProbeServiceConverters, AudioNodeOutputInfoPtr) {
+  constexpr uint64_t kId = 42;
+  constexpr char kName[] = "Internal Speaker";
+  constexpr char kDeviceName[] = "HDA Intel PCH: CA0132 Analog:0,0";
+  constexpr bool kActive = true;
+  constexpr uint8_t kNodeVolume = 242;
+
+  auto output_node = cros_healthd::mojom::AudioNodeInfo::New();
+  output_node->id = kId;
+  output_node->name = kName;
+  output_node->device_name = kDeviceName;
+  output_node->active = kActive;
+  output_node->node_volume = kNodeVolume;
+  EXPECT_EQ(ConvertAudioOutputNodePtr(std::move(output_node)),
+            crosapi::mojom::ProbeAudioOutputNodeInfo::New(
+                kId, kName, kDeviceName, kActive, kNodeVolume));
+
+  EXPECT_EQ(ConvertAudioOutputNodePtr(nullptr),
+            crosapi::mojom::ProbeAudioOutputNodeInfoPtr());
+}
+
+TEST(ProbeServiceConverters, AudioInfoPtr) {
+  constexpr bool kOutputMute = true;
+  constexpr bool kInputMute = false;
+  constexpr uint32_t kUnderruns = 56;
+  constexpr uint32_t kSevereUnderruns = 3;
+
+  constexpr uint64_t kIdInput = 42;
+  constexpr char kNameInput[] = "Internal Speaker";
+  constexpr char kDeviceNameInput[] = "HDA Intel PCH: CA0132 Analog:0,0";
+  constexpr bool kActiveInput = true;
+  constexpr uint8_t kInputNodeGainInput = 1;
+
+  constexpr uint64_t kIdOutput = 43;
+  constexpr char kNameOutput[] = "Extenal Speaker";
+  constexpr char kDeviceNameOutput[] = "HDA Intel PCH: CA0132 Analog:1,0";
+  constexpr bool kActiveOutput = false;
+  constexpr uint8_t kNodeVolumeOutput = 212;
+
+  std::vector<cros_healthd::mojom::AudioNodeInfoPtr> input_node_info;
+  auto input_node = cros_healthd::mojom::AudioNodeInfo::New();
+  input_node->id = kIdInput;
+  input_node->name = kNameInput;
+  input_node->device_name = kDeviceNameInput;
+  input_node->active = kActiveInput;
+  input_node->input_node_gain = kInputNodeGainInput;
+  input_node_info.push_back(std::move(input_node));
+
+  std::vector<cros_healthd::mojom::AudioNodeInfoPtr> output_node_info;
+  auto output_node = cros_healthd::mojom::AudioNodeInfo::New();
+  output_node->id = kIdOutput;
+  output_node->name = kNameOutput;
+  output_node->device_name = kDeviceNameOutput;
+  output_node->active = kActiveOutput;
+  output_node->node_volume = kNodeVolumeOutput;
+  output_node_info.push_back(std::move(output_node));
+
+  auto input = cros_healthd::mojom::AudioInfo::New();
+  input->output_mute = kOutputMute;
+  input->input_mute = kInputMute;
+  input->underruns = kUnderruns;
+  input->severe_underruns = kSevereUnderruns;
+  input->output_nodes = std::move(output_node_info);
+  input->input_nodes = std::move(input_node_info);
+
+  std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr>
+      expected_input_node_info;
+  auto expected_input = crosapi::mojom::ProbeAudioInputNodeInfo::New();
+  expected_input->id = kIdInput;
+  expected_input->name = kNameInput;
+  expected_input->device_name = kDeviceNameInput;
+  expected_input->active = kActiveInput;
+  expected_input->node_gain = kInputNodeGainInput;
+  expected_input_node_info.push_back(std::move(expected_input));
+
+  std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr>
+      expected_output_node_info;
+  auto expected_output = crosapi::mojom::ProbeAudioOutputNodeInfo::New();
+  expected_output->id = kIdOutput;
+  expected_output->name = kNameOutput;
+  expected_output->device_name = kDeviceNameOutput;
+  expected_output->active = kActiveOutput;
+  expected_output->node_volume = kNodeVolumeOutput;
+  expected_output_node_info.push_back(std::move(expected_output));
+
+  EXPECT_EQ(ConvertProbePtr(std::move(input)),
+            crosapi::mojom::ProbeAudioInfo::New(
+                kOutputMute, kInputMute, kUnderruns, kSevereUnderruns,
+                std::move(expected_output_node_info),
+                std::move(expected_input_node_info)));
+}
+
+TEST(ProbeServiceConverters, AudioResultPtrInfo) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::AudioResult::NewAudioInfo(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_audio_info());
+}
+
+TEST(ProbeServiceConverters, AudioResultPtrError) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::AudioResult::NewError(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_error());
 }
 
 TEST(ProbeServiceConverters, BatteryInfoPtr) {
@@ -1037,6 +1168,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
             chromeos::network_health::mojom::NetworkHealthState::New());
     input->tpm_result = cros_healthd::mojom::TpmResult::NewTpmInfo(
         cros_healthd::mojom::TpmInfo::New());
+    input->audio_result = cros_healthd::mojom::AudioResult::NewAudioInfo(
+        cros_healthd::mojom::AudioInfo::New());
   }
 
   EXPECT_EQ(
@@ -1082,7 +1215,9 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
           crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
               chromeos::network_health::mojom::NetworkHealthState::New()),
           crosapi::mojom::ProbeTpmResult::NewTpmInfo(
-              crosapi::mojom::ProbeTpmInfo::New())));
+              crosapi::mojom::ProbeTpmInfo::New()),
+          crosapi::mojom::ProbeAudioResult::NewAudioInfo(
+              crosapi::mojom::ProbeAudioInfo::New())));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
@@ -1100,7 +1235,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 crosapi::mojom::ProbeBluetoothResultPtr(nullptr),
                 crosapi::mojom::ProbeSystemResultPtr(nullptr),
                 crosapi::mojom::ProbeNetworkResultPtr(nullptr),
-                crosapi::mojom::ProbeTpmResultPtr(nullptr)));
+                crosapi::mojom::ProbeTpmResultPtr(nullptr),
+                crosapi::mojom::ProbeAudioResultPtr(nullptr)));
 }
 
 }  // namespace ash::converters

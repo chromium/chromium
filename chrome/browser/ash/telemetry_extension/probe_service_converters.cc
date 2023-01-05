@@ -6,12 +6,14 @@
 
 #include <unistd.h>
 #include <utility>
+#include <vector>
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace converters {
@@ -49,6 +51,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kSystem;
     case crosapi::mojom::ProbeCategoryEnum::kTpm:
       return cros_healthd::mojom::ProbeCategoryEnum::kTpm;
+    case crosapi::mojom::ProbeCategoryEnum::kAudio:
+      return cros_healthd::mojom::ProbeCategoryEnum::kAudio;
   }
   NOTREACHED();
 }
@@ -66,6 +70,45 @@ crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
 crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint64Ptr input) {
   return crosapi::mojom::UInt64Value::New(input->value);
+}
+
+crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::AudioInfoPtr input) {
+  absl::optional<std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr>>
+      output_nodes;
+  absl::optional<std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr>>
+      input_nodes;
+
+  if (input->output_nodes) {
+    output_nodes = std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr>();
+    for (auto& elem : input->output_nodes.value()) {
+      auto converted_value = ConvertAudioOutputNodePtr(std::move(elem));
+      output_nodes->push_back(std::move(converted_value));
+    }
+  }
+  if (input->input_nodes) {
+    input_nodes = std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr>();
+    for (auto& elem : input->input_nodes.value()) {
+      auto converted_value = ConvertAudioInputNodePtr(std::move(elem));
+      input_nodes->push_back(std::move(converted_value));
+    }
+  }
+
+  return crosapi::mojom::ProbeAudioInfo::New(
+      input->output_mute, input->input_mute, input->underruns,
+      input->severe_underruns, std::move(output_nodes), std::move(input_nodes));
+}
+
+crosapi::mojom::ProbeAudioResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::AudioResultPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::AudioResult::Tag::kAudioInfo:
+      return crosapi::mojom::ProbeAudioResult::NewAudioInfo(
+          ConvertProbePtr(std::move(input->get_audio_info())));
+    case cros_healthd::mojom::AudioResult::Tag::kError:
+      return crosapi::mojom::ProbeAudioResult::NewError(
+          ConvertProbePtr(std::move(input->get_error())));
+  }
 }
 
 crosapi::mojom::ProbeBatteryInfoPtr UncheckedConvertPtr(
@@ -426,7 +469,8 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->bluetooth_result)),
       std::move(system_result_output.second),
       ConvertProbePtr(std::move(input->network_result)),
-      ConvertProbePtr(std::move(input->tpm_result)));
+      ConvertProbePtr(std::move(input->tpm_result)),
+      ConvertProbePtr(std::move(input->audio_result)));
 }
 
 }  // namespace unchecked
@@ -493,6 +537,40 @@ crosapi::mojom::UInt32ValuePtr Convert(uint32_t input) {
 
 crosapi::mojom::UInt64ValuePtr Convert(uint64_t input) {
   return crosapi::mojom::UInt64Value::New(input);
+}
+
+crosapi::mojom::ProbeAudioInputNodeInfoPtr ConvertAudioInputNodePtr(
+    cros_healthd::mojom::AudioNodeInfoPtr input) {
+  if (!input) {
+    return crosapi::mojom::ProbeAudioInputNodeInfoPtr();
+  }
+
+  auto result = crosapi::mojom::ProbeAudioInputNodeInfo::New();
+
+  result->id = input->id;
+  result->name = input->name;
+  result->device_name = input->device_name;
+  result->active = input->active;
+  result->node_gain = input->input_node_gain;
+
+  return result;
+}
+
+crosapi::mojom::ProbeAudioOutputNodeInfoPtr ConvertAudioOutputNodePtr(
+    cros_healthd::mojom::AudioNodeInfoPtr input) {
+  if (!input) {
+    return crosapi::mojom::ProbeAudioOutputNodeInfoPtr();
+  }
+
+  auto result = crosapi::mojom::ProbeAudioOutputNodeInfo::New();
+
+  result->id = input->id;
+  result->name = input->name;
+  result->device_name = input->device_name;
+  result->active = input->active;
+  result->node_volume = input->node_volume;
+
+  return result;
 }
 
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
