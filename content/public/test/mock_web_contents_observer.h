@@ -60,10 +60,6 @@ class MockWebContentsObserver : public WebContentsObserver {
               (base::TerminationStatus status),
               (override));
   MOCK_METHOD(void,
-              RenderViewHostChanged,
-              (RenderViewHost* old_host, RenderViewHost* new_host),
-              (override));
-  MOCK_METHOD(void,
               OnRendererUnresponsive,
               (RenderProcessHost* render_process_host),
               (override));
