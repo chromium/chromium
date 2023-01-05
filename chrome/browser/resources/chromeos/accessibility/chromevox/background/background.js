@@ -30,6 +30,7 @@ import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
+import {EventSourceState} from './event_source.js';
 import {FindHandler} from './find_handler.js';
 import {FocusAutomationHandler} from './focus_automation_handler.js';
 import {FocusBounds} from './focus_bounds.js';
@@ -125,6 +126,7 @@ export class Background extends ChromeVoxState {
     ClipboardHandler.init();
     CommandHandler.init();
     DownloadHandler.init();
+    EventSourceState.init();
     FindHandler.init();
     FocusAutomationHandler.init();
     GestureCommandHandler.init();
