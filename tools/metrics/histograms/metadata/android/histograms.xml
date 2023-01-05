@@ -416,10 +416,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.ExactTaskCreated"
-    enum="BackgroundTaskId" expires_after="2022-05-01">
-  <owner>fgorski@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that an exact task has been created. Recorded when the task is
     scheduled.
@@ -428,16 +428,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCanceled"
     enum="BackgroundTaskId" expires_after="2023-06-04">
-  <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>Records that a specific background task has been canceled.</summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithExpiration"
-    enum="BackgroundTaskId" expires_after="2022-05-01">
-  <owner>fgorski@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific task has been created with an expiration deadline.
     Recorded when the task is scheduled.
@@ -445,10 +445,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration"
-    enum="BackgroundTaskId" expires_after="2022-05-01">
-  <owner>fgorski@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific task has been created without the expiration feature
     activated. Recorded when the task is scheduled.
@@ -457,9 +457,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskExpired"
     enum="BackgroundTaskId" expires_after="2023-06-04">
-  <owner>fgorski@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific background task has expired. Recorded before the
     task is to be started.
@@ -467,9 +467,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskFinished.{TaskType}"
-    units="ms" expires_after="2022-11-01">
-  <owner>shaktisahu@chromium.org</owner>
+    units="ms" expires_after="2023-06-04">
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records the time (uptimeMillis) taken by a background task of type
     {TaskType}. Recorded when the task finished callback is invoked.
@@ -479,8 +479,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"
     enum="BackgroundTaskId" expires_after="2023-06-04">
-  <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a task extending a NativeBackgroundTask started loading the
     native portion of Chrome (either in Reduced Mode or Full Browser Mode).
@@ -488,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"
-    enum="BackgroundTaskId" expires_after="2023-02-12">
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>mheikal@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"
-    enum="BackgroundTaskId" expires_after="2023-02-12">
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>mheikal@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -509,18 +509,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Failure"
-    enum="BackgroundTaskId" expires_after="2023-03-19">
-  <owner>fgorski@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific background task has failed to be scheduled.
   </summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Success"
-    enum="BackgroundTaskId" expires_after="2023-05-07">
-  <owner>fgorski@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific background task has been successfully scheduled.
   </summary>
@@ -528,15 +528,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStarted"
     enum="BackgroundTaskId" expires_after="2023-06-04">
-  <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>Records that a specific background task has been started.</summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStopped"
-    enum="BackgroundTaskId" expires_after="2023-03-19">
-  <owner>fgorski@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2023-06-04">
   <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific background task has been stopped by Background Task
     Scheduler before it was able to complete itself.
