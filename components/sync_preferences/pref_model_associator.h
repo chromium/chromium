@@ -168,11 +168,6 @@ class PrefModelAssociator : public syncer::SyncableService {
   bool TypeMatchesUserPrefStore(const std::string& pref_name,
                                 const base::Value& new_value) const;
 
-  // Verifies that the type which preference |pref_name| was registered with
-  // matches the type of any persisted value. On mismatch, the persisted value
-  // gets removed.
-  void EnforceRegisteredTypeInStore(const std::string& pref_name);
-
   // Notifies the synced pref observers that the pref for the given |path| is
   // synced.
   void NotifyStartedSyncing(const std::string& path) const;

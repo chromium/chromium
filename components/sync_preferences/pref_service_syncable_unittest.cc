@@ -626,36 +626,6 @@ TEST_F(PrefServiceSyncableMergeTest, KeepPriorityPreferencesSeparately) {
               Eq("priority-default"));
 }
 
-class ShouldNotBeNotifedObserver : public SyncedPrefObserver {
- public:
-  ShouldNotBeNotifedObserver() = default;
-  ~ShouldNotBeNotifedObserver() = default;
-
-  void OnSyncedPrefChanged(const std::string& path, bool from_sync) override {
-    ADD_FAILURE() << "Unexpected notification about a pref change with path: '"
-                  << path << "' and from_sync: " << from_sync;
-  }
-};
-
-TEST_F(PrefServiceSyncableMergeTest, RegisterShouldClearTypeMismatchingData) {
-  const std::string pref_name = "testing.pref";
-  user_prefs_->SetString(pref_name, "string_value");
-  ASSERT_TRUE(user_prefs_->GetValue(pref_name, nullptr));
-
-  // Make sure no changes will be communicated to any synced pref listeners
-  // (those listeners are typically only used for metrics but we still don't
-  // want to inform them).
-  ShouldNotBeNotifedObserver observer;
-  prefs_.AddSyncedPrefObserver(pref_name, &observer);
-
-  pref_registry_->RegisterListPref(
-      pref_name, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  EXPECT_TRUE(GetPreferenceValue(pref_name).GetList().empty());
-  EXPECT_FALSE(user_prefs_->GetValue(pref_name, nullptr));
-
-  prefs_.RemoveSyncedPrefObserver(pref_name, &observer);
-}
-
 TEST_F(PrefServiceSyncableMergeTest, ShouldIgnoreUpdatesToNotSyncablePrefs) {
   const std::string pref_name = "testing.not_syncable_pref";
   pref_registry_->RegisterStringPref(pref_name, "default_value",

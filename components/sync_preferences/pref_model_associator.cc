@@ -482,13 +482,6 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
 void PrefModelAssociator::RegisterPref(const std::string& name) {
   DCHECK(!base::Contains(registered_preferences_, name));
   registered_preferences_.insert(name);
-
-  // Make sure data in the local store matches the registered type (where "type"
-  // means base::Value data type like string, not ModelType like PREFERENCES).
-  // If this results in a modification of the local pref store, we don't want
-  // to tell ChromeSync about these -- it's a local anomaly,
-  base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
-  EnforceRegisteredTypeInStore(name);
 }
 
 void PrefModelAssociator::RegisterPrefWithLegacyModelType(
@@ -617,27 +610,6 @@ bool PrefModelAssociator::TypeMatchesUserPrefStore(
                 << new_value.type() << " which doesn't match the locally "
                 << "present pref type: " << local_value->type();
   return false;
-}
-
-void PrefModelAssociator::EnforceRegisteredTypeInStore(
-    const std::string& pref_name) {
-  const base::Value* persisted_value = nullptr;
-  if (user_pref_store_->GetValue(pref_name, &persisted_value)) {
-    // Get the registered type (typically from the default value).
-    const PrefService::Preference* pref =
-        pref_service_->FindPreference(pref_name);
-    DCHECK(pref);
-    if (pref->GetType() != persisted_value->type()) {
-      // We see conflicting type information and there's a chance the local
-      // type-conflicting data came in via sync. Remove it.
-      // TODO(tschumann): The value should get removed silently. Add a method
-      // RemoveValueSilently() to WriteablePrefStore. Note, that as of today
-      // that removal will only notify other pref stores but not sync -- that's
-      // done on a higher level.
-      user_pref_store_->RemoveValue(
-          pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-    }
-  }
 }
 
 void PrefModelAssociator::NotifyStartedSyncing(const std::string& path) const {
