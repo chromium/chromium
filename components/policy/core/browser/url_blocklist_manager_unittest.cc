@@ -127,7 +127,7 @@ TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
   base::Value::List list;
   list.Append("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
-                               std::make_unique<base::Value>(std::move(list)));
+                               base::Value(std::move(list)));
   auto manager = std::make_unique<URLBlocklistManager>(
       &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
   task_environment_.RunUntilIdle();
@@ -136,10 +136,10 @@ TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
 }
 
 TEST_F(URLBlocklistManagerTest, LoadAllowlistOnCreate) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlAllowlist,
-                               base::Value::ToUniquePtrValue(std::move(list)));
+                               base::Value(std::move(list)));
   auto manager = std::make_unique<URLBlocklistManager>(
       &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
   task_environment_.RunUntilIdle();
@@ -148,16 +148,14 @@ TEST_F(URLBlocklistManagerTest, LoadAllowlistOnCreate) {
 }
 
 TEST_F(URLBlocklistManagerTest, SingleUpdateForTwoPrefChanges) {
-  base::Value blocklist(base::Value::Type::LIST);
+  base::Value::List blocklist;
   blocklist.Append("*.google.com");
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append("mail.google.com");
-  pref_service_.SetManagedPref(
-      policy_prefs::kUrlBlocklist,
-      base::Value::ToUniquePtrValue(std::move(blocklist)));
-  pref_service_.SetManagedPref(
-      policy_prefs::kUrlBlocklist,
-      base::Value::ToUniquePtrValue(std::move(allowlist)));
+  pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
+                               base::Value(std::move(blocklist)));
+  pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
+                               base::Value(std::move(allowlist)));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, blocklist_manager_->update_called());

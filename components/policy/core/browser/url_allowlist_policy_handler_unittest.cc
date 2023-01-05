@@ -92,9 +92,9 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Empty) {
 
 TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
   // The policy expects string-valued elements. Give it booleans.
-  base::Value in(base::Value::Type::LIST);
+  base::Value::List in;
   in.Append(false);
-  SetPolicy(key::kURLAllowlist, std::move(in));
+  SetPolicy(key::kURLAllowlist, base::Value(std::move(in)));
   ApplyPolicies();
 
   // The element should be skipped.
@@ -105,9 +105,9 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Successful) {
-  base::Value in_url_allowlist(base::Value::Type::LIST);
+  base::Value::List in_url_allowlist;
   in_url_allowlist.Append(kTestAllowlistValue);
-  SetPolicy(key::kURLAllowlist, std::move(in_url_allowlist));
+  SetPolicy(key::kURLAllowlist, base::Value(std::move(in_url_allowlist)));
   ApplyPolicies();
 
   base::Value* out;

@@ -87,18 +87,18 @@ TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_NoPolicy) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_OneBadValue) {
   // The policy expects a list. Give it a boolean.
-  base::Value in(base::Value::Type::LIST);
+  base::Value::List in;
   in.Append(kNotAUrl);
   in.Append(kTestUrl);
-  EXPECT_TRUE(CheckPolicy(kTestPolicyName, std::move(in)));
+  EXPECT_TRUE(CheckPolicy(kTestPolicyName, base::Value(std::move(in))));
   EXPECT_EQ(1U, errors_.size());
 }
 
 TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_SingleBadValue) {
   // The policy expects a list. Give it a boolean.
-  base::Value in(base::Value::Type::LIST);
+  base::Value::List in;
   in.Append(kNotAUrl);
-  EXPECT_FALSE(CheckPolicy(kTestPolicyName, std::move(in)));
+  EXPECT_FALSE(CheckPolicy(kTestPolicyName, base::Value(std::move(in))));
   EXPECT_EQ(1U, errors_.size());
 }
 
@@ -125,10 +125,10 @@ TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_Empty) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
   // The policy expects string-valued elements. Give it booleans.
-  base::Value in(base::Value::Type::LIST);
+  base::Value::List in;
   in.Append(kNotAUrl);
   in.Append(kTestUrl);
-  SetPolicy(kTestPolicyName, std::move(in));
+  SetPolicy(kTestPolicyName, base::Value(std::move(in)));
   ApplyPolicies();
 
   // The element should be skipped.
@@ -144,10 +144,10 @@ TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_BadUrl) {
   // The policy expects a gvalid url schema.
-  base::Value in(base::Value::Type::LIST);
+  base::Value::List in;
   in.Append(false);
   in.Append(kTestUrl);
-  SetPolicy(kTestPolicyName, std::move(in));
+  SetPolicy(kTestPolicyName, base::Value(std::move(in)));
   ApplyPolicies();
 
   // The element should be skipped.
@@ -162,9 +162,9 @@ TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_BadUrl) {
 }
 
 TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_Successful) {
-  base::Value in_url_blocklist(base::Value::Type::LIST);
+  base::Value::List in_url_blocklist;
   in_url_blocklist.Append(kTestUrl);
-  SetPolicy(kTestPolicyName, std::move(in_url_blocklist));
+  SetPolicy(kTestPolicyName, base::Value(std::move(in_url_blocklist)));
   ApplyPolicies();
 
   base::Value* out;
