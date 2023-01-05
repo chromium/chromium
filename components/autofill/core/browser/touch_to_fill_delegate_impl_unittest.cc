@@ -10,13 +10,16 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using testing::_;
+using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::NiceMock;
+using testing::Pointee;
 using testing::Ref;
 using testing::Return;
 
@@ -358,6 +361,25 @@ TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillShowsExpiredCards) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_,
               ShowTouchToFillCreditCard(_, ElementsAreArray(credit_cards)));
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest,
+       TryToShowTouchToFillDoesNotShowDisusedExpiredCards) {
+  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  CreditCard credit_card = autofill::test::GetCreditCard();
+  credit_card.set_use_date(AutofillClock::Now());
+  CreditCard disused_expired_card = test::GetExpiredCreditCard();
+  const base::Time last_used =
+      AutofillClock::Now() - kDisusedDataModelTimeDelta * 2;
+  disused_expired_card.set_use_date(last_used);
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(
+      disused_expired_card);
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  EXPECT_CALL(autofill_client_,
+              ShowTouchToFillCreditCard(_, ElementsAre(Pointee(credit_card))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }

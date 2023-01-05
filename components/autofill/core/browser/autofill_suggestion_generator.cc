@@ -54,7 +54,7 @@ std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
 
 // Returns the card-linked offers map with credit card guid as the key and the
 // pointer to the linked AutofillOfferData as the value.
-std::map<std::string, AutofillOfferData*> getCardLinkedOffers(
+std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
     AutofillClient* autofill_client) {
   AutofillOfferManager* offer_manager =
       autofill_client->GetAutofillOfferManager();
@@ -156,36 +156,15 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   std::vector<Suggestion> suggestions;
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-      getCardLinkedOffers(autofill_client_);
+      GetCardLinkedOffers(autofill_client_);
   with_offer = !card_linked_offers_map.empty();
-
-  DCHECK(personal_data_);
-  std::vector<CreditCard*> cards_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(
-          autofill_client_->AreServerCardsSupported());
-
-  // If a card has available card linked offers on the last committed url, rank
-  // it to the top.
-  if (!card_linked_offers_map.empty()) {
-    base::ranges::stable_sort(
-        cards_to_suggest,
-        [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
-          return base::Contains(card_linked_offers_map, a->guid()) &&
-                 !base::Contains(card_linked_offers_map, b->guid());
-        });
-  }
 
   // The field value is sanitized before attempting to match it to the user's
   // data.
   auto field_contents = SanitizeCreditCardFieldValue(field.value);
 
-  // Suppress disused credit cards when triggered from an empty field.
-  if (field_contents.empty()) {
-    const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        AutofillClock::Now(), min_last_used, &cards_to_suggest);
-  }
+  std::vector<CreditCard*> cards_to_suggest =
+      GetOrderedCardsToSuggest(autofill_client_, field_contents.empty());
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
 
@@ -240,6 +219,44 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   }
 
   return suggestions;
+}
+
+// static
+std::vector<CreditCard*> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
+    // PersonalDataManager* personal_data,
+    AutofillClient* autofill_client,
+    bool suppress_disused_cards) {
+  DCHECK(autofill_client);
+  std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+      GetCardLinkedOffers(autofill_client);
+
+  PersonalDataManager* personal_data =
+      autofill_client->GetPersonalDataManager();
+  DCHECK(personal_data);
+  std::vector<CreditCard*> cards_to_suggest =
+      personal_data->GetCreditCardsToSuggest(
+          autofill_client->AreServerCardsSupported());
+
+  // If a card has available card linked offers on the last committed url, rank
+  // it to the top.
+  if (!card_linked_offers_map.empty()) {
+    base::ranges::stable_sort(
+        cards_to_suggest,
+        [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
+          return base::Contains(card_linked_offers_map, a->guid()) &&
+                 !base::Contains(card_linked_offers_map, b->guid());
+        });
+  }
+
+  // Suppress disused credit cards when triggered from an empty field.
+  if (suppress_disused_cards) {
+    const base::Time min_last_used =
+        AutofillClock::Now() - kDisusedDataModelTimeDelta;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        AutofillClock::Now(), min_last_used, &cards_to_suggest);
+  }
+
+  return cards_to_suggest;
 }
 
 // static

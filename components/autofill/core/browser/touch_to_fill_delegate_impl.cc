@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -53,8 +54,9 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   // Valid = unexpired with valid number format.
   PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
   DCHECK(pdm);
-  std::vector<CreditCard*> cards_to_suggest = pdm->GetCreditCardsToSuggest(
-      manager_->client()->AreServerCardsSupported());
+  std::vector<CreditCard*> cards_to_suggest =
+      AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
+          manager_->client(), /*suppress_disused_cards=*/true);
 
   // Not showing the sheet if all the cards are incomplete or invalid.
   if (base::ranges::none_of(cards_to_suggest,
