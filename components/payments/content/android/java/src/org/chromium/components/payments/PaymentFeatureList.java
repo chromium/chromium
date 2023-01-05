@@ -21,10 +21,6 @@ public class PaymentFeatureList {
     public static final String ADD_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT =
             "AddIdentityInCanMakePaymentEvent";
     public static final String ANDROID_APP_PAYMENT_UPDATE_EVENTS = "AndroidAppPaymentUpdateEvents";
-    // TODO(crbug.com/1290492): Remove when all call sites switch to
-    // AddIdentityInCanMakePaymentEvent.
-    public static final String CLEAR_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT =
-            "ClearIdentityInCanMakePaymentEvent";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";

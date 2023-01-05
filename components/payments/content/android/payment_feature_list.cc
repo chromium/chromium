@@ -24,9 +24,6 @@ namespace {
 // Android only features).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &::blink::features::kAddIdentityInCanMakePaymentEvent,
-    // TODO(crbug.com/1290492): Remove when all call sites switch to
-    // AddIdentityInCanMakePaymentEvent.
-    &::blink::features::kClearIdentityInCanMakePaymentEvent,
     &::features::kSecurePaymentConfirmation,
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,

@@ -37,10 +37,6 @@ public class ShadowPaymentFeatureList {
                 PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.ADD_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT, false);
-        // TODO(crbug.com/1290492): Remove when all call sites switch to
-        // AddIdentityInCanMakePaymentEvent.
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.CLEAR_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT, false);
     }
 
     @Resetter
