@@ -526,8 +526,6 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
 
 void PageLoadMetricsTestWaiter::OnTrackerCreated(
     page_load_metrics::PageLoadTracker* tracker) {
-  // A PageLoadMetricsWaiter should only wait for events from a single page
-  // load.
   if (!attach_on_tracker_creation_)
     return;
   AddObserver(tracker);
@@ -535,19 +533,15 @@ void PageLoadMetricsTestWaiter::OnTrackerCreated(
 
 void PageLoadMetricsTestWaiter::OnCommit(
     page_load_metrics::PageLoadTracker* tracker) {
-  // A PageLoadMetricsWaiter should only wait for events from a single page
-  // load.
-  if (attach_on_tracker_creation_)
+  // Prevent double registration of two WaiterMetricsObservers.
+  if (did_add_observer_) {
     return;
+  }
   AddObserver(tracker);
 }
 
 void PageLoadMetricsTestWaiter::OnActivate(
     page_load_metrics::PageLoadTracker* tracker) {
-  // A PageLoadMetricsWaiter should only wait for events from a single page
-  // load.
-  if (attach_on_tracker_creation_)
-    return;
   // Prevent double registration if a test added expectation before
   // prerendering navigation.
   if (did_add_observer_)
