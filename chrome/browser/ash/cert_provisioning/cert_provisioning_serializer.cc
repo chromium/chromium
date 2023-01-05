@@ -180,7 +180,7 @@ bool DeserializePublicKey(const base::Value::Dict& parent_dict,
 
 void CertProvisioningSerializer::SerializeWorkerToPrefs(
     PrefService* pref_service,
-    const CertProvisioningWorkerImpl& worker) {
+    const CertProvisioningWorkerStatic& worker) {
   ScopedDictPrefUpdate scoped_dict_updater(
       pref_service, GetPrefNameForSerialization(worker.cert_scope_));
   base::Value::Dict& saved_workers = scoped_dict_updater.Get();
@@ -189,7 +189,7 @@ void CertProvisioningSerializer::SerializeWorkerToPrefs(
 
 void CertProvisioningSerializer::DeleteWorkerFromPrefs(
     PrefService* pref_service,
-    const CertProvisioningWorkerImpl& worker) {
+    const CertProvisioningWorkerStatic& worker) {
   ScopedDictPrefUpdate scoped_dict_updater(
       pref_service, GetPrefNameForSerialization(worker.cert_scope_));
 
@@ -207,8 +207,8 @@ void CertProvisioningSerializer::DeleteWorkerFromPrefs(
 //   "invalidation_topic": <string>,
 // }
 base::Value::Dict CertProvisioningSerializer::SerializeWorker(
-    const CertProvisioningWorkerImpl& worker) {
-  static_assert(CertProvisioningWorkerImpl::kVersion == 1,
+    const CertProvisioningWorkerStatic& worker) {
+  static_assert(CertProvisioningWorkerStatic::kVersion == 1,
                 "This function should be updated");
 
   base::Value::Dict result;
@@ -223,8 +223,8 @@ base::Value::Dict CertProvisioningSerializer::SerializeWorker(
 
 bool CertProvisioningSerializer::DeserializeWorker(
     const base::Value::Dict& saved_worker,
-    CertProvisioningWorkerImpl* worker) {
-  static_assert(CertProvisioningWorkerImpl::kVersion == 1,
+    CertProvisioningWorkerStatic* worker) {
+  static_assert(CertProvisioningWorkerStatic::kVersion == 1,
                 "This function should be updated");
 
   // This will show to the scheduler that the worker is not doing anything yet
