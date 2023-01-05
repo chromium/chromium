@@ -1543,17 +1543,6 @@ void RunOfflineInstall(UpdaterScope scope,
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 
-  // Create a unique name for a shared event to be waited for in this process
-  // and signaled in the offline installer process to confirm the installer
-  // was run.
-  const std::wstring event_name = base::StrCat(
-      {L"OfflineInstallTest-", base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr =
-      GetNamedObjectAttributes(event_name.c_str(), scope);
-  base::WaitableEvent event(base::win::ScopedHandle(
-      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
-  ASSERT_NE(event.handle(), nullptr);
-
   base::ScopedTempDir temp_dir;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath& offline_dir = temp_dir.GetPath();
@@ -1561,6 +1550,12 @@ void RunOfflineInstall(UpdaterScope scope,
   // Create a batch file as the installer script, which creates some registry
   // values as the installation artifacts.
   base::FilePath installer_path = offline_dir.AppendASCII("test_installer.bat");
+
+  // Create a unique name for a shared event to be waited for in this process
+  // and signaled in the offline installer process to confirm the installer
+  // was run.
+  test::EventHolder event_holder(test::CreateWaitableEventForTest());
+
   EXPECT_TRUE(base::WriteFile(
       installer_path,
       [](UpdaterScope scope, const std::string& app_client_state_key,
@@ -1590,7 +1585,7 @@ void RunOfflineInstall(UpdaterScope scope,
               reg_item.value_name, reg_item.type, reg_item.value.c_str()));
         }
         return base::JoinString(commands, "\n");
-      }(scope, base::WideToASCII(app_client_state_key), attr.name)));
+      }(scope, base::WideToASCII(app_client_state_key), event_holder.name)));
 
   // The updater only allows `.exe` or `.msi` to run from the offline directory.
   // Setup `cmd.exe` as the wrapper installer.
@@ -1673,7 +1668,8 @@ void RunOfflineInstall(UpdaterScope scope,
     // Silent install does not run post-install command. For other cases the
     // event should have been signaled by the post-install command via the
     // installer result API.
-    EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+    EXPECT_TRUE(
+        event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
   }
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
