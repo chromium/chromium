@@ -75,6 +75,14 @@ bool IsRequestDenied(LocalDOMWindow* window, ExceptionState& exception_state) {
   } else if (window->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kFencedFrameError);
+  } else if (window->GetFrame()
+                 ->Top()
+                 ->GetSecurityContext()
+                 ->GetSecurityOrigin()
+                 ->IsOpaque()) {
+    exception_state.ThrowSecurityError(
+        "Access to the Web Bluetooth API is denied from contexts where the "
+        "top-level document has an opaque origin.");
   }
 
   return exception_state.HadException();
@@ -291,6 +299,7 @@ void ConvertRequestDeviceOptions(
 ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
+
   if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
@@ -353,6 +362,7 @@ void Bluetooth::RequestDeviceCallback(
 ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
                                     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
+
   if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
@@ -380,6 +390,7 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
                                        const RequestDeviceOptions* options,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
+
   if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
@@ -484,6 +495,7 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
                                        const BluetoothLEScanOptions* options,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
+
   if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
