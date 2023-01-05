@@ -140,6 +140,11 @@ export class BrowsingContextImpl {
     return this.#cdpBrowserContextId;
   }
 
+  // https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
+  get navigableId(): string | null {
+    return this.#loaderId;
+  }
+
   public convertFrameToTargetContext(
     cdpClient: CdpClient,
     cdpSessionId: string
@@ -366,6 +371,7 @@ export class BrowsingContextImpl {
         const realm = Realm.create(
           params.context.uniqueId,
           this.contextId,
+          this.navigableId ?? 'UNKNOWN',
           params.context.id,
           this.#getOrigin(params),
           // TODO: differentiate types.

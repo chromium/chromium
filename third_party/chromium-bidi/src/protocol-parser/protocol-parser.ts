@@ -54,6 +54,11 @@ export function parseObject<T extends ZodType>(
 }
 
 export namespace CommonDataTypes {
+  export const SharedReferenceSchema = zod.object({
+    sharedId: zod.string().min(1),
+  });
+  export type SharedReference = zod.infer<typeof SharedReferenceSchema>;
+
   export const RemoteReferenceSchema = zod.object({
     handle: zod.string().min(1),
   });
@@ -163,8 +168,9 @@ export namespace CommonDataTypes {
   );
 
   // Order is important, as `parse` is processed in the same order.
-  // `RemoteReferenceSchema` has higher priority.
+  // `SharedReferenceSchema`->`RemoteReferenceSchema`->`LocalValueSchema`.
   const LocalOrRemoteValueSchema = zod.union([
+    SharedReferenceSchema,
     RemoteReferenceSchema,
     LocalValueSchema,
   ]);
@@ -345,10 +351,11 @@ export namespace CommonDataTypes {
     type: 'arraybuffer';
   };
 
-  export type NodeRemoteValue = RemoteReference & {
-    type: 'node';
-    value?: NodeProperties;
-  };
+  export type NodeRemoteValue = SharedReference &
+    RemoteReference & {
+      type: 'node';
+      value?: NodeProperties;
+    };
 
   export type NodeProperties = RemoteReference & {
     nodeType: number;
@@ -566,6 +573,7 @@ export namespace Script {
 
   const ArgumentValueSchema = zod.union([
     CommonDataTypes.RemoteReferenceSchema,
+    CommonDataTypes.SharedReferenceSchema,
     CommonDataTypes.LocalValueSchema,
   ]);
   export type ArgumentValue = zod.infer<typeof ArgumentValueSchema>;

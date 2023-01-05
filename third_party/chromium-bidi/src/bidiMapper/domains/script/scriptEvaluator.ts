@@ -22,8 +22,9 @@ import {Realm} from './realm.js';
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
-  static readonly #evaluateStacktraceLineOffset = 0;
-  static readonly #callFunctionStacktraceLineOffset = 1;
+  static readonly #EVALUATE_STACKTRACE_LINE_OFFSET = 0;
+  static readonly #CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
+  static readonly #SHARED_ID_DIVIDER = '_element_';
 
   // Keeps track of `handle`s and their realms sent to client.
   static readonly #knownHandlesToRealm: Map<string, string> = new Map();
@@ -156,7 +157,7 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpCallFunctionResult.exceptionDetails,
-          this.#callFunctionStacktraceLineOffset,
+          this.#CALL_FUNCTION_STACKTRACE_LINE_OFFSET,
           resultOwnership,
           realm
         ),
@@ -249,25 +250,72 @@ export class ScriptEvaluator {
     realm: Realm,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
-    // This relies on the CDP to implement proper BiDi serialization, except
-    // objectIds+handles.
     const cdpWebDriverValue = cdpValue.result.webDriverValue!;
-    if (!cdpValue.result.objectId) {
-      return cdpWebDriverValue as CommonDataTypes.RemoteValue;
-    }
+    const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue, realm);
 
-    const objectId = cdpValue.result.objectId;
-    const bidiValue = cdpWebDriverValue as any;
-
-    if (resultOwnership === 'root') {
-      bidiValue.handle = objectId;
-      // Remember all the handles sent to client.
-      this.#knownHandlesToRealm.set(objectId, realm.realmId);
-    } else {
-      await realm.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+    if (cdpValue.result.objectId) {
+      const objectId = cdpValue.result.objectId;
+      if (resultOwnership === 'root') {
+        // Extend BiDi value with `handle` based on required `resultOwnership`
+        // and  CDP response but not on the actual BiDi type.
+        (bidiValue as any).handle = objectId;
+        // Remember all the handles sent to client.
+        this.#knownHandlesToRealm.set(objectId, realm.realmId);
+      } else {
+        // No need in waiting for the object to be released.
+        // noinspection ES6MissingAwait
+        realm.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+      }
     }
 
     return bidiValue as CommonDataTypes.RemoteValue;
+  }
+
+  static webDriverValueToBiDi(
+    webDriverValue: Protocol.Runtime.WebDriverValue,
+    realm: Realm
+  ): CommonDataTypes.RemoteValue {
+    // This relies on the CDP to implement proper BiDi serialization, except
+    // backendNodeId/sharedId.
+    const result = webDriverValue as any;
+    const bidiValue = result.value;
+    if (bidiValue === undefined) {
+      return result;
+    }
+
+    if (result.type == 'node') {
+      if (bidiValue.hasOwnProperty('backendNodeId')) {
+        bidiValue.sharedId = `${realm.navigableId}${
+          ScriptEvaluator.#SHARED_ID_DIVIDER
+        }${bidiValue.backendNodeId}`;
+        delete bidiValue['backendNodeId'];
+      }
+      if (bidiValue.hasOwnProperty('children')) {
+        for (const i in bidiValue.children) {
+          bidiValue.children[i] = this.webDriverValueToBiDi(
+            bidiValue.children[i],
+            realm
+          );
+        }
+      }
+    }
+
+    // Recursively update the nested values.
+    if (['array', 'set'].includes(webDriverValue.type)) {
+      for (const i in bidiValue) {
+        bidiValue[i] = this.webDriverValueToBiDi(bidiValue[i], realm);
+      }
+    }
+    if (['object', 'map'].includes(webDriverValue.type)) {
+      for (const i in bidiValue) {
+        bidiValue[i] = [
+          this.webDriverValueToBiDi(bidiValue[i][0], realm),
+          this.webDriverValueToBiDi(bidiValue[i][1], realm),
+        ];
+      }
+    }
+
+    return result;
   }
 
   public static async scriptEvaluate(
@@ -291,7 +339,7 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpEvaluateResult.exceptionDetails,
-          this.#evaluateStacktraceLineOffset,
+          this.#EVALUATE_STACKTRACE_LINE_OFFSET,
           resultOwnership,
           realm
         ),
@@ -315,6 +363,51 @@ export class ScriptEvaluator {
     argumentValue: Script.ArgumentValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
+    if ('sharedId' in argumentValue) {
+      const [navigableId, rawBackendNodeId] = argumentValue.sharedId.split(
+        ScriptEvaluator.#SHARED_ID_DIVIDER
+      );
+
+      const backendNodeId = parseInt(rawBackendNodeId ?? '');
+      if (
+        isNaN(backendNodeId) ||
+        backendNodeId === undefined ||
+        navigableId === undefined
+      ) {
+        throw new Message.InvalidArgumentException(
+          `SharedId "${
+            argumentValue.sharedId
+          }" should have format "{navigableId}${
+            ScriptEvaluator.#SHARED_ID_DIVIDER
+          }{backendNodeId}".`
+        );
+      }
+
+      if (realm.navigableId !== navigableId) {
+        throw new Message.NoSuchNodeException(
+          `SharedId "${argumentValue.sharedId}" belongs to different document.`
+        );
+      }
+
+      try {
+        const obj = await realm.cdpClient.sendCommand('DOM.resolveNode', {
+          backendNodeId,
+          executionContextId: realm.executionContextId,
+        });
+        // TODO: release `obj.object.objectId` after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
+        return {objectId: obj.object.objectId};
+      } catch (e: any) {
+        // Heuristic to detect "no such node" exception. Based on the  specific
+        // CDP implementation.
+        if (e.code === -32000 && e.message === 'No node with given id found') {
+          throw new Message.NoSuchNodeException(
+            `SharedId "${argumentValue.sharedId}" was not found.`
+          );
+        }
+        throw e;
+      }
+    }
     if ('handle' in argumentValue) {
       return {objectId: argumentValue.handle};
     }
@@ -374,7 +467,7 @@ export class ScriptEvaluator {
       }
       case 'map': {
         // TODO(sadym): if non of the nested keys and values has remote
-        //  reference, serialize to `unserializableValue` without CDP roundtrip.
+        // reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
           argumentValue.value,
           realm
@@ -397,9 +490,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
-
-        // TODO(sadym): dispose nested objects.
-
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
       case 'object': {
@@ -434,9 +526,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
-
-        // TODO(sadym): dispose nested objects.
-
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
       case 'array': {
@@ -459,9 +550,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
-
-        // TODO(sadym): dispose nested objects.
-
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
       case 'set': {
@@ -481,6 +571,8 @@ export class ScriptEvaluator {
             executionContextId: realm.executionContextId,
           }
         );
+        // TODO: release `argEvalResult.result.objectId`  after using.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
         return {objectId: argEvalResult.result.objectId};
       }
 

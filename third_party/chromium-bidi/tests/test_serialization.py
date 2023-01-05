@@ -452,8 +452,8 @@ async def test_serialization_node(websocket, context_id):
             "value": {
                 "nodeType":
                 1,
-                "backendNodeId":
-                any_value,
+                "sharedId":
+                any_shared_id,
                 "localName":
                 "div",
                 "namespaceURI":
@@ -468,13 +468,13 @@ async def test_serialization_node(websocket, context_id):
                     "value": {
                         "nodeType": 3,
                         "nodeValue": "some text",
-                        "backendNodeId": any_value,
+                        "sharedId": any_shared_id,
                     }
                 }, {
                     "type": "node",
                     "value": {
                         "nodeType": 1,
-                        "backendNodeId": any_value,
+                        "sharedId": any_shared_id,
                         "localName": "h2",
                         "namespaceURI": "http://www.w3.org/1999/xhtml",
                         "childNodeCount": 1,
@@ -483,6 +483,52 @@ async def test_serialization_node(websocket, context_id):
                 }]
             }
         }, result["result"])
+
+
+# Verify node nested in other data structures are serialized with the proper
+# `sharedId`.
+@pytest.mark.parametrize("eval_delegate, extract_delegate", [
+    (lambda s: f"[{s}]", lambda r: r["value"][0]),
+    (lambda s: f"new Set([{s}])", lambda r: r["value"][0]),
+    (lambda s: f"({{qwe: {s}}})", lambda r: r["value"][0][1]),
+    (lambda s: f"new Map([['qwe', {s}]])", lambda r: r["value"][0][1]),
+])
+@pytest.mark.asyncio
+async def test_serialization_nested_node(websocket, context_id, eval_delegate,
+                                         extract_delegate):
+    await goto_url(
+        websocket, context_id,
+        "data:text/html,<div some_attr_name='some_attr_value' "
+        ">some text<h2>some another text</h2></div>")
+
+    eval_node = "document.querySelector('body > div')"
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": eval_delegate(eval_node),
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    recursive_compare(
+        {
+            "type": "node",
+            "value": {
+                "nodeType": 1,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 2,
+                "attributes": {
+                    "some_attr_name": "some_attr_value"
+                },
+                "sharedId": any_shared_id
+            }
+        }, extract_delegate(result["result"]))
 
 
 @pytest.mark.asyncio

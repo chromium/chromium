@@ -62,7 +62,8 @@ export namespace Message {
     | 'unknown error'
     | 'unknown command'
     | 'invalid argument'
-    | 'no such frame';
+    | 'no such frame'
+    | 'no such node';
 
   export type ErrorResult = {
     readonly error: ErrorCode;
@@ -113,6 +114,12 @@ export namespace Message {
     }
   }
 
+  export class NoSuchNodeException extends ErrorResponseClass {
+    constructor(message: string, stacktrace?: string) {
+      super('no such node', message, stacktrace);
+    }
+  }
+
   export class NoSuchFrameException extends ErrorResponseClass {
     constructor(message: string) {
       super('no such frame', message);
@@ -123,6 +130,10 @@ export namespace Message {
 export namespace CommonDataTypes {
   export type RemoteReference = {
     handle: string;
+  };
+
+  export type SharedReference = {
+    sharedId: string;
   };
 
   // UndefinedValue = {
@@ -236,7 +247,10 @@ export namespace CommonDataTypes {
   };
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  export type MappingLocalValue = [string | LocalOrRemoteValue, LocalOrRemoteValue][];
+  export type MappingLocalValue = [
+    string | LocalOrRemoteValue,
+    LocalOrRemoteValue
+  ][];
 
   // MapLocalValue = {
   //   type: "map",
@@ -569,6 +583,7 @@ export namespace Script {
 
   export type ArgumentValue =
     | CommonDataTypes.RemoteReference
+    | CommonDataTypes.SharedReference
     | CommonDataTypes.LocalValue;
 
   export type CallFunctionParameters = {

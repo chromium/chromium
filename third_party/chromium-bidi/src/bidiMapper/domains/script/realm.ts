@@ -31,6 +31,7 @@ export class Realm {
   static create(
     realmId: string,
     browsingContextId: string,
+    navigableId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
@@ -41,6 +42,7 @@ export class Realm {
     const realm = new Realm(
       realmId,
       browsingContextId,
+      navigableId,
       executionContextId,
       origin,
       type,
@@ -55,6 +57,7 @@ export class Realm {
   static findRealms(
     filter: {
       realmId?: string;
+      navigableId?: string;
       browsingContextId?: string;
       executionContextId?: Protocol.Runtime.ExecutionContextId;
       type?: string;
@@ -64,6 +67,12 @@ export class Realm {
   ): Realm[] {
     return Array.from(Realm.#realmMap.values()).filter((realm) => {
       if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
+        return false;
+      }
+      if (
+        filter.navigableId !== undefined &&
+        filter.navigableId !== realm.navigableId
+      ) {
         return false;
       }
       if (
@@ -137,6 +146,7 @@ export class Realm {
 
   readonly #realmId: string;
   readonly #browsingContextId: string;
+  readonly #navigableId: string;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
@@ -147,6 +157,7 @@ export class Realm {
   private constructor(
     realmId: string,
     browsingContextId: string,
+    navigableId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
@@ -156,6 +167,7 @@ export class Realm {
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
+    this.#navigableId = navigableId;
     this.#executionContextId = executionContextId;
     this.#sandbox = sandbox;
     this.#origin = origin;
@@ -176,6 +188,10 @@ export class Realm {
 
   get realmId(): string {
     return this.#realmId;
+  }
+
+  get navigableId(): string {
+    return this.#navigableId;
   }
 
   get browsingContextId(): string {
