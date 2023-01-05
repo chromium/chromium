@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<style>
+textarea {
+  border: none;
+  width: 200px;
+  height: 200px;
+  resize: both;
+  overflow: scroll;
+}
+textarea::-webkit-scrollbar {
+  width: 125px;
+  height: 175px;
+  background: red;
+}
+textarea::-webkit-scrollbar-corner {
+  background: green;
+}
+</style>
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<textarea id="textInputID">
+Some text
+</textarea>
+
+<script>
+function drag(startX, startY, destX, destY, callback) {
+  chrome.gpuBenchmarking.pointerActionSequence([{source: 'mouse', actions:[
+    {name: 'pointerDown', x: startX, y: startY},
+    {name: 'pointerMove', x: destX, y: destY},
+    {name: 'pointerUp'}]}],
+    callback);
+}
+
+var t = async_test('Test for resizing the TEXTAREA below the resizer size.');
+t.step(() => {
+  assert_own_property(window, 'chrome');
+  assert_own_property(chrome, 'gpuBenchmarking');
+
+  var textArea = document.getElementById('textInputID');
+  var startX = (textArea.getBoundingClientRect().right - 1);
+  var startY = (textArea.getBoundingClientRect().bottom - 1);
+  drag(startX, startY, 0, 0, t.step_func_done(() => {
+    // The textarea should be shrunk so that there is no room for visible
+    // content beyond the resizer itself.
+    assert_equals(textArea.clientWidth, 0);
+    assert_equals(textArea.clientHeight, 0);
+    assert_equals(textArea.getBoundingClientRect().width, 125);
+    assert_equals(textArea.getBoundingClientRect().height, 175);
+  }));
+});
+</script>
+</body>

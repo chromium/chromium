@@ -113,15 +113,6 @@
 
 namespace blink {
 
-namespace {
-
-// Default value is set to 15 as the default
-// minimum size used by firefox is 15x15.
-static const int kDefaultMinimumWidthForResizing = 15;
-static const int kDefaultMinimumHeightForResizing = 15;
-
-}  // namespace
-
 PaintLayerScrollableAreaRareData::PaintLayerScrollableAreaRareData() = default;
 
 void PaintLayerScrollableAreaRareData::Trace(Visitor* visitor) const {
@@ -2178,10 +2169,14 @@ LayoutSize PaintLayerScrollableArea::MinimumSizeForResizing(float zoom_factor) {
   LayoutUnit min_height =
       MinimumValueForLength(GetLayoutBox()->StyleRef().MinHeight(),
                             GetLayoutBox()->ContainingBlock()->Size().Height());
-  min_width = std::max(LayoutUnit(min_width / zoom_factor),
-                       LayoutUnit(kDefaultMinimumWidthForResizing));
-  min_height = std::max(LayoutUnit(min_height / zoom_factor),
-                        LayoutUnit(kDefaultMinimumHeightForResizing));
+
+  const gfx::Rect& corner_rect = CornerRect();
+  min_width = std::max(LayoutUnit(min_width), LayoutUnit(corner_rect.width()));
+  min_height =
+      std::max(LayoutUnit(min_height), LayoutUnit(corner_rect.height()));
+
+  min_width /= zoom_factor;
+  min_height /= zoom_factor;
   return LayoutSize(min_width, min_height);
 }
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<style>
+body {
+  zoom: 3;
+}
+textarea {
+  border: none;
+  width: 100px;
+  height: 100px;
+  resize: both;
+  overflow: scroll;
+}
+</style>
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<textarea id="textInputID">
+Some text
+</textarea>
+
+<script>
+function drag(startX, startY, destX, destY, callback) {
+  chrome.gpuBenchmarking.pointerActionSequence([{source: 'mouse', actions:[
+    {name: 'pointerDown', x: startX, y: startY},
+    {name: 'pointerMove', x: destX, y: destY},
+    {name: 'pointerUp'}]}],
+    callback);
+}
+
+var t = async_test('Test for resizing the TEXTAREA below the resizer size.');
+t.step(() => {
+  assert_own_property(window, 'chrome');
+  assert_own_property(chrome, 'gpuBenchmarking');
+
+  var textArea = document.getElementById('textInputID');
+  var startX = (textArea.getBoundingClientRect().right - 1) * 3;
+  var startY = (textArea.getBoundingClientRect().bottom - 1) * 3;
+  drag(startX, startY, 0, 0, t.step_func_done(() => {
+    // The textarea should be shrunk so that there is no room for visible
+    // content beyond the resizer itself.
+    assert_equals(textArea.clientWidth, 0);
+    assert_equals(textArea.clientHeight, 0);
+  }));
+});
+</script>
+</body>

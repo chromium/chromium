@@ -1544,7 +1544,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
   EXPECT_TRUE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kResize);
-  LOG(ERROR) << "REMOVE";
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(scrollable_area, target->GetLayoutBox()->GetScrollableArea());
   ASSERT_FALSE(scrollable_area->HasScrollbar());
@@ -1552,7 +1551,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
   EXPECT_FALSE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
 
   target->SetInlineStyleProperty(CSSPropertyID::kResize, "both");
-  LOG(ERROR) << "ADD";
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(scrollable_area, target->GetLayoutBox()->GetScrollableArea());
   ASSERT_FALSE(scrollable_area->HasScrollbar());
