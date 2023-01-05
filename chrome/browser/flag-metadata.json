@@ -420,7 +420,7 @@
   {
     "name": "autocomplete-extended-suggestions",
     "owners": [ "yulunwu", "tbarzic" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 113
   },
   {
       "name": "autofill-address-verification-in-save-prompt",
