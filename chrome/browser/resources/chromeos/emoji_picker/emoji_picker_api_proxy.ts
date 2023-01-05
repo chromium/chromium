@@ -137,4 +137,8 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     }
     return EmojiPickerApiProxyImpl.instance;
   }
+
+  static setInstance(instance: EmojiPickerApiProxy): void {
+    EmojiPickerApiProxyImpl.instance = instance;
+  }
 }

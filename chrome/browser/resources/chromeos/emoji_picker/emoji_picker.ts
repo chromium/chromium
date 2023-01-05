@@ -23,7 +23,7 @@ import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -226,7 +226,7 @@ export class EmojiPicker extends PolymerElement {
         await Promise
             .all(
                 [
-                  this.fetchOrderingData<EmojiGroupData>(firstResult.url),
+                  this.fetchOrderingData(firstResult.url),
                   this.apiProxy.getFeatureList().then(
                       (response: {featureList: number[]}) =>
                           this.setActiveFeatures(response.featureList)),
@@ -296,7 +296,7 @@ export class EmojiPicker extends PolymerElement {
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
   }
 
-  fetchOrderingData<T>(url: string): Promise<T> {
+  fetchOrderingData(url: string): Promise<EmojiGroupData> {
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
       xhr.onloadend = () => resolve(JSON.parse(xhr.responseText));
@@ -948,17 +948,15 @@ export class EmojiPicker extends PolymerElement {
         this.allCategoryTabs.every(
             (subCategoryData) =>
                 subCategoryData.category !== CategoryEnum.GIF)) {
-      const dataUrl = EmojiPicker.configs().dataUrls.gif[0];
-      // Fetch the mock json data for categories in tests instead of the
-      // real tenor API
-      const categories: GifSubcategoryData[] = dataUrl ?
-          (await this.fetchOrderingData<GifSubcategoryData[]>(dataUrl)) :
-          (await this.apiProxy.getCategories()).categories;
+      const {categories} = await this.apiProxy.getCategories();
       const categoryTabs = {
         ...CATEGORY_TABS,
         gif: categories,
       };
       this.allCategoryTabs = gifCategoryTabs(categoryTabs);
+
+      const {featured} = await this.apiProxy.getFeaturedGifs();
+      console.warn(featured);
     }
 
     this.set('category', newCategory);

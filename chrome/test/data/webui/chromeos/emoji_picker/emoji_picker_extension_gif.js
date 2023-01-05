@@ -9,7 +9,8 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {deepQuerySelector, timeout, waitForCondition} from './emoji_picker_test_util.js';
+import {deepQuerySelector, waitForCondition} from './emoji_picker_test_util.js';
+import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
@@ -36,6 +37,8 @@ export function GifTestSuite(category) {
       document.body.innerHTML = '';
       window.localStorage.clear();
 
+      EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
+
       // Set default incognito state to False.
       EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
           new Promise((resolve) => resolve({incognito: false}));
@@ -47,7 +50,7 @@ export function GifTestSuite(category) {
           ],
           'emoticon': ['/emoticon_test_ordering.json'],
           'symbol': ['/symbol_test_ordering.json'],
-          'gif': ['/gif_test_ordering.json'],
+          'gif': [],
         },
       });
 
@@ -105,13 +108,14 @@ export function GifTestSuite(category) {
                   .map(item => item.shadowRoot.querySelector('cr-icon-button'));
           const categoryButton = allCategoryButtons[categoryIndex];
           categoryButton.click();
-          waitForCondition(
-              () => isCategoryButtonActive(categoryButton) &&
-                  allCategoryButtons.every(
-                      (categoryButtonItem, index) =>
-                          (index === categoryIndex ||
-                           isCategoryButtonActive(categoryButtonItem))),
+          await waitForCondition(
+              () => isCategoryButtonActive(categoryButton),
               'gif section failed to be active', 5000);
+          allCategoryButtons.forEach((categoryButtonItem, index) => {
+            if (index !== categoryIndex) {
+              assertFalse(isCategoryButtonActive(categoryButtonItem));
+            }
+          });
         });
   });
 }
