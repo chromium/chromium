@@ -5,13 +5,22 @@
 As part of Chrome Modularization, this directory contains various tools for
 analyzing the dependencies contained within the Chrome Android project.
 
+If you'd like to just view the graph, the simplest way is to use the script:
+
+```
+tools/android/dependency_analysis/start_server.sh
+```
+
 ## Usage
 
 Start by generating a JSON dependency file with a snapshot of the dependencies
 for your JAR files using the **JSON dependency generator** command-line tool.
 
-This snapshot file can then be used as input for various other
-analysis tools listed below.
+This snapshot file can then be used as input for various other analysis tools
+listed below.
+
+See the visualization [js/README.md](js/README.md) for details on how to start a
+local server to view your local dependency graphs.
 
 ## Command-line tools
 
@@ -26,33 +35,45 @@ on and writes the resulting dependency graph into a JSON file. The default
 root build target is chrome/android:monochrome_public_bundle.
 
 ```
-usage: generate_json_dependency_graph.py [-h] -o OUTPUT [-C BUILD_OUTPUT_DIR] [-p PREFIXES] [-t TARGET] [-d CHECKOUT_DIR] [-j JDEPS_PATH]
-                                         [-g GN_PATH] [-v]
+usage: generate_json_dependency_graph.py [-h] -o OUTPUT [-C BUILD_OUTPUT_DIR]
+                                         [-p PREFIX] [-t TARGET]
+                                         [-d CHECKOUT_DIR] [-j JDEPS_PATH]
+                                         [-g GN_PATH] [--skip-rebuild]
+                                         [--show-ninja] [-v]
 
-Runs jdeps (dependency analysis tool) on all JARs a root build target depends on and writes the resulting dependency graph into a JSON file.
-The default root build target is chrome/android:monochrome_public_bundle and the default prefix is "org.chromium.".
-
+Runs jdeps (dependency analysis tool) on all JARs and writes the resulting
+dependency graph into a JSON file.
 options:
   -h, --help            show this help message and exit
   -C BUILD_OUTPUT_DIR, --build_output_dir BUILD_OUTPUT_DIR
-                        Build output directory, will guess if not provided. This should always be relative to //src.
-  -p PREFIXES, --prefixes PREFIXES
-                        A comma-separated list of prefixes to filter classes. Class paths that do not match any of the prefixes are ignored in
-                        the graph. Pass in an empty string to turn off filtering.
+                        Build output directory, will attempt to guess if not
+                        provided.
+  -p PREFIX, --prefix PREFIX
+                        If any package prefixes are passed, these will be used
+                        to filter classes so that only classes with a package
+                        matching one of the prefixes are kept in the graph. By
+                        default no filtering is performed.
   -t TARGET, --target TARGET
-                        Root build target.
+                        If a specific target is specified, only transitive
+                        deps of that target are included in the graph. By
+                        default all known javac jars are included.
   -d CHECKOUT_DIR, --checkout-dir CHECKOUT_DIR
-                        Path to the chromium checkout directory.
+                        Path to the chromium checkout directory. By default
+                        the checkout containing this script is used.
   -j JDEPS_PATH, --jdeps-path JDEPS_PATH
                         Path to the jdeps executable.
   -g GN_PATH, --gn-path GN_PATH
                         Path to the gn executable.
+  --skip-rebuild        Skip rebuilding, useful on bots where compile is a
+                        separate step right before running this script.
+  --show-ninja          Used to show ninja output.
   -v, --verbose         Used to display detailed logging.
 
 required arguments:
   -o OUTPUT, --output OUTPUT
-                        Path to the file to write JSON output to. Will be created if it does not yet exist and overwrite existing content if
-                        it does.
+                        Path to the file to write JSON output to. Will be
+                        created if it does not yet exist and overwrite
+                        existing content if it does.
 ```
 
 #### Class Dependency Audit

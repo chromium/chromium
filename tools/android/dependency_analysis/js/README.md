@@ -1,22 +1,37 @@
 # Chrome Android Dependency Analysis Visualization
 
+If you'd like to just view the graph, the simplest way is to use the script:
+
+```
+tools/android/dependency_analysis/start_server.sh
+```
+
 ## Development Setup
 
 ### Shell variables
 
-This setup assumes Chromium is in a `cr` directory (`~/cr/src/...`). To make
-setup easier, you can modify and export the following variables:
+
+This setup assumes Chromium is in the `CHROMIUM_DIR` directory (e.g.
+`~/cr/src/...`). Please modify the following command using the path to your
+chromium repo:
 
 ```
-export DEP_ANALYSIS_DIR=~/cr/src/tools/android/dependency_analysis
-export DEP_ANALYSIS_BUILD_DIR=~/cr/src/out/Debug
+export CHROMIUM_DIR=<path to your repo>
+```
+
+Now you can copy/paste the following and set up these other variables. You can
+swap out `out/Debug` in `DEP_ANALYSIS_BUILD_DIR` to your preferred output dir.
+
+```
+export DEP_ANALYSIS_DIR=$CHROMIUM_DIR/src/tools/android/dependency_analysis
+export DEP_ANALYSIS_BUILD_DIR=$CHROMIUM_DIR/src/out/Debug
 ```
 
 ### Generate JSON
 
-See `../README.md` for instructions on using `generate_json_dependency_graph.py`
-, then generate a graph file in the `src` directory (`js/src/json_graph.txt`)
-with that exact name:
+See [../README.md](../README.md) for instructions on using
+`generate_json_dependency_graph.py`, then generate a graph file in the `src`
+directory (`js/src/json_graph.txt`) with that exact name:
 
 ```
 cd $DEP_ANALYSIS_DIR
@@ -60,10 +75,10 @@ npm install
 npm run serve
 ```
 
-You may need this in your `~/.bashrc` if you are on node version 17+:
+If you prefer to run npm commands from the root of your chromium repo:
 
 ```
-export NODE_OPTIONS=--openssl-legacy-provider
+npm run --prefix tools/android/dependency_analysis/js serve
 ```
 
 This command runs `webpack-dev-server` in development mode, which will bundle
@@ -72,7 +87,7 @@ point of the bundled output. Changes made to the core JS will reload the page,
 and changes made to individual modules will trigger a
 [hot module replacement](https://webpack.js.org/concepts/hot-module-replacement/).
 
-**To view the visualization, open http://localhost:8888/package_view.html.**
+**To view the visualization, open http://localhost:8888/index.html.**
 
 ### Build the visualization
 
@@ -97,7 +112,7 @@ To build and serve, you can execute the two commands together:
 npm run build && npm run serve-dist
 ```
 
-**To view the visualization, open http://localhost:8888/package_view.html.**
+**To view the visualization, open http://localhost:8888/index.html.**
 
 ### Deploy
 

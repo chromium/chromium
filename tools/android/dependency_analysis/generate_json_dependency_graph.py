@@ -27,9 +27,6 @@ from pylib import constants
 sys.path.append(str(_SRC_PATH / 'tools/android'))
 from python_utils import git_metadata_utils, subprocess_utils
 
-_DEFAULT_ROOT_TARGET = 'chrome/android:monochrome_public_bundle'
-_DEFAULT_PREFIX = 'org.chromium.'
-
 _IGNORED_JAR_PATHS = [
     # This matches org_ow2_asm_asm_commons and org_ow2_asm_asm_analysis, both of
     # which fail jdeps (not sure why).
@@ -85,7 +82,7 @@ class JavaClassJdepsParser:
     def parse_line(self,
                    build_target: str,
                    line: str,
-                   prefixes: Tuple[str] = (_DEFAULT_PREFIX, )):
+                   prefixes: Tuple[str] = ('org.chromium.', )):
         """Parses a line of jdeps output.
 
         The assumed format of the line starts with 'name_1 -> name_2'.
@@ -218,6 +215,7 @@ def _should_ignore(jar_path: str) -> bool:
 
 
 def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
+                                    show_ninja: bool,
                                     src_path: pathlib.Path) -> JarTargetDict:
     """Runs list_java_targets.py to find all jars generated in the build.
 
@@ -229,15 +227,17 @@ def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
     # //media/midi:midi_java: obj/media/midi/midi_java.javac.jar
     # //clank/third_party/google3:clock_java: ../../clank/third_party/google3/libs/clock.jar
     # pylint: enable=line-too-long
-    output = subprocess_utils.run_command([
+    cmd = [
         str(src_path / 'build' / 'android' / 'list_java_targets.py'),
         '-C',
         str(build_output_dir),
-        '-q',  # Necessary to avoid ninja logs in the output.
         '--gn-labels',  # Adds the // prefix.
         '--query',
         'deps_info.unprocessed_jar_path',
-    ])
+    ]
+    if not show_ninja:
+        cmd.append('-q')
+    output = subprocess_utils.run_command(cmd)
     jar_dict: JarTargetDict = {}
     # pylint: disable=line-too-long
     # Resulting jar_dict after parsing: {
@@ -300,11 +300,8 @@ def main():
     Creates a JSON file from the jdeps output."""
 
     arg_parser = argparse.ArgumentParser(
-        description='Runs jdeps (dependency analysis tool) on all JARs a root '
-        'build target depends on and writes the resulting dependency graph '
-        'into a JSON file. The default root build target is '
-        'chrome/android:monochrome_public_bundle and the default prefix is '
-        '"org.chromium.".')
+        description='Runs jdeps (dependency analysis tool) on all JARs and '
+        'writes the resulting dependency graph into a JSON file.')
     required_arg_group = arg_parser.add_argument_group('required arguments')
     required_arg_group.add_argument(
         '-o',
@@ -318,28 +315,26 @@ def main():
         help='Build output directory, will attempt to guess if not provided.')
     arg_parser.add_argument(
         '-p',
-        '--prefixes',
-        default=_DEFAULT_PREFIX,
-        help='A comma-separated list of prefixes to filter '
-        'classes. Class paths that do not match any of the '
-        'prefixes are ignored in the graph. Pass in an '
-        'empty string to turn off filtering.')
-    arg_parser.add_argument('-t',
-                            '--target',
-                            default=_DEFAULT_ROOT_TARGET,
-                            help='Root build target.')
-    arg_parser.add_argument('--all',
-                            action='store_true',
-                            help='Build and parse all known javac jars.')
-    arg_parser.add_argument('--skip-rebuild',
-                            action='store_true',
-                            help='Skip rebuilding, useful on bots where '
-                            'compile is a separate step right before running '
-                            'this script.')
+        '--prefix',
+        default=[],
+        dest='prefixes',
+        action='append',
+        help='If any package prefixes are passed, these will be used to filter '
+        'classes so that only classes with a package matching one of the '
+        'prefixes are kept in the graph. By default no filtering is performed.'
+    )
+    arg_parser.add_argument(
+        '-t',
+        '--target',
+        help='If a specific target is specified, only transitive deps of that '
+        'target are included in the graph. By default all known javac jars are '
+        'included.')
     arg_parser.add_argument('-d',
                             '--checkout-dir',
                             default=_SRC_PATH,
-                            help='Path to the chromium checkout directory.')
+                            help='Path to the chromium checkout directory. By '
+                            'default the checkout containing this script is '
+                            'used.')
     arg_parser.add_argument('-j',
                             '--jdeps-path',
                             help='Path to the jdeps executable.')
@@ -347,6 +342,14 @@ def main():
                             '--gn-path',
                             default='gn',
                             help='Path to the gn executable.')
+    arg_parser.add_argument('--skip-rebuild',
+                            action='store_true',
+                            help='Skip rebuilding, useful on bots where '
+                            'compile is a separate step right before running '
+                            'this script.')
+    arg_parser.add_argument('--show-ninja',
+                            action='store_true',
+                            help='Used to show ninja output.')
     arg_parser.add_argument('-v',
                             '--verbose',
                             action='store_true',
@@ -376,16 +379,20 @@ def main():
     args.build_output_dir = pathlib.Path(constants.GetOutDirectory())
     logging.info(
         f'Using output dir: {_relsrc(args.build_output_dir, src_path)}')
+    args_gn_path = args.build_output_dir / 'args.gn'
+    logging.info(f'Contents of {_relsrc(args_gn_path, src_path)}:')
+    with open(args_gn_path) as f:
+        print(f.read())
 
     logging.info('Getting list of dependency jars...')
-    if args.all:
-        target_jars: JarTargetDict = run_and_parse_list_java_targets(
-            args.build_output_dir, src_path)
-    else:
+    if args.target:
         gn_desc_output = _run_gn_desc_list_dependencies(
             args.build_output_dir, args.target, args.gn_path, src_path)
         target_jars: JarTargetDict = parse_original_targets_and_jars(
             gn_desc_output, args.build_output_dir, cr_position)
+    else:
+        target_jars: JarTargetDict = run_and_parse_list_java_targets(
+            args.build_output_dir, args.show_ninja, src_path)
 
     if args.skip_rebuild:
         logging.info(f'Skipping rebuilding jars.')
@@ -396,14 +403,15 @@ def main():
         rel_jar_paths = [
             p.relative_to(args.build_output_dir) for p in target_jars.values()
         ]
-        logging.info(
-            f'Re-building {len(rel_jar_paths)} jars for up-to-date deps. '
-            'This may take a while the first time through. Use -v to see '
-            'ninja progress.')
+        if not args.show_ninja:
+            logging.info(
+                f'Re-building {len(rel_jar_paths)} jars for up-to-date deps. '
+                'This may take a while the first time through. Pass '
+                '--show-ninja to see ninja progress.')
         subprocess.run([
             subprocess_utils.resolve_autoninja(), '-C', args.build_output_dir
         ] + rel_jar_paths,
-                       capture_output=not args.verbose,
+                       capture_output=not args.show_ninja,
                        check=True)
 
     logging.info('Running jdeps...')
@@ -415,7 +423,6 @@ def main():
                               args.build_output_dir), target_jars.values())
 
     logging.info('Parsing jdeps output...')
-    prefixes = tuple(args.prefixes.split(','))
     jdeps_parser = JavaClassJdepsParser()
     for raw_jdeps_output, build_target in zip(jdeps_outputs,
                                               target_jars.keys()):
@@ -424,7 +431,7 @@ def main():
         logging.debug(f'Parsing jdeps for {build_target}')
         jdeps_parser.parse_raw_jdeps_output(build_target,
                                             raw_jdeps_output,
-                                            prefixes=prefixes)
+                                            prefixes=tuple(args.prefixes))
 
     class_graph = jdeps_parser.graph
     logging.info(f'Parsed class-level dependency graph, '
