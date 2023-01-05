@@ -851,17 +851,46 @@ TEST_F(DockedMagnifierTest, ResizeDockedMagnifier) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
             viewport_widget->GetWindowBoundsInScreen());
 
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_NE(ui::mojom::CursorType::kNorthSouthResize,
+            cursor_manager->GetCursor().type());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+
   // Move cursor over docked magnifier separator (to drag for resizing).
   gfx::Point mouse_location(400, viewport_height);
   GetEventGenerator()->MoveMouseTo(mouse_location);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthResize,
+            cursor_manager->GetCursor().type());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
   // Drag separator 100 pixels down.
   mouse_location = gfx::Point(400, viewport_height + 100);
   GetEventGenerator()->DragMouseTo(mouse_location);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthResize,
+            cursor_manager->GetCursor().type());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
   // Assert docked magnifier viewport is now taller.
   EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height + 100),
             viewport_widget->GetWindowBoundsInScreen());
+
+  // Move off of the separator. The cursor should reset.
+  GetEventGenerator()->MoveMouseTo(400, viewport_height + 200);
+  EXPECT_NE(ui::mojom::CursorType::kNorthSouthResize,
+            cursor_manager->GetCursor().type());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+
+  // Drag again, but turn off docked magnifier during drag (simulating keyboard
+  // shortcut). The cursor should reset.
+  GetEventGenerator()->MoveMouseTo(400, viewport_height + 100);
+  GetEventGenerator()->DragMouseTo(gfx::Point(400, viewport_height));
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthResize,
+            cursor_manager->GetCursor().type());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  controller()->SetEnabled(false);
+  EXPECT_NE(ui::mojom::CursorType::kNorthSouthResize,
+            cursor_manager->GetCursor().type());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
 }
 
 // Tests to verify dragging above separator does not resize docked magnifier.

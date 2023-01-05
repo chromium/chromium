@@ -132,6 +132,10 @@ class ASH_EXPORT DockedMagnifierController
   // separator and resize the viewport.
   void MaybePerformViewportResizing(ui::MouseEvent* event);
 
+  // Resets the large docked magnifier viewport resizing cursor if
+  // it was locked because it was over the separator.
+  void MaybeResetResizingCursor();
+
   // Switches the current source root window to |new_root_window| if it's
   // different than |current_source_root_window_|, destroys (if any) old
   // viewport layers and widgets, and recreates them if |new_root_window| is not

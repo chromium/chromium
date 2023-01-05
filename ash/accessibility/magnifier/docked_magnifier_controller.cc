@@ -439,11 +439,8 @@ void DockedMagnifierController::MaybePerformViewportResizing(
     cursor_manager->LockCursor();
     cursor_window_controller->OnDockedMagnifierResizingStateChanged(true);
     is_cursor_locked_ = true;
-  } else if (!cursor_is_over_resizer && is_cursor_locked_ && !is_resizing_) {
-    MaybeSetCursorSize(ui::CursorSize::kNormal);
-    cursor_manager->UnlockCursor();
-    cursor_window_controller->OnDockedMagnifierResizingStateChanged(false);
-    is_cursor_locked_ = false;
+  } else if (!cursor_is_over_resizer && !is_resizing_) {
+    MaybeResetResizingCursor();
   }
 
   // If user releases left mouse button, or any other mouse button is pressed,
@@ -483,6 +480,20 @@ void DockedMagnifierController::MaybePerformViewportResizing(
     default:
       break;
   }
+}
+
+void DockedMagnifierController::MaybeResetResizingCursor() {
+  if (!is_cursor_locked_) {
+    return;
+  }
+
+  MaybeSetCursorSize(ui::CursorSize::kNormal);
+  Shell::Get()->cursor_manager()->UnlockCursor();
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->OnDockedMagnifierResizingStateChanged(false);
+  is_cursor_locked_ = false;
 }
 
 void DockedMagnifierController::SwitchCurrentSourceRootWindowIfNeeded(
@@ -601,6 +612,7 @@ void DockedMagnifierController::OnEnabledPrefChanged() {
   } else {
     shell->window_tree_host_manager()->RemoveObserver(this);
     shell->RemoveAccessibilityEventHandler(this);
+    MaybeResetResizingCursor();
 
     // Setting the current root window to |nullptr| will remove the viewport and
     // all its associated layers.
