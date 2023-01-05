@@ -80,6 +80,13 @@ void LogPageContentAnnotationsStorageStatus(
       status);
 }
 
+void LogRelatedSearchesExtracted(bool success) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "RelatedSearchesExtracted",
+      success);
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Record the visibility score of the provided visit as a RAPPOR-style record to
 // UKM.
@@ -475,7 +482,10 @@ void PageContentAnnotationsService::
     ExtractRelatedSearchesFromZeroSuggestResponse(
         const ZeroSuggestCacheService::CacheEntry& response,
         history::QueryURLResult url_result) {
-  if (url_result.visits.empty()) {
+  if (!url_result.success || url_result.visits.empty()) {
+    LogPageContentAnnotationsStorageStatus(
+        PageContentAnnotationsStorageStatus::kNoVisitsForUrl,
+        PageContentAnnotationsType::kRelatedSearches);
     return;
   }
 
@@ -497,11 +507,18 @@ void PageContentAnnotationsService::
   }
 
   if (related_searches.empty()) {
+    LogRelatedSearchesExtracted(false);
     return;
   }
 
+  LogRelatedSearchesExtracted(true);
+
   auto visit_id = url_result.visits.front().visit_id;
   history_service_->AddRelatedSearchesForVisit(related_searches, visit_id);
+
+  LogPageContentAnnotationsStorageStatus(
+      PageContentAnnotationsStorageStatus::kSuccess,
+      PageContentAnnotationsType::kRelatedSearches);
 }
 
 void PageContentAnnotationsService::OnRelatedSearchesExtracted(
@@ -510,10 +527,7 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     continuous_search::mojom::CategoryResultsPtr results) {
   const bool success =
       status == continuous_search::SearchResultExtractorClientStatus::kSuccess;
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "RelatedSearchesExtracted",
-      success);
+  LogRelatedSearchesExtracted(success);
 
   if (!success) {
     return;
