@@ -34,6 +34,14 @@ bool IsInhibited(const mojom::DeviceStateProperties* device);
 base::Value::Dict UserApnListToOnc(const std::string& network_guid,
                                    const base::Value::List* user_apn_list);
 
+// Converts a list of APN types in the ONC representation to the Mojo enum
+// representation.
+std::vector<mojom::ApnType> OncApnTypesToMojo(
+    const std::vector<std::string>& apn_types);
+
+// Creates a Mojo APN from a ONC dictionary.
+mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn);
+
 }  // namespace network_config
 }  // namespace chromeos
 
