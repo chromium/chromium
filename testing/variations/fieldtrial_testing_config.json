@@ -570,6 +570,21 @@
             ]
         }
     ],
+    "ArcLazyWebViewInit": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LazyWebViewInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcLogdSizeConfig": [
         {
             "platforms": [
