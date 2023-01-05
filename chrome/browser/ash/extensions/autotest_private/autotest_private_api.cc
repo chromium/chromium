@@ -401,9 +401,7 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
     case apps::AppType::kStandaloneBrowserExtension:
       return api::autotest_private::AppType::APP_TYPE_NONE;
     case apps::AppType::kStandaloneBrowserChromeApp:
-      // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
-      // Lacros-hosted chrome-apps.
-      return api::autotest_private::AppType::APP_TYPE_NONE;
+      return api::autotest_private::AppType::APP_TYPE_EXTENSION;
   }
   NOTREACHED();
   return api::autotest_private::AppType::APP_TYPE_NONE;
