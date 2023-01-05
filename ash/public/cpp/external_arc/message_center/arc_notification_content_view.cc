@@ -36,7 +36,6 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/root_view.h"
@@ -282,11 +281,6 @@ ArcNotificationContentView::ArcNotificationContentView(
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
-
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 
   item_->IncrementWindowRefCount();
   item_->AddObserver(this);
