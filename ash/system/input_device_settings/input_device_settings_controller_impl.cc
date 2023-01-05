@@ -8,13 +8,17 @@
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/notreached.h"
+#include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
 
-InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl() =
-    default;
-InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() =
-    default;
+InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl() {
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
+}
+
+InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
+}
 
 // TODO(dpad): Implement retrieval of connected keyboards.
 std::vector<mojom::KeyboardPtr>
@@ -38,6 +42,20 @@ void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
 // TODO(dpad): Implement adding/removing of observers.
 void InputDeviceSettingsControllerImpl::RemoveObserver(Observer* observer) {
   NOTIMPLEMENTED();
+}
+
+// TODO(dpad@): Implement pulling of device lists.
+void InputDeviceSettingsControllerImpl::RefreshDeviceLists() {
+  NOTIMPLEMENTED();
+}
+
+void InputDeviceSettingsControllerImpl::OnInputDeviceConfigurationChanged(
+    uint8_t input_device_type) {
+  RefreshDeviceLists();
+}
+
+void InputDeviceSettingsControllerImpl::OnDeviceListsComplete() {
+  RefreshDeviceLists();
 }
 
 }  // namespace ash

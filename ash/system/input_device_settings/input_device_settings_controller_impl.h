@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {
 
@@ -20,7 +21,8 @@ enum class InputDeviceCategory {
 
 // Controller to manage input device settings.
 class ASH_EXPORT InputDeviceSettingsControllerImpl
-    : public InputDeviceSettingsController {
+    : public InputDeviceSettingsController,
+      public ui::InputDeviceEventObserver {
  public:
   InputDeviceSettingsControllerImpl();
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
@@ -35,6 +37,13 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
                            const mojom::KeyboardSettings& settings) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+
+ private:
+  void RefreshDeviceLists();
+
+  // ui::InputDeviceEventObserver
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_type) override;
+  void OnDeviceListsComplete() override;
 };
 
 }  // namespace ash
