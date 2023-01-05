@@ -162,6 +162,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1774796056689732716">Kalenteri, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> on valittuna</translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="1797271123677381264">Salasana unohtui</translation>
+<translation id="1807246157184219062">Vaalea</translation>
 <translation id="181103072419391116">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="1812997170047690955">Mitä näytölläni näkyy?</translation>
 <translation id="1816896987747843206">Sallii kameran käytön kaikille sovelluksille ja verkkosivustoille, joilla on kameralupa</translation>
@@ -238,6 +239,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2224075387478458881">Näytön tallentajan käyttöä ei sallita, kun suojattua sisältöä on nähtävissä</translation>
 <translation id="2227179592712503583">Poista ehdotus</translation>
 <translation id="225680501294068881">Etsitään laitteita...</translation>
+<translation id="225716114209817872">Enimmäistaso</translation>
 <translation id="2257486738914982088">Jotain meni pieleen, eikä <ph name="FILENAME" /> latautunut</translation>
 <translation id="2258734398699965611">Ehdotetut tiedostot</translation>
 <translation id="2268130516524549846">Bluetooth pois käytöstä</translation>
@@ -525,6 +527,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="385300504083504382">Alku</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
+<translation id="3871092408932389764">Matalin</translation>
 <translation id="3886872229787704059">Avattu tänään</translation>
 <translation id="3891340733213178823">Kirjaudu ulos painamalla Ctrl+Shift+Q kahdesti.</translation>
 <translation id="3893630138897523026">ChromeVox (äänipalaute)</translation>
@@ -1011,6 +1014,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6537924328260219877">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Latausta <ph name="FILENAME" /> skannataan</translation>
 <translation id="6542521951477560771">Suoratoistetaan: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Taustan sumennus</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Uusi asennus</translation>
 <translation id="6559976592393364813">Pyydä apua järjestelmänvalvojalta</translation>
@@ -1416,6 +1420,7 @@ Uusi asennus</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, asennettu sovellus, estetty</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Runsas</translation>
 <translation id="8806053966018712535">Kansio <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">Ohje</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

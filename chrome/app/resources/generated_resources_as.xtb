@@ -1248,6 +1248,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকুওৱা হ’ল</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফ’ন নম্বৰ}one{# টা ফ’ন নম্বৰ}other{# টা ফ’ন নম্বৰ}}</translation>
 <translation id="2110941575868943054">ব্লুটুথ ডিভাইচ বিচাৰিবলৈ অনুমতি দিয়া হয়</translation>
+<translation id="2111158890826137380">দুঃখিত, কিবা ভুল হ’ল। অনুগ্ৰহ কৰি বিৱৰণত #bruschettaৰ জৰিয়তে মতামত দাখিল কৰক। আসোঁৱাহ ক’ড হৈছে <ph name="ERROR" /></translation>
 <translation id="211144231511833662">মচাৰ প্ৰকাৰসমূহ</translation>
 <translation id="2111670510994270194">সোঁফালৰ নতুন টেব</translation>
 <translation id="2112554630428445878">স্বাগতম <ph name="USERNAME" /></translation>
@@ -1792,6 +1793,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{এই ডিভাইচটো ১ বছৰৰ বাবে ছেভ কৰি থোৱা হ’ব আৰু আপুনি কোনো ক’ডৰ অবিহনেই পৰৱৰ্তী সময়ত সংযোগ কৰিব পাৰিব। এইটো আপোনাৰ প্ৰশাসকে ছেট কৰে।}one{এই ডিভাইচটো {YEARS} বছৰৰ বাবে ছেভ কৰি থোৱা হ’ব আৰু আপুনি কোনো ক’ডৰ অবিহনেই পৰৱৰ্তী সময়ত সংযোগ কৰিব পাৰিব। এইটো আপোনাৰ প্ৰশাসকে ছেট কৰে।}other{এই ডিভাইচটো {YEARS} বছৰৰ বাবে ছেভ কৰি থোৱা হ’ব আৰু আপুনি কোনো ক’ডৰ অবিহনেই পৰৱৰ্তী সময়ত সংযোগ কৰিব পাৰিব। এইটো আপোনাৰ প্ৰশাসকে ছেট কৰে।}}</translation>
 <translation id="257779572837908839">বৈঠকৰ বাবে Chromebox হিচাপে ছেট আপ কৰক</translation>
 <translation id="2579309488038515659">হটস্পট সক্ষম</translation>
+<translation id="2579596474754516455">প্ৰয়োজন হ’লে স্ক্ৰীন ৰীডাৰৰ বাবে পাঠ ৰূপান্তৰ কৰিবলৈ PDF প্ৰতিচ্ছবি স্কেন কৰক</translation>
 <translation id="2580889980133367162"><ph name="HOST" />ক সদায় একাধিক ফাইল ডাউনল’ড কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="258095186877893873">দীঘল</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (প্লেটফ’র্ম <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2893,6 +2895,7 @@
 <translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3616741288025931835">&amp;ব্ৰাউজিং ডেটা মচক...</translation>
 <translation id="3617891479562106823">নেপথ্য উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="3618286417582819036">ক্ষমা কৰিব, কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="3619115746895587757">কেপ’চিনো</translation>
 <translation id="3620136223548713675">জিঅ’লোকেশ্বন</translation>
 <translation id="362023940451053340"><ph name="ACCOUNT" />ৰ বাবে থকা আপোনাৰ Google একাউণ্টত</translation>
@@ -6685,6 +6688,7 @@
 <translation id="7149839598364933473">এই ডিভাইচটো এটা <ph name="DEVICE_OS" /> ডিভাইচলৈ ৰূপান্তৰ কৰক।</translation>
 <translation id="7149893636342594995">যোৱা ২৪ ঘণ্টাত</translation>
 <translation id="7152478047064750137">এই এক্সটেনশ্বনটোৰ বাবে কোনো বিশেষ অনুমতি ল’ব নালাগে</translation>
+<translation id="7153309176431047193">প্ৰতিচ্ছবিক পাঠলৈ ৰূপান্তৰ কৰক</translation>
 <translation id="7154130902455071009">আপোনাৰ আৰম্ভণিৰ পৃষ্ঠা ইয়ালৈ সলনি কৰক: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">প্ৰতিচ্ছবিক পাঠলৈ ৰূপান্তৰ কৰক</translation>
 <translation id="7159953856712257647">ডিফ’ল্ট হিচাপে ইনষ্টল কৰা</translation>

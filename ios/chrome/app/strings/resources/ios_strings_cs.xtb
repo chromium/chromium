@@ -170,7 +170,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Přidat účet</translation>
 <translation id="2268044343513325586">Upřesnit</translation>
-<translation id="2271351792809375263">Používejte hesla, která jste si uložili v Chromu, také v jiných aplikacích v zařízení</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
 <translation id="2286505070150039482">Zvýrazněný text</translation>
 <translation id="2299218006564889602">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována.</translation>
@@ -465,7 +464,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4508750114462689118">Zavřít propagační zprávu ohledně přihlášení</translation>
 <translation id="4514889972748124117">Navrhnout silné heslo…</translation>
 <translation id="4520798012560649652">Další informace o anonymním režimu</translation>
-<translation id="4526249700380860531">Uložená hesla můžete zobrazit a upravit na adrese <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4536418791685807335">Zkuste se přihlásit znovu.</translation>
 <translation id="4540780316273593836">Něco se pokazilo</translation>
@@ -553,7 +551,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5118764316110575523">Vypnuto</translation>
 <translation id="5119391094379141756">Vyberte Chrome.</translation>
 <translation id="5132942445612118989">Vaše hesla, historie a další údaje na všech zařízeních</translation>
-<translation id="5140288047769711648">Chrome si pro vás toto heslo zapamatuje. Vy si ho pamatovat nemusíte.</translation>
 <translation id="5149188072385105201">Přidat heslo…</translation>
 <translation id="5150492518600715772">Odeslat na vaše zařízení</translation>
 <translation id="5168414296986405587">Vytvořeno pro iPadOS</translation>
@@ -1092,7 +1089,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9079935439869366234">Označit vše jako nepřečtené</translation>
 <translation id="9081058212938299310">Aktualizovat heslo uživatele <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Chcete-li synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci.</translation>
-<translation id="9087108903408689779">Heslo navrhované prohlížečem Chrome:</translation>
 <translation id="9093271241977565440">V horní části obrazovky klepněte na ikonu Vyhledávání</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>
 <translation id="9097506547406246598">Sledování nelze zrušit. Něco se pokazilo.</translation>

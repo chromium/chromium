@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1724977129262658800">برای ویرایش گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="1726477445370128854">‏وقتی Chrome صفحاتی را که فکر می‌کند ممکن است بازدید کنید پیش‌بارگیری می‌کند، می‌توانید سریع‌تر مرور و جستجو کنید.</translation>
-<translation id="1736419249208073774">کاوش</translation>
 <translation id="1749561566933687563">همگام‌سازی نشانک‌ها</translation>
 <translation id="1750259112639922169">گروه برگه - <ph name="TAB_COUNT" /> برگه</translation>
 <translation id="17513872634828108">بازکردن برگه‌ها</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">نوشتار</translation>
 <translation id="2068748236079642969">تماشای ویدیوی بعدی</translation>
 <translation id="2074143993849053708">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» بسته شد</translation>
+<translation id="2079545284768500474">لغو</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">همگام‌سازی و شخصی‌سازی در همه دستگاه‌ها</translation>
 <translation id="2100273922101894616">ورود به سیستم خودکار</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">ورود به سیستم امکان‌پذیر نیست</translation>
 <translation id="234265804618409743">نمی‌توان دوربین را باز کرد. مشکلی پیش آمد.</translation>
 <translation id="2349710944427398404">‏کل داده‌های استفاده‌شده توسط Chrome، شامل حساب‌ها، نشانک‌ها و تنظیمات ذخیره‌شده</translation>
-<translation id="2353636109065292463">بررسی اتصال اینترنت</translation>
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2386938421315164605">پنهان و آشکار کردن موضوعات</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3285080554353377245">‏ویدیوهایی درباره نحوه استفاده از Chrome</translation>
-<translation id="3288003805934695103">بار کردن مجدد صفحه</translation>
 <translation id="3290249595466894471">نمونه کوچکی از صفحات، بارگیری‌ها، فعالیت افزونه، و اطلاعات سیستم را هم ارسال می‌کند تا به کشف تهدیدهای جدید کمک کند</translation>
 <translation id="3297344142967351106">دستیار صوتی</translation>
 <translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">افزودن پوشه</translation>
 <translation id="3899682235662194879">بستن همه «برگه‌های ناشناس»</translation>
 <translation id="3908308510347173149">به‌روزرسانی <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">درحال پیدا کردن بهترین مورد از وب…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> روشن است</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ادغام کردن داده‌های من</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">برگه جدید</translation>
 <translation id="5235196193381275927">هنگام ورود به سیستم مشکلی پیش آمد</translation>
 <translation id="5246093389635966745">میان‌بر ویرایش نوار ابزار</translation>
-<translation id="526421993248218238">این صفحه بار نشد</translation>
 <translation id="5271967389191913893">دستگاه نمی‌تواند محتوا را برای بارگیری باز کند.</translation>
 <translation id="5274286919938458946">به <ph name="CARD_DETAIL" /> پیوند داده شده است</translation>
 <translation id="5292796745632149097">ارسال به</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
 <translation id="6140709049082532940">محافظت بهبودیافته:</translation>
 <translation id="6140912465461743537">کشور/منطقه</translation>
-<translation id="614940544461990577">این موارد را امتحان کنید:</translation>
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
 <translation id="6154478581116148741">برای صادر کردن گذرواژه‌ها از این دستگاه، قفل صفحه را در تنظیمات روشن کنید.</translation>
 <translation id="6159729262978459665">سابقه از همه دستگاه‌های همگام‌سازی‌شده پاک می‌شود.</translation>

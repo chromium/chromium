@@ -170,7 +170,6 @@
 <translation id="225943865679747347">รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">เพิ่มบัญชี</translation>
 <translation id="2268044343513325586">ปรับแต่ง</translation>
-<translation id="2271351792809375263">ใช้รหัสผ่านที่คุณบันทึกไว้ใน Chrome กับแอปอื่นๆ ในอุปกรณ์</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
 <translation id="2286505070150039482">ข้อความที่ไฮไลต์</translation>
 <translation id="2299218006564889602">ระบบจะเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google</translation>
@@ -454,6 +453,7 @@
 <translation id="4420409367264901497">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="4442550905108052454">เปิด<ph name="BEGIN_BOLD" />การตั้งค่า<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">เพิ่มภาษา</translation>
+<translation id="4461286950227634995">เสนอให้บันทึกรหัสผ่าน</translation>
 <translation id="4462491365653392320">ติดตามราคาในแท็บ</translation>
 <translation id="4469418912670346607">ตั้งค่าต่อ</translation>
 <translation id="4474494258097106883">สร้างขึ้นเพื่อ iPhone ของคุณ</translation>
@@ -465,7 +465,6 @@
 <translation id="4508750114462689118">ปิดโปรโมชันการลงชื่อเข้าใช้</translation>
 <translation id="4514889972748124117">แนะนำรหัสผ่านที่รัดกุม...</translation>
 <translation id="4520798012560649652">ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดไม่ระบุตัวตน</translation>
-<translation id="4526249700380860531">ดูและจัดการรหัสผ่านที่บันทึกไว้ที่ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4536418791685807335">ลองลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="4540780316273593836">เกิดข้อผิดพลาด</translation>
@@ -553,7 +552,6 @@
 <translation id="5118764316110575523">ปิด</translation>
 <translation id="5119391094379141756">เลือก Chrome</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
-<translation id="5140288047769711648">Chrome จะจำรหัสผ่านนี้ให้คุณ คุณไม่จำเป็นต้องจำเอง</translation>
 <translation id="5149188072385105201">เพิ่มรหัสผ่าน...</translation>
 <translation id="5150492518600715772">ส่งไปที่อุปกรณ์</translation>
 <translation id="5168414296986405587">สร้างมาเพื่อใช้กับ iPadOS</translation>
@@ -1092,7 +1090,6 @@
 <translation id="9079935439869366234">ทำเครื่องหมายทั้งหมดว่ายังไม่ได้อ่าน</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
 <translation id="9083838294503912307">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
-<translation id="9087108903408689779">รหัสผ่านที่ Chrome แนะนำ</translation>
 <translation id="9093271241977565440">แตะไอคอนค้นหาที่ด้านบนของหน้าจอ</translation>
 <translation id="9094033019050270033">อัปเดตรหัสผ่าน</translation>
 <translation id="9097506547406246598">เลิกติดตามไม่ได้ เกิดข้อผิดพลาด</translation>

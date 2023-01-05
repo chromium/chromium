@@ -170,7 +170,6 @@
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>
 <translation id="2268044343513325586">Уточнить</translation>
-<translation id="2271351792809375263">Используйте пароли, сохраненные в Chrome, в других приложениях на устройстве.</translation>
 <translation id="2273327106802955778">Меню "Ещё"</translation>
 <translation id="2286505070150039482">Выделенный текст</translation>
 <translation id="2299218006564889602">Ваши пароли шифруются на устройстве и только потом сохраняются в Менеджере паролей Google.</translation>
@@ -454,6 +453,7 @@
 <translation id="4420409367264901497">Изменить закладку</translation>
 <translation id="4442550905108052454">Откройте приложение <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Добавление языка</translation>
+<translation id="4461286950227634995">Предлагать сохр. паролей</translation>
 <translation id="4462491365653392320">Отслеживать цены на вкладках</translation>
 <translation id="4469418912670346607">Продолжить настройку</translation>
 <translation id="4474494258097106883">Создан специально для iPhone</translation>
@@ -465,7 +465,6 @@
 <translation id="4508750114462689118">Закрыть сообщение о входе</translation>
 <translation id="4514889972748124117">Сгенерировать надежный пароль</translation>
 <translation id="4520798012560649652">Подробнее о режиме инкогнито</translation>
-<translation id="4526249700380860531">Просматривайте сохраненные пароли и управляйте ими на странице <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4536418791685807335">Войдите в аккаунт снова.</translation>
 <translation id="4540780316273593836">Ошибка</translation>
@@ -553,7 +552,6 @@
 <translation id="5118764316110575523">ВЫКЛ</translation>
 <translation id="5119391094379141756">Выберите Chrome.</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
-<translation id="5140288047769711648">Вам не нужно запоминать этот пароль, так как он будет сохранен в Chrome.</translation>
 <translation id="5149188072385105201">Добавить пароль</translation>
 <translation id="5150492518600715772">Отправить на свое устройство</translation>
 <translation id="5168414296986405587">Создано для iPadOS</translation>
@@ -1092,7 +1090,6 @@
 <translation id="9079935439869366234">Отметить все как непрочитанные</translation>
 <translation id="9081058212938299310">Обновить пароль для аккаунта <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
-<translation id="9087108903408689779">Сгенерированный в Chrome пароль:</translation>
 <translation id="9093271241977565440">В верхней части экрана нажмите на значок поиска</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9097506547406246598">Не удалось отменить подписку. Произошла ошибка.</translation>

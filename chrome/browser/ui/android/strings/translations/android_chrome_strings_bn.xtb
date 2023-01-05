@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
 <translation id="1724977129262658800">আপনার পাসওয়ার্ড এডিট করতে আনলক করুন</translation>
 <translation id="1726477445370128854">Chrome-এর মতে আপনি দেখতে পারেন এমন পৃষ্ঠা প্রিলোড করা হলে আরও দ্রুত ব্রাউজ ও সার্চ করতে পারবেন</translation>
-<translation id="1736419249208073774">ঘুরে দেখুন</translation>
 <translation id="1749561566933687563">আপনার বুকমার্কগুলি সিঙ্ক করুন</translation>
 <translation id="1750259112639922169">ট্যাব গ্রুপ - <ph name="TAB_COUNT" />টি ট্যাব</translation>
 <translation id="17513872634828108">খোলা ট্যাব</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">টেক্সট</translation>
 <translation id="2068748236079642969">পরবর্তী ভিডিও দেখুন</translation>
 <translation id="2074143993849053708">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI বন্ধ আছে</translation>
+<translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
 <translation id="2096012225669085171">বিভিন্ন ডিভাইস জুড়ে সিঙ্ক এবং ব্যক্তিগতকৃত করুন</translation>
 <translation id="2100273922101894616">অটো সাইন-ইন</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">সাইন ইন করতে পারছেন না</translation>
 <translation id="234265804618409743">ক্যামেরা চালু করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="2349710944427398404">অ্যাকাউন্ট, ​​বুকমার্ক এবং স্টোর করা সেটিংসসহ Chrome-এর ব্যবহার করা মোট ডেটা</translation>
-<translation id="2353636109065292463">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা সেটি দেখা হচ্ছে</translation>
 <translation id="235789365079050412">Google-এর গোপনীয়তা নীতি</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2386938421315164605">বিষয় লুকান বা দেখুন</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3285080554353377245">Chrome কীভাবে ব্যবহার করবেন সেই সংক্রান্ত ভিডিও</translation>
-<translation id="3288003805934695103">পৃষ্ঠাটি আবার লোড করে দেখুন</translation>
 <translation id="3290249595466894471">তাছাড়া, নতুন কোনও ঝুঁকি খুঁজে পেতে সাহায্য করার জন্য পৃষ্ঠার ছোট নমুনা, ডাউনলোড, এক্সটেনশন অ্যাক্টিভিটি এবং সিস্টেম সংক্রান্ত তথ্যও পাঠায়</translation>
 <translation id="3297344142967351106">ভয়েস সহায়তা</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">ফোল্ডার যোগ করুন</translation>
 <translation id="3899682235662194879">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
-<translation id="3912508018559818924">ওয়েব থেকে সেরা ফলাফল লোড করা হচ্ছে…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> চালু করা আছে</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
@@ -777,7 +774,6 @@
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
 <translation id="5235196193381275927">সাইন-ইন করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="5246093389635966745">টুলবারের শর্টকার্ট এডিট করুন</translation>
-<translation id="526421993248218238">পৃষ্ঠাটি লোড করা যাচ্ছে না</translation>
 <translation id="5271967389191913893">ডাউনলোড করা কন্টেন্ট ডিভাইস খুলতে পারবে না৷</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="5292796745632149097">এতে পাঠান:</translation>
@@ -931,7 +927,6 @@
 <translation id="6138832295072039549">এখান থেকে আপনার সাইট সেটিংস পরিবর্তন করুন</translation>
 <translation id="6140709049082532940">উন্নত সুরক্ষা:</translation>
 <translation id="6140912465461743537">দেশ/অঞ্চল</translation>
-<translation id="614940544461990577">এটি করে দেখুন:</translation>
 <translation id="6150320133806434356">বুকমার্ক সেভ করা হয়েছে</translation>
 <translation id="6154478581116148741">এই ডিভাইস থেকে আপনার পাসওয়ার্ড এক্সপোর্ট করতে সেটিংসে স্ক্রিন লক চালু করুন</translation>
 <translation id="6159729262978459665">সিঙ্ক করা সব ডিভাইস থেকে ইতিহাস মুছে ফেলে।</translation>

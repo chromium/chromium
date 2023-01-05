@@ -2746,6 +2746,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3469583217479686109">Valintatyökalu</translation>
 <translation id="3470392222765168737">Seuraa sivustoa</translation>
 <translation id="3471876058939596279">HDMI- ja USB Type-C ‑portteja ei voi käyttää videota varten yhtä aikaa. Käytä toista videoporttia.</translation>
+<translation id="3472469028191701821">Avautuu uudelle välilehdelle</translation>
 <translation id="3473241910002674503">Tablettitilan painikkeilla voit siirtyä aloitusnäytölle, takaisin ja vaihtaa sovellusta.</translation>
 <translation id="3473479545200714844">Ruudun suurentaminen</translation>
 <translation id="3474218480460386727">Käytä uudessa sanassa korkeintaan 99 kirjainta</translation>
@@ -3132,6 +3133,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3820749202859700794">SECG elliptinen käyrä secp521r1 (eli NIST P-521)</translation>
 <translation id="3821074617718452587">Puhelinhubi-ilmoitukset</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Laajennus on hyväksytty}other{# laajennusta on hyväksytty}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linuxin käyttöön suositellaan vähintään <ph name="INSTALL_SIZE" /> vapaata tilaa.</translation>
 <translation id="3824621460022590830">Laitteen rekisteröintitunnus on virheellinen. Ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muista valintani tälle tiedostotyypille: <ph name="FILE_TYPES" />}other{Muista valintani näille tiedostotyypeille: <ph name="FILE_TYPES" />}}</translation>
@@ -3680,7 +3682,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4348766275249686434">Kerää virheet</translation>
 <translation id="4349828822184870497">Hyödyllinen</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> ei saa koskaan käyttää sijaintitietojasi</translation>
-<translation id="4350782034419308508">OK Google</translation>
+<translation id="4350782034419308508">Hey Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> kerää laitedataa ja jakaa sen Googlelle parhaan mahdollisen käyttökokemuksen tarjoamiseksi. Tämä auttaa selvittämään, millaisia päivityksiä tarvitaan. Voit halutessasi antaa Googlelle luvan käyttää dataa myös muihin tarkoituksiin, esim. käyttökokemuksen ja palvelun (<ph name="DEVICE_OS" />) tukemiseen ja kehittämiseen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Näet Googlelle päivitysten suodattamista varten lähetetyn datan (ja kaiken muun Googlelle jakamasi datan) kirjautumalla laitteelle ja siirtymällä Chromen diagnostiikkatietojen (chrome://system) CHROMEOSFLEX_HARDWARE_INFO-osioon.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Lisätietoa datasta, jota <ph name="DEVICE_OS" /> voi jakaa Googlelle, ja sen käytöstä saat osoitteesta g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
@@ -4048,6 +4050,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4675828034887792601">Luo pikakomentoja sivustojen hakuun ja hakukoneen hallintaan</translation>
 <translation id="4676595058027112862">Phone Hub, lue lisää</translation>
 <translation id="4677772697204437347">GPU-muisti</translation>
+<translation id="4678848110205818817">Credit- tai debit-kortti</translation>
 <translation id="4680105648806843642">Ääni mykistettiin tällä sivulla</translation>
 <translation id="4680112532510845139">Pudota kuva tähän</translation>
 <translation id="4681453295291708042">Poista lähijakaminen käytöstä</translation>

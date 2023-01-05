@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1797271123677381264">पासवर्ड बिर्सनुभयो</translation>
+<translation id="1807246157184219062">हल्का</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1812997170047690955">मेरो स्क्रिनमा के छ?</translation>
 <translation id="1816896987747843206">यसले क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
@@ -525,6 +526,7 @@
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
 <translation id="3861651314799684201">पूरा स्क्रिन रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
+<translation id="3871092408932389764">सबैभन्दा न्यून</translation>
 <translation id="3886872229787704059">आज खोलिएको</translation>
 <translation id="3891340733213178823">साइन आउट गर्न Ctrl+Shift+Q लाई दुईपटक थिच्नुहोस्।</translation>
 <translation id="3893630138897523026">ChromeVox (बोली पृष्ठपोषण)</translation>

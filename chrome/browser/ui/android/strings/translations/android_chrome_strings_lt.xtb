@@ -139,7 +139,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="1718835860248848330">Paskutinė valanda</translation>
 <translation id="1724977129262658800">Atrakinkite, kad galėtumėte redaguoti slaptažodį</translation>
 <translation id="1726477445370128854">Galite sparčiau naršyti ir ieškoti, kai „Chrome“ iš anksto įkelia puslapius, kuriuose, jos manymu, galėtumėte apsilankyti</translation>
-<translation id="1736419249208073774">Naršyti</translation>
 <translation id="1749561566933687563">Sinchronizuokite žymes</translation>
 <translation id="1750259112639922169">Skirtukų grupė – <ph name="TAB_COUNT" /> skirtuk.</translation>
 <translation id="17513872634828108">Atidaryti skirtukai</translation>
@@ -197,6 +196,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2067805253194386918">teksto pranešimas</translation>
 <translation id="2068748236079642969">Žiūrėti kitą vaizdo įrašą</translation>
 <translation id="2074143993849053708">Sutikimo atlikti paiešką balsu naudojant Padėjėją NS uždaryta</translation>
+<translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2082238445998314030">Rezultatų: <ph name="RESULT_NUMBER" /> iš <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sinchronizuoti ir suasmeninti įrenginiuose</translation>
 <translation id="2100273922101894616">Automatinis prisijungimas</translation>
@@ -238,7 +238,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2328985652426384049">Nepavyksta prisijungti</translation>
 <translation id="234265804618409743">Kameros atidaryti nepavyko. Įvyko klaida.</translation>
 <translation id="2349710944427398404">Bendras „Chrome“ naudojamų duomenų kiekis, įskaitant paskyras, žymes ir išsaugotus nustatymus</translation>
-<translation id="2353636109065292463">Tikrinamas interneto ryšys</translation>
 <translation id="235789365079050412">„Google“ privatumo politika</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2386938421315164605">Slėpti temas ir jų nebeslėpti</translation>
@@ -423,7 +422,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3280562213547448728">Paieška balsu</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3285080554353377245">Vaizdo įrašai apie „Chrome“ naudojimą</translation>
-<translation id="3288003805934695103">Iš naujo įkelti puslapį</translation>
 <translation id="3290249595466894471">Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes</translation>
 <translation id="3297344142967351106">Pagalba balsu</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
@@ -521,7 +519,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3894427358181296146">Aplanko pridėjimas</translation>
 <translation id="3899682235662194879">Uždaryti visus inkognito skirtukus</translation>
 <translation id="3908308510347173149">Atnaujinti „<ph name="PRODUCT_NAME" />“</translation>
-<translation id="3912508018559818924">Ieškoma geriausio žiniatinklio turinio…</translation>
 <translation id="3924911262913579434">„<ph name="SAFE_BROWSING_MODE" />“ įjungta</translation>
 <translation id="3927692899758076493">Be užraitų</translation>
 <translation id="3928666092801078803">Sujungti duomenis</translation>
@@ -775,7 +772,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5233638681132016545">Naujas skirtukas</translation>
 <translation id="5235196193381275927">Prisijungiant įvyko klaida</translation>
 <translation id="5246093389635966745">Redaguoti spartųjį įrankių juostos klavišą</translation>
-<translation id="526421993248218238">Nepavyko įkelti šio puslapio</translation>
 <translation id="5271967389191913893">Įrenginyje nepavyksta atidaryti norimo atsisiųsti turinio.</translation>
 <translation id="5274286919938458946">Susieta su <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Siųsti į</translation>
@@ -929,7 +925,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="6138832295072039549">Pakeiskite svetainės nustatymus čia</translation>
 <translation id="6140709049082532940">Sustiprinta apsauga:</translation>
 <translation id="6140912465461743537">Šalis / regionas</translation>
-<translation id="614940544461990577">Pabandykite atlikti toliau nurodytus veiksmus.</translation>
 <translation id="6150320133806434356">Žymė išsaugota</translation>
 <translation id="6154478581116148741">Norėdami iš šio įrenginio eksportuoti slaptažodžius, nustatymuose įjunkite ekrano užraktą</translation>
 <translation id="6159729262978459665">Išvaloma istorija visuose sinchronizuojamuose įrenginiuose.</translation>
@@ -1166,6 +1161,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7379900596734708416">Svetainėse pasiekiama tamsioji tema</translation>
 <translation id="7400418766976504921">URL adresas</translation>
 <translation id="7403691278183511381">„Chrome“ pirmosios paleisties patirtis</translation>
+<translation id="7411224099004328643">„Google“ paskyros naudotojas</translation>
 <translation id="741204030948306876">Taip, sutinku</translation>
 <translation id="7419565702166471774">Visada naudoti saugų ryšį</translation>
 <translation id="7431991332293347422">Naršymo istorijos naudojimo paieškai ir kitoms funkcijoms suasmeninti valdymas</translation>

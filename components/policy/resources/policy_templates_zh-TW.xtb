@@ -4284,6 +4284,17 @@
 <translation id="519247340330463721">設定安全瀏覽相關政策。</translation>
 <translation id="5194683382395300627">允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /> 執行操作，例如自動變更密碼</translation>
 <translation id="5196630732055960309">允許這些網頁應用程式上的 File Handling API</translation>
+<translation id="5198660575318473544">控制是否可在 <ph name="PRODUCT_OS_NAME" /> 登入畫面上使用 Manifest V2 擴充功能。
+
+系統將停止支援 Manifest V2 擴充功能，日後所有擴充功能都必須遷移至 v3。如要進一步瞭解遷移的資訊和時間表，請前往 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
+
+如果將這項政策設為「<ph name="DEFAULT" />」(0) 或不設定，裝置會根據上述時間表決定是否載入 v2 擴充功能。
+如果將這項政策設為「<ph name="DISABLE" />」(1)，系統將禁止安裝 v2 擴充功能，並停用現有的 v2 擴充功能。如果在預設停止支援 v2 的時間點後選擇這個選項，系統將視為未設定這項政策。
+如果將這項政策設為「<ph name="ENABLE" />」(2)，系統將允許使用 v2 擴充功能。如果在預設停止支援 v2 的時間點前選擇這個選項，系統將視為未設定這項政策。
+如果將這項政策設為 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系統將允許強制安裝的 v2 擴充功能，包括 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 政策清單中 <ph name="INSTALLATION_MODE" /> 為「force_installed」或「normal_installed」的擴充功能。系統會停用所有其他 v2 擴充功能。如果在預設停止支援 v2 的時間點前選擇這個選項，系統將視為未設定這項政策。
+
+
+擴充功能可用性仍會受其他政策控制。</translation>
 <translation id="5206454085187851382">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="5207543664699568887">設定 Linux 上的 <ph name="PRODUCT_NAME" /> 是否要使用系統通知。
 
@@ -4728,6 +4739,7 @@
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>
 <translation id="5601503069213153581">PIN 碼</translation>
 <translation id="5607021831414604820">啟用裝置儲存空間狀態回報功能</translation>
+<translation id="5608114828230655271">預設裝置行為</translation>
 <translation id="5614865701790130558">記錄以政策為根據的擴充功能安裝事件</translation>
 <translation id="5618398258385745432">我們先前曾以類似設定來控管使用者是否可查看密碼，但在新增重新驗證功能後，該設定與這項政策已不再適用於 Chrome 的運作方式。目前 Chrome 的運作方式，相當於這項政策禁止在密碼管理員設定頁面以純文字顯示密碼。也就是說，設定頁面只會顯示預留位置，使用者必須點選 [顯示] 並重新驗證 (如果適用)，Chrome 才會顯示密碼。這項政策的原始說明如下：
 

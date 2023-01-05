@@ -1250,6 +1250,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> is versteek</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Foonnommer}other{# foonnommers}}</translation>
 <translation id="2110941575868943054">Toegelaat om na Bluetooth-toestelle te soek</translation>
+<translation id="2111158890826137380">Jammer, iets is fout. Dien asseblief terugvoer in met #bruschetta in die beskrywing. Foutkode is <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Vee soorte uit</translation>
 <translation id="2111670510994270194">Nuwe oortjie aan die regterkant</translation>
 <translation id="2112554630428445878">Welkom, <ph name="USERNAME" /></translation>
@@ -1794,6 +1795,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2575713839157415345">{YEARS,plural, =1{Hierdie toestel sal 1 jaar lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}other{Hierdie toestel sal {YEARS} jaar lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}}</translation>
 <translation id="257779572837908839">Stel op as Chromebox vir vergaderings</translation>
 <translation id="2579309488038515659">Warmkol geaktiveer</translation>
+<translation id="2579596474754516455">Skandeer PDF-prente om teks vir skermleser om te skakel, wanneer nodig</translation>
 <translation id="2580889980133367162">Laat <ph name="HOST" /> altyd toe om veelvuldige lêers af te laai</translation>
 <translation id="258095186877893873">Lank</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2747,6 +2749,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3469583217479686109">Selekteernutsding</translation>
 <translation id="3470392222765168737">Volg werf</translation>
 <translation id="3471876058939596279">HDMI- en USB Tipe C-poorte kan nie tegelyk vir video gebruik word nie. Gebruik 'n ander videopoort.</translation>
+<translation id="3472469028191701821">Maak in nuwe oortjie oop</translation>
 <translation id="3473241910002674503">Navigeer tuis en terug, en wissel programme met knoppies in tabletmodus.</translation>
 <translation id="3473479545200714844">Skermvergrootglas</translation>
 <translation id="3474218480460386727">Gebruik 99 letters of minder vir nuwe woorde</translation>
@@ -2895,6 +2898,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3616741288025931835">Vee blaaidata uit …</translation>
 <translation id="3617891479562106823">Agtergronde is nie beskikbaar nie. Probeer later weer.</translation>
+<translation id="3618286417582819036">Jammer, ’n fout het voorgekom</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geoligging</translation>
 <translation id="362023940451053340">In jou Google-rekening, vir <ph name="ACCOUNT" /></translation>
@@ -3133,6 +3137,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3820749202859700794">SECG-elliptiesekurwe-secp521r1 (ook bekend as NIST P-521)</translation>
 <translation id="3821074617718452587">Foonsentrum-kennisgewings</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{'n Uitbreiding is goedgekeur}other{# uitbreidings is goedgekeur}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Minstens <ph name="INSTALL_SIZE" /> se spasie word vir Linux aanbeveel.</translation>
 <translation id="3824621460022590830">Toestelinskrywingtoken is ongeldig. Kontak asseblief jou toesteleienaar of administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Onthou my keuse vir hierdie lêertipe: <ph name="FILE_TYPES" />}other{Onthou my keuse vir hierdie lêertipes: <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4057,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4675828034887792601">Skep kortpaaie om werwe te deursoek en bestuur jou soekenjin</translation>
 <translation id="4676595058027112862">Foonsentrum, kom meer te wete</translation>
 <translation id="4677772697204437347">GPU-geheue</translation>
+<translation id="4678848110205818817">Krediet- of debietkaart</translation>
 <translation id="4680105648806843642">Klank op hierdie bladsy word gedemp</translation>
 <translation id="4680112532510845139">Sleep ’n prent hierheen</translation>
 <translation id="4681453295291708042">Deaktiveer Nabydeling</translation>
@@ -6687,6 +6693,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7149839598364933473">Skakel hierdie toestel om in 'n <ph name="DEVICE_OS" />-toestel.</translation>
 <translation id="7149893636342594995">Afgelope 24 uur</translation>
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
+<translation id="7153309176431047193">Skakel prente om in teks</translation>
 <translation id="7154130902455071009">Verander jou beginblad na: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Skakel prent oor na teks</translation>
 <translation id="7159953856712257647">By verstel geïnstalleer</translation>

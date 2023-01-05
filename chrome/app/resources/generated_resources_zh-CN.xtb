@@ -2724,6 +2724,7 @@
 <translation id="3469583217479686109">选择工具</translation>
 <translation id="3470392222765168737">关注网站</translation>
 <translation id="3471876058939596279">HDMI 端口和 USB C 型端口无法同时用于视频。请另选一个视频端口。</translation>
+<translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3473241910002674503">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。</translation>
 <translation id="3473479545200714844">屏幕放大镜</translation>
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
@@ -3110,6 +3111,7 @@
 <translation id="3820749202859700794">SECG 椭圆曲线 secp521r1（又称 NIST P-521）</translation>
 <translation id="3821074617718452587">Phone Hub 通知</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已获批准}other{有 # 个扩展程序已获批准}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">建议为 Linux 留出至少 <ph name="INSTALL_SIZE" /> 的空间。</translation>
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{记住我对这个文件类型的选择：<ph name="FILE_TYPES" />}other{记住我对这些文件类型的选择：<ph name="FILE_TYPES" />}}</translation>
@@ -4025,6 +4027,7 @@
 <translation id="4675828034887792601">创建用于搜索网站的快捷字词，以及管理您的搜索引擎</translation>
 <translation id="4676595058027112862">Phone Hub，了解详情</translation>
 <translation id="4677772697204437347">GPU内存</translation>
+<translation id="4678848110205818817">信用卡/借记卡</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
 <translation id="4680112532510845139">将图片放到此处</translation>
 <translation id="4681453295291708042">停用“附近分享”功能</translation>

@@ -170,7 +170,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="225943865679747347">Fejlkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tilføj konto</translation>
 <translation id="2268044343513325586">Juster</translation>
-<translation id="2271351792809375263">Brug de adgangskoder, du har gemt i Chrome, i andre apps på din enhed</translation>
 <translation id="2273327106802955778">Menuen Mere</translation>
 <translation id="2286505070150039482">Fremhævet tekst</translation>
 <translation id="2299218006564889602">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangskodeadministrator.</translation>
@@ -465,7 +464,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4508750114462689118">Luk loginkampagne</translation>
 <translation id="4514889972748124117">Foreslå en stærk adgangskode...</translation>
 <translation id="4520798012560649652">Få flere oplysninger om inkognitotilstand</translation>
-<translation id="4526249700380860531">Se og administrer gemte adgangskoder på <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4536418791685807335">Prøv at logge ind igen.</translation>
 <translation id="4540780316273593836">Der gik noget galt</translation>
@@ -553,7 +551,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5118764316110575523">Fra</translation>
 <translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
-<translation id="5140288047769711648">Chrome husker adgangskoden for dig. Du behøver ikke at huske den.</translation>
 <translation id="5149188072385105201">Tilføj adgangskode…</translation>
 <translation id="5150492518600715772">Send til din enhed</translation>
 <translation id="5168414296986405587">Udviklet til iPadOS</translation>
@@ -1092,7 +1089,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9079935439869366234">Markér alle som ulæste</translation>
 <translation id="9081058212938299310">Vil du opdatere adgangskoden til <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder.</translation>
-<translation id="9087108903408689779">Foreslået adgangskode fra Chrome:</translation>
 <translation id="9093271241977565440">Tryk på søgeikonet øverst på skærmen</translation>
 <translation id="9094033019050270033">Opdater adgangskoden</translation>
 <translation id="9097506547406246598">"Følg" kan ikke fortrydes. Der gik noget galt.</translation>

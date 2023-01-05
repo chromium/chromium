@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1724977129262658800">יש לבטל את הנעילה כדי לערוך את הסיסמה</translation>
 <translation id="1726477445370128854">‏אפשר לגלוש ולחפש מהר יותר כשמערכת Chrome מבצעת הערכה לגבי דפים שהמשתמש יעבור אליהם וטוענת אותם מראש</translation>
-<translation id="1736419249208073774">מידע נוסף</translation>
 <translation id="1749561566933687563">סנכרון הסימניות שלך</translation>
 <translation id="1750259112639922169">קבוצת כרטיסיות - <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">טקסט</translation>
 <translation id="2068748236079642969">לצפייה בסרטון הבא</translation>
 <translation id="2074143993849053708">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נסגרה</translation>
+<translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">סנכרון והתאמה אישית במכשירים שונים</translation>
 <translation id="2100273922101894616">כניסה אוטומטית</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">אי אפשר להיכנס לחשבון</translation>
 <translation id="234265804618409743">לא ניתן לפתוח את המצלמה. משהו השתבש.</translation>
 <translation id="2349710944427398404">‏סך כל הנתונים שבהם משתמש Chrome, כולל חשבונות, סימניות והגדרות שמורות</translation>
-<translation id="2353636109065292463">בדיקת חיבור האינטרנט</translation>
 <translation id="235789365079050412">‏מדיניות הפרטיות של Google</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3285080554353377245">‏סרטוני הסבר על השימוש ב-Chrome</translation>
-<translation id="3288003805934695103">הדף נטען מחדש</translation>
 <translation id="3290249595466894471">בנוסף, נשלחת דגימה קטנה שכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת כדי לאתר איומים חדשים</translation>
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">הוספת תיקייה</translation>
 <translation id="3899682235662194879">סגירה של כל כרטיסיות המצב האנונימי</translation>
 <translation id="3908308510347173149">יש לעדכן את <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">כל הטוב שבאינטרנט…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> פעילה</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">שילוב הנתונים שלי</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
 <translation id="5235196193381275927">משהו השתבש במהלך הכניסה לחשבון</translation>
 <translation id="5246093389635966745">עריכת קיצור הדרך בסרגל הכלים</translation>
-<translation id="526421993248218238">לא ניתן לטעון את הדף</translation>
 <translation id="5271967389191913893">המכשיר לא מצליח לפתוח את התוכן להורדה.</translation>
 <translation id="5274286919938458946">הכרטיס הווירטואלי מקושר לכרטיס <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">שליחה אל</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">כאן אפשר לשנות את הגדרות האתר שלך</translation>
 <translation id="6140709049082532940">הגנה משופרת:</translation>
 <translation id="6140912465461743537">מדינה/אזור</translation>
-<translation id="614940544461990577">כדאי לנסות:</translation>
 <translation id="6150320133806434356">הסימנייה נשמרה</translation>
 <translation id="6154478581116148741">יש להפעיל נעילת מסך ב'הגדרות' כדי לייצא את הסיסמאות מהמכשיר הזה</translation>
 <translation id="6159729262978459665">ניקוי ההיסטוריה בכל המכשירים המסונכרנים.</translation>
@@ -1166,6 +1161,7 @@
 <translation id="7379900596734708416">העיצוב הכהה זמין לאתרים</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
+<translation id="7411224099004328643">‏משתמש בחשבון Google</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>

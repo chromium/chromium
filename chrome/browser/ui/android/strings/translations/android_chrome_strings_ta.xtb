@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">கடந்த ஒரு மணிநேரம்</translation>
 <translation id="1724977129262658800">கடவுச்சொல்லைத் திருத்த, அன்லாக் செய்யவும்</translation>
 <translation id="1726477445370128854">நீங்கள் பார்வையிடக்கூடிய பக்கங்களைக் கணித்து அவற்றை Chrome முன்கூட்டியே ஏற்றினால் நீங்கள் வேகமாக உலாவலாம் தேடலாம்</translation>
-<translation id="1736419249208073774">அறிக</translation>
 <translation id="1749561566933687563">உங்கள் புத்தகக்குறிகளை ஒத்திசைக்கவும்</translation>
 <translation id="1750259112639922169">பக்கக் குழு -<ph name="TAB_COUNT" /> பக்கங்கள்</translation>
 <translation id="17513872634828108">தாவல்களைத் திற</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">உரை</translation>
 <translation id="2068748236079642969">அடுத்த வீடியோவைக் காட்டு</translation>
 <translation id="2074143993849053708">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் UI மூடப்பட்டது</translation>
+<translation id="2079545284768500474">செயல்தவிர்</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
 <translation id="2096012225669085171">பல சாதனங்களுக்கிடையில் ஒத்திசைக்கலாம், தனிப்பயனாக்கலாம்</translation>
 <translation id="2100273922101894616">தானாக உள்நுழையவும்</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">உள்நுழைய முடியவில்லை</translation>
 <translation id="234265804618409743">கேமராவைத் திறக்க முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="2349710944427398404">கணக்குகள், புக்மார்க்குகள், சேமித்த அமைப்புகள் உள்பட Chrome பயன்படுத்தும் மொத்தத் தரவு</translation>
-<translation id="2353636109065292463">உங்கள் இணைய இணைப்பைச் சரிபார்க்கிறது</translation>
 <translation id="235789365079050412">Google தனியுரிமைக் கொள்கை</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2386938421315164605">தலைப்புகளை மறைக்கும் &amp; காட்டும்</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">குரல் தேடல்</translation>
 <translation id="3282568296779691940">Chrome இல் உள்நுழைக</translation>
 <translation id="3285080554353377245">Chromeமை எப்படிப் பயன்படுத்துவது என்பது குறித்த வீடியோக்கள்</translation>
-<translation id="3288003805934695103">பக்கத்தை மீண்டும் ஏற்றுதல்</translation>
 <translation id="3290249595466894471">புதிய அச்சுறுத்தல்களைக் கண்டறிய உதவும் வகையில் பக்கங்களின் சிறிய மாதிரி, பதிவிறக்கங்கள், நீட்டிப்புச் செயல்பாடு, சிஸ்டம் தகவல்கள் ஆகியவற்றையும் அனுப்பும்</translation>
 <translation id="3297344142967351106">குரல் உதவி</translation>
 <translation id="3303414029551471755">உள்ளடக்கத்தைப் பதிவிறக்குவதைத் தொடரவா?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">ஃபோல்டரைச் சேர்</translation>
 <translation id="3899682235662194879">மறைநிலைத் தாவல்கள் அனைத்தையும் மூடுக</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ஐப் புதுப்பி</translation>
-<translation id="3912508018559818924">இணையத்திலிருந்து தரவை ஏற்றுகிறோம்…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> இயக்கத்தில் உள்ளது</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">புதிய தாவல்</translation>
 <translation id="5235196193381275927">உள்நுழையும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="5246093389635966745">கருவிப்பட்டியின் ஷார்ட்கட்டை மாற்றும்</translation>
-<translation id="526421993248218238">பக்கத்தை ஏற்ற முடியவில்லை</translation>
 <translation id="5271967389191913893">பதிவிறக்க வேண்டிய உள்ளடக்கத்தைச் சாதனத்தால் திறக்க முடியாது</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> உடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="5292796745632149097">இதற்கு அனுப்பு:</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">தளத்தின் அமைப்புகளை இங்கே மாற்றலாம்</translation>
 <translation id="6140709049082532940">மேம்பட்ட பாதுகாப்பு:</translation>
 <translation id="6140912465461743537">நாடு/மண்டலம்</translation>
-<translation id="614940544461990577">இவற்றைச் செய்து பார்க்கவும்:</translation>
 <translation id="6150320133806434356">புக்மார்க் சேமிக்கப்பட்டது</translation>
 <translation id="6154478581116148741">இந்தச் சாதனத்திலிருந்து உங்கள் கடவுச்சொற்களை ஏற்ற, அமைப்புகளில் திரைப் பூட்டை இயக்கவும்</translation>
 <translation id="6159729262978459665">ஒத்திசைக்கப்பட்ட சாதனங்கள் அனைத்திலிருந்தும் இதுவரையான செயல்பாடுகள் பற்றிய தகவல்களை அழிக்கும்.</translation>

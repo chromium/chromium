@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1724977129262658800">आफ्नो पासवर्ड बदल्न अनलक गर्नुहोस्</translation>
 <translation id="1726477445370128854">Chrome ले उसलाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज प्रिलोड गरेर राख्छ। यसले गर्दा तपाईं ती पेज छिटोछरितो रूपमा ब्राउज गर्न र खोज्न सक्नुहुन्छ</translation>
-<translation id="1736419249208073774">अन्वेषण गर्नुहोस्</translation>
 <translation id="1749561566933687563">तपाईंका पुस्तक चिन्हहरू सिंक गर्नुहोस्</translation>
 <translation id="1750259112639922169">ट्याब समूह - <ph name="TAB_COUNT" /> वटा ट्याब</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">पाठ</translation>
 <translation id="2068748236079642969">अर्को भिडियो हेर्नुहोस्</translation>
 <translation id="2074143993849053708">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI बन्द गरिएको छ</translation>
+<translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2096012225669085171">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्</translation>
 <translation id="2100273922101894616">स्वत: साइन-इन</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
 <translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
-<translation id="2353636109065292463">तपाईंको इन्टरनेट जडानको जाँच गर्दै</translation>
 <translation id="235789365079050412">Google को गोपनीयता नीति</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2386938421315164605">विषयहरू लुकाउनुहोस् तथा देखाउनुहोस्</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">भ्वाइस सर्च</translation>
 <translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3285080554353377245">Chrome प्रयोग गर्ने तरिका देखाउने भिडियोहरू</translation>
-<translation id="3288003805934695103">पृष्ठलाई पुनः लोड गर्नुहोस्</translation>
 <translation id="3290249595466894471">यो सुविधाले नयाँ जोखिमहरू पत्ता लगाउन पेज, डाउनलोड, एक्स्टेन्सनसम्बन्धी गतिविधि र प्रणालीसम्बन्धी जानकारीको सानो नमुना पनि Safe Browsing मा पठाउँछ</translation>
 <translation id="3297344142967351106">आवाज सहायता</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">फोल्डर थप्नुहोस्</translation>
 <translation id="3899682235662194879">सबै इन्कोग्निटो ट्याबहरू बन्द गरियोस्</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> अपडेट गर्नुहोस्</translation>
-<translation id="3912508018559818924">वेबका उत्कृष्ट सामग्रीहरू फेला पार्दै…</translation>
 <translation id="3924911262913579434">'<ph name="SAFE_BROWSING_MODE" />' अन छ</translation>
 <translation id="3927692899758076493">स्यान्स सेरिफ</translation>
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
@@ -774,7 +771,6 @@
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
 <translation id="5235196193381275927">साइन इन गर्ने क्रममा केही चिज गडबड भयो</translation>
 <translation id="5246093389635966745">टुलबारको सर्टकट सम्पादन गर्नुहोस्</translation>
-<translation id="526421993248218238">यो पृष्ठ लोड गर्न सकिएन</translation>
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> कार्डसँग लिंक गरिएको छ</translation>
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
@@ -928,7 +924,6 @@
 <translation id="6138832295072039549">यहाँ गई आफ्नो साइटसम्बन्धी सेटिङ परिवर्तन गर्नुहोस्</translation>
 <translation id="6140709049082532940">सुदृढ सुरक्षा:</translation>
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
-<translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
 <translation id="6150320133806434356">बुकमार्क सेभ गरियो</translation>
 <translation id="6154478581116148741">यो यन्त्रबाट आफ्ना पासवर्डहरू निर्यात गर्न सेटिङहरूमा गई स्क्रिन लक अन गर्नुहोस्</translation>
 <translation id="6159729262978459665">यसले सिंक गरिएका सबै डिभाइसबाट इतिहास मेटाउँछ।</translation>

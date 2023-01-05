@@ -1246,6 +1246,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" />-г нуусан</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Утасны дугаар}other{# утасны дугаар}}</translation>
 <translation id="2110941575868943054">Bluetooth төхөөрөмж хайхыг зөвшөөрсөн</translation>
+<translation id="2111158890826137380">Уучлаарай, алдаа гарлаа. Тайлбарт #bruschetta-р санал хүсэлт илгээнэ үү. Алдааны код нь <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Төхөөрөмжийн төрлүүдийг арилгах</translation>
 <translation id="2111670510994270194">Шинэ табыг баруун тийш нь</translation>
 <translation id="2112554630428445878">Тавтай морилно уу, <ph name="USERNAME" /></translation>
@@ -1790,6 +1791,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{Энэ төхөөрөмжийг 1 жилийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}other{Энэ төхөөрөмжийг {YEARS} жилийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}}</translation>
 <translation id="257779572837908839">Уулзалтад зориулсан Chromebox-р тохируулах</translation>
 <translation id="2579309488038515659">Сүлжээний цэгийг идэвхжүүлэх</translation>
+<translation id="2579596474754516455">Шаардлагатай үед дэлгэц уншигчид зориулж PDF зургийг текст болгон хөрвүүлэхийн тулд скан хийгээрэй</translation>
 <translation id="2580889980133367162"><ph name="HOST" />-ийг хэд хэдэн файл татаж авахыг үргэлж зөвшөөрөх</translation>
 <translation id="258095186877893873">Урт</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /><ph name="PRODUCT_VERSION" /> (Платформ <ph name="PLATFORM_VERSION" /> ) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2743,6 +2745,7 @@
 <translation id="3469583217479686109">Сонголтын хэрэгсэл</translation>
 <translation id="3470392222765168737">Сайтыг дагах</translation>
 <translation id="3471876058939596279">HDMI болон USB C-Төрлийн портыг нэгэн зэрэг видеонд ашиглах боломжгүй. Өөр видео порт ашиглана уу.</translation>
+<translation id="3472469028191701821">Шинэ табд нээгдэнэ</translation>
 <translation id="3473241910002674503">Таблет горимд товчлуур ашиглан нүүр лүү шилжих, буцах, аппуудын хооронд сэлгэх.</translation>
 <translation id="3473479545200714844">Дэлгэц Томруулах</translation>
 <translation id="3474218480460386727">Шинэ үгэнд 99 эсвэл үүнээс цөөн үсэг ашиглана уу</translation>
@@ -2891,6 +2894,7 @@
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616741288025931835">&amp; Хайлтын өгөгдлийг цэвэрлэ...</translation>
 <translation id="3617891479562106823">Арын дэвсгэр боломжгүй байна. Дараа дахин оролдоно уу.</translation>
+<translation id="3618286417582819036">Уучлаарай, алдаа гарлаа</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокаци</translation>
 <translation id="362023940451053340">Таны Google Бүртгэл болох <ph name="ACCOUNT" />-д</translation>
@@ -3129,6 +3133,7 @@
 <translation id="3820749202859700794">SECG зууван муруй secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub-н мэдэгдлүүд</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг зөвшөөрсөн}other{# өргөтгөлийг зөвшөөрсөн}}</translation>
+<translation id="3823019343150397277">Олон улсын банк акаунтны дугаар</translation>
 <translation id="3823310065043511710">Linux-д хамгийн багадаа <ph name="INSTALL_SIZE" />-н зайтай байхыг зөвлөж байна.</translation>
 <translation id="3824621460022590830">Төхөөрөмжийн бүртгэлийн тэмдэг буруу байна. Төхөөрөмж өмчлөгч эсвэл администратортайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Миний энэ файлын төрлийн сонголтыг санана уу: <ph name="FILE_TYPES" />}other{Миний эдгээр файлын төрлийн сонголтыг санана уу: <ph name="FILE_TYPES" />}}</translation>
@@ -4047,6 +4052,7 @@
 <translation id="4675828034887792601">Сайт хайх болон хайлтын системээ удирдахад зориулж товчлол үүсгэнэ үү</translation>
 <translation id="4676595058027112862">Phone Hub, Нэмэлт мэдээлэл авах</translation>
 <translation id="4677772697204437347">GPU санах ой</translation>
+<translation id="4678848110205818817">Кредит/Дебит карт</translation>
 <translation id="4680105648806843642">Энэ хуудасны дууг хаасан</translation>
 <translation id="4680112532510845139">Энд зураг буулгана уу</translation>
 <translation id="4681453295291708042">Ойролцоо хуваалцах онцлогийг идэвхгүй болгох</translation>
@@ -6681,6 +6687,7 @@
 <translation id="7149839598364933473">Энэ төхөөрөмжийг <ph name="DEVICE_OS" /> төхөөрөмж болгож хөрвүүлээрэй.</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
 <translation id="7152478047064750137">Энэ өргөтгөл ямар нэгэн тусгай зөвшөөрөл шаарддаггүй</translation>
+<translation id="7153309176431047193">Зургийг текст болгон хөрвүүлэх</translation>
 <translation id="7154130902455071009">Өөрийн эхлэх хуудсыг :<ph name="START_PAGE" /> болгож өөрчлөх</translation>
 <translation id="7156231244155528270">Зургийг текст рүү хөрвүүлэх</translation>
 <translation id="7159953856712257647">Өгөгдмөлөөр суулгасан</translation>

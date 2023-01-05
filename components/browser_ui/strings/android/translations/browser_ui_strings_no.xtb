@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Trykk for å gå tilbake til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2091887806945687916">Lyd</translation>
-<translation id="2107397443965016585">Spør før nettsteder får tillatelse til å spille beskyttet innhold (anbefalt)</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv om øynene deres var beskyttet av de grønne brillene, ble Dorothy og vennene hennes overveldet ved synet av</translation>
 <translation id="2182457891543959921">Spør før nettsteder får lage 3D-kart av omgivelsene dine eller spore kameraposisjonen (anbefales)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personlig tilpasning av annonser</translation>
 <translation id="4434045419905280838">Forgrunnsvinduer/viderekoblinger</translation>
 <translation id="4440642537584213025">Vis <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Tillat at nettsteder kan spille beskyttet innhold</translation>
 <translation id="4468959413250150279">Kutt lyden for et bestemt nettsted.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# informasjonskapsel}other{# informasjonskapsler}}</translation>
 <translation id="4479647676395637221">Spør før nettsteder får bruke kameraet (anbefales)</translation>

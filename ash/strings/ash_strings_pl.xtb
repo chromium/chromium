@@ -162,6 +162,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1797271123677381264">Nie pamiętam hasła</translation>
+<translation id="1807246157184219062">Jasny</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1812997170047690955">Co widać na moim ekranie?</translation>
 <translation id="1816896987747843206">Spowoduje to przyznanie dostępu do aparatu wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
@@ -238,6 +239,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2224075387478458881">Gdy widoczne są treści chronione, nagrywanie ekranu jest niedozwolone</translation>
 <translation id="2227179592712503583">Usuń sugestię</translation>
 <translation id="225680501294068881">Skanowanie w poszukiwaniu urządzeń...</translation>
+<translation id="225716114209817872">Maksymalne</translation>
 <translation id="2257486738914982088">Podczas pobierania pliku <ph name="FILENAME" /> coś poszło nie tak</translation>
 <translation id="2258734398699965611">Sugerowane pliki</translation>
 <translation id="2268130516524549846">Bluetooth wyłączony</translation>
@@ -506,6 +508,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
 <translation id="3726171378575546917">Aplikacji <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ani jeszcze <ph name="UNAVAILABLE_APPS_COUNT" /> nie ma na tym urządzeniu.</translation>
 <translation id="3735740477244556633">Sortuj według</translation>
+<translation id="3738664582935948253">W nagraniach ekranu możesz teraz pokazywać kliknięcia i skróty klawiszowe</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
 <translation id="3765841986579723851">Edytowane dzisiaj</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
@@ -525,6 +528,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
+<translation id="3871092408932389764">Najniższy</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -1011,6 +1015,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6537924328260219877">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Skanuję pobierany plik <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Rozmycie tła</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
 <translation id="6565007273808762236">Połączenie eSIM jest niedostępne</translation>
@@ -1416,6 +1421,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, zainstalowana aplikacja, zablokowana</translation>
 <translation id="8785070478575117577">Połącz z <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Mocne</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Pomoc”</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

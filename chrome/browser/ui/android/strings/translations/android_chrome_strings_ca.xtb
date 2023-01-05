@@ -139,7 +139,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="1718835860248848330">Darrera hora</translation>
 <translation id="1724977129262658800">Desbloqueja per editar la contrasenya</translation>
 <translation id="1726477445370128854">Pots navegar i fer cerques més ràpidament quan Chrome carrega prèviament les pàgines que considera que podries visitar</translation>
-<translation id="1736419249208073774">Explora</translation>
 <translation id="1749561566933687563">Sincronitzeu les adreces d'interès</translation>
 <translation id="1750259112639922169">Grup de pestanyes: <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="17513872634828108">Pestanyes obertes</translation>
@@ -197,6 +196,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Mira el vídeo següent</translation>
 <translation id="2074143993849053708">La IU de consentiment de la cerca per veu de l'Assistent s'ha tancat</translation>
+<translation id="2079545284768500474">Desfés</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronitza i personalitza el contingut en tots els dispositius</translation>
 <translation id="2100273922101894616">Inici de sessió automàtic</translation>
@@ -238,7 +238,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2328985652426384049">No es pot iniciar la sessió</translation>
 <translation id="234265804618409743">No es pot obrir la càmera. S'ha produït un error.</translation>
 <translation id="2349710944427398404">Dades totals utilitzades per Chrome, com ara comptes, adreces d'interès i opcions de configuració desades</translation>
-<translation id="2353636109065292463">S'està comprovant la connexió a Internet</translation>
 <translation id="235789365079050412">Política de privadesa de Google</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2386938421315164605">Amaga i deixa d'amagar els temes</translation>
@@ -423,7 +422,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3280562213547448728">Cerca per veu</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3285080554353377245">Vídeos sobre com s'utilitza Chrome</translation>
-<translation id="3288003805934695103">Torneu a carregar la pàgina</translation>
 <translation id="3290249595466894471">També envia una petita mostra de pàgines, baixades, activitat d'extensions i informació del sistema per ajudar a detectar amenaces noves</translation>
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
@@ -521,7 +519,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3894427358181296146">Afegeix una carpeta</translation>
 <translation id="3899682235662194879">Tanca totes les pestanyes d'incògnit</translation>
 <translation id="3908308510347173149">Actualitza <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Estem cercant el millor contingut del web…</translation>
 <translation id="3924911262913579434">S'ha activat <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combina les meves dades</translation>
@@ -775,7 +772,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5235196193381275927">S'ha produït un error durant l'inici de sessió</translation>
 <translation id="5246093389635966745">Edita la drecera de la barra d'eines</translation>
-<translation id="526421993248218238">No es pot carregar aquesta pàgina</translation>
 <translation id="5271967389191913893">El dispositiu no pot obrir el contingut que s'ha de baixar.</translation>
 <translation id="5274286919938458946">Enllaçada amb <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Envia a</translation>
@@ -929,7 +925,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6138832295072039549">Canvia la configuració del teu lloc web aquí</translation>
 <translation id="6140709049082532940">Protecció millorada:</translation>
 <translation id="6140912465461743537">País/Regió</translation>
-<translation id="614940544461990577">Prova el següent:</translation>
 <translation id="6150320133806434356">Adreça d'interès desada</translation>
 <translation id="6154478581116148741">Activa el bloqueig de pantalla a Configuració per exportar les teves contrasenyes d'aquest dispositiu</translation>
 <translation id="6159729262978459665">Esborra l'historial des de tots els dispositius sincronitzats.</translation>

@@ -170,7 +170,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="225943865679747347">Klaidos kodas: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Pridėti paskyrą</translation>
 <translation id="2268044343513325586">Patikslinti</translation>
-<translation id="2271351792809375263">Naudokite naršyklėje „Chrome“ išsaugotus slaptažodžius kitose įrenginio programose</translation>
 <translation id="2273327106802955778">Daugiau meniu</translation>
 <translation id="2286505070150039482">Paryškintas tekstas</translation>
 <translation id="2299218006564889602">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
@@ -454,6 +453,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4420409367264901497">Žymės redagavimas</translation>
 <translation id="4442550905108052454">Atidarykite skiltį <ph name="BEGIN_BOLD" />Nustatymai<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Pridėti kalbą</translation>
+<translation id="4461286950227634995">Siūlymas išsaugoti slaptažodžius</translation>
 <translation id="4462491365653392320">Stebėti kainas skirtukuose</translation>
 <translation id="4469418912670346607">Tęsti sąranką</translation>
 <translation id="4474494258097106883">Sukurta specialiai „iPhone“</translation>
@@ -465,7 +465,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4508750114462689118">Uždaryti prisijungimo reklamą</translation>
 <translation id="4514889972748124117">Siūlyti sudėtingą slaptažodį...</translation>
 <translation id="4520798012560649652">Sužinokite daugiau apie inkognito režimą</translation>
-<translation id="4526249700380860531">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius apsilankę adresu <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Peržiūrėti sinchronizuotus duomenis</translation>
 <translation id="4536418791685807335">Bandykite prisijungti dar kartą.</translation>
 <translation id="4540780316273593836">Kažkas nepavyko</translation>
@@ -553,7 +552,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5118764316110575523">Išjungta</translation>
 <translation id="5119391094379141756">Pasirinkite „Chrome“</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
-<translation id="5140288047769711648">„Chrome“ įsimins šį slaptažodį už jus. Jums nereikia jo prisiminti.</translation>
 <translation id="5149188072385105201">Pridėti slaptažodį...</translation>
 <translation id="5150492518600715772">Siųsti į įrenginį</translation>
 <translation id="5168414296986405587">Sukurta „iPad“ OS</translation>
@@ -1092,7 +1090,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9079935439869366234">Pažymėti visus kaip neskaitytus</translation>
 <translation id="9081058212938299310">Atnaujinti <ph name="USERNAME" /> slaptažodį?</translation>
 <translation id="9083838294503912307">Kad turinys būtų sinchronizuojamas ir suasmeninamas visuose įrenginiuose, įjunkite sinchronizavimą</translation>
-<translation id="9087108903408689779">„Chrome“ siūlomas slaptažodis:</translation>
 <translation id="9093271241977565440">Ekrano viršuje palieskite paieškos piktogramą</translation>
 <translation id="9094033019050270033">Atnaujinti slaptažodį</translation>
 <translation id="9097506547406246598">Negalima nebestebėti. Kažkas nepavyko.</translation>

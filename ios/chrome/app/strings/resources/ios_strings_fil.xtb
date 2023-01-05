@@ -170,7 +170,6 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="225943865679747347">Code ng error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Magdagdag ng Account</translation>
 <translation id="2268044343513325586">Pinuhin</translation>
-<translation id="2271351792809375263">Gamitin ang mga password na na-save mo sa iba pang app sa iyong device</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
 <translation id="2286505070150039482">Naka-highlight na Text</translation>
 <translation id="2299218006564889602">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager.</translation>
@@ -454,6 +453,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4420409367264901497">I-edit ang Bookmark</translation>
 <translation id="4442550905108052454">Buksan ang <ph name="BEGIN_BOLD" />Mga Setting<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Magdagdag ng Wika</translation>
+<translation id="4461286950227634995">Mag-alok na I-save ang Mga Password</translation>
 <translation id="4462491365653392320">Subaybayan ang mga Presyo sa Mga Tab</translation>
 <translation id="4469418912670346607">Ituloy ang Pag-set up</translation>
 <translation id="4474494258097106883">Ginawa Para sa Iyong iPhone</translation>
@@ -465,7 +465,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4508750114462689118">Isara ang promo sa pag-sign in</translation>
 <translation id="4514889972748124117">Magmungkahi ng Malakas na Password...</translation>
 <translation id="4520798012560649652">Matuto pa tungkol sa Incognito mode</translation>
-<translation id="4526249700380860531">Tingnan at pamahalaan ang mga naka-save na password sa <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
 <translation id="4536418791685807335">Subukang mag-sign in muli.</translation>
 <translation id="4540780316273593836">Nagkaproblema</translation>
@@ -553,7 +552,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5118764316110575523">Naka-off</translation>
 <translation id="5119391094379141756">Piliin ang Chrome</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
-<translation id="5140288047769711648">Tatandaan ng Chrome ang password na ito para sa iyo. Hindi mo ito kailangang tandaan.</translation>
 <translation id="5149188072385105201">Magdagdag ng Password...</translation>
 <translation id="5150492518600715772">Ipadala Sa Iyong Device</translation>
 <translation id="5168414296986405587">Binuo para sa iPadOS</translation>
@@ -1092,7 +1090,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9079935439869366234">Markahan ang Lahat bilang Hindi pa Nababasa</translation>
 <translation id="9081058212938299310">I-update ang password para sa <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para mag-sync at mag-personalize sa mga device, i-on ang pag-sync.</translation>
-<translation id="9087108903408689779">Iminungkahing Password ng Chrome:</translation>
 <translation id="9093271241977565440">Sa Itaas ng Screen, I-tap ang Icon ng Paghahanap</translation>
 <translation id="9094033019050270033">I-update ang password</translation>
 <translation id="9097506547406246598">Hindi ma-unfollow. Nagkaproblema.</translation>

@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" />፣ በአሁኑ ጊዜ <ph name="DATE" /> ተመርጧል።</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="1797271123677381264">የይለፍ ቃል ረሱ</translation>
+<translation id="1807246157184219062">ብርሃን</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1812997170047690955">ማያ ገጼ ላይ ምን አለ?</translation>
 <translation id="1816896987747843206">ይህ የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
@@ -525,6 +526,7 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="385300504083504382">መጀመሪያ</translation>
 <translation id="3861651314799684201">ሙሉ ገጽ ዕይታ ለመቅዳት አስገባን ይጫኑ</translation>
+<translation id="3871092408932389764">ዝቅተኛው</translation>
 <translation id="3886872229787704059">ዛሬ የተከፈተ</translation>
 <translation id="3891340733213178823">ዘግተው ለመውጣት Ctrl+Shift+Qን ሁለቴ ይጫኑ።</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>

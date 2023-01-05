@@ -162,6 +162,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1774796056689732716">Takvim, <ph name="CURRENT_MONTH_YEAR" />, şu anda <ph name="DATE" /> seçili.</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="1797271123677381264">Şifremi unuttum</translation>
+<translation id="1807246157184219062">Açık</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1812997170047690955">Ekranımda ne var?</translation>
 <translation id="1816896987747843206">Bu işlem, kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
@@ -525,6 +526,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlangıç</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
+<translation id="3871092408932389764">En kalın</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>

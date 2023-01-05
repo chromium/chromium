@@ -170,7 +170,6 @@
 <translation id="225943865679747347">ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ಖಾತೆ ಸೇರಿಸಿ</translation>
 <translation id="2268044343513325586">ಪರಿಷ್ಕರಿಸು</translation>
-<translation id="2271351792809375263">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ನೀವು Chrome ನಲ್ಲಿ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="2273327106802955778">ಹೆಚ್ಚಿನ ಮೆನು</translation>
 <translation id="2286505070150039482">ಹೈಲೈಟ್ ಮಾಡಿದ ಪಠ್ಯ</translation>
 <translation id="2299218006564889602">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">ಸೈನ್-ಇನ್ ಪ್ರೋಮೋ ಮುಚ್ಚಿ</translation>
 <translation id="4514889972748124117">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="4520798012560649652">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4536418791685807335">ಮತ್ತೊಮ್ಮೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4540780316273593836">ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5119391094379141756">Chrome ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5132942445612118989">ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
-<translation id="5140288047769711648">Chrome ನಿಮಗಾಗಿ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೆನಪಿನಲ್ಲಿರಿಸಿಕೊಳ್ಳುತ್ತದೆ. ನೀವು ಅದನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="5149188072385105201">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇರಿಸಿ...</translation>
 <translation id="5150492518600715772">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5168414296986405587">iPadOS ಗಾಗಿ ನಿರ್ಮಿಸಲಾಗಿದೆ</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">ಎಲ್ಲಾ ಓದದೇ ಇರುವವುಗಳನ್ನು ಗುರುತಿಸಿ</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>
 <translation id="9083838294503912307">ಸಾಧನಗಳಾದ್ಯಂತ ಸಿಂಕ್ ಮಾಡಲು ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ.</translation>
-<translation id="9087108903408689779">Chrome ಸೂಚಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್:</translation>
 <translation id="9093271241977565440">ಸ್ಕ್ರೀನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ, ಹುಡುಕಾಟ ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="9094033019050270033">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡು</translation>
 <translation id="9097506547406246598">ಅನ್‌ಫಾಲೋ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>

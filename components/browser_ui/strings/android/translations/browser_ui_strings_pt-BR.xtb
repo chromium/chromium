@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Toque para voltar para <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2091887806945687916">Som</translation>
-<translation id="2107397443965016585">Perguntar antes de permitir que sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="216989819110952009">Mesmo com os olhos protegidos pelos óculos verdes, Dorothy e seus amigos ficaram encantados pelo</translation>
 <translation id="2182457891543959921">Perguntar antes de permitir que sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera (recomendado)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="4440642537584213025">Abrir <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Permitir que sites mostrem conteúdo protegido</translation>
 <translation id="4468959413250150279">Desativar o som de um site específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4479647676395637221">Perguntar antes de permitir que sites usem sua câmera (recomendado)</translation>

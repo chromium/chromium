@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Dodirnite da biste se vratili na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2091887806945687916">Zvuk</translation>
-<translation id="2107397443965016585">Web-lokacije moraju tražiti dopuštenje za reprodukciju zaštićenog sadržaja (preporučeno)</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="216989819110952009">Iako su im oči bile zaštićene zelenim naočalama, Dorothy i njezine prijatelje u početku su zadivili</translation>
 <translation id="2182457891543959921">Prikaži upit prije omogućivanja web-lokacijama da izrađuju 3D kartu vašeg okruženja i prate položaj kamere (preporučeno)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Prilagodba oglasa</translation>
 <translation id="4434045419905280838">Skočni prozori i preusmjeravanja</translation>
 <translation id="4440642537584213025">Proširi odjeljak <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Web-lokacijama je dopuštena reprodukcija zaštićenog sadržaja</translation>
 <translation id="4468959413250150279">Isključivanje zvuka za određenu web-lokaciju.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kolačić}one{# kolačić}few{# kolačića}other{# kolačića}}</translation>
 <translation id="4479647676395637221">Web-lokacije moraju tražiti dopuštenje za pristup kameri (preporučeno)</translation>

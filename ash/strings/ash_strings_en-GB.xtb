@@ -162,6 +162,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1797271123677381264">Forgot password</translation>
+<translation id="1807246157184219062">Light</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1812997170047690955">What's on my screen?</translation>
 <translation id="1816896987747843206">This allows camera access for all apps and websites with the camera permission</translation>
@@ -238,6 +239,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2224075387478458881">Screen recording is not allowed when protected content is visible</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
+<translation id="225716114209817872">Maximum</translation>
 <translation id="2257486738914982088">Something went wrong while downloading <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Suggested files</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
@@ -506,6 +508,7 @@ Connect your device to power.</translation>
 <translation id="3713734891607377840">Open when complete</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> and <ph name="UNAVAILABLE_APPS_COUNT" /> more aren't on this device.</translation>
 <translation id="3735740477244556633">Sort by</translation>
+<translation id="3738664582935948253">You can now show clicks and keyboard shortcuts in screen recordings</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
 <translation id="3765841986579723851">Edited today</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
@@ -525,6 +528,7 @@ Connect your device to power.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
+<translation id="3871092408932389764">Lowest</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -1011,6 +1015,7 @@ Connect your device to power.</translation>
 <translation id="6537924328260219877">Signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Background blur</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 New install</translation>
 <translation id="6559976592393364813">Ask administrator</translation>
@@ -1417,6 +1422,7 @@ New install</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installed app, blocked</translation>
 <translation id="8785070478575117577">Connect to <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Heavy</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">'Help'</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

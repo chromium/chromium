@@ -162,6 +162,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutačno je odabran datum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1797271123677381264">Zaboravljena zaporka</translation>
+<translation id="1807246157184219062">Svijetlo</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1812997170047690955">Što je na mojem zaslonu?</translation>
 <translation id="1816896987747843206">To omogućuje pristup kameri za sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
@@ -524,6 +525,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3861651314799684201">Pritisnite Enter za snimanje cijelog zaslona</translation>
+<translation id="3871092408932389764">Najniži</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Pritisnite Ctrl + Shift + Q dvaput da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>

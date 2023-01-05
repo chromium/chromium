@@ -1251,6 +1251,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е сокриен</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="2110941575868943054">Дозволено да се бараат уреди со Bluetooth</translation>
+<translation id="2111158890826137380">Нешто не е во ред. Испратете повратни информации на #bruschetta во описот. Кодот за грешката е <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Избриши ги типовите</translation>
 <translation id="2111670510994270194">Нова картичка надесно</translation>
 <translation id="2112554630428445878">Добре дојдовте, <ph name="USERNAME" /></translation>
@@ -1795,6 +1796,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{Уредов ќе се зачува 1 година и следниот пат ќе може да се поврзете без код. Ова е поставено од вашиот администратор.}one{Уредов ќе се зачува {YEARS} година и следниот пат ќе може да се поврзете без код. Ова е поставено од вашиот администратор.}other{Уредов ќе се зачува {YEARS} години и следниот пат ќе може да се поврзете без код. Ова е поставено од вашиот администратор.}}</translation>
 <translation id="257779572837908839">Поставете како „Chromebox за состаноци“</translation>
 <translation id="2579309488038515659">Овозможете ја точката на пристап</translation>
+<translation id="2579596474754516455">Скенирајте PDF-слики за да конвертирате текст за читачот на екран кога е потребно</translation>
 <translation id="2580889980133367162">Секогаш дозволи <ph name="HOST" /> да презема повеќе датотеки</translation>
 <translation id="258095186877893873">Долго</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2748,6 +2750,7 @@
 <translation id="3469583217479686109">Алатка за избирање</translation>
 <translation id="3470392222765168737">Следете го сајтот</translation>
 <translation id="3471876058939596279">HDMI-портата и USB-портата од типот C не може да се користат за видео истовремено. Користете друга видеопорта.</translation>
+<translation id="3472469028191701821">Се отвора во нова картичка</translation>
 <translation id="3473241910002674503">Одете на почетен екран, вратете се назад и префрлајте меѓу апликации со копчиња во режим на таблет.</translation>
 <translation id="3473479545200714844">Лупа за екран</translation>
 <translation id="3474218480460386727">Користете до 99 букви за новите зборови</translation>
@@ -2896,6 +2899,7 @@
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616741288025931835">&amp;Исчисти податоци од прелистување...</translation>
 <translation id="3617891479562106823">Заднините се недостапни. Обидете се повторно подоцна.</translation>
+<translation id="3618286417582819036">Настана грешка</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокација</translation>
 <translation id="362023940451053340">Во вашата сметка на Google, за <ph name="ACCOUNT" /></translation>
@@ -3134,6 +3138,7 @@
 <translation id="3820749202859700794">SECG елиптична крива secp521r1 (наречена NIST P-521)</translation>
 <translation id="3821074617718452587">Известувања на Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Една екстензија е одобрена}one{# екстензија е одобрена}other{# екстензии се одобрени}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux, се препорачува најмалку <ph name="INSTALL_SIZE" /> слободен простор.</translation>
 <translation id="3824621460022590830">Токенот за регистрација на уредот е неважечки. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомни го мојот избор за овој вид датотека: <ph name="FILE_TYPES" />}one{Запомни го мојот избор за овие видови датотеки: <ph name="FILE_TYPES" />}other{Запомни го мојот избор за овие видови датотеки: <ph name="FILE_TYPES" />}}</translation>
@@ -4053,6 +4058,7 @@
 <translation id="4675828034887792601">Создајте кратенки за пребарување сајтови и управувајте со вашиот пребарувач</translation>
 <translation id="4676595058027112862">Phone Hub, Дознајте повеќе</translation>
 <translation id="4677772697204437347">ГПУ-меморија</translation>
+<translation id="4678848110205818817">Кредитна/дебитна картичка</translation>
 <translation id="4680105648806843642">Звукот е исклучен на страницава</translation>
 <translation id="4680112532510845139">Спуштете слика овде</translation>
 <translation id="4681453295291708042">Оневозможете „Споделување во близина“</translation>
@@ -6689,6 +6695,7 @@
 <translation id="7149839598364933473">Конвертирајте го уредов во уред со <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Изминатите 24 часа</translation>
 <translation id="7152478047064750137">Екстензијава не бара специјални дозволи</translation>
+<translation id="7153309176431047193">Конвертирајте слики во текст</translation>
 <translation id="7154130902455071009">Променете ја почетната страница во: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Конвертирај слика во текст</translation>
 <translation id="7159953856712257647">Стандардно инсталирана</translation>

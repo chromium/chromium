@@ -139,7 +139,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="1718835860248848330">Sejam terakhir</translation>
 <translation id="1724977129262658800">Buka kunci untuk mengedit sandi Anda</translation>
 <translation id="1726477445370128854">Anda dapat menjelajah dan menelusuri lebih cepat saat Chrome melakukan pramuat halaman yang menurutnya mungkin akan Anda buka</translation>
-<translation id="1736419249208073774">Jelajahi</translation>
 <translation id="1749561566933687563">Sinkronisasikan bookmark Anda</translation>
 <translation id="1750259112639922169">Grup tab - <ph name="TAB_COUNT" /> tab</translation>
 <translation id="17513872634828108">Buka tab</translation>
@@ -197,6 +196,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2067805253194386918">teks</translation>
 <translation id="2068748236079642969">Tonton video berikutnya</translation>
 <translation id="2074143993849053708">UI izin penelusuran suara Asisten ditutup</translation>
+<translation id="2079545284768500474">Urungkan</translation>
 <translation id="2082238445998314030">Hasil <ph name="RESULT_NUMBER" /> dari <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sinkronkan dan personalisasi di berbagai perangkat</translation>
 <translation id="2100273922101894616">Login Otomatis</translation>
@@ -238,7 +238,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2328985652426384049">Tidak dapat login</translation>
 <translation id="234265804618409743">Tidak dapat membuka kamera Anda. Terjadi error.</translation>
 <translation id="2349710944427398404">Total data yang digunakan oleh Chrome, termasuk akun, bookmark, dan setelan yang tersimpan</translation>
-<translation id="2353636109065292463">Memeriksa koneksi internet Anda</translation>
 <translation id="235789365079050412">Kebijakan Privasi Google</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2386938421315164605">Sembunyikan dan perlihatkan topik</translation>
@@ -423,7 +422,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3280562213547448728">Penelusuran suara</translation>
 <translation id="3282568296779691940">Login ke Chrome</translation>
 <translation id="3285080554353377245">Video tentang cara menggunakan Chrome</translation>
-<translation id="3288003805934695103">Memuat ulang halaman</translation>
 <translation id="3290249595466894471">Juga mengirimkan sedikit contoh halaman, download, aktivitas ekstensi, dan informasi sistem untuk membantu menemukan ancaman baru</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
@@ -521,7 +519,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3899682235662194879">Tutup semua tab Samaran</translation>
 <translation id="3908308510347173149">Update <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Menemukan yang terbaik dari web...</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktif</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
@@ -775,7 +772,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5233638681132016545">Tab baru</translation>
 <translation id="5235196193381275927">Terjadi error saat login</translation>
 <translation id="5246093389635966745">Edit pintasan toolbar</translation>
-<translation id="526421993248218238">Tidak dapat memuat halaman ini</translation>
 <translation id="5271967389191913893">Perangkat tidak dapat membuka konten untuk didownload.</translation>
 <translation id="5274286919938458946">Ditautkan dengan <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Kirim ke</translation>
@@ -929,7 +925,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6138832295072039549">Ubah setelan situs di sini</translation>
 <translation id="6140709049082532940">Perlindungan yang ditingkatkan:</translation>
 <translation id="6140912465461743537">Negara/Wilayah</translation>
-<translation id="614940544461990577">Coba:</translation>
 <translation id="6150320133806434356">Bookmark disimpan</translation>
 <translation id="6154478581116148741">Aktifkan kunci layar di Setelan untuk mengekspor sandi dari perangkat ini</translation>
 <translation id="6159729262978459665">Menghapus histori dari semua perangkat yang disinkronkan.</translation>

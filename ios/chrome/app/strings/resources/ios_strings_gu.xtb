@@ -170,7 +170,6 @@
 <translation id="225943865679747347">ભૂલ કોડ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">એકાઉન્ટ ઉમેરો</translation>
 <translation id="2268044343513325586">સુધારો</translation>
-<translation id="2271351792809375263">તમે Chromeમાં સાચવેલા પાસવર્ડનો તમારા ડિવાઇસની અન્ય ઍપમાં ઉપયોગ કરો</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
 <translation id="2286505070150039482">હાઇલાઇટ કરેલી ટેક્સ્ટ</translation>
 <translation id="2299218006564889602">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">સાઇન-ઇન પ્રોમો બંધ કરો</translation>
 <translation id="4514889972748124117">સશક્ત પાસવર્ડ સૂચવો...</translation>
 <translation id="4520798012560649652">છૂપા મોડ વિશે વધુ જાણો</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> પર સાચવેલા પાસવર્ડ જુઓ અને મેનેજ કરો</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4536418791685807335">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="4540780316273593836">કંઈક ખોટું થયું હતું</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">બંધ</translation>
 <translation id="5119391094379141756">Chrome પસંદ કરો</translation>
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
-<translation id="5140288047769711648">Chrome તમારા માટે આ પાસવર્ડ યાદ રાખશે. તમારે તેને યાદ રાખવાની જરૂર નથી.</translation>
 <translation id="5149188072385105201">પાસવર્ડ ઉમેરો...</translation>
 <translation id="5150492518600715772">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="5168414296986405587">iPadOS માટે બનાવવામાં આવેલું</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">તમામને વાંચ્યા વગરની તરીકે ચિહ્નિત કરો</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> માટેનો પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="9083838294503912307">એકથી વધુ ડિવાઇસને સિંક અને વ્યક્તિગત કરવા માટે સિંક ચાલુ કરો.</translation>
-<translation id="9087108903408689779">Chrome દ્વારા સૂચિત પાસવર્ડ:</translation>
 <translation id="9093271241977565440">સ્ક્રીનની સૌથી ઉપર, શોધો આઇકન પર ટૅપ કરો</translation>
 <translation id="9094033019050270033">પાસવર્ડ અપડેટ કરો</translation>
 <translation id="9097506547406246598">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>

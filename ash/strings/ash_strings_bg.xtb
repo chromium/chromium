@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">Календар, текущата дата е <ph name="CURRENT_MONTH_YEAR" />, а понастоящем е избрана <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Изкл.</translation>
 <translation id="1797271123677381264">Забравена парола</translation>
+<translation id="1807246157184219062">Светло</translation>
 <translation id="181103072419391116">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="1812997170047690955">Какво има на екрана ми?</translation>
 <translation id="1816896987747843206">Това разрешава достъп до камерата за всички приложения и уебсайтове, които имат съответното разрешение</translation>
@@ -238,6 +239,7 @@
 <translation id="2224075387478458881">Записването на екрана не е разрешено, когато се вижда защитено съдържание</translation>
 <translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="225680501294068881">Сканира се за устройства...</translation>
+<translation id="225716114209817872">Максимално</translation>
 <translation id="2257486738914982088">Нещо се обърка при изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Предложени файлове</translation>
 <translation id="2268130516524549846">Bluetooth е деактивиран</translation>
@@ -525,6 +527,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Началото</translation>
 <translation id="3861651314799684201">Натиснете Enter за записване на целия екран</translation>
+<translation id="3871092408932389764">Най-ниска</translation>
 <translation id="3886872229787704059">Отваряно днес</translation>
 <translation id="3891340733213178823">Натиснете два пъти „Ctrl+Shift+Q“ за изход.</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
@@ -1011,6 +1014,7 @@
 <translation id="6537924328260219877">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Изтегляният файл <ph name="FILENAME" /> се сканира</translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="6548693220024099658">Замъгляване на фона</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Наскоро инсталирано</translation>
 <translation id="6559976592393364813">Попитайте администратора</translation>
@@ -1417,6 +1421,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирано приложение, блокирано</translation>
 <translation id="8785070478575117577">Свързване със <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Обилно</translation>
 <translation id="8806053966018712535">Папка „<ph name="FOLDER_NAME" />“</translation>
 <translation id="880709030178078220">„Help“</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -170,7 +170,6 @@
 <translation id="225943865679747347">အမှား ကုဒ်: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">အကောင့်ထည့်ပါ</translation>
 <translation id="2268044343513325586">ပြန်မွမ်းမံ</translation>
-<translation id="2271351792809375263">သင် Chrome တွင်သိမ်းထားသည့် စကားဝှက်များကို သင့်စက်ရှိ အခြားအက်ပ်များတွင် သုံးပါ</translation>
 <translation id="2273327106802955778">မီနူးကို ပိုပြပေးပါ</translation>
 <translation id="2286505070150039482">ရွေးထားသော စာသား</translation>
 <translation id="2299218006564889602">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပြီးပါပြီ။</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">လက်မှတ်ထိုးဝင်ထားသော ပရိုမိုးရှင်းများကို ပိတ်ရန်</translation>
 <translation id="4514889972748124117">လုံခြုံမှုမြင့်သည့် စကားဝှက် အကြံပြုရန်…</translation>
 <translation id="4520798012560649652">‘ရုပ်ဖျက်မုဒ်’ အကြောင်း ပိုမိုလေ့လာရန်</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> တွင် သိမ်းဆည်းထားသော စကားဝှက်များအား ကြည့်ပြီး စီမံပါ</translation>
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
 <translation id="4536418791685807335">ထပ်မံ၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="4540780316273593836">တစ်ခုခု မှားသွားပါသည်</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">ပိတ်ထားသည်</translation>
 <translation id="5119391094379141756">Chrome ကိုရွေးပါ</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
-<translation id="5140288047769711648">Chrome က ဤစကားဝှက်ကို သင့်အတွက် မှတ်ထားပေးပါမည်။ သင်မှတ်ထားစရာ မလိုပါ။</translation>
 <translation id="5149188072385105201">စကားဝှက်ထည့်ရန်...</translation>
 <translation id="5150492518600715772">သင့်စက်သို့ ပို့ရန်</translation>
 <translation id="5168414296986405587">iPadOS အတွက် ပြုလုပ်ထားသည်</translation>
@@ -1091,7 +1088,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="9079935439869366234">အားလုံးကို မဖတ်ရသေးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> အတွက် စကားဝှက် အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="9083838294503912307">စက်အားလုံးတွင် စင့်ခ်လုပ်ရန်နှင့် ပုဂ္ဂိုလ်ရေးသီးသန့် ပြင်ဆင်ရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ။</translation>
-<translation id="9087108903408689779">Chrome အကြံပြုထားသော စကားဝှက်−</translation>
 <translation id="9093271241977565440">ဖန်သားပြင်ထိပ်၌ ‘ရှာဖွေရန်’ သင်္ကေတကို တို့ပါ</translation>
 <translation id="9094033019050270033">စကားဝှက် အပ်ဒိတ် လုပ်ပါ</translation>
 <translation id="9097506547406246598">လိုက်မကြည့်တော့၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>

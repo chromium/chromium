@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">ბოლო საათი</translation>
 <translation id="1724977129262658800">განბლოკეთ თქვენი პაროლის რედაქტირებისთვის</translation>
 <translation id="1726477445370128854">თუ Chrome წინასწარ ჩატვირთავს გვერდებს, რომლებიც, მისი გათვლებით, შეიძლება მოინახულოთ, ვების დათვალიერებისა და ძიების პროცესი დაჩქარდება</translation>
-<translation id="1736419249208073774">მიმოხილვა</translation>
 <translation id="1749561566933687563">განახორციელეთ თქვენი სანიშნეების სინქრონიზაცია</translation>
 <translation id="1750259112639922169">ჩანართების ჯგუფი — <ph name="TAB_COUNT" /> ჩანართი</translation>
 <translation id="17513872634828108">გახსნილი ჩანართები</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">ტექსტი</translation>
 <translation id="2068748236079642969">შემდეგი ვიდეოს ყურება</translation>
 <translation id="2074143993849053708">ასისტენტში ხმოვან ძიებაზე თანხმობის სამომხმარებლო ინტერფეისი დახურულია</translation>
+<translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2096012225669085171">სინქრონიზაცია და პერსონალიზება სხვადასხვა მოწყობილობას შორის</translation>
 <translation id="2100273922101894616">ავტომატური შესვლა</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">სისტემაში შესვლა ვერ მოხერხდა</translation>
 <translation id="234265804618409743">კამერის გახსნა ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="2349710944427398404">Chrome-ის მიერ გამოყენებული მეხსიერების საერთო მოცულობა, რომელშიც ინახება ანგარიშები, სანიშნეები და შენახული პარამეტრები</translation>
-<translation id="2353636109065292463">თქვენი ინტერნეტ-კავშირის შემოწმება</translation>
 <translation id="235789365079050412">Google-ის კონფიდენციალურობის დებულება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2386938421315164605">თემების დამალვა და გამოჩენა</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">ხმოვანი ძიება</translation>
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3285080554353377245">ვიდეოები Chrome-ის გამოყენების წესის შესახებ</translation>
-<translation id="3288003805934695103">გვერდის გადატვირთვა</translation>
 <translation id="3290249595466894471">ახალი საფრთხეების აღმოჩენის ხელშეწყობის მიზნით, გაიგზავნება გვერდების, ჩამოტვირთვების, გაფართოებათა აქტივობისა და სისტემის ინფორმაციის მცირე ნიმუშებიც</translation>
 <translation id="3297344142967351106">ხმოვანი დახმარება</translation>
 <translation id="3303414029551471755">გაგრძელდეს შინაარსის ჩამოტვირთვა?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">საქაღალდის დამატება</translation>
 <translation id="3899682235662194879">ყველა ინკოგნიტო ჩანართის დახურვა</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />-ის განახლება</translation>
-<translation id="3912508018559818924">მიმდინარეობს საუკეთესო კონტენტის პოვნა ვებში…</translation>
 <translation id="3924911262913579434">„<ph name="SAFE_BROWSING_MODE" />“ ჩართულია</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ჩემი მონაცემების კომბინირება</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">ახალი ჩანართი</translation>
 <translation id="5235196193381275927">შესვლისას წარმოიქმნა შეფერხება</translation>
 <translation id="5246093389635966745">ხელსაწყოთა ზოლის მალსახმობის რედაქტირება</translation>
-<translation id="526421993248218238">ამ გვერდის ჩატვირთვა ვერ მოხერხდა</translation>
 <translation id="5271967389191913893">მოწყობილობა ვერ ხსნის შინაარსს ჩამოსატვირთად.</translation>
 <translation id="5274286919938458946">მიბმულია <ph name="CARD_DETAIL" />-თან</translation>
 <translation id="5292796745632149097">გაგზავნა აქ:</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">შეინახეთ თქვენი საიტის პარამეტრები აქ</translation>
 <translation id="6140709049082532940">გაძლიერებული დაცვა:</translation>
 <translation id="6140912465461743537">ქვეყანა/რეგიონი</translation>
-<translation id="614940544461990577">ცადეთ:</translation>
 <translation id="6150320133806434356">სანიშნე შეინახა</translation>
 <translation id="6154478581116148741">ამ მოწყობილობიდან პაროლების ექსპორტირებისთვის პარამეტრებიდან გაააქტიურეთ ეკრანის დაბლოკვის მეთოდი</translation>
 <translation id="6159729262978459665">გაასუფთავებს ისტორიას ყველა სინქრონიზებულ მოწყობილობაზე.</translation>

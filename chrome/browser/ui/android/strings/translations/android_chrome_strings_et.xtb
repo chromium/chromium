@@ -139,7 +139,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1718835860248848330">Viimase tunni jooksul</translation>
 <translation id="1724977129262658800">Parooli muutmiseks avage</translation>
 <translation id="1726477445370128854">Kui Chrome eellaadib lehed, mida võite arvatavasti külastada, võimaldab see teil kiiremini sirvida ja otsida</translation>
-<translation id="1736419249208073774">Avastage</translation>
 <translation id="1749561566933687563">Järjehoidjate sünkroonimine</translation>
 <translation id="1750259112639922169">Vahelehegrupp – <ph name="TAB_COUNT" /> vahelehte</translation>
 <translation id="17513872634828108">Avatud vahelehed</translation>
@@ -197,6 +196,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2068748236079642969">Vaadake järgmist videot</translation>
 <translation id="2074143993849053708">Assistendi häälotsingu sisu kasutajaliides on suletud</translation>
+<translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Seadmete vahel sünkroonimine ja isikupärastamine</translation>
 <translation id="2100273922101894616">Automaatne sisselogimine</translation>
@@ -238,7 +238,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2328985652426384049">Ei saa sisse logida</translation>
 <translation id="234265804618409743">Kaamerat ei saa avada. Midagi läks valesti.</translation>
 <translation id="2349710944427398404">Chrome'i kasutatav andmemaht kokku, sh kontod, järjehoidjad ja salvestatud seaded</translation>
-<translation id="2353636109065292463">Interneti-ühenduse kontrollimine</translation>
 <translation id="235789365079050412">Google'i privaatsuseeskirjad</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2386938421315164605">Teemade peitmine ja peidust välja toomine</translation>
@@ -423,7 +422,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3280562213547448728">Häälotsing</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3285080554353377245">Videod Chrome'i kasutamise kohta</translation>
-<translation id="3288003805934695103">Laadige leht uuesti</translation>
 <translation id="3290249595466894471">Saadab ka lehtede, allalaadimiste, laienduste tegevuse ja süsteemiteabe näidiseid, et aidata uusi ohte tuvastada.</translation>
 <translation id="3297344142967351106">Häälabi</translation>
 <translation id="3303414029551471755">Kas soovite jätkata sisu allalaadimist?</translation>
@@ -521,7 +519,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3894427358181296146">Kausta lisamine</translation>
 <translation id="3899682235662194879">Sule kõik inkognito vahelehed</translation>
 <translation id="3908308510347173149">Värskenda rakendust <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Otsitakse parimat, mida veebil on pakkuda …</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on sisse lülitatud</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Minu andmete kombineerimine</translation>
@@ -775,7 +772,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5233638681132016545">Uus vaheleht</translation>
 <translation id="5235196193381275927">Sisselogimisel läks midagi valesti</translation>
 <translation id="5246093389635966745">Tööriistariba otsetee muutmine</translation>
-<translation id="526421993248218238">Seda lehte ei saa laadida</translation>
 <translation id="5271967389191913893">Seade ei saa allalaaditavat sisu avada.</translation>
 <translation id="5274286919938458946">Lingitud kaardiga <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Saatmine</translation>
@@ -929,7 +925,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6138832295072039549">Muutke siin oma saidi seadeid</translation>
 <translation id="6140709049082532940">Täiustatud kaitse:</translation>
 <translation id="6140912465461743537">Riik/piirkond</translation>
-<translation id="614940544461990577">Proovige järgmist.</translation>
 <translation id="6150320133806434356">Järjehoidja salvestatud</translation>
 <translation id="6154478581116148741">Seadmes olevate paroolide eksportimiseks lülitage seadetes ekraanilukk sisse.</translation>
 <translation id="6159729262978459665">Kustutab ajaloo kõigist sünkroonitud seadmetest.</translation>
@@ -1166,6 +1161,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7379900596734708416">Saitide tume teema on saadaval</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome'i esmakordse käitamise kasutuskogemus</translation>
+<translation id="7411224099004328643">Google'i konto kasutaja</translation>
 <translation id="741204030948306876">Jah, sobib</translation>
 <translation id="7419565702166471774">Kasuta alati turvalist ühendust</translation>
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>

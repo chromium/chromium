@@ -139,7 +139,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="1718835860248848330">Zadnji sat</translation>
 <translation id="1724977129262658800">Otključajte da biste izmijenili zaporku</translation>
 <translation id="1726477445370128854">Možete pregledavati i pretraživati brže kad Chrome predučitava stranice za koje misli da biste ih mogli posjetiti</translation>
-<translation id="1736419249208073774">Istražite</translation>
 <translation id="1749561566933687563">Sinkronizirajte oznake</translation>
 <translation id="1750259112639922169">Grupa kartica – broj kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
@@ -197,6 +196,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="2067805253194386918">SMS</translation>
 <translation id="2068748236079642969">Pogledaj sljedeći videozapis</translation>
 <translation id="2074143993849053708">Korisničko sučelje pristanka za glasovno pretraživanje putem Asistenta je zatvoreno</translation>
+<translation id="2079545284768500474">Poništi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2096012225669085171">Sinkronizacija i prilagodba na svim uređajima</translation>
 <translation id="2100273922101894616">Automatska prijava</translation>
@@ -238,7 +238,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="2328985652426384049">Prijava nije moguća</translation>
 <translation id="234265804618409743">Kamera se ne može otvoriti. Nešto nije u redu.</translation>
 <translation id="2349710944427398404">Ukupna količina podataka koju Chrome upotrebljava, uključujući račune, oznake i spremljene postavke.</translation>
-<translation id="2353636109065292463">Provjera vaše internetske veze</translation>
 <translation id="235789365079050412">Googleova pravila o privatnosti</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2386938421315164605">Sakrivanje i otkrivanje tema</translation>
@@ -423,7 +422,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3280562213547448728">Glasovno pretraživanje</translation>
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3285080554353377245">Videozapisi o upotrebi Chromea</translation>
-<translation id="3288003805934695103">ponovo učitajte stranicu</translation>
 <translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti proširenja i informacija o sustavu radi lakšeg otkrivanja novih prijetnji</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
@@ -521,7 +519,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3894427358181296146">Dodavanje mape</translation>
 <translation id="3899682235662194879">Zatvori sve anonimne kartice</translation>
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Pronalazimo ono najbolje s weba…</translation>
 <translation id="3924911262913579434">Uključen je način <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombiniranje podataka</translation>
@@ -775,7 +772,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5235196193381275927">Došlo je do pogreške tijekom prijave</translation>
 <translation id="5246093389635966745">Uređivanje prečaca alatne trake</translation>
-<translation id="526421993248218238">Učitavanje stranice nije uspjelo</translation>
 <translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
 <translation id="5274286919938458946">Povezano s karticom <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Pošalji na uređaj</translation>
@@ -929,7 +925,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6138832295072039549">Postavke web-lokacije promijenite ovdje</translation>
 <translation id="6140709049082532940">Poboljšana zaštita:</translation>
 <translation id="6140912465461743537">Država/regija</translation>
-<translation id="614940544461990577">Pokušajte sljedeće:</translation>
 <translation id="6150320133806434356">Oznaka je spremljena</translation>
 <translation id="6154478581116148741">Uključite zaključavanje zaslona u postavkama da biste izvezli svoje zaporke s ovog uređaja</translation>
 <translation id="6159729262978459665">Briše povijest sa svih sinkroniziranih uređaja.</translation>

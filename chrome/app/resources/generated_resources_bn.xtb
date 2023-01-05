@@ -1251,6 +1251,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকানো আছে</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফোন নম্বর}one{#টি ফোন নম্বর}other{#টি ফোন নম্বর}}</translation>
 <translation id="2110941575868943054">ব্লুটুথ ডিভাইস খোঁজার অনুমতি দেওয়া হয়েছে</translation>
+<translation id="2111158890826137380">কোনও সমস্যা হয়েছে। বিবরণে #bruschetta সহ মতামত ফাইল করুন। সমস্যার কোড <ph name="ERROR" /></translation>
 <translation id="211144231511833662">টাইপগুলি মুছে দিন</translation>
 <translation id="2111670510994270194">ডানদিকে নতুন ট্যাব</translation>
 <translation id="2112554630428445878">স্বাগতম, <ph name="USERNAME" /></translation>
@@ -1795,6 +1796,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{এই ডিভাইসটি ১ বছরের জন্য সেভ করা হবে এবং পরের বার কোনও কোড ছাড়াই কানেক্ট করতে পারবেন। এটি আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে সেট করা হয়েছে।}one{এই ডিভাইসটি {YEARS} বছরের জন্য সেভ করা হবে এবং পরের বার কোনও কোড ছাড়াই কানেক্ট করতে পারবেন। এটি আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে সেট করা হয়েছে।}other{এই ডিভাইসটি {YEARS} বছরের জন্য সেভ করা হবে এবং পরের বার কোনও কোড ছাড়াই কানেক্ট করতে পারবেন। এটি আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে সেট করা হয়েছে।}}</translation>
 <translation id="257779572837908839">মিটিংয়ের জন্য Chromebox সেট-আপ করুন</translation>
 <translation id="2579309488038515659">হটস্পট চালু করুন</translation>
+<translation id="2579596474754516455">প্রয়োজন হলে স্ক্রিন রিডারের জন্য টেক্সট কনভার্ট করতে পিডিএফ ছবি স্ক্যান করুন</translation>
 <translation id="2580889980133367162">একাধিক ফাইল ডাউনলোড করতে <ph name="HOST" />-কে সবসময় অনুমতি দিন</translation>
 <translation id="258095186877893873">দীর্ঘ সময়</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (প্ল্যাটফর্ম <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2896,6 +2898,7 @@
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3616741288025931835">ব্রাউজ করা ডেটা সাফ করুন...</translation>
 <translation id="3617891479562106823">ব্যাকগ্রাউন্ডগুলি উপলভ্য নয়। পরে আবার চেষ্টা করুন।</translation>
+<translation id="3618286417582819036">একটি সমস্যা হয়েছে</translation>
 <translation id="3619115746895587757">ক্যাপুচিনো</translation>
 <translation id="3620136223548713675">ভৌগোলিক অবস্থান</translation>
 <translation id="362023940451053340">আপনার Google অ্যাকাউন্টে, <ph name="ACCOUNT" />-এর জন্য</translation>
@@ -6692,6 +6695,7 @@
 <translation id="7149839598364933473">এই ডিভাইসকে <ph name="DEVICE_OS" /> ডিভাইসে রূপান্তরিত করুন।</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
 <translation id="7152478047064750137">এই এক্সটেনশনটির জন্য কোনও বিশেষ অনুমতির প্রয়োজন নেই</translation>
+<translation id="7153309176431047193">টেক্সটে ছবি কনভার্ট করুন</translation>
 <translation id="7154130902455071009">আপনার সূচনা পৃষ্ঠাকে এতে পরিবর্তন করুন: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">টেক্সটে ছবি কনভার্ট করুন</translation>
 <translation id="7159953856712257647">ডিফল্ট হিসেবে ইনস্টল করা হয়েছে</translation>

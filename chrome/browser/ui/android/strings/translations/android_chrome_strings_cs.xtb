@@ -139,7 +139,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1724977129262658800">Chcete-li upravit heslo, odemkněte zařízení</translation>
 <translation id="1726477445370128854">Když bude Chrome předběžně načítat stránky, které byste podle něj mohli navštívit, budete moci procházet web a vyhledávat rychleji.</translation>
-<translation id="1736419249208073774">Prozkoumat</translation>
 <translation id="1749561566933687563">Synchronizace záložek</translation>
 <translation id="1750259112639922169">Skupina karet – počet karet: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Otevřené karty</translation>
@@ -197,6 +196,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Přehrát další video</translation>
 <translation id="2074143993849053708">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta bylo zavřeno</translation>
+<translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synchronizovat a přizpůsobit na různých zařízeních</translation>
 <translation id="2100273922101894616">Přihlásit se automaticky</translation>
@@ -238,7 +238,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2328985652426384049">Přihlášení se nezdařilo</translation>
 <translation id="234265804618409743">Kameru nelze otevřít. Něco se pokazilo.</translation>
 <translation id="2349710944427398404">Celkové množství dat využívané prohlížečem Chrome, včetně účtů, záložek a uložených nastavení</translation>
-<translation id="2353636109065292463">Kontrola připojení k internetu</translation>
 <translation id="235789365079050412">Zásady ochrany soukromí Google</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2386938421315164605">Skrýt a znovu zobrazit témata</translation>
@@ -423,7 +422,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3280562213547448728">Hlasové vyhledávání</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3285080554353377245">Výuková videa o používání Chromu</translation>
-<translation id="3288003805934695103">Načíst stránku znovu</translation>
 <translation id="3290249595466894471">Odesílá také malý vzorek stránek, stažených souborů, rozšíření, aktivity a informací o systému a pomáhá tak odhalovat nové hrozby</translation>
 <translation id="3297344142967351106">Hlasová asistence</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
@@ -521,7 +519,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3894427358181296146">Přidat složku</translation>
 <translation id="3899682235662194879">Zavřít všechny anonymní karty</translation>
 <translation id="3908308510347173149">Aktualizovat <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Hledáme to nejlepší z webu…</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je zapnutý</translation>
 <translation id="3927692899758076493">Bezpatková</translation>
 <translation id="3928666092801078803">Sloučit má data</translation>
@@ -775,7 +772,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5235196193381275927">Při přihlašování se něco pokazilo</translation>
 <translation id="5246093389635966745">Upravit zkratku lišty</translation>
-<translation id="526421993248218238">Stránku nelze načíst</translation>
 <translation id="5271967389191913893">Zařízení obsah ke stažení nemůže otevřít.</translation>
 <translation id="5274286919938458946">Propojeno s kartou <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Odeslat do zařízení</translation>
@@ -929,7 +925,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6138832295072039549">Tady můžete změnit nastavení webu</translation>
 <translation id="6140709049082532940">Vylepšená ochrana:</translation>
 <translation id="6140912465461743537">Země/Region</translation>
-<translation id="614940544461990577">Zkuste:</translation>
 <translation id="6150320133806434356">Záložka uložena</translation>
 <translation id="6154478581116148741">Chcete-li z tohoto zařízení exportovat svá hesla, zapněte v Nastavení zámek obrazovky</translation>
 <translation id="6159729262978459665">Vymaže historii ze všech synchronizovaných zařízení.</translation>
@@ -1166,6 +1161,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7379900596734708416">Pro weby je k dispozici tmavý motiv</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
 <translation id="7403691278183511381">První spuštění Chromu</translation>
+<translation id="7411224099004328643">Uživatel účtu Google</translation>
 <translation id="741204030948306876">Ano</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
 <translation id="7431991332293347422">Nastavte, jak se má vaše historie prohlížení používat k personalizaci Vyhledávání a dalších služeb</translation>

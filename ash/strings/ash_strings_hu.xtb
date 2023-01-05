@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1797271123677381264">Elfelejtett jelszó</translation>
+<translation id="1807246157184219062">Világos</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1812997170047690955">Mi van a képernyőn?</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
@@ -506,6 +507,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
+<translation id="3738664582935948253">Mostantól megjelenítheti a kattintásokat és a billentyűparancsokat a képernyőfelvételeken</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3765841986579723851">Ma szerkesztette</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
@@ -526,6 +528,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="385300504083504382">A legelejére</translation>
 <translation id="3861651314799684201">Nyomja le az Entert a teljes képernyő tartalmának rögzítéséhez</translation>
+<translation id="3871092408932389764">Legalacsonyabb</translation>
 <translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3891340733213178823">Nyomja meg a Ctrl+Shift+Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>

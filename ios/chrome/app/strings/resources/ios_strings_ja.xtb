@@ -170,7 +170,6 @@
 <translation id="225943865679747347">エラー コード: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">アカウントを追加</translation>
 <translation id="2268044343513325586">絞り込み</translation>
-<translation id="2271351792809375263">Chrome に保存したパスワードをデバイスの他のアプリで使用する</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
 <translation id="2286505070150039482">選択したテキスト</translation>
 <translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">ログイン プロモーションを閉じる</translation>
 <translation id="4514889972748124117">安全なパスワードを自動生成...</translation>
 <translation id="4520798012560649652">シークレット モードの詳細を表示します</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> での保存パスワードの表示と管理</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4536418791685807335">もう一度ログインしてみてください。</translation>
 <translation id="4540780316273593836">エラーが発生しました</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">オフ</translation>
 <translation id="5119391094379141756">[Chrome] を選択する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
-<translation id="5140288047769711648">このパスワードは Chrome で保存され、次回から自動入力されます。</translation>
 <translation id="5149188072385105201">パスワードを追加...</translation>
 <translation id="5150492518600715772">お使いのデバイスに送信</translation>
 <translation id="5168414296986405587">iPadOS 向けの設計</translation>
@@ -753,6 +750,7 @@
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="648164694371393720">認証エラー</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を削除しました</translation>
+<translation id="6495429111159337775">Google アカウントのパスワードの使用と保存</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> を信用できる場合は、他のサイトで保存したパスワードを使用できます。
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
@@ -1091,7 +1089,6 @@
 <translation id="9079935439869366234">すべて未読にする</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
 <translation id="9083838294503912307">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>
-<translation id="9087108903408689779">Chrome の推奨パスワード:</translation>
 <translation id="9093271241977565440">画面上部の検索アイコンをタップします</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9097506547406246598">フォローを解除できません。エラーが発生しました。</translation>

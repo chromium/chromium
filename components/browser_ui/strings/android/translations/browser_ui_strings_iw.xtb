@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש להקיש כאן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2091887806945687916">צליל</translation>
-<translation id="2107397443965016585">יש לבקש ממני אישור לפני מתן הרשאה לאתרים להציג תוכן מוגן (מומלץ)</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="216989819110952009">אפילו שהרכיבו משקפיים ירוקות שהגנו על עיניהם, דורותי וחבריה נדהמו כשהגיעו לראשונה</translation>
 <translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">התאמה אישית של מודעות</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="4440642537584213025">הרחבה של <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">מתן הרשאה לאתרים להציג תוכן מוגן</translation>
 <translation id="4468959413250150279">השתקת צלילים באתר ספציפי.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{‏קובץ cookie אחד}one{‏# קובצי cookie}two{‏# קובצי cookie}other{‏# קובצי cookie}}</translation>
 <translation id="4479647676395637221">יש לשאול לפני שמאפשרים לאתרים להשתמש במצלמה שלך (מומלץ)</translation>

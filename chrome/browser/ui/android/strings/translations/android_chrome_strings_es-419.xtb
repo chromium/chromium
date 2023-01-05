@@ -139,7 +139,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloquea la pantalla para editar tu contraseña.</translation>
 <translation id="1726477445370128854">Puedes navegar y realizar búsquedas más rápidas cuando Chrome precarga las páginas que considera que puedes visitar</translation>
-<translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincroniza tus favoritos</translation>
 <translation id="1750259112639922169">Grupo de pestañas: <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
@@ -197,6 +196,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Mirar el próximo video</translation>
 <translation id="2074143993849053708">La IU de consentimiento de la búsqueda por voz de Asistente está cerrada</translation>
+<translation id="2079545284768500474">Deshacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincroniza y personaliza contenido en diferentes dispositivos</translation>
 <translation id="2100273922101894616">Acceso automático</translation>
@@ -238,7 +238,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2328985652426384049">No puedes acceder</translation>
 <translation id="234265804618409743">No se puede abrir la cámara. Se produjo un error.</translation>
 <translation id="2349710944427398404">Cantidad total de datos que usa Chrome, lo que incluye las cuentas, favoritos y opciones de configuración guardadas</translation>
-<translation id="2353636109065292463">Revisando tu conexión a Internet</translation>
 <translation id="235789365079050412">Política de Privacidad de Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2386938421315164605">Oculta y muestra temas.</translation>
@@ -423,7 +422,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3280562213547448728">Búsqueda por voz</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3285080554353377245">Videos sobre cómo usar Chrome</translation>
-<translation id="3288003805934695103">Volver a cargar la página.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas.</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
@@ -521,7 +519,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3894427358181296146">Agregar carpeta</translation>
 <translation id="3899682235662194879">Cerrar todas las pestañas de incógnito</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Buscando lo mejor de la Web…</translation>
 <translation id="3924911262913579434">El modo <ph name="SAFE_BROWSING_MODE" /> está activado</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>
@@ -775,7 +772,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5235196193381275927">Se produjo un error durante el acceso</translation>
 <translation id="5246093389635966745">Editar la combinación de teclas de la barra de herramientas</translation>
-<translation id="526421993248218238">No se puede cargar esta página</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido que se descargará.</translation>
 <translation id="5274286919938458946">Está vinculada con <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Enviar a</translation>
@@ -929,7 +925,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6138832295072039549">Cambia la configuración de tu sitio aquí</translation>
 <translation id="6140709049082532940">Protección mejorada:</translation>
 <translation id="6140912465461743537">País o región</translation>
-<translation id="614940544461990577">Intenta:</translation>
 <translation id="6150320133806434356">Se guardó el favorito</translation>
 <translation id="6154478581116148741">Para exportar tus contraseñas de este dispositivo, activa el bloqueo de pantalla en Configuración</translation>
 <translation id="6159729262978459665">Borra el historial de todos tus dispositivos sincronizados.</translation>

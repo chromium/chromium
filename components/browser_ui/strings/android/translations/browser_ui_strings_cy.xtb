@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Tapiwch i ddychwelyd i <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2091887806945687916">Sain</translation>
-<translation id="2107397443965016585">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="216989819110952009">Hyd yn oed gyda'u llygaid wedi'u hamddiffyn gan y sbectol werdd roedd Dorothy a'i ffrindiau wedi'u syfrdanu i ddechrau gan y</translation>
 <translation id="2182457891543959921">Gofyn cyn caniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle eich camera (argymhellir)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personoleiddio hysbysebion</translation>
 <translation id="4434045419905280838">Ffenestri naid ac ailgyfeiriadau</translation>
 <translation id="4440642537584213025">Ehangu <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
 <translation id="4468959413250150279">Distewi sain ar gyfer gwefan benodol.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cwci}zero{# cwci}two{# gwci}few{# chwci}many{# chwci}other{# cwci}}</translation>
 <translation id="4479647676395637221">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch camera (argymhellir)</translation>

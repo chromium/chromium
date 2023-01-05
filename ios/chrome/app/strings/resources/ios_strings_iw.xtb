@@ -170,7 +170,6 @@
 <translation id="225943865679747347">קוד שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">חשבון חדש</translation>
 <translation id="2268044343513325586">צמצום</translation>
-<translation id="2271351792809375263">‏יש להשתמש בסיסמאות ששמרת ב-Chrome לאפליקציות אחרות במכשיר</translation>
 <translation id="2273327106802955778">התפריט 'עוד'</translation>
 <translation id="2286505070150039482">הטקסט המודגש</translation>
 <translation id="2299218006564889602">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">סגירת קידום הכניסה</translation>
 <translation id="4514889972748124117">הצעת סיסמה חזקה…</translation>
 <translation id="4520798012560649652">למידע נוסף בנושא המצב הפרטי</translation>
-<translation id="4526249700380860531">‏הצגה וינוהל של סיסמאות שמורות ב-<ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
 <translation id="4536418791685807335">יש לנסות להיכנס שוב.</translation>
 <translation id="4540780316273593836">משהו השתבש</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">כבויה</translation>
 <translation id="5119391094379141756">‏בוחרים באפשרות Chrome</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
-<translation id="5140288047769711648">‏Chrome ישמור את הסיסמה הזאת בשבילך. אין צורך לזכור אותה.</translation>
 <translation id="5149188072385105201">הוספת סיסמאות…</translation>
 <translation id="5150492518600715772">שליחה למכשיר שלך</translation>
 <translation id="5168414296986405587">‏מותאם ל-iPadOS</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">סימון הכול כ'לא נקרא'</translation>
 <translation id="9081058212938299310">לעדכן את הסיסמה של <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, צריך להפעיל את הסנכרון.</translation>
-<translation id="9087108903408689779">‏הצעה לסיסמה מ-Chrome:</translation>
 <translation id="9093271241977565440">בחלק העליון של המסך, מקישים על סמל החיפוש</translation>
 <translation id="9094033019050270033">עדכון סיסמה</translation>
 <translation id="9097506547406246598">לא ניתן לבטל את המעקב. משהו השתבש.</translation>

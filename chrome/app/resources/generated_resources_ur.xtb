@@ -1239,6 +1239,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پوشیدہ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{فون نمبر}other{# فون نمبرز}}</translation>
 <translation id="2110941575868943054">بلوٹوتھ آلات تلاش کرنے کی اجازت ہے</translation>
+<translation id="2111158890826137380">‏معذرت، کچھ غلط ہو گیا۔ براہ کرم تفصیل میں bruschetta# کے ساتھ تاثرات درج کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے</translation>
 <translation id="211144231511833662">اقسام صاف کریں</translation>
 <translation id="2111670510994270194">دائیں طرف نیا ٹیب</translation>
 <translation id="2112554630428445878">خوش آمدید، <ph name="USERNAME" /></translation>
@@ -1781,6 +1782,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{یہ آلہ 1 سال کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {YEARS} سال کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="257779572837908839">‏Chromebox برائے میٹنگز کے طور پر سیٹ کریں</translation>
 <translation id="2579309488038515659">ہاٹ اسپاٹ کو فعال کریں</translation>
+<translation id="2579596474754516455">‏ضرورت پڑنے پر اسکرین ریڈر کے لیے ٹیکسٹ تبدیل کرنے کے لیے PDF تصاویر کو اسکین کریں</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> کو ہمیشہ متعدد فائلیں ڈاؤن لوڈ کرنے کی اجازت دیں</translation>
 <translation id="258095186877893873">طویل</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (پلیٹ فارم <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2882,6 +2884,7 @@
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3616741288025931835">براؤزنگ ڈیٹا &amp;صاف کریں…</translation>
 <translation id="3617891479562106823">پس منظر غیر دستیاب ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="3618286417582819036">معذرت، ایک خرابی پیش آ گئی</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
 <translation id="3620136223548713675">جغرافیائی مقام</translation>
 <translation id="362023940451053340">‏آپ کے Google اکاؤنٹ میں، <ph name="ACCOUNT" /> کے لیے</translation>
@@ -6671,6 +6674,7 @@
 <translation id="7149839598364933473">اس آلے کو ایک <ph name="DEVICE_OS" /> آلے میں تبدیل کریں۔</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
+<translation id="7153309176431047193">ٹیکسٹ کو تصاویر میں تبدیل کریں</translation>
 <translation id="7154130902455071009">اپنے شروعاتی صفحہ کو اس پر تبدیل کریں: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">تصویر کو ٹیکسٹ میں تبدیل کریں</translation>
 <translation id="7159953856712257647">بطور ڈیفالٹ انسٹال ہے</translation>

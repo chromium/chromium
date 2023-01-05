@@ -170,7 +170,6 @@
 <translation id="225943865679747347">त्रुटि कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाता थप्नुहोस्...</translation>
 <translation id="2268044343513325586">परिशुद्ध</translation>
-<translation id="2271351792809375263">आफ्नो डिभाइसमा भएका अन्य एपमा आफूले Chrome मा सेभ गरेका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="2273327106802955778">थप मेनु</translation>
 <translation id="2286505070150039482">हाइलाइट गरिएको टेक्स्ट</translation>
 <translation id="2299218006564889602">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ।</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">साइन-इन प्रोमो बन्द गर्नुहोस्</translation>
 <translation id="4514889972748124117">भरपर्दो पासवर्ड सिफारिस गरियोस्...</translation>
 <translation id="4520798012560649652">इन्कोग्निटो मोडका बारेमा थप जान्नुहोस्</translation>
-<translation id="4526249700380860531">हेर्नुहोस् र <ph name="BEGIN_LINK" /> passwords.google.com <ph name="END_LINK" /> सुरक्षित गरिएका पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4536418791685807335">फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="4540780316273593836">केही चिज गडबड भयो</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">निष्क्रिय छ</translation>
 <translation id="5119391094379141756">Chrome चयन गर्नुहोस्</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
-<translation id="5140288047769711648">Chrome ले तपाईंका लागि यो पासवर्ड याद राख्ने छ। तपाईंले आफ्नो पासवर्ड सम्झिराख्नु पर्दैन।</translation>
 <translation id="5149188072385105201">पासवर्ड सेभ गर्नुहोस्...</translation>
 <translation id="5150492518600715772">आफ्ना यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5168414296986405587">iPadOS का लागि बनाइएको</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">नपढिएका भनी सबैलाई चिन्ह लगाउनुहोस्</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
-<translation id="9087108903408689779">Chrome ले सिफारिस गरेको पासवर्ड:</translation>
 <translation id="9093271241977565440">स्क्रिनको सिरानमा रहेको "खोज्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9097506547406246598">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>

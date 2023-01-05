@@ -170,7 +170,6 @@
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додај налог</translation>
 <translation id="2268044343513325586">Прецизирај</translation>
-<translation id="2271351792809375263">Користите лозинке које сте сачували у Chrome-у у другим апликацијама на уређају</translation>
 <translation id="2273327106802955778">Мени Још</translation>
 <translation id="2286505070150039482">Истакнути текст</translation>
 <translation id="2299218006564889602">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки.</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">Затвори промоцију за пријављивање</translation>
 <translation id="4514889972748124117">Предложи јаку лозинку…</translation>
 <translation id="4520798012560649652">Сазнајте више о режиму без архивирања</translation>
-<translation id="4526249700380860531">Прегледајте сачуване лозинке и управљајте њима на <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Прегледајте синхронизоване податке</translation>
 <translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>
 <translation id="4540780316273593836">Нешто није у реду</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">Искључено</translation>
 <translation id="5119391094379141756">Изаберите Chrome</translation>
 <translation id="5132942445612118989">Синхронизујте лозинке, историју и други садржај на свим уређајима</translation>
-<translation id="5140288047769711648">Chrome ће запамтити ову лозинку уместо вас. Не морате ви да је памтите.</translation>
 <translation id="5149188072385105201">Додајте лозинку...</translation>
 <translation id="5150492518600715772">Пошаљите на уређај</translation>
 <translation id="5168414296986405587">Направљено за iPadOS</translation>
@@ -1092,7 +1089,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9079935439869366234">Означи све као непрочитано</translation>
 <translation id="9081058212938299310">Желите ли да ажурирате лозинку за <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Да бисте синхронизовали и персонализовали садржај на уређајима, укључите синхронизацију.</translation>
-<translation id="9087108903408689779">Предложена лозинка за Chrome:</translation>
 <translation id="9093271241977565440">У врху екрана додирните икону Претрага</translation>
 <translation id="9094033019050270033">Ажурирај лозинку</translation>
 <translation id="9097506547406246598">Опозивање праћења није успело. Дошло је до грешке.</translation>

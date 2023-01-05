@@ -1250,6 +1250,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> hidden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
 <translation id="2110941575868943054">Allowed to look for Bluetooth devices</translation>
+<translation id="2111158890826137380">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Clear types</translation>
 <translation id="2111670510994270194">New tab to the right</translation>
 <translation id="2112554630428445878">Welcome, <ph name="USERNAME" /></translation>
@@ -1794,6 +1795,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2575713839157415345">{YEARS,plural, =1{This device will be saved for one year and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {YEARS} years and you can connect without a code next time. This is set by your administrator.}}</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
 <translation id="2579309488038515659">Hotspot enable</translation>
+<translation id="2579596474754516455">Scan PDF images to convert text for screen reader when necessary</translation>
 <translation id="2580889980133367162">Always allow <ph name="HOST" /> to download multiple files</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2747,6 +2749,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3469583217479686109">Selection tool</translation>
 <translation id="3470392222765168737">Follow site</translation>
 <translation id="3471876058939596279">HDMI and USB Type-C ports can't be used for video at the same time. Use a different video port.</translation>
+<translation id="3472469028191701821">Opens in new tab</translation>
 <translation id="3473241910002674503">Navigate home or back and switch apps with buttons in tablet mode.</translation>
 <translation id="3473479545200714844">Screen magnifier</translation>
 <translation id="3474218480460386727">Use 99 letters or fewer for new words</translation>
@@ -2895,6 +2898,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616741288025931835">&amp;Clear Browsing Data...</translation>
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
+<translation id="3618286417582819036">Sorry, an error occurred</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocation</translation>
 <translation id="362023940451053340">In your Google Account, for <ph name="ACCOUNT" /></translation>
@@ -3133,6 +3137,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub notifications</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{An extension has been approved}other{# extensions have been approved}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">At least <ph name="INSTALL_SIZE" /> of space is recommended for Linux.</translation>
 <translation id="3824621460022590830">Device enrolment token is invalid. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Remember my choice for this file type: <ph name="FILE_TYPES" />}other{Remember my choice for these file types: <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4057,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4675828034887792601">Create shortcuts for searching sites and manage your search engine</translation>
 <translation id="4676595058027112862">Phone Hub, learn more</translation>
 <translation id="4677772697204437347">GPU memory</translation>
+<translation id="4678848110205818817">Credit/debit card</translation>
 <translation id="4680105648806843642">Sound was muted on this page</translation>
 <translation id="4680112532510845139">Drop an image here</translation>
 <translation id="4681453295291708042">Disable Nearby Share</translation>
@@ -6686,6 +6692,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7149839598364933473">Convert this device into a <ph name="DEVICE_OS" /> device.</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
+<translation id="7153309176431047193">Convert images to text</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convert image to text</translation>
 <translation id="7159953856712257647">Installed by default</translation>

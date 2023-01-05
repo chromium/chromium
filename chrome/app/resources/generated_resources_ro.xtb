@@ -1239,6 +1239,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ascunse</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Număr de telefon}few{# numere de telefon}other{# de numere de telefon}}</translation>
 <translation id="2110941575868943054">Pot căuta dispozitive Bluetooth</translation>
+<translation id="2111158890826137380">A apărut o eroare. Trimite feedback cu #bruschetta în descriere. Codul de eroare este <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Șterge tipurile</translation>
 <translation id="2111670510994270194">Filă nouă la dreapta</translation>
 <translation id="2112554630428445878">Bun venit, <ph name="USERNAME" /></translation>
@@ -1780,6 +1781,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2575713839157415345">{YEARS,plural, =1{Dispozitivul va fi salvat timp de un an și te poți conecta fără cod data viitoare. Setarea este configurată de administrator.}few{Dispozitivul va fi salvat timp de {YEARS} ani și te poți conecta fără cod data viitoare. Setarea este configurată de administrator.}other{Dispozitivul va fi salvat timp de {YEARS} de ani și te poți conecta fără cod data viitoare. Setarea este configurată de administrator.}}</translation>
 <translation id="257779572837908839">Configurează ca Chromebox pentru videoconferințe</translation>
 <translation id="2579309488038515659">Activează hotspotul</translation>
+<translation id="2579596474754516455">Scanează imagini PDF pentru a face conversia textului pentru cititorul de ecran atunci când este necesar</translation>
 <translation id="2580889980133367162">Permiteți întotdeauna <ph name="HOST" /> să descarce mai multe fișiere</translation>
 <translation id="258095186877893873">Lungă</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2881,6 +2883,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616741288025931835">&amp;Șterge datele de navigare...</translation>
 <translation id="3617891479562106823">Fundalurile nu sunt disponibile. Încearcă din nou mai târziu.</translation>
+<translation id="3618286417582819036">A apărut o eroare</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Localizarea geografică</translation>
 <translation id="362023940451053340">În Contul Google, pentru <ph name="ACCOUNT" /></translation>
@@ -6673,6 +6676,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7149839598364933473">Transformă dispozitivul într-un dispozitiv <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
 <translation id="7152478047064750137">Această extensie nu necesită permisiuni speciale</translation>
+<translation id="7153309176431047193">Fă conversia imaginilor în text</translation>
 <translation id="7154130902455071009">Schimbați pagina de start la: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convertește imaginea în text</translation>
 <translation id="7159953856712257647">Instalat în mod prestabilit</translation>

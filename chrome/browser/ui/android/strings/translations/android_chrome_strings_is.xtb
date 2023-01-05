@@ -139,7 +139,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
 <translation id="1724977129262658800">Taktu úr lás til að breyta aðgangsorðinu</translation>
 <translation id="1726477445370128854">Þú getur vafrað og leitað á hraðari hátt þegar Chrome forhleður síðum sem vafrinn telur að þú munir opna</translation>
-<translation id="1736419249208073774">Kanna</translation>
 <translation id="1749561566933687563">Samstilltu bókamerkin þín</translation>
 <translation id="1750259112639922169">Flipahópur – <ph name="TAB_COUNT" /> flipar</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
@@ -197,6 +196,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2067805253194386918">texti</translation>
 <translation id="2068748236079642969">Horfa á næsta myndskeið</translation>
 <translation id="2074143993849053708">Samþykkisviðmót raddleitar Hjálpara lokað</translation>
+<translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2082238445998314030">Niðurstaða <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Samstilltu á milli tækja og gerðu að þínu</translation>
 <translation id="2100273922101894616">Sjálfvirk innskráning</translation>
@@ -238,7 +238,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2328985652426384049">Innskráning mistókst</translation>
 <translation id="234265804618409743">Ekki tókst að opna myndavélina. Eitthvað fór úrskeiðis.</translation>
 <translation id="2349710944427398404">Gögn sem Chrome notar alls, þ.m.t. reikningar, bókamerki og vistaðar stillingar</translation>
-<translation id="2353636109065292463">Verið er að athuga nettenginguna</translation>
 <translation id="235789365079050412">Persónuverndarstefna Google</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2386938421315164605">Fela og sýna umfjöllunarefni</translation>
@@ -423,7 +422,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3280562213547448728">Raddleit</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3285080554353377245">Myndskeið um hvernig á að nota Chrome</translation>
-<translation id="3288003805934695103">Endurhlaða síðuna</translation>
 <translation id="3290249595466894471">Sendir einnig lítið brot af síðum, niðurhali, virkni viðbóta og kerfisupplýsingar til að auðvelda leit að nýjum ógnum</translation>
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
@@ -521,7 +519,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3894427358181296146">Bæta möppu við</translation>
 <translation id="3899682235662194879">Loka öllum huliðsflipum</translation>
 <translation id="3908308510347173149">Uppfæra <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Leitar að því besta á vefnum…</translation>
 <translation id="3924911262913579434">Áætlunin <ph name="SAFE_BROWSING_MODE" /> er virk</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Sameina gögnin mín</translation>
@@ -775,7 +772,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5233638681132016545">Nýr flipi</translation>
 <translation id="5235196193381275927">Eitthvað fór úrskeiðis við innskráningu</translation>
 <translation id="5246093389635966745">Breyta flýtileið tækjastiku</translation>
-<translation id="526421993248218238">Ekki hægt að hlaða þessari síðu</translation>
 <translation id="5271967389191913893">Tækið getur ekki opnað efnið sem á að sækja.</translation>
 <translation id="5274286919938458946">Tengt við <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Senda í</translation>
@@ -929,7 +925,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="6138832295072039549">Breyttu stillingum vefsvæðisins hér</translation>
 <translation id="6140709049082532940">Aukin vörn:</translation>
 <translation id="6140912465461743537">Land/svæði</translation>
-<translation id="614940544461990577">Prófaðu að:</translation>
 <translation id="6150320133806434356">Bókamerki vistað</translation>
 <translation id="6154478581116148741">Kveiktu á skjálás í stillingunum til að flytja aðgangsorðin þín út úr þessu tæki</translation>
 <translation id="6159729262978459665">Hreinsar feril úr öllum samstilltum tækjum.</translation>

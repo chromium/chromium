@@ -7,7 +7,7 @@
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1588438908519853928">Arrunta</translation>
 <translation id="1591070050619849194">Desgaitu animazio guztiak.</translation>
-<translation id="1703735871906654364">Testu-kurtsorearen bidez arakatzeko aplikazioa</translation>
+<translation id="1703735871906654364">Testu-kurtsorearen bidez arakatzea</translation>
 <translation id="1791496371305830581">Onartu animazio guztiak.</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1996252509865389616">Gaitu nahi duzu?</translation>
@@ -19,7 +19,7 @@
 <translation id="2648340354586434750">Eduki sakatuta &lt;span class='key'&gt;Aukera&lt;/span&gt; hitz batetik bestera mugitzeko.</translation>
 <translation id="2795227192542594043">Luzapenak kurtsore mugikorra jartzen du webgunean testua teklatuarekin hautatu ahal izateko.</translation>
 <translation id="2808027189040546825">1. urratsa: hautatu izar lausoenak dituen errenkada:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Estekara edo kontrolera iristean, automatikoki fokuratzen da. Sakatu &lt;span class='key'&gt;Sartu&lt;/span&gt; estekan edo botoian klik egitean. &lt;/p&gt; &lt;p&gt;Fokuratutako kontrolak (adibidez, testu-koadroak edo zerrenda-koadroak) gezi-teklak hartzen dituenean, sakatu &lt;span class='key'&gt;Esc&lt;/span&gt; eta, ondoren, Ezkerrera edo Eskuinera gezia, testu-kurtsorearen bidez arakatzen jarraitzeko. &lt;/p&gt; &lt;p&gt;Horren ordez, sakatu &lt;span class='key'&gt;Fitxa&lt;/span&gt; fokura daitekeen hurrengo kontrolera joateko. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Estekara edo kontrolera iristean, automatikoki fokuratzen da. Sakatu &lt;span class='key'&gt;Sartu&lt;/span&gt; estekan edo botoian klik egitean. &lt;/p&gt; &lt;p&gt;Fokuratutako kontrolak (adibidez, testu-koadroak edo zerrenda-koadroak) gezi-teklak hartzen dituenean, sakatu &lt;span class='key'&gt;Esc&lt;/span&gt; eta, ondoren, Ezkerrera edo Eskuinera gezia, testu-kurtsorearen bidez arakatzeko eginbidea erabiltzen jarraitzeko. &lt;/p&gt; &lt;p&gt;Horren ordez, sakatu &lt;span class='key'&gt;Fitxa&lt;/span&gt; fokura daitekeen hurrengo kontrolera joateko. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Konfigurazioa</translation>
 <translation id="3410969471888629217">Ahaztu webgunearen pertsonalizazioak</translation>
 <translation id="3435896845095436175">Gaitu</translation>

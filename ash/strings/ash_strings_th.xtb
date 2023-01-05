@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">ปฏิทิน, <ph name="CURRENT_MONTH_YEAR" />, เลือกวันที่ <ph name="DATE" /> อยู่</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1797271123677381264">ลืมรหัสผ่าน</translation>
+<translation id="1807246157184219062">สว่าง</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1812997170047690955">รายการที่อยู่ในหน้าจอของฉัน</translation>
 <translation id="1816896987747843206">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
@@ -506,6 +507,7 @@
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> และอีก<ph name="UNAVAILABLE_APPS_COUNT" /> แอปไม่ได้อยู่ในอุปกรณ์</translation>
 <translation id="3735740477244556633">จัดเรียงตาม</translation>
+<translation id="3738664582935948253">ตอนนี้คุณแสดงการคลิกและแป้นพิมพ์ลัดในการบันทึกหน้าจอได้แล้ว</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3765841986579723851">แก้ไขวันนี้</translation>
 <translation id="3773700760453577392">ผู้ดูแลระบบไม่อนุญาตให้ <ph name="USER_EMAIL" /> ลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี ผู้ใช้ทุกคนต้องออกจากระบบเพื่อดำเนินการต่อ</translation>
@@ -525,6 +527,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
 <translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
+<translation id="3871092408932389764">ต่ำสุด</translation>
 <translation id="3886872229787704059">เปิดวันนี้</translation>
 <translation id="3891340733213178823">กด Ctrl+Shift+Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>

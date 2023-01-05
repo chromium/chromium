@@ -139,7 +139,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1718835860248848330">Ultima ora</translation>
 <translation id="1724977129262658800">Sblocca per modificare la password</translation>
 <translation id="1726477445370128854">Puoi eseguire ricerche e navigare più rapidamente quando Chrome precarica le pagine che ritiene tu possa visitare</translation>
-<translation id="1736419249208073774">Esplora</translation>
 <translation id="1749561566933687563">Sincronizza i tuoi preferiti</translation>
 <translation id="1750259112639922169">Gruppo di schede - <ph name="TAB_COUNT" /> schede</translation>
 <translation id="17513872634828108">Schede aperte</translation>
@@ -197,6 +196,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2067805253194386918">testo</translation>
 <translation id="2068748236079642969">Guarda il video successivo</translation>
 <translation id="2074143993849053708">Interfaccia utente per il consenso all'utilizzo dell'assistente per la ricerca vocale chiusa</translation>
+<translation id="2079545284768500474">Annulla</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronizza e personalizza su tutti i dispositivi</translation>
 <translation id="2100273922101894616">Accesso automatico</translation>
@@ -238,7 +238,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2328985652426384049">Impossibile eseguire l'accesso</translation>
 <translation id="234265804618409743">Impossibile aprire la fotocamera. Si è verificato un problema.</translation>
 <translation id="2349710944427398404">Dati totali utilizzati da Chrome, tra cui account, preferiti e impostazioni salvate</translation>
-<translation id="2353636109065292463">Controllare la connessione a Internet</translation>
 <translation id="235789365079050412">Norme sulla privacy di Google</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2386938421315164605">Nascondi e mostra argomenti</translation>
@@ -423,7 +422,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="3280562213547448728">Ricerca vocale</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3285080554353377245">Video relativi all'utilizzo di Chrome</translation>
-<translation id="3288003805934695103">Ricaricare la pagina</translation>
 <translation id="3290249595466894471">Invia anche un numero ridotto di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce</translation>
 <translation id="3297344142967351106">Assistenza vocale</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
@@ -521,7 +519,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="3894427358181296146">Aggiungi cartella</translation>
 <translation id="3899682235662194879">Chiudi tutte le schede di navigazione in incognito</translation>
 <translation id="3908308510347173149">Aggiorna <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Stiamo cercando il meglio sul Web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Unisci i miei dati</translation>
@@ -775,7 +772,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5233638681132016545">Nuova scheda</translation>
 <translation id="5235196193381275927">Si è verificato un problema durante l'accesso</translation>
 <translation id="5246093389635966745">Modifica scorciatoia per la barra degli strumenti</translation>
-<translation id="526421993248218238">Impossibile caricare la pagina</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
 <translation id="5274286919938458946">Collegata alla carta <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Invia a</translation>
@@ -929,7 +925,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6138832295072039549">Cambia qui le impostazioni del sito</translation>
 <translation id="6140709049082532940">Protezione avanzata:</translation>
 <translation id="6140912465461743537">Paese/regione</translation>
-<translation id="614940544461990577">Prova a:</translation>
 <translation id="6150320133806434356">Segnalibro salvato</translation>
 <translation id="6154478581116148741">Attiva il blocco schermo in Impostazioni per esportare le tue password da questo dispositivo</translation>
 <translation id="6159729262978459665">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati.</translation>

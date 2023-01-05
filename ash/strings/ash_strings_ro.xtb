@@ -162,6 +162,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, momentan s-a selectat <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1797271123677381264">Am uitat parola</translation>
+<translation id="1807246157184219062">Luminos</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="1812997170047690955">Ce este pe ecranul meu?</translation>
 <translation id="1816896987747843206">Astfel, accesul la cameră este permis pentru toate aplicațiile și site-urile care au permisiunea adecvată</translation>
@@ -506,6 +507,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3713734891607377840">Deschide după finalizare</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> și încă <ph name="UNAVAILABLE_APPS_COUNT" /> nu sunt disponibile pe acest dispozitiv.</translation>
 <translation id="3735740477244556633">Sortează după</translation>
+<translation id="3738664582935948253">Acum poți afișa clicurile și comenzile rapide de la tastatură în înregistrările ecranului</translation>
 <translation id="3742055079367172538">Captură de ecran efectuată</translation>
 <translation id="3765841986579723851">Editat astăzi</translation>
 <translation id="3773700760453577392">Un administrator a interzis conectarea multiplă pentru <ph name="USER_EMAIL" />. Toți utilizatorii trebuie să se deconecteze pentru a continua.</translation>
@@ -525,6 +527,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="385300504083504382">Început</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
+<translation id="3871092408932389764">Cea mai scăzută</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>

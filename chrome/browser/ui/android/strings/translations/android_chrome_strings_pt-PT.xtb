@@ -139,7 +139,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloqueie para editar a palavra-passe</translation>
 <translation id="1726477445370128854">Pode explorar e pesquisar mais rapidamente quando o Chrome pré-carrega páginas que pensa que poderá visitar</translation>
-<translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincronizar os marcadores</translation>
 <translation id="1750259112639922169">Grupo de separadores – <ph name="TAB_COUNT" /> separadores</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
@@ -197,6 +196,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Ver vídeo seguinte</translation>
 <translation id="2074143993849053708">IU de consentimento da pesquisa por voz do Assistente fechada</translation>
+<translation id="2079545284768500474">Anular</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronizar e personalizar entre dispositivos</translation>
 <translation id="2100273922101894616">Início de sessão automático</translation>
@@ -238,7 +238,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2328985652426384049">Não é possível iniciar sessão</translation>
 <translation id="234265804618409743">Não é possível abrir a câmara. Ocorreu um erro.</translation>
 <translation id="2349710944427398404">Total de dados utilizados pelo Chrome, incluindo contas, marcadores e definições guardadas</translation>
-<translation id="2353636109065292463">A verificar a sua ligação à Internet...</translation>
 <translation id="235789365079050412">Política de Privacidade da Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2386938421315164605">Oculte e mostre tópicos</translation>
@@ -423,7 +422,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3285080554353377245">Vídeos sobre como utilizar o Chrome</translation>
-<translation id="3288003805934695103">Atualizar a página</translation>
 <translation id="3290249595466894471">Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças</translation>
 <translation id="3297344142967351106">Assistente de voz</translation>
 <translation id="3303414029551471755">Pretende transferir o conteúdo?</translation>
@@ -521,7 +519,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3894427358181296146">Adicionar pasta</translation>
 <translation id="3899682235662194879">Fechar todos os separadores de navegação anónima</translation>
 <translation id="3908308510347173149">Atualizar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">A procurar o melhor da Web…</translation>
 <translation id="3924911262913579434">A funcionalidade <ph name="SAFE_BROWSING_MODE" /> está ativada.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar os meus dados</translation>
@@ -775,7 +772,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5233638681132016545">Novo separador</translation>
 <translation id="5235196193381275927">Algo correu mal durante o início de sessão</translation>
 <translation id="5246093389635966745">Editar atalho da barra de ferramentas</translation>
-<translation id="526421993248218238">Não é possível carregar esta página.</translation>
 <translation id="5271967389191913893">O dispositivo não consegue abrir o conteúdo a transferir.</translation>
 <translation id="5274286919938458946">Associado a <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Enviar para</translation>
@@ -929,7 +925,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6138832295072039549">Altere as definições do site aqui.</translation>
 <translation id="6140709049082532940">Proteção melhorada:</translation>
 <translation id="6140912465461743537">País/região</translation>
-<translation id="614940544461990577">Experimente:</translation>
 <translation id="6150320133806434356">Marcador guardado</translation>
 <translation id="6154478581116148741">Ative o bloqueio de ecrã nas Definições para exportar as suas palavras-passe a partir deste dispositivo.</translation>
 <translation id="6159729262978459665">Limpa o histórico de todos os dispositivos sincronizados.</translation>
@@ -1166,6 +1161,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7379900596734708416">Está disponível o tema escuro para sites</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Experiência de primeira execução do Chrome</translation>
+<translation id="7411224099004328643">Utilizador da Conta Google</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
 <translation id="7419565702166471774">Usar sempre ligações seguras</translation>
 <translation id="7431991332293347422">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa e muito mais.</translation>

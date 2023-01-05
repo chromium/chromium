@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Dotaknite se, če se želite vrniti na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2091887806945687916">Zvok</translation>
-<translation id="2107397443965016585">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine (priporočeno)</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="216989819110952009">Kljub zelenim očalom za zaščito oči je Dorothy in njene prijatelje sprva zaslepilo</translation>
 <translation id="2182457891543959921">Vprašaj, preden se spletnim mestom dovoli ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja kamere (priporočljivo)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Osebno prilagajanje oglasov</translation>
 <translation id="4434045419905280838">Pojavna okna in preusmeritve</translation>
 <translation id="4440642537584213025">Razširitev: <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="4468959413250150279">Izklop zvoka za določeno spletno mesto.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# piškotek}one{# piškotek}two{# piškotka}few{# piškotki}other{# piškotkov}}</translation>
 <translation id="4479647676395637221">Prikaži poziv, preden se spletnim mestom dovoli uporaba kamere (priporočeno)</translation>

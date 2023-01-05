@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Последния час</translation>
 <translation id="1724977129262658800">Отключете, за да редактирате паролата си</translation>
 <translation id="1726477445370128854">Можете да сърфирате и търсите по-бързо, когато Chrome зарежда предварително страниците, които смята, че е възможно да посетите</translation>
-<translation id="1736419249208073774">Разглеждане</translation>
 <translation id="1749561566933687563">Синхронизирайте отметките си</translation>
 <translation id="1750259112639922169">Група раздели – <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="17513872634828108">Отворени раздели</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Гледане на следващия видеоклип</translation>
 <translation id="2074143993849053708">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е затворен</translation>
+<translation id="2079545284768500474">Отмяна</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизиране и персонализиране на всички устройства</translation>
 <translation id="2100273922101894616">Автоматичен вход</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">Влизането в профила не е възможно</translation>
 <translation id="234265804618409743">Камерата не може да се отвори. Нещо се обърка.</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
-<translation id="2353636109065292463">Връзката с интернет се проверява</translation>
 <translation id="235789365079050412">Декларация за поверителност на Google</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2386938421315164605">Скриване и показване на теми</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">Гласово търсене</translation>
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3285080554353377245">Видеоклипове за използването на Chrome</translation>
-<translation id="3288003805934695103">Презаредете страницата.</translation>
 <translation id="3290249595466894471">Също така се изпраща малка извадка от страници, изтеглени файлове, активност на разширенията и системна информация, за да се подпомогне откриването на нови заплахи</translation>
 <translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">Добавяне на папка</translation>
 <translation id="3899682235662194879">Затваряне на всички раздели в режим „инкогнито“</translation>
 <translation id="3908308510347173149">Актуализиране на <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Намираме най-доброто от мрежата…</translation>
 <translation id="3924911262913579434">Режимът „<ph name="SAFE_BROWSING_MODE" />“ е включен</translation>
 <translation id="3927692899758076493">Безсерифен</translation>
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">Нов раздел</translation>
 <translation id="5235196193381275927">Нещо се обърка при влизането в профила</translation>
 <translation id="5246093389635966745">Редактиране на пряк път в лентата с инструменти</translation>
-<translation id="526421993248218238">Тази страница не може да се зареди</translation>
 <translation id="5271967389191913893">Устройството не може да отвори съдържанието за изтегляне.</translation>
 <translation id="5274286919938458946">Свързана с(ъс) <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Изпращане до</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">Тук можете да промените настройките си за сайта</translation>
 <translation id="6140709049082532940">Подобрена защита:</translation>
 <translation id="6140912465461743537">Държава/регион</translation>
-<translation id="614940544461990577">Изпробвайте следното:</translation>
 <translation id="6150320133806434356">Отметката е запазена</translation>
 <translation id="6154478581116148741">Включете функцията за заключване на екрана от настройките, за да експортирате паролите си от това устройство</translation>
 <translation id="6159729262978459665">Изчиства историята от всички синхронизирани устройства.</translation>
@@ -1166,6 +1161,7 @@
 <translation id="7379900596734708416">Налице е тъмна тема за сайтовете</translation>
 <translation id="7400418766976504921">URL адрес</translation>
 <translation id="7403691278183511381">Представяне при първо стартиране на Chrome</translation>
+<translation id="7411224099004328643">Потребител на профила в Google</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
 <translation id="7419565702166471774">Винаги да се използват сигурни връзки</translation>
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>

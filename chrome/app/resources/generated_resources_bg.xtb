@@ -2743,6 +2743,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3469583217479686109">Инструмент за избиране</translation>
 <translation id="3470392222765168737">Следване на сайта</translation>
 <translation id="3471876058939596279">HDMI и USB Type-C портовете не могат едновременно да се използват за видео. Използвайте друг порт за видео.</translation>
+<translation id="3472469028191701821">Отваря се в нов раздел</translation>
 <translation id="3473241910002674503">Преминавайте към началния екран, връщайте се и превключвайте между приложенията чрез бутони, когато сте в режим на таблет.</translation>
 <translation id="3473479545200714844">Екранна лупа</translation>
 <translation id="3474218480460386727">Използвайте до 99 букви за новите думи</translation>
@@ -3129,6 +3130,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3820749202859700794">Елиптична крива secp521r1 по SECG (позната и като NIST P-521)</translation>
 <translation id="3821074617718452587">Известия от Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Разширение бе одобрено}other{# разширения бяха одобрени}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място.</translation>
 <translation id="3824621460022590830">Означението за регистриране на устройството е невалидно. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомняне на избора ми за този файлов тип: <ph name="FILE_TYPES" />}other{Запомняне на избора ми за следните файлови типове: <ph name="FILE_TYPES" />}}</translation>
@@ -4049,6 +4051,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4675828034887792601">Създавайте преки пътища, с чиято помощ да търсите в сайтовете и да управлявате търсещите си машини</translation>
 <translation id="4676595058027112862">Phone Hub. Научете повече</translation>
 <translation id="4677772697204437347">Памет на графичния процесор</translation>
+<translation id="4678848110205818817">Кредитна/дебитна карта</translation>
 <translation id="4680105648806843642">Звукът бе заглушен на тази страница</translation>
 <translation id="4680112532510845139">Преместете изображение тук</translation>
 <translation id="4681453295291708042">Деактивиране на „Споделяне наблизо“</translation>

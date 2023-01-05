@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">છેલ્લા એક કલાક</translation>
 <translation id="1724977129262658800">તમારા પાસવર્ડમાં ફેરફાર કરવા માટે અનલૉક કરો</translation>
 <translation id="1726477445370128854">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome જ્યારે પહેલેથી લોડ કરે, ત્યારે તમે ઝડપથી બ્રાઉઝ અને શોધ કરી શકો છો</translation>
-<translation id="1736419249208073774">શોધખોળ કરો</translation>
 <translation id="1749561566933687563">તમારા બુકમાર્કને સિંક કરો</translation>
 <translation id="1750259112639922169">ટૅબનું ગ્રૂપ - <ph name="TAB_COUNT" /> ટૅબ</translation>
 <translation id="17513872634828108">ટેબ્સ ખોલો</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">ટેક્સ્ટ</translation>
 <translation id="2068748236079642969">આગલો વીડિયો જુઓ</translation>
 <translation id="2074143993849053708">Assistant વૉઇસ શોધની સંમતિ માટેનું UI બંધ કર્યું</translation>
+<translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
 <translation id="2096012225669085171">સમગ્ર ઉપકરણો પર સિંક કરો અને વ્યક્તિગત બનાવો</translation>
 <translation id="2100273922101894616">સ્વતઃ સાઇન-ઇન</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="234265804618409743">તમારો કૅમેરા ખોલી શકતાં નથી. કંઈક ખોટું થયું.</translation>
 <translation id="2349710944427398404">Chrome દ્વારા ઉપયોગમાં લેવાયેલી કુલ સ્ટોરેજ, એકાઉન્ટ, બુકમાર્ક અને સાચવેલા સેટિંગ સહિત</translation>
-<translation id="2353636109065292463">તમારું ઇન્ટરનેટ કનેક્શન તપાસી રહ્યાં છીએ</translation>
 <translation id="235789365079050412">Google પ્રાઇવસી પૉલિસી</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2386938421315164605">વિષયોને છુપાવો અને બતાવો</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">વૉઇસ શોધ</translation>
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3285080554353377245">Chromeનો ઉપયોગ કેવી રીતે કરવો તે વિશેના વીડિયો</translation>
-<translation id="3288003805934695103">પેજ ફરીથી લોડ કરીને</translation>
 <translation id="3290249595466894471">નવા જોખમો શોધવામાં સહાય કરવા માટે પેજનો નાનો નમૂનો, ડાઉનલોડ, એક્સ્ટેન્શનની પ્રવૃત્તિ અને સિસ્ટમની માહિતી પણ મોકલે છે</translation>
 <translation id="3297344142967351106">વૉઇસ સહાયતા</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">ફોલ્ડર ઉમેરો</translation>
 <translation id="3899682235662194879">બધી છૂપી ટૅબ બંધ કરો</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> અપડેટ કરો</translation>
-<translation id="3912508018559818924">વેબમાંથી શ્રેષ્ઠ શોધવું…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ચાલુ છે</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">નવું ટૅબ</translation>
 <translation id="5235196193381275927">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="5246093389635966745">ટૂલબારના શૉર્ટકટમાં ફેરફાર કરો</translation>
-<translation id="526421993248218238">આ પેજ લોડ કરી શકાતું નથી</translation>
 <translation id="5271967389191913893">ડિવાઇસ, ડાઉનલોડ કરવાની કન્ટેન્ટ ખોલી શકતું નથી.</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" />ની સાથે લિંક કર્યું</translation>
 <translation id="5292796745632149097">આના પર મોકલો</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">તમારા સાઇટ સેટિંગમાં અહીંથી ફેરફાર કરો</translation>
 <translation id="6140709049082532940">વધારેલું સંરક્ષણ:</translation>
 <translation id="6140912465461743537">દેશ/પ્રદેશ</translation>
-<translation id="614940544461990577">પ્રયાસ કરો:</translation>
 <translation id="6150320133806434356">બુકમાર્ક સાચવ્યું</translation>
 <translation id="6154478581116148741">આ ઉપકરણ પરથી તમારા બધા પાસવર્ડને નિકાસ કરવા માટે સેટિંગમાંથી સ્ક્રીન લૉક ચાલુ કરો</translation>
 <translation id="6159729262978459665">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે.</translation>

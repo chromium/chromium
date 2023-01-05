@@ -162,6 +162,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, actualmente está seleccionado el <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1797271123677381264">He olvidado la contraseña</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
 <translation id="1812997170047690955">¿Qué hay en mi pantalla?</translation>
 <translation id="1816896987747843206">Esto permite que accedan a la cámara todas las aplicaciones y sitios web con el permiso de cámara</translation>
@@ -526,6 +527,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="385300504083504382">Principio</translation>
 <translation id="3861651314799684201">Pulsa Intro para grabar toda la pantalla</translation>
+<translation id="3871092408932389764">El más bajo</translation>
 <translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3891340733213178823">Pulsa Ctrl+Mayús+Q dos veces para cerrar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (conversión de texto a voz)</translation>

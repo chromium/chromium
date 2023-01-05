@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Націсніце, каб вярнуцца на ўкладку <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2091887806945687916">Гук</translation>
-<translation id="2107397443965016585">Пытаць, перш чым дазволіць прайграванне абароненага змесціва на сайтах (рэкамендуецца)</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="216989819110952009">Нават надзеўшы зялёныя акуляры, Дораці і яе сябры былі ашаломленыя</translation>
 <translation id="2182457891543959921">Пытацца, перш чым дазволіць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры (рэкамендуецца)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Персаналізацыя рэкламы</translation>
 <translation id="4434045419905280838">Усплыв. вокны і перанакіраванні</translation>
 <translation id="4440642537584213025">Разгарнуць апісанне "<ph name="TARGET_DESCRIPTION" />"</translation>
-<translation id="445467742685312942">Дазволіць сайтам прайграваць абароненае змесціва</translation>
 <translation id="4468959413250150279">Выключыць гук на канкрэтным сайце.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файлы cookie}many{# файлаў cookie}other{# файла cookie}}</translation>
 <translation id="4479647676395637221">Пытацца, перш чым дазволіць сайтам выкарыстоўваць камеру (рэкамендуецца)</translation>

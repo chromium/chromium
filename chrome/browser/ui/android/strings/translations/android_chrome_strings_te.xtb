@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">చివరి గంట</translation>
 <translation id="1724977129262658800">మీ పాస్‌వర్డ్‌ను ఎడిట్ చేయడానికి అన్‌లాక్ చేయండి</translation>
 <translation id="1726477445370128854">Chrome మీరు సందర్శించవచ్చని భావించే పేజీలను ప్రీ - లోడ్ చేసినప్పుడు మీరు వేగంగా బ్రౌజ్ చేయవచ్చు, సెర్చ్ చేయవచ్చు</translation>
-<translation id="1736419249208073774">అన్వేషించండి</translation>
 <translation id="1749561566933687563">మీ బుక్‌మార్క్‌లను సింక్ చేయండి</translation>
 <translation id="1750259112639922169">ట్యాబ్ గ్రూప్ - <ph name="TAB_COUNT" /> ట్యాబ్‌లు</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">వచనం</translation>
 <translation id="2068748236079642969">తర్వాతి వీడియోను చూడండి</translation>
 <translation id="2074143993849053708">Assistant వాయిస్ సెర్చ్ సమ్మతి UI మూసివేయబడింది</translation>
+<translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
 <translation id="2096012225669085171">అన్ని పరికరాలలో సింక్ చేయండి మరియు వ్యక్తిగతీకరించండి</translation>
 <translation id="2100273922101894616">ఆటోమేటిక్ సైన్-ఇన్</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">సైన్ ఇన్ చేయడం సాధ్యపడదు</translation>
 <translation id="234265804618409743">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. ఏదో పొరపాటు జరిగింది.</translation>
 <translation id="2349710944427398404">ఖాతాలు, బుక్‌మార్క్‌లు, సేవ్ చేసిన సెట్టింగ్‌లతో సహా Chrome ఉపయోగించిన మొత్తం డేటా</translation>
-<translation id="2353636109065292463">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేస్తోంది</translation>
 <translation id="235789365079050412">Google గోప్యతా పాలసీ</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2386938421315164605">అంశాలను దాచండి లేదా చూపండి</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">వాయిస్ సెర్చ్</translation>
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3285080554353377245">Chromeను ఎలా ఉపయోగించాలనే దానికి సంబంధించిన వీడియోలు</translation>
-<translation id="3288003805934695103">పేజీని మళ్లీ లోడ్ చేయడం</translation>
 <translation id="3290249595466894471">కొత్త రకం ప్రమాదాలను గుర్తించడంలో సహాయపడటానికి కొన్ని నమూనా పేజీలు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్ యాక్టివిటీ, సిస్టమ్ సమాచారాన్ని కూడా పంపుతుంది</translation>
 <translation id="3297344142967351106">వాయిస్ సహాయం</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">ఫోల్డర్‌ను జోడించండి</translation>
 <translation id="3899682235662194879">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయి</translation>
-<translation id="3912508018559818924">వెబ్ నుండి ఉత్తమమైనది కనుగొంటోంది…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ఆన్‌లో ఉంది</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">నా డేటాను కలపండి</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
 <translation id="5235196193381275927">సైన్ ఇన్ చేసే సమయంలో ఏదో తప్పు జరిగింది</translation>
 <translation id="5246093389635966745">టూల్‌బార్ షార్ట్‌కట్‌ను ఎడిట్ చేయండి</translation>
-<translation id="526421993248218238">ఈ పేజీని లోడ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5271967389191913893">పరికరం డౌన్‌లోడ్ చేయాల్సిన కంటెంట్‌ను తెరవలేదు.</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" />తో లింక్ చేయబడింది</translation>
 <translation id="5292796745632149097">ఈ పరికరానికి పంపండి</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">ఇక్కడ మీ సైట్ సెట్టింగ్‌లు మార్చండి</translation>
 <translation id="6140709049082532940">మెరుగైన రక్షణ:</translation>
 <translation id="6140912465461743537">దేశం/ప్రాంతం</translation>
-<translation id="614940544461990577">ఇలా చేసి ప్రయత్నించండి:</translation>
 <translation id="6150320133806434356">బుక్‌మార్క్ సేవ్ చేయబడింది</translation>
 <translation id="6154478581116148741">ఈ పరికరం నుండి మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయడానికి సెట్టింగ్‌లలో స్క్రీన్ లాక్‌ను ఆన్ చేయండి</translation>
 <translation id="6159729262978459665">సింక్ అయి ఉన్న పరికరాలన్నిటి నుండి హిస్టరీని క్లియర్ చేస్తుంది.</translation>

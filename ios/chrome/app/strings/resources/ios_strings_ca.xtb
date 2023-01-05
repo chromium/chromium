@@ -170,7 +170,6 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Afegeix un compte</translation>
 <translation id="2268044343513325586">Restringeix</translation>
-<translation id="2271351792809375263">Utilitza les contrasenyes que tens desades a Chrome en altres aplicacions del teu dispositiu</translation>
 <translation id="2273327106802955778">Més opcions del menú</translation>
 <translation id="2286505070150039482">Text marcat</translation>
 <translation id="2299218006564889602">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>
@@ -465,7 +464,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>
 <translation id="4514889972748124117">Suggereix una contrasenya segura...</translation>
 <translation id="4520798012560649652">Més informació sobre el mode d'incògnit</translation>
-<translation id="4526249700380860531">Consulta i gestiona les contrasenyes desades a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4536418791685807335">Prova d'iniciar la sessió de nou.</translation>
 <translation id="4540780316273593836">S'ha produït un error</translation>
@@ -553,7 +551,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5118764316110575523">Desactivat</translation>
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
-<translation id="5140288047769711648">Chrome recordarà aquesta contrasenya. No cal que la memoritzis.</translation>
 <translation id="5149188072385105201">Afegeix una contrasenya...</translation>
 <translation id="5150492518600715772">Envia al teu dispositiu</translation>
 <translation id="5168414296986405587">Creat per a iPadOS</translation>
@@ -1092,7 +1089,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9079935439869366234">Marca-ho tot com a no llegit</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
-<translation id="9087108903408689779">Contrasenya suggerida per Chrome:</translation>
 <translation id="9093271241977565440">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
 <translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>

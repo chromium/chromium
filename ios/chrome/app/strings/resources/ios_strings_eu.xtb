@@ -170,7 +170,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="225943865679747347">Errore-kodea: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Gehitu kontu bat</translation>
 <translation id="2268044343513325586">Mugatu</translation>
-<translation id="2271351792809375263">Erabili Chrome-n gordetako pasahitzak gailuko beste aplikazio batzuetan</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
 <translation id="2286505070150039482">Nabarmendutako testua</translation>
 <translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
@@ -465,7 +464,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4508750114462689118">Itxi saioa hasteko promozioa</translation>
 <translation id="4514889972748124117">Iradoki pasahitz konplexu bat…</translation>
 <translation id="4520798012560649652">Lortu ezkutuko moduari buruzko informazio gehiago</translation>
-<translation id="4526249700380860531">Ikusi eta kudeatu gordetako pasahitzak <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> estekan.</translation>
 <translation id="452750746583162491">Berrikusi sinkronizatutako datuak</translation>
 <translation id="4536418791685807335">Hasi saioa berriro.</translation>
 <translation id="4540780316273593836">Arazoren bat izan da</translation>
@@ -553,7 +551,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5118764316110575523">Desaktibatuta</translation>
 <translation id="5119391094379141756">Hautatu Chrome.</translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
-<translation id="5140288047769711648">Chrome-k gogoratuko du pasahitza. Ez duzu zuk gogoratu beharko.</translation>
 <translation id="5149188072385105201">Gehitu pasahitz bat…</translation>
 <translation id="5150492518600715772">Bidali beste gailu batera</translation>
 <translation id="5168414296986405587">iPadOS-erako sortua</translation>
@@ -1092,7 +1089,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9079935439869366234">Markatu guztiak irakurri gabeko gisa</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> erabiltzailearen pasahitza eguneratu nahi duzu?</translation>
 <translation id="9083838294503912307">Gailu guztiak sinkronizatu eta pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
-<translation id="9087108903408689779">Chrome-k iradokitako pasahitza:</translation>
 <translation id="9093271241977565440">Pantailaren goialdean, sakatu bilatzeko botoia</translation>
 <translation id="9094033019050270033">Aldatu pasahitza</translation>
 <translation id="9097506547406246598">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>

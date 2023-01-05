@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">过去一小时</translation>
 <translation id="1724977129262658800">解锁屏幕后才能修改您的密码</translation>
 <translation id="1726477445370128854">如果 Chrome 预加载它认为您可能会访问的网页，您便可更快速地浏览和搜索</translation>
-<translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="1750259112639922169">标签页分组 - <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">文本</translation>
 <translation id="2068748236079642969">观看下一个视频</translation>
 <translation id="2074143993849053708">针对 Google 助理语音搜索功能的用户意见征求界面已关闭</translation>
+<translation id="2079545284768500474">撤消</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
 <translation id="2096012225669085171">在所有设备上保持同步，获享个性化体验</translation>
 <translation id="2100273922101894616">自动登录</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">无法登录</translation>
 <translation id="234265804618409743">无法打开您的摄像头。出了点问题。</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括帐号、书签和已保存的设置</translation>
-<translation id="2353636109065292463">检查互联网连接状况</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">语音搜索</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3285080554353377245">介绍如何使用 Chrome 的视频</translation>
-<translation id="3288003805934695103">重新加载网页</translation>
 <translation id="3290249595466894471">还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
 <translation id="3297344142967351106">语音助理</translation>
 <translation id="3303414029551471755">要开始下载该内容吗？</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">添加文件夹</translation>
 <translation id="3899682235662194879">关闭所有无痕模式标签页</translation>
 <translation id="3908308510347173149">更新 <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">正在从网络中查找最具价值的数据…</translation>
 <translation id="3924911262913579434">已开启“<ph name="SAFE_BROWSING_MODE" />”</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
-<translation id="526421993248218238">无法加载此页面</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5274286919938458946">已关联到<ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">发送到</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">如需更改您的网站设置，请点击此处</translation>
 <translation id="6140709049082532940">增强型保护：</translation>
 <translation id="6140912465461743537">国家/地区</translation>
-<translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6150320133806434356">书签已保存</translation>
 <translation id="6154478581116148741">需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码</translation>
 <translation id="6159729262978459665">会从所有已同步的设备中清除历史记录。</translation>
@@ -1166,6 +1161,7 @@
 <translation id="7379900596734708416">可为网站启用深色主题</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7403691278183511381">Chrome 首次运行体验</translation>
+<translation id="7411224099004328643">Google 帐号用户</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>

@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">ಕ್ಯಾಲೆಂಡರ್, <ph name="CURRENT_MONTH_YEAR" />, ಪ್ರಸ್ತುತವಾಗಿ <ph name="DATE" /> ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1787955149152357925">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1797271123677381264">ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರುವಿರಿ</translation>
+<translation id="1807246157184219062">ತಿಳಿ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1812997170047690955">ನನ್ನ ಪರದೆಯಲ್ಲಿ ಏನಿದೆ?</translation>
 <translation id="1816896987747843206">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
@@ -525,6 +526,7 @@
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="385300504083504382">ಪ್ರಾರಂಭ</translation>
 <translation id="3861651314799684201">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
+<translation id="3871092408932389764">ಅತಿ ಕಡಿಮೆ</translation>
 <translation id="3886872229787704059">ಇಂದು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="3891340733213178823">ಸೈನ್ ಔಟ್ ಮಾಡಲು Ctrl+Shift+Q ಅನ್ನು ಎರಡುಬಾರಿ ಒತ್ತಿರಿ.</translation>
 <translation id="3893630138897523026">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>

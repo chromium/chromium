@@ -139,7 +139,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1724977129262658800">Odklenite, če želite urediti geslo.</translation>
 <translation id="1726477445370128854">Brskanje in iskanje sta hitrejša, ko Chrome vnaprej naloži strani, za katere meni, da jih boste morda obiskali.</translation>
-<translation id="1736419249208073774">Razišči</translation>
 <translation id="1749561566933687563">Sinhroniziranje zaznamkov</translation>
 <translation id="1750259112639922169">Skupina zavihkov – zavihki (<ph name="TAB_COUNT" />)</translation>
 <translation id="17513872634828108">Odprti zavihki</translation>
@@ -197,6 +196,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="2067805253194386918">besedilo</translation>
 <translation id="2068748236079642969">Ogled naslednjega videoposnetka</translation>
 <translation id="2074143993849053708">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku zaprt.</translation>
+<translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultat od <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sinhronizacija in prilagajanje med napravami</translation>
 <translation id="2100273922101894616">Samodejna prijava</translation>
@@ -238,7 +238,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="2328985652426384049">Ne morem se prijaviti</translation>
 <translation id="234265804618409743">Kamere ni mogoče odpreti. Prišlo je do napake.</translation>
 <translation id="2349710944427398404">Skupna količina podatkov, ki jih uporablja Chrome, vključno z računi, zaznamki in shranjenimi nastavitvami.</translation>
-<translation id="2353636109065292463">Preverjanje internetne povezave</translation>
 <translation id="235789365079050412">Googlov pravilnik o zasebnosti</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2386938421315164605">Skrivanje in razkrivanje tem.</translation>
@@ -423,7 +422,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3280562213547448728">Glasovno iskanje</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3285080554353377245">Videoposnetki o uporabi Chroma</translation>
-<translation id="3288003805934695103">znova naložiti stran</translation>
 <translation id="3290249595466894471">Prav tako pošlje manjši vzorec strani, prenosov, dejavnosti razširitev in podatkov o sistemu zaradi pomoči pri odkrivanju novih groženj.</translation>
 <translation id="3297344142967351106">Glasovna pomoč</translation>
 <translation id="3303414029551471755">Ali želite prenesti vsebino?</translation>
@@ -521,7 +519,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3894427358181296146">Dodajanje mape</translation>
 <translation id="3899682235662194879">Zapri vse anonimne zavihke</translation>
 <translation id="3908308510347173149">Posodobi <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Iskanje najboljšega v spletu …</translation>
 <translation id="3924911262913579434">Način »<ph name="SAFE_BROWSING_MODE" />« je vklopljen</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Združevanje podatkov</translation>
@@ -775,7 +772,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5233638681132016545">Nov zavihek</translation>
 <translation id="5235196193381275927">Med prijavo je prišlo do težave.</translation>
 <translation id="5246093389635966745">Urejanje bližnjice orodne vrstice</translation>
-<translation id="526421993248218238">Te strani ni mogoče naložiti</translation>
 <translation id="5271967389191913893">Naprava ne more odpreti vsebine za prenos.</translation>
 <translation id="5274286919938458946">Povezano s kartico <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Pošiljanje v napravo</translation>
@@ -929,7 +925,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6138832295072039549">Tukaj spremenite nastavitve svojega spletnega mesta</translation>
 <translation id="6140709049082532940">Izboljšana zaščita:</translation>
 <translation id="6140912465461743537">Država/regija</translation>
-<translation id="614940544461990577">Poskusite:</translation>
 <translation id="6150320133806434356">Zaznamek je shranjen</translation>
 <translation id="6154478581116148741">Vklopite zaklepanje zaslona v nastavitvah, če želite izvoziti gesla iz te naprave.</translation>
 <translation id="6159729262978459665">Izbriše zgodovino iz vseh sinhroniziranih naprav.</translation>

@@ -162,6 +162,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, just nu är <ph name="DATE" /> markerat.</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1797271123677381264">Glömt lösenordet</translation>
+<translation id="1807246157184219062">Ljus</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="1812997170047690955">Vad visas på skärmen?</translation>
 <translation id="1816896987747843206">Detta ger kameraåtkomst för alla appar och webbplatser med kamerabehörighet</translation>
@@ -525,6 +526,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
 <translation id="3861651314799684201">Tryck på retur för att spela in hela skärmen</translation>
+<translation id="3871092408932389764">Lägst</translation>
 <translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3893630138897523026">ChromeVox (talad feedback)</translation>

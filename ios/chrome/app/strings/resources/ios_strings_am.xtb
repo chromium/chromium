@@ -170,7 +170,6 @@
 <translation id="225943865679747347">የስህተት ኮድ፦ <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">መለያ አክል</translation>
 <translation id="2268044343513325586">አጽዳ</translation>
-<translation id="2271351792809375263">በመሣሪያዎ ላይ ባሉ ሌሎች መተግበሪያዎች ውስጥ Chrome ላይ ያስቀመጡትን የይለፍ ቃላት ይጠቀሙ</translation>
 <translation id="2273327106802955778">ተጨማሪ ምናሌ</translation>
 <translation id="2286505070150039482">የደመቀው ጽሁፍ</translation>
 <translation id="2299218006564889602">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሳሪያዎ ላይ ይመሣጠራል።</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">የመግቢያ ማስተዋወቂያን ዝጋ</translation>
 <translation id="4514889972748124117">ጠንካራ የይለፍ ቃል ጠቁም...</translation>
 <translation id="4520798012560649652">ስለማንነት የማያሳውቅ ሁነታ የበለጠ ይወቁ</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> ላይ የተቀመጡ የይለፍ ቃሎችን ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4536418791685807335">እንደገና ወደ መለያ ለመግባት ይሞክሩ።</translation>
 <translation id="4540780316273593836">የሆነ ችግር ተፈጥሯል</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">ጠፍቷል</translation>
 <translation id="5119391094379141756">Chromeን ይምረጡ</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
-<translation id="5140288047769711648">Chrome ይህን የይለፍ ቃል ለእርስዎ ያስታውሳል። እርስዎ ማስታወስ አያስፈልግዎትም።</translation>
 <translation id="5149188072385105201">የይለፍ ቃል አክል…</translation>
 <translation id="5150492518600715772">ወደ የእርስዎ መሣሪያ ይላኩ</translation>
 <translation id="5168414296986405587">ለiPadOS ይፍጠሩ</translation>
@@ -1092,7 +1089,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9079935439869366234">ሁሉም እንዳልተነበቡ ምልክት አድርግባቸው</translation>
 <translation id="9081058212938299310">የ<ph name="USERNAME" /> ይለፍ ቃል ይዘመን?</translation>
 <translation id="9083838294503912307">በመላ መሣሪያዎች ላይ ለማስመር እና ግላዊነትን ለማላበስ ስምረትን ያብሩ።</translation>
-<translation id="9087108903408689779">በChrome የጠቆመ ይለፍ ቃል፦</translation>
 <translation id="9093271241977565440">በማያ ገጹ አናት ላይ የፍለጋ አዶውን መታ ያድርጉ</translation>
 <translation id="9094033019050270033">የይለፍ ቃል ያዘምኑ</translation>
 <translation id="9097506547406246598">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>

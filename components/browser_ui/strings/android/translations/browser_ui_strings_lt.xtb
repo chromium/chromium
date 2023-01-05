@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Palieskite, kad grįžtumėte į <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2091887806945687916">Garsas</translation>
-<translation id="2107397443965016585">Paklausti prieš leidžiant svetainėms leisti saugomą turinį (rekomenduojama)</translation>
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="216989819110952009">Netgi žaliais akiniais apsaugoję akis Dorotė ir jos draugai iš pradžių buvo apstulbinti</translation>
 <translation id="2182457891543959921">Klausti, ar svetainėms leidžiama kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį (rekomenduojama)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Skelbimų suasmeninimas</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
 <translation id="4440642537584213025">Išskleisti „<ph name="TARGET_DESCRIPTION" />“</translation>
-<translation id="445467742685312942">Leisti svetainėms leisti saugomą turinį</translation>
 <translation id="4468959413250150279">Konkrečios svetainės garso išjungimas.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# slapukas}one{# slapukas}few{# slapukai}many{# slapuko}other{# slapukų}}</translation>
 <translation id="4479647676395637221">Pirmiausia klausti prieš leidžiant svetainėms naudoti kamerą (rekomenduojama)</translation>

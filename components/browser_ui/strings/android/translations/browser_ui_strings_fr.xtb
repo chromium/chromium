@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Appuyez pour revenir à l'adresse <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2091887806945687916">Son</translation>
-<translation id="2107397443965016585">Demander avant d'autoriser les sites à lire les contenus protégés (recommandé)</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="216989819110952009">Malgré leurs lunettes vertes, Dorothée et ses amis furent d'abord éblouis par l'éclat</translation>
 <translation id="2182457891543959921">Demander avant d'autoriser les sites à créer un plan 3D de votre environnement ou à suivre la position de la caméra (recommandé)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4434045419905280838">Pop-up et redirections</translation>
 <translation id="4440642537584213025">Développer "<ph name="TARGET_DESCRIPTION" />"</translation>
-<translation id="445467742685312942">Autoriser les sites à lire les contenus protégés</translation>
 <translation id="4468959413250150279">Coupez le son d'un site spécifique.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4479647676395637221">Demander avant d'autoriser des sites à utiliser ma caméra (recommandé)</translation>

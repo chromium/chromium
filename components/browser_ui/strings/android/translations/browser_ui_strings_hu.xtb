@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Koppintson, hogy visszatérjen ide: <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2091887806945687916">Hang</translation>
-<translation id="2107397443965016585">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára védett tartalmak lejátszását (ajánlott)</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="216989819110952009">Dorkát és barátait még a zöld szemüvegen át is elkápráztatta a</translation>
 <translation id="2182457891543959921">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára 3D-s térkép létrehozását az Ön környezetéről, valamint a kamera pozíciójának követését (ajánlott)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> kibontása</translation>
-<translation id="445467742685312942">Védett tartalmak lejátszásának engedélyezése a webhelyek számára</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4479647676395637221">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a kamera használatát (ajánlott)</translation>

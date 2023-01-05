@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Pieskarieties, lai atgrieztos cilnē <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2091887806945687916">Signāls</translation>
-<translation id="2107397443965016585">Vaicāt, pirms atļaut vietnēm atskaņot aizsargātu saturu (ieteicams)</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="216989819110952009">Pat raugoties caur zaļajām brillēm, kas sargāja acis, Dorotija un viņas draugi sākotnēji apžilba no</translation>
 <translation id="2182457891543959921">Vaicāt, pirms ļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju (ieteicams)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Reklāmu personalizēšana</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="4440642537584213025">Izvērst: <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Ļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="4468959413250150279">Izslēgt skaņu noteiktai vietnei</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# sīkfails}zero{# sīkfailu}one{# sīkfails}other{# sīkfaili}}</translation>
 <translation id="4479647676395637221">Jautāt, pirms atļaut vietnēm izmantot jūsu kameru (ieteicams)</translation>

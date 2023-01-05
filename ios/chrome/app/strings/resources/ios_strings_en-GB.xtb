@@ -170,7 +170,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Add Account</translation>
 <translation id="2268044343513325586">Refine</translation>
-<translation id="2271351792809375263">Use the passwords that you saved to Chrome in other apps on your device</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2286505070150039482">Highlighted text</translation>
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
@@ -454,6 +453,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Add language</translation>
+<translation id="4461286950227634995">Offer to save passwords</translation>
 <translation id="4462491365653392320">Track prices on tabs</translation>
 <translation id="4469418912670346607">Continue setup</translation>
 <translation id="4474494258097106883">Built for your iPhone</translation>
@@ -465,7 +465,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4508750114462689118">Close sign-in promo</translation>
 <translation id="4514889972748124117">Suggest strong password…</translation>
 <translation id="4520798012560649652">Learn more about Incognito mode</translation>
-<translation id="4526249700380860531">View and manage saved passwords at <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Something went wrong</translation>
@@ -553,7 +552,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5118764316110575523">Off</translation>
 <translation id="5119391094379141756">Select Chrome</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
-<translation id="5140288047769711648">Chrome will remember this password for you. You don't have to remember it.</translation>
 <translation id="5149188072385105201">Add password…</translation>
 <translation id="5150492518600715772">Send to your device</translation>
 <translation id="5168414296986405587">Built for iPadOS</translation>
@@ -1092,7 +1090,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9079935439869366234">Mark All Unread</translation>
 <translation id="9081058212938299310">Update password for <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">To sync and personalise across devices, turn on sync.</translation>
-<translation id="9087108903408689779">Chrome suggested password:</translation>
 <translation id="9093271241977565440">At the top of the screen, tap the search icon</translation>
 <translation id="9094033019050270033">Update password</translation>
 <translation id="9097506547406246598">Can't unfollow. Something went wrong.</translation>

@@ -1238,6 +1238,7 @@
 <translation id="2105809836724866556">ซ่อน<ph name="MODULE_TITLE" />แล้ว</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{หมายเลขโทรศัพท์}other{# หมายเลขโทรศัพท์}}</translation>
 <translation id="2110941575868943054">อนุญาตให้ค้นหาอุปกรณ์บลูทูธ</translation>
+<translation id="2111158890826137380">ขออภัย มีข้อผิดพลาดเกิดขึ้น โปรดส่งความคิดเห็นพร้อมใส่ #bruschetta ในคำอธิบาย รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="211144231511833662">ล้างประเภท</translation>
 <translation id="2111670510994270194">แท็บใหม่อยู่ด้านขวา</translation>
 <translation id="2112554630428445878">ยินดีต้อนรับ <ph name="USERNAME" /></translation>
@@ -1779,6 +1780,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา 1 ปีและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}other{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา {YEARS} ปีและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}}</translation>
 <translation id="257779572837908839">ตั้งค่าเป็น Chromebox สำหรับการประชุม</translation>
 <translation id="2579309488038515659">เปิดใช้ฮอตสปอต</translation>
+<translation id="2579596474754516455">สแกนรูปภาพที่เป็นไฟล์ PDF เพื่อแปลงข้อความสำหรับโปรแกรมอ่านหน้าจอเมื่อจำเป็น</translation>
 <translation id="2580889980133367162">อนุญาตให้ <ph name="HOST" /> ดาวน์โหลดไฟล์หลายไฟล์เสมอ</translation>
 <translation id="258095186877893873">ยาว</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (แพลตฟอร์ม <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2880,6 +2882,7 @@
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3616741288025931835">&amp;ล้างข้อมูลการท่องเว็บ...</translation>
 <translation id="3617891479562106823">พื้นหลังไม่พร้อมใช้งาน โปรดลองอีกครั้งภายหลัง</translation>
+<translation id="3618286417582819036">ขออภัย มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="3619115746895587757">คาปูชิโน</translation>
 <translation id="3620136223548713675">ตำแหน่งทางภูมิศาสตร์</translation>
 <translation id="362023940451053340">ในบัญชี Google ของคุณ สำหรับ <ph name="ACCOUNT" /></translation>
@@ -6667,6 +6670,7 @@
 <translation id="7149839598364933473">เปลี่ยนอุปกรณ์นี้เป็นอุปกรณ์ <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">24 ชั่วโมงที่แล้ว</translation>
 <translation id="7152478047064750137">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
+<translation id="7153309176431047193">แปลงรูปภาพเป็นข้อความ</translation>
 <translation id="7154130902455071009">เปลี่ยนหน้าเริ่มต้นของคุณเป็น: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">แปลงรูปภาพเป็นข้อความ</translation>
 <translation id="7159953856712257647">ติดตั้งโดยค่าเริ่มต้นแล้ว</translation>

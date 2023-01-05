@@ -170,7 +170,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Engadir conta</translation>
 <translation id="2268044343513325586">Refina</translation>
-<translation id="2271351792809375263">Utiliza os contrasinais que tes gardados en Chrome noutras aplicacións do teu dispositivo</translation>
 <translation id="2273327106802955778">Menú Máis</translation>
 <translation id="2286505070150039482">Texto destacado</translation>
 <translation id="2299218006564889602">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
@@ -465,7 +464,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
 <translation id="4514889972748124117">Suxerir contrasinal seguro…</translation>
 <translation id="4520798012560649652">Máis información sobre o modo de incógnito</translation>
-<translation id="4526249700380860531">Ver e xestionar os contrasinais gardados en <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4536418791685807335">Proba a volver iniciar sesión.</translation>
 <translation id="4540780316273593836">Produciuse un erro</translation>
@@ -553,7 +551,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5118764316110575523">Non</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
-<translation id="5140288047769711648">Chrome lembrará este contrasinal por ti. Non é necesario que o recordes.</translation>
 <translation id="5149188072385105201">Engadir contrasinal…</translation>
 <translation id="5150492518600715772">Enviar ao teu dispositivo</translation>
 <translation id="5168414296986405587">Creado para iPadOS</translation>
@@ -1092,7 +1089,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9079935439869366234">Marcar todo como non lido</translation>
 <translation id="9081058212938299310">Queres actualizar o contrasinal do usuario <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar todos os teus dispositivos, activa a sincronización.</translation>
-<translation id="9087108903408689779">Contrasinal suxerido por Chrome:</translation>
 <translation id="9093271241977565440">Na parte superior da pantalla, toca a icona da Busca</translation>
 <translation id="9094033019050270033">Actualizar contrasinal</translation>
 <translation id="9097506547406246598">Non se puido deixar de seguir o contido. Produciuse un erro.</translation>

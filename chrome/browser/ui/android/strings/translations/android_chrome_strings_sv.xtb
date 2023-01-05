@@ -139,7 +139,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1724977129262658800">Lås upp om du vill redigera lösenordet</translation>
 <translation id="1726477445370128854">Du kan surfa och söka snabbare när Chrome läser in sidor som du kanske vill besöka i förväg</translation>
-<translation id="1736419249208073774">Utforska</translation>
 <translation id="1749561566933687563">Synkronisera bokmärken</translation>
 <translation id="1750259112639922169">Flikgrupp – <ph name="TAB_COUNT" /> flikar</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
@@ -197,6 +196,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Titta på nästa video</translation>
 <translation id="2074143993849053708">Användargränssnittet för samtycke till röstsökning med assistenten har stängts</translation>
+<translation id="2079545284768500474">Ångra</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synkronisera och anpassa på alla enheter</translation>
 <translation id="2100273922101894616">Automatisk inloggning</translation>
@@ -238,7 +238,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2328985652426384049">Det gick inte att logga in</translation>
 <translation id="234265804618409743">Det gick inte att öppna kameran. Något gick fel.</translation>
 <translation id="2349710944427398404">Total data som används av Chrome, inklusive konton, bokmärken och sparade inställningar</translation>
-<translation id="2353636109065292463">Kontrollera internetanslutningen</translation>
 <translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2386938421315164605">Dölj och visa ämnen</translation>
@@ -423,7 +422,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3280562213547448728">Röstsökning</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3285080554353377245">Videor om hur du använder Chrome</translation>
-<translation id="3288003805934695103">läsa in sidan igen</translation>
 <translation id="3290249595466894471">Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot</translation>
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
@@ -522,7 +520,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3894427358181296146">Lägg till mapp</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>
 <translation id="3908308510347173149">Uppdatera <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Letar efter det bästa på webben …</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> är på</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Slå ihop data</translation>
@@ -776,7 +773,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5235196193381275927">Något gick fel vid inloggningen</translation>
 <translation id="5246093389635966745">Redigera genväg i verktygsfältet</translation>
-<translation id="526421993248218238">Det går inte att läsa in den här sidan</translation>
 <translation id="5271967389191913893">Innehållet som skulle laddas ned gick inte att öppna på enheten.</translation>
 <translation id="5274286919938458946">Är länkat till <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Skicka till</translation>
@@ -930,7 +926,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6138832295072039549">Ändra webbplatsinställningarna här</translation>
 <translation id="6140709049082532940">Förbättrat skydd</translation>
 <translation id="6140912465461743537">Land/region</translation>
-<translation id="614940544461990577">Testa att</translation>
 <translation id="6150320133806434356">Bokmärket har sparats</translation>
 <translation id="6154478581116148741">Aktivera ett skärmlås i inställningarna om du vill exportera lösenord från den här enheten.</translation>
 <translation id="6159729262978459665">Historiken rensas från alla synkroniserade enheter.</translation>

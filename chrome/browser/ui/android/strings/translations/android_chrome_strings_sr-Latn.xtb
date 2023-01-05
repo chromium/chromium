@@ -139,7 +139,6 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="1718835860248848330">Poslednjih sat vremena</translation>
 <translation id="1724977129262658800">Otključajte da biste izmenili lozinku</translation>
 <translation id="1726477445370128854">Možete da pregledate i pretražujete brže kada Chrome predučita stranice za koje smatra da ćete ih možda posetiti</translation>
-<translation id="1736419249208073774">Istraži</translation>
 <translation id="1749561566933687563">Sinhronizujte obeleživače</translation>
 <translation id="1750259112639922169">Grupa kartica – kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
@@ -197,6 +196,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2068748236079642969">Gledajte sledeći video</translation>
 <translation id="2074143993849053708">Korisnički interfejs za saglasnost za glasovnu pretragu Pomoćnika je zatvoren</translation>
+<translation id="2079545284768500474">Opozovi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2096012225669085171">Sinhronizacija i personalizacija na svim uređajima</translation>
 <translation id="2100273922101894616">Automatsko prijavljivanje</translation>
@@ -238,7 +238,6 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2328985652426384049">Ne mogu da se prijavim</translation>
 <translation id="234265804618409743">Ne možemo da otvorimo kameru. Došlo je do greške.</translation>
 <translation id="2349710944427398404">Svi podaci koje koristi Chrome, uključujući naloge, obeleživače i sačuvana podešavanja</translation>
-<translation id="2353636109065292463">Proverava se internet veza</translation>
 <translation id="235789365079050412">Google politika privatnosti</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2386938421315164605">Sakrijte i otkrijte teme</translation>
@@ -423,7 +422,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3280562213547448728">Glasovna pretraga</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3285080554353377245">Video snimci o tome kako da koristite Chrome</translation>
-<translation id="3288003805934695103">da ponovo učitate stranicu</translation>
 <translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti dodataka i informacija sistema da bi se otkrile nove pretnje</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li da nastavite sa preuzimanjem sadržaja?</translation>
@@ -521,7 +519,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3894427358181296146">Dodajte folder</translation>
 <translation id="3899682235662194879">Zatvori sve kartice bez arhiviranja</translation>
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Traže se najbolji podaci sa veba…</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je uključen</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombinuj podatke</translation>
@@ -775,7 +772,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5235196193381275927">Došlo je do problema pri prijavljivanju</translation>
 <translation id="5246093389635966745">Izmeni prečicu za traku sa alatkama</translation>
-<translation id="526421993248218238">Učitavanje ove stranice nije uspelo</translation>
 <translation id="5271967389191913893">Uređaj ne može da otvori sadržaj za preuzimanje.</translation>
 <translation id="5274286919938458946">Povezano sa karticom <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Pošaljite na</translation>
@@ -929,7 +925,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6138832295072039549">Promenite podešavanja sajta ovde</translation>
 <translation id="6140709049082532940">Napredna zaštita:</translation>
 <translation id="6140912465461743537">Zemlja/regija</translation>
-<translation id="614940544461990577">Pokušajte:</translation>
 <translation id="6150320133806434356">Obeleživač je sačuvan</translation>
 <translation id="6154478581116148741">Uključite zaključavanje ekrana u Podešavanjima da biste izvezli lozinke sa uređaja</translation>
 <translation id="6159729262978459665">Briše istoriju sa svih sinhronizovanih uređaja.</translation>
@@ -1166,6 +1161,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7379900596734708416">Tamna tema za sajtove je dostupna</translation>
 <translation id="7400418766976504921">URL adresa</translation>
 <translation id="7403691278183511381">Chrome doživljaj prvog pokretanja</translation>
+<translation id="7411224099004328643">Korisnik Google naloga</translation>
 <translation id="741204030948306876">Da, omogući</translation>
 <translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>
 <translation id="7431991332293347422">Kontrolišite kako se istorija pregledanja koristi za personalizovanje Pretrage i drugih usluga</translation>

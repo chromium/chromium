@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">آخر ساعة</translation>
 <translation id="1724977129262658800">عليك فتح قفل الشاشة لتتمكّن من تعديل كلمة المرور.</translation>
 <translation id="1726477445370128854">‏بإمكانك التصفّح والبحث بسرعة عندما يحمّل Chrome مُسبقًا الصفحات التي يتوقّع أن تنتقل إليها.</translation>
-<translation id="1736419249208073774">استكشاف</translation>
 <translation id="1749561566933687563">مزامنة الإشارات المرجعية</translation>
 <translation id="1750259112639922169">مجموعة علامات التبويب: <ph name="TAB_COUNT" /> علامة تبويب</translation>
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">نص</translation>
 <translation id="2068748236079642969">مشاهدة الفيديو التالي</translation>
 <translation id="2074143993849053708">‏تم إغلاق واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google".</translation>
+<translation id="2079545284768500474">تراجع</translation>
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">المزامنة والتخصيص على الأجهزة</translation>
 <translation id="2100273922101894616">تسجيل الدخول تلقائيًا</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">تعذر تسجيل الدخول</translation>
 <translation id="234265804618409743">تعذّر فتح الكاميرا. حدث خطأ ما.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
-<translation id="2353636109065292463">التحقُّق من اتصال الإنترنت</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2386938421315164605">إخفاء المواضيع وإظهارها</translation>
@@ -424,7 +423,6 @@
 <translation id="3280562213547448728">بحث صوتي</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3285080554353377245">‏فيديوهات حول كيفية استخدام Chrome</translation>
-<translation id="3288003805934695103">إعادة تحميل الصفحة</translation>
 <translation id="3290249595466894471">يُرسِل هذا الوضع أيضًا عددًا قليلاً من الصفحات وعمليات التنزيل وأنشطة الإضافات ومعلومات النظام للمساعدة في اكتشاف التهديدات الجديدة.</translation>
 <translation id="3297344142967351106">المساعَدة الصوتية</translation>
 <translation id="3303414029551471755">هل ترغب في الاستمرار في تنزيل المحتوى؟</translation>
@@ -522,7 +520,6 @@
 <translation id="3894427358181296146">إضافة مجلد</translation>
 <translation id="3899682235662194879">إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي</translation>
 <translation id="3908308510347173149">تحديث <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">جارٍ العثور على الأفضل من الويب...</translation>
 <translation id="3924911262913579434">وضع <ph name="SAFE_BROWSING_MODE" /> مفعّل.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">جمع البيانات التابعة لي</translation>
@@ -776,7 +773,6 @@
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
 <translation id="5235196193381275927">حدث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="5246093389635966745">تعديل الاختصار على شريط الأدوات</translation>
-<translation id="526421993248218238">يتعذَّر تحميل هذه الصفحة</translation>
 <translation id="5271967389191913893">لا يمكن للجهاز فتح المحتوى لتنزيله</translation>
 <translation id="5274286919938458946">تم ربط بطاقتك الافتراضية بالبطاقة <ph name="CARD_DETAIL" />.</translation>
 <translation id="5292796745632149097">إرسال إلى</translation>
@@ -930,7 +926,6 @@
 <translation id="6138832295072039549">يمكنك تغيير إعدادات الموقع الإلكتروني من هنا.</translation>
 <translation id="6140709049082532940">الحماية المُحسَّنة:</translation>
 <translation id="6140912465461743537">الدولة/الإقليم</translation>
-<translation id="614940544461990577">يمكنك محاولة:</translation>
 <translation id="6150320133806434356">تم حفظ الإشارة المرجعية</translation>
 <translation id="6154478581116148741">تشغيل قفل الشاشة في الإعدادات لتصدير كلمات المرور من هذا الجهاز</translation>
 <translation id="6159729262978459665">سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها.</translation>

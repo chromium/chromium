@@ -162,6 +162,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1774796056689732716">Koledar, <ph name="CURRENT_MONTH_YEAR" />, trenutno izbran datum: <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1797271123677381264">Pozabljeno geslo</translation>
+<translation id="1807246157184219062">Svetlo</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="1812997170047690955">Kaj je na zaslonu?</translation>
 <translation id="1816896987747843206">To omogoča dostop do kamere za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero.</translation>
@@ -525,6 +526,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="385300504083504382">Začetek</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
+<translation id="3871092408932389764">Najnižja</translation>
 <translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3891340733213178823">Dvakrat pritisnite Ctrl + Shift + Q, če se želite odjaviti.</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>

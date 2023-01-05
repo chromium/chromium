@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Sakatu hau <ph name="URL_OF_THE_CURRENT_TAB" /> webgunera itzultzeko</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2091887806945687916">Soinua</translation>
-<translation id="2107397443965016585">Webguneei eduki babestua erreproduzitzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="216989819110952009">Begiak betaurreko berdeekin babestuta bazituzten ere, Dorothy eta haren lagunak txundituta geratu ziren</translation>
 <translation id="2182457891543959921">Eskatu zure baimena webguneei inguruaren 3D-ko mapa bat sortu edo kameraren posizioaren jarraipena egiteko baimena eman aurretik (gomendatua)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Iragarkien pertsonalizazioa</translation>
 <translation id="4434045419905280838">Leiho gainerak. / Birbideratzeak</translation>
 <translation id="4440642537584213025">Zabaldu <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Baimendu webguneei eduki babestua erreproduzitzea</translation>
 <translation id="4468959413250150279">Desaktibatu webgune jakin baten audioa.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4479647676395637221">Webguneei kamera erabiltzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>

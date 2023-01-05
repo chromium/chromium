@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">پچھلے گھنٹے</translation>
 <translation id="1724977129262658800">اپنے پاس ورڈ کو ترمیم کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="1726477445370128854">‏آپ تیزی سے براؤز اور تلاش کر سکتے ہیں جب Chrome ایسے صفحات کو پیشگی لوڈ کرتا ہے جن کے بارے میں اسے لگتا ہے کہ آپ ملاحظہ کر سکتے ہیں</translation>
-<translation id="1736419249208073774">دریافت کریں</translation>
 <translation id="1749561566933687563">اپنے بُک مارکس کی مطابقت پذیری کریں</translation>
 <translation id="1750259112639922169">ٹیب گروپ - <ph name="TAB_COUNT" /> ٹیبز</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">متن</translation>
 <translation id="2068748236079642969">اگلی ویڈیو دیکھیں</translation>
 <translation id="2074143993849053708">‏اسسٹنٹ صوتی تلاش کی رضامندی ui بند کی گئی ہے</translation>
+<translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">سبھی آلات پر مطابقت پذیری اور ذاتی نوعیت سازی کریں</translation>
 <translation id="2100273922101894616">خودکار سائن ان</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">سائن نہیں کیا جا سکتا ہے</translation>
 <translation id="234265804618409743">اپنا کیمرا نہیں کھول سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="2349710944427398404">‏اکاؤنٹس، بُک مارکس اور محفوظ کردہ ترتیبات سمیت، Chrome کے ذریعے استعمال کردہ کُل ڈیٹا</translation>
-<translation id="2353636109065292463">آپ کا انٹرنیٹ کنکشن چیک کیا جا رہا ہے</translation>
 <translation id="235789365079050412">‏Google کی رازداری کی پالیسی</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2386938421315164605">موضوعات کو پوشیدہ کریں اور پوشیدگی ختم کریں</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">صوتی تلاش</translation>
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3285080554353377245">‏Chrome استعمال کرنے کے طریقے سے متعلق ویڈیوز</translation>
-<translation id="3288003805934695103">صفحہ دوبارہ لوڈ ہو رہا ہے</translation>
 <translation id="3290249595466894471">نئے خطرات کا پتہ لگانے میں مدد کے لیے صفحات، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا چھوٹا سا نمونہ بھی بھیجتا ہے</translation>
 <translation id="3297344142967351106">صوتی معاونت</translation>
 <translation id="3303414029551471755">مواد ڈاؤن لوڈ کرنے کیلئے آگے بڑھیں؟</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
 <translation id="3899682235662194879">سبھی پوشیدگی ٹیبز بند کریں</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> اپ ڈیٹ کریں</translation>
-<translation id="3912508018559818924">ویب سے بہترین چیزیں تلاش کی جا رہی ہیں…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> آن ہے</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">میرا ڈیٹا ملائیں</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">نیا ٹیب</translation>
 <translation id="5235196193381275927">سائن ان کرنے کے دوران کچھ غلط ہو گیا</translation>
 <translation id="5246093389635966745">ٹول بار شارٹ کٹ میں ترمیم کریں</translation>
-<translation id="526421993248218238">اس صفحہ کو لوڈ نہیں کیا جا سکتا</translation>
 <translation id="5271967389191913893">آلہ ڈاؤن لوڈ کیے جانے والے مواد کو نہیں کھول سکتا۔</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> کے ساتھ لنک کیا گيا</translation>
 <translation id="5292796745632149097">اس پر بھیجیں</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">اپنی سائٹ کی ترتیبات کو یہاں تبدیل کریں</translation>
 <translation id="6140709049082532940">بہتر کردہ حفاظت:</translation>
 <translation id="6140912465461743537">ملک/علاقہ</translation>
-<translation id="614940544461990577">آزمائیں:</translation>
 <translation id="6150320133806434356">بک مارک محفوظ ہو گیا</translation>
 <translation id="6154478581116148741">اس آلہ سے اپنے پاس ورڈز برآمد کرنے کے لئے ترتیبات میں اسکرین لاک آن کریں</translation>
 <translation id="6159729262978459665">مطابقت پذیر کردہ تمام آلات سے سرگزشت صاف ہو جاتی ہے۔</translation>

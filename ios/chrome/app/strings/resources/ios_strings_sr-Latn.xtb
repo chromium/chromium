@@ -170,7 +170,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="225943865679747347">Kôd greške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj nalog</translation>
 <translation id="2268044343513325586">Preciziraj</translation>
-<translation id="2271351792809375263">Koristite lozinke koje ste sačuvali u Chrome-u u drugim aplikacijama na uređaju</translation>
 <translation id="2273327106802955778">Meni Još</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
 <translation id="2299218006564889602">Lozinke se šifruju na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>
@@ -465,7 +464,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4508750114462689118">Zatvori promociju za prijavljivanje</translation>
 <translation id="4514889972748124117">Predloži jaku lozinku…</translation>
 <translation id="4520798012560649652">Saznajte više o režimu bez arhiviranja</translation>
-<translation id="4526249700380860531">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pregledajte sinhronizovane podatke</translation>
 <translation id="4536418791685807335">Probajte ponovo da se prijavite.</translation>
 <translation id="4540780316273593836">Nešto nije u redu</translation>
@@ -553,7 +551,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5118764316110575523">Isključeno</translation>
 <translation id="5119391094379141756">Izaberite Chrome</translation>
 <translation id="5132942445612118989">Sinhronizujte lozinke, istoriju i drugi sadržaj na svim uređajima</translation>
-<translation id="5140288047769711648">Chrome će zapamtiti ovu lozinku umesto vas. Ne morate vi da je pamtite.</translation>
 <translation id="5149188072385105201">Dodajte lozinku...</translation>
 <translation id="5150492518600715772">Pošaljite na uređaj</translation>
 <translation id="5168414296986405587">Napravljeno za iPadOS</translation>
@@ -1092,7 +1089,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9079935439869366234">Označi sve kao nepročitano</translation>
 <translation id="9081058212938299310">Želite li da ažurirate lozinku za <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Da biste sinhronizovali i personalizovali sadržaj na uređajima, uključite sinhronizaciju.</translation>
-<translation id="9087108903408689779">Predložena lozinka za Chrome:</translation>
 <translation id="9093271241977565440">U vrhu ekrana dodirnite ikonu Pretraga</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9097506547406246598">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>

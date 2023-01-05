@@ -1000,6 +1000,11 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
+<translation id="1964985353230379667">Consente di specificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
+
+      Se il criterio "KerberosUseCustomPrefilledConfig" viene attivato, il valore del criterio viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos. Se il criterio viene impostato su una stringa vuota o se non viene configurato, viene eliminata la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.
+
+      Se il criterio "KerberosUseCustomPrefilledConfig" viene disattivato, il valore di questo criterio non viene usato.</translation>
 <translation id="1969212217917526199">Sostituisce le build di debug dell'host di accesso remoto.
 
           Il valore viene analizzato come un dizionario JSON di associazioni tra nomi e valori di norme.</translation>

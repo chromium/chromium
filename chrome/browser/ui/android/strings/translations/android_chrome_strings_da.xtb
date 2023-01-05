@@ -139,7 +139,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1718835860248848330">Den seneste time</translation>
 <translation id="1724977129262658800">Lås op for at redigere din adgangskode</translation>
 <translation id="1726477445370128854">Du kan browse og søge hurtigere, når Chrome forudindlæser sider, som Chrome tror, du kunne være interesseret i at besøge</translation>
-<translation id="1736419249208073774">Mere</translation>
 <translation id="1749561566933687563">Synkroniser dine bogmærker</translation>
 <translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åbne faner</translation>
@@ -197,6 +196,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2068748236079642969">Se næste video</translation>
 <translation id="2074143993849053708">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er lukket</translation>
+<translation id="2079545284768500474">Fortryd</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synkroniser og tilpas på flere enheder</translation>
 <translation id="2100273922101894616">Automatisk login</translation>
@@ -238,7 +238,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2328985652426384049">Det er ikke muligt at logge ind</translation>
 <translation id="234265804618409743">Dit kamera kan ikke åbnes. Noget gik galt.</translation>
 <translation id="2349710944427398404">Samlet mængde data, som Chrome anvender, herunder konti, bogmærker og gemte indstillinger</translation>
-<translation id="2353636109065292463">Tjekker din internetforbindelse</translation>
 <translation id="235789365079050412">Googles privatlivspolitik</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2386938421315164605">Skjul og vis emner</translation>
@@ -423,7 +422,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3280562213547448728">Stemmesøgning</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3285080554353377245">Videoer om, hvordan du bruger Chrome</translation>
-<translation id="3288003805934695103">Genindlæse siden</translation>
 <translation id="3290249595466894471">Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
@@ -521,7 +519,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3894427358181296146">Tilføj mappe</translation>
 <translation id="3899682235662194879">Luk alle inkognitofaner</translation>
 <translation id="3908308510347173149">Opdater <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Finder det bedste fra nettet…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> er aktiveret</translation>
 <translation id="3927692899758076493">Sans serif</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
@@ -775,7 +772,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noget gik galt under login</translation>
 <translation id="5246093389635966745">Rediger genvej til værktøjslinje</translation>
-<translation id="526421993248218238">Siden kunne ikke indlæses</translation>
 <translation id="5271967389191913893">Enheden kan ikke åbne det indhold, der skal downloades.</translation>
 <translation id="5274286919938458946">Tilknyttet <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Send til</translation>
@@ -929,7 +925,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6138832295072039549">Skift indstillinger for websites her</translation>
 <translation id="6140709049082532940">Forbedret beskyttelse:</translation>
 <translation id="6140912465461743537">Land/region</translation>
-<translation id="614940544461990577">Prøv at:</translation>
 <translation id="6150320133806434356">Bogmærket er gemt</translation>
 <translation id="6154478581116148741">Aktivér skærmlåsen i Indstillinger for at eksportere dine adgangskoder fra denne enhed</translation>
 <translation id="6159729262978459665">Ryder historikken fra alle synkroniserede enheder.</translation>

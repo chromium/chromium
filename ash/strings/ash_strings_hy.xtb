@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1797271123677381264">Մոռացել եմ գաղտնաբառը</translation>
+<translation id="1807246157184219062">Բաց</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1812997170047690955">Ի՞նչ է ցուցադրվում էկրանին</translation>
 <translation id="1816896987747843206">Սա հասանելի է դարձնում տեսախցիկը բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
@@ -524,6 +525,7 @@
 <translation id="385051799172605136">Հետ</translation>
 <translation id="385300504083504382">Սկիզբ</translation>
 <translation id="3861651314799684201">Սեղմեք Enter՝ ամբողջ էկրանը տեսագրելու համար</translation>
+<translation id="3871092408932389764">Ամենացածր</translation>
 <translation id="3886872229787704059">Այսօր բացել եք</translation>
 <translation id="3891340733213178823">Դուրս գրվելու համար երկու անգամ սեղմեք Ctrl+Shift+Q:</translation>
 <translation id="3893630138897523026">ChromeVox (ձայնային ուղեկցում)</translation>

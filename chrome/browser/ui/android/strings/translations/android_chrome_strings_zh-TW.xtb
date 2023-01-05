@@ -140,7 +140,6 @@
 <translation id="1718835860248848330">過去 1 小時</translation>
 <translation id="1724977129262658800">解鎖後即可編輯密碼</translation>
 <translation id="1726477445370128854">Chrome 會預先載入你可能造訪的網頁，加快你瀏覽及搜尋的速度</translation>
-<translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步處理您的書籤</translation>
 <translation id="1750259112639922169">分頁群組 - <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
@@ -198,6 +197,7 @@
 <translation id="2067805253194386918">文字</translation>
 <translation id="2068748236079642969">觀看下一部影片</translation>
 <translation id="2074143993849053708">Google 助理語音搜尋的同意使用者介面已關閉</translation>
+<translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
 <translation id="2096012225669085171">讓多部裝置保持同步，並提供人化體驗</translation>
 <translation id="2100273922101894616">自動登入</translation>
@@ -239,7 +239,6 @@
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="234265804618409743">無法開啟攝影機，發生錯誤。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和儲存的設定</translation>
-<translation id="2353636109065292463">檢查你的網際網路連線</translation>
 <translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
@@ -424,7 +423,6 @@
 <translation id="3280562213547448728">語音搜尋</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3285080554353377245">關於如何使用 Chrome 的影片</translation>
-<translation id="3288003805934695103">重新載入網頁</translation>
 <translation id="3290249595466894471">另外也會傳送少量網頁、下載內容、擴充功能活動和系統資訊，協助找出新的威脅</translation>
 <translation id="3297344142967351106">語音協助</translation>
 <translation id="3303414029551471755">繼續下載這項內容？</translation>
@@ -522,7 +520,6 @@
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3899682235662194879">關閉所有無痕分頁</translation>
 <translation id="3908308510347173149">更新「<ph name="PRODUCT_NAME" />」</translation>
-<translation id="3912508018559818924">正在從網路上尋找最佳內容…</translation>
 <translation id="3924911262913579434">已開啟<ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">合併我的資料</translation>
@@ -774,7 +771,6 @@
 <translation id="5233638681132016545">新增分頁</translation>
 <translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
-<translation id="526421993248218238">無法載入這個網頁</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
 <translation id="5274286919938458946">已連結到 <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">傳送到</translation>
@@ -928,7 +924,6 @@
 <translation id="6138832295072039549">請在這裡變更網站設定</translation>
 <translation id="6140709049082532940">強化防護：</translation>
 <translation id="6140912465461743537">國家/地區</translation>
-<translation id="614940544461990577">建議做法：</translation>
 <translation id="6150320133806434356">書籤已儲存</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定，即可從這部裝置匯出你的密碼</translation>
 <translation id="6159729262978459665">清除所有同步裝置上的記錄。</translation>
@@ -1165,6 +1160,7 @@
 <translation id="7379900596734708416">現已推出網站的深色主題</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403691278183511381">Chrome 初次使用體驗</translation>
+<translation id="7411224099004328643">Google 帳戶使用者</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>

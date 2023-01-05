@@ -170,7 +170,6 @@
 <translation id="225943865679747347">ত্রুটি কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="2268044343513325586">রিফাইন করুন</translation>
-<translation id="2271351792809375263">Chrome-এ সেভ করা পাসওয়ার্ড আপনার ডিভাইসের অন্যান্য অ্যাপে ব্যবহার করুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
 <translation id="2286505070150039482">হাইলাইট করা টেক্সট</translation>
 <translation id="2299218006564889602">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
@@ -454,6 +453,7 @@
 <translation id="4420409367264901497">বুকমার্ক এডিট করুন</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />সেটিংস<ph name="END_BOLD" /> খুলুন</translation>
 <translation id="4454246407045105932">ভাষা যোগ করার সেটিংস</translation>
+<translation id="4461286950227634995">পাসওয়ার্ড সেভ করার প্রস্তাব</translation>
 <translation id="4462491365653392320">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="4469418912670346607">সেট-আপ করা চালিয়ে যান</translation>
 <translation id="4474494258097106883">আপনার iPhone-এর জন্য তৈরি করা হয়েছে</translation>
@@ -465,7 +465,6 @@
 <translation id="4508750114462689118">সাইন-ইন প্রোমো বন্ধ করুন</translation>
 <translation id="4514889972748124117">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন...</translation>
 <translation id="4520798012560649652">'ছদ্মবেশী' মোড সম্পর্কে আরও জানুন</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> এ গিয়ে সংরক্ষণ করা পাসওয়ার্ডগুলি দেখুন ও পরিচালনা করুন</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4536418791685807335">আবার সাইন ইন করার চেষ্টা করুন।</translation>
 <translation id="4540780316273593836">কিছু সমস্যা হয়েছে</translation>
@@ -553,7 +552,6 @@
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
 <translation id="5119391094379141756">Chrome বেছে নিন</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
-<translation id="5140288047769711648">Chrome আপনার জন্য এই পাসওয়ার্ড মনে রাখবে। আপনাকে এটি মনে রাখতে হবে না।</translation>
 <translation id="5149188072385105201">পাসওয়ার্ড যোগ করুন...</translation>
 <translation id="5150492518600715772">আপনার অন্য ডিভাইসে পাঠান</translation>
 <translation id="5168414296986405587">iPadOS-এর জন্য তৈরি</translation>
@@ -1093,7 +1091,6 @@
 <translation id="9079935439869366234">সমস্ত অপঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />-এর পাসওয়ার্ড আপডেট করবেন?</translation>
 <translation id="9083838294503912307">সমগ্র ডিভাইস জুড়ে সিঙ্ক এবং নিজের মতো সাজিয়ে নিতে সিঙ্ক বিকল্পটি চালু করুন।</translation>
-<translation id="9087108903408689779">Chrome-এর সাজেস্ট করা পাসওয়ার্ড:</translation>
 <translation id="9093271241977565440">স্ক্রিনের উপরে, Search আইকনে ট্যাপ করুন</translation>
 <translation id="9094033019050270033">পাসওয়ার্ড আপডেট করুন</translation>
 <translation id="9097506547406246598">আনফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>

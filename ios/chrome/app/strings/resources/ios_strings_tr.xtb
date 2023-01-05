@@ -170,7 +170,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="225943865679747347">Hata kodu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hesap Ekle</translation>
 <translation id="2268044343513325586">Hassaslaştır</translation>
-<translation id="2271351792809375263">Chrome'da kayıtlı şifrelerinizi cihazınızdaki diğer uygulamalarda kullanın</translation>
 <translation id="2273327106802955778">Diğer menüsü</translation>
 <translation id="2286505070150039482">Vurgulanan Metin</translation>
 <translation id="2299218006564889602">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir.</translation>
@@ -465,7 +464,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4508750114462689118">Oturum açma tanıtımını kapat</translation>
 <translation id="4514889972748124117">Güçlü Şifre Öner...</translation>
 <translation id="4520798012560649652">Gizli mod hakkında daha fazla bilgi</translation>
-<translation id="4526249700380860531">Kaydedilmiş şifreleri <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> adresinden görüntüleyin ve yönetin</translation>
 <translation id="452750746583162491">Senkronize edilmiş verilerinizi inceleyin</translation>
 <translation id="4536418791685807335">Tekrar oturum açmayı deneyin.</translation>
 <translation id="4540780316273593836">Bir Sorun Oluştu</translation>
@@ -553,7 +551,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5118764316110575523">Kapalı</translation>
 <translation id="5119391094379141756">Chrome'u seçin</translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
-<translation id="5140288047769711648">Chrome bu şifreyi sizin için hatırlar. Sizin şifreyi hatırlamanız gerekmez.</translation>
 <translation id="5149188072385105201">Şifre Ekleyin..</translation>
 <translation id="5150492518600715772">Cihazıma Gönder</translation>
 <translation id="5168414296986405587">iPadOS için geliştirildi</translation>
@@ -1092,7 +1089,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9079935439869366234">Tümünü Okunmadı Olarak İşaretle</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> hesabının şifresi güncellensin mi?</translation>
 <translation id="9083838294503912307">Cihazlar arasında senkronizasyon ve kişiselleştirme yapmak için senkronizasyonu etkinleştirin.</translation>
-<translation id="9087108903408689779">Chrome Tarafından Önerilen Şifre:</translation>
 <translation id="9093271241977565440">Ekranın Üst Kısmındaki Arama Simgesine Dokunun</translation>
 <translation id="9094033019050270033">Şifreyi güncelle</translation>
 <translation id="9097506547406246598">Takip bırakılamıyor. Bir sorun oldu.</translation>

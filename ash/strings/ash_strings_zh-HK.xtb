@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前揀咗 <ph name="DATE" />。</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1797271123677381264">忘記密碼</translation>
+<translation id="1807246157184219062">淺色</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1812997170047690955">我嘅畫面上面有咩？</translation>
 <translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
@@ -238,6 +239,7 @@
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
+<translation id="225716114209817872">最大</translation>
 <translation id="2257486738914982088">下載「<ph name="FILENAME" />」時發生錯誤</translation>
 <translation id="2258734398699965611">建議檔案</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
@@ -525,6 +527,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
+<translation id="3871092408932389764">最低</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -1010,6 +1013,7 @@
 <translation id="6537924328260219877">訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">背景模糊</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
 <translation id="6559976592393364813">詢問管理員</translation>
 <translation id="6565007273808762236">無法連接 eSIM</translation>
@@ -1415,6 +1419,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />，已經安裝嘅應用程式，已經封鎖</translation>
 <translation id="8785070478575117577">連接去<ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">強</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" />資料夾</translation>
 <translation id="880709030178078220">「說明」</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

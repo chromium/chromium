@@ -2732,6 +2732,7 @@
 <translation id="3469583217479686109">選取工具</translation>
 <translation id="3470392222765168737">追蹤網站</translation>
 <translation id="3471876058939596279">HDMI 和 USB Type-C 連接埠無法同時用於視訊。請使用其他視訊連接埠。</translation>
+<translation id="3472469028191701821">在新分頁中開啟</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">畫面放大鏡</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母以內</translation>
@@ -3118,6 +3119,7 @@
 <translation id="3820749202859700794">SECG 橢圓曲線 secp521r1 (亦稱為 NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub 通知</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{已核准擴充功能}other{已核准 # 個擴充功能}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">建議你至少為 Linux 保留 <ph name="INSTALL_SIZE" /> 的空間。</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
@@ -4035,6 +4037,7 @@
 <translation id="4675828034887792601">建立捷徑以搜尋網站和管理搜尋引擎</translation>
 <translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
 <translation id="4677772697204437347">GPU 記憶體</translation>
+<translation id="4678848110205818817">信用卡/簽帳金融卡</translation>
 <translation id="4680105648806843642">已將這個網頁設為靜音</translation>
 <translation id="4680112532510845139">將圖片拖放到這裡</translation>
 <translation id="4681453295291708042">停用鄰近分享功能</translation>

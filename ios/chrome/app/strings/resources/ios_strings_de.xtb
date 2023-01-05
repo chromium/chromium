@@ -170,7 +170,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="225943865679747347">Fehlercode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Konto hinzufügen</translation>
 <translation id="2268044343513325586">Verfeinern</translation>
-<translation id="2271351792809375263">Du kannst in Chrome gespeicherte Passwörter in anderen Apps auf deinem Gerät nutzen</translation>
 <translation id="2273327106802955778">Menü "Mehr"</translation>
 <translation id="2286505070150039482">Markierter Text</translation>
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Passwortmanager von Google gespeichert werden.</translation>
@@ -465,7 +464,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4508750114462689118">Anmeldeangebot schließen</translation>
 <translation id="4514889972748124117">Starkes Passwort vorschlagen…</translation>
 <translation id="4520798012560649652">Weitere Informationen zum Inkognitomodus</translation>
-<translation id="4526249700380860531">Unter <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> gespeicherte Passwörter aufrufen und verwalten</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4536418791685807335">Melde dich noch einmal an.</translation>
 <translation id="4540780316273593836">Ein Problem ist aufgetreten</translation>
@@ -553,7 +551,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5118764316110575523">Aus</translation>
 <translation id="5119391094379141756">Wähle Chrome aus</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
-<translation id="5140288047769711648">Chrome speichert dieses Passwort für dich. Du musst es dir nicht merken.</translation>
 <translation id="5149188072385105201">Passwort hinzufügen</translation>
 <translation id="5150492518600715772">An mein Gerät senden</translation>
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>
@@ -1092,7 +1089,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9079935439869366234">Alle als ungelesen markieren</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>
-<translation id="9087108903408689779">Von Chrome vorgeschlagenes Passwort:</translation>
 <translation id="9093271241977565440">Oben auf dem Bildschirm auf das Suchsymbol tippen</translation>
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
 <translation id="9097506547406246598">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>

@@ -1234,6 +1234,7 @@
 <translation id="2104166991923847969">アクセス ポイントを自動的にオフにする</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
+<translation id="2110941575868943054">Bluetooth デバイスの検出が許可されているサイト</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
 <translation id="2111670510994270194">右隣に新しいタブを開く</translation>
 <translation id="2112554630428445878">ようこそ、<ph name="USERNAME" /> さん</translation>
@@ -3022,6 +3023,7 @@
 <translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3756578970075173856">PIN を設定</translation>
 <translation id="3756795331760037744">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの画面上の情報を使用したサポートを許可する</translation>
+<translation id="3756806135608816820">サイトが Bluetooth デバイスの検出を要求できるようにする</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
 <translation id="375841316537350618">プロキシ スクリプトをダウンロードしています...</translation>
 <translation id="3758842566811519622">Cookie が設定されました</translation>
@@ -4993,6 +4995,7 @@
 <translation id="5600706100022181951">アップデートをダウンロードすると、<ph name="UPDATE_SIZE_MB" /> MB のモバイルデータを使用することになります。続行してもよろしいですか？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI デバイスへの接続を許可しないサイト</translation>
+<translation id="5601833336918638013">サイトが Bluetooth デバイスを検出することを許可しない</translation>
 <translation id="5602765853043467355">ブックマーク、履歴、パスワード、その他の設定情報をこのデバイスから削除する</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{この拡張機能はブロックされています}other{これらの拡張機能はブロックされています}}</translation>
@@ -6448,6 +6451,7 @@
 <translation id="6960507406838246615">Linux の更新が必要です</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> の音声ファイルをダウンロードできませんでした。ダウンロードは後で試行されます。音声はダウンロードが完了するまで処理のために Google に送信されます。</translation>
 <translation id="696103774840402661">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除しました。</translation>
+<translation id="6961327401577924850">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、サイトは通常 Bluetooth デバイスを検出します。</translation>
 <translation id="6963872466817251924">テキスト カーソルのハイライト表示</translation>
 <translation id="6964390816189577014">ヒーロー</translation>
 <translation id="6964760285928603117">グループから削除</translation>
@@ -8083,6 +8087,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> が実行の許可を求めています</translation>
 <translation id="8466417995783206254">このタブではピクチャー イン ピクチャー モードで動画を再生しています。</translation>
 <translation id="8467326454809944210">別の言語を選択</translation>
+<translation id="8468087214092422866">Bluetooth デバイスの検出が許可されていないサイト</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> 用に保存されているパスワード</translation>
 <translation id="8471525937465764768">多くのサイトは、ドキュメントを印刷したりストレージ デバイスに保存するために USB デバイスに接続します。</translation>
 <translation id="8471959340398751476">割引情報の取得はオフになっています。カスタマイズ メニューでオンにすることができます</translation>

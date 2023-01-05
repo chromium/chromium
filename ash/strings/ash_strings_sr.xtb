@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> је тренутно изабран.</translation>
 <translation id="1787955149152357925">Искључено</translation>
 <translation id="1797271123677381264">Заборавили сте лозинку</translation>
+<translation id="1807246157184219062">Светлa</translation>
 <translation id="181103072419391116">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="1812997170047690955">Шта је на екрану?</translation>
 <translation id="1816896987747843206">Ово омогућава приступ камери за све апликације и веб-сајтове са дозволом за камеру</translation>
@@ -238,6 +239,7 @@
 <translation id="2224075387478458881">Снимање екрана није дозвољено када је видљив заштићени садржај</translation>
 <translation id="2227179592712503583">Уклони предлог</translation>
 <translation id="225680501294068881">Скенирање уређаја...</translation>
+<translation id="225716114209817872">Максимално</translation>
 <translation id="2257486738914982088">Дошло је до проблема при преузимању фајла <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Предложени фајлови</translation>
 <translation id="2268130516524549846">Bluetooth је онемогућен</translation>
@@ -525,6 +527,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почетак</translation>
 <translation id="3861651314799684201">Притисните Enter да бисте снимили цео екран</translation>
+<translation id="3871092408932389764">Најнижи</translation>
 <translation id="3886872229787704059">Отварано данас</translation>
 <translation id="3891340733213178823">Двапут притисните Ctrl+Shift+Q да бисте се одјавили.</translation>
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
@@ -1012,6 +1015,7 @@
 <translation id="6537924328260219877">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, батерија телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Скенира се фајл <ph name="FILENAME" /> који се преузима</translation>
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Замагљена позадина</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ново инсталирање</translation>
 <translation id="6559976592393364813">Питајте администратора</translation>
@@ -1418,6 +1422,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8785070478575117577">Повежите са уређајем <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Обилно</translation>
 <translation id="8806053966018712535">Фолдер <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Помоћ“</translation>
 <translation id="8814190375133053267">WiFi</translation>

@@ -170,7 +170,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="225943865679747347">Virhekoodi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Lisää tili</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
-<translation id="2271351792809375263">Käytä Chromeen tallennettuja salasanojasi muissa laitteen sovelluksissa</translation>
 <translation id="2273327106802955778">Lisäasetusvalikko</translation>
 <translation id="2286505070150039482">Korostettu teksti</translation>
 <translation id="2299218006564889602">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
@@ -465,7 +464,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4508750114462689118">Sulje kirjautumismainos</translation>
 <translation id="4514889972748124117">Ehdota vahvaa salasanaa…</translation>
 <translation id="4520798012560649652">Lue lisää incognito-tilasta</translation>
-<translation id="4526249700380860531">Tarkastele ja hallinnoi tallennettuja salasanoja osoitteessa <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Tarkista synkronoitu datasi</translation>
 <translation id="4536418791685807335">Yritä kirjautua sisään uudelleen.</translation>
 <translation id="4540780316273593836">Jotain meni pieleen</translation>
@@ -553,7 +551,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5118764316110575523">Pois päältä</translation>
 <translation id="5119391094379141756">Valitse Chrome</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
-<translation id="5140288047769711648">Chrome muistaa tämän salasanan, jotta sinun ei tarvitse.</translation>
 <translation id="5149188072385105201">Lisää salasana…</translation>
 <translation id="5150492518600715772">Lähetä laitteeseen</translation>
 <translation id="5168414296986405587">Suunniteltu iPadOS:lle</translation>
@@ -1092,7 +1089,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9079935439869366234">Merkitse kaikki lukemattomiksi</translation>
 <translation id="9081058212938299310">Päivitetäänkö salasana: <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Ota synkronointi käyttöön, niin sisältö synkronoidaan ja yksilöidään eri laitteilla.</translation>
-<translation id="9087108903408689779">Chromen salasanaehdotus:</translation>
 <translation id="9093271241977565440">Napauta näytön yläreunasta hakukuvaketta</translation>
 <translation id="9094033019050270033">Päivitä salasana</translation>
 <translation id="9097506547406246598">Seuraamista ei voi lopettaa. Jotain meni pieleen.</translation>

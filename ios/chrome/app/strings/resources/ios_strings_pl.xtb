@@ -170,7 +170,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj konto</translation>
 <translation id="2268044343513325586">Zawęź</translation>
-<translation id="2271351792809375263">Korzystaj z haseł zapisanych w Chrome w innych aplikacjach na urządzeniu</translation>
 <translation id="2273327106802955778">Menu Więcej</translation>
 <translation id="2286505070150039482">Zaznaczony tekst</translation>
 <translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
@@ -454,6 +453,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4420409367264901497">Edytuj zakładkę</translation>
 <translation id="4442550905108052454">Otwórz <ph name="BEGIN_BOLD" />Ustawienia<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Dodaj język</translation>
+<translation id="4461286950227634995">Proponuj zapisywanie haseł</translation>
 <translation id="4462491365653392320">Sprawdzaj ceny na kartach</translation>
 <translation id="4469418912670346607">Kontynuuj konfigurowanie</translation>
 <translation id="4474494258097106883">Dla Twojego iPhone'a</translation>
@@ -465,7 +465,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4508750114462689118">Zamknij okno zachęcające do logowania</translation>
 <translation id="4514889972748124117">Zaproponuj silne hasło...</translation>
 <translation id="4520798012560649652">Więcej informacji o trybie incognito</translation>
-<translation id="4526249700380860531">Wyświetlaj zapisane hasła i zarządzaj nimi na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4536418791685807335">Spróbuj zalogować się jeszcze raz.</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
@@ -553,7 +552,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5118764316110575523">Wyłączono</translation>
 <translation id="5119391094379141756">Wybierz Chrome.</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
-<translation id="5140288047769711648">Chrome będzie pamiętać to hasło za Ciebie. Nie musisz go zapamiętywać.</translation>
 <translation id="5149188072385105201">Dodaj hasło…</translation>
 <translation id="5150492518600715772">Wyślij na swoje urządzenie</translation>
 <translation id="5168414296986405587">Stworzona dla iPadOS</translation>
@@ -1092,7 +1090,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9079935439869366234">Oznacz wszystkie jako nieprzeczytane</translation>
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
-<translation id="9087108903408689779">Hasło proponowane przez Chrome:</translation>
 <translation id="9093271241977565440">U góry ekranu kliknij ikonę wyszukiwania</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>
 <translation id="9097506547406246598">Nie udało się zrezygnować z obserwowania. Coś poszło nie tak.</translation>

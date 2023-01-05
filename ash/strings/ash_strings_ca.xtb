@@ -162,6 +162,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1774796056689732716">Calendari, <ph name="CURRENT_MONTH_YEAR" />, actualment està seleccionat el dia <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1797271123677381264">He oblidat la contrasenya</translation>
+<translation id="1807246157184219062">Clar</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="1812997170047690955">Què hi ha a la pantalla?</translation>
 <translation id="1816896987747843206">Permet l'accés a la càmera a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
@@ -525,6 +526,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
+<translation id="3871092408932389764">El més baix</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>

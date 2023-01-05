@@ -2731,6 +2731,7 @@
 <translation id="3469583217479686109">Алатка за бирање</translation>
 <translation id="3470392222765168737">Пратите сајт</translation>
 <translation id="3471876058939596279">HDMI и USB портови типа C не могу да се користе за видео у исто време. Користите други видео порт.</translation>
+<translation id="3472469028191701821">Отвара се на новој картици</translation>
 <translation id="3473241910002674503">Идите на почетну страницу или назад и мењајте апликације помоћу дугмади у режиму таблета.</translation>
 <translation id="3473479545200714844">Лупа екрана</translation>
 <translation id="3474218480460386727">Користите 99 слова или мање за нове речи</translation>
@@ -3117,6 +3118,7 @@
 <translation id="3820749202859700794">Елиптична крива SECG secp521r1 (такође позната као NIST P-521)</translation>
 <translation id="3821074617718452587">Обавештења Phone Hub-а</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Додатак је одобрен}one{# додатак је одобрен}few{# додатка су одобрена}other{# додатака је одобрено}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux се препоручује најмање <ph name="INSTALL_SIZE" /> простора.</translation>
 <translation id="3824621460022590830">Токен за регистрацију уређаја је неважећи. Обратите се власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запамти мој избор за овај тип фајла: <ph name="FILE_TYPES" />}one{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}few{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}other{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}}</translation>
@@ -4035,6 +4037,7 @@
 <translation id="4675828034887792601">Правите пречице за претраживање сајтова и управљајте претраживачем</translation>
 <translation id="4676595058027112862">Phone Hub, сазнајте више</translation>
 <translation id="4677772697204437347">GPU меморија</translation>
+<translation id="4678848110205818817">Кредитна или дебитна картица</translation>
 <translation id="4680105648806843642">Звук је искључен на овој страници</translation>
 <translation id="4680112532510845139">Отпустите слику овде</translation>
 <translation id="4681453295291708042">Онемогући Дељење у близини</translation>

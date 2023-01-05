@@ -170,7 +170,6 @@
 <translation id="225943865679747347">Ката коду: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Аккаунт кошуу</translation>
 <translation id="2268044343513325586">Мыктылоо</translation>
-<translation id="2271351792809375263">Chrome'го сактаган сырсөздөрдү түзмөгүңүздөгү башка колдонмолордо пайдаланыңыз</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
 <translation id="2286505070150039482">Бөлүнүп көрсөтүлгөн текст</translation>
 <translation id="2299218006564889602">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет.</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">Кирүүгө үндөгөн жарнама жабылсын</translation>
 <translation id="4514889972748124117">Татаал сырсөз сунушталсын...</translation>
 <translation id="4520798012560649652">Жашыруун режим жөнүндө кеңири маалымат</translation>
-<translation id="4526249700380860531">Сакталган сырсөздөрдү <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> дарегинен көрүп жана башкарыңыз</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4536418791685807335">Кайра кирип көрүңүз.</translation>
 <translation id="4540780316273593836">Бир жерден ката кетти</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">Өчүк</translation>
 <translation id="5119391094379141756">Chrome'ду тандаңыз</translation>
 <translation id="5132942445612118989">Бардык түзмөктөрдөгү сырсөздөрдү, таржымалды жана башкаларды шайкештирүү</translation>
-<translation id="5140288047769711648">Chrome бул сырсөздү сиз үчүн сактап коёт. Аны эстеп калуунун кажети жок.</translation>
 <translation id="5149188072385105201">Сырсөз кошуу...</translation>
 <translation id="5150492518600715772">Түзмөгүңүзгө жөнөтүү</translation>
 <translation id="5168414296986405587">iPadOS үчүн куралган</translation>
@@ -1092,7 +1089,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9079935439869366234">Баарын окула элек деп белгилөө</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> үчүн сырсөз жаңыртылсынбы?</translation>
 <translation id="9083838294503912307">Бардык түзмөктөрүңүздө шайкештирүү жана жекечелештирүү үчүн шайкештирүүнү иштетиңиз.</translation>
-<translation id="9087108903408689779">Chrome сунуштаган сырсөз:</translation>
 <translation id="9093271241977565440">Экрандын жогору жагындагы Издөө сүрөтчөсүн таптаңыз</translation>
 <translation id="9094033019050270033">Сырсөздү жаңыртуу</translation>
 <translation id="9097506547406246598">Жазылуу токтотулган жок. Бир жерден ката кетти.</translation>

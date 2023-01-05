@@ -1007,6 +1007,11 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="1962864958436828230">Veri sızıntısını önleme amaçlı pano kısıtlaması için minimum boyut sınırını belirleyin</translation>
 <translation id="1964634611280150550">Gizli mod devre dışı</translation>
 <translation id="1964802606569741174">Bu politikanın Android YouTube uygulaması üzerinde hiçbir etkisi yoktur. YouTube'da Güvenlik Modu uygulanacaksa Android YouTube uygulamasının yüklenmesine izin verilmemelidir.</translation>
+<translation id="1964985353230379667">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
+
+      "KerberosUseCustomPrefilledConfig" politikası etkinleştirilirse politika değeri, önerilen yapılandırma olarak uygulanır ve Kerberos kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde gösterilir. Bu politika boş bir dizeye ayarlanır veya ayarlanmadan bırakılırsa önerilen <ph name="PRODUCT_OS_NAME" /> yapılandırması silinir.
+
+      "KerberosUseCustomPrefilledConfig" politikası devre dışı bırakılırsa bu politikanın değeri kullanılmaz.</translation>
 <translation id="1969212217917526199">Uzaktan erişim ana makinesinin Hata Ayıklama yapılarındaki politikaları geçersiz kılar.
 
           Değer, politika adı ile politika değeri eşleşmelerinin olduğu bir JSON sözlüğü olarak ayrıştırılır.</translation>

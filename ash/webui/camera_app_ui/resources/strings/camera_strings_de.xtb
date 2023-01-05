@@ -90,12 +90,12 @@
 <translation id="428234092390943511">Miniaturansicht der Seite</translation>
 <translation id="4329152592498422850">Zum Modus für quadratische Fotos wechseln</translation>
 <translation id="4340659173795395806">Du kannst jetzt PDF-Dateien mit mehreren Seiten erstellen</translation>
-<translation id="4383571725254449280">Druckleistungsprotokolle drucken</translation>
+<translation id="4383571725254449280">Leistungsprotokolle drucken</translation>
 <translation id="4445542136948522167">Fotoaufnahme beenden</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Megapixel</translation>
 <translation id="4570032796877367747">Frontkamera</translation>
 <translation id="4598556348158889687">Speicherplatzverwaltung</translation>
-<translation id="4620818268515773682">Mikrofonstummschalten ausschalten. Stummschaltung ist deaktiviert.</translation>
+<translation id="4620818268515773682">Mikrofonstummschaltung ausschalten. Stummschaltung ist deaktiviert.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Datei konnte nicht gespeichert werden</translation>
 <translation id="4695379108709712600">Wird nach oben verschoben</translation>
@@ -175,7 +175,7 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
-<translation id="8711011893539266636">Mikrofonstummschalten einschalten. Stummschaltung ist aktiviert.</translation>
+<translation id="8711011893539266636">Mikrofonstummschaltung einschalten. Stummschaltung ist aktiviert.</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8732462232047530626">Vorschau der Metadaten anzeigen</translation>

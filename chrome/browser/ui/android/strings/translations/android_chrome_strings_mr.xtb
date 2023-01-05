@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1724977129262658800">तुमचा पासवर्ड संपादित करण्यासाठी अनलॉक करा</translation>
 <translation id="1726477445370128854">तुम्ही भेट देऊ शकता असे Chrome ला वाटत असलेली पेज ते प्रीलोड करते तेव्हा, तुम्ही आणखी जलद ब्राउझ करू शकता आणि शोधू शकता</translation>
-<translation id="1736419249208073774">एक्सप्लोर करा</translation>
 <translation id="1749561566933687563">तुमचे बुकमार्क सिंक करा</translation>
 <translation id="1750259112639922169">टॅब गट - <ph name="TAB_COUNT" /> टॅब</translation>
 <translation id="17513872634828108">खुले टॅब</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">मजकूर</translation>
 <translation id="2068748236079642969">पुढील व्हिडिओ पहा</translation>
 <translation id="2074143993849053708">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI बंद केले</translation>
+<translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2096012225669085171">डिव्हाइसवर सिंक आणि पर्सनलाइझ करा</translation>
 <translation id="2100273922101894616">ऑटो साइन इन करा</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">साइन इन करू शकत नाही</translation>
 <translation id="234265804618409743">तुमचा कॅमेरा उघडू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="2349710944427398404">खाती, बुकमार्क आणि सेव्ह केलेल्या सेटिंग्जसह, Chrome ने वापरलेला एकूण डेटा</translation>
-<translation id="2353636109065292463">तुमचे इंटरनेट कनेक्शन तपासत आहे</translation>
 <translation id="235789365079050412">Google गोपनीयता धोरण</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2386938421315164605">विषय लपवा आणि दाखवा</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">व्हॉइस शोध</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3285080554353377245">Chrome कसे वापरावे याबद्दल व्हिडिओ</translation>
-<translation id="3288003805934695103">पृष्ठ रीलोड करणे</translation>
 <translation id="3290249595466894471">तसेच नवीन धोके शोधण्यात मदत करण्यासाठी पेज, डाउनलोड, एक्स्टेंशन अ‍ॅक्टिव्हिटी आणि सिस्टीम माहिती यांचे लहान नमुने पाठवते</translation>
 <translation id="3297344142967351106">व्हॉइस साहाय्य</translation>
 <translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">फोल्डर जोडा</translation>
 <translation id="3899682235662194879">सर्व गुप्त टॅब बंद करा</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> अपडेट करा</translation>
-<translation id="3912508018559818924">वेबवरून सर्वोत्तम शोधत आहे…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> सुरू आहे</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">नवीन टॅब</translation>
 <translation id="5235196193381275927">साइन-इन करताना काहीतरी चूक झाली</translation>
 <translation id="5246093389635966745">टूलबार शॉर्टकट संपादित करा</translation>
-<translation id="526421993248218238">हे पेज लोड करू शकत नाही</translation>
 <translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> सह लिंक केलेले</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">येथे तुमच्या साइटची सेटिंग्ज बदला</translation>
 <translation id="6140709049082532940">वर्धित संरक्षण:</translation>
 <translation id="6140912465461743537">देश/प्रदेश</translation>
-<translation id="614940544461990577">हे करून पहा:</translation>
 <translation id="6150320133806434356">बुकमार्क सेव्ह केला</translation>
 <translation id="6154478581116148741">तुमचे पासवर्ड या डिव्हाइसवरून एक्सपोर्ट करण्यासाठी सेटिंग्जमधील लॉक स्क्रीन सुरू करा</translation>
 <translation id="6159729262978459665">सिंक केलेल्या सर्व डिव्हाइसवरून इतिहास साफ करते.</translation>

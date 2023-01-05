@@ -4425,6 +4425,19 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, window.webkitStorageI
 <translation id="519247340330463721">Mengonfigurasi kebijakan terkait Safe Browsing.</translation>
 <translation id="5194683382395300627">Mengizinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web, misalnya untuk mengaktifkan perubahan sandi secara otomatis</translation>
 <translation id="5196630732055960309">Mengizinkan File Handling API di aplikasi web ini</translation>
+<translation id="5198660575318473544">Mengontrol apakah ekstensi Manifes v2 dapat digunakan di layar login <ph name="PRODUCT_OS_NAME" />.
+
+Dukungan ekstensi Manifes v2 tidak akan digunakan lagi dan semua ekstensi harus
+dimigrasikan ke v3 pada masa mendatang. Informasi selengkapnya dan linimasa migrasi
+dapat ditemukan di https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Jika kebijakan disetel ke <ph name="DEFAULT" /> (0) atau tidak disetel, pemuatan ekstensi v2 akan ditentukan oleh perangkat, mengikuti linimasa di atas.
+Jika kebijakan disetel ke <ph name="DISABLE" /> (1), penginstalan ekstensi v2 akan diblokir dan ekstensi yang ada akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel setelah dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE" /> (2), ekstensi v2 akan diizinkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
+Jika kebijakan disetel ke <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), ekstensi v2 yang diinstal otomatis akan diizinkan. Ini termasuk ekstensi yang dicantumkan oleh <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> dengan <ph name="INSTALLATION_MODE" /> "force_installed" atau "normal_installed". Semua ekstensi v2 lainnya akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
+
+
+Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="5206454085187851382">Jika <ph name="PRINTERS_ALLOWLIST" /> dipilih untuk <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Mengonfigurasi apakah <ph name="PRODUCT_NAME" /> di Linux akan menggunakan notifikasi sistem.
 
@@ -4871,6 +4884,7 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="5599461642204007579">Setelan pengelolaan <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Aktifkan pelaporan status penyimpanan perangkat</translation>
+<translation id="5608114828230655271">Perilaku default perangkat</translation>
 <translation id="5614865701790130558">Membuat log peristiwa penginstalan ekstensi berdasarkan kebijakan</translation>
 <translation id="5618398258385745432">Setelan terkait digunakan sebelum autentikasi ulang saat melihat sandi diperkenalkan. Sejak saat itu, setelan dan kebijakan ini tidak berpengaruh pada perilaku Chrome. Perilaku Chrome saat ini sama seperti saat kebijakan ini ditetapkan untuk tidak menampilkan sandi dalam teks jelas di halaman setelan pengelola sandi. Artinya, halaman setelan hanya memuat placeholder, dan Chrome hanya akan menampilkan sandi setelah pengguna mengklik "Tampilkan" (dan mengautentikasi ulang, jika berlaku). Deskripsi asli untuk kebijakan ini tercantum di bawah.
 

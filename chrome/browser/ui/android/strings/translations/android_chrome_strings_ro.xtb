@@ -139,7 +139,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1724977129262658800">Deblochează pentru a modifica parola</translation>
 <translation id="1726477445370128854">Poți să navighezi și să cauți mai repede când Chrome preîncarcă pagini pe care crede că le-ai putea accesa</translation>
-<translation id="1736419249208073774">Explorează</translation>
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="1750259112639922169">Grup de file – <ph name="TAB_COUNT" /> file</translation>
 <translation id="17513872634828108">File deschise</translation>
@@ -197,6 +196,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Urmărește videoclipul următor</translation>
 <translation id="2074143993849053708">IU pentru consimțirea la căutarea vocală cu ajutorul Asistentului, închisă</translation>
+<translation id="2079545284768500474">Anulează</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronizează și personalizează pe toate dispozitivele</translation>
 <translation id="2100273922101894616">Conectare automată</translation>
@@ -238,7 +238,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="2328985652426384049">Nu se poate conecta</translation>
 <translation id="234265804618409743">Nu se poate deschide camera. A apărut o eroare.</translation>
 <translation id="2349710944427398404">Totalul datelor folosite de Chrome, inclusiv conturile, marcajele și setările salvate</translation>
-<translation id="2353636109065292463">Se verifică conexiunea la internet</translation>
 <translation id="235789365079050412">Politica de confidențialitate Google</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2386938421315164605">Ascunde și reafișează subiecte</translation>
@@ -423,7 +422,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3280562213547448728">Căutare vocală</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3285080554353377245">Videoclipuri despre folosirea browserului Chrome</translation>
-<translation id="3288003805934695103">să reîncarci pagina;</translation>
 <translation id="3290249595466894471">În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări</translation>
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
@@ -521,7 +519,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3894427358181296146">Adaugă un dosar</translation>
 <translation id="3899682235662194879">Închide toate filele incognito</translation>
 <translation id="3908308510347173149">Actualizează <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Se caută tot ce e mai bun de pe web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> este activă</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combină datele</translation>
@@ -775,7 +772,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5233638681132016545">Filă nouă</translation>
 <translation id="5235196193381275927">A apărut o eroare la conectare</translation>
 <translation id="5246093389635966745">Editează comanda rapidă pentru bara de instrumente</translation>
-<translation id="526421993248218238">Această pagină nu poate fi încărcată.</translation>
 <translation id="5271967389191913893">Dispozitivul nu poate deschide conținutul de descărcat.</translation>
 <translation id="5274286919938458946">Conectat cu <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Trimite la</translation>
@@ -929,7 +925,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6138832295072039549">Modifică aici setările pentru site</translation>
 <translation id="6140709049082532940">Protecție îmbunătățită:</translation>
 <translation id="6140912465461743537">Țară/Regiune</translation>
-<translation id="614940544461990577">Încearcă:</translation>
 <translation id="6150320133806434356">Marcaj salvat</translation>
 <translation id="6154478581116148741">Pentru a-ți exporta parolele de pe acest dispozitiv, activează blocarea ecranului în Setări.</translation>
 <translation id="6159729262978459665">Șterge istoricul de pe toate dispozitivele sincronizate.</translation>

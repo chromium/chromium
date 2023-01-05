@@ -170,7 +170,6 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="225943865679747347">Xəta kodu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hesab Əlavə edin</translation>
 <translation id="2268044343513325586">Silin</translation>
-<translation id="2271351792809375263">Chrome'da saxladığınız parolları cihazınızdaki digər tətbiqlərdə istifadə edin</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
 <translation id="2286505070150039482">Vurğulanmış Mətn</translation>
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
@@ -465,7 +464,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4508750114462689118">Giriş reklamını bağlayın</translation>
 <translation id="4514889972748124117">Güclü Parol Təklif Edin...</translation>
 <translation id="4520798012560649652">Anonim rejimi haqqında ətraflı məlumat</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> linkində yadda saxlanılmış parollarınıza baxın və idarə edin</translation>
 <translation id="452750746583162491">Sinxronlaşdırılmış datanızı nəzərdən keçirin</translation>
 <translation id="4536418791685807335">Yenidən daxil olmağa cəhd edin.</translation>
 <translation id="4540780316273593836">Xəta baş verdi</translation>
@@ -553,7 +551,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5118764316110575523">Deaktiv</translation>
 <translation id="5119391094379141756">Chrome seçin</translation>
 <translation id="5132942445612118989">Bütün cihazlarda parol, tarixçə və s. sinxronizasiya edin</translation>
-<translation id="5140288047769711648">Chrome bu parolu Sizin üçün yadda saxlayacaq. Parolu yadda saxlamaq məcburiyyətində deyilsiniz.</translation>
 <translation id="5149188072385105201">Parol Əlavə edin...</translation>
 <translation id="5150492518600715772">Cihazınıza göndərin</translation>
 <translation id="5168414296986405587">iPadOS üçün hazırlanıb</translation>
@@ -1092,7 +1089,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9079935439869366234">Hamısını Oxunmamış kimi Qeyd Edin</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> üçün parollar yenilənsin?</translation>
 <translation id="9083838294503912307">Cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün sinxronizasiyanı aktiv edin</translation>
-<translation id="9087108903408689779">Chrome Tərəfindən Təklif Edilən Parol:</translation>
 <translation id="9093271241977565440">Ekranın yuxarısında Axtarış İkonuna toxunun</translation>
 <translation id="9094033019050270033">Parolu güncəlləyin</translation>
 <translation id="9097506547406246598">İzləmədən çıxarmaq olmur. Xəta oldu.</translation>

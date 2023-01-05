@@ -170,7 +170,6 @@
 <translation id="225943865679747347">දෝශ කේතය: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ගිණුම එක් කරන්න</translation>
 <translation id="2268044343513325586">පිරිපහදු කරන්න</translation>
-<translation id="2271351792809375263">ඔබගේ උපාංගයේ වෙනත් යෙදුම්වල ඔබ Chrome වෙත සුරැකි මුරපද භාවිත කරන්න</translation>
 <translation id="2273327106802955778">තව මෙනුව</translation>
 <translation id="2286505070150039482">උද්දීපනය කළ පෙළ</translation>
 <translation id="2299218006564889602">ඔබගේ මුරපදය Google මුරපද කළමනාකරු වෙත සුරැකීමට පෙර ඔබගේ උපාංගයේ සංකේතනය කර ඇත.</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">පුරනය-වීමේ ප්‍රවර්ධනය වසන්න</translation>
 <translation id="4514889972748124117">ප්‍රබල මුරපදයක් යෝජනා කරන්න...</translation>
 <translation id="4520798012560649652">අප්‍රකට ප්‍රකාරය පිළිබඳ තව දැන ගන්න</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> හිදී මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="452750746583162491">ඔබේ සමමුහූර්ත කළ දත්ත සමාලෝචන කරන්න</translation>
 <translation id="4536418791685807335">නැවත පිරීමට උත්සාහ කරන්න.</translation>
 <translation id="4540780316273593836">යම් දෙයක් වැරදිණි</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">අක්‍රිය</translation>
 <translation id="5119391094379141756">Chrome තෝරන්න</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
-<translation id="5140288047769711648">Chrome ඔබ වෙනුවෙන් මෙම මුරපදය මතක තබා ගනියි. ඔබට එය මතක තබා ගැනීමට අවශ්‍ය නැත.</translation>
 <translation id="5149188072385105201">මුරපදය එක් කරන්න...</translation>
 <translation id="5150492518600715772">ඔබේ උපාංගය වෙත යවන්න</translation>
 <translation id="5168414296986405587">iPadOS සඳහා තනා ඇත</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">සියල්ල නොකියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> සඳහා මුරපදය යාවත්කාලීන කරන්නේද?</translation>
 <translation id="9083838294503912307">උපාංග හරහා සමමුහුර්ත සහ පෞද්ගලීකරණය කිරීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න.</translation>
-<translation id="9087108903408689779">Chrome යෝජනා කළ මුරපදය:</translation>
 <translation id="9093271241977565440">තිරයෙහි ඉහළින්, සෙවීම් නිරූපකය තට්ටු කරන්න</translation>
 <translation id="9094033019050270033">මුරපදය යාවත්කාලීන කරන්න</translation>
 <translation id="9097506547406246598">අනුගමනය කිරීමෙන් ඉවත් වීමට නොහැකිය. යම් දෙයක් වැරදිණි.</translation>

@@ -170,7 +170,6 @@
 <translation id="225943865679747347">오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">계정 추가</translation>
 <translation id="2268044343513325586">상세검색</translation>
-<translation id="2271351792809375263">기기의 다른 앱에서 Chrome에 저장한 비밀번호를 사용하세요</translation>
 <translation id="2273327106802955778">더보기 메뉴</translation>
 <translation id="2286505070150039482">강조표시된 텍스트</translation>
 <translation id="2299218006564889602">비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
@@ -465,7 +464,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4508750114462689118">로그인 프로모션 닫기</translation>
 <translation id="4514889972748124117">안전한 비밀번호 추천...</translation>
 <translation id="4520798012560649652">시크릿 모드에 관해 자세히 알아보기</translation>
-<translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4536418791685807335">다시 로그인해 주세요.</translation>
 <translation id="4540780316273593836">문제 발생</translation>
@@ -553,7 +551,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5118764316110575523">사용 안함</translation>
 <translation id="5119391094379141756">Chrome을 선택합니다.</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
-<translation id="5140288047769711648">Chrome에서 이 비밀번호를 기억합니다. 따라서 기억하지 않아도 됩니다.</translation>
 <translation id="5149188072385105201">비밀번호 추가...</translation>
 <translation id="5150492518600715772">기기로 보내기</translation>
 <translation id="5168414296986405587">iPadOS 최적화</translation>
@@ -1092,7 +1089,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9079935439869366234">모두 읽지않음으로 표시</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />님의 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9083838294503912307">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요.</translation>
-<translation id="9087108903408689779">Chrome 추천 비밀번호:</translation>
 <translation id="9093271241977565440">화면 상단에서 검색 아이콘을 탭합니다.</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9097506547406246598">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>

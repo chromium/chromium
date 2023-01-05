@@ -170,7 +170,6 @@
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додати обліковий запис</translation>
 <translation id="2268044343513325586">Уточнити</translation>
-<translation id="2271351792809375263">Використовуйте паролі, які зберегли в Chrome, в інших додатках на своєму пристрої</translation>
 <translation id="2273327106802955778">Більше опцій</translation>
 <translation id="2286505070150039482">Виділений текст</translation>
 <translation id="2299218006564889602">Ваші паролі шифруються на пристрої, перш ніж зберегтися в Менеджері паролів Google.</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">Закрити заклик до входу</translation>
 <translation id="4514889972748124117">Запропонувати надійний пароль…</translation>
 <translation id="4520798012560649652">Докладніше про режим анонімного перегляду</translation>
-<translation id="4526249700380860531">Переглядайте збережені паролі та керуйте ними на сторінці <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4536418791685807335">Спробуйте ввійти ще раз.</translation>
 <translation id="4540780316273593836">Сталася помилка</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">Вимк.</translation>
 <translation id="5119391094379141756">Виберіть Chrome</translation>
 <translation id="5132942445612118989">Синхронізуйте свої паролі, історію тощо на всіх пристроях</translation>
-<translation id="5140288047769711648">Chrome збереже цей пароль. Вам не потрібно його запам’ятовувати.</translation>
 <translation id="5149188072385105201">Додати пароль…</translation>
 <translation id="5150492518600715772">Надіслати на ваш пристрій</translation>
 <translation id="5168414296986405587">Створено для iPadOS</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">Позначити всі як непрочитані</translation>
 <translation id="9081058212938299310">Оновити пароль для <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Щоб синхронізувати й персоналізувати дані на всіх своїх пристроях, увімкніть синхронізацію.</translation>
-<translation id="9087108903408689779">Запропонований пароль від Chrome:</translation>
 <translation id="9093271241977565440">Угорі екрана натисніть значок пошуку</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>
 <translation id="9097506547406246598">Не вдалося скасувати підписку.</translation>

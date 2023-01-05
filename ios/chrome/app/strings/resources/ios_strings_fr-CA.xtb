@@ -170,7 +170,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
-<translation id="2271351792809375263">Utilisez les mots de passe enregistrés dans Chrome dans d'autres applications de votre appareil</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2286505070150039482">Texte mis en évidence</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le gestionnaire de mots de passe Google.</translation>
@@ -465,7 +464,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4508750114462689118">Fermer la promotion de connexion</translation>
 <translation id="4514889972748124117">Suggérer un mot de passe fort…</translation>
 <translation id="4520798012560649652">En savoir plus à propos du mode de navigation privée</translation>
-<translation id="4526249700380860531">Afficher et gérer les mots de passe enregistrés à l'adresse <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4536418791685807335">Essayez de vous reconnecter.</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
@@ -553,7 +551,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
-<translation id="5140288047769711648">Chrome mémorisera ce mot de passe pour vous. Vous n'avez pas à le mémoriser.</translation>
 <translation id="5149188072385105201">Ajouter un mot de passe…</translation>
 <translation id="5150492518600715772">Envoyer à votre appareil</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
@@ -1092,7 +1089,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9079935439869366234">Tout marquer comme non lu</translation>
 <translation id="9081058212938299310">Mettre à jour le mot de passe pour <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Pour profiter de la synchronisation et d'une expérience personnalisée sur tous vos appareils, activez la synchronisation.</translation>
-<translation id="9087108903408689779">Mot de passe suggéré par Chrome :</translation>
 <translation id="9093271241977565440">Dans la partie supérieure de l'écran, touchez l'icône de recherche</translation>
 <translation id="9094033019050270033">Mettre à jour le mot de passe</translation>
 <translation id="9097506547406246598">Le désabonnement a échoué. Un problème est survenu.</translation>

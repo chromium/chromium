@@ -170,7 +170,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Añadir cuenta</translation>
 <translation id="2268044343513325586">Restringir</translation>
-<translation id="2271351792809375263">Usa las contraseñas que has guardado en Chrome en otras aplicaciones de tu dispositivo</translation>
 <translation id="2273327106802955778">Menú más</translation>
 <translation id="2286505070150039482">Texto resaltado</translation>
 <translation id="2299218006564889602">Tus contraseñas se cifran en tu dispositivo antes de que se guarden en el gestor de contraseñas de Google.</translation>
@@ -465,7 +464,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>
 <translation id="4514889972748124117">Sugerir contraseña segura...</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
-<translation id="4526249700380860531">Consulta y gestiona las contraseñas guardadas en la página <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
 <translation id="4536418791685807335">Prueba a iniciar sesión de nuevo.</translation>
 <translation id="4540780316273593836">Se ha producido un error</translation>
@@ -553,7 +551,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5118764316110575523">Desactivado</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
-<translation id="5140288047769711648">Chrome recordará esta contraseña. Así no tendrás que recordarla.</translation>
 <translation id="5149188072385105201">Añadir contraseña...</translation>
 <translation id="5150492518600715772">Enviar a tu dispositivo</translation>
 <translation id="5168414296986405587">Diseñado para iPadOS</translation>
@@ -1092,7 +1089,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9079935439869366234">Marcar todo como no leído</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña de <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>
-<translation id="9087108903408689779">Contraseña sugerida de Chrome:</translation>
 <translation id="9093271241977565440">En la parte superior de la pantalla, toca el icono de búsqueda</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9097506547406246598">No se puede dejar de seguir. Algo ha fallado.</translation>

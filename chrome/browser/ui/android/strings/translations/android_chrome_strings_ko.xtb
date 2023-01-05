@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">지난 1시간</translation>
 <translation id="1724977129262658800">비밀번호를 수정하려면 잠금 해제하세요</translation>
 <translation id="1726477445370128854">사용자가 방문할 것으로 생각되는 페이지를 Chrome에서 미리 로드하면 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
-<translation id="1736419249208073774">탐색</translation>
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="1750259112639922169">탭 그룹 - 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="17513872634828108">열린 탭</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">텍스트</translation>
 <translation id="2068748236079642969">다음 동영상 보기</translation>
 <translation id="2074143993849053708">어시스턴트 음성 검색 동의 UI 닫힘</translation>
+<translation id="2079545284768500474">실행취소</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
 <translation id="2096012225669085171">모든 기기 동기화 및 맞춤설정</translation>
 <translation id="2100273922101894616">자동 로그인</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">로그인할 수 없음</translation>
 <translation id="234265804618409743">카메라를 열 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
-<translation id="2353636109065292463">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="235789365079050412">Google 개인정보처리방침</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">음성 검색</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3285080554353377245">Chrome 사용 방법에 관한 동영상</translation>
-<translation id="3288003805934695103">페이지 새로고침</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">폴더 추가</translation>
 <translation id="3899682235662194879">모든 시크릿 탭 닫기</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> 업데이트</translation>
-<translation id="3912508018559818924">웹에서 최상의 결과를 찾는 중…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> 사용 중</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">내 데이터 결합하기</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
-<translation id="526421993248218238">이 페이지를 로드할 수 없습니다.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
 <translation id="5274286919938458946">연결된 카드: <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">전송할 기기</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">여기에서 사이트 설정을 변경하세요.</translation>
 <translation id="6140709049082532940">향상된 보호 모드:</translation>
 <translation id="6140912465461743537">국가/지역</translation>
-<translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
 <translation id="6150320133806434356">북마크 저장됨</translation>
 <translation id="6154478581116148741">이 기기에서 비밀번호를 내보내려면 설정에서 화면 잠금을 사용 설정하세요</translation>
 <translation id="6159729262978459665">동기화된 모든 기기에서 방문 기록을 지웁니다.</translation>

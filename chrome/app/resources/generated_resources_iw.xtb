@@ -2747,6 +2747,7 @@
 <translation id="3469583217479686109">כלי הבחירה</translation>
 <translation id="3470392222765168737">מעקב אחר האתר</translation>
 <translation id="3471876058939596279">‏אי אפשר להשתמש בו-זמנית ביציאות HDMI ו-USB C לווידאו. עליך לבחור יציאת וידאו אחרת.</translation>
+<translation id="3472469028191701821">נפתח בכרטיסייה חדשה</translation>
 <translation id="3473241910002674503">במצב טאבלט אפשר להשתמש בלחצנים כדי לעבור אל דף הבית, לחזור לדף הקודם ולעבור בין אפליקציות.</translation>
 <translation id="3473479545200714844">מגדיל התצוגה</translation>
 <translation id="3474218480460386727">יש לכתוב מילים חדשות עם 99 אותיות או פחות</translation>
@@ -3133,6 +3134,7 @@
 <translation id="3820749202859700794">‏עקומה אליפטית SECG מסוג secp521r1 (מוכרת גם בשם NIST P-521)</translation>
 <translation id="3821074617718452587">‏התראות של Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{תוסף אושר}one{# תוספים אושרו}two{# תוספים אושרו}other{# תוספים אושרו}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">‏מומלץ ששטח האחסון הפנוי יהיה <ph name="INSTALL_SIZE" /> לפחות כדי להשתמש ב-Linux.</translation>
 <translation id="3824621460022590830">אסימון הרשמת המכשיר לא חוקי. יש לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{אני רוצה שהבחירה שלי עבור סוג הקובץ הזה תישמר: <ph name="FILE_TYPES" />}one{אני רוצה שהבחירה שלי עבור סוגי הקבצים האלה תישמר: <ph name="FILE_TYPES" />}two{אני רוצה שהבחירה שלי עבור סוגי הקבצים האלה תישמר: <ph name="FILE_TYPES" />}other{אני רוצה שהבחירה שלי עבור סוגי הקבצים האלה תישמר: <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4054,7 @@
 <translation id="4675828034887792601">יצירת קיצורי דרך לחיפוש באתרים ספציפיים וניהול של מנועי החיפוש</translation>
 <translation id="4676595058027112862">‏Phone Hub, מידע נוסף</translation>
 <translation id="4677772697204437347">‏זיכרון GPU</translation>
+<translation id="4678848110205818817">כרטיס אשראי או כרטיס חיוב מיידי</translation>
 <translation id="4680105648806843642">הצלילים הושתקו בדף הזה</translation>
 <translation id="4680112532510845139">משחררים את התמונה כאן</translation>
 <translation id="4681453295291708042">השבתה של 'שיתוף בקרבת מקום'</translation>

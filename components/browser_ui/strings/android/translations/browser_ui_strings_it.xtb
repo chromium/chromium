@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Tocca per tornare a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2091887806945687916">Audio</translation>
-<translation id="2107397443965016585">Chiedi prima di consentire ai siti di riprodurre contenuti protetti (opzione consigliata)</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="216989819110952009">Nonostante gli occhiali verdi, i cinque rimasero ugualmente abbagliati dallo splendore</translation>
 <translation id="2182457891543959921">Chiedi conferma prima di consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera (opzione consigliata)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personalizzazione degli annunci</translation>
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="4440642537584213025">Espandi <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Consenti ai siti di riprodurre contenuti protetti</translation>
 <translation id="4468959413250150279">Disattiva l'audio per un sito specifico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4479647676395637221">Chiedi conferma prima di consentire ai siti di utilizzare la fotocamera (opzione consigliata)</translation>

@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Остання година</translation>
 <translation id="1724977129262658800">Розблокуйте, щоб змінити пароль</translation>
 <translation id="1726477445370128854">Ви можете шукати й переглядати контент швидше, коли Chrome попередньо завантажує сторінки, які ви, імовірно, захочете відвідати</translation>
-<translation id="1736419249208073774">Огляд</translation>
 <translation id="1749561566933687563">Синхронізуйте свої закладки</translation>
 <translation id="1750259112639922169">Група вкладок – <ph name="TAB_COUNT" /> шт.</translation>
 <translation id="17513872634828108">Відкриті вкладки</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">SMS</translation>
 <translation id="2068748236079642969">Дивитися наступне відео</translation>
 <translation id="2074143993849053708">Інтерфейс надання згоди на голосовий пошук через Асистента закрито</translation>
+<translation id="2079545284768500474">Відмінити</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронізація та персоналізація на всіх пристроях</translation>
 <translation id="2100273922101894616">Автоматичний вхід</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">Не вдається ввійти</translation>
 <translation id="234265804618409743">Не вдається відкрити камеру. Помилка.</translation>
 <translation id="2349710944427398404">Усі дані, які використовує Chrome, зокрема облікові записи, закладки та збережені налаштування</translation>
-<translation id="2353636109065292463">Перевірка інтернет-з’єднання</translation>
 <translation id="235789365079050412">Політика конфіденційності Google</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2386938421315164605">Ховайте й показуйте теми</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">Голосовий пошук</translation>
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3285080554353377245">Відеоінструкції щодо користування веб-переглядачем Chrome</translation>
-<translation id="3288003805934695103">перезавантажити сторінку</translation>
 <translation id="3290249595466894471">Також надсилає невеликі зразки сторінок, завантаження, дані про дії розширень та інформацію про систему, щоб виявляти нові загрози</translation>
 <translation id="3297344142967351106">Голосова допомога</translation>
 <translation id="3303414029551471755">Завантажити вміст?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">Додати папку</translation>
 <translation id="3899682235662194879">Закрити всі анонімні вкладки</translation>
 <translation id="3908308510347173149">Оновити сервіс <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Шукаємо найкраще в Інтернеті…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> увімкнено</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Об’єднати мої дані</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">Нова вкладка</translation>
 <translation id="5235196193381275927">Під час входу сталася помилка</translation>
 <translation id="5246093389635966745">Змінити кнопку на панелі інструментів</translation>
-<translation id="526421993248218238">Не вдається завантажити цю сторінку</translation>
 <translation id="5271967389191913893">Вміст, який ви хочете завантажити, не можна відкрити на цьому пристрої.</translation>
 <translation id="5274286919938458946">Зв’язано з карткою <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Кому надіслати:</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">Змініть налаштування сайту тут</translation>
 <translation id="6140709049082532940">Покращений захист:</translation>
 <translation id="6140912465461743537">Країна або регіон</translation>
-<translation id="614940544461990577">Спробуйте:</translation>
 <translation id="6150320133806434356">Закладку збережено</translation>
 <translation id="6154478581116148741">Щоб експортувати паролі з цього пристрою, увімкніть блокування екрана</translation>
 <translation id="6159729262978459665">Історію буде видалено на всіх синхронізованих пристроях.</translation>

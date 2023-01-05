@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Нажмите, чтобы вернуться на страницу <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2091887806945687916">Звук</translation>
-<translation id="2107397443965016585">Запрашивать разрешение на воспроизведение защищенного контента (рекомендуется)</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="216989819110952009">Даже в защитных очках Дороти и ее друзья были ослеплены блеском</translation>
 <translation id="2182457891543959921">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры (рекомендуется)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
 <translation id="4440642537584213025">Развернуть раздел "<ph name="TARGET_DESCRIPTION" />"</translation>
-<translation id="445467742685312942">Разрешить сайтам воспроизводить защищенный контент</translation>
 <translation id="4468959413250150279">Отключить звуки на определенном сайте</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файла cookie}many{# файлов cookie}other{# файла cookie}}</translation>
 <translation id="4479647676395637221">Запрашивать разрешение на доступ к камере (рекомендуется)</translation>

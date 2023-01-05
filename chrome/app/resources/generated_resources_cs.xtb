@@ -2734,6 +2734,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3469583217479686109">Nástroj Výběr</translation>
 <translation id="3470392222765168737">Sledovat web</translation>
 <translation id="3471876058939596279">Pro video nelze používat zároveň konektor HDMI i USB Type-C. Použijte pro video jiný konektor.</translation>
+<translation id="3472469028191701821">Otevře se na nové kartě</translation>
 <translation id="3473241910002674503">Umožňuje přejít na domovskou stránku či zpět a přepínat aplikace pomocí tlačítek v režimu tabletu.</translation>
 <translation id="3473479545200714844">Lupa obrazovky</translation>
 <translation id="3474218480460386727">Nová slova smí mít maximálně 99 písmen</translation>
@@ -3120,6 +3121,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3820749202859700794">Eliptická křivka SECG secp521r1 (neboli NIST P-521)</translation>
 <translation id="3821074617718452587">Oznámení Telefonního centra</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozšíření bylo schváleno}few{# rozšíření byla schválena}many{# rozšíření bylo schváleno}other{# rozšíření bylo schváleno}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Pro Linux je doporučeno alespoň <ph name="INSTALL_SIZE" /> místa.</translation>
 <translation id="3824621460022590830">Token registrace zařízení není platný. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamatovat moji volbu pro tento typ souboru: <ph name="FILE_TYPES" />}few{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}many{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}other{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}}</translation>
@@ -4037,6 +4039,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4675828034887792601">Vytvořte zkratky pro vyhledávání na webech a správu vyhledávače</translation>
 <translation id="4676595058027112862">Telefonní centrum, další informace</translation>
 <translation id="4677772697204437347">Paměť GPU</translation>
+<translation id="4678848110205818817">Kreditní/debetní karta</translation>
 <translation id="4680105648806843642">Na této stránce byl ztlumen zvuk</translation>
 <translation id="4680112532510845139">Přetáhněte sem obrázek</translation>
 <translation id="4681453295291708042">Deaktivovat sdílení nablízko</translation>

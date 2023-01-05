@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1724977129262658800">Чтобы изменить пароль, разблокируйте устройство</translation>
 <translation id="1726477445370128854">Предзагрузка страниц позволяет ускорить работу браузера Chrome.</translation>
-<translation id="1736419249208073774">Подробнее</translation>
 <translation id="1749561566933687563">Синхронизируйте закладки</translation>
 <translation id="1750259112639922169">Группа вкладок (вкладок: <ph name="TAB_COUNT" />)</translation>
 <translation id="17513872634828108">Открытые вкладки</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Смотреть следующее видео</translation>
 <translation id="2074143993849053708">Окно, где требуется разрешить использование Ассистента для голосового поиска, закрыто</translation>
+<translation id="2079545284768500474">Отмена</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизация и персонализация данных на всех устройствах</translation>
 <translation id="2100273922101894616">Автоматический вход</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">Не удается войти</translation>
 <translation id="234265804618409743">Произошла ошибка. Не удается открыть камеру.</translation>
 <translation id="2349710944427398404">Общее количество данных Chrome, включая аккаунты, закладки и сохраненные настройки</translation>
-<translation id="2353636109065292463">Проверка подключения к Интернету</translation>
 <translation id="235789365079050412">Политика конфиденциальности Google</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2386938421315164605">Скрывайте и показывайте темы</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">Голосовой поиск</translation>
 <translation id="3282568296779691940">Войти в Chrome</translation>
 <translation id="3285080554353377245">Видео о том, как пользоваться Chrome</translation>
-<translation id="3288003805934695103">Обновите страницу.</translation>
 <translation id="3290249595466894471">Кроме того, с целью выявления новых угроз на анализ отправляется небольшая выборка страниц, скачанных файлов и сведений об использовании расширений, а также информация о системе.</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3303414029551471755">Скачать?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">Добавление папки</translation>
 <translation id="3899682235662194879">Закрыть все вкладки инкогнито</translation>
 <translation id="3908308510347173149">Обновить: <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Загрузка данных из Интернета…</translation>
 <translation id="3924911262913579434">Включен режим "<ph name="SAFE_BROWSING_MODE" />"</translation>
 <translation id="3927692899758076493">Без засечек</translation>
 <translation id="3928666092801078803">Объединить данные</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="5235196193381275927">Не удалось войти в систему.</translation>
 <translation id="5246093389635966745">Изменить кнопку на панели инструментов</translation>
-<translation id="526421993248218238">Не удалось загрузить страницу</translation>
 <translation id="5271967389191913893">Не удается открыть скачанный контент.</translation>
 <translation id="5274286919938458946">Связана с картой <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Куда отправить</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">Изменить настройки сайта можно здесь</translation>
 <translation id="6140709049082532940">Улучшенная защита:</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
-<translation id="614940544461990577">Попробуйте сделать следующее:</translation>
 <translation id="6150320133806434356">Закладка сохранена</translation>
 <translation id="6154478581116148741">Чтобы экспортировать пароли с этого устройства, включите блокировку экрана в настройках.</translation>
 <translation id="6159729262978459665">Удаление истории на всех синхронизированных устройствах</translation>

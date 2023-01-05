@@ -170,7 +170,6 @@
 <translation id="225943865679747347">আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">একাউণ্ট যোগ দিয়ক</translation>
 <translation id="2268044343513325586">পৰিষ্কৰণ</translation>
-<translation id="2271351792809375263">আপুনি Chromeত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ আপোনাৰ ডিভাইচত অন্য এপ্‌সমূহত ব্যৱহাৰ কৰক</translation>
 <translation id="2273327106802955778">অধিক বিকল্পৰ মেনু</translation>
 <translation id="2286505070150039482">হাইলাইট কৰা পাঠ</translation>
 <translation id="2299218006564889602">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়।</translation>
@@ -454,6 +453,7 @@
 <translation id="4420409367264901497">বুকমাৰ্ক সম্পাদনা কৰক</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ছেটিং<ph name="END_BOLD" /> খোলক</translation>
 <translation id="4454246407045105932">ভাষা যোগ কৰক</translation>
+<translation id="4461286950227634995">পাছৱৰ্ড ছেভ কৰাৰ সুবিধা প্ৰদান কৰক</translation>
 <translation id="4462491365653392320">টেবত মূল্য ট্ৰেক কৰক</translation>
 <translation id="4469418912670346607">ছেটআপ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="4474494258097106883">আপোনাৰ iPhoneৰ বাবে প্ৰস্তুত কৰা</translation>
@@ -465,7 +465,6 @@
 <translation id="4508750114462689118">ছাইন প্ৰ’ম’ বন্ধ কৰক</translation>
 <translation id="4514889972748124117">বিশ্বস্ত পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="4520798012560649652">ইনক’গনিট’ ম’ডৰ বিষয়ে অধিক জানক</translation>
-<translation id="4526249700380860531">ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />ত চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="452750746583162491">আপোনাৰ ছিংক কৰা ডেটা পর্যালোচনা কৰক</translation>
 <translation id="4536418791685807335">পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="4540780316273593836">কিবা ভুল হ’ল</translation>
@@ -553,7 +552,6 @@
 <translation id="5118764316110575523">অফ আছে</translation>
 <translation id="5119391094379141756">Chrome বাছনি কৰক</translation>
 <translation id="5132942445612118989">আপোনাৰ পাছৱর্ড, ইতিহাস আৰু অধিক সকলো ডিভাইচতে ছিংক কৰক</translation>
-<translation id="5140288047769711648">Chromeএ আপোনাৰ বাবে এই পাছৱৰ্ডটো মনত ৰাখিব। আপুনি ইয়াক মনত ৰাখিব নালাগে।</translation>
 <translation id="5149188072385105201">পাছৱৰ্ড যোগ দিয়ক...</translation>
 <translation id="5150492518600715772">আপোনাৰ ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="5168414296986405587">iPadOSৰ বাবে প্ৰস্তুত কৰা</translation>
@@ -1092,7 +1090,6 @@
 <translation id="9079935439869366234">সকলো নপঢ়া বুলি চিহ্নিত কৰক</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />ৰ পাছৱৰ্ড আপডে’ট কৰিবনে?</translation>
 <translation id="9083838294503912307">সকলো ডিভাইচতে ছিংক আৰু ব্যক্তিগতকৰণ কৰিবলৈ ছিংক কৰা সুবিধাটো অন কৰক।</translation>
-<translation id="9087108903408689779">Chromeএ চুপাৰিছ কৰা পাছৱৰ্ড:</translation>
 <translation id="9093271241977565440">স্ক্ৰীনখনৰ একেবাৰে ওপৰত থকা সন্ধানৰ চিহ্নটোত টিপক</translation>
 <translation id="9094033019050270033">পাছৱৰ্ড আপডে’ট কৰক</translation>
 <translation id="9097506547406246598">আনফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>

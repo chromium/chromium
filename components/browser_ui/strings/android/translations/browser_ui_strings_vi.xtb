@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Nhấn để quay lại <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
-<translation id="2107397443965016585">Hỏi trước khi cho phép trang web phát nội dung được bảo vệ (khuyên dùng)</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
 <translation id="216989819110952009">Ngay cả khi đôi mắt được bảo vệ bởi cặp kính xanh lục, thoạt tiên Dorothy và bạn bè vẫn cảm thấy loá mắt bởi</translation>
 <translation id="2182457891543959921">Hỏi trước khi cho phép các trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="4440642537584213025">Mở rộng <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Cho phép trang web phát nội dung được bảo vệ</translation>
 <translation id="4468959413250150279">Tắt âm thanh trên một trang web cụ thể.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4479647676395637221">Hỏi trước trước khi cho phép các trang web sử dụng máy ảnh của bạn (được đề xuất)</translation>

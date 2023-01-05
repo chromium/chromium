@@ -170,7 +170,6 @@
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
-<translation id="2271351792809375263">在裝置上使用您透過其他應用程式儲存至 Chrome 的密碼</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2286505070150039482">突顯的文字</translation>
 <translation id="2299218006564889602">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具。</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">閂登入宣傳元素</translation>
 <translation id="4514889972748124117">建議安全度高的密碼…</translation>
 <translation id="4520798012560649652">進一步瞭解無痕模式</translation>
-<translation id="4526249700380860531">檢視及管理您在 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 中已儲存的密碼</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5119391094379141756">選取 [Chrome]</translation>
 <translation id="5132942445612118989">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
-<translation id="5140288047769711648">Chrome 會為您儲存此密碼，因此您無需記住密碼。</translation>
 <translation id="5149188072385105201">新增密碼…</translation>
 <translation id="5150492518600715772">傳送至您的裝置</translation>
 <translation id="5168414296986405587">為 iPadOS 而設</translation>
@@ -1090,7 +1087,6 @@
 <translation id="9079935439869366234">全部標示為未讀</translation>
 <translation id="9081058212938299310">要更新 <ph name="USERNAME" /> 的密碼嗎？</translation>
 <translation id="9083838294503912307">如要在不同裝置上同步並享受個人化體驗，請開啟同步處理功能。</translation>
-<translation id="9087108903408689779">Chrome 建議的密碼：</translation>
 <translation id="9093271241977565440">輕按畫面頂部的「搜尋」圖示</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>

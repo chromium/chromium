@@ -170,7 +170,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="225943865679747347">Koda napake: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Izboljšaj iskanje</translation>
-<translation id="2271351792809375263">Gesla, ki ste jih shranili v Chromu, lahko uporabljate v drugih aplikacijah v napravi.</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2286505070150039482">Označeno besedilo</translation>
 <translation id="2299218006564889602">Gesla se šifrirajo v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
@@ -465,7 +464,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
 <translation id="4514889972748124117">Predlagaj zapleteno geslo ...</translation>
 <translation id="4520798012560649652">Preberite več o anonimnem načinu</translation>
-<translation id="4526249700380860531">Dostopajte do shranjenih gesel in jih upravljajte na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Prišlo je do napake</translation>
@@ -553,7 +551,6 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5118764316110575523">Izklopljeno</translation>
 <translation id="5119391094379141756">Izberite Chrome.</translation>
 <translation id="5132942445612118989">Sinhronizirajte gesla, zgodovino in drugo v vseh napravah</translation>
-<translation id="5140288047769711648">Chrome si bo zapomnil to geslo namesto vas. Ni si vam ga treba zapomniti.</translation>
 <translation id="5149188072385105201">Dodaj geslo …</translation>
 <translation id="5150492518600715772">Pošlji v napravo</translation>
 <translation id="5168414296986405587">Ustvarjeno za iPadOS</translation>
@@ -1092,7 +1089,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9079935439869366234">Označi vse kot neprebrano</translation>
 <translation id="9081058212938299310">Želite posodobiti geslo za <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Če želite sinhronizirati in prilagajati v vseh napravah, vklopite sinhronizacijo.</translation>
-<translation id="9087108903408689779">Geslo, ki ga predlaga Chrome:</translation>
 <translation id="9093271241977565440">Na vrhu zaslona se dotaknite ikone za iskanje.</translation>
 <translation id="9094033019050270033">Posodobi geslo</translation>
 <translation id="9097506547406246598">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>

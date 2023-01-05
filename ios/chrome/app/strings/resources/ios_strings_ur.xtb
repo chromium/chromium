@@ -170,7 +170,6 @@
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">اکاؤنٹ شامل کریں</translation>
 <translation id="2268044343513325586">بہتر بنائیں</translation>
-<translation id="2271351792809375263">‏وہ پاس ورڈز استعمال کریں جو آپ نے اپنے آلے پر موجود دیگر ایپس میں Chrome میں محفوظ کیے ہیں</translation>
 <translation id="2273327106802955778">مزید مینو</translation>
 <translation id="2286505070150039482">نمایاں کردہ ٹیکسٹ</translation>
 <translation id="2299218006564889602">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو ہوتا ہے۔</translation>
@@ -454,6 +453,7 @@
 <translation id="4420409367264901497">بُک مارک میں ترمیم کریں</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ترتیبات<ph name="END_BOLD" /> کھولیں</translation>
 <translation id="4454246407045105932">زبان شامل کریں</translation>
+<translation id="4461286950227634995">پاس ورڈز محفوظ کرنے کی پیشکش</translation>
 <translation id="4462491365653392320">ٹیبز پر قیمتیں ٹریک کریں</translation>
 <translation id="4469418912670346607">سیٹ اپ جاری رکھیں</translation>
 <translation id="4474494258097106883">‏آپ کے iPhone کے لیے بنایا گیا</translation>
@@ -465,7 +465,6 @@
 <translation id="4508750114462689118">سائن ان پرومو بند کریں</translation>
 <translation id="4514889972748124117">مضبوط پاس ورڈ تجویز کریں...</translation>
 <translation id="4520798012560649652">پوشیدگی وضع کے بارے میں مزید جانیں</translation>
-<translation id="4526249700380860531">‏<ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> پر محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4536418791685807335">دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="4540780316273593836">کچھ غلط ہو گیا</translation>
@@ -553,7 +552,6 @@
 <translation id="5118764316110575523">آف</translation>
 <translation id="5119391094379141756">‏Chrome منتخب کریں</translation>
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
-<translation id="5140288047769711648">‏Chrome یہ پاس ورڈ آپ کے لئے یاد رکھے گا۔ آپ کو اسے یاد رکھنے کی ضرورت نہیں ہے۔</translation>
 <translation id="5149188072385105201">پاس ورڈ شامل کریں...</translation>
 <translation id="5150492518600715772">اپنے آلہ پر بھیجیں</translation>
 <translation id="5168414296986405587">‏iPadOS کیلئے بنائی گئی</translation>
@@ -1092,7 +1090,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9079935439869366234">سبھی کو بغیر پڑھا ہوا کے بطور نشان کریں</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> کا پاس ورڈ اپ ڈیٹ کریں؟</translation>
 <translation id="9083838294503912307">سبھی آلات پر مطابقت پذیری اور ذاتی نوعیت سازی کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
-<translation id="9087108903408689779">‏Chrome کا تجویز کردہ پاس ورڈ:</translation>
 <translation id="9093271241977565440">اسکرین کے اوپری حصے میں، تلاش کے آئیکن پر تھپتھپائیں</translation>
 <translation id="9094033019050270033">پاس ورڈ اپ ڈیٹ کریں</translation>
 <translation id="9097506547406246598">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہوگیا۔</translation>

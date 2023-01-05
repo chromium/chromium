@@ -1249,6 +1249,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2105809836724866556">A következők el vannak rejtve: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonszám}other{# telefonszám}}</translation>
 <translation id="2110941575868943054">Kereshetnek Bluetooth-eszközöket</translation>
+<translation id="2111158890826137380">Sajnos hiba történt. Küldjön be visszajelzést, és a leírásban használja a #bruschetta jelölést. A hibakód: <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">Típusok törlése</translation>
 <translation id="2111670510994270194">Új lap jobbra</translation>
 <translation id="2112554630428445878">Üdvözöljük, <ph name="USERNAME" />!</translation>
@@ -1728,7 +1729,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2514326558286966059">Ujjlenyomatával gyorsabban oldhatja fel a zárolást</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Felhasználónév megerősítése</translation>
-<translation id="2517472476991765520">Keresés</translation>
+<translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2518024842978892609">Klienstanúsítványok használata</translation>
 <translation id="2519517390894391510">Tanúsítványprofil neve</translation>
 <translation id="2520644704042891903">Várakozás elérhető socketre...</translation>
@@ -1793,6 +1794,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2575713839157415345">{YEARS,plural, =1{Az eszközt a rendszer egy évig menti el, Ön pedig legközelebb kód nélkül csatlakozhat. Ezt a rendszergazda állítja be.}other{Az eszközt a rendszer {YEARS} évig menti el, Ön pedig legközelebb kód nélkül csatlakozhat. Ezt a rendszergazda állítja be.}}</translation>
 <translation id="257779572837908839">Beállítás videokonferenciákhoz készült Chromebox eszközként</translation>
 <translation id="2579309488038515659">Hotspot engedélyezése</translation>
+<translation id="2579596474754516455">Beolvasással a PDF formátumú képeket a képernyőolvasó számára olvasható szöveggé alakíthatja szükség esetén</translation>
 <translation id="2580889980133367162">A(z) <ph name="HOST" /> mindig letölthet több fájlt</translation>
 <translation id="258095186877893873">Hosszú</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> platform) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2894,6 +2896,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616741288025931835">&amp;Böngészés adatainak törlése...</translation>
 <translation id="3617891479562106823">A hátterek nem állnak rendelkezésre. Próbálja újra később.</translation>
+<translation id="3618286417582819036">Sajnos hiba történt</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Földrajzihely-meghatározás</translation>
 <translation id="362023940451053340">Az Ön Google-fiókjában (<ph name="ACCOUNT" />)</translation>
@@ -6686,6 +6689,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7149839598364933473">Eszköz konvertálása a következő rendszert használó eszközzé: <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Az elmúlt 24 órából</translation>
 <translation id="7152478047064750137">A bővítmény nem igényel különleges engedélyeket</translation>
+<translation id="7153309176431047193">Képek konvertálása szöveggé</translation>
 <translation id="7154130902455071009">Kezdőoldal módosítása a következőre: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Kép átalakítása szöveggé</translation>
 <translation id="7159953856712257647">Alapértelmezés szerint telepítve</translation>

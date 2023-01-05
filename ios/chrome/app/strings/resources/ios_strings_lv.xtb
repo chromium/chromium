@@ -170,7 +170,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="225943865679747347">Kļūdas kods: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Pievienot kontu</translation>
 <translation id="2268044343513325586">Uzlabot</translation>
-<translation id="2271351792809375263">Izmantojiet pārlūkā Chrome saglabātās paroles citās lietotnēs jūsu ierīcē</translation>
 <translation id="2273327106802955778">Izvēlne Vairāk</translation>
 <translation id="2286505070150039482">Atzīmētais teksts</translation>
 <translation id="2299218006564889602">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
@@ -465,7 +464,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4508750114462689118">Aizvērt pierakstīšanās piedāvājumu</translation>
 <translation id="4514889972748124117">Ieteikt drošu paroli…</translation>
 <translation id="4520798012560649652">Uzzināt vairāk par inkognito režīmu</translation>
-<translation id="4526249700380860531">Skatīt un pārvaldīt saglabātās paroles vietnē <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4536418791685807335">Mēģiniet pierakstīties vēlreiz.</translation>
 <translation id="4540780316273593836">Radās problēma</translation>
@@ -553,7 +551,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5118764316110575523">Izslēgts</translation>
 <translation id="5119391094379141756">Atlasiet Chrome</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
-<translation id="5140288047769711648">Chrome iegaumēs šo paroli. Jums tā nav jāatceras.</translation>
 <translation id="5149188072385105201">Pievienot paroli…</translation>
 <translation id="5150492518600715772">Nosūtīt uz jūsu ierīci</translation>
 <translation id="5168414296986405587">Izstrādāts operētājsistēmai iPadOS</translation>
@@ -1092,7 +1089,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9079935439869366234">Atzīmēt visu kā nelasītu</translation>
 <translation id="9081058212938299310">Vai atjaunināt lietotājvārda <ph name="USERNAME" /> paroli?</translation>
 <translation id="9083838294503912307">Lai sinhronizētu un personalizētu saturu dažādās ierīcēs, ieslēdziet sinhronizāciju.</translation>
-<translation id="9087108903408689779">Chrome ieteiktā parole:</translation>
 <translation id="9093271241977565440">Ekrāna augšdaļā pieskarieties meklēšanas ikonai</translation>
 <translation id="9094033019050270033">Atjaunināt paroli</translation>
 <translation id="9097506547406246598">Nevar pārtraukt sekošanu. Radās kļūda.</translation>

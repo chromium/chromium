@@ -139,7 +139,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1724977129262658800">Ontgrendel om je wachtwoord te bewerken</translation>
 <translation id="1726477445370128854">Je kunt sneller browsen en zoeken als Chrome pagina's vooraf laadt waarvan Chrome denkt dat je ze misschien gaat bezoeken</translation>
-<translation id="1736419249208073774">Verkennen</translation>
 <translation id="1749561566933687563">Synchroniseer je bookmarks</translation>
 <translation id="1750259112639922169">Tabbladgroep: <ph name="TAB_COUNT" /> tabbladen</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
@@ -197,6 +196,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2067805253194386918">sms</translation>
 <translation id="2068748236079642969">Volgende video bekijken</translation>
 <translation id="2074143993849053708">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is gesloten</translation>
+<translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synchronisatie en personalisatie op meerdere apparaten</translation>
 <translation id="2100273922101894616">Automatisch inloggen</translation>
@@ -238,7 +238,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2328985652426384049">Kan niet inloggen</translation>
 <translation id="234265804618409743">Kan de camera niet openen. Er is iets misgegaan.</translation>
 <translation id="2349710944427398404">Totale gegevens gebruikt door Chrome, inclusief accounts, bookmarks en opgeslagen instellingen</translation>
-<translation id="2353636109065292463">Je internetverbinding controleren…</translation>
 <translation id="235789365079050412">Privacybeleid van Google</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2386938421315164605">Onderwerpen verbergen en zichtbaar maken</translation>
@@ -423,7 +422,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3280562213547448728">Gesproken zoekopdracht</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3285080554353377245">Video's over hoe je Chrome kunt gebruiken</translation>
-<translation id="3288003805934695103">Laad de pagina opnieuw</translation>
 <translation id="3290249595466894471">Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen vinden</translation>
 <translation id="3297344142967351106">Spraakassistent</translation>
 <translation id="3303414029551471755">Doorgaan met het downloaden van de content?</translation>
@@ -521,7 +519,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3894427358181296146">Map toevoegen</translation>
 <translation id="3899682235662194879">Alle incognitotabbladen sluiten</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> updaten</translation>
-<translation id="3912508018559818924">We zoeken naar het beste op internet…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> staat aan</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Mijn gegevens combineren</translation>
@@ -775,7 +772,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5235196193381275927">Er is iets misgegaan bij het inloggen</translation>
 <translation id="5246093389635966745">Snelkoppeling voor werkbalk bewerken</translation>
-<translation id="526421993248218238">Kan deze pagina niet laden</translation>
 <translation id="5271967389191913893">Het apparaat kan de content niet openen die moet worden gedownload.</translation>
 <translation id="5274286919938458946">Gekoppeld aan <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Verzenden naar</translation>
@@ -929,7 +925,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6138832295072039549">Hier kun je je instellingen wijzigen</translation>
 <translation id="6140709049082532940">Geoptimaliseerde beveiliging:</translation>
 <translation id="6140912465461743537">Land/regio</translation>
-<translation id="614940544461990577">Probeer dit eens:</translation>
 <translation id="6150320133806434356">Bookmark opgeslagen</translation>
 <translation id="6154478581116148741">Zet de schermvergrendeling aan via Instellingen om je wachtwoorden te exporteren vanaf dit apparaat</translation>
 <translation id="6159729262978459665">Hiermee wordt de geschiedenis van alle gesynchroniseerde apparaten gewist.</translation>

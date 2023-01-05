@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">탭하여 <ph name="URL_OF_THE_CURRENT_TAB" />(으)로 돌아가기</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2091887806945687916">소리</translation>
-<translation id="2107397443965016585">사이트에서 보호된 콘텐츠를 재생하도록 허용하기 전에 확인(권장)</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="216989819110952009">도로시와 친구들은 녹색 안경으로 눈을 보호했지만, 처음에는 멋진 도시의 광채에 눈이 부셨습니다.</translation>
 <translation id="2182457891543959921">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하기 전에 확인(권장)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">광고 개인 최적화</translation>
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> 펼치기</translation>
-<translation id="445467742685312942">사이트에서 보호된 콘텐츠를 재생하도록 허용</translation>
 <translation id="4468959413250150279">특정 사이트를 음소거합니다.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{쿠키 #개}other{쿠키 #개}}</translation>
 <translation id="4479647676395637221">사이트에서 카메라를 사용하도록 허용하기 전에 확인(권장)</translation>

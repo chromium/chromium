@@ -162,6 +162,7 @@
 <translation id="1774796056689732716">カレンダー、<ph name="CURRENT_MONTH_YEAR" />、現在 <ph name="DATE" /> が選択されています。</translation>
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1797271123677381264">パスワードをお忘れの場合</translation>
+<translation id="1807246157184219062">明</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1812997170047690955">画面上のアイテムを検索します</translation>
 <translation id="1816896987747843206">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
@@ -525,6 +526,7 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="385300504083504382">先頭</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
+<translation id="3871092408932389764">最も低い</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
@@ -925,6 +927,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>
 <translation id="6043994281159824495">ログアウト</translation>
+<translation id="6045629311476491587"><ph name="APP_COUNT" /> 件のアプリで使用</translation>
 <translation id="6047696787498798094">別のユーザーに切り替えると画面の共有は解除されます。続行してもよろしいですか？</translation>
 <translation id="6054305421211936131">スマートカードでログイン</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>

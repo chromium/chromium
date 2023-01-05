@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Изминатиот час</translation>
 <translation id="1724977129262658800">Отклучете за да ја измените лозинката</translation>
 <translation id="1726477445370128854">Може да прелистувате и да пребарувате побрзо кога Chrome однапред ги вчитува страниците што мисли дека ќе ги посетите</translation>
-<translation id="1736419249208073774">Истражете</translation>
 <translation id="1749561566933687563">Синхронизирајте ги обележувачите</translation>
 <translation id="1750259112639922169">Група картички - <ph name="TAB_COUNT" /> картички</translation>
 <translation id="17513872634828108">Отворени јазичиња</translation>
@@ -197,6 +196,7 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Гледајте го следното видео</translation>
 <translation id="2074143993849053708">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е затворен</translation>
+<translation id="2079545284768500474">Врати</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизирајте и персонализирајте низ уредите</translation>
 <translation id="2100273922101894616">Автоматско најавување</translation>
@@ -238,7 +238,6 @@
 <translation id="2328985652426384049">Не може да се најавите</translation>
 <translation id="234265804618409743">Камерата не може да се отвори. Нешто не е во ред.</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
-<translation id="2353636109065292463">Се проверува вашата интернет-врска</translation>
 <translation id="235789365079050412">Политика за приватност на Google</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2386938421315164605">Сокривајте и прикажувајте теми</translation>
@@ -423,7 +422,6 @@
 <translation id="3280562213547448728">Гласовно пребарување</translation>
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3285080554353377245">Видеа за користењето на Chrome</translation>
-<translation id="3288003805934695103">Повторно да ја вчитате страницата</translation>
 <translation id="3290249595466894471">Испраќа и мал примерок од страници, преземања, активност на екстензиите и податоци за системот за да помогне да се откријат нови закани</translation>
 <translation id="3297344142967351106">Гласовна помош</translation>
 <translation id="3303414029551471755">Продолжете со преземање на содржината?</translation>
@@ -521,7 +519,6 @@
 <translation id="3894427358181296146">Додај папка</translation>
 <translation id="3899682235662194879">Затвори ги сите картички „Инкогнито“</translation>
 <translation id="3908308510347173149">Ажурирај го уредот <ph name="PRODUCT_NAME" /></translation>
-<translation id="3912508018559818924">Го наоѓаме најдоброто на интернет…</translation>
 <translation id="3924911262913579434">Режимот „<ph name="SAFE_BROWSING_MODE" />“ е вклучен</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
@@ -775,7 +772,6 @@
 <translation id="5233638681132016545">Нова картичка</translation>
 <translation id="5235196193381275927">Нешто тргна наопаку при најавувањето</translation>
 <translation id="5246093389635966745">Изменете ја кратенката за алатникот</translation>
-<translation id="526421993248218238">Страницава не може да се вчита</translation>
 <translation id="5271967389191913893">Уредот не може да ја отвори содржината за да се преземе.</translation>
 <translation id="5274286919938458946">Поврзана со <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Испрати до</translation>
@@ -929,7 +925,6 @@
 <translation id="6138832295072039549">Променете ги поставките за сајтот тука</translation>
 <translation id="6140709049082532940">Подобрена заштита:</translation>
 <translation id="6140912465461743537">Држава/регион</translation>
-<translation id="614940544461990577">Обидете се:</translation>
 <translation id="6150320133806434356">Обележувачот е зачуван</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
 <translation id="6159729262978459665">Ќе ја исчисти историјата од сите синхронизирани уреди.</translation>
@@ -1166,6 +1161,7 @@
 <translation id="7379900596734708416">Темната тема за сајтови е достапна</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Искуство при првото извршување на Chrome</translation>
+<translation id="7411224099004328643">Корисник на сметка на Google</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7419565702166471774">Секогаш користи безбедни врски</translation>
 <translation id="7431991332293347422">Контролирајте како вашата историја на прелистување се користи за персонализирање на „Пребарувањето“ и друго</translation>

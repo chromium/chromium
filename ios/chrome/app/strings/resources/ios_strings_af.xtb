@@ -170,7 +170,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Voeg rekening by</translation>
 <translation id="2268044343513325586">Verfyn</translation>
-<translation id="2271351792809375263">Gebruik die wagwoorde wat jy in Chrome gestoor het in ander programme op jou toestel</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
 <translation id="2286505070150039482">Gemerkte teks</translation>
 <translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
@@ -454,6 +453,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4420409367264901497">Wysig boekmerk</translation>
 <translation id="4442550905108052454">Maak <ph name="BEGIN_BOLD" />Instellings<ph name="END_BOLD" /> oop</translation>
 <translation id="4454246407045105932">Voeg taal by</translation>
+<translation id="4461286950227634995">Bied aan om wagwoorde te stoor</translation>
 <translation id="4462491365653392320">Spoor pryse na in oortjies</translation>
 <translation id="4469418912670346607">Gaan voort met opstelling</translation>
 <translation id="4474494258097106883">Gebou vir jou iPhone</translation>
@@ -465,7 +465,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4508750114462689118">Maak aanmelding-promosie toe</translation>
 <translation id="4514889972748124117">Stel sterk wagwoord voor …</translation>
 <translation id="4520798012560649652">Kom meer te wete oor Incognitomodus</translation>
-<translation id="4526249700380860531">Bekyk en bestuur gestoorde wagwoorde by <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Gaan jou gesinkroniseerde data na</translation>
 <translation id="4536418791685807335">Probeer om weer aan te meld.</translation>
 <translation id="4540780316273593836">Iets was fout</translation>
@@ -553,7 +552,6 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5118764316110575523">Af</translation>
 <translation id="5119391094379141756">Kies Chrome</translation>
 <translation id="5132942445612118989">Sinkroniseer jou wagwoorde, geskiedenis en meer op alle toestelle</translation>
-<translation id="5140288047769711648">Chrome sal hierdie wagwoord vir jou onthou. Jy hoef dit nie te onthou nie.</translation>
 <translation id="5149188072385105201">Voeg wagwoord by …</translation>
 <translation id="5150492518600715772">Stuur na jou toestel toe</translation>
 <translation id="5168414296986405587">Gebou vir iPadOS</translation>
@@ -1092,7 +1090,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9079935439869366234">Merk alles as ongelees</translation>
 <translation id="9081058212938299310">Dateer wagwoord op vir <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en personaliseer.</translation>
-<translation id="9087108903408689779">Chrome se voorgestelde wagwoord:</translation>
 <translation id="9093271241977565440">Tik op die soekikoon boaan die skerm</translation>
 <translation id="9094033019050270033">Dateer wagwoord op</translation>
 <translation id="9097506547406246598">Kan nie ontvolg nie. Iets was fout.</translation>

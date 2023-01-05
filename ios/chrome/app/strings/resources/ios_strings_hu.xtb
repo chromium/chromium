@@ -170,7 +170,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="225943865679747347">Hibakód: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Fiók hozzáadása</translation>
 <translation id="2268044343513325586">Pontosítás</translation>
-<translation id="2271351792809375263">Használja a Chrome-ba mentett jelszavait az eszközén lévő többi alkalmazásban.</translation>
 <translation id="2273327106802955778">Továbbiak menü</translation>
 <translation id="2286505070150039482">Kiemelt szöveg</translation>
 <translation id="2299218006564889602">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe.</translation>
@@ -454,6 +453,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4420409367264901497">Könyvjelző szerkesztése</translation>
 <translation id="4442550905108052454">Nyissa meg a <ph name="BEGIN_BOLD" />Beállításokat<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Nyelv hozzáadása</translation>
+<translation id="4461286950227634995">Jelszavak mentésének felajánlása</translation>
 <translation id="4462491365653392320">Árkövetés a megnyitott lapokon</translation>
 <translation id="4469418912670346607">Beállítás folytatása</translation>
 <translation id="4474494258097106883">iPhone-hoz készült</translation>
@@ -465,7 +465,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4508750114462689118">Bejelentkezési promóció bezárása</translation>
 <translation id="4514889972748124117">Erős jelszó ajánlása…</translation>
 <translation id="4520798012560649652">További információ az inkognitó módról</translation>
-<translation id="4526249700380860531">A mentett jelszavak megtekintése és kezelése a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> címen</translation>
 <translation id="452750746583162491">A szinkronizált adatok áttekintése</translation>
 <translation id="4536418791685807335">Próbáljon meg újra bejelentkezni.</translation>
 <translation id="4540780316273593836">Hiba történt</translation>
@@ -553,7 +552,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5118764316110575523">Ki</translation>
 <translation id="5119391094379141756">Válassza ki a Chrome böngészőt.</translation>
 <translation id="5132942445612118989">Jelszavak, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
-<translation id="5140288047769711648">A Chrome megjegyzi ezt a jelszót, így Önnek nem kell észben tartania.</translation>
 <translation id="5149188072385105201">Jelszó hozzáadása…</translation>
 <translation id="5150492518600715772">Küldés az eszközére</translation>
 <translation id="5168414296986405587">Az iPadOS-re tervezve</translation>
@@ -1092,7 +1090,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9079935439869366234">Az összes megjelölése olvasatlanként</translation>
 <translation id="9081058212938299310">Frissíti <ph name="USERNAME" /> jelszavát?</translation>
 <translation id="9083838294503912307">Az eszközök közötti szinkronizáláshoz és személyre szabáshoz kapcsolja be a szinkronizálást.</translation>
-<translation id="9087108903408689779">Chrome által javasolt jelszó:</translation>
 <translation id="9093271241977565440">A képernyő tetején koppintson a Keresés ikonra.</translation>
 <translation id="9094033019050270033">Jelszó frissítése</translation>
 <translation id="9097506547406246598">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>

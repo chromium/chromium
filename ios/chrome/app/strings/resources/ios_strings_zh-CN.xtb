@@ -170,7 +170,6 @@
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
 <translation id="2268044343513325586">优化</translation>
-<translation id="2271351792809375263">在设备上的其他应用内使用已保存到 Chrome 中的密码</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
 <translation id="2286505070150039482">突出显示的文字</translation>
 <translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>
@@ -465,7 +464,6 @@
 <translation id="4508750114462689118">关闭登录推广元素</translation>
 <translation id="4514889972748124117">建议一个安全系数高的密码…</translation>
 <translation id="4520798012560649652">详细了解无痕模式</translation>
-<translation id="4526249700380860531">通过 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 查看和管理已保存的密码</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4536418791685807335">请尝试重新登录。</translation>
 <translation id="4540780316273593836">出了点问题</translation>
@@ -553,7 +551,6 @@
 <translation id="5118764316110575523">已关闭</translation>
 <translation id="5119391094379141756">选择“Chrome”</translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
-<translation id="5140288047769711648">Chrome 将为您记住此密码，因此，您不必记住它。</translation>
 <translation id="5149188072385105201">添加密码…</translation>
 <translation id="5150492518600715772">发送到您的设备</translation>
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
@@ -1092,7 +1089,6 @@
 <translation id="9079935439869366234">全部标为未读</translation>
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
 <translation id="9083838294503912307">要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>
-<translation id="9087108903408689779">Chrome 建议的密码：</translation>
 <translation id="9093271241977565440">点按屏幕顶部的“搜索”图标</translation>
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9097506547406246598">无法取消关注。出了点问题。</translation>

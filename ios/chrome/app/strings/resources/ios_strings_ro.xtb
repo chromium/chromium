@@ -170,7 +170,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="225943865679747347">Cod de eroare: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adaugă un cont</translation>
 <translation id="2268044343513325586">Rafinează</translation>
-<translation id="2271351792809375263">Folosește parolele salvate în Chrome în alte aplicații de pe dispozitiv.</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
 <translation id="2286505070150039482">Text evidențiat</translation>
 <translation id="2299218006564889602">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>
@@ -454,6 +453,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4420409367264901497">Editează marcajul</translation>
 <translation id="4442550905108052454">Deschide <ph name="BEGIN_BOLD" />Setările<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Adaugă o limbă</translation>
+<translation id="4461286950227634995">Oferă salvarea parolelor</translation>
 <translation id="4462491365653392320">Urmărește prețurile din file</translation>
 <translation id="4469418912670346607">Continuă configurarea</translation>
 <translation id="4474494258097106883">Creat pentru iPhone</translation>
@@ -465,7 +465,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4508750114462689118">Închide mesajul promoțional de conectare</translation>
 <translation id="4514889972748124117">Sugerează o parolă puternică</translation>
 <translation id="4520798012560649652">Află mai multe despre modul incognito</translation>
-<translation id="4526249700380860531">Vezi și gestionează parolele salvate la <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Examinează datele sincronizate</translation>
 <translation id="4536418791685807335">Încearcă să te conectezi din nou.</translation>
 <translation id="4540780316273593836">A apărut o eroare</translation>
@@ -553,7 +552,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5118764316110575523">Dezactivat</translation>
 <translation id="5119391094379141756">Selectează Chrome.</translation>
 <translation id="5132942445612118989">Sincronizează parolele, istoricul și alte date pe toate dispozitivele</translation>
-<translation id="5140288047769711648">Chrome va memora această parolă pentru tine. Nu trebuie să o ții minte.</translation>
 <translation id="5149188072385105201">adaugă parola…</translation>
 <translation id="5150492518600715772">Trimite pe dispozitivul tău.</translation>
 <translation id="5168414296986405587">Creat pentru iPadOS</translation>
@@ -1092,7 +1090,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9079935439869366234">Marchează-le pe toate ca necitite</translation>
 <translation id="9081058212938299310">Actualizezi parola pentru <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
-<translation id="9087108903408689779">Parolă sugerată de Chrome:</translation>
 <translation id="9093271241977565440">În partea de sus a ecranului, atinge pictograma de căutare</translation>
 <translation id="9094033019050270033">Actualizează parola</translation>
 <translation id="9097506547406246598">Nu se poate anula urmărirea. A apărut o eroare.</translation>

@@ -2731,6 +2731,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3469583217479686109">Alatka za biranje</translation>
 <translation id="3470392222765168737">Pratite sajt</translation>
 <translation id="3471876058939596279">HDMI i USB portovi tipa C ne mogu da se koriste za video u isto vreme. Koristite drugi video port.</translation>
+<translation id="3472469028191701821">Otvara se na novoj kartici</translation>
 <translation id="3473241910002674503">Idite na početnu stranicu ili nazad i menjajte aplikacije pomoću dugmadi u režimu tableta.</translation>
 <translation id="3473479545200714844">Lupa ekrana</translation>
 <translation id="3474218480460386727">Koristite 99 slova ili manje za nove reči</translation>
@@ -3117,6 +3118,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3820749202859700794">Eliptična kriva SECG secp521r1 (takođe poznata kao NIST P-521)</translation>
 <translation id="3821074617718452587">Obaveštenja Phone Hub-a</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Dodatak je odobren}one{# dodatak je odobren}few{# dodatka su odobrena}other{# dodataka je odobreno}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Za Linux se preporučuje najmanje <ph name="INSTALL_SIZE" /> prostora.</translation>
 <translation id="3824621460022590830">Token za registraciju uređaja je nevažeći. Obratite se vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamti moj izbor za ovaj tip fajla: <ph name="FILE_TYPES" />}one{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}few{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}other{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}}</translation>
@@ -4035,6 +4037,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4675828034887792601">Pravite prečice za pretraživanje sajtova i upravljajte pretraživačem</translation>
 <translation id="4676595058027112862">Phone Hub, saznajte više</translation>
 <translation id="4677772697204437347">GPU memorija</translation>
+<translation id="4678848110205818817">Kreditna ili debitna kartica</translation>
 <translation id="4680105648806843642">Zvuk je isključen na ovoj stranici</translation>
 <translation id="4680112532510845139">Otpustite sliku ovde</translation>
 <translation id="4681453295291708042">Onemogući Deljenje u blizini</translation>

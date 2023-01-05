@@ -139,7 +139,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1724977129262658800">Oldja fel a képernyőzárat a jelszó szerkesztéséhez</translation>
 <translation id="1726477445370128854">Gyorsabban böngészhet és kereshet, ha a Chrome betölti előre azokat az oldalakat, amelyeket a böngésző szerint Ön már felkeresett.</translation>
-<translation id="1736419249208073774">Felfedezés</translation>
 <translation id="1749561566933687563">Könyvjelzők szinkronizálása</translation>
 <translation id="1750259112639922169">Lapcsoport – <ph name="TAB_COUNT" /> lap</translation>
 <translation id="17513872634828108">Megnyitott lapok</translation>
@@ -197,6 +196,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2067805253194386918">szöveg</translation>
 <translation id="2068748236079642969">Következő videó megtekintése</translation>
 <translation id="2074143993849053708">A Segéd hangalapú kereséssel kapcsolatos, bezárt hozzájárulási kezelőfelülete</translation>
+<translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2082238445998314030">Eredmény: <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Szinkronizálás és személyre szabás az eszközök között</translation>
 <translation id="2100273922101894616">Automatikus bejelentkezés</translation>
@@ -238,7 +238,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2328985652426384049">Nem sikerült a bejelentkezés</translation>
 <translation id="234265804618409743">Nem lehet megnyitni a kamerát. Hiba történt.</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
-<translation id="2353636109065292463">Az internetkapcsolat ellenőrzése</translation>
 <translation id="235789365079050412">Google Adatvédelmi irányelvek</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2386938421315164605">Témakörök elrejtése és felfedése</translation>
@@ -263,7 +262,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="250020030759455918">Láthatja a(z) <ph name="SITE_NAME" /> bejelentkezési állapotát, a böngészőadatokat és a webhelyadatokat a Chrome-ban</translation>
 <translation id="2510106555128151389">A(z) <ph name="WEBAPK_NAME" /> telepítése…</translation>
 <translation id="2513403576141822879">A <ph name="BEGIN_LINK" />Szinkronizálás és Google<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan</translation>
-<translation id="2517472476991765520">Keresés</translation>
+<translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2523184218357549926">A felkeresett oldalak URL-címének elküldése a Google-nak</translation>
 <translation id="2527209463677295330">Hasznosabb találatokat kaphat, ha nagyobb részt jelöl ki az oldal szövegéből</translation>
 <translation id="2527497042232966453">Átváltva az inkognitó módban használt lapokra</translation>
@@ -423,7 +422,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3280562213547448728">Hangalapú keresés</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3285080554353377245">Videók a Chrome használatával kapcsolatban</translation>
-<translation id="3288003805934695103">Az oldal frissítése</translation>
 <translation id="3290249595466894471">Elküldi továbbá az oldalakkal, letöltésekkel, bővítményekkel és rendszerrel kapcsolatos adatok egy kisebb mintáját annak érdekében, hogy a jövőben könnyebben felismerhessük az új fenyegetéseket.</translation>
 <translation id="3297344142967351106">Hangalapú segítség</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
@@ -521,7 +519,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3894427358181296146">Mappa hozzáadása</translation>
 <translation id="3899682235662194879">Összes inkognitó lap bezárása</translation>
 <translation id="3908308510347173149">A(z) <ph name="PRODUCT_NAME" /> frissítése</translation>
-<translation id="3912508018559818924">A legjobb találatok keresése az interneten…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktív</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Adataim egyesítése</translation>
@@ -775,7 +772,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5233638681132016545">Új lap</translation>
 <translation id="5235196193381275927">A bejelentkezés közben hiba történt</translation>
 <translation id="5246093389635966745">Eszköztár gyorsparancsainak szerkesztése</translation>
-<translation id="526421993248218238">Nem lehet betölteni az oldalt</translation>
 <translation id="5271967389191913893">Az eszköz nem tudja megnyitni a letölteni kívánt tartalmat.</translation>
 <translation id="5274286919938458946">Összekapcsolva a következővel: <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Küldés a következőre:</translation>
@@ -929,7 +925,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6138832295072039549">Itt módosíthatja a webhelybeállításokat</translation>
 <translation id="6140709049082532940">Speciális védelem:</translation>
 <translation id="6140912465461743537">Ország/régió</translation>
-<translation id="614940544461990577">Próbálja ki a következőket:</translation>
 <translation id="6150320133806434356">A könyvjelző mentése megtörtént</translation>
 <translation id="6154478581116148741">Kapcsolja be a képernyőzárat a Beállítások menüben, hogy exportálhassa az ezen az eszközön tárolt jelszavait</translation>
 <translation id="6159729262978459665">Az összes szinkronizált eszközről törli az előzményeket.</translation>

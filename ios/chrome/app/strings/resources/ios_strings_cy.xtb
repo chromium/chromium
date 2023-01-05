@@ -170,7 +170,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="225943865679747347">Cod gwall: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ychwanegu Cyfrif</translation>
 <translation id="2268044343513325586">Mireinio</translation>
-<translation id="2271351792809375263">Defnyddiwch y cyfrineiriau a gadwyd gennych i Chrome mewn apiau eraill ar eich dyfais</translation>
 <translation id="2273327106802955778">Dewislen rhagor</translation>
 <translation id="2286505070150039482">Testun a Amlygir</translation>
 <translation id="2299218006564889602">Mae eich cyfrineiriau yn cael eu hamgryptio ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>
@@ -465,7 +464,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4508750114462689118">Cau'r anogwr mewngofnodi</translation>
 <translation id="4514889972748124117">Awgrymu Cyfrinair Cryf...</translation>
 <translation id="4520798012560649652">Dysgu rhagor am y modd Anhysbys</translation>
-<translation id="4526249700380860531">Gallwch weld a rheoli cyfrineiriau sydd wedi'u cadw yn <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Adolygwch eich data a gysonwyd</translation>
 <translation id="4536418791685807335">Rhowch gynnig arall ar fewngofnodi.</translation>
 <translation id="4540780316273593836">Aeth Rhywbeth o'i Le</translation>
@@ -553,7 +551,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5118764316110575523">Diffodd</translation>
 <translation id="5119391094379141756">Dewiswch Chrome</translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
-<translation id="5140288047769711648">Bydd Chrome yn cofio'r cyfrinair hwn i chi. Nid oes rhaid i chi ei gofio.</translation>
 <translation id="5149188072385105201">Ychwanegu Cyfrinair...</translation>
 <translation id="5150492518600715772">Anfon at eich Dyfais</translation>
 <translation id="5168414296986405587">Wedi'i ddatblygu ar gyfer iPadOS</translation>
@@ -1092,7 +1089,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9079935439869366234">Marcio pob un fel heb ei ddarllen</translation>
 <translation id="9081058212938299310">Diweddaru'r cyfrinair ar gyfer <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">I gysoni a phersonoleiddio ar draws dyfeisiau, trowch gysoni ymlaen.</translation>
-<translation id="9087108903408689779">Cyfrinair sy'n cael ei awgrymu gan Chrome:</translation>
 <translation id="9093271241977565440">Ar Ben y Sgrin, Tapiwch yr Eicon Chwilio</translation>
 <translation id="9094033019050270033">Diweddaru cyfrinair</translation>
 <translation id="9097506547406246598">Methu â dad-ddilyn. Aeth rhywbeth o'i le.</translation>

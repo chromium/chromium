@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">ወደ <ph name="URL_OF_THE_CURRENT_TAB" /> ለመመለስ መታ ያድርጉ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2091887806945687916">ድምፅ</translation>
-<translation id="2107397443965016585">ጣቢያዎች የተጠበቀ ይዘትን እንዲያጫውቱ ከመፍቀድዎ በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="216989819110952009">ዓይኖች በአረንጓዴ መነጽሮች ቢጠበቁም ዶሮቲ እና ጓደኞቿ በመጀመሪያ ላይ ፈዘው ነበር በ</translation>
 <translation id="2182457891543959921">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዲፈጥሩ ወይም የካሜራ ቦታን እንዲከታተል ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">ማስታወቂያን ግላዊነት ማላበስ</translation>
 <translation id="4434045419905280838">ብቅ-ባዮች እና አቅጣጫ ማዞሮች</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" />ን ዘርጋ</translation>
-<translation id="445467742685312942">ጣቢያዎች የተጠበቀ ይዘትን እንዲያጫውት ይፍቀዱ</translation>
 <translation id="4468959413250150279">በአንድ የተወሰነ ጣቢያ ላይ ድምጸ-ከል አድርግ።</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# ኩኪ}one{# ኩኪ}other{# ኩኪዎች}}</translation>
 <translation id="4479647676395637221">ጣቢያዎች ካሜራዎን እንዲጠቀሙ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>

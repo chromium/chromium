@@ -170,7 +170,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="225943865679747347">Mã lỗi: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Thêm tài khoản</translation>
 <translation id="2268044343513325586">Tinh chỉnh</translation>
-<translation id="2271351792809375263">Sử dụng mật khẩu bạn đã lưu vào Chrome cho các ứng dụng khác trên thiết bị của bạn</translation>
 <translation id="2273327106802955778">Menu khác</translation>
 <translation id="2286505070150039482">Văn bản được đánh dấu</translation>
 <translation id="2299218006564889602">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>
@@ -465,7 +464,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="4508750114462689118">Đóng quảng cáo đăng nhập</translation>
 <translation id="4514889972748124117">Đề xuất mật khẩu mạnh...</translation>
 <translation id="4520798012560649652">Tìm hiểu thêm về Chế độ ẩn danh</translation>
-<translation id="4526249700380860531">Xem và quản lý mật khẩu đã lưu tại <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4536418791685807335">Thử đăng nhập lại.</translation>
 <translation id="4540780316273593836">Đã xảy ra lỗi</translation>
@@ -553,7 +551,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5118764316110575523">Đang tắt</translation>
 <translation id="5119391094379141756">Chọn Chrome</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, lịch sử và các thông tin khác của bạn trên tất cả các thiết bị</translation>
-<translation id="5140288047769711648">Chrome sẽ nhớ mật khẩu này cho bạn. Bạn không phải nhớ mật khẩu.</translation>
 <translation id="5149188072385105201">Thêm mật khẩu...</translation>
 <translation id="5150492518600715772">Gửi tới thiết bị của bạn</translation>
 <translation id="5168414296986405587">Thiết kế cho iPadOS</translation>
@@ -1092,7 +1089,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9079935439869366234">Đánh dấu tất cả là chưa đọc</translation>
 <translation id="9081058212938299310">Bạn có muốn cập nhật mật khẩu cho <ph name="USERNAME" /> không?</translation>
 <translation id="9083838294503912307">Để đồng bộ hóa và cá nhân hóa trên các thiết bị, hãy bật tính năng đồng bộ hóa.</translation>
-<translation id="9087108903408689779">Mật khẩu do Chrome đề xuất:</translation>
 <translation id="9093271241977565440">Nhấn vào biểu tượng Tìm kiếm ở đầu màn hình</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>
 <translation id="9097506547406246598">Không ngừng theo dõi được. Đã xảy ra lỗi.</translation>

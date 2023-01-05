@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Ketuk untuk kembali ke <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2091887806945687916">Suara</translation>
-<translation id="2107397443965016585">Tanyakan sebelum mengizinkan situs memutar konten yang dilindungi (direkomendasikan)</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="216989819110952009">Meskipun mengenakan kacamata berwarna hijau, Dorothy dan teman-temannya pada awalnya terpesona oleh</translation>
 <translation id="2182457891543959921">Tanyakan sebelum mengizinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera (direkomendasikan)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personalisasi iklan</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="4440642537584213025">Luaskan <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Izinkan situs memutar konten yang dilindungi</translation>
 <translation id="4468959413250150279">Mematikan suara untuk situs tertentu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4479647676395637221">Minta izin terlebih dahulu sebelum memungkinkan situs menggunakan kamera Anda (disarankan)</translation>

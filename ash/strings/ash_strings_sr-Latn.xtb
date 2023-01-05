@@ -162,6 +162,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> je trenutno izabran.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1797271123677381264">Zaboravili ste lozinku</translation>
+<translation id="1807246157184219062">Svetla</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1812997170047690955">Šta je na ekranu?</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i veb-sajtove sa dozvolom za kameru</translation>
@@ -238,6 +239,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je vidljiv zaštićeni sadržaj</translation>
 <translation id="2227179592712503583">Ukloni predlog</translation>
 <translation id="225680501294068881">Skeniranje uređaja...</translation>
+<translation id="225716114209817872">Maksimalno</translation>
 <translation id="2257486738914982088">Došlo je do problema pri preuzimanju fajla <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Predloženi fajlovi</translation>
 <translation id="2268130516524549846">Bluetooth je onemogućen</translation>
@@ -525,6 +527,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3861651314799684201">Pritisnite Enter da biste snimili ceo ekran</translation>
+<translation id="3871092408932389764">Najniži</translation>
 <translation id="3886872229787704059">Otvarano danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl+Shift+Q da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -1012,6 +1015,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6537924328260219877">Jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Skenira se fajl <ph name="FILENAME" /> koji se preuzima</translation>
 <translation id="6542521951477560771">Prebacuje se na <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Zamagljena pozadina</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Novo instaliranje</translation>
 <translation id="6559976592393364813">Pitajte administratora</translation>
@@ -1418,6 +1422,7 @@ Novo instaliranje</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalirana aplikacija, blokirana</translation>
 <translation id="8785070478575117577">Povežite sa uređajem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Obilno</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Pomoć“</translation>
 <translation id="8814190375133053267">WiFi</translation>

@@ -170,7 +170,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="225943865679747347">Feilkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Legg til konto</translation>
 <translation id="2268044343513325586">Finstem</translation>
-<translation id="2271351792809375263">Bruk passordene du har lagret i Chrome, i andre apper på enheten</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
 <translation id="2286505070150039482">Markert tekst</translation>
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
@@ -465,7 +464,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4508750114462689118">Lukk påloggingskampanjen</translation>
 <translation id="4514889972748124117">Foreslå et sterkt passord…</translation>
 <translation id="4520798012560649652">Finn ut mer om inkognitomodus</translation>
-<translation id="4526249700380860531">Se og administrer lagrede passord på <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4536418791685807335">Prøv å logge på igjen.</translation>
 <translation id="4540780316273593836">Noe gikk galt</translation>
@@ -553,7 +551,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5118764316110575523">Av</translation>
 <translation id="5119391094379141756">Velg Chrome</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
-<translation id="5140288047769711648">Chrome husker dette passordet for deg. Du trenger ikke å huske det selv.</translation>
 <translation id="5149188072385105201">Legg til et passord…</translation>
 <translation id="5150492518600715772">Send til enheten din</translation>
 <translation id="5168414296986405587">Laget for iPadOS</translation>
@@ -800,7 +797,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6762812039470893796">Velg bort alle</translation>
 <translation id="6780034285637185932">Postnummer</translation>
 <translation id="6781260999953472352">Vil du slå på synkronisering?</translation>
-<translation id="6785453220513215166">Sender programstopprapport …</translation>
+<translation id="6785453220513215166">Sender krasjrapport …</translation>
 <translation id="6797885426782475225">Talesøk</translation>
 <translation id="6801927553864092214">For å surfe privat på nettet, åpne en inkognitofane</translation>
 <translation id="6807889908376551050">Vis alle</translation>
@@ -1092,7 +1089,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9079935439869366234">Merk alle som ulest</translation>
 <translation id="9081058212938299310">Vil du oppdatere passordet for <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">For å synkronisere og gi et personlig preg på alle enhetene, slå på synkronisering.</translation>
-<translation id="9087108903408689779">Passordforslag fra Chrome:</translation>
 <translation id="9093271241977565440">Trykk på søkeikonet øverst på skjermen</translation>
 <translation id="9094033019050270033">Oppdater passordet</translation>
 <translation id="9097506547406246598">Kan ikke slutte å følge. Noe gikk galt.</translation>

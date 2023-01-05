@@ -1250,6 +1250,7 @@
 <translation id="2105809836724866556">បានលាក់ <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{លេខទូរសព្ទ}other{លេខទូរសព្ទ #}}</translation>
 <translation id="2110941575868943054">បាន​អនុញ្ញាត​ឱ្យ​រកមើល​ឧបករណ៍​ប៊្លូធូស</translation>
+<translation id="2111158890826137380">សូមអភ័យទោស មានអ្វីមួយខុសប្រក្រតី។ សូម​ផ្ដល់មតិកែលម្អ​ដោយប្រើ #bruschetta នៅ​ក្នុង​ការ​ពណ៌នា។ លេខ​កូដ​បញ្ហាគឺ <ph name="ERROR" /></translation>
 <translation id="211144231511833662">សម្អាតប្រភេទ</translation>
 <translation id="2111670510994270194">ផ្ទាំងថ្មី​ទៅខាង​ស្ដាំ</translation>
 <translation id="2112554630428445878">សូមស្វាគមន៍ <ph name="USERNAME" /></translation>
@@ -1794,6 +1795,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ឧបករណ៍នេះនឹងត្រូវបានរក្សាទុករយៈពេល 1 ឆ្នាំ ហើយអ្នកអាចភ្ជាប់ដោយគ្មានលេខកូដនៅ​លើក​ក្រោយបាន។ លក្ខណៈនេះត្រូវបានកំណត់ដោយអ្នកគ្រប់គ្រងរបស់អ្នក។}other{ឧបករណ៍នេះនឹងត្រូវបានរក្សាទុករយៈពេល {YEARS} ឆ្នាំ ហើយអ្នកអាចភ្ជាប់ដោយគ្មានលេខកូដនៅ​លើក​ក្រោយបាន។ លក្ខណៈនេះត្រូវបានកំណត់ដោយអ្នកគ្រប់គ្រងរបស់អ្នក។}}</translation>
 <translation id="257779572837908839">រៀបចំជា Chromebox សម្រាប់ការប្រជុំ</translation>
 <translation id="2579309488038515659">បើក​ហតស្ប៉ត</translation>
+<translation id="2579596474754516455">ស្កេន​រូបភាព PDF ដើម្បី​បំប្លែង​អក្សរ​សម្រាប់កម្មវិធី​អាន​អេក្រង់​នៅ​ពេល​ចាំបាច់</translation>
 <translation id="2580889980133367162">អនុញ្ញាតឲ្យ <ph name="HOST" /> ទាញយកឯកសារច្រើនជានិច្ច</translation>
 <translation id="258095186877893873">វែង</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (អង្គប្រតិបត្តិការ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2747,6 +2749,7 @@
 <translation id="3469583217479686109">ឧបករណ៍ជ្រើសរើស</translation>
 <translation id="3470392222765168737">តាមដាន​គេហទំព័រ</translation>
 <translation id="3471876058939596279">មិនអាចប្រើរន្ធ HDMI និង USB ប្រភេទ C សម្រាប់​វីដេអូ​ក្នុងពេលតែមួយបានទេ។ សូមប្រើ​រន្ធវីដេអូផ្សេងគ្នា។</translation>
+<translation id="3472469028191701821">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3473241910002674503">ចូលទៅទំព័រដើម ថយក្រោយ រួចប្ដូរកម្មវិធី​ដោយប្រើប៊ូតុងនៅក្នុងមុខងារថេប្លេត។</translation>
 <translation id="3473479545200714844">ឧបករណ៍ពង្រីកអេក្រង់</translation>
 <translation id="3474218480460386727">ប្រើ 99 តួ ឬតិចជាងនេះសម្រាប់ពាក្យថ្មី</translation>
@@ -2895,6 +2898,7 @@
 <translation id="3616113530831147358">សម្លេង</translation>
 <translation id="3616741288025931835">ជម្រះទិន្នន័យរុករក...</translation>
 <translation id="3617891479562106823">មិនមាន​ផ្ទៃ​ខាងក្រោយ​ទេ។ សូម​ព្យាយាម​ម្ដងទៀត​នៅពេល​ក្រោយ។</translation>
+<translation id="3618286417582819036">សូមអភ័យទោស បញ្ហាបានកើតឡើង</translation>
 <translation id="3619115746895587757">កាពូឈីណូ</translation>
 <translation id="3620136223548713675">ទីតាំងភូមិសាស្ត្រ</translation>
 <translation id="362023940451053340">នៅ​ក្នុង​គណនី Google របស់​អ្នក​សម្រាប់ <ph name="ACCOUNT" /></translation>
@@ -3133,6 +3137,7 @@
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">ការជូនដំណឹងពីមណ្ឌលទូរសព្ទ</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{កម្មវិធីបន្ថែមមួយ​ត្រូវបាន​អនុញ្ញាតហើយ}other{កម្មវិធីបន្ថែម # ត្រូវបាន​អនុញ្ញាតហើយ}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">យ៉ាងហោច​ណាស់ <ph name="INSTALL_SIZE" /> នៃទំហំផ្ទុក​ត្រូវបានណែនាំឱ្យប្រើ​សម្រាប់ Linux។</translation>
 <translation id="3824621460022590830">ធាតុកូដចុះឈ្មោះឧបករណ៍​មិនត្រឹមត្រូវទេ។ សូមទាក់ទង​អ្នកគ្រប់គ្រង ឬម្ចាស់ឧបករណ៍​របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ចងចាំជម្រើសរបស់ខ្ញុំសម្រាប់ប្រភេទឯកសារនេះ៖ <ph name="FILE_TYPES" />}other{ចងចាំជម្រើសរបស់ខ្ញុំសម្រាប់ប្រភេទឯកសារទាំងនេះ៖ <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4057,7 @@
 <translation id="4675828034887792601">បង្កើត​ផ្លូវកាត់​សម្រាប់ស្វែងរក​គេហទំព័រ និង​គ្រប់គ្រង​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក</translation>
 <translation id="4676595058027112862">មណ្ឌលទូរសព្ទ ស្វែងយល់បន្ថែម</translation>
 <translation id="4677772697204437347">មេម៉ូរី GPU</translation>
+<translation id="4678848110205818817">កាតឥណទាន/ឥណពន្ធ</translation>
 <translation id="4680105648806843642">សំឡេង​ត្រូវបាន​បិទ​នៅលើ​ទំព័រ​នេះ</translation>
 <translation id="4680112532510845139">ទម្លាក់រូបភាពនៅទីនេះ</translation>
 <translation id="4681453295291708042">បិទ​ការចែករំលែក​នៅជិត</translation>
@@ -6687,6 +6693,7 @@
 <translation id="7149839598364933473">បំប្លែងឧបករណ៍នេះទៅជាឧបករណ៍ <ph name="DEVICE_OS" />។</translation>
 <translation id="7149893636342594995">24 ម៉ោងមុន</translation>
 <translation id="7152478047064750137">កម្មវិធី​បន្ថែម​នេះ​មិន​តម្រូវ​ឱ្យ​មាន​ការអនុញ្ញាត​ពិសេសទេ</translation>
+<translation id="7153309176431047193">បំប្លែង​រូបភាព​ទៅ​អក្សរ</translation>
 <translation id="7154130902455071009">ប្តូរទំព័រចាប់ផ្តើមរបស់អ្នកទៅ៖ <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">បំប្លែង​រូបភាព​ទៅ​ជា​អក្សរ</translation>
 <translation id="7159953856712257647">បានដំឡើង​តាមលំនាំដើម</translation>

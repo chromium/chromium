@@ -1238,6 +1238,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}other{# números de telefone}}</translation>
 <translation id="2110941575868943054">Com autorização para procurar dispositivos Bluetooth</translation>
+<translation id="2111158890826137380">Lamentamos, mas algo correu mal. Envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Novo separador à direita</translation>
 <translation id="2112554630428445878">Damos-lhe as boas-vindas, <ph name="USERNAME" /></translation>
@@ -1779,6 +1780,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo vai ser guardado durante 1 ano e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {YEARS} anos e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniões</translation>
 <translation id="2579309488038515659">Ativar zona Wi-Fi</translation>
+<translation id="2579596474754516455">Digitalize imagens em PDF para converter texto para o leitor de ecrã quando precisar</translation>
 <translation id="2580889980133367162">Permitir sempre que o <ph name="HOST" /> transfira vários ficheiros</translation>
 <translation id="258095186877893873">Longo</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2733,6 +2735,7 @@ Pretende pará-lo?</translation>
 <translation id="3469583217479686109">Ferramenta de seleção</translation>
 <translation id="3470392222765168737">Seguir site</translation>
 <translation id="3471876058939596279">Não é possível utilizar as portas HDMI e USB tipo C para vídeo ao mesmo tempo. Utilize uma porta de vídeo diferente.</translation>
+<translation id="3472469028191701821">Abre-se num novo separador</translation>
 <translation id="3473241910002674503">Navegue para a página inicial, para trás e mude de apps através de botões no modo de tablet.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Utilize 99 letras ou menos para novas palavras.</translation>
@@ -2881,6 +2884,7 @@ Pretende pará-lo?</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3616741288025931835">&amp;Limpar Dados de Navegação...</translation>
 <translation id="3617891479562106823">Os fundos não estão disponíveis. Tente mais tarde.</translation>
+<translation id="3618286417582819036">Lamentamos, mas ocorreu um erro</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocalização</translation>
 <translation id="362023940451053340">Na sua Conta Google, para <ph name="ACCOUNT" /></translation>
@@ -3119,6 +3123,7 @@ Pretende pará-lo?</translation>
 <translation id="3820749202859700794">SECG de curva elíptica secp521r1 (também denominada NIST P-521)</translation>
 <translation id="3821074617718452587">Notificações do Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Recomenda-se, pelo menos, <ph name="INSTALL_SIZE" /> de espaço para o Linux.</translation>
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
@@ -4037,6 +4042,7 @@ Pretende pará-lo?</translation>
 <translation id="4675828034887792601">Crie atalhos para pesquisar sites e gerir o seu motor de pesquisa</translation>
 <translation id="4676595058027112862">Phone Hub, saiba mais</translation>
 <translation id="4677772697204437347">Memória de GPU</translation>
+<translation id="4678848110205818817">Cartão de crédito/débito</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página.</translation>
 <translation id="4680112532510845139">Largue uma imagem aqui</translation>
 <translation id="4681453295291708042">Desativar a funcionalidade Partilhar na proximidade</translation>
@@ -6672,6 +6678,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7149839598364933473">Converta este dispositivo num dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
+<translation id="7153309176431047193">Converter imagens em texto</translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Converter imagem em texto</translation>
 <translation id="7159953856712257647">Instalada por predefinição</translation>

@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Toca per tornar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2091887806945687916">So</translation>
-<translation id="2107397443965016585">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
 <translation id="2148716181193084225">Avui</translation>
 <translation id="216989819110952009">Fins i tot amb els ulls protegits per les ulleres verdes, la Dorothy i els seus amics van quedar enlluernats per la</translation>
 <translation id="2182457891543959921">Pregunta abans de permetre que els llocs web creïn un mapa en 3D del teu entorn o facin un seguiment de la posició de la càmera (opció recomanada)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="4434045419905280838">Finestres emergents i redireccions</translation>
 <translation id="4440642537584213025">Desplega <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Permet que els llocs web reprodueixin contingut protegit</translation>
 <translation id="4468959413250150279">Silencia el so d'un lloc web concret.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# galeta}other{# galetes}}</translation>
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>

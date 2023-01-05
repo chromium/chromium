@@ -4376,6 +4376,17 @@ Si se inhabilita esta política o no se define, la API window.webkitStorageInfo 
 <translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación segura</translation>
 <translation id="5194683382395300627">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web (por ejemplo, para habilitar el cambio automático de contraseñas)</translation>
 <translation id="5196630732055960309">Permitir la API File Handling en estas aplicaciones web</translation>
+<translation id="5198660575318473544">Controla si se pueden usar extensiones de Manifest V2 en la pantalla de inicio de sesión de <ph name="PRODUCT_OS_NAME" />.
+
+Las extensiones de Manifest V2 dejarán de estar disponibles y todas las extensiones deberán migrarse a Manifest V3 en el futuro. Para consultar más detalles y el calendario de la migración, visita https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Si a esta política se le asigna el valor <ph name="DEFAULT" /> (0) o no se define, el dispositivo decidirá si se cargan las extensiones de Manifest V2 según el calendario indicado en el enlace de arriba.
+Si a esta política se le asigna el valor <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de Manifest V2 y se inhabilitarán las ya instaladas. Esta opción se tratará como si la política no se hubiera definido después de que se desactive la compatibilidad con Manifest V2 de forma predeterminada.
+Si a esta política se le asigna el valor <ph name="ENABLE" /> (2), se permitirán las extensiones de Manifest V2. Esta opción se tratará como si la política no se hubiera definido antes de que se desactive la compatibilidad con Manifest V2 de forma predeterminada.
+Si a esta política se le asigna el valor <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirá la instalación forzada de extensiones de Manifest V2. Esto incluye las extensiones que figuren en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con el valor force_installed o normal_installed asignado a <ph name="INSTALLATION_MODE" />. El resto de las extensiones de Manifest V2 se inhabilitarán. Esta opción se tratará como si la política no se hubiera definido antes de que se desactive la compatibilidad con Manifest V2 de forma predeterminada.
+
+
+La disponibilidad de las extensiones seguirá estando controlada por otras políticas.</translation>
 <translation id="5206454085187851382">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para el usuario. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones del sistema.
 
@@ -4823,6 +4834,7 @@ Si no se establece la política, ningún dominio podrá acceder a URLs file:// e
 <translation id="5599461642204007579">Configuración de administración de <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
+<translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
 <translation id="5614865701790130558">Registrar eventos de instalación de extensiones basados en políticas</translation>
 <translation id="5618398258385745432">La opción asociada se utilizó antes de que se introdujese la nueva autenticación para ver las contraseñas. Desde entonces, la opción y, por lo tanto, esta política, no han afectado al comportamiento de Chrome. El comportamiento actual de Chrome es el mismo que si se hubiese establecido la política para inhabilitar la visualización de las contraseñas sin cifrar en la página de configuración del gestor de contraseñas. Esto significa que la página de configuración incluye un solo marcador de posición y Chrome solo muestra la contraseña cuando el usuario hace clic en "Mostrar"(y al volver a autenticarse, si procede). A continuación se muestra la descripción original de la política.
 

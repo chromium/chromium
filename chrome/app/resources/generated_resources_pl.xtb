@@ -1236,6 +1236,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2105809836724866556">Sekcja <ph name="MODULE_TITLE" /> jest ukryta</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
 <translation id="2110941575868943054">Zezwolono na wyszukiwanie urządzeń Bluetooth</translation>
+<translation id="2111158890826137380">Coś poszło nie tak. Prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Wyczyść typy</translation>
 <translation id="2111670510994270194">Nowa karta po prawej</translation>
 <translation id="2112554630428445878">Cześć <ph name="USERNAME" />,</translation>
@@ -1766,6 +1767,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2575713839157415345">{YEARS,plural, =1{To urządzenie będzie zapisane przez rok. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {YEARS} lata. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {YEARS} lat. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {YEARS} roku. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="257779572837908839">Skonfiguruj jako Chromeboxa wideokonferencje</translation>
 <translation id="2579309488038515659">Hotspot włączony</translation>
+<translation id="2579596474754516455">Skanuj obrazy w plikach PDF, aby w razie potrzeby przekonwertować tekst na potrzeby czytnika ekranu</translation>
 <translation id="2580889980133367162">Zawsze zezwalaj <ph name="HOST" /> na pobieranie wielu plików</translation>
 <translation id="258095186877893873">Długie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2719,6 +2721,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3469583217479686109">Narzędzie do zaznaczania</translation>
 <translation id="3470392222765168737">Obserwuj witrynę</translation>
 <translation id="3471876058939596279">Do wyświetlania obrazu nie można używać jednocześnie portu HDMI i portu USB typu C. Użyj innego portu wideo.</translation>
+<translation id="3472469028191701821">Otwiera się w nowej karcie</translation>
 <translation id="3473241910002674503">Przechodź do strony głównej i wstecz oraz przełączaj się między aplikacjami, korzystając z przycisków w trybie tabletu.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Możesz użyć maksymalnie 99 liter</translation>
@@ -2867,6 +2870,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3616741288025931835">&amp;Wyczyść dane przeglądania...</translation>
 <translation id="3617891479562106823">Tła są niedostępne. Spróbuj ponownie później.</translation>
+<translation id="3618286417582819036">Wystąpił błąd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolokalizacja</translation>
 <translation id="362023940451053340">Na Twoim koncie Google, dla: <ph name="ACCOUNT" /></translation>
@@ -3105,6 +3109,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3820749202859700794">Kryptografia krzywych eliptycznych SECG secp521r1 (inna nazwa: NIST P-521)</translation>
 <translation id="3821074617718452587">Powiadomienia o sterowaniu telefonem</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozszerzenie zostało zatwierdzone}few{Zostały zatwierdzone # rozszerzenia}many{Zostało zatwierdzonych # rozszerzeń}other{Zostało zatwierdzone # rozszerzenia}}</translation>
+<translation id="3823019343150397277">Numer IBAN</translation>
 <translation id="3823310065043511710">Do korzystania z Linuksa zalecane jest co najmniej <ph name="INSTALL_SIZE" /> wolnego miejsca.</translation>
 <translation id="3824621460022590830">Token rejestrowania urządzenia jest nieprawidłowy. Skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamiętaj mój wybór w przypadku tego typu plików: <ph name="FILE_TYPES" />}few{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}many{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}other{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}}</translation>
@@ -4023,6 +4028,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4675828034887792601">Tworzenie skrótów do wyszukiwania w witrynach i zarządzanie wyszukiwarkami</translation>
 <translation id="4676595058027112862">Sterowanie telefonem, Więcej informacji</translation>
 <translation id="4677772697204437347">Pamięć GPU</translation>
+<translation id="4678848110205818817">Karta kredytowa lub debetowa</translation>
 <translation id="4680105648806843642">Dźwięk na tej stronie został wyciszony</translation>
 <translation id="4680112532510845139">Upuść obraz tutaj</translation>
 <translation id="4681453295291708042">Wyłącz Udostępnianie w pobliżu</translation>
@@ -6658,6 +6664,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7149839598364933473">Przekonwertuj to urządzenie na urządzenie z systemem operacyjnym <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Ostatnie 24 godziny</translation>
 <translation id="7152478047064750137">To rozszerzenie nie wymaga specjalnych uprawnień</translation>
+<translation id="7153309176431047193">Konwertuj obrazy na tekst</translation>
 <translation id="7154130902455071009">Zmiana strony startowej na: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Przekonwertuj obraz na tekst</translation>
 <translation id="7159953856712257647">Zainstalowane domyślnie</translation>

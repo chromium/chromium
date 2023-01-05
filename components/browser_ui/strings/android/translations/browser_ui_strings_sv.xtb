@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Återgå till <ph name="URL_OF_THE_CURRENT_TAB" /> genom att trycka här</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2091887806945687916">Ljud</translation>
-<translation id="2107397443965016585">Fråga innan webbplatser tillåts att spela upp skyddat innehåll (rekommenderas)</translation>
 <translation id="2148716181193084225">Idag</translation>
 <translation id="216989819110952009">Trots de skyddande gröna glasögonen blev Dorothy och hennes vänner först bländade av</translation>
 <translation id="2182457891543959921">Fråga innan webbplatser tillåts att skapa en 3D-karta över dina omgivningar eller registrera kamerans position (rekommenderas)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="4440642537584213025">Utöka <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Tillåt att webbplatser spelar upp skyddat innehåll</translation>
 <translation id="4468959413250150279">Stäng av ljudet för en webbplats.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4479647676395637221">Fråga innan webbplatser tillåts att använda kameran (rekommenderas)</translation>

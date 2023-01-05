@@ -170,7 +170,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="225943865679747347">Villukóði: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Bæta reikningi við</translation>
 <translation id="2268044343513325586">Þrengja</translation>
-<translation id="2271351792809375263">Notaðu aðgangsorðin sem þú vistaðir í Chrome í öðrum forritum tækisins</translation>
 <translation id="2273327106802955778">Valmynd fyrir meira</translation>
 <translation id="2286505070150039482">Áherslumerktur texti</translation>
 <translation id="2299218006564889602">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google.</translation>
@@ -465,7 +464,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4508750114462689118">Loka innskráningarkynningu</translation>
 <translation id="4514889972748124117">Leggja til traust aðgangsorð…</translation>
 <translation id="4520798012560649652">Nánar um huliðsstillingu</translation>
-<translation id="4526249700380860531">Skoða og hafa umsjón með vistuðum aðgangsorðum á <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Fara yfir samstillt gögn</translation>
 <translation id="4536418791685807335">Reyndu að skrá þig inn aftur.</translation>
 <translation id="4540780316273593836">Eitthvað fór úrskeiðis</translation>
@@ -553,7 +551,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5118764316110575523">Slökkt</translation>
 <translation id="5119391094379141756">Veldu Chrome</translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
-<translation id="5140288047769711648">Chrome man þetta aðgangsorð fyrir þig. Þú þarft ekki að leggja það á minnið.</translation>
 <translation id="5149188072385105201">Bæta aðgangsorði við...</translation>
 <translation id="5150492518600715772">Senda í tækið þitt</translation>
 <translation id="5168414296986405587">Hannað fyrir iPadOS</translation>
@@ -1092,7 +1089,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9079935439869366234">Merkja allt sem ólesið</translation>
 <translation id="9081058212938299310">Uppfæra aðgangsorð fyrir <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum.</translation>
-<translation id="9087108903408689779">Aðgangsorð sem Chrome stingur upp á:</translation>
 <translation id="9093271241977565440">Ýttu á leitartáknið efst á skjánum</translation>
 <translation id="9094033019050270033">Uppfæra aðgangsorð</translation>
 <translation id="9097506547406246598">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>

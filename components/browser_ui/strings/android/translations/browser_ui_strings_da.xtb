@@ -49,7 +49,6 @@
 <translation id="2030769033451695672">Tryk for at vende tilbage til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2091887806945687916">Lyd</translation>
-<translation id="2107397443965016585">Spørg, før websites får tilladelse til at afspille beskyttet indhold (anbefales)</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv med øjnene beskyttet bag de grønne briller blev Dorothy og hendes venner først forblændet af den</translation>
 <translation id="2182457891543959921">Spørg, inden websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
@@ -166,7 +165,6 @@
 <translation id="4428065317363009941">Annoncetilpasning</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="4440642537584213025">Udvid <ph name="TARGET_DESCRIPTION" /></translation>
-<translation id="445467742685312942">Tillad, at websites afspiller beskyttet indhold</translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4479647676395637221">Spørg, før websites bruger dit kamera (anbefales)</translation>
