@@ -1364,20 +1364,6 @@
       },
     },
   },
-  'win7': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-7-SP1',
-      },
-    },
-  },
-  'x86-32': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-32',
-      },
-    },
-  },
   'x86-64': {
     'swarming': {
       'dimensions': {
