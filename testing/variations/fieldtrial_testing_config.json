@@ -3239,6 +3239,21 @@
             ]
         }
     ],
+    "CrOSHugepageRemapAndLockInZygoteStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CrOSHugepageRemapAndLockInZygoteStudy"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootMediaDynamicCgroup": [
         {
             "platforms": [
