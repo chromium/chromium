@@ -517,6 +517,15 @@ const base::Value::List* NetworkMetadataStore::GetCustomApnList(
   return nullptr;
 }
 
+const base::Value::List* NetworkMetadataStore::GetPreRevampCustomApnList(
+    const std::string& network_guid) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  if (const base::Value* pref = GetPref(network_guid, kCustomApnList)) {
+    return pref->GetIfList();
+  }
+  return nullptr;
+}
+
 void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
     const std::string& network_guid,
     bool enable) {
