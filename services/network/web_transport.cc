@@ -286,13 +286,13 @@ class WebTransport::Stream final {
         }
         DCHECK_EQ(result, MOJO_RESULT_OK);
 
-        read_result =
-            incoming_->Read(reinterpret_cast<char*>(buffer), available);
+        read_result = incoming_->Read(
+            absl::Span<char>(reinterpret_cast<char*>(buffer), available));
         writable_->EndWriteData(read_result.bytes_read);
       } else {
         // Even if ReadableBytes() == 0, we may need to read the FIN at the end
         // of the stream.
-        read_result = incoming_->Read(nullptr, 0);
+        read_result = incoming_->Read(absl::Span<char>());
         if (!read_result.fin) {
           return;
         }
@@ -409,11 +409,8 @@ void WebTransport::SendDatagram(base::span<const uint8_t> data,
 
   datagram_callbacks_.emplace(std::move(callback));
 
-  quiche::QuicheBuffer buffer(quiche::SimpleBufferAllocator::Get(),
-                              data.size());
-  memcpy(buffer.data(), data.data(), data.size());
-  quiche::QuicheMemSlice slice(std::move(buffer));
-  transport_->session()->SendOrQueueDatagram(std::move(slice));
+  transport_->session()->SendOrQueueDatagram(absl::string_view(
+      reinterpret_cast<const char*>(data.data()), data.size()));
 }
 
 void WebTransport::CreateStream(
@@ -512,7 +509,7 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
   }
 
   transport_->session()->SetDatagramMaxTimeInQueue(
-      quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
+      absl::Microseconds(duration.InMicroseconds()));
 }
 
 void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {

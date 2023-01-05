@@ -927,7 +927,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'absl::Span is banned. Use base::span instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+        # Needed to use QUICHE API.
+        r'services/network/web_transport\.cc',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK
+      ],
     ),
     BanRule(
       r'/\babsl::StatusOr\b',
