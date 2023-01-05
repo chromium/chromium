@@ -211,6 +211,8 @@
 	<string>IDS_IOS_FACE_ID_USAGE_DESCRIPTION</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>IDS_IOS_CALENDARS_USAGE_DESCRIPTION</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>IDS_IOS_SPEECH_RECOGNITION_USAGE_DESCRIPTION</string>
 	<key>FirebaseScreenReportingEnabled</key>
 	<false/>
 	<key>UIApplicationSceneManifest</key>

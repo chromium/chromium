@@ -1937,6 +1937,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn You if Passwords Are Exposed in a Data Breach
       </message>
+      <message name="IDS_IOS_SPEECH_RECOGNITION_USAGE_DESCRIPTION" desc="Specifies the reason for sending user data to Apple's speech recognition servers.">
+        This will let you use your voice with certain features on websites.
+      </message>
       <message name="IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP" desc="Accessibility hint for info button items that have a tap functionality.">
         Button
       </message>

@@ -186,6 +186,12 @@
 					<key>output</key>
 					<string>NSCalendarsUsageDescription</string>
 				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_SPEECH_RECOGNITION_USAGE_DESCRIPTION</string>
+					<key>output</key>
+					<string>NSSpeechRecognitionUsageDescription</string>
+				</dict>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE</string>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE</string>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE</string>
