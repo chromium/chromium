@@ -194,8 +194,12 @@ void IOSLanguageDetectionTabHelper::WebStateDestroyed(
 }
 
 void IOSLanguageDetectionTabHelper::StartLanguageDetection() {
-  // Translate setting should not cancel language detection.
+  // Translate setting should not cancel language detection, except if it is
+  // disabled by policy.
   // Keep the existing behavior if IsForceTranslateEnabled is disabled.
+  if (!translate_enabled_.GetValue() && translate_enabled_.IsManaged()) {
+    return;
+  }
   if (!translate_enabled_.GetValue() && !translate::IsForceTranslateEnabled()) {
     return;  // Translate disabled in preferences.
   }
