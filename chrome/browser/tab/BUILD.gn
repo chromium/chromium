@@ -57,7 +57,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/SerializedCriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/Serializer.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
-    "java/src/org/chromium/chrome/browser/tab/state/StorePersistedTabData.java",
   ]
 
   srcjar_deps = [
@@ -142,7 +141,6 @@ proto_java_library("critical_persisted_tab_data_proto_java") {
   sources = [
     "$proto_path/coupon_persisted_tab_data.proto",
     "$proto_path/shopping_persisted_tab_data.proto",
-    "$proto_path/store_persisted_tab_data.proto",
   ]
 }
 
