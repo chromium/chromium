@@ -35,7 +35,8 @@ found in the LICENSE file.
             android:layout_centerVertical="true"
             android:scaleType="fitCenter"
             android:tint="@macro/default_icon_color"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/primary"

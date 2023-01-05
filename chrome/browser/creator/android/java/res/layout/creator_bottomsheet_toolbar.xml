@@ -93,7 +93,8 @@ found in the LICENSE file.
           android:layout_alignStart="@id/title"
           android:layout_below="@id/title"
           android:layout_marginTop="@dimen/creator_bottomsheet_toolbar_security_icon_margin"
-          app:tint="@macro/default_icon_color" />
+          app:tint="@macro/default_icon_color"
+          android:importantForAccessibility="no" />
       <TextView
           android:id="@+id/origin"
           android:layout_width="match_parent"

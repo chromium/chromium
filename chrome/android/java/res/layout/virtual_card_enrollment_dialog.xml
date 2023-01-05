@@ -18,7 +18,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:src="@drawable/virtual_card_enrollment_illustration"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:importantForAccessibility="no" />
 
     <androidx.appcompat.widget.DialogTitle
         android:id="@+id/dialog_title"
@@ -46,7 +47,8 @@ found in the LICENSE file.
             android:layout_alignTop="@id/virtual_card_text"
             android:layout_alignBottom="@id/credit_card_identifier"
             android:layout_marginEnd="@dimen/virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end"
-            tools:src="@drawable/infobar_autofill_cc" />
+            tools:src="@drawable/infobar_autofill_cc"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/virtual_card_text"

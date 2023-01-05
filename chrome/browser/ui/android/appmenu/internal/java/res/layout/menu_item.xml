@@ -28,5 +28,6 @@ found in the LICENSE file.
         android:layout_gravity="end"
         android:gravity="center_vertical"
         android:tint="@macro/default_icon_color_secondary"
-        android:duplicateParentState="true" />
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no" />
 </LinearLayout>

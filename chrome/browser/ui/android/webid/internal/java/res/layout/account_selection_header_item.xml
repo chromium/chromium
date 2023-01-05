@@ -30,7 +30,8 @@ found in the LICENSE file.
          android:layout_height="@dimen/account_selection_sheet_icon_size"
          android:layout_gravity="center_vertical"
          android:layout_marginEnd="16dp"
-         android:visibility="gone" />
+         android:visibility="gone"
+         android:importantForAccessibility="no" />
       <TextView
           android:id="@+id/header_title"
           android:layout_width="0dp"

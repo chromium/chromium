@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <org.chromium.chrome.browser.omnibox.status.StatusIconView
         android:id="@+id/location_bar_status_icon_view"
@@ -37,7 +37,8 @@ found in the LICENSE file.
             android:src="@android:color/transparent"
             android:visibility="visible"
             android:scaleType="center"
-            android:focusable="false" />
+            android:focusable="false"
+            tools:ignore="ContentDescription" />
 
     </FrameLayout>
 

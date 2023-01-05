@@ -12,7 +12,8 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/start_icon"
-        style="@style/ListItemStartIcon" />
+        style="@style/ListItemStartIcon"
+        android:importantForAccessibility="no" />
 
     <!-- Common title/description shared between list item views. -->
     <include layout="@layout/title_and_description_layout" />

@@ -17,7 +17,8 @@ found in the LICENSE file.
     <LinearLayout
         style="@style/AppMenuItem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        tools:ignore="UseCompoundDrawables">
 
         <TextView
             android:id="@+id/menu_item_text"
@@ -37,7 +38,8 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:gravity="center_vertical"
-            app:tint="@color/default_icon_color_tint_list" />
+            app:tint="@color/default_icon_color_tint_list"
+            android:importantForAccessibility="no" />
 
     </LinearLayout>
 
@@ -49,4 +51,3 @@ found in the LICENSE file.
         android:visibility="gone" />
 
 </LinearLayout>
-

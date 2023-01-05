@@ -26,7 +26,8 @@ found in the LICENSE file.
                 android:id="@+id/toolbar_left_button"
                 style="@style/BottomToolbarButton"
                 android:src="@drawable/ic_expand_less_black_24dp"
-                app:tint="@color/default_icon_color_tint_list" />
+                app:tint="@color/default_icon_color_tint_list"
+                tools:ignore="ContentDescription" />
             <FrameLayout
                 android:id="@+id/toolbar_container_view"
                 android:layout_width="0dp"
@@ -36,7 +37,8 @@ found in the LICENSE file.
                 android:id="@+id/toolbar_right_button"
                 style="@style/BottomToolbarButton"
                 android:src="@drawable/plus"
-                app:tint="@color/default_icon_color_tint_list" />
+                app:tint="@color/default_icon_color_tint_list"
+                tools:ignore="ContentDescription" />
         </LinearLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/tab_strip_fading_edge_start"

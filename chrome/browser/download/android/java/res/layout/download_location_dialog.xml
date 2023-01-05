@@ -55,7 +55,8 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_drive_file_24dp"
                     app:tint="@macro/default_icon_color"
-                    style="@style/ListItemStartIcon" />
+                    style="@style/ListItemStartIcon"
+                    android:importantForAccessibility="no" />
 
                 <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
                     android:id="@+id/file_name"
@@ -91,7 +92,8 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_folder_blue_24dp"
                     app:tint="@macro/default_icon_color"
-                    style="@style/ListItemStartIcon" />
+                    style="@style/ListItemStartIcon"
+                    android:importantForAccessibility="no" />
 
                 <Spinner
                     android:id="@+id/file_location"

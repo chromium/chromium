@@ -6,11 +6,13 @@ found in the LICENSE file.
 -->
 <!-- Layout for each item in the menu popup -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/AppMenuItem"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeightSmall"
     android:gravity="center_vertical"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    tools:ignore="UseCompoundDrawables">
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
@@ -19,7 +21,8 @@ found in the LICENSE file.
         android:gravity="center_vertical"
         android:tint="@color/default_icon_color_secondary_tint_list"
         android:tintMode="src_in"
-        android:duplicateParentState="true" />
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/menu_item_text"

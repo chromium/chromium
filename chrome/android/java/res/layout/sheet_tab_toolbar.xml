@@ -102,7 +102,8 @@ found in the LICENSE file.
                 android:layout_alignStart="@id/title"
                 android:layout_below="@id/title"
                 android:layout_marginTop="3dp"
-                app:tint="@macro/default_icon_color" />
+                app:tint="@macro/default_icon_color"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/origin"

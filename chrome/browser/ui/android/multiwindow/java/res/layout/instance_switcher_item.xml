@@ -27,7 +27,8 @@ found in the LICENSE file.
         android:layout_height="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginVertical="28dp"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:importantForAccessibility="no" />
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/favicon"

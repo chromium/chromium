@@ -5,14 +5,16 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:app="http://schemas.android.com/apk/res-auto">
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       xmlns:tools="http://schemas.android.com/tools">
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/background_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/tab_grid_card_background"
         android:layout_margin="@dimen/tab_grid_card_margin"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
     <FrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
@@ -98,6 +100,7 @@ found in the LICENSE file.
             android:layout_margin="@dimen/tab_list_card_action_button_margin"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="@macro/default_icon_color"/>
+            android:tint="@macro/default_icon_color"
+            tools:ignore="ContentDescription" />
     </FrameLayout>
 </merge>

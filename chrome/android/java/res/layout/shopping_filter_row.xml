@@ -13,7 +13,8 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/start_icon"
         android:src="@drawable/price_tracking_enabled_outline"
-        style="@style/ListItemStartIcon" />
+        style="@style/ListItemStartIcon"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/title"
@@ -28,6 +29,7 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/end_icon"
         android:src="@drawable/outline_chevron_right_24dp"
-        style="@style/ListItemEndIcon" />
+        style="@style/ListItemEndIcon"
+        android:importantForAccessibility="no" />
 
 </LinearLayout>

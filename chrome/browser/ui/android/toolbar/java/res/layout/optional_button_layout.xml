@@ -17,7 +17,8 @@ found in the LICENSE file.
         android:scaleType="fitXY"
         android:id="@+id/swappable_icon_secondary_background"
         android:layout_gravity="center"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -44,5 +45,6 @@ found in the LICENSE file.
         android:id="@+id/swappable_icon_animation_image"
         android:layout_gravity="center"
         android:visibility="gone"
-        style="@style/ToolbarButton" />
+        style="@style/ToolbarButton"
+        android:importantForAccessibility="no" />
 </org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonView>

@@ -21,7 +21,8 @@ found in the LICENSE file.
             android:layout_gravity="start"
             android:paddingTop="20dp"
             android:gravity="center"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent"
+            android:importantForAccessibility="no" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
