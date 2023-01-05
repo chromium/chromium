@@ -4,6 +4,9 @@
 
 #include "ash/system/ime/ime_feature_pod_controller.h"
 
+#include <string>
+
+#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -12,8 +15,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -66,6 +71,7 @@ IMEFeaturePodController::~IMEFeaturePodController() {
 }
 
 FeaturePodButton* IMEFeaturePodController::CreateButton() {
+  DCHECK(!features::IsQsRevampEnabled());
   button_ = new FeaturePodButton(this, /*is_togglable=*/false);
   button_->SetVectorIcon(kUnifiedMenuKeyboardIcon);
   button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_SHORT));
@@ -77,6 +83,27 @@ FeaturePodButton* IMEFeaturePodController::CreateButton() {
   button_->SetVisible(false);
   Update();
   return button_;
+}
+
+std::unique_ptr<FeatureTile> IMEFeaturePodController::CreateTile() {
+  DCHECK(features::IsQsRevampEnabled());
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&IMEFeaturePodController::OnIconPressed,
+                          weak_factory_.GetWeakPtr()),
+      /*is_togglable=*/false);
+  tile_ = tile.get();
+  tile_->SetVectorIcon(kUnifiedMenuKeyboardIcon);
+  tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_SHORT));
+  std::u16string tooltip = GetTooltipString();
+  tile_->SetTooltipText(tooltip);
+  tile_->CreateDrillInButton(
+      base::BindRepeating(&IMEFeaturePodController::OnLabelPressed,
+                          weak_factory_.GetWeakPtr()),
+      tooltip);
+  // `Update` will update the visibility.
+  tile_->SetVisible(false);
+  Update();
+  return tile;
 }
 
 QsFeatureCatalogName IMEFeaturePodController::GetCatalogName() {
@@ -97,12 +124,24 @@ void IMEFeaturePodController::OnIMEMenuActivationChanged(bool is_active) {
 }
 
 void IMEFeaturePodController::Update() {
-  button_->SetSubLabel(GetLabelString());
-  // If the button's visibility changes from invisible to visible, log its
-  // visibility.
-  if (!button_->GetVisible() && IsButtonVisible())
-    TrackVisibilityUMA();
-  button_->SetVisible(IsButtonVisible());
+  bool is_button_visible = IsButtonVisible();
+  if (features::IsQsRevampEnabled()) {
+    tile_->SetSubLabel(GetLabelString());
+    // If the tile's visibility changes from invisible to visible, log its
+    // visibility.
+    if (!tile_->GetVisible() && is_button_visible) {
+      TrackVisibilityUMA();
+    }
+    tile_->SetVisible(is_button_visible);
+  } else {
+    button_->SetSubLabel(GetLabelString());
+    // If the button's visibility changes from invisible to visible, log its
+    // visibility.
+    if (!button_->GetVisible() && is_button_visible) {
+      TrackVisibilityUMA();
+    }
+    button_->SetVisible(is_button_visible);
+  }
 }
 
 }  // namespace ash

@@ -676,6 +676,8 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<RotationLockFeaturePodController>(),
               feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<IMEFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   create_tile(std::make_unique<VPNFeaturePodController>(this),
               feature_pod_controllers_, tiles);
 

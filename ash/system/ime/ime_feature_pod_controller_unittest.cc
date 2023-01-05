@@ -4,12 +4,14 @@
 
 #include "ash/system/ime/ime_feature_pod_controller.h"
 
+#include <string>
 #include <vector>
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -17,19 +19,32 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 // Tests manually control their session state.
-class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
+class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
+                                    public testing::WithParamInterface<bool> {
  public:
-  IMEFeaturePodControllerTest() = default;
+  IMEFeaturePodControllerTest() {
+    if (IsQsRevampEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kQsRevamp, features::kQsRevampWip}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {features::kQsRevamp, features::kQsRevampWip});
+    }
+  }
 
   IMEFeaturePodControllerTest(const IMEFeaturePodControllerTest&) = delete;
   IMEFeaturePodControllerTest& operator=(const IMEFeaturePodControllerTest&) =
       delete;
 
   ~IMEFeaturePodControllerTest() override = default;
+
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
@@ -38,6 +53,7 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    tile_.reset();
     button_.reset();
     controller_.reset();
     NoSessionAshTestBase::TearDown();
@@ -46,7 +62,11 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
  protected:
   void SetUpButton() {
     controller_ = std::make_unique<IMEFeaturePodController>(tray_controller());
-    button_.reset(controller_->CreateButton());
+    if (IsQsRevampEnabled()) {
+      tile_ = controller_->CreateTile();
+    } else {
+      button_ = base::WrapUnique(controller_->CreateButton());
+    }
   }
 
   UnifiedSystemTrayController* tray_controller() {
@@ -55,7 +75,24 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
         ->unified_system_tray_controller();
   }
 
-  FeaturePodButton* button() { return button_.get(); }
+  bool IsButtonVisible() {
+    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
+  }
+
+  const char* GetToggledOnHistogramName() {
+    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOn"
+                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOn";
+  }
+
+  const char* GetToggledOffHistogramName() {
+    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOff"
+                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOff";
+  }
+
+  const char* GetDiveInHistogramName() {
+    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.DiveIn"
+                               : "Ash.UnifiedSystemView.FeaturePod.DiveIn";
+  }
 
   // Creates |count| simulated active IMEs.
   void SetActiveIMECount(int count) {
@@ -82,9 +119,10 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
 
   void PressLabel() { controller_->OnLabelPressed(); }
 
- private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IMEFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;
+  std::unique_ptr<FeatureTile> tile_;
 
   // IMEs
   ImeInfo current_ime_;
@@ -92,97 +130,112 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
   std::vector<ImeMenuItem> menu_items_;
 };
 
+INSTANTIATE_TEST_SUITE_P(QsRevamp,
+                         IMEFeaturePodControllerTest,
+                         testing::Bool());
+
+TEST_P(IMEFeaturePodControllerTest, Labels) {
+  SetUpButton();
+
+  std::u16string label = IsQsRevampEnabled()
+                             ? tile_->label()->GetText()
+                             : button_->label_button()->GetLabelText();
+  EXPECT_EQ(label, u"Keyboard");
+
+  SetActiveIMECount(2);
+  current_ime_.id = "0";
+  available_imes_[0].short_name = u"US";
+  available_imes_[1].short_name = u"FR";
+  RefreshImeController();
+  std::u16string sub_label = IsQsRevampEnabled()
+                                 ? tile_->sub_label()->GetText()
+                                 : button_->label_button()->GetSubLabelText();
+  EXPECT_EQ(sub_label, u"US");
+}
+
 // Tests that if the pod button is hidden if less than 2 IMEs are present.
-TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityIMECount) {
+TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityIMECount) {
   SetUpButton();
 
   SetActiveIMECount(0);
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
   SetActiveIMECount(1);
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
   SetActiveIMECount(2);
-  EXPECT_TRUE(button()->GetVisible());
+  EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
+TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
   SetUpButton();
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
 
   SetActiveIMECount(0);
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
   SetActiveIMECount(1);
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
   SetActiveIMECount(2);
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
+TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
   SetUpButton();
 
   Shell::Get()->ime_controller()->SetImesManagedByPolicy(true);
 
   SetActiveIMECount(0);
-  EXPECT_TRUE(button()->GetVisible());
+  EXPECT_TRUE(IsButtonVisible());
   SetActiveIMECount(1);
-  EXPECT_TRUE(button()->GetVisible());
+  EXPECT_TRUE(IsButtonVisible());
   SetActiveIMECount(2);
-  EXPECT_TRUE(button()->GetVisible());
+  EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_F(IMEFeaturePodControllerTest, IconUMATracking) {
+TEST_P(IMEFeaturePodControllerTest, IconUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/0);
+  histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetToggledOffHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetDiveInHistogramName(),
+                                     /*expected_count=*/0);
 
   // Show IME detailed view when pressing on the icon.
   PressIcon();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/1);
-  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+  histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetToggledOffHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetDiveInHistogramName(),
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(GetDiveInHistogramName(),
                                       QsFeatureCatalogName::kIME,
                                       /*expected_count=*/1);
 }
 
-TEST_F(IMEFeaturePodControllerTest, LabelUMATracking) {
+TEST_P(IMEFeaturePodControllerTest, LabelUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/0);
+  histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetToggledOffHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetDiveInHistogramName(),
+                                     /*expected_count=*/0);
 
   // Show IME detailed view when pressing on the label.
   PressLabel();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*count=*/1);
-  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+  histogram_tester->ExpectTotalCount(GetToggledOnHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetToggledOffHistogramName(),
+                                     /*expected_count=*/0);
+  histogram_tester->ExpectTotalCount(GetDiveInHistogramName(),
+                                     /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(GetDiveInHistogramName(),
                                       QsFeatureCatalogName::kIME,
                                       /*expected_count=*/1);
 }
