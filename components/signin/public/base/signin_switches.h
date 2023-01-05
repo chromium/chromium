@@ -41,9 +41,6 @@ BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
 #endif
-#if BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kEnableCbdSignOut);
-#endif
 
 BASE_DECLARE_FEATURE(kTangibleSync);
 

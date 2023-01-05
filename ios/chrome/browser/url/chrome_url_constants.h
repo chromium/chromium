@@ -96,9 +96,6 @@ extern const char kDoNotTrackLearnMoreURL[];
 // The URL for the "Learn more" page on sync encryption.
 extern const char kSyncEncryptionHelpURL[];
 
-// "Learn more" URL for the Clear Browsing Data under Privacy Options.
-extern const char kClearBrowsingDataLearnMoreURL[];
-
 // Google history URL for the footer in the Clear Browsing Data under Privacy
 // Options.
 extern const char kClearBrowsingDataMyActivityUrlInFooterURL[];

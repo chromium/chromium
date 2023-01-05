@@ -4399,21 +4399,6 @@
             ]
         }
     ],
-    "EnableCbdSignOut": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCbdSignOut"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableFrameSinkDesktopCapturerInCrd": [
         {
             "platforms": [

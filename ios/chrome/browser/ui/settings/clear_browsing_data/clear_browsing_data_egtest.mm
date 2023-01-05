@@ -6,7 +6,6 @@
 
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -29,11 +28,11 @@
 
 namespace {
 
-// Identifier used to find the 'Learn more' link.
-NSString* const kLearnMoreIdentifier = @"Learn more";
+// Identifier used to find the 'Search history' link.
+NSString* const kSearchHistory = @"Search history";
 
 // URL of the help center page.
-char kHelpCenterURL[] = "support.google.com";
+char kMyActivityURL[] = "myactivity.google.com";
 
 // Matcher for an element with or without the
 // UIAccessibilityTraitSelected accessibility trait depending on `selected`.
@@ -74,20 +73,6 @@ using chrome_test_util::WindowWithNumber;
 @end
 
 @implementation ClearBrowsingDataSettingsTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testTapLearnMore)] ||
-      [self isRunningTest:@selector(testTapLearnMoreFromHistory)] ||
-      [self
-          isRunningTest:@selector(testUserSignedOutWhenClearingBrowsingData)]) {
-    config.features_disabled.push_back(switches::kEnableCbdSignOut);
-  } else if ([self isRunningTest:@selector
-                   (testUserSignedInWhenClearingBrowsingData)]) {
-    config.features_enabled.push_back(switches::kEnableCbdSignOut);
-  }
-  return config;
-}
 
 - (void)openClearBrowsingDataDialog {
   [ChromeEarlGreyUI openSettingsMenu];
@@ -271,31 +256,12 @@ using chrome_test_util::WindowWithNumber;
       performAction:grey_tap()];
 }
 
-// Tests that tapping the "Learn more" link opens the help center.
-- (void)testTapLearnMore {
-  [self openClearBrowsingDataDialog];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              kLearnMoreIdentifier),
-                                          grey_kindOfClassName(
-                                              @"UIAccessibilityLinkSubelement"),
-                                          nil)]
-      performAction:chrome_test_util::TapAtPointPercentage(0.95, 0.05)];
-
-  // Check that the URL of the help center was opened.
-  GREYAssertEqual(std::string(kHelpCenterURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center url.");
-}
-
 // Tests that opening the Clear Browsing interface from the History and tapping
-// the "Learn more" link opens the help center.
-- (void)testTapLearnMoreFromHistory {
+// the "Search history" link opens the help center.
+- (void)testTapSearchHistoryFromHistory {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
@@ -308,17 +274,17 @@ using chrome_test_util::WindowWithNumber;
           grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              kLearnMoreIdentifier),
-                                          grey_kindOfClassName(
-                                              @"UIAccessibilityLinkSubelement"),
-                                          nil)]
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(kSearchHistory),
+                                   grey_kindOfClassName(
+                                       @"UIAccessibilityLinkSubelement"),
+                                   nil)]
       performAction:chrome_test_util::TapAtPointPercentage(0.95, 0.05)];
 
   // Check that the URL of the help center was opened.
-  GREYAssertEqual(std::string(kHelpCenterURL),
+  GREYAssertEqual(std::string(kMyActivityURL),
                   [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center url.");
+                  @"Did not navigate to the search activity url.");
 }
 
 // Sign-in without sync. Clear browsing data.
@@ -341,21 +307,11 @@ using chrome_test_util::WindowWithNumber;
 }
 
 // Tests that a user in the `ConsentLevel::kSignin` state will be signed out
-// after clearing their browsing history if `kEnableCbdSignOut` feature is
-// enabled.
+// after clearing their browsing history.
 - (void)testUserSignedInWhenClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
-// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
-// after clearing their browsing history if `kEnableCbdSignOut` feature is
-// disabled.
-- (void)testUserSignedOutWhenClearingBrowsingData {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey verifySignedOut];
 }
 
 @end

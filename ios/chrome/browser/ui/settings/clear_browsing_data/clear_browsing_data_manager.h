@@ -51,11 +51,8 @@ enum ClearBrowsingDataItemType {
   // Footer noting user will not be signed out of chrome and other forms of
   // browsing history will still be available.
   ItemTypeFooterGoogleAccountAndMyActivity,
-  // Footer noting site settings will remain.
-  ItemTypeFooterSavedSiteData,
-  // Footer noting data will be cleared on all devices except for saved
-  // settings.
-  ItemTypeFooterClearSyncAndSavedSiteData,
+  // Footer offering to sign out of Google account in Chrome.
+  ItemTypeFooterSignoutOfGoogle,
   // Item showing time range to remove data and allowing user to edit time
   // range.
   ItemTypeTimeRange,

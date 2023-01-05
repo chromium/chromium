@@ -20,7 +20,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
@@ -234,10 +233,6 @@ static NSDictionary* imageNamesByItemTypes = @{
 }
 
 - (void)updateModel:(ListModel*)model withTableView:(UITableView*)tableView {
-  if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
-    // Footer update are only needed in the Enabled Cbd Signout experiment.
-    return;
-  }
   const BOOL hasSectionSavedSiteData =
       [model hasSectionForSectionIdentifier:SectionIdentifierSavedSiteData];
   if (hasSectionSavedSiteData == [self loggedIn]) {
@@ -398,7 +393,6 @@ static NSDictionary* imageNamesByItemTypes = @{
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
                 action:^{
                   [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
-                  [weakSelf signOutIfNotSyncing];
                 }
                  style:UIAlertActionStyleDestructive];
   return actionCoordinator;
@@ -597,26 +591,9 @@ static NSDictionary* imageNamesByItemTypes = @{
        appendLocaleToURL:YES];
 }
 
-- (TableViewLinkHeaderFooterItem*)footerSavedSiteDataItem {
-  return [self
-      footerItemWithType:ItemTypeFooterSavedSiteData
-                 titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SAVED_SITE_DATA
-                     URL:kClearBrowsingDataLearnMoreURL
-       appendLocaleToURL:YES];
-}
-
-- (TableViewLinkHeaderFooterItem*)footerClearSyncAndSavedSiteDataItem {
-  return [self
-      footerItemWithType:ItemTypeFooterClearSyncAndSavedSiteData
-                 titleID:
-                     IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_CLEAR_SYNC_AND_SAVED_SITE_DATA
-                     URL:kClearBrowsingDataLearnMoreURL
-       appendLocaleToURL:YES];
-}
-
 - (TableViewLinkHeaderFooterItem*)signOutFooterItem {
   return [self
-      footerItemWithType:ItemTypeFooterClearSyncAndSavedSiteData
+      footerItemWithType:ItemTypeFooterSignoutOfGoogle
                  titleID:
                      IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SIGN_OUT_EVERY_WEBSITE
                      URL:kCBDSignOutOfChromeURL
@@ -695,37 +672,10 @@ static NSDictionary* imageNamesByItemTypes = @{
 
 // Add at the end of the list model the elements related to signing-out.
 - (void)addSavedSiteDataSectionWithModel:(ListModel*)model {
-  syncer::SyncService* syncService = [self syncService];
-  if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
-    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    if (syncService && syncService->IsSyncFeatureActive()) {
-      [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
-          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    } else {
-      [model setFooter:[self footerSavedSiteDataItem]
-          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    }
-  } else if ([self loggedIn]) {
+  if ([self loggedIn]) {
     [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
     [model setFooter:[self signOutFooterItem]
         forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-  }
-}
-
-// Signs the user out of Chrome if the sign-in state is `ConsentLevel::kSignin`.
-- (void)signOutIfNotSyncing {
-  DCHECK(self.browserState);
-  signin::IdentityManager* identityManager = [self identityManager];
-  DCHECK(identityManager);
-  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(_browserState);
-    DCHECK(authenticationService);
-    if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
-      authenticationService->SignOut(
-          signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
-          /*force_clear_browsing_data=*/false, nil);
-    }
   }
 }
 

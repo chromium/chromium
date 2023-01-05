@@ -1136,9 +1136,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxKeyboardPasteButtonDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxKeyboardPasteButton)},
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
-    {"enable-cbd-sign-out", flag_descriptions::kEnableCBDSignOutName,
-     flag_descriptions::kEnableCBDSignOutDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kEnableCbdSignOut)},
     {"enable-open-in-download", flag_descriptions::kEnableOpenInDownloadName,
      flag_descriptions::kEnableOpenInDownloadDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableOpenInDownload,

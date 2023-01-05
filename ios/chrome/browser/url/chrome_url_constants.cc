@@ -115,9 +115,6 @@ const char kSyncEncryptionHelpURL[] =
     "https://support.google.com/chrome/answer/"
     "1181035?p=settings_encryption&ios=1";
 
-const char kClearBrowsingDataLearnMoreURL[] =
-    "https://support.google.com/chrome/answer/2392709";
-
 const char kClearBrowsingDataMyActivityUrlInFooterURL[] =
     "https://history.google.com/history/?utm_source=chrome_cbd";
 

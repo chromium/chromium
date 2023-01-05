@@ -52,15 +52,6 @@ BASE_FEATURE(kEnableFetchingAccountCapabilities,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
-// Decouples signing out from clearing browsing data on Android. Users are
-// no longer signed-out when they clear browsing data. Instead they may
-// choose to sign out separately by pressing another button.
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableCbdSignOut,
-             "EnableCbdSignOut",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // This feature disables all extended sync promos.
 BASE_FEATURE(kForceDisableExtendedSyncPromos,
              "ForceDisableExtendedSyncPromos",
