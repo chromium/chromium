@@ -2658,6 +2658,45 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
   EXPECT_TRUE(cluster.triggerability_calculated);
 }
 
+TEST_F(HistoryBackendDBTest,
+       MigrateClustersAutoincrementIdAndAddOriginatorColumns) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(60));
+
+  int64_t cluster_id = 1;
+
+  // Open the db for manual manipulation.
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  const char kInsertClustersStatement[] =
+      "INSERT INTO clusters"
+      "(cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
+      "triggerability_calculated)"
+      "VALUES(?,?,?,?,?)";
+
+  // Add a row to `clusters` table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertClustersStatement));
+    s.BindInt64(0, cluster_id);
+    s.BindBool(1, true);
+    s.BindString16(2, u"");
+    s.BindString16(3, u"");
+    s.BindBool(4, true);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // After the migration, the originator columns should return default values.
+  {
+    // Check contents.
+    Cluster cluster = db_->GetCluster(cluster_id);
+    EXPECT_EQ(cluster.originator_cache_guid, "");
+    EXPECT_EQ(cluster.originator_cluster_id, 0);
+  }
+}
+
 // ^^^ NEW MIGRATION TESTS GO HERE ^^^
 
 // Preparation for the next DB migration: This test verifies that the test DB

@@ -1028,6 +1028,20 @@ struct Cluster {
   // Set to true if the triggerability of this cluster (e.g. keywords, should
   // show on prominent UI surfaces) has already been calculated.
   bool triggerability_calculated = false;
+
+  // These are set only for synced visits originating from a different machine.
+  // `originator_cache_guid` is the originator machine's unique client ID. It's
+  // called a "cache" just to match Chrome Sync's terminology.
+  // Note that even for synced clusters, this may be empty if from a legacy
+  // client that does not support the sending of this field or the local client
+  // does not support populating this field.
+  std::string originator_cache_guid;
+  // The cluster ID of this cluster on the originating device, which is *not*
+  // comparable to local cluster IDs (as in `cluster_id`.)
+  // Note that even for synced clusters, this may be 0 if from a legacy client
+  // that does not support the sending of this field or the local client does
+  // not support populating this field.
+  int64_t originator_cluster_id = 0;
 };
 
 // Navigation -----------------------------------------------------------------

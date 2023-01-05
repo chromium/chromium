@@ -14,6 +14,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
+#include "sql/transaction.h"
 
 namespace history {
 
@@ -29,7 +30,7 @@ namespace {
   "tab_id,task_id,root_task_id,parent_task_id,response_code "
 #define HISTORY_CLUSTER_ROW_FIELDS                                    \
   " cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label," \
-  "triggerability_calculated "
+  "triggerability_calculated,originator_cache_guid,originator_cluster_id "
 #define HISTORY_CLUSTER_VISIT_ROW_FIELDS                              \
   " visit_id,score,engagement_score,url_for_deduping,normalized_url," \
   "url_for_display "
@@ -577,8 +578,9 @@ void VisitAnnotationsDatabase::AddClusters(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "INSERT INTO clusters"
                                  "(should_show_on_prominent_ui_surfaces,label,"
-                                 "raw_label,triggerability_calculated)"
-                                 "VALUES(?,?,?,?)"));
+                                 "raw_label,triggerability_calculated,"
+                                 "originator_cache_guid,originator_cluster_id)"
+                                 "VALUES(?,?,?,?,?,?)"));
   sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO clusters_and_visits"
@@ -609,6 +611,8 @@ void VisitAnnotationsDatabase::AddClusters(
     clusters_statement.BindString16(1, cluster.label.value_or(u""));
     clusters_statement.BindString16(2, cluster.raw_label.value_or(u""));
     clusters_statement.BindBool(3, cluster.triggerability_calculated);
+    clusters_statement.BindString(4, cluster.originator_cache_guid);
+    clusters_statement.BindInt64(5, cluster.originator_cluster_id);
     if (!clusters_statement.Run()) {
       DVLOG(0) << "Failed to execute 'clusters' insert statement";
       continue;
@@ -680,12 +684,16 @@ int64_t VisitAnnotationsDatabase::ReserveNextClusterId() {
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "INSERT INTO clusters"
                                  "(should_show_on_prominent_ui_surfaces,label,"
-                                 "raw_label,triggerability_calculated)"
-                                 "VALUES(?,?,?,?)"));
+                                 "raw_label,triggerability_calculated,"
+                                 "originator_cache_guid,originator_cluster_id)"
+                                 "VALUES(?,?,?,?,?,?)"));
   clusters_statement.BindBool(0, false);
   clusters_statement.BindString16(1, u"");
   clusters_statement.BindString16(2, u"");
   clusters_statement.BindBool(3, false);
+  // TODO(b/264457591): Probably have this method take in the originator fields.
+  clusters_statement.BindString(4, "");
+  clusters_statement.BindInt64(5, 0);
   if (!clusters_statement.Run()) {
     DVLOG(0) << "Failed to execute 'clusters' insert statement";
   }
@@ -817,6 +825,8 @@ Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   if (cluster.raw_label->empty())
     cluster.raw_label = absl::nullopt;
   cluster.triggerability_calculated = statement.ColumnBool(4);
+  cluster.originator_cache_guid = statement.ColumnString(5);
+  cluster.originator_cluster_id = statement.ColumnInt64(6);
   return cluster;
 }
 
@@ -1235,14 +1245,98 @@ bool VisitAnnotationsDatabase::MigrateAnnotationsAddColumnsForSync() {
   return true;
 }
 
+bool VisitAnnotationsDatabase::MigrateClustersAddTriggerabilityCalculated() {
+  if (!GetDB().DoesTableExist("clusters")) {
+    NOTREACHED() << " Clusters table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("clusters", "triggerability_calculated")) {
+    return true;
+  }
+  // Set default to true, as clusters added to this table prior to this column
+  // getting added are the fully formed clusters rather than just the basic
+  // ones.
+  return GetDB().Execute(
+      "ALTER TABLE clusters "
+      "ADD COLUMN triggerability_calculated BOOL DEFAULT TRUE");
+}
+
+bool VisitAnnotationsDatabase::
+    MigrateClustersAutoincrementIdAndAddOriginatorColumns() {
+  if (!GetDB().DoesTableExist("clusters")) {
+    NOTREACHED() << " Clusters table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("clusters", "originator_cache_guid") &&
+      GetDB().DoesColumnExist("clusters", "originator_cluster_id") &&
+      ClustersTableContainsAutoincrement()) {
+    return true;
+  }
+
+  sql::Transaction transaction(&GetDB());
+  return transaction.Begin() &&
+         GetDB().Execute(
+             "CREATE TABLE clusters_tmp("
+             "cluster_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+             "should_show_on_prominent_ui_surfaces BOOLEAN NOT NULL,"
+             "label VARCHAR NOT NULL,"
+             "raw_label VARCHAR NOT NULL,"
+             "triggerability_calculated BOOLEAN NOT NULL,"
+             "originator_cache_guid TEXT DEFAULT \"\" NOT NULL,"
+             "originator_cluster_id INTEGER DEFAULT 0 NOT NULL)") &&
+         GetDB().Execute(
+             "INSERT INTO clusters_tmp("
+             "cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
+             "triggerability_calculated)"
+             "SELECT "
+             "cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
+             "triggerability_calculated FROM clusters") &&
+         GetDB().Execute("DROP TABLE clusters") &&
+         GetDB().Execute("ALTER TABLE clusters_tmp RENAME TO clusters") &&
+         transaction.Commit();
+}
+
+bool VisitAnnotationsDatabase::ClustersTableContainsAutoincrement() {
+  // sqlite_schema has columns:
+  //   type - "index" or "table".
+  //   name - name of created element.
+  //   tbl_name - name of element, or target table in case of index.
+  //   rootpage - root page of the element in database file.
+  //   sql - SQL to create the element.
+  sql::Statement statement(
+      GetDB().GetUniqueStatement("SELECT sql FROM sqlite_schema WHERE type = "
+                                 "'table' AND name = 'clusters'"));
+
+  // clusters table does not exist.
+  if (!statement.Step()) {
+    return false;
+  }
+
+  std::string clusters_schema = statement.ColumnString(0);
+  // We check if the whole schema contains "AUTOINCREMENT", since
+  // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
+  // other columns could contain "AUTOINCREMENT".
+  return clusters_schema.find("AUTOINCREMENT") != std::string::npos;
+}
+
 bool VisitAnnotationsDatabase::CreateClustersTable() {
+  // The `id` uses AUTOINCREMENT to support Sync. Chrome Sync uses the
+  // `id` in conjunction with the Client ID as a unique identifier.
+  // If this was not AUTOINCREMENT, deleting a row and creating a new
+  // one could reuse the same `id` for an entirely new cluster, which
+  // would confuse Sync, as Sync would be unable to distinguish
+  // an update from a deletion plus a creation.
   return GetDB().Execute(
       "CREATE TABLE IF NOT EXISTS clusters("
-      "cluster_id INTEGER PRIMARY KEY,"
+      "cluster_id INTEGER PRIMARY KEY AUTOINCREMENT,"
       "should_show_on_prominent_ui_surfaces BOOLEAN NOT NULL,"
       "label VARCHAR NOT NULL,"
       "raw_label VARCHAR NOT NULL,"
-      "triggerability_calculated BOOLEAN NOT NULL)");
+      "triggerability_calculated BOOLEAN NOT NULL,"
+      "originator_cache_guid TEXT NOT NULL,"
+      "originator_cluster_id INTEGER NOT NULL)");
 }
 
 bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
@@ -1260,23 +1354,6 @@ bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
          GetDB().Execute(
              "CREATE INDEX IF NOT EXISTS clusters_for_visit ON "
              "clusters_and_visits(visit_id)");
-}
-
-bool VisitAnnotationsDatabase::MigrateClustersAddTriggerabilityCalculated() {
-  if (!GetDB().DoesTableExist("clusters")) {
-    NOTREACHED() << " Clusters table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("clusters", "triggerability_calculated")) {
-    return true;
-  }
-  // Set default to true, as clusters added to this table prior to this column
-  // getting added are the fully formed clusters rather than just the basic
-  // ones.
-  return GetDB().Execute(
-      "ALTER TABLE clusters "
-      "ADD COLUMN triggerability_calculated BOOL DEFAULT TRUE");
 }
 
 }  // namespace history

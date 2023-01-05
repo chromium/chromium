@@ -192,7 +192,17 @@ class VisitAnnotationsDatabase {
   // a triggerability calculated column.
   bool MigrateClustersAddTriggerabilityCalculated();
 
+  // Called by the derived classes to migrate the older clusters table which
+  // aren't ready to accommodate Sync. It sets `id` to AUTOINCREMENT, and
+  // ensures the existence of the `originator_cache_guid` and
+  // `originator_cluster_id` columns.
+  bool MigrateClustersAutoincrementIdAndAddOriginatorColumns();
+
  private:
+  // Return true if the clusters table's schema contains "AUTOINCREMENT".
+  // false if table do not contain AUTOINCREMENT, or the table is not created.
+  bool ClustersTableContainsAutoincrement();
+
   // Helper to create the 'clusters' table and avoid duplicating the code.
   bool CreateClustersTable();
 
