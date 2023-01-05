@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_utils.h"
 #include "mojo/public/c/system/types.h"
 
@@ -67,10 +68,11 @@ InputStream::StreamState StreamHandleInputStream::Read(
     return InputStream::EMPTY;
 
   static int bytes_to_read = GetDownloadFileBufferSize();
-  *length = bytes_to_read;
   *data = base::MakeRefCounted<net::IOBuffer>(bytes_to_read);
+  uint32_t u32_len = static_cast<uint32_t>(bytes_to_read);
   MojoResult mojo_result = stream_handle_->stream->ReadData(
-      (*data)->data(), (uint32_t*)length, MOJO_READ_DATA_FLAG_NONE);
+      (*data)->data(), &u32_len, MOJO_READ_DATA_FLAG_NONE);
+  *length = u32_len;
   // TODO(qinmin): figure out when COMPLETE should be returned.
   switch (mojo_result) {
     case MOJO_RESULT_OK:
@@ -86,7 +88,7 @@ InputStream::StreamState StreamHandleInputStream::Read(
     case MOJO_RESULT_INVALID_ARGUMENT:
     case MOJO_RESULT_OUT_OF_RANGE:
     case MOJO_RESULT_BUSY:
-      NOTREACHED();
+      RecordInputStreamReadError(mojo_result);
       return InputStream::COMPLETE;
   }
   return InputStream::EMPTY;

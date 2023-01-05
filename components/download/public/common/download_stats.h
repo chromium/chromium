@@ -20,6 +20,7 @@
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_source.h"
+#include "mojo/public/c/system/types.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_response_info.h"
 #include "url/gurl.h"
@@ -327,6 +328,20 @@ enum class DownloadMetricsCallsite {
   kMixContentDownloadBlocking,
 };
 
+enum class InputStreamReadError {
+  // Reading the input stream cause a mojo input argument error.
+  kInvalidArgument = 0,
+
+  // Reading the input stream cause a mojo out of range error.
+  kOutOfRange = 1,
+
+  // Reading the input stream cause a mojo busy error.
+  kBusy = 2,
+
+  kUnknown = 3,
+  kMaxValue = kUnknown,
+};
+
 COMPONENTS_DOWNLOAD_EXPORT DownloadConnectionSecurity
 CheckDownloadConnectionSecurity(const GURL& download_url,
                                 const std::vector<GURL>& url_chain);
@@ -373,6 +388,10 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
 // Record download later events.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadLaterEvent(
     DownloadLaterEvent event);
+
+// Record download later events.
+COMPONENTS_DOWNLOAD_EXPORT void RecordInputStreamReadError(
+    MojoResult mojo_result);
 
 #if BUILDFLAG(IS_ANDROID)
 enum class BackgroudTargetDeterminationResultTypes {

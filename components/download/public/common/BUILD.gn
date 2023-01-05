@@ -88,6 +88,7 @@ component("public") {
     "//components/download/internal/common:internal",
     "//components/services/quarantine:quarantine",
     "//crypto",
+    "//mojo/public/c/system",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",

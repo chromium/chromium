@@ -28686,6 +28686,13 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="Migration from in-progress cache failed"/>
 </enum>
 
+<enum name="DownloadInputStreamReadErrorType">
+  <int value="0" label="Invalid argument"/>
+  <int value="1" label="Out of range"/>
+  <int value="2" label="Busy"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
 <enum name="DownloadInterruptedUnknownSizeType">
   <int value="0" label="Size Known"/>
   <int value="1" label="Size Unknown"/>
