@@ -14,6 +14,7 @@
 #include "device/fido/mac/fake_keychain.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -155,6 +156,47 @@ TEST_F(LocalCredentialManagementTest, EditUnknownCredential) {
   local_cred_man_.Edit(credential_id, "new-username", callback.callback());
   callback.WaitForCallback();
   EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+}
+
+class ScopedMockKeychain : device::fido::mac::Keychain {
+ public:
+  ScopedMockKeychain() { SetInstanceOverride(this); }
+  ~ScopedMockKeychain() override { ClearInstanceOverride(); }
+
+  MOCK_METHOD(OSStatus,
+              ItemCopyMatching,
+              (CFDictionaryRef query, CFTypeRef* result),
+              (override));
+};
+
+class MockKeychainLocalCredentialManagementTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  ScopedMockKeychain mock_keychain_;
+  LocalCredentialManagementMac local_cred_man_{
+      {.keychain_access_group = "test-keychain-access-group",
+       .metadata_secret = "TestMetadataSecret"}};
+};
+
+// Regression test for crbug.com/1401342.
+TEST_F(MockKeychainLocalCredentialManagementTest, KeychainError) {
+  EXPECT_CALL(mock_keychain_, ItemCopyMatching)
+      .WillOnce(testing::Return(errSecInternalComponent));
+  device::test::TestCallbackReceiver<bool> callback;
+  local_cred_man_.HasCredentials(callback.callback());
+  callback.WaitForCallback();
+  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+  testing::Mock::VerifyAndClearExpectations(&mock_keychain_);
+
+  EXPECT_CALL(mock_keychain_, ItemCopyMatching)
+      .WillOnce(testing::Return(errSecInternalComponent));
+  device::test::TestCallbackReceiver<
+      absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      enumerate_callback;
+  local_cred_man_.Enumerate(enumerate_callback.callback());
+  enumerate_callback.WaitForCallback();
+  auto result = std::get<0>(enumerate_callback.TakeResult());
+  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace
