@@ -7,12 +7,13 @@ import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
 import {RepeatedEventHandler} from '../../common/repeated_event_handler.js';
 import {Navigator} from '../navigator.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SAConstants} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * This class handles interactions with combo boxes.
@@ -33,10 +34,9 @@ class ComboBoxNode extends BasicNode {
   /** @override */
   get actions() {
     const actions = super.actions;
-    if (!actions.includes(SwitchAccessMenuAction.INCREMENT) &&
-        !actions.includes(SwitchAccessMenuAction.DECREMENT)) {
-      actions.push(
-          SwitchAccessMenuAction.INCREMENT, SwitchAccessMenuAction.DECREMENT);
+    if (!actions.includes(MenuAction.INCREMENT) &&
+        !actions.includes(MenuAction.DECREMENT)) {
+      actions.push(MenuAction.INCREMENT, MenuAction.DECREMENT);
     }
     return actions;
   }
@@ -67,10 +67,10 @@ class ComboBoxNode extends BasicNode {
     // by selecting a value without opening the pop-up, using the up and down
     // arrows.
     switch (action) {
-      case SwitchAccessMenuAction.DECREMENT:
+      case MenuAction.DECREMENT:
         EventGenerator.sendKeyPress(KeyCode.UP);
         return SAConstants.ActionResponse.REMAIN_OPEN;
-      case SwitchAccessMenuAction.INCREMENT:
+      case MenuAction.INCREMENT:
         EventGenerator.sendKeyPress(KeyCode.DOWN);
         return SAConstants.ActionResponse.REMAIN_OPEN;
     }

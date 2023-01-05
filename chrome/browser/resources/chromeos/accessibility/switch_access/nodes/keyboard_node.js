@@ -8,7 +8,7 @@ import {RectUtil} from '../../common/rect_util.js';
 import {AutoScanManager} from '../auto_scan_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SAConstants} from '../switch_access_constants.js';
 import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 
 import {BackButtonNode} from './back_button_node.js';
@@ -17,6 +17,7 @@ import {GroupNode} from './group_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * This class handles the behavior of keyboard nodes directly associated with a
@@ -35,7 +36,7 @@ export class KeyboardNode extends BasicNode {
 
   /** @override */
   get actions() {
-    return [SwitchAccessMenuAction.SELECT];
+    return [MenuAction.SELECT];
   }
 
   // ================= General methods =================
@@ -69,7 +70,7 @@ export class KeyboardNode extends BasicNode {
 
   /** @override */
   performAction(action) {
-    if (action !== SwitchAccessMenuAction.SELECT) {
+    if (action !== MenuAction.SELECT) {
       return SAConstants.ActionResponse.NO_ACTION_TAKEN;
     }
 

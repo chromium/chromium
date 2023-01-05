@@ -7,6 +7,7 @@ import {constants} from '../common/constants.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /** @abstract */
 export class ItemNavigatorInterface {
@@ -152,7 +153,7 @@ export class PointNavigatorInterface {
 
   /**
    * Performs a mouse action at the currentPoint().
-   * @param {chrome.accessibilityPrivate.SwitchAccessMenuAction} action
+   * @param {MenuAction} action
    */
   performMouseAction(action) {}
 }

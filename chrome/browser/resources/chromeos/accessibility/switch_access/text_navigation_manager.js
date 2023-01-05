@@ -9,9 +9,10 @@ import {KeyCode} from '../common/key_code.js';
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+import {SAConstants} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * Class to handle navigating text. Currently, only
@@ -398,7 +399,7 @@ export class TextNavigationManager {
   updateClipboardHasData_() {
     this.clipboardHasData_ = true;
     const node = Navigator.byItem.currentNode;
-    if (node.hasAction(SwitchAccessMenuAction.PASTE)) {
+    if (node.hasAction(MenuAction.PASTE)) {
       ActionManager.refreshMenuForNode(node);
     }
   }

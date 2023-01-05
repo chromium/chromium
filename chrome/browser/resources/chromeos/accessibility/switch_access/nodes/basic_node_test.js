@@ -16,8 +16,8 @@ SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {
     await importModule('DesktopNode', '/switch_access/nodes/desktop_node.js');
     await importModule(
         'SARootNode', '/switch_access/nodes/switch_access_node.js');
-    await importModule(
-        'SwitchAccessMenuAction', '/switch_access/switch_access_constants.js');
+
+    globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
   }
 };
 
@@ -137,14 +137,13 @@ AX_TEST_F('SwitchAccessBasicNodeTest', 'Actions', async function() {
       chrome.automation.RoleType.TEXT_FIELD, textField.role,
       'Text field node is not a text field');
   assertTrue(
-      textField.hasAction(SwitchAccessMenuAction.KEYBOARD),
+      textField.hasAction(MenuAction.KEYBOARD),
       'Text field does not have action KEYBOARD');
   assertTrue(
-      textField.hasAction(SwitchAccessMenuAction.DICTATION),
+      textField.hasAction(MenuAction.DICTATION),
       'Text field does not have action DICTATION');
   assertFalse(
-      textField.hasAction(SwitchAccessMenuAction.SELECT),
-      'Text field has action SELECT');
+      textField.hasAction(MenuAction.SELECT), 'Text field has action SELECT');
 
   const button = BasicNode.create(
       rootWebArea.find({role: chrome.automation.RoleType.BUTTON}),
@@ -154,14 +153,12 @@ AX_TEST_F('SwitchAccessBasicNodeTest', 'Actions', async function() {
       chrome.automation.RoleType.BUTTON, button.role,
       'Button node is not a button');
   assertTrue(
-      button.hasAction(SwitchAccessMenuAction.SELECT),
+      button.hasAction(MenuAction.SELECT),
       'Button does not have action SELECT');
   assertFalse(
-      button.hasAction(SwitchAccessMenuAction.KEYBOARD),
-      'Button has action KEYBOARD');
+      button.hasAction(MenuAction.KEYBOARD), 'Button has action KEYBOARD');
   assertFalse(
-      button.hasAction(SwitchAccessMenuAction.DICTATION),
-      'Button has action DICTATION');
+      button.hasAction(MenuAction.DICTATION), 'Button has action DICTATION');
 
   const slider = BasicNode.create(
       rootWebArea.find({role: chrome.automation.RoleType.SLIDER}),
@@ -171,9 +168,9 @@ AX_TEST_F('SwitchAccessBasicNodeTest', 'Actions', async function() {
       chrome.automation.RoleType.SLIDER, slider.role,
       'Slider node is not a slider');
   assertTrue(
-      slider.hasAction(SwitchAccessMenuAction.INCREMENT),
+      slider.hasAction(MenuAction.INCREMENT),
       'Slider does not have action INCREMENT');
   assertTrue(
-      slider.hasAction(SwitchAccessMenuAction.DECREMENT),
+      slider.hasAction(MenuAction.DECREMENT),
       'Slider does not have action DECREMENT');
 });

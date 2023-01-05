@@ -22,11 +22,11 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
     await importModule('Navigator', '/switch_access/navigator.js');
     await importModule('SACache', '/switch_access/cache.js');
     await importModule(
-        'SwitchAccessMenuAction', '/switch_access/switch_access_constants.js');
-    await importModule(
         'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('AutomationTreeWalker', '/common/tree_walker.js');
+
+    globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
     BackButtonNode
         .locationForTesting = {top: 10, left: 10, width: 20, height: 20};
@@ -360,7 +360,7 @@ AX_TEST_F(
       assertEquals(
           'testinput', input.automationNode.htmlAttributes.id,
           'Current node is not input');
-      input.performAction(SwitchAccessMenuAction.KEYBOARD);
+      input.performAction(MenuAction.KEYBOARD);
 
       const keyboard =
           await this.untilFocusIs({role: chrome.automation.RoleType.KEYBOARD});
@@ -396,7 +396,7 @@ AX_TEST_F(
       assertEquals(
           'testinput', input.automationNode.htmlAttributes.id,
           'Current node is not input');
-      input.performAction(SwitchAccessMenuAction.KEYBOARD);
+      input.performAction(MenuAction.KEYBOARD);
 
       const keyboard =
           await this.untilFocusIs({role: chrome.automation.RoleType.KEYBOARD});

@@ -5,9 +5,10 @@
 import {RectUtil} from '../../common/rect_util.js';
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SAConstants} from '../switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * This interface represents some object or group of objects on screen
@@ -38,7 +39,7 @@ export class SAChildNode {
 
   /**
    * Returns a list of all the actions available for this node.
-   * @return {!Array<SwitchAccessMenuAction>}
+   * @return {!Array<MenuAction>}
    * @abstract
    */
   get actions() {}
@@ -132,7 +133,7 @@ export class SAChildNode {
     if (!this.isFocused_) {
       return;
     }
-    this.performAction(SwitchAccessMenuAction.SELECT);
+    this.performAction(MenuAction.SELECT);
   }
 
   /**
@@ -144,7 +145,7 @@ export class SAChildNode {
 
   /**
    * Given a menu action, returns whether it can be performed on this node.
-   * @param {SwitchAccessMenuAction} action
+   * @param {MenuAction} action
    * @return {boolean}
    */
   hasAction(action) {
@@ -200,7 +201,7 @@ export class SAChildNode {
 
   /**
    * Performs the specified action on the node, if it is available.
-   * @param {SwitchAccessMenuAction} action
+   * @param {MenuAction} action
    * @return {SAConstants.ActionResponse} What action the menu should perform in
    *      response.
    * @abstract

@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 const AutomationNode = chrome.automation.AutomationNode;
-export const SwitchAccessMenuAction =
-    chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /** Constants used in Switch Access */
 export const SAConstants = {

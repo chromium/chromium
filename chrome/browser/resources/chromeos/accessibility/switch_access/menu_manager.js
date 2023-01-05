@@ -8,9 +8,9 @@ import {EventHandler} from '../common/event_handler.js';
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
-import {SwitchAccessMenuAction} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * Class to handle interactions with the Switch Access action menu, including
@@ -20,7 +20,7 @@ const AutomationNode = chrome.automation.AutomationNode;
 export class MenuManager {
   /** @private */
   constructor() {
-    /** @private {?Array<!SwitchAccessMenuAction>} */
+    /** @private {?Array<!MenuAction>} */
     this.displayedActions_ = null;
 
     /** @private {chrome.accessibilityPrivate.ScreenRect} */
@@ -50,7 +50,7 @@ export class MenuManager {
   /**
    * If multiple actions are available for the currently highlighted node,
    * opens the menu. Otherwise performs the node's default action.
-   * @param {!Array<!SwitchAccessMenuAction>} actions
+   * @param {!Array<!MenuAction>} actions
    * @param {chrome.accessibilityPrivate.ScreenRect|undefined} location
    */
   static open(actions, location) {
@@ -95,12 +95,12 @@ export class MenuManager {
 
   /**
    * @param {string=} actionString
-   * @return {?SwitchAccessMenuAction}
+   * @return {?MenuAction}
    * @private
    */
   asAction_(actionString) {
-    if (Object.values(SwitchAccessMenuAction).includes(actionString)) {
-      return /** @type {!SwitchAccessMenuAction} */ (actionString);
+    if (Object.values(MenuAction).includes(actionString)) {
+      return /** @type {!MenuAction} */ (actionString);
     }
     return null;
   }
@@ -108,7 +108,7 @@ export class MenuManager {
   /**
    * Opens or reloads the menu for the current action node with the specified
    * actions.
-   * @param {!Array<SwitchAccessMenuAction>} actions
+   * @param {!Array<!MenuAction>} actions
    * @private
    */
   displayMenuWithActions_(actions) {

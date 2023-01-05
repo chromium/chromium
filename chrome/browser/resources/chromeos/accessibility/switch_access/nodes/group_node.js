@@ -4,12 +4,13 @@
 
 import {RectUtil} from '../../common/rect_util.js';
 import {Navigator} from '../navigator.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SAConstants} from '../switch_access_constants.js';
 
 import {BackButtonNode} from './back_button_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * This class handles the grouping of nodes that are not grouped in the
@@ -39,7 +40,7 @@ export class GroupNode extends SAChildNode {
 
   /** @override */
   get actions() {
-    return [SwitchAccessMenuAction.SELECT];
+    return [MenuAction.SELECT];
   }
 
   /** @override */
@@ -124,7 +125,7 @@ export class GroupNode extends SAChildNode {
 
   /** @override */
   performAction(action) {
-    if (action === SwitchAccessMenuAction.SELECT) {
+    if (action === MenuAction.SELECT) {
       Navigator.byItem.enterGroup();
       return SAConstants.ActionResponse.CLOSE_MENU;
     }

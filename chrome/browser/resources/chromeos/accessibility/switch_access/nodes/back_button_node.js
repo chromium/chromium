@@ -9,11 +9,12 @@ import {FocusRingManager} from '../focus_ring_manager.js';
 import {MenuManager} from '../menu_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {SAConstants} from '../switch_access_constants.js';
 
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
  * This class handles the behavior of the back button.
@@ -38,7 +39,7 @@ export class BackButtonNode extends SAChildNode {
 
   /** @override */
   get actions() {
-    return [SwitchAccessMenuAction.SELECT];
+    return [MenuAction.SELECT];
   }
 
   /** @override */
@@ -122,7 +123,7 @@ export class BackButtonNode extends SAChildNode {
 
   /** @override */
   performAction(action) {
-    if (action === SwitchAccessMenuAction.SELECT && this.automationNode) {
+    if (action === MenuAction.SELECT && this.automationNode) {
       BackButtonNode.onClick_();
       return SAConstants.ActionResponse.CLOSE_MENU;
     }

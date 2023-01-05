@@ -11,8 +11,6 @@ SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {
     await importModule(
         ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
     await importModule('GroupNode', '/switch_access/nodes/group_node.js');
-    await importModule(
-        'SwitchAccessMenuAction', '/switch_access/switch_access_constants.js');
   }
 };
 

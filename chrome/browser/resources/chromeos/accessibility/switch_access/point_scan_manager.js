@@ -9,8 +9,9 @@ import {ActionManager} from './action_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
 import {PointNavigatorInterface} from './navigator_interface.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+import {SAConstants} from './switch_access_constants.js';
 
+const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 const PointScanState = chrome.accessibilityPrivate.PointScanState;
 
 export class PointScanManager extends PointNavigatorInterface {
@@ -48,13 +49,12 @@ export class PointScanManager extends PointNavigatorInterface {
     if (SwitchAccess.mode !== SAConstants.Mode.POINT_SCAN) {
       return;
     }
-    if (action !== SwitchAccessMenuAction.LEFT_CLICK &&
-        action !== SwitchAccessMenuAction.RIGHT_CLICK) {
+    if (action !== MenuAction.LEFT_CLICK && action !== MenuAction.RIGHT_CLICK) {
       return;
     }
 
     const params = {};
-    if (action === SwitchAccessMenuAction.RIGHT_CLICK) {
+    if (action === MenuAction.RIGHT_CLICK) {
       params.mouseButton =
           chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT;
     }
