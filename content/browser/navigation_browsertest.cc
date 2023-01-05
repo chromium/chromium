@@ -5880,7 +5880,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_EQ(1U, main_frame()->child_count());
   FrameTreeNode* child = main_frame()->child_at(0);
   EXPECT_EQ(iframe_url_1, child->current_url());
-  EXPECT_FALSE(child->credentialless());
+  EXPECT_FALSE(child->Credentialless());
   EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
             EvalJs(child->current_frame_host(), "window.credentialless"));
@@ -5890,7 +5890,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_TRUE(
       ExecJs(main_frame(),
              "document.getElementById('test_iframe').credentialless = true;"));
-  EXPECT_TRUE(child->credentialless());
+  EXPECT_TRUE(child->Credentialless());
   EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
             EvalJs(child->current_frame_host(), "window.credentialless"));
@@ -5908,7 +5908,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   // The grandchild FrameTreeNode does not set the 'credentialless'
   // attribute. The grandchild RenderFrameHost is not credentialless, since its
   // parent RenderFrameHost is not credentialless.
-  EXPECT_FALSE(grandchild->credentialless());
+  EXPECT_FALSE(grandchild->Credentialless());
   EXPECT_FALSE(grandchild->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
             EvalJs(grandchild->current_frame_host(), "window.credentialless"));
@@ -5919,7 +5919,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
                                "        .contentWindow.location.href = $1;",
                                iframe_url_1.Resolve("#here").spec())));
   WaitForLoadStop(web_contents());
-  EXPECT_TRUE(child->credentialless());
+  EXPECT_TRUE(child->Credentialless());
   EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
             EvalJs(child->current_frame_host(), "window.credentialless"));
@@ -5929,7 +5929,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
       main_frame(), JsReplace("document.getElementById('test_iframe').src = $1",
                               iframe_url_2)));
   WaitForLoadStop(web_contents());
-  EXPECT_TRUE(child->credentialless());
+  EXPECT_TRUE(child->Credentialless());
   EXPECT_TRUE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.credentialless"));
   // A credentialless document has a storage key with a nonce.
@@ -5950,7 +5950,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
 
   // The grandchild does not set the 'credentialless' attribute, but the
   // grandchild document is credentialless.
-  EXPECT_FALSE(grandchild->credentialless());
+  EXPECT_FALSE(grandchild->Credentialless());
   EXPECT_TRUE(grandchild->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true,
             EvalJs(grandchild->current_frame_host(), "window.credentialless"));
@@ -5981,7 +5981,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_TRUE(
       ExecJs(main_frame(),
              "document.getElementById('test_iframe').credentialless = false;"));
-  EXPECT_FALSE(child->credentialless());
+  EXPECT_FALSE(child->Credentialless());
   EXPECT_TRUE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.credentialless"));
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
@@ -5998,7 +5998,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
                        iframe_url_1)));
   EXPECT_EQ(2U, child->child_count());
   FrameTreeNode* grandchild2 = child->child_at(1);
-  EXPECT_FALSE(grandchild2->credentialless());
+  EXPECT_FALSE(grandchild2->Credentialless());
   EXPECT_TRUE(grandchild2->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true,
             EvalJs(grandchild2->current_frame_host(), "window.credentialless"));
@@ -6015,7 +6015,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
              JsReplace("document.getElementById('test_iframe').src = $1;",
                        iframe_url_2)));
   WaitForLoadStop(web_contents());
-  EXPECT_FALSE(child->credentialless());
+  EXPECT_FALSE(child->Credentialless());
   EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
             EvalJs(child->current_frame_host(), "window.credentialless"));
@@ -6031,7 +6031,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_EQ(1U, main_frame()->child_count());
   FrameTreeNode* child_b = main_frame()->child_at(0);
   EXPECT_EQ(iframe_url_b, child_b->current_url());
-  EXPECT_TRUE(child_b->credentialless());
+  EXPECT_TRUE(child_b->Credentialless());
   EXPECT_TRUE(child_b->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true,
             EvalJs(child_b->current_frame_host(), "window.credentialless"));

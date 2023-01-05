@@ -1550,7 +1550,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
                      "var f = document.createElement('iframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root->child_count());
-  EXPECT_FALSE(root->child_at(0)->credentialless());
+  EXPECT_FALSE(root->child_at(0)->Credentialless());
   EXPECT_EQ(false, EvalJs(root->child_at(0)->current_frame_host(),
                           "window.credentialless"));
 
@@ -1561,7 +1561,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
                      "d.innerHTML = '<iframe credentialless></iframe>';"
                      "document.body.appendChild(d);"));
   EXPECT_EQ(2U, root->child_count());
-  EXPECT_TRUE(root->child_at(1)->credentialless());
+  EXPECT_TRUE(root->child_at(1)->Credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(1)->current_frame_host(),
                          "window.credentialless"));
 
@@ -1571,17 +1571,17 @@ IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
                      "g.credentialless = true;"
                      "document.body.appendChild(g);"));
   EXPECT_EQ(3U, root->child_count());
-  EXPECT_TRUE(root->child_at(2)->credentialless());
+  EXPECT_TRUE(root->child_at(2)->Credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
                          "window.credentialless"));
 
   EXPECT_TRUE(ExecJs(root, "g.credentialless = false;"));
-  EXPECT_FALSE(root->child_at(2)->credentialless());
+  EXPECT_FALSE(root->child_at(2)->Credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
                          "window.credentialless"));
 
   EXPECT_TRUE(ExecJs(root, "g.credentialless = true;"));
-  EXPECT_TRUE(root->child_at(2)->credentialless());
+  EXPECT_TRUE(root->child_at(2)->Credentialless());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
                          "window.credentialless"));
 }

@@ -958,7 +958,7 @@ bool IsDocumentToCommitAnonymous(FrameTreeNode* frame,
   // credentialless.
   bool parent_is_credentialless =
       parent_document && parent_document->IsCredentialless();
-  return parent_is_credentialless || frame->credentialless();
+  return parent_is_credentialless || frame->Credentialless();
 }
 
 // Returns the "loading" URL in the renderer. This tries to replicate

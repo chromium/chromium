@@ -493,7 +493,7 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
 
 void FrameTreeNode::SetAttributes(
     blink::mojom::IframeAttributesPtr attributes) {
-  if (!credentialless() && attributes->credentialless) {
+  if (!Credentialless() && attributes->credentialless) {
     // Log this only when credentialless is changed to true.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         parent_, blink::mojom::WebFeature::kAnonymousIframe);
@@ -1061,6 +1061,10 @@ void FrameTreeNode::CancelNavigation() {
     navigation_request()->set_net_error(net::ERR_ABORTED);
   }
   ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+}
+
+bool FrameTreeNode::Credentialless() const {
+  return attributes_->credentialless;
 }
 
 }  // namespace content

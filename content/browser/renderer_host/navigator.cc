@@ -206,7 +206,7 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   //   attribute at the beginning of the navigation, as opposed to when the
   //   new document has been created, because it might have changed. Still, it
   //   is good enough, a priori.
-  if (rfh->frame_tree_node()->credentialless()) {
+  if (rfh->frame_tree_node()->Credentialless()) {
     base::UmaHistogramBoolean(
         "Navigation.AnonymousIframeIsSandboxed",
         rfh->active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone);

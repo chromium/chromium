@@ -3027,7 +3027,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
 
   // The initial empty document's credentialless bit was inherited from the
   // parent document. The frame's credentialless bit can also turn it on.
-  if (frame_tree_node_->credentialless()) {
+  if (owner_->Credentialless()) {
     policy_container_host_->SetIsCredentialless();
   }
 }

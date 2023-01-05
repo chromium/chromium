@@ -119,6 +119,9 @@ class RenderFrameHostOwner {
 
   // Cancel ongoing navigation in this frame, if any.
   virtual void CancelNavigation() = 0;
+
+  // Return the iframe.credentialless attribute value.
+  virtual bool Credentialless() const = 0;
 };
 
 }  // namespace content
