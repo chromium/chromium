@@ -474,8 +474,8 @@ TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagEnabled) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagDisabled) {
@@ -508,8 +508,8 @@ TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagDisabled) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -542,8 +542,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -576,8 +576,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -653,8 +653,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -683,8 +683,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -712,8 +712,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -741,8 +741,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -768,8 +768,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -795,8 +795,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -821,8 +821,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -847,8 +847,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -1032,8 +1032,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest,
@@ -1746,8 +1746,8 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
+  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
+  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
 TEST_F(RetroactivePairingDetectorTest, DontNotifyIfAlreadySavedToAcount) {

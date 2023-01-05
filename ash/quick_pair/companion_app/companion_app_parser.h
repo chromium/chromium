@@ -12,7 +12,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 class DeviceMetadata;
 
 // CompanionAppParser finds the name of a device's companion app

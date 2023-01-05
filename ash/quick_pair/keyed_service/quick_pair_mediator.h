@@ -33,7 +33,7 @@ namespace ash {
 namespace quick_pair {
 
 class FastPairRepository;
-struct Device;
+class Device;
 class QuickPairProcessManager;
 class QuickPairMetricsLogger;
 class MessageStreamLookup;

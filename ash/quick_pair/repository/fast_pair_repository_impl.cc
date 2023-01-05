@@ -325,11 +325,11 @@ void FastPairRepositoryImpl::AssociateAccountKey(
   QP_LOG(INFO) << __func__;
   DCHECK(device->classic_address());
   GetDeviceMetadata(
-      device->metadata_id,
+      device->metadata_id(),
       base::BindOnce(&FastPairRepositoryImpl::WriteDeviceToFootprints,
-                     weak_ptr_factory_.GetWeakPtr(), device->metadata_id,
+                     weak_ptr_factory_.GetWeakPtr(), device->metadata_id(),
                      device->classic_address().value(), account_key,
-                     device->protocol));
+                     device->protocol()));
 }
 
 bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
@@ -714,7 +714,7 @@ void FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey(
 
 void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Fetching device images for model ID "
-               << device->metadata_id;
+               << device->metadata_id();
   // Save a record of the device ID -> model ID for this device so that we can
   // display images for device objects that lack a model ID, such as
   // device::BluetoothDevice.
@@ -722,13 +722,13 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
     QP_LOG(WARNING) << __func__
                     << ": Unable to save device ID -> model ID"
                        " mapping for model ID "
-                    << device->metadata_id;
+                    << device->metadata_id();
   }
 
   GetDeviceMetadata(
-      device->metadata_id,
+      device->metadata_id(),
       base::BindOnce(&FastPairRepositoryImpl::CompleteFetchDeviceImages,
-                     weak_ptr_factory_.GetWeakPtr(), device->metadata_id));
+                     weak_ptr_factory_.GetWeakPtr(), device->metadata_id()));
 }
 
 absl::optional<std::string>
@@ -773,14 +773,14 @@ void FastPairRepositoryImpl::CompleteFetchDeviceImages(
 
 bool FastPairRepositoryImpl::PersistDeviceImages(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Persisting device images for model ID "
-               << device->metadata_id;
+               << device->metadata_id();
   if (!device_id_map_->PersistRecordsForDevice(device)) {
     QP_LOG(WARNING) << __func__
                     << ": Unable to persist address -> model ID"
                        " mapping for model ID "
-                    << device->metadata_id;
+                    << device->metadata_id();
   }
-  return device_image_store_->PersistDeviceImages(device->metadata_id);
+  return device_image_store_->PersistDeviceImages(device->metadata_id());
 }
 
 bool FastPairRepositoryImpl::EvictDeviceImages(

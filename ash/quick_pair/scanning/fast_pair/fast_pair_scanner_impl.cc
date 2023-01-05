@@ -272,7 +272,7 @@ void FastPairScannerImpl::OnDeviceLost(
 void FastPairScannerImpl::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": device: " << device;
   if (device->classic_address()) {
-    ble_address_to_classic_[device->ble_address] =
+    ble_address_to_classic_[device->ble_address()] =
         device->classic_address().value();
   }
 }

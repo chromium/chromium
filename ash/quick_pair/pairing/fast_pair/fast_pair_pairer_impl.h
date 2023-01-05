@@ -29,7 +29,7 @@ class BluetoothAdapter;
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 enum class AccountKeyFailure;
 enum class PairFailure;
 class FastPairDataEncryptor;

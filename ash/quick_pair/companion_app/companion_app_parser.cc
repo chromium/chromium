@@ -32,7 +32,7 @@ void CompanionAppParser::GetAppPackageName(
     scoped_refptr<Device> device,
     base::OnceCallback<void(absl::optional<std::string>)>
         on_companion_app_parsed) {
-  const auto metadata_id = device->metadata_id;
+  const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(&CompanionAppParser::OnDeviceMetadataRetrieved,

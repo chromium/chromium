@@ -247,7 +247,7 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   device->set_version(metadata->device_metadata->InferFastPairVersion());
 
   device::BluetoothDevice* ble_device =
-      adapter_->GetDevice(device->ble_address);
+      adapter_->GetDevice(device->ble_address());
 
   if (ble_device && ble_device->IsPaired()) {
     QP_LOG(ERROR) << __func__
@@ -257,7 +257,7 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   }
 
   QP_LOG(INFO) << __func__ << ": Running found callback";
-  notified_devices_[device->ble_address] = device;
+  notified_devices_[device->ble_address()] = device;
   found_callback_.Run(device);
 }
 

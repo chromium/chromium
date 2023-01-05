@@ -22,7 +22,7 @@ class BluetoothAdapter;
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 class FastPairHandshake;
 
 // This class creates, deletes and exposes FastPairHandshake instances.

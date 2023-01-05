@@ -92,7 +92,7 @@ FastPairPresenterImpl::~FastPairPresenterImpl() = default;
 void FastPairPresenterImpl::ShowDiscovery(scoped_refptr<Device> device,
                                           DiscoveryCallback callback) {
   DCHECK(device);
-  const auto metadata_id = device->metadata_id;
+  const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id, base::BindRepeating(
                        &FastPairPresenterImpl::OnDiscoveryMetadataRetrieved,
@@ -109,7 +109,7 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
 
   device->set_version(device_metadata->InferFastPairVersion());
 
-  if (device->protocol == Protocol::kFastPairSubsequent) {
+  if (device->protocol() == Protocol::kFastPairSubsequent) {
     ShowSubsequentDiscoveryNotification(device, callback, device_metadata);
     return;
   }
@@ -268,7 +268,7 @@ void FastPairPresenterImpl::OnDiscoveryLearnMoreClicked(
 }
 
 void FastPairPresenterImpl::ShowPairing(scoped_refptr<Device> device) {
-  const auto metadata_id = device->metadata_id;
+  const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(&FastPairPresenterImpl::OnPairingMetadataRetrieved,
@@ -290,7 +290,7 @@ void FastPairPresenterImpl::OnPairingMetadataRetrieved(
 
 void FastPairPresenterImpl::ShowPairingFailed(scoped_refptr<Device> device,
                                               PairingFailedCallback callback) {
-  const auto metadata_id = device->metadata_id;
+  const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(&FastPairPresenterImpl::OnPairingFailedMetadataRetrieved,
@@ -354,7 +354,7 @@ void FastPairPresenterImpl::ShowAssociateAccount(
     AssociateAccountCallback callback) {
   RecordRetroactiveSuccessFunnelFlow(
       FastPairRetroactiveSuccessFunnelEvent::kNotificationDisplayed);
-  const auto metadata_id = device->metadata_id;
+  const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(

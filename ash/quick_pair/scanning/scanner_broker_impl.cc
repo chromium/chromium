@@ -180,7 +180,7 @@ void ScannerBrokerImpl::StopFastPairScanning() {
 }
 
 void ScannerBrokerImpl::NotifyDeviceFound(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id;
+  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id();
 
   for (auto& observer : observers_) {
     observer.OnDeviceFound(device);
@@ -188,7 +188,7 @@ void ScannerBrokerImpl::NotifyDeviceFound(scoped_refptr<Device> device) {
 }
 
 void ScannerBrokerImpl::NotifyDeviceLost(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id;
+  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id();
 
   for (auto& observer : observers_) {
     observer.OnDeviceLost(device);

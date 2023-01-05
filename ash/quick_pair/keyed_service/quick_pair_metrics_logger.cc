@@ -39,7 +39,7 @@ void GetDeviceMetadataAndLogEngagementFunnelWithMetadata(
     scoped_refptr<Device> device,
     FastPairEngagementFlowEvent event) {
   FastPairRepository::Get()->GetDeviceMetadata(
-      device->metadata_id,
+      device->metadata_id(),
       base::BindOnce(&AttemptToRecordEngagementFunnelFlowWithMetadata, device,
                      event));
 }
@@ -64,7 +64,7 @@ void GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
     scoped_refptr<Device> device,
     FastPairRetroactiveEngagementFlowEvent event) {
   FastPairRepository::Get()->GetDeviceMetadata(
-      device->metadata_id,
+      device->metadata_id(),
       base::BindOnce(
           &AttemptToRecordRetroactiveEngagementFunnelFlowWithMetadata, device,
           event));
@@ -161,7 +161,7 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
                                                DiscoveryAction action) {
   switch (action) {
     case DiscoveryAction::kPairToDevice:
-      switch (device->protocol) {
+      switch (device->protocol()) {
         case Protocol::kFastPairSubsequent:
           RecordSubsequentSuccessFunnelFlow(
               FastPairSubsequentSuccessFunnelEvent::kNotificationsClicked);
@@ -296,7 +296,7 @@ void QuickPairMetricsLogger::OnPairingStart(scoped_refptr<Device> device) {
   RecordFastPairInitializePairingProcessEvent(
       *device, FastPairInitializePairingProcessEvent::kInitializationStarted);
 
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairSubsequent:
       RecordSubsequentSuccessFunnelFlow(
           FastPairSubsequentSuccessFunnelEvent::kInitializationStarted);
@@ -316,7 +316,7 @@ void QuickPairMetricsLogger::OnHandshakeComplete(scoped_refptr<Device> device) {
   RecordFastPairInitializePairingProcessEvent(
       *device, FastPairInitializePairingProcessEvent::kInitializationComplete);
 
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairSubsequent:
       RecordSubsequentSuccessFunnelFlow(
           FastPairSubsequentSuccessFunnelEvent::kPairingStarted);
@@ -333,7 +333,7 @@ void QuickPairMetricsLogger::OnHandshakeComplete(scoped_refptr<Device> device) {
 }
 
 void QuickPairMetricsLogger::OnPairingComplete(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairSubsequent:
       RecordSubsequentSuccessFunnelFlow(
           FastPairSubsequentSuccessFunnelEvent::kProcessComplete);
@@ -468,7 +468,7 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
 void QuickPairMetricsLogger::OnAccountKeyWrite(
     scoped_refptr<Device> device,
     absl::optional<AccountKeyFailure> error) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairSubsequent:
       // TODO(b/259443372): Record this case once we implement account key
       // writing in all scenarios,

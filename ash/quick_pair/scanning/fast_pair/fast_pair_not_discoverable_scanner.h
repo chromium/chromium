@@ -14,7 +14,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 

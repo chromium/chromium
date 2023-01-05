@@ -12,7 +12,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 // A RetroactivePairingDetector instance is responsible for detecting Fast Pair
 // devices that can be paired retroactively, and notifying observers of this

@@ -174,17 +174,18 @@ bool Mediator::IsDeviceCurrentlyShowingNotification(
   // is found via the initial scenario and via the subsequent scenario, Fast
   // Pair does not consider them the same device.
   return device_currently_showing_notification_ &&
-         device_currently_showing_notification_->metadata_id ==
-             device->metadata_id &&
-         device_currently_showing_notification_->ble_address ==
-             device->ble_address &&
-         device_currently_showing_notification_->protocol == device->protocol;
+         device_currently_showing_notification_->metadata_id() ==
+             device->metadata_id() &&
+         device_currently_showing_notification_->ble_address() ==
+             device->ble_address() &&
+         device_currently_showing_notification_->protocol() ==
+             device->protocol();
 }
 
 bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
     scoped_refptr<Device> device) {
   auto it = discovery_notification_block_list_.find(
-      std::make_pair(device->metadata_id, device->protocol));
+      std::make_pair(device->metadata_id(), device->protocol()));
   if (it == discovery_notification_block_list_.end())
     return false;
 
@@ -228,7 +229,7 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 
   // Get the device name and add it to the device object, the device will only
   // have a name in the cache if this is a subsequent pairing scenario.
-  if (device->protocol == Protocol::kFastPairSubsequent &&
+  if (device->protocol() == Protocol::kFastPairSubsequent &&
       device->account_key().has_value()) {
     device->set_display_name(
         fast_pair_repository_->GetDeviceDisplayNameFromCache(
@@ -308,13 +309,13 @@ void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
 
 void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
   auto it = discovery_notification_block_list_.find(
-      std::make_pair(device->metadata_id, device->protocol));
+      std::make_pair(device->metadata_id(), device->protocol()));
 
   // If this is the first time we are seeing this device, create a new value in
   // the block-list.
   if (it == discovery_notification_block_list_.end()) {
-    discovery_notification_block_list_[std::make_pair(device->metadata_id,
-                                                      device->protocol)] =
+    discovery_notification_block_list_[std::make_pair(device->metadata_id(),
+                                                      device->protocol())] =
         std::make_pair(
             DiscoveryNotificationDismissalState::kDismissed,
             absl::make_optional(base::Time::Now() +

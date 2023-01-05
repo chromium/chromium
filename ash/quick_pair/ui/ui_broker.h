@@ -11,7 +11,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 // The UIBroker is the entry point for the UI component in the Quick Pair
 // system. It is responsible for brokering the 'show UI' calls to the correct

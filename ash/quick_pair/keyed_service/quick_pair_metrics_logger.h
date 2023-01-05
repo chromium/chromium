@@ -20,7 +20,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 class FastPairFeatureUsageMetricsLogger;
 
 // Observes pairing, scanning and UI events and logs corresponding metrics.

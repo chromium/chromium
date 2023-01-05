@@ -59,11 +59,11 @@ void FastPairDataEncryptorImpl::Factory::CreateAsync(
     return;
   }
 
-  if (device->protocol == Protocol::kFastPairInitial ||
-      device->protocol == Protocol::kFastPairRetroactive) {
+  if (device->protocol() == Protocol::kFastPairInitial ||
+      device->protocol() == Protocol::kFastPairRetroactive) {
     CreateAsyncWithKeyExchange(std::move(device),
                                std::move(on_get_instance_callback));
-  } else if (device->protocol == Protocol::kFastPairSubsequent) {
+  } else if (device->protocol() == Protocol::kFastPairSubsequent) {
     CreateAsyncWithAccountKey(std::move(device),
                               std::move(on_get_instance_callback));
   } else {
@@ -82,7 +82,7 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithKeyExchange(
 
   // We first have to get the metadata in order to get the public key to use
   // to generate the new secret key pair.
-  auto metadata_id = device->metadata_id;
+  auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(

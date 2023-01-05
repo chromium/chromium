@@ -26,7 +26,7 @@ namespace quick_pair {
 
 class FastPairDiscoverableScanner;
 class FastPairNotDiscoverableScanner;
-struct Device;
+class Device;
 class QuickPairProcessManager;
 
 class ScannerBrokerImpl : public ScannerBroker, public SessionObserver {

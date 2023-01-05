@@ -30,9 +30,12 @@ enum class DeviceFastPairVersion {
 // |account_key| to fetch objects which contain more information. E.g. A
 // Fast Pair component can use |metadata_id| to query the Service to receive a
 // full metadata object.
-struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
+class COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     : public base::RefCounted<Device> {
-  Device(std::string metadata_id, std::string ble_address, Protocol protocol);
+ public:
+  Device(const std::string& metadata_id,
+         const std::string& ble_address,
+         Protocol protocol);
   Device(const Device&) = delete;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;
@@ -67,21 +70,27 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     account_key_ = account_key;
   }
 
-  // An identifier which components can use to fetch additional metadata for
-  // this device. This ID will correspond to different things depending on
-  // |protocol|. For example, if |protocol| is Fast Pair, this ID will be the
-  // model ID of the Fast Pair device.
-  const std::string metadata_id;
+  const std::string& metadata_id() const { return metadata_id_; }
 
-  // Bluetooth LE address of the device.
-  const std::string ble_address;
+  const std::string& ble_address() const { return ble_address_; }
 
-  // The Quick Pair protocol implementation that this device belongs to.
-  const Protocol protocol;
+  Protocol protocol() const { return protocol_; }
 
  private:
   friend class base::RefCounted<Device>;
   ~Device();
+
+  // An identifier which components can use to fetch additional metadata for
+  // this device. This ID will correspond to different things depending on
+  // |protocol_|. For example, if |protocol_| is Fast Pair, this ID will be the
+  // model ID of the Fast Pair device.
+  const std::string metadata_id_;
+
+  // Bluetooth LE address of the device.
+  const std::string ble_address_;
+
+  // The Quick Pair protocol implementation that this device belongs to.
+  const Protocol protocol_;
 
   // Bluetooth classic address of the device.
   absl::optional<std::string> classic_address_;

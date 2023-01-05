@@ -15,7 +15,7 @@ class MessageCenter;
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 class DeviceMetadata;
 
 using DiscoveryCallback = base::RepeatingCallback<void(DiscoveryAction)>;

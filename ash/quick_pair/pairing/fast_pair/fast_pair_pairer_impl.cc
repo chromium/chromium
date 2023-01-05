@@ -138,7 +138,7 @@ FastPairPairerImpl::FastPairPairerImpl(
         *device_,
         FastPairInitializePairingProcessEvent::kPassedToPairingDialog);
     Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
-        device_->ble_address);
+        device_->ble_address());
     return;
   }
 
@@ -165,7 +165,7 @@ void FastPairPairerImpl::StartPairing() {
                             *device_);
   std::string device_address = device_->classic_address().value();
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
-  switch (device_->protocol) {
+  switch (device_->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairSubsequent:
       // Now that we have validated the decrypted response, we can attempt to
@@ -408,7 +408,7 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
   // We only send the account key if we're doing an initial or retroactive
   // pairing. For subsequent pairing, we have to save the account key
   // locally so that we can refer to it in API calls to the server.
-  if (device_->protocol == Protocol::kFastPairSubsequent) {
+  if (device_->protocol() == Protocol::kFastPairSubsequent) {
     QP_LOG(INFO) << __func__
                  << ": Saving Account Key locally for subsequent pair";
     FastPairRepository::Get()->AssociateAccountKeyLocally(device_);
@@ -443,7 +443,7 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
   // be.
   if (!ShouldBeEnabledForLoginStatus(
           Shell::Get()->session_controller()->login_status())) {
-    if (device_->protocol == Protocol::kFastPairInitial) {
+    if (device_->protocol() == Protocol::kFastPairInitial) {
       RecordInitialSuccessFunnelFlow(
           FastPairInitialSuccessFunnelEvent::kGuestModeDetected);
     }
@@ -506,7 +506,7 @@ void FastPairPairerImpl::OnIsDeviceSavedToAccount(
                  << ": Device is already saved, skipping write account key. "
                     "Pairing procedure complete.";
 
-    if (device_->protocol == Protocol::kFastPairInitial) {
+    if (device_->protocol() == Protocol::kFastPairInitial) {
       RecordInitialSuccessFunnelFlow(
           FastPairInitialSuccessFunnelEvent::kDeviceAlreadyAssociatedToAccount);
     }
@@ -529,7 +529,7 @@ void FastPairPairerImpl::WriteAccountKey() {
   RAND_bytes(account_key.data(), account_key.size());
   account_key[0] = 0x04;
 
-  if (device_->protocol == Protocol::kFastPairInitial) {
+  if (device_->protocol() == Protocol::kFastPairInitial) {
     RecordInitialSuccessFunnelFlow(
         FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey);
   }
@@ -575,7 +575,7 @@ void FastPairPairerImpl::OnWriteAccountKey(
       << __func__
       << ": Account key written to device. Pairing procedure complete.";
 
-  if (device_->protocol == Protocol::kFastPairInitial) {
+  if (device_->protocol() == Protocol::kFastPairInitial) {
     RecordInitialSuccessFunnelFlow(
         FastPairInitialSuccessFunnelEvent::kAccountKeyWritten);
   }
@@ -629,7 +629,7 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
     return;
   }
 
-  if (device->GetAddress() == device_->ble_address ||
+  if (device->GetAddress() == device_->ble_address() ||
       device->GetAddress() == device_->classic_address()) {
     QP_LOG(INFO) << __func__ << ": Completing pairing procedure " << device_;
     RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,

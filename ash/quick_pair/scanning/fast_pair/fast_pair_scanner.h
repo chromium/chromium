@@ -14,7 +14,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 // This registers a BluetoothLowEnergyScanner with the Advertisement Monitoring
 // API and exposes the Fast Pair devices found/lost events to its observers.

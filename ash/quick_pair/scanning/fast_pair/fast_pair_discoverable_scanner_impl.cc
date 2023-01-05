@@ -233,7 +233,7 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
   }
 
   device::BluetoothDevice* ble_device =
-      adapter_->GetDevice(device->ble_address);
+      adapter_->GetDevice(device->ble_address());
 
   if (ble_device && ble_device->IsPaired()) {
     QP_LOG(ERROR) << __func__
@@ -247,7 +247,7 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
   // on the pairing state of the Classic device.
 
   QP_LOG(INFO) << __func__ << ": Running found callback";
-  notified_devices_[device->ble_address] = device;
+  notified_devices_[device->ble_address()] = device;
   found_callback_.Run(device);
 }
 

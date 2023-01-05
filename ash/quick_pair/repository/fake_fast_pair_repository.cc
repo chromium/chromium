@@ -71,13 +71,13 @@ void FakeFastPairRepository::CheckAccountKeys(
 void FakeFastPairRepository::AssociateAccountKey(
     scoped_refptr<Device> device,
     const std::vector<uint8_t>& account_key) {
-  saved_account_keys_[device->ble_address] = account_key;
+  saved_account_keys_[device->ble_address()] = account_key;
 }
 
 bool FakeFastPairRepository::AssociateAccountKeyLocally(
     scoped_refptr<Device> device) {
   std::vector<uint8_t> fake_account_key;
-  saved_account_keys_[device->ble_address] = fake_account_key;
+  saved_account_keys_[device->ble_address()] = fake_account_key;
   return true;
 }
 

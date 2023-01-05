@@ -60,12 +60,12 @@ void PairerBrokerImpl::RemoveObserver(Observer* observer) {
 }
 
 void PairerBrokerImpl::PairDevice(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairRetroactive:
     case Protocol::kFastPairSubsequent:
       did_handshake_previously_complete_successfully_map_.insert_or_assign(
-          device->ble_address, false);
+          device->ble_address(), false);
       PairFastPairDevice(std::move(device));
       break;
   }
@@ -75,11 +75,11 @@ void PairerBrokerImpl::EraseHandshakeAndFromPairers(
     scoped_refptr<Device> device) {
   // |fast_pair_pairers_| and its children objects depend on the handshake
   // instance. Shut them down before destroying the handshake.
-  pair_failure_counts_.erase(device->ble_address);
-  fast_pair_pairers_.erase(device->ble_address);
+  pair_failure_counts_.erase(device->ble_address());
+  fast_pair_pairers_.erase(device->ble_address());
   FastPairHandshakeLookup::GetInstance()->Erase(device);
   did_handshake_previously_complete_successfully_map_.insert_or_assign(
-      device->ble_address, false);
+      device->ble_address(), false);
 }
 
 bool PairerBrokerImpl::IsPairing() {
@@ -94,7 +94,7 @@ void PairerBrokerImpl::StopPairing() {
 }
 
 void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
-  if (base::Contains(fast_pair_pairers_, device->ble_address)) {
+  if (base::Contains(fast_pair_pairers_, device->ble_address())) {
     QP_LOG(WARNING) << __func__ << ": Already pairing device" << device;
     RecordFastPairInitializePairingProcessEvent(
         *device, FastPairInitializePairingProcessEvent::kAlreadyPairingFailure);
@@ -133,7 +133,7 @@ void PairerBrokerImpl::CreateHandshake(scoped_refptr<Device> device) {
   }
 
   QP_LOG(INFO) << __func__ << ": Creating new handshake for pair attempt.";
-  num_handshake_attempts_[device->ble_address]++;
+  num_handshake_attempts_[device->ble_address()]++;
   FastPairHandshakeLookup::GetInstance()->Create(
       adapter_, device,
       base::BindOnce(&PairerBrokerImpl::OnHandshakeComplete,
@@ -157,8 +157,8 @@ void PairerBrokerImpl::OnHandshakeComplete(
     return;
   }
 
-  if (!did_handshake_previously_complete_successfully_map_[device
-                                                               ->ble_address]) {
+  if (!did_handshake_previously_complete_successfully_map_
+          [device->ble_address()]) {
     // Currently the only observer is |QuickPairMetricsLogger|. To keep metrics
     // consistent we should only call the observer the first time a handshake
     // completes. If another observer is added, this logic should be
@@ -170,23 +170,24 @@ void PairerBrokerImpl::OnHandshakeComplete(
     }
     DCHECK(num_observers == 1);
     did_handshake_previously_complete_successfully_map_.insert_or_assign(
-        device->ble_address, true);
+        device->ble_address(), true);
   }
 
   RecordEffectiveHandshakeSuccess(/*success=*/true);
-  RecordHandshakeAttemptCount(num_handshake_attempts_[device->ble_address]);
+  RecordHandshakeAttemptCount(num_handshake_attempts_[device->ble_address()]);
 
   // Reset |num_handshake_attempts_| so if the handshake is lost during pairing,
   // we will attempt to create it 3 more times. This should be an extremely rare
   // situation, such as handshake happening directly before the device rotates
   // ble addresses.
-  num_handshake_attempts_[device->ble_address] = 0;
+  num_handshake_attempts_[device->ble_address()] = 0;
   StartBondingAttempt(device);
 }
 
 void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
                                           PairFailure failure) {
-  if (num_handshake_attempts_[device->ble_address] < kMaxNumHandshakeAttempts) {
+  if (num_handshake_attempts_[device->ble_address()] <
+      kMaxNumHandshakeAttempts) {
     CreateHandshake(device);
     return;
   }
@@ -204,8 +205,9 @@ void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
 }
 
 void PairerBrokerImpl::StartBondingAttempt(scoped_refptr<Device> device) {
-  if (!base::Contains(pair_failure_counts_, device->ble_address))
-    pair_failure_counts_[device->ble_address] = 0;
+  if (!base::Contains(pair_failure_counts_, device->ble_address())) {
+    pair_failure_counts_[device->ble_address()] = 0;
+  }
 
   QP_LOG(INFO) << __func__ << ": " << device;
 
@@ -214,16 +216,17 @@ void PairerBrokerImpl::StartBondingAttempt(scoped_refptr<Device> device) {
   }
 
   DCHECK(adapter_);
-  fast_pair_pairers_[device->ble_address] = FastPairPairerImpl::Factory::Create(
-      adapter_, device,
-      base::BindOnce(&PairerBrokerImpl::OnFastPairDeviceBonded,
-                     weak_pointer_factory_.GetWeakPtr()),
-      base::BindOnce(&PairerBrokerImpl::OnFastPairBondingFailure,
-                     weak_pointer_factory_.GetWeakPtr()),
-      base::BindOnce(&PairerBrokerImpl::OnAccountKeyFailure,
-                     weak_pointer_factory_.GetWeakPtr()),
-      base::BindOnce(&PairerBrokerImpl::OnFastPairProcedureComplete,
-                     weak_pointer_factory_.GetWeakPtr()));
+  fast_pair_pairers_[device->ble_address()] =
+      FastPairPairerImpl::Factory::Create(
+          adapter_, device,
+          base::BindOnce(&PairerBrokerImpl::OnFastPairDeviceBonded,
+                         weak_pointer_factory_.GetWeakPtr()),
+          base::BindOnce(&PairerBrokerImpl::OnFastPairBondingFailure,
+                         weak_pointer_factory_.GetWeakPtr()),
+          base::BindOnce(&PairerBrokerImpl::OnAccountKeyFailure,
+                         weak_pointer_factory_.GetWeakPtr()),
+          base::BindOnce(&PairerBrokerImpl::OnFastPairProcedureComplete,
+                         weak_pointer_factory_.GetWeakPtr()));
 }
 
 void PairerBrokerImpl::OnFastPairDeviceBonded(scoped_refptr<Device> device) {
@@ -234,23 +237,23 @@ void PairerBrokerImpl::OnFastPairDeviceBonded(scoped_refptr<Device> device) {
   }
 
   RecordPairFailureRetry(
-      /*num_retries=*/pair_failure_counts_[device->ble_address]);
-  pair_failure_counts_.erase(device->ble_address);
+      /*num_retries=*/pair_failure_counts_[device->ble_address()]);
+  pair_failure_counts_.erase(device->ble_address());
 }
 
 void PairerBrokerImpl::OnFastPairBondingFailure(scoped_refptr<Device> device,
                                                 PairFailure failure) {
-  ++pair_failure_counts_[device->ble_address];
+  ++pair_failure_counts_[device->ble_address()];
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Failure=" << failure
                << ", Failure Count = "
-               << pair_failure_counts_[device->ble_address];
+               << pair_failure_counts_[device->ble_address()];
 
   device::BluetoothDevice* bt_device = nullptr;
   if (device->classic_address()) {
     bt_device = adapter_->GetDevice(device->classic_address().value());
   }
 
-  if (pair_failure_counts_[device->ble_address] == kMaxFailureRetryCount) {
+  if (pair_failure_counts_[device->ble_address()] == kMaxFailureRetryCount) {
     QP_LOG(INFO) << __func__
                  << ": Reached max failure count. Notifying observers.";
     RecordProtocolPairingStep(FastPairProtocolPairingSteps::kExhaustedRetries,
@@ -267,7 +270,7 @@ void PairerBrokerImpl::OnFastPairBondingFailure(scoped_refptr<Device> device,
     return;
   }
 
-  fast_pair_pairers_.erase(device->ble_address);
+  fast_pair_pairers_.erase(device->ble_address());
 
   if (bt_device && !bt_device->IsPaired()) {
     QP_LOG(INFO)
@@ -310,8 +313,8 @@ void PairerBrokerImpl::OnFastPairProcedureComplete(
   // If we get to this point in the flow for the initial and retroactive pairing
   // scenarios, this means that the account key has successfully been written
   // to these devices.
-  if (device->protocol == Protocol::kFastPairInitial ||
-      device->protocol == Protocol::kFastPairRetroactive) {
+  if (device->protocol() == Protocol::kFastPairInitial ||
+      device->protocol() == Protocol::kFastPairRetroactive) {
     for (auto& observer : observers_) {
       observer.OnAccountKeyWrite(device, /*error=*/absl::nullopt);
     }

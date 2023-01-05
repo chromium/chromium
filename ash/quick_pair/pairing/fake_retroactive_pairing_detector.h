@@ -12,7 +12,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 class FakeRetroactivePairingDetector : public RetroactivePairingDetector {
  public:

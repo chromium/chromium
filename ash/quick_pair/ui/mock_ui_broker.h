@@ -13,7 +13,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 class MockUIBroker : public UIBroker {
  public:

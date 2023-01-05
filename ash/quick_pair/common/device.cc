@@ -36,25 +36,25 @@ std::ostream& OutputToStream(std::ostream& stream,
 namespace ash {
 namespace quick_pair {
 
-Device::Device(std::string metadata_id,
-               std::string ble_address,
+Device::Device(const std::string& metadata_id,
+               const std::string& ble_address,
                Protocol protocol)
-    : metadata_id(std::move(metadata_id)),
-      ble_address(std::move(ble_address)),
-      protocol(protocol) {}
+    : metadata_id_(metadata_id),
+      ble_address_(ble_address),
+      protocol_(protocol) {}
 
 Device::~Device() = default;
 
 std::ostream& operator<<(std::ostream& stream, const Device& device) {
-  return OutputToStream(stream, device.metadata_id, device.ble_address,
+  return OutputToStream(stream, device.metadata_id(), device.ble_address(),
                         device.classic_address(), device.display_name(),
-                        device.protocol);
+                        device.protocol());
 }
 
 std::ostream& operator<<(std::ostream& stream, scoped_refptr<Device> device) {
-  return OutputToStream(stream, device->metadata_id, device->ble_address,
+  return OutputToStream(stream, device->metadata_id(), device->ble_address(),
                         device->classic_address(), device->display_name(),
-                        device->protocol);
+                        device->protocol());
 }
 
 }  // namespace quick_pair

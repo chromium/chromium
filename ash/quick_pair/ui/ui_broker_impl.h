@@ -16,7 +16,7 @@ namespace ash {
 namespace quick_pair {
 
 class FastPairPresenter;
-struct Device;
+class Device;
 
 class UIBrokerImpl final : public UIBroker {
  public:

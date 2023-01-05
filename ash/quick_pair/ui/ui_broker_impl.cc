@@ -32,7 +32,7 @@ void UIBrokerImpl::RemoveObserver(Observer* observer) {
 }
 
 void UIBrokerImpl::ShowDiscovery(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowDiscovery(
@@ -47,7 +47,7 @@ void UIBrokerImpl::ShowDiscovery(scoped_refptr<Device> device) {
 }
 
 void UIBrokerImpl::ShowPairing(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairRetroactive:
     case Protocol::kFastPairSubsequent:
@@ -57,7 +57,7 @@ void UIBrokerImpl::ShowPairing(scoped_refptr<Device> device) {
 }
 
 void UIBrokerImpl::ShowPairingFailed(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowPairingFailed(
@@ -74,7 +74,7 @@ void UIBrokerImpl::ShowPairingFailed(scoped_refptr<Device> device) {
 }
 
 void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairRetroactive:
       fast_pair_presenter_->ShowAssociateAccount(
@@ -89,7 +89,7 @@ void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
 }
 
 void UIBrokerImpl::ShowCompanionApp(scoped_refptr<Device> device) {
-  switch (device->protocol) {
+  switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairRetroactive:
     case Protocol::kFastPairSubsequent:

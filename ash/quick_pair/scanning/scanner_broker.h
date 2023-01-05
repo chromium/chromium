@@ -12,7 +12,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 // The ScannerBroker is the entry point for the Scanning component in the Quick
 // Pair system. It is responsible for brokering the start/stop scanning calls

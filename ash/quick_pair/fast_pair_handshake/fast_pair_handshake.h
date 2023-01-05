@@ -19,7 +19,7 @@ class BluetoothAdapter;
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 class FastPairDataEncryptor;
 class FastPairGattServiceClient;
 

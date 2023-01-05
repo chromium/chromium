@@ -34,7 +34,7 @@ FastPairHandshakeImpl::FastPairHandshakeImpl(
   RecordHandshakeStep(FastPairHandshakeSteps::kHandshakeStarted, *device_);
 
   device::BluetoothDevice* bluetooth_device =
-      adapter_->GetDevice(device_->ble_address);
+      adapter_->GetDevice(device_->ble_address());
 
   if (!bluetooth_device) {
     QP_LOG(INFO) << __func__
@@ -97,12 +97,12 @@ void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
   RecordTotalDataEncryptorCreateTime(base::TimeTicks::Now() -
                                      encryptor_create_start_time);
 
-  bool is_retroactive = device_->protocol == Protocol::kFastPairRetroactive;
+  bool is_retroactive = device_->protocol() == Protocol::kFastPairRetroactive;
 
   fast_pair_gatt_service_client_->WriteRequestAsync(
       /*message_type=*/kKeyBasedPairingType,
       /*flags=*/is_retroactive ? kRetroactiveFlags : kInitialOrSubsequentFlags,
-      /*provider_address=*/device_->ble_address,
+      /*provider_address=*/device_->ble_address(),
       /*seekers_address=*/is_retroactive ? adapter_->GetAddress() : "",
       fast_pair_data_encryptor_.get(),
       base::BindOnce(&FastPairHandshakeImpl::OnWriteResponse,

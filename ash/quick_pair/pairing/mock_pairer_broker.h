@@ -15,7 +15,7 @@
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 enum class AccountKeyFailure;
 
 class MockPairerBroker : public PairerBroker {

@@ -35,10 +35,10 @@ bool DeviceIdMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
   // records.
   bool did_save = false;
   absl::optional<const std::string> ble_device_id =
-      GetDeviceIdForAddress(device->ble_address);
+      GetDeviceIdForAddress(device->ble_address());
   if (ble_device_id) {
     did_save = true;
-    device_id_to_model_id_[ble_device_id.value()] = device->metadata_id;
+    device_id_to_model_id_[ble_device_id.value()] = device->metadata_id();
   }
 
   absl::optional<const std::string> classic_address = device->classic_address();
@@ -50,7 +50,7 @@ bool DeviceIdMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
       GetDeviceIdForAddress(classic_address.value());
   if (classic_device_id) {
     did_save = true;
-    device_id_to_model_id_[classic_device_id.value()] = device->metadata_id;
+    device_id_to_model_id_[classic_device_id.value()] = device->metadata_id();
   }
   return did_save;
 }
@@ -61,7 +61,7 @@ bool DeviceIdMap::PersistRecordsForDevice(scoped_refptr<Device> device) {
   // records.
   bool did_persist = false;
   absl::optional<const std::string> ble_device_id =
-      GetDeviceIdForAddress(device->ble_address);
+      GetDeviceIdForAddress(device->ble_address());
   if (ble_device_id) {
     did_persist = PersistDeviceIdRecord(ble_device_id.value());
   }

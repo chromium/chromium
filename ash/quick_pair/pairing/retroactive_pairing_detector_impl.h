@@ -36,7 +36,7 @@ class BluetoothDevice;
 namespace ash {
 namespace quick_pair {
 
-struct Device;
+class Device;
 
 class RetroactivePairingDetectorImpl final
     : public RetroactivePairingDetector,

@@ -827,19 +827,19 @@ const char kHandshakeAttemptCount[] = "FastPair.Handshake.AttemptCount";
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
   return std::string(kEngagementFlowInitialMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id);
+         GetFastPairTrackedModelId(device.metadata_id());
 }
 
 const std::string GetEngagementFlowSubsequentModelIdMetric(
     const ash::quick_pair::Device& device) {
   return std::string(kEngagementFlowSubsequentMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id);
+         GetFastPairTrackedModelId(device.metadata_id());
 }
 
 const std::string GetRetroactiveEngagementFlowModelIdMetric(
     const ash::quick_pair::Device& device) {
   return std::string(kRetroactiveEngagementFlowMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id);
+         GetFastPairTrackedModelId(device.metadata_id());
 }
 
 // The retroactive engagement flow doesn't record retroactive successes
@@ -848,7 +848,7 @@ const std::string GetRetroactiveEngagementFlowModelIdMetric(
 const std::string GetAccountKeyWriteResultRetroactiveModelIdMetric(
     const ash::quick_pair::Device& device) {
   return std::string(kFastPairAccountKeyWriteResultRetroactiveMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id);
+         GetFastPairTrackedModelId(device.metadata_id());
 }
 
 absl::optional<std::string>
@@ -910,7 +910,7 @@ void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
     FastPairEngagementFlowEvent event) {
   absl::optional<std::string> funnel_name;
 
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       funnel_name = GetEngagementFunnelInitialDeviceTypeNotificationTypeMetric(
           device_details);
@@ -945,7 +945,7 @@ void RecordFastPairDeviceAndNotificationSpecificRetroactiveEngagementFlow(
     FastPairRetroactiveEngagementFlowEvent event) {
   absl::optional<std::string> funnel_name;
 
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       break;
     // This is only implemented for the retroactive pairing scenario since it's
@@ -971,7 +971,7 @@ void RecordFastPairDeviceAndNotificationSpecificRetroactiveEngagementFlow(
 
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramSparse(kEngagementFlowInitialMetric,
                                static_cast<int>(event));
@@ -1008,7 +1008,7 @@ void RecordRetroactiveSuccessFunnelFlow(
 void RecordFastPairInitializePairingProcessEvent(
     const Device& device,
     FastPairInitializePairingProcessEvent event) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramEnumeration(kInitializePairingProcessInitial, event);
       break;
@@ -1024,7 +1024,7 @@ void RecordFastPairInitializePairingProcessEvent(
 
 void RecordInitializationFailureReason(const Device& device,
                                        PairFailure failure_reason) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramEnumeration(
           kInitializePairingProcessFailureReasonInitial, failure_reason);
@@ -1042,7 +1042,7 @@ void RecordInitializationFailureReason(const Device& device,
 
 void RecordInitializationRetriesBeforeSuccess(const Device& device,
                                               int num_retries_before_success) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramExactLinear(
           kInitializePairingProcessRetriesBeforeSuccessInitial,
@@ -1066,7 +1066,7 @@ void RecordInitializationRetriesBeforeSuccess(const Device& device,
 
 void AttemptRecordingTotalUxPairTime(const Device& device,
                                      base::TimeDelta total_pair_time) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramCustomTimes(kTotalUxPairTimeInitialMetric,
                                     total_pair_time, base::Milliseconds(1),
@@ -1085,7 +1085,7 @@ void AttemptRecordingTotalUxPairTime(const Device& device,
 void AttemptRecordingFastPairRetroactiveEngagementFlow(
     const Device& device,
     FastPairRetroactiveEngagementFlowEvent event) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairSubsequent:
       break;
@@ -1134,7 +1134,7 @@ void RecordGattConnectionAttemptCount(int num_attempts) {
 }
 
 void RecordPairingResult(const Device& device, bool success) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramBoolean(kFastPairPairResultInitialMetric, success);
       break;
@@ -1148,7 +1148,7 @@ void RecordPairingResult(const Device& device, bool success) {
 }
 
 void RecordPairingFailureReason(const Device& device, PairFailure failure) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramEnumeration(kFastPairPairFailureInitialMetric, failure);
       break;
@@ -1165,7 +1165,7 @@ void RecordPairingFailureReason(const Device& device, PairFailure failure) {
 
 void RecordAccountKeyFailureReason(const Device& device,
                                    AccountKeyFailure failure) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramEnumeration(
           kFastPairAccountKeyWriteFailureInitialMetric, failure);
@@ -1180,7 +1180,7 @@ void RecordAccountKeyFailureReason(const Device& device,
 }
 
 void RecordAccountKeyResult(const Device& device, bool success) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramBoolean(kFastPairAccountKeyWriteResultInitialMetric,
                                 success);
@@ -1385,7 +1385,7 @@ void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason) {
 
 void RecordProtocolPairingStep(FastPairProtocolPairingSteps pairing_step,
                                const Device& device) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramEnumeration(kProtocolPairingStepInitial, pairing_step);
       break;
@@ -1400,7 +1400,7 @@ void RecordProtocolPairingStep(FastPairProtocolPairingSteps pairing_step,
 
 void RecordHandshakeStep(FastPairHandshakeSteps handshake_step,
                          const Device& device) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramEnumeration(kFastPairHandshakeStepInitial,
                                     handshake_step);
@@ -1466,7 +1466,7 @@ void RecordSavedDevicesRemoveResult(bool success) {
 
 void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
                                                 bool success) {
-  switch (device.protocol) {
+  switch (device.protocol()) {
     case Protocol::kFastPairInitial:
       base::UmaHistogramBoolean(kSavedDeviceUpdateOptInStatusInitialResult,
                                 success);
