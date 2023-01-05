@@ -3621,7 +3621,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4348766275249686434">Kerää virheet</translation>
 <translation id="4349828822184870497">Hyödyllinen</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> ei saa koskaan käyttää sijaintitietojasi</translation>
-<translation id="4350782034419308508">OK Google</translation>
+<translation id="4350782034419308508">Hey Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> kerää laitedataa ja jakaa sen Googlelle parhaan mahdollisen käyttökokemuksen tarjoamiseksi. Tämä auttaa selvittämään, millaisia päivityksiä tarvitaan. Voit halutessasi antaa Googlelle luvan käyttää dataa myös muihin tarkoituksiin, esim. käyttökokemuksen ja palvelun (<ph name="DEVICE_OS" />) tukemiseen ja kehittämiseen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Näet Googlelle päivitysten suodattamista varten lähetetyn datan (ja kaiken muun Googlelle jakamasi datan) kirjautumalla laitteelle ja siirtymällä Chromen diagnostiikkatietojen (chrome://system) CHROMEOSFLEX_HARDWARE_INFO-osioon.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Lisätietoa datasta, jota <ph name="DEVICE_OS" /> voi jakaa Googlelle, ja sen käytöstä saat osoitteesta g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
