@@ -34,7 +34,7 @@
 
 <div id="container">
   <template is="dom-repeat" items="[[apps_]]">
-    <app-item data="[[item]]"></app-item>
+    <app-item app-info="[[item]]"></app-item>
   </template>
 </div>
 
@@ -50,8 +50,8 @@
   </div>
   <div tabindex="0" class="dropdown-item"
       on-click="onLaunchOnStartupItemClick_"
-      hidden="{{!actionMenuModel_.data.mayShowRunOnOsLoginMode}}"
-      disabled="{{!actionMenuModel_.data.mayToggleRunOnOsLoginMode}}">
+      hidden="{{!actionMenuModel_.appInfo.mayShowRunOnOsLoginMode}}"
+      disabled="{{!actionMenuModel_.appInfo.mayToggleRunOnOsLoginMode}}">
     <div class="dropdown-item-label">
       Launch on startup
     </div>

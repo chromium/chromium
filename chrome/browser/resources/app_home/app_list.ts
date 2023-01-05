@@ -88,17 +88,17 @@ export class AppListElement extends PolymerElement {
     this.listenerIds_ = [];
   }
 
-  private addApp_(data: AppInfo) {
-    const index = this.apps_.findIndex(app => app.id === data.id);
+  private addApp_(appInfo: AppInfo) {
+    const index = this.apps_.findIndex(app => app.id === appInfo.id);
     if (index !== -1) {
-      this.set(`apps_.${index}`, data);
+      this.set(`apps_.${index}`, appInfo);
     } else {
-      this.push('apps_', data);
+      this.push('apps_', appInfo);
     }
   }
 
-  private removeApp_(data: AppInfo) {
-    const index = this.apps_.findIndex(app => app.id === data.id);
+  private removeApp_(appInfo: AppInfo) {
+    const index = this.apps_.findIndex(app => app.id === appInfo.id);
     // We gracefully handle item not found case because:
     // 1.if the async getApps() returns later than an uninstall event,
     // it should gracefully handles that and ignores that uninstall event,
