@@ -451,7 +451,6 @@ void It2MeNativeMessagingHostLacros::SendErrorAndExit(
     message.Set(kMessageId, message_id);
   }
   message.Set(kErrorMessageCode, ErrorCodeToString(error_code));
-  message.Set(kErrorMessageDescription, ErrorCodeToString(error_code));
 
   SendMessageToClient(std::move(message));
 

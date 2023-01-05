@@ -97,7 +97,6 @@ extern const char kIq[];
 // Generic message sent from the host to the client when an error occurs.
 extern const char kErrorMessage[];
 extern const char kErrorMessageCode[];
-extern const char kErrorMessageDescription[];
 
 // Sent from the host when there is a change in the NAT traversal policies.
 extern const char kNatPolicyChangedMessage[];

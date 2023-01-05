@@ -53,7 +53,6 @@ const char kIq[] = "iq";
 
 const char kErrorMessage[] = "error";
 const char kErrorMessageCode[] = "errorCode";
-const char kErrorMessageDescription[] = "description";
 
 const char kNatPolicyChangedMessage[] = "natPolicyChanged";
 const char kNatPolicyChangedMessageNatEnabled[] = "natTraversalEnabled";

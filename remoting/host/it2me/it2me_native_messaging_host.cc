@@ -447,8 +447,6 @@ void It2MeNativeMessagingHost::SendErrorAndExit(
   DCHECK(task_runner()->BelongsToCurrentThread());
   response.Set(kMessageType, kErrorMessage);
   response.Set(kErrorMessageCode, ErrorCodeToString(error_code));
-  // TODO(kelvinp): Remove this after M61 Webapp is pushed to 100%.
-  response.Set(kErrorMessageDescription, ErrorCodeToString(error_code));
   SendMessageToClient(std::move(response));
 
   // Trigger a host shutdown by sending an empty message.
@@ -500,8 +498,6 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
       // is sent can be communicated.
       message.Set(kMessageType, kErrorMessage);
       message.Set(kErrorMessageCode, ErrorCodeToString(error_code));
-      // TODO(kelvinp): Remove this after M61 Webapp is pushed to 100%.
-      message.Set(kErrorMessageDescription, ErrorCodeToString(error_code));
       break;
 
     default:
