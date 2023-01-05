@@ -294,27 +294,17 @@ base::FilePath ProfileHelperImpl::GetProfileDir(base::StringPiece profile) {
 }
 
 bool ProfileHelperImpl::IsSigninProfileInitialized() {
-  return browser_context_helper_->delegate()->GetBrowserContextByPath(
-      GetSigninProfileDir());
+  return browser_context_helper_->GetSigninBrowserContext();
 }
 
 Profile* ProfileHelperImpl::GetSigninProfile() {
-  Profile* profile = Profile::FromBrowserContext(
-      browser_context_helper_->delegate()->DeprecatedGetBrowserContext(
-          GetSigninProfileDir()));
-  if (!profile)
-    return nullptr;
-  return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  return Profile::FromBrowserContext(
+      browser_context_helper_->DeprecatedGetOrCreateSigninBrowserContext());
 }
 
 Profile* ProfileHelperImpl::GetLockScreenProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
-  Profile* profile =
-      profile_manager->GetProfileByPath(GetLockScreenProfileDir());
-  if (!profile)
-    return nullptr;
-  return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  return Profile::FromBrowserContext(
+      browser_context_helper_->GetLockScreenBrowserContext());
 }
 
 base::FilePath ProfileHelperImpl::GetActiveUserProfileDir() {

@@ -114,6 +114,25 @@ base::FilePath BrowserContextHelper::GetSigninBrowserContextPath() const {
   return delegate_->GetUserDataDir()->Append(kSigninBrowserContextBaseName);
 }
 
+content::BrowserContext* BrowserContextHelper::GetSigninBrowserContext() {
+  content::BrowserContext* browser_context =
+      delegate_->GetBrowserContextByPath(GetSigninBrowserContextPath());
+  if (!browser_context) {
+    return nullptr;
+  }
+  return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+}
+
+content::BrowserContext*
+BrowserContextHelper::DeprecatedGetOrCreateSigninBrowserContext() {
+  content::BrowserContext* browser_context =
+      delegate_->DeprecatedGetBrowserContext(GetSigninBrowserContextPath());
+  if (!browser_context) {
+    return nullptr;
+  }
+  return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+}
+
 base::FilePath BrowserContextHelper::GetLockScreenAppBrowserContextPath()
     const {
   return delegate_->GetUserDataDir()->Append(
@@ -122,6 +141,15 @@ base::FilePath BrowserContextHelper::GetLockScreenAppBrowserContextPath()
 
 base::FilePath BrowserContextHelper::GetLockScreenBrowserContextPath() const {
   return delegate_->GetUserDataDir()->Append(kLockScreenBrowserContextBaseName);
+}
+
+content::BrowserContext* BrowserContextHelper::GetLockScreenBrowserContext() {
+  content::BrowserContext* browser_context =
+      delegate_->GetBrowserContextByPath(GetLockScreenBrowserContextPath());
+  if (!browser_context) {
+    return nullptr;
+  }
+  return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
 }
 
 }  // namespace ash

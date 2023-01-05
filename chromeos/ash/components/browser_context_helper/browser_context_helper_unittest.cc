@@ -14,19 +14,60 @@ namespace {
 
 class FakeBrowserContextHelperDelegate : public BrowserContextHelper::Delegate {
  public:
+  FakeBrowserContextHelperDelegate() {
+    CHECK(user_data_dir_.CreateUniqueTempDir());
+  }
+
+  content::BrowserContext* CreateBrowserContext(const base::FilePath& path,
+                                                bool is_off_the_record) {
+    auto browser_context = std::make_unique<content::TestBrowserContext>(path);
+    browser_context->set_is_off_the_record(is_off_the_record);
+    auto* browser_context_ptr = browser_context.get();
+    browser_context_list_.push_back(std::move(browser_context));
+    return browser_context_ptr;
+  }
+
+  // BrowserContextHelper::Delegate overrides.
   content::BrowserContext* GetBrowserContextByPath(
       const base::FilePath& path) override {
+    for (auto& candidate : browser_context_list_) {
+      if (candidate->GetPath() == path && !candidate->IsOffTheRecord()) {
+        return candidate.get();
+      }
+    }
     return nullptr;
   }
+
   content::BrowserContext* DeprecatedGetBrowserContext(
       const base::FilePath& path) override {
-    return nullptr;
+    auto* browser_context = GetBrowserContextByPath(path);
+    if (browser_context) {
+      return nullptr;
+    }
+
+    return CreateBrowserContext(path, /*is_off_the_record=*/false);
   }
 
-  const base::FilePath* GetUserDataDir() override { return &user_data_dir_; }
+  content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
+      content::BrowserContext* browser_context) override {
+    const auto& path = browser_context->GetPath();
+    for (auto& candidate : browser_context_list_) {
+      if (candidate.get() != browser_context && candidate->GetPath() == path &&
+          candidate->IsOffTheRecord()) {
+        return candidate.get();
+      }
+    }
+    return CreateBrowserContext(path, /*is_off_the_record=*/true);
+  }
+
+  const base::FilePath* GetUserDataDir() override {
+    return &user_data_dir_.GetPath();
+  }
 
  private:
-  base::FilePath user_data_dir_{"user_data_dir"};
+  base::ScopedTempDir user_data_dir_;
+  std::vector<std::unique_ptr<content::TestBrowserContext>>
+      browser_context_list_;
 };
 
 class BrowserContextHelperTest : public testing::Test {
@@ -91,16 +132,76 @@ TEST_F(BrowserContextHelperTest, GetUserBrowserContextDirName) {
 }
 
 TEST_F(BrowserContextHelperTest, GetBrowserContextPathByUserIdHash) {
-  BrowserContextHelper helper(
-      std::make_unique<FakeBrowserContextHelperDelegate>());
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
   // u- prefix is expected. See GetUserBrowserContextDirName for details.
-  EXPECT_EQ(base::FilePath("user_data_dir/u-0123456789"),
+  EXPECT_EQ(delegate_ptr->GetUserDataDir()->Append("u-0123456789"),
             helper.GetBrowserContextPathByUserIdHash("0123456789"));
   // Special use name case.
-  EXPECT_EQ(base::FilePath("user_data_dir/user"),
+  EXPECT_EQ(delegate_ptr->GetUserDataDir()->Append("user"),
             helper.GetBrowserContextPathByUserIdHash("user"));
-  EXPECT_EQ(base::FilePath("user_data_dir/test-user"),
+  EXPECT_EQ(delegate_ptr->GetUserDataDir()->Append("test-user"),
             helper.GetBrowserContextPathByUserIdHash("test-user"));
+}
+
+TEST_F(BrowserContextHelperTest, GetSigninBrowserContext) {
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
+  // If not yet loaded, GetSigninBrowserContext() should return nullptr.
+  EXPECT_FALSE(helper.GetSigninBrowserContext());
+
+  // Load the signin browser context.
+  delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append(
+          BrowserContextHelper::kSigninBrowserContextBaseName),
+      /*is_off_the_record=*/false);
+
+  // Then it should start returning the instance.
+  auto* signin_browser_context = helper.GetSigninBrowserContext();
+  ASSERT_TRUE(signin_browser_context);
+  EXPECT_EQ(BrowserContextHelper::kSigninBrowserContextBaseName,
+            signin_browser_context->GetPath().BaseName().value());
+  EXPECT_TRUE(signin_browser_context->IsOffTheRecord());
+}
+
+TEST_F(BrowserContextHelperTest, DeprecatedGetOrCreateSigninBrowserContext) {
+  BrowserContextHelper helper(
+      std::make_unique<FakeBrowserContextHelperDelegate>());
+
+  // DeprecatedGetOrCreateSigninBrowserContext() should create the instance,
+  // if it is not yet.
+  auto* signin_browser_context =
+      helper.DeprecatedGetOrCreateSigninBrowserContext();
+  ASSERT_TRUE(signin_browser_context);
+  // Other than that, it should work in the same way with
+  // GetSigninBrowserContext().
+  EXPECT_EQ(helper.GetSigninBrowserContext(), signin_browser_context);
+}
+
+TEST_F(BrowserContextHelperTest, GetLockScreenBrowserContext) {
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
+  // If not yet loaded, GetLockScreenBrowserContext() should return nullptr.
+  EXPECT_FALSE(helper.GetLockScreenBrowserContext());
+
+  // Load the lock screen browser context.
+  delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append(
+          BrowserContextHelper::kLockScreenBrowserContextBaseName),
+      /*is_off_the_record=*/false);
+
+  // Then it should start returning the instance.
+  auto* lock_screen_browser_context = helper.GetLockScreenBrowserContext();
+  ASSERT_TRUE(lock_screen_browser_context);
+  EXPECT_EQ(BrowserContextHelper::kLockScreenBrowserContextBaseName,
+            lock_screen_browser_context->GetPath().BaseName().value());
+  EXPECT_TRUE(lock_screen_browser_context->IsOffTheRecord());
 }
 
 }  // namespace ash
