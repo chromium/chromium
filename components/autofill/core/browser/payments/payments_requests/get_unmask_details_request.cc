@@ -35,17 +35,15 @@ std::string GetUnmaskDetailsRequest::GetRequestContentType() {
 }
 
 std::string GetUnmaskDetailsRequest::GetRequestContent() {
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("language_code", base::Value(app_locale_));
-  context.SetKey("billable_service",
-                 base::Value(kUnmaskCardBillableServiceNumber));
-  request_dict.SetKey("context", std::move(context));
+  base::Value::Dict request_dict;
+  base::Value::Dict context;
+  context.Set("language_code", app_locale_);
+  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+  request_dict.Set("context", std::move(context));
 
-  base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-  chrome_user_context.SetKey("full_sync_enabled",
-                             base::Value(full_sync_enabled_));
-  request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
   std::string request_content;
   base::JSONWriter::Write(request_dict, &request_content);
@@ -67,8 +65,7 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
 
   const absl::optional<bool> offer_fido_opt_in =
       response.FindBool("offer_fido_opt_in");
-  unmask_details_.offer_fido_opt_in =
-      offer_fido_opt_in.has_value() && *offer_fido_opt_in;
+  unmask_details_.offer_fido_opt_in = offer_fido_opt_in.value_or(false);
 
   const base::Value::Dict* dictionary_value =
       response.FindDict("fido_request_options");

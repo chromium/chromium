@@ -74,7 +74,7 @@ class LegalMessageLine {
  private:
   friend class TestLegalMessageLine;
 
-  bool ParseLine(const base::Value& line, bool escape_apostrophes);
+  bool ParseLine(const base::Value::Dict& line, bool escape_apostrophes);
 
   std::u16string text_;
   Links links_;

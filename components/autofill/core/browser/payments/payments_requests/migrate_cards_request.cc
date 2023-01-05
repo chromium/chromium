@@ -97,8 +97,8 @@ void MigrateCardsRequest::ParseResponse(const base::Value::Dict& response) {
       std::make_unique<std::unordered_map<std::string, std::string>>();
   for (const base::Value& result : *found_list) {
     if (result.is_dict()) {
-      const std::string* unique_id = result.FindStringKey("unique_id");
-      const std::string* status = result.FindStringKey("status");
+      const std::string* unique_id = result.GetDict().FindString("unique_id");
+      const std::string* status = result.GetDict().FindString("status");
       save_result_->insert(
           std::make_pair(unique_id ? *unique_id : std::string(),
                          status ? *status : std::string()));
