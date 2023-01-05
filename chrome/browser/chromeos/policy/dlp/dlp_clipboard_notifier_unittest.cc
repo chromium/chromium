@@ -82,7 +82,8 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
                           const std::u16string& text));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD2(CloseWidget,
-               void(views::Widget* widget, views::Widget::ClosedReason reason));
+               void(MayBeDangling<views::Widget> widget,
+                    views::Widget::ClosedReason reason));
 
   void SetPasteCallback(base::OnceCallback<void(bool)> paste_cb) override {
     paste_cb_ = std::move(paste_cb);

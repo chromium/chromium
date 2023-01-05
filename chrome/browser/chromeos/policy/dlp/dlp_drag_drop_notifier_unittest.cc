@@ -39,7 +39,8 @@ class MockDlpDragDropNotifier : public DlpDragDropNotifier {
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
                     base::RepeatingCallback<void(views::Widget*)> cancel_cb));
   MOCK_METHOD2(CloseWidget,
-               void(views::Widget* widget, views::Widget::ClosedReason reason));
+               void(MayBeDangling<views::Widget> widget,
+                    views::Widget::ClosedReason reason));
 
   void SetPasteCallback(base::OnceCallback<void(bool)> paste_cb) override {
     paste_cb_ = std::move(paste_cb);

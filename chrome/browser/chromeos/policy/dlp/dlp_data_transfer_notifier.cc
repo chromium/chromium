@@ -132,7 +132,9 @@ void DlpDataTransferNotifier::ShowBlockBubble(const std::u16string& text) {
       widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
   bubble->SetDismissCallback(base::BindRepeating(
       &DlpDataTransferNotifier::CloseWidget, base::Unretained(this),
-      widget_.get(), views::Widget::ClosedReason::kCancelButtonClicked));
+      // This is safe. CloseWidget() has sufficient checks to test its validity.
+      base::UnsafeDangling(widget_.get()),
+      views::Widget::ClosedReason::kCancelButtonClicked));
   ResizeAndShowWidget(bubble->GetBubbleSize(), kClipboardDlpBlockDurationMs);
 }
 
@@ -150,7 +152,7 @@ void DlpDataTransferNotifier::ShowWarningBubble(
   ResizeAndShowWidget(bubble->GetBubbleSize(), kClipboardDlpWarnDurationMs);
 }
 
-void DlpDataTransferNotifier::CloseWidget(views::Widget* widget,
+void DlpDataTransferNotifier::CloseWidget(MayBeDangling<views::Widget> widget,
                                           views::Widget::ClosedReason reason) {
   if (!widget || widget != widget_.get())
     return;
@@ -188,7 +190,9 @@ void DlpDataTransferNotifier::OnWidgetDestroying(views::Widget* widget) {
 void DlpDataTransferNotifier::OnWidgetActivationChanged(views::Widget* widget,
                                                         bool active) {
   if (!active && widget->IsVisible())
-    CloseWidget(widget, views::Widget::ClosedReason::kLostFocus);
+    CloseWidget(
+        // This is safe, CloseWidget() has sufficient checks to test validity.
+        widget, views::Widget::ClosedReason::kLostFocus);
 }
 
 void DlpDataTransferNotifier::InitWidget() {
@@ -209,8 +213,15 @@ void DlpDataTransferNotifier::ResizeAndShowWidget(const gfx::Size& bubble_size,
       FROM_HERE, base::Milliseconds(timeout_duration_ms),
       base::BindOnce(
           &DlpDataTransferNotifier::CloseWidget, base::Unretained(this),
-          base::UnsafeDanglingUntriaged(
-              widget_.get()),  // Safe as DlpClipboardNotificationHelper
+          // This is safe given that `widget_` is owned by the class itself and
+          // the resource is destroyed only if InitWidget() is called again, for
+          // which case there's an additional check in CloseWidget() to compare
+          // the passed parameter against `widget_`.
+          base::UnsafeDangling(
+              widget_.get()),  // TODO(crbug.com/1381414): Remove the following
+                               // comment if outdated.
+                               //
+                               // Safe as DlpClipboardNotificationHelper
                                // owns `widget_` and outlives it.
           views::Widget::ClosedReason::kUnspecified));
 }
