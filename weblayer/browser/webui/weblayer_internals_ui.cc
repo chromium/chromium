@@ -16,14 +16,12 @@ const char kChromeUIWebLayerHost[] = "weblayer";
 
 WebLayerInternalsUI::WebLayerInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIWebLayerHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUIWebLayerHost);
   source->AddResourcePath("weblayer_internals.js", IDR_WEBLAYER_INTERNALS_JS);
   source->AddResourcePath("weblayer_internals.mojom-webui.js",
                           IDR_WEBLAYER_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_WEBLAYER_INTERNALS_HTML);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 }
 
 WebLayerInternalsUI::~WebLayerInternalsUI() = default;

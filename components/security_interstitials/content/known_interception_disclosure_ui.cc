@@ -20,8 +20,10 @@ namespace security_interstitials {
 KnownInterceptionDisclosureUI::KnownInterceptionDisclosureUI(
     content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-  content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
-      kChromeUIConnectionMonitoringDetectedHost);
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIConnectionMonitoringDetectedHost);
 
   html_source->AddLocalizedString("title", IDS_KNOWN_INTERCEPTION_TITLE);
   html_source->AddLocalizedString("pageHeader", IDS_KNOWN_INTERCEPTION_HEADER);
@@ -39,10 +41,6 @@ KnownInterceptionDisclosureUI::KnownInterceptionDisclosureUI(
   html_source->AddResourcePath("images/2x/triangle_red.png",
                                IDR_KNOWN_INTERCEPTION_ICON_2X_PNG);
   html_source->SetDefaultResource(IDR_KNOWN_INTERCEPTION_HTML);
-
-  content::BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source);
 }
 
 KnownInterceptionDisclosureUI::~KnownInterceptionDisclosureUI() = default;

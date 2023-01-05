@@ -114,12 +114,9 @@ class UntrustedExampleUI : public ui::UntrustedWebUIController {
 
     // Create a URLDataSource and add resources.
     auto* untrusted_source =
-      content::WebUIDataSource::Create(kUntrustedExampleURL);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(), kUntrustedExampleURL);
     untrusted_source->AddResourcePath(...);
-
-    // Register the URLDataSource
-    auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-    content::WebUIDataSource::Add(browser_context, untrusted_source);
   }
 
   UntrustedExampleUI(const UntrustedExampleUI&) = delete;

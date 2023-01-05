@@ -56,7 +56,8 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
   explicit MojoFileSystemAccessUI(content::WebUI* web_ui)
       : ui::MojoWebUIController(web_ui), receiver_(this) {
     content::WebUIDataSource* data_source =
-        content::WebUIDataSource::Create(kTestWebUIHost);
+        content::WebUIDataSource::CreateAndAdd(
+            web_ui->GetWebContents()->GetBrowserContext(), kTestWebUIHost);
     data_source->SetDefaultResource(IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
     data_source->AddResourcePath(
@@ -64,8 +65,6 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
         IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_MOJOM_WEBUI_JS);
     data_source->AddResourcePath("mojo_file_system_access_test.js",
                                  IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_JS);
-    content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                  data_source);
   }
 
   MojoFileSystemAccessUI(const MojoFileSystemAccessUI&) = delete;
@@ -123,11 +122,10 @@ class OrdinaryMojoWebUI : public ui::MojoWebUIController {
   explicit OrdinaryMojoWebUI(content::WebUI* web_ui)
       : ui::MojoWebUIController(web_ui) {
     content::WebUIDataSource* data_source =
-        content::WebUIDataSource::Create(kOrdinaryWebUIHost);
+        content::WebUIDataSource::CreateAndAdd(
+            web_ui->GetWebContents()->GetBrowserContext(), kOrdinaryWebUIHost);
     data_source->DisableContentSecurityPolicy();
     data_source->SetDefaultResource(IDR_MOJO_JS_INTERFACE_BROKER_TEST_BUZ_HTML);
-    content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                  data_source);
   }
 };
 

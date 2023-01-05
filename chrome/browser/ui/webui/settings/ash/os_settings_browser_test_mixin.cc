@@ -61,8 +61,8 @@ OSSettingsBrowserTestMixin::OSSettingsUIProvider::NewWebUI(
     content::WebUI* web_ui,
     const GURL& url) {
   auto controller = std::make_unique<OSSettingsUI>(web_ui);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                webui::CreateWebUITestDataSource());
+  webui::CreateAndAddWebUITestDataSource(
+      web_ui->GetWebContents()->GetBrowserContext());
   return controller;
 }
 

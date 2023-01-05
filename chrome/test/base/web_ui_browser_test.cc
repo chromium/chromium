@@ -470,8 +470,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 
     // Register data sources for chrome://webui-test/ URLs
     // e.g. `chrome://webui-test/chai_assert.js`.
-    content::WebUIDataSource* source = webui::CreateWebUITestDataSource();
-    content::WebUIDataSource::Add(browser()->profile(), source);
+    webui::CreateAndAddWebUITestDataSource(browser()->profile());
   }
 
   test_factory_ = std::make_unique<TestChromeWebUIControllerFactory>();

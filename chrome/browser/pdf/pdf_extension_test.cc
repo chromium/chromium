@@ -1008,8 +1008,7 @@ class PDFExtensionJSTest : public PDFExtensionTest {
         pak_path, ui::kScaleFactorNone);
 
     // Register the chrome://webui-test data source.
-    content::WebUIDataSource::Add(browser()->profile(),
-                                  webui::CreateWebUITestDataSource());
+    webui::CreateAndAddWebUITestDataSource(browser()->profile());
   }
 
   void RunTestsInJsModule(const std::string& filename,

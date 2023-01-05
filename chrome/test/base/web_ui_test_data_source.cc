@@ -8,15 +8,17 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/data/grit/webui_generated_test_resources.h"
 #include "chrome/test/data/grit/webui_generated_test_resources_map.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_resources.h"
 
 namespace webui {
 
-content::WebUIDataSource* CreateWebUITestDataSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIWebUITestHost);
+content::WebUIDataSource* CreateAndAddWebUITestDataSource(
+    content::BrowserContext* browser_context) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, chrome::kChromeUIWebUITestHost);
 
   webui::EnableTrustedTypesCSP(source);
   source->OverrideContentSecurityPolicy(

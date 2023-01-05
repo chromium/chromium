@@ -44,8 +44,8 @@ class TestWebUIProvider
     // Loader.
     auto* profile = Profile::FromWebUI(web_ui);
     content::WebUIDataSource* files_swa_source =
-        content::WebUIDataSource::Create(
-            ash::file_manager::kChromeUIFileManagerHost);
+        content::WebUIDataSource::CreateAndAdd(
+            profile, ash::file_manager::kChromeUIFileManagerHost);
 
     files_swa_source->AddResourcePaths(base::make_span(
         kFileManagerSwaResources, kFileManagerSwaResourcesSize));
@@ -60,8 +60,6 @@ class TestWebUIProvider
     AddFileManagerFeatureStrings("en-US", Profile::FromWebUI(web_ui), &dict_);
     files_swa_source->AddLocalizedStrings(dict_);
     files_swa_source->UseStringsJs();
-
-    content::WebUIDataSource::Add(profile, files_swa_source);
 
     return std::make_unique<content::WebUIController>(web_ui);
   }

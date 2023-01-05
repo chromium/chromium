@@ -167,7 +167,9 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // Set up the chrome://hello-world source.
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIHelloWorldHost);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          chrome::kChromeUIHelloWorldHost);
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {
@@ -188,10 +190,6 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   };
   source->AddResourcePaths(kResources);
   html_source->SetDefaultResource(IDR_HELLO_WORLD_HTML);
-
-  content::BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source);
 }
 
 HelloWorldUI::~HelloWorldUI() {

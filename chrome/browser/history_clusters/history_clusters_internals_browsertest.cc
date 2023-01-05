@@ -33,12 +33,11 @@ void SetUpWebUIDataSource(content::WebUI* web_ui,
                           const char* web_ui_host,
                           base::span<const webui::ResourcePath> resources,
                           int default_resource) {
-  auto source = base::WrapUnique(content::WebUIDataSource::Create(web_ui_host));
-  webui::SetupWebUIDataSource(source.get(), resources, default_resource);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), web_ui_host);
+  webui::SetupWebUIDataSource(source, resources, default_resource);
   // Disable CSP for tests so that EvalJS can be invoked without CSP violations.
   source->DisableContentSecurityPolicy();
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source.release());
 }
 
 class TestWebUIControllerFactory : public content::WebUIControllerFactory {

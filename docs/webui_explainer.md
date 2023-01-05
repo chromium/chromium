@@ -129,10 +129,11 @@ class DonutsUI : public content::WebUIController {
  public:
   DonutsUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
     content::WebUIDataSource* source =
-        content::WebUIDataSource::Create("donuts");  // "donuts" == hostname
+        content::WebUIDataSource::CreateAndAdd(
+            web_ui->GetWebContents()->GetBrowserContext(),
+            "donuts");  // "donuts" == hostname
     source->AddString("mmmDonuts", "Mmm, donuts!");  // Translations.
     source->AddResourcePath("", IDR_DONUTS_HTML);  // Home page.
-    content::WebUIDataSource::Add(source);
 
     // Handles messages from JavaScript to C++ via chrome.send().
     web_ui->AddMessageHandler(std::make_unique<OvenHandler>());
@@ -220,7 +221,8 @@ Below is an example of a simple data source (in this case, Chrome's history
 page):
 
 ```c++
-content::WebUIDataSource* source = content::WebUIDataSource::Create("history");
+content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+    Profile::FromWebUI(web_ui), "history");
 
 source->AddResourcePath("sign_in_promo.svg", IDR_HISTORY_SIGN_IN_PROMO_SVG);
 source->AddResourcePath("synced_tabs.html", IDR_HISTORY_SYNCED_TABS_HTML);
@@ -234,8 +236,6 @@ source->AddBoolean("showDateRanges",
 webui::SetupWebUIDataSource(
     source, base::make_span(kHistoryResources, kHistoryResourcesSize),
     kGeneratedPath, IDR_HISTORY_HISTORY_HTML);
-
-content::WebUIDataSource::Add(source);
 ```
 
 For more about each of the methods called on `WebUIDataSource` and the utility
@@ -279,18 +279,13 @@ $('bakeDonutsButton').onclick = function() {
 
 ## Data Sources
 
-### WebUIDataSource::Create()
+### WebUIDataSource::CreateAndAdd()
 
-This is a factory method required to create a WebUIDataSource instance. The
-argument to `Create()` is typically the host name of the page. Caller owns the
-result.
+This is a factory method required to create and add a WebUIDataSource. The first
+argument to `Create()` is the browser context. The second argument is typically
+the host name of the page. The caller does not own the result.
 
-### WebUIDataSource::Add()
-
-Once you've created and added some things to a data source, it'll need to be
-"added". This means transferring ownership. In practice, the data source is
-created in the browser process on the UI thread and transferred to the IO
-thread. Additionally, calling `Add()` will overwrite any existing data source
+Additionally, calling `CreateAndAdd()` will overwrite any existing data source
 with the same name.
 
 <div class="note">
