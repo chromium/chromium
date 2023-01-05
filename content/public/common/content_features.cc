@@ -311,11 +311,6 @@ BASE_FEATURE(kEarlyEstablishGpuChannel,
              "EarlyEstablishGpuChannel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable Early Hints subresource preloads for navigation.
-BASE_FEATURE(kEarlyHintsPreloadForNavigation,
-             "EarlyHintsPreloadForNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Requires documents embedded via <iframe>, etc, to explicitly opt-into the
 // embedding: https://github.com/mikewest/embedding-requires-opt-in.
 BASE_FEATURE(kEmbeddingRequiresOptIn,

@@ -14,7 +14,6 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -149,8 +148,7 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
  public:
   NavigationEarlyHintsTest() {
     feature_list_.InitWithFeatures(
-        {features::kEarlyHintsPreloadForNavigation,
-         net::features::kSplitCacheByNetworkIsolationKey},
+        {net::features::kSplitCacheByNetworkIsolationKey},
         {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
          net::features::kEnableDoubleKeyNetworkAnonymizationKey});
   }
@@ -748,31 +746,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ASSERT_FALSE(is_cached.value());
 }
 
-class NavigationEarlyHintsPreconnectTest
-    : public NavigationEarlyHintsTest,
-      public testing::WithParamInterface<bool> {
- public:
-  NavigationEarlyHintsPreconnectTest() {
-    if (!IsPreconnectEnabled()) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kEarlyHintsPreloadForNavigation,
-          {{"enable_preconnect", "false"}});
-    }
-  }
-
-  ~NavigationEarlyHintsPreconnectTest() override = default;
-
- protected:
-  bool IsPreconnectEnabled() { return GetParam(); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         NavigationEarlyHintsPreconnectTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(NavigationEarlyHintsPreconnectTest, SimplePreconnect) {
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, SimplePreconnect) {
   const char kPageWithPreconnect[] = "/page_with_preconnect.html";
   const GURL kPreconnectUrl = cross_origin_server().GetURL("/");
   ResponseEntry page_entry(kPageWithPreconnect, net::HTTP_OK);
@@ -786,11 +760,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEarlyHintsPreconnectTest, SimplePreconnect) {
       shell(), net::QuicSimpleTestServer::GetFileURL(kPageWithPreconnect)));
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  if (IsPreconnectEnabled()) {
-    EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 1UL);
-  } else {
-    EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 0UL);
-  }
+  EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 1UL);
   EXPECT_TRUE(
       GetEarlyHintsManager(static_cast<RenderFrameHostImpl*>(
                                shell()->web_contents()->GetPrimaryMainFrame()))
@@ -860,120 +830,6 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsAddressSpaceTest,
   EXPECT_EQ(it->second.cors_error_status->cors_error,
             network::mojom::CorsError::kInsecurePrivateNetwork);
 }
-
-enum class FieldTrialTestingMode {
-  kDisabled,
-  kForceDisabled,
-  kEnabled,
-};
-
-std::string FieldTrialTestingModeToString(
-    const testing::TestParamInfo<FieldTrialTestingMode>& info) {
-  switch (info.param) {
-    case FieldTrialTestingMode::kDisabled:
-      return "FieldTrialDisabled";
-    case FieldTrialTestingMode::kForceDisabled:
-      return "FieldTrialForceDisabled";
-    case FieldTrialTestingMode::kEnabled:
-      return "FieldTrialEnabled";
-  }
-}
-
-class NavigationEarlyHintsOriginTrialTest
-    : public NavigationEarlyHintsTest,
-      public testing::WithParamInterface<FieldTrialTestingMode> {
- public:
-  NavigationEarlyHintsOriginTrialTest() = default;
-  ~NavigationEarlyHintsOriginTrialTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NavigationEarlyHintsTest::SetUpCommandLine(command_line);
-    feature_list().Reset();
-    switch (GetFieldTrialTestingMode()) {
-      case FieldTrialTestingMode::kDisabled:
-        feature_list().InitWithFeatures(
-            {net::features::kSplitCacheByNetworkIsolationKey},
-            {features::kEarlyHintsPreloadForNavigation});
-        break;
-      case FieldTrialTestingMode::kForceDisabled:
-        feature_list().InitWithFeaturesAndParameters(
-            /*enabled_features=*/{{features::kEarlyHintsPreloadForNavigation,
-                                   {{"force_disable", "true"}}},
-                                  {net::features::
-                                       kSplitCacheByNetworkIsolationKey,
-                                   {}}},
-            /*disabled_features=*/{});
-        break;
-      case FieldTrialTestingMode::kEnabled:
-        feature_list().InitWithFeatures(
-            {net::features::kSplitCacheByNetworkIsolationKey,
-             features::kEarlyHintsPreloadForNavigation},
-            {});
-        break;
-    }
-  }
-
-  void SetUpOnMainThread() override {
-    NavigationEarlyHintsTest::SetUpOnMainThread();
-    url_loader_interceptor_ =
-        std::make_unique<URLLoaderInterceptor>(base::BindRepeating(
-            &NavigationEarlyHintsOriginTrialTest::InterceptRequest,
-            base::Unretained(this)));
-  }
-
-  void TearDownOnMainThread() override {
-    url_loader_interceptor_.reset();
-    NavigationEarlyHintsTest::TearDownOnMainThread();
-  }
-
- protected:
-  FieldTrialTestingMode GetFieldTrialTestingMode() { return GetParam(); }
-
-  bool NavigateToTestPageAndCheckPreloadTriggered() {
-    EXPECT_TRUE(NavigateToURLAndWaitTitle(GetUrl("/"), "Done"));
-    PreloadedResources preloaded_resources = WaitForPreloadedResources();
-    return preloaded_resources.size() > 0;
-  }
-
- private:
-  GURL GetUrl(const std::string& path) {
-    return GURL("https://example.test/").Resolve(path);
-  }
-
-  // URLLoaderInterceptor callback
-  bool InterceptRequest(URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url.path() == "/") {
-      // Send an Early Hints response.
-      auto link_header = network::mojom::LinkHeader::New(
-          GetUrl(kHintedScriptPath), network::mojom::LinkRelAttribute::kPreload,
-          network::mojom::LinkAsAttribute::kScript,
-          network::mojom::CrossOriginAttribute::kUnspecified,
-          /*mime_type=*/absl::nullopt);
-      auto hints = network::mojom::EarlyHints::New();
-      hints->headers = network::mojom::ParsedHeaders::New();
-      hints->headers->link_headers.push_back(std::move(link_header));
-      params->client->OnReceiveEarlyHints(std::move(hints));
-
-      // Send the final response.
-      std::string headers =
-          base::StrCat({"HTTP/1.1 200 OK\n", "Content-Type: text/html\n",
-                        "Link: </hinted.js>; rel=preload; as=script\n", "\n"});
-      URLLoaderInterceptor::WriteResponse(headers, kPageWithHintedScriptBody,
-                                          params->client.get());
-      return true;
-    } else if (params->url_request.url.path() == "/hinted.js") {
-      std::string headers = base::StrCat(
-          {"HTTP/1.1 200 OK\n", "Content-Type: application/javascript\n",
-           "Cache-Control: max-age=3600\n", "\n"});
-      URLLoaderInterceptor::WriteResponse(headers, kHintedScriptBody,
-                                          params->client.get());
-      return true;
-    }
-    return false;
-  }
-
-  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
-};
 
 class NavigationEarlyHintsPrerenderTest : public NavigationEarlyHintsTest {
  public:

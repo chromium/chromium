@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -97,8 +96,6 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   ~NavigationEarlyHintsManagerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kEarlyHintsPreloadForNavigation);
     fake_network_context_ = std::make_unique<FakeNetworkContext>();
     early_hints_manager().SetNetworkContextForTesting(
         fake_network_context_.get());
@@ -157,8 +154,6 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   TestStoragePartition storage_partition_;

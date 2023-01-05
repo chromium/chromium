@@ -4,9 +4,7 @@
 
 #include "content/browser/loader/navigation_early_hints_manager.h"
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_context.h"
@@ -14,7 +12,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -82,16 +79,6 @@ const net::NetworkTrafficAnnotationTag kEarlyHintsPreloadTrafficAnnotation =
       "disabled. Using either URLBlocklist or URLAllowlist (or a combination "
       "of both) limits the scope of these requests."
 )");
-
-bool IsDisabledEarlyHintsPreloadForcibly() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kEarlyHintsPreloadForNavigation, "force_disable", false);
-}
-
-bool IsEnabledEarlyHintsPreconnect() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kEarlyHintsPreloadForNavigation, "enable_preconnect", true);
-}
 
 network::mojom::CSPDirectiveName LinkAsAttributeToCSPDirective(
     network::mojom::LinkAsAttribute attr) {
@@ -493,9 +480,6 @@ void NavigationEarlyHintsManager::MaybePreconnect(
     const network::mojom::LinkHeaderPtr& link) {
   was_resource_hints_received_ = true;
 
-  if (!IsEnabledEarlyHintsPreconnect())
-    return;
-
   if (!ShouldHandleResourceHints(link))
     return;
 
@@ -589,15 +573,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
 
 bool NavigationEarlyHintsManager::ShouldHandleResourceHints(
     const network::mojom::LinkHeaderPtr& link) {
-  if (IsDisabledEarlyHintsPreloadForcibly())
-    return false;
-
-  if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
-    return false;
-
   if (!link->href.SchemeIsHTTPOrHTTPS())
     return false;
-
   return true;
 }
 
