@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
+@protocol ContentSuggestionsCollectionSynchronizing;
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsHeaderCommands;
 @protocol ContentSuggestionsHeaderViewControllerDelegate;
@@ -22,12 +24,14 @@
 @protocol LensCommands;
 @class LayoutGuideCenter;
 @class PrimaryToolbarViewController;
+class ReadingListModel;
 
 // Controller for the header containing the logo and the fake omnibox, handling
 // the interactions between the header and the collection, and the rest of the
 // application.
 @interface ContentSuggestionsHeaderViewController
-    : UIViewController <NTPHomeConsumer,
+    : UIViewController <ContentSuggestionsHeaderControlling,
+                        NTPHomeConsumer,
                         LogoAnimationControllerOwnerOwner,
                         UserAccountImageUpdateDelegate>
 
@@ -45,10 +49,11 @@
 @property(nonatomic, weak) id<ContentSuggestionsHeaderViewControllerDelegate>
     delegate;
 @property(nonatomic, weak) id<ContentSuggestionsHeaderCommands> commandHandler;
+@property(nonatomic, assign) ReadingListModel* readingListModel;
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
-// `YES` when notifications indicate the omnibox is focused.
-@property(nonatomic, assign) BOOL omniboxFocused;
+// Whether the Google logo or doodle is being shown.
+@property(nonatomic, assign) BOOL logoIsShowing;
 
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.
@@ -60,57 +65,24 @@
 // `YES` if the Start Surface is currently being shown.
 @property(nonatomic, assign) BOOL isStartShowing;
 
-// `YES` if its view is visible.  When set to `NO` various UI updates are
-// ignored.
-@property(nonatomic, assign, getter=isShowing) BOOL showing;
-
 // The base view controller from which to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // The layout guide center for the current scene.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
-// Animation to expand this header in response to focusing the omnibox to match
-// the fake omnibox with the omnibox's.
-- (void)expandHeaderForFocus;
-
-// Configure the header after the focus omnibox animation has completed.
-// `finalPosition` is important since the animation could be cancelled before
-// completion.
-- (void)completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
-    (UIViewAnimatingPosition)finalPosition;
-
-// Updates the iPhone fakebox's frame based on the current scroll view `offset`
-// and `width`. `width` is the width of the screen, including the space outside
-// the safe area. The `safeAreaInsets` is relative to the view used to calculate
-// the `width`.
-- (void)updateFakeOmniboxForOffset:(CGFloat)offset
-                       screenWidth:(CGFloat)screenWidth
-                    safeAreaInsets:(UIEdgeInsets)safeAreaInsets
-            animateScrollAnimation:(BOOL)animateScrollAnimation;
-
-// Updates the fakeomnibox's width in order to be adapted to the new `width`,
-// without taking the y-position into account.
-- (void)updateFakeOmniboxForWidth:(CGFloat)width;
-
-// Returns the Y value to use for the scroll view's contentOffset when scrolling
-// the omnibox to the top of the screen.
-- (CGFloat)pinnedOffsetY;
-
 // Return the toolbar view;
 - (UIView*)toolBarView;
+
+// Animates the NTP fakebox to the focused position and focuses the real
+// omnibox.
+- (void)focusFakebox;
 
 // Sends notification to focus the accessibility of the omnibox.
 - (void)focusAccessibilityOnOmnibox;
 
-// Calls layoutIfNeeded on the header.
-- (void)layoutHeader;
-
 // Returns the height of the entire header.
 - (CGFloat)headerHeight;
-
-// Update any dynamic constraints.
-- (void)updateConstraints;
 
 // Identity disc shown in this ViewController.
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports

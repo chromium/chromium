@@ -18,6 +18,8 @@ class WebState;
 class AuthenticationService;
 class Browser;
 class ChromeAccountManagerService;
+@protocol ContentSuggestionsCollectionControlling;
+@class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
@@ -51,10 +53,13 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Recorder for the metrics related to the feed.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
-// View Controller for the NTP.
+// View Controller forthe NTP if using the refactored NTP and the Feed is
+// visible.
 // TODO(crbug.com/1114792): Create a protocol to avoid duplication and update
 // comment.
-@property(nonatomic, weak) NewTabPageViewController* NTPViewController;
+@property(nonatomic, weak) NewTabPageViewController* ntpViewController;
+@property(nonatomic, weak)
+    ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 // Mediator for the ContentSuggestions.
 // TODO(crbug.com/1403298): Replace this dependency with a delegate.
 @property(nonatomic, strong) ContentSuggestionsMediator* suggestionsMediator;

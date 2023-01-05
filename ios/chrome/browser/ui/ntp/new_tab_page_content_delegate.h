@@ -17,12 +17,6 @@
 // Handles what happens when the signin promo changes visibility in the NTP.
 - (void)signinPromoHasChangedVisibility:(BOOL)visible;
 
-// Signals to the receiver that omnibox edit state should be cancelled.
-- (void)cancelOmniboxEdit;
-
-// Signals to the receiver that the Fakebox is blurring.
-- (void)onFakeboxBlur;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

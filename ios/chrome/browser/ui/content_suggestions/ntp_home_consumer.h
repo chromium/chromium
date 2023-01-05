@@ -19,8 +19,6 @@
 - (void)setLogoVendor:(id<LogoVendor>)logoVendor;
 
 // The location bar has lost focus.
-// TODO(crbug.com/1404977): Move this to a consumer protocol directly to
-// NTPViewController.
 - (void)locationBarResignsFirstResponder;
 
 // Tell location bar has taken focus.
