@@ -267,30 +267,29 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
 
 int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     const std::string& path,
-    const int64_t total_bytes) {
+    const int64_t bytes_transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(total_bytes, 0) << " for " << Quote(path);
+  DCHECK_GE(bytes_transferred, 0) << " for " << Quote(path);
 
-  const auto it = in_progress_items_.find(path);
-  if (it == in_progress_items_.end()) {
-    // TODO(b/261530520): Items can end up in this flow when a removal is
-    // attempted on an item that wasn't tracked via an explicit pin operation.
-    // In this case, gracefully degrade by responding with the total bytes
-    // transferred. This should ideally fail as all syncing operations should be
-    // identified as they affect disk space.
-    VLOG(2) << "[InProgressSyncingItems] Cannot remove " << Quote(path);
+  const InProgressMap::node_type node = in_progress_items_.extract(path);
+  if (!node) {
+    VLOG(2) << "[InProgressSyncingItems] Ignored untracked " << Quote(path)
+            << " with size " << HumanReadableSize(bytes_transferred);
     return total_bytes_transferred_;
   }
 
-  DCHECK_EQ(it->first, path);
-  const Progress& progress = it->second;
-  LOG_IF(ERROR, progress.transferred > total_bytes)
+  DCHECK_EQ(node.key(), path);
+  const Progress& progress = node.mapped();
+  LOG_IF(ERROR, progress.transferred > bytes_transferred)
       << "[InProgressSyncingItems] Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
-      << HumanReadableSize(total_bytes) << " for " << Quote(path);
-  total_bytes_transferred_ += total_bytes - progress.transferred;
-  in_progress_items_.erase(it);
-  VLOG(3) << "[InProgressSyncingItems] Successfully removed " << Quote(path);
+      << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
+  total_bytes_transferred_ += bytes_transferred - progress.transferred;
+  LOG_IF(ERROR, progress.total != 0 && progress.total != bytes_transferred)
+      << "[InProgressSyncingItems] Expected final progress "
+      << HumanReadableSize(progress.total) << " instead of "
+      << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
+  VLOG(3) << "[InProgressSyncingItems] Stopped tracking " << Quote(path);
   return total_bytes_transferred_;
 }
 
@@ -585,6 +584,10 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot pin " << Quote(path) << ": " << status;
     state_.progress.error_count++;
+    syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
+        .WithArgs(path, 0)
+        .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
+                             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -731,24 +734,30 @@ void DriveFsPinManager::OnMetadataRetrieved(
     const mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot get metadata of " << Quote(path) << ": " << error;
+    syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
+        .WithArgs(path, 0)
+        .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
+                             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   DCHECK(metadata);
   VLOG(2) << "path: " << Quote(path) << ", metadata: " << Quote(*metadata);
 
-  if (metadata->available_offline || metadata->size == 0) {
+  if (!metadata->pinned || metadata->available_offline || metadata->size == 0) {
     const int64_t file_size =
-        (metadata->type == mojom::FileMetadata::Type::kHosted)
+        metadata->type == mojom::FileMetadata::Type::kHosted
             ? kAverageHostedFileSizeInBytes
             : metadata->size;
 
+    VLOG_IF(2, !metadata->pinned)
+        << "Skipped " << Quote(path) << ": Not pinned";
     VLOG_IF(2, metadata->available_offline)
         << "Skipped " << Quote(path) << ": Already available offline";
     VLOG_IF(2, metadata->size == 0)
         << "Skipped " << Quote(path) << ": Empty file";
     syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
-        .WithArgs(std::move(path), file_size)
+        .WithArgs(path, file_size)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
                              weak_ptr_factory_.GetWeakPtr()));
   }

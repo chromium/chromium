@@ -186,12 +186,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     // Adds an item to the map.
     void AddItem(const std::string& path);
 
-    // Removes an item from the map, if the item doesn't exist ignores the
-    // removal. Returns the total bytes transferred on every removal.
-    int64_t RemoveItem(const std::string& path, int64_t total_bytes);
+    // Removes an item from the map. Does nothing if the item is not in the map.
+    // Updates and returns the total number of bytes transferred so far.
+    int64_t RemoveItem(const std::string& path, int64_t bytes_transferred);
 
     // Adds or updates the item keyed at `path` with the new progress bytes.
-    // Returns the total bytes transferred on every update.
+    // Updates and returns the total number of bytes transferred so far.
     int64_t UpdateItem(const std::string& path,
                        int64_t bytes_transferred,
                        int64_t bytes_to_transfer);
