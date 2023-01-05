@@ -11,7 +11,10 @@
 #include <sstream>
 
 #include "base/debug/asan_invalid_access.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,6 +94,34 @@ TEST_F(AsanServiceTest, MAYBE_ShouldExitCleanly) {
   EXPECT_EXIT(AsanHeapUseAfterFree(), ExitedCleanly, "ErrorCallback1");
   EXPECT_EXIT(AsanHeapUseAfterFree(), ExitedCleanly, "ShouldExitCleanly");
   EXPECT_EXIT(AsanHeapUseAfterFree(), ExitedCleanly, "EXITING");
+}
+
+class AsanTaskTraceTest {
+ public:
+  AsanTaskTraceTest() {}
+
+  void Run() {
+    task_runner_.PostTask(
+        FROM_HERE, BindOnce(&AsanTaskTraceTest::PostingTask, Unretained(this)));
+    task_environment_.RunUntilIdle();
+  }
+
+ private:
+  void PostingTask() {
+    task_runner_.PostTask(FROM_HERE, BindOnce(&AsanHeapUseAfterFree));
+  }
+
+  test::TaskEnvironment task_environment_;
+  SingleThreadTaskRunner& task_runner_ =
+      *task_environment_.GetMainThreadTaskRunner();
+};
+
+TEST_F(AsanServiceTest, TaskTraceCallback) {
+  AsanTaskTraceTest test;
+  // Check that we get the correct task trace entries in our crash output.
+  EXPECT_DEATH(test.Run(),
+               "#0 0x.* in base::debug::AsanTaskTraceTest::PostingTask");
+  EXPECT_DEATH(test.Run(), "#1 0x.* in Run");
 }
 
 }  // namespace debug
