@@ -410,17 +410,17 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
       // search + esc -> search + esc
       {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
        SHOW_TASK_MANAGER},
-      // shift + zoom -> shift + search + F4
-      {/*trigger_on_press=*/true, ui::VKEY_F4,
+      // shift + zoom -> shift + search + F3
+      {/*trigger_on_press=*/true, ui::VKEY_F3,
        ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, TOGGLE_FULLSCREEN},
-      // zoom -> search + F4
-      {/*trigger_on_press=*/true, ui::VKEY_F4, ui::EF_COMMAND_DOWN,
+      // zoom -> search + F3
+      {/*trigger_on_press=*/true, ui::VKEY_F3, ui::EF_COMMAND_DOWN,
        TOGGLE_FULLSCREEN},
-      // brightness_up -> search + F7
-      {/*trigger_on_press=*/true, ui::VKEY_F7, ui::EF_COMMAND_DOWN,
+      // brightness_up -> search + F6
+      {/*trigger_on_press=*/true, ui::VKEY_F6, ui::EF_COMMAND_DOWN,
        BRIGHTNESS_UP},
-      // alt + brightness_up -> alt + search + F7
-      {/*trigger_on_press=*/true, ui::VKEY_F7,
+      // alt + brightness_up -> alt + search + F6
+      {/*trigger_on_press=*/true, ui::VKEY_F6,
        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
       // When [search] is part of the original accelerator, no remapping is
       // done.

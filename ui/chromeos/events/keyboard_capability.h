@@ -15,12 +15,12 @@ namespace ui {
 inline constexpr auto kLayout2TopRowKeyToFKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
-        {KeyboardCode::VKEY_BROWSER_FORWARD, KeyboardCode::VKEY_F2},
-        {KeyboardCode::VKEY_BROWSER_REFRESH, KeyboardCode::VKEY_F3},
-        {KeyboardCode::VKEY_ZOOM, KeyboardCode::VKEY_F4},
-        {KeyboardCode::VKEY_MEDIA_LAUNCH_APP1, KeyboardCode::VKEY_F5},
-        {KeyboardCode::VKEY_BRIGHTNESS_DOWN, KeyboardCode::VKEY_F6},
-        {KeyboardCode::VKEY_BRIGHTNESS_UP, KeyboardCode::VKEY_F7},
+        {KeyboardCode::VKEY_BROWSER_REFRESH, KeyboardCode::VKEY_F2},
+        {KeyboardCode::VKEY_ZOOM, KeyboardCode::VKEY_F3},
+        {KeyboardCode::VKEY_MEDIA_LAUNCH_APP1, KeyboardCode::VKEY_F4},
+        {KeyboardCode::VKEY_BRIGHTNESS_DOWN, KeyboardCode::VKEY_F5},
+        {KeyboardCode::VKEY_BRIGHTNESS_UP, KeyboardCode::VKEY_F6},
+        {KeyboardCode::VKEY_MEDIA_PLAY_PAUSE, KeyboardCode::VKEY_F7},
         {KeyboardCode::VKEY_VOLUME_MUTE, KeyboardCode::VKEY_F8},
         {KeyboardCode::VKEY_VOLUME_DOWN, KeyboardCode::VKEY_F9},
         {KeyboardCode::VKEY_VOLUME_UP, KeyboardCode::VKEY_F10},
