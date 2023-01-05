@@ -140,7 +140,7 @@ TaskQueue::~TaskQueue() {
   recordreplay::UnregisterPointer(this);
 
   // Because the refcount is threadsafe, destruction can happen at non-deterministic points.
-  recordreplay::AutoDisallowEvents disallow;
+  recordreplay::AutoDisallowEvents disallow("TaskQueue::~TaskQueue");
 
   ShutdownTaskQueueGracefully();
 }

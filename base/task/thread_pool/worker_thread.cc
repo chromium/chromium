@@ -288,7 +288,7 @@ void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
 void WorkerThread::ThreadMain() {
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (record_replay_unordered_)
-    disallow.emplace();
+    disallow.emplace("WorkerThread::ThreadMain");
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(io_thread_task_runner_);

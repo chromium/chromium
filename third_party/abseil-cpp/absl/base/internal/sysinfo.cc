@@ -59,20 +59,20 @@
 
 #include <dlfcn.h>
 
-static void* gRecordReplayBeginDisallowEventsFn;
+static void* gRecordReplayBeginDisallowEventsWithLabelFn;
 
-static void RecordReplayBeginDisallowEvents() {
-  if (!gRecordReplayBeginDisallowEventsFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEvents");
+static void RecordReplayBeginDisallowEventsWithLabel(const char* label) {
+  if (!gRecordReplayBeginDisallowEventsWithLabelFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEventsWithLabel");
     if (!fnptr) {
-      gRecordReplayBeginDisallowEventsFn = reinterpret_cast<void*>(1);
+      gRecordReplayBeginDisallowEventsWithLabelFn = reinterpret_cast<void*>(1);
       return;
     }
-    gRecordReplayBeginDisallowEventsFn = fnptr;
+    gRecordReplayBeginDisallowEventsWithLabelFn = fnptr;
   }
 
-  if (gRecordReplayBeginDisallowEventsFn != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(gRecordReplayBeginDisallowEventsFn)();
+  if (gRecordReplayBeginDisallowEventsWithLabelFn != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)(const char*)>(gRecordReplayBeginDisallowEventsWithLabelFn)(label);
   }
 }
 
@@ -387,7 +387,7 @@ int NumCPUs() {
   base_internal::LowLevelCallOnce(
       &init_num_cpus_once, []() {
         // The thread which ends up calling this can vary when replaying.
-        RecordReplayBeginDisallowEvents();
+        RecordReplayBeginDisallowEventsWithLabel("NumCPUs");
         num_cpus = GetNumCPUs();
         RecordReplayEndDisallowEvents();
       });

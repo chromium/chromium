@@ -30,20 +30,20 @@
 
 #include <dlfcn.h>
 
-static void* gRecordReplayBeginDisallowEventsFn;
+static void* gRecordReplayBeginDisallowEventsWithLabelFn;
 
-static void RecordReplayBeginDisallowEvents() {
-  if (!gRecordReplayBeginDisallowEventsFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEvents");
+static void RecordReplayBeginDisallowEventsWithLabel(const char* label) {
+  if (!gRecordReplayBeginDisallowEventsWithLabelFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEventsWithLabel");
     if (!fnptr) {
-      gRecordReplayBeginDisallowEventsFn = reinterpret_cast<void*>(1);
+      gRecordReplayBeginDisallowEventsWithLabelFn = reinterpret_cast<void*>(1);
       return;
     }
-    gRecordReplayBeginDisallowEventsFn = fnptr;
+    gRecordReplayBeginDisallowEventsWithLabelFn = fnptr;
   }
 
-  if (gRecordReplayBeginDisallowEventsFn != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(gRecordReplayBeginDisallowEventsFn)();
+  if (gRecordReplayBeginDisallowEventsWithLabelFn != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)(const char*)>(gRecordReplayBeginDisallowEventsWithLabelFn)(label);
   }
 }
 
@@ -107,7 +107,7 @@ thread_local ThreadIdentity* thread_identity_ptr = nullptr;
 void SetCurrentThreadIdentity(
     ThreadIdentity* identity, ThreadIdentityReclaimerFunction reclaimer) {
   // Setting the identity can happen at non-deterministic points.
-  RecordReplayBeginDisallowEvents();
+  RecordReplayBeginDisallowEventsWithLabel("SetCurrentThreadIdentity");
 
   assert(CurrentThreadIdentityIfPresent() == nullptr);
   // Associate our destructor.

@@ -112,7 +112,7 @@ ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label,
   }
 
   if (recordreplay::IsRecordingOrReplaying()) {
-    recordreplay::AutoDisallowEvents disallow;
+    recordreplay::AutoDisallowEvents disallow("ThreadPoolImpl::ThreadPoolImpl");
     record_replay_unordered_thread_group_ = std::make_unique<ThreadGroupImpl>(
         std::string(),
         kBackgroundPoolEnvironmentParams.name_suffix,
