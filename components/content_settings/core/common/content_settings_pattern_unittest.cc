@@ -88,13 +88,30 @@ TEST(ContentSettingsPatternTest, FromURL) {
   EXPECT_TRUE(pattern.IsValid());
   EXPECT_EQ("file:///foo/bar.html", pattern.ToString());
 
-  // WebUI schemes can't be created by FromURL, because they have no port and
-  // can't have domain wildcard.
+  // WebUI and other portless schemes shouldn't use domain wildcards.
   pattern = ContentSettingsPattern::FromURL(GURL("chrome://test"));
-  EXPECT_FALSE(pattern.IsValid());
+  EXPECT_TRUE(pattern.IsValid());
+  EXPECT_FALSE(pattern.Matches(GURL("chrome://foo.test")));
   pattern = ContentSettingsPattern::FromURL(GURL("chrome-untrusted://test"));
-  EXPECT_FALSE(pattern.IsValid());
+  EXPECT_TRUE(pattern.IsValid());
+  EXPECT_FALSE(pattern.Matches(GURL("chrome-untrusted://foo.test")));
   pattern = ContentSettingsPattern::FromURL(GURL("devtools://devtools"));
+  EXPECT_TRUE(pattern.IsValid());
+  EXPECT_FALSE(pattern.Matches(GURL("devtools://foo.devtools")));
+
+  // Ports should be ignored for portless schemes.
+  pattern = ContentSettingsPattern::FromURL(GURL("devtools://devtools"));
+  EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:80")));
+  EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:81")));
+
+  // TODO(crbug.com/1405269): Including a port with a portless scheme should
+  // return an invalid pattern.
+  pattern = ContentSettingsPattern::FromURL(GURL("devtools://devtools:80"));
+  EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:80")));
+  EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:81")));
+
+  // Unknown schemes shouldn't create valid ContentSettingsPatterns.
+  pattern = ContentSettingsPattern::FromURL(GURL("invalid://test"));
   EXPECT_FALSE(pattern.IsValid());
 }
 

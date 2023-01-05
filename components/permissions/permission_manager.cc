@@ -207,7 +207,7 @@ void PermissionManager::Shutdown() {
 
 void PermissionManager::OnEmbargoStarted(const GURL& origin,
                                          ContentSettingsType content_setting) {
-  auto primary_pattern = ContentSettingsPattern::FromURL(origin);
+  auto primary_pattern = ContentSettingsPattern::FromURLNoWildcard(origin);
   OnPermissionChanged(primary_pattern, ContentSettingsPattern::Wildcard(),
                       ContentSettingsTypeSet(content_setting));
 }
