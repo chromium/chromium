@@ -4,7 +4,11 @@
 
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 
+#include <vector>
+
 #include "base/check_op.h"
+#include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 

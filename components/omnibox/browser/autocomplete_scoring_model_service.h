@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Autocomplete scoring service using machine learning models via
 // OptimizationGuide's model handler.

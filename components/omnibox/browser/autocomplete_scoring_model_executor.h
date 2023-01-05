@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_MODEL_EXECUTOR_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_MODEL_EXECUTOR_H_
 
+#include <vector>
+
 #include "components/optimization_guide/core/base_model_executor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/tflite/src/tensorflow/lite/c/common.h"
 
 // Implements BaseModelExecutor to execute models with float vector input and
 // output. Input represents scoring signals associated one autocomplete match
