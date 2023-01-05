@@ -670,22 +670,6 @@ export class Output {
   }
 
   /** @override */
-  formatListNestedLevel_(data) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-
-    let level = 0;
-    let current = node;
-    while (current) {
-      if (current.role === RoleType.LIST) {
-        level += 1;
-      }
-      current = current.parent;
-    }
-    this.append_(buff, level.toString());
-  }
-
-  /** @override */
   formatPrecedingBullet_(data) {
     const buff = data.outputBuffer;
     const node = data.node;

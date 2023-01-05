@@ -111,7 +111,7 @@ export class OutputFormatter {
     } else if (token === 'phoneticReading') {
       this.formatPhoneticReading_(this.params_);
     } else if (token === 'listNestedLevel') {
-      this.output_.formatListNestedLevel_(this.params_);
+      this.formatListNestedLevel_(this.params_);
     } else if (token === 'precedingBullet') {
       this.output_.formatPrecedingBullet_(this.params_);
     } else if (tree.firstChild) {
@@ -474,6 +474,25 @@ export class OutputFormatter {
     this.output_.append_(buff, unjoined.join(' '), options);
     formatLog.write(
         '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @private
+   */
+  formatListNestedLevel_(data) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+
+    let level = 0;
+    let current = node;
+    while (current) {
+      if (current.role === RoleType.LIST) {
+        level += 1;
+      }
+      current = current.parent;
+    }
+    this.output_.append_(buff, level.toString());
   }
 
   /**
