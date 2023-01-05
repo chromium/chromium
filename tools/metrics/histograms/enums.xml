@@ -99560,6 +99560,18 @@ would be helpful to identify which type is being sent.
   <int value="4" label="Bottom sheet dismissed"/>
 </enum>
 
+<enum name="TouchToFill.CreditCard.TriggerOutcome">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Not shown: clicked field not focusable or not empty"/>
+  <int value="2" label="Not shown: no valid cards to display"/>
+  <int value="3" label="Not shown: form or client not secure"/>
+  <int value="4" label="Not shown: was shown before"/>
+  <int value="5" label="Not shown: could not show Autofill UI"/>
+  <int value="6"
+      label="Not shown: tried to display the sheet, but failed due to unknown
+             reason"/>
+</enum>
+
 <enum name="TouchToFill.Outcome">
   <int value="0" label="Credenential is filled"/>
   <int value="1" label="Sheet is dismissed"/>

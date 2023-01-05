@@ -13,6 +13,38 @@
 
 namespace autofill {
 
+// Enum that describes different outcomes to an attempt of triggering the
+// Touch To Fill bottom sheet for credit cards.
+// The enum values are not exhaustive to avoid excessive metric collection.
+// The cases where TTF is not shown because of other form type (not credit card)
+// or TTF being not supported are skipped.
+// Do not remove or renumber entries in this enum. It needs to be kept in
+// sync with the enum of the same name in `enums.xml`.
+enum class TouchToFillCreditCardTriggerOutcome {
+  // The sheet was shown.
+  kShown = 0,
+  // The sheet was not shown because the clicked field was not focusable or
+  // already had a value.
+  kFieldNotEmptyOrNotFocusable = 1,
+  // The sheet was not shown because there were no valid credit cards to
+  // suggest.
+  kNoValidCards = 2,
+  // The sheet was not shown because either the client or the form was not
+  // secure.
+  kFormOrClientNotSecure = 3,
+  // The sheet was not shown because it has already been shown before.
+  kShownBefore = 4,
+  // The sheet was not shown because Autofill UI cannot be shown.
+  kCannotShowAutofillUi = 5,
+  // There was a try to display the bottom sheet, but it failed due to unknown
+  // reason.
+  kFailedToDisplayBottomSheet = 6,
+  kMaxValue = kFailedToDisplayBottomSheet
+};
+
+constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
+    "Autofill.TouchToFill.CreditCard.TriggerOutcome";
+
 class AutofillDriver;
 class BrowserAutofillManager;
 

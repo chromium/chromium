@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -174,12 +175,16 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillSucceeds) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -209,6 +214,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kFormOrClientNotSecure, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -219,6 +227,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kFormOrClientNotSecure, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -238,6 +249,9 @@ TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillFailsIfWasShown) {
   touch_to_fill_delegate_->HideTouchToFill();
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectBucketCount(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kShownBefore, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -246,6 +260,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   field_.is_focusable = false;
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -254,11 +271,17 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   field_.value = u"Initial value";
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
 
   // But should ignore formatting characters.
   field_.value = u"____-____-____-____";
 
   TryToShowTouchToFill(/*expected_success=*/true);
+  histogram_tester_.ExpectBucketCount(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -267,6 +290,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   autofill_client_.GetPersonalDataManager()->ClearCreditCards();
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -291,6 +317,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   autofill_client_.GetPersonalDataManager()->AddCreditCard(cc_no_name);
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 3);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -301,6 +330,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
       test::GetExpiredCreditCard());
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -312,12 +344,18 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   autofill_client_.GetPersonalDataManager()->AddCreditCard(cc_invalid_number);
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 1);
 
   // But succeeds for existing masked server card with incomplete number.
   autofill_client_.GetPersonalDataManager()->AddCreditCard(
       test::GetMaskedServerCard());
 
   TryToShowTouchToFill(/*expected_success=*/true);
+  histogram_tester_.ExpectBucketCount(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,
@@ -326,6 +364,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   EXPECT_CALL(*autofill_driver_, CanShowAutofillUi).WillOnce(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kCannotShowAutofillUi, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillFailsIfShowFails) {
