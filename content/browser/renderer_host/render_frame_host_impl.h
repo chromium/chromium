@@ -3707,6 +3707,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the BackForwardCacheImpl for the outermost main frame.
   BackForwardCacheImpl& GetBackForwardCache();
 
+  // Return the FrameTreeNode currently owning this RenderFrameHost. In general,
+  // we don't want the RenderFrameHost to depend on it, because it might change,
+  // or might be missing. An exception is made here during unload. It is invalid
+  // to use this function elsewhere.
+  // In other cases, the use of the RenderFrameHostOwner interface should be
+  // used for communicating with the FrameTreeNode.
+  FrameTreeNode* GetFrameTreeNodeForUnload();
+
   // Stores an override of this document's base URL when it does not match the
   // last committed URL or an inherited value (e.g., if a <base> element is
   // added). This is tracked for all frames, for the purpose of GetBaseUrl. This

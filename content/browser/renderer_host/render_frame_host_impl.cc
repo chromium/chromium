@@ -4273,7 +4273,7 @@ void RenderFrameHostImpl::Detach() {
   // happens, delete the frame and both the new and old documents. Unload
   // handlers aren't guaranteed to run here.
   if (is_waiting_for_unload_ack_) {
-    parent_->RemoveChild(frame_tree_node_);
+    parent_->RemoveChild(GetFrameTreeNodeForUnload());
     return;
   }
 
@@ -4304,7 +4304,7 @@ void RenderFrameHostImpl::Detach() {
   // descendant frames to execute unload handlers. Start executing those
   // handlers now.
   StartPendingDeletionOnSubtree(PendingDeletionReason::kFrameDetach);
-  frame_tree()->FrameUnloading(frame_tree_node_);
+  frame_tree()->FrameUnloading(GetFrameTreeNodeForUnload());
 
   // Some children with no unload handler may be eligible for immediate
   // deletion. Cut the dead branches now. This is a performance optimization.
@@ -4827,7 +4827,7 @@ void RenderFrameHostImpl::DetachFromProxy() {
   // Start pending deletion on this frame and its children.
   DeleteRenderFrame(mojom::FrameDeleteIntention::kNotMainFrame);
   StartPendingDeletionOnSubtree(PendingDeletionReason::kFrameDetach);
-  frame_tree()->FrameUnloading(frame_tree_node_);
+  frame_tree()->FrameUnloading(GetFrameTreeNodeForUnload());
 
   // Some children with no unload handler may be eligible for immediate
   // deletion. Cut the dead branches now. This is a performance optimization.
@@ -5072,7 +5072,8 @@ void RenderFrameHostImpl::OnUnloaded() {
   }
 
   bool deleted =
-      frame_tree_node_->render_manager()->DeleteFromPendingList(this);
+      GetFrameTreeNodeForUnload()->render_manager()->DeleteFromPendingList(
+          this);
   CHECK(deleted);
 }
 
@@ -8788,7 +8789,7 @@ void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
       OnUnloaded();  // Delete |this|.
       // Do not add code after this.
     } else {
-      parent_->RemoveChild(frame_tree_node_);
+      parent_->RemoveChild(GetFrameTreeNodeForUnload());
     }
   }
 }
@@ -8870,7 +8871,7 @@ void RenderFrameHostImpl::ResetAllNavigationsInSubtreeForFrameDetach() {
 
 void RenderFrameHostImpl::OnUnloadTimeout() {
   DCHECK(IsPendingDeletion());
-  parent_->RemoveChild(frame_tree_node_);
+  parent_->RemoveChild(GetFrameTreeNodeForUnload());
 }
 
 void RenderFrameHostImpl::SetFocusedFrame() {
@@ -12720,24 +12721,25 @@ RenderWidgetHostImpl* RenderFrameHostImpl::GetLocalRenderWidgetHost() const {
 }
 
 void RenderFrameHostImpl::EnsureDescendantsAreUnloading() {
-  std::vector<RenderFrameHostImpl*> parents_to_be_checked = {this};
-  std::vector<RenderFrameHostImpl*> rfhs_to_be_checked;
-  while (!parents_to_be_checked.empty()) {
-    RenderFrameHostImpl* document = parents_to_be_checked.back();
-    parents_to_be_checked.pop_back();
+  std::vector<FrameTreeNode*> frame_to_remove;
+  std::vector<RenderFrameHostImpl*> rfh_to_be_checked = {this};
+  while (!rfh_to_be_checked.empty()) {
+    RenderFrameHostImpl* document = rfh_to_be_checked.back();
+    rfh_to_be_checked.pop_back();
 
-    for (auto& subframe : document->children_) {
-      RenderFrameHostImpl* child = subframe->current_frame_host();
-      // Every child is expected to be pending deletion. If it isn't the
-      // case, their FrameTreeNode is immediately removed from the tree.
-      if (!child->IsPendingDeletion())
-        rfhs_to_be_checked.push_back(child);
-      else
-        parents_to_be_checked.push_back(child);
+    // Every child is expected to be pending deletion. If it isn't the case,
+    // their FrameTreeNode is immediately removed from the tree.
+    for (auto& iframe : document->children_) {
+      if (iframe->current_frame_host()->IsPendingDeletion()) {
+        rfh_to_be_checked.push_back(iframe->current_frame_host());
+      } else {
+        frame_to_remove.push_back(iframe.get());
+      }
     }
   }
-  for (RenderFrameHostImpl* document : rfhs_to_be_checked)
-    document->parent_->RemoveChild(document->frame_tree_node());
+  for (FrameTreeNode* child : frame_to_remove) {
+    child->parent()->RemoveChild(child);
+  }
 }
 
 void RenderFrameHostImpl::AddMessageToConsoleImpl(
@@ -13549,6 +13551,11 @@ BackForwardCacheImpl& RenderFrameHostImpl::GetBackForwardCache() {
       ->frame_tree()
       ->controller()
       .GetBackForwardCache();
+}
+
+FrameTreeNode* RenderFrameHostImpl::GetFrameTreeNodeForUnload() {
+  DCHECK(IsPendingDeletion());
+  return frame_tree_node_;
 }
 
 void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
