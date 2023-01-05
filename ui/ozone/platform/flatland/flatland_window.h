@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   FlatlandWindow(const FlatlandWindow&) = delete;
   FlatlandWindow& operator=(const FlatlandWindow&) = delete;
 
+  void ResetSurfaceContent();
+
   // Embeds the Flatland identified by |token| into the scene graph.
   void AttachSurfaceContent(fuchsia::ui::views::ViewportCreationToken token);
 
