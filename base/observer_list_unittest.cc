@@ -553,7 +553,7 @@ class ListDestructor : public Foo {
   explicit ListDestructor(ObserverListType* list) : list_(list) {}
   ~ListDestructor() override = default;
 
-  void Observe(int x) override { delete list_; }
+  void Observe(int x) override { delete list_.ExtractAsDangling(); }
 
  private:
   raw_ptr<ObserverListType> list_;
@@ -819,8 +819,8 @@ TYPED_TEST(ObserverListTest, NonCompactList) {
   ObserverListFoo observer_list;
   Adder a(1), b(-1);
 
+  Disrupter disrupter2(&observer_list, true);  // Must outlive `disrupter1`.
   Disrupter disrupter1(&observer_list, true);
-  Disrupter disrupter2(&observer_list, true);
 
   // Disrupt itself and another one.
   disrupter1.SetDoomed(&disrupter2);
@@ -848,8 +848,8 @@ TYPED_TEST(ObserverListTest, BecomesEmptyThanNonEmpty) {
   ObserverListFoo observer_list;
   Adder a(1), b(-1);
 
+  Disrupter disrupter2(&observer_list, true);  // Must outlive `disrupter1`.
   Disrupter disrupter1(&observer_list, true);
-  Disrupter disrupter2(&observer_list, true);
 
   // Disrupt itself and another one.
   disrupter1.SetDoomed(&disrupter2);
