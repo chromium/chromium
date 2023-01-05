@@ -18,12 +18,12 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/child_process_host.h"
 
 using content::BrowserContext;
 using content::RenderProcessHost;

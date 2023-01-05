@@ -965,6 +965,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::TimeTicks keepalive_deadline_;
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  base::FilePath GetChildProcessPath(
+      int child_flags,
+      const base::FilePath& helpers_path) override;
+#endif  // BUILDFLAG(IS_MAC)
+
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };
 

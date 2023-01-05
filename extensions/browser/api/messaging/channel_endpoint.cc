@@ -4,9 +4,9 @@
 
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 

@@ -21,10 +21,9 @@
 #include "url/url_util.h"
 
 namespace base {
-class FilePath;
 class RefCountedMemory;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace blink {
 class OriginTrialPolicy;
@@ -177,16 +176,6 @@ class CONTENT_EXPORT ContentClient {
 
   // Returns a native image given its id.
   virtual gfx::Image& GetNativeImageNamed(int resource_id);
-
-#if BUILDFLAG(IS_MAC)
-  // Gets the path for an embedder-specific helper child process. The
-  // |child_flags| is a value greater than
-  // ChildProcessHost::CHILD_EMBEDDER_FIRST. The |helpers_path| is the location
-  // of the known //content Mac helpers in the framework bundle.
-  virtual base::FilePath GetChildProcessPath(
-      int child_flags,
-      const base::FilePath& helpers_path);
-#endif  // BUILDFLAG(IS_MAC)
 
   // Called by content::GetProcessTypeNameInEnglish for process types that it
   // doesn't know about because they're from the embedder.

@@ -2377,6 +2377,16 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Called when optionally blockable insecure content is displayed on a secure
   // page (resulting in mixed content).
   virtual void OnDisplayInsecureContent(WebContents* web_contents) {}
+
+#if BUILDFLAG(IS_MAC)
+  // Gets the path for an embedder-specific helper child process. The
+  // |child_flags| is a value greater than
+  // ChildProcessHost::CHILD_EMBEDDER_FIRST. The |helpers_path| is the location
+  // of the known //content Mac helpers in the framework bundle.
+  virtual base::FilePath GetChildProcessPath(
+      int child_flags,
+      const base::FilePath& helpers_path);
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace content

@@ -5,11 +5,11 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 
 #include "base/no_destructor.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

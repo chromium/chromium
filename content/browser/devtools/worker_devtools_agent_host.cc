@@ -15,7 +15,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 namespace content {
 

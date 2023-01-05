@@ -11,8 +11,8 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/geometry/point.h"
 

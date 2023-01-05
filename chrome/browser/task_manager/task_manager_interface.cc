@@ -15,7 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_dialogs.h"

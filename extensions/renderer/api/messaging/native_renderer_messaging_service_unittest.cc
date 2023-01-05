@@ -8,7 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/common/content_constants.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
@@ -158,7 +158,7 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
       MessagingEndpoint::ForExtension(extension()->id());
   external_connection_info.source_url = source_url;
   external_connection_info.guest_process_id =
-      content::ChildProcessHost::kInvalidUniqueID;
+      content::kInvalidChildProcessUniqueId;
   external_connection_info.guest_render_frame_routing_id = 0;
 
   const char kAddListener[] =
@@ -503,7 +503,7 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
       MessagingEndpoint::ForExtension(extension()->id());
   external_connection_info.source_url = source_url;
   external_connection_info.guest_process_id =
-      content::ChildProcessHost::kInvalidUniqueID;
+      content::kInvalidChildProcessUniqueId;
   external_connection_info.guest_render_frame_routing_id = 0;
 
   // Open a receiver for the message.
@@ -576,7 +576,7 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
         MessagingEndpoint::ForExtension(source_id);
     external_connection_info.source_url = source_url;
     external_connection_info.guest_process_id =
-        content::ChildProcessHost::kInvalidUniqueID;
+        content::kInvalidChildProcessUniqueId;
     external_connection_info.guest_render_frame_routing_id = 0;
 
     // Open a receiver for the message.

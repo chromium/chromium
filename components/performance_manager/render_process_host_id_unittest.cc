@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/public/render_process_host_id.h"
 
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {

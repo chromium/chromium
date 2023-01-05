@@ -16,8 +16,8 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/service_process_host.h"
-#include "content/public/common/child_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExternalProcessImporterClient::ExternalProcessImporterClient(

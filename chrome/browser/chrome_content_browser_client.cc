@@ -45,6 +45,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/child_process_host_flags.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -7363,3 +7364,20 @@ bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
 }
+
+#if BUILDFLAG(IS_MAC)
+base::FilePath ChromeContentBrowserClient::GetChildProcessPath(
+    int child_flags,
+    const base::FilePath& helpers_path) {
+  std::string helper_name(chrome::kHelperProcessExecutableName);
+  if (child_flags == chrome::kChildProcessHelperAlerts) {
+    helper_name += chrome::kMacHelperSuffixAlerts;
+    return helpers_path.Append(helper_name + ".app")
+        .Append("Contents")
+        .Append("MacOS")
+        .Append(helper_name);
+  }
+  NOTREACHED() << "Unsupported child process flags!";
+  return {};
+}
+#endif  // BUILDFLAG(IS_MAC)

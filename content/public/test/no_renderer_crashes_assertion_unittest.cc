@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/no_renderer_crashes_assertion.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

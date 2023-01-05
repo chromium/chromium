@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/child_process_host_impl.h"
+#include "content/browser/child_process_host_impl.h"
 
 #include <limits>
 #include <tuple>
@@ -25,7 +25,8 @@
 #include "build/build_config.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/pseudonymization_salt.h"
-#include "content/public/common/child_process_host_delegate.h"
+#include "content/public/browser/child_process_host_delegate.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -41,7 +42,7 @@
 #include "base/linux_util.h"
 #elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
-#include "content/common/mac_helpers.h"
+#include "content/browser/mac_helpers.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -72,14 +73,16 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Use /proc/self/exe rather than our known binary path so updates
   // can't swap out the binary from underneath us.
-  if (child_path.empty() && flags & CHILD_ALLOW_SELF)
+  if (child_path.empty() && flags & CHILD_ALLOW_SELF) {
     child_path = base::FilePath(base::kProcSelfExe);
+  }
 #endif
 
   // On most platforms, the child executable is the same as the current
   // executable.
-  if (child_path.empty())
+  if (child_path.empty()) {
     base::PathService::Get(CHILD_PROCESS_EXE, &child_path);
+  }
 
 #if BUILDFLAG(IS_MAC)
   std::string child_base_name = child_path.BaseName().value();
@@ -98,7 +101,8 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
     } else if (flags == CHILD_PLUGIN) {
       child_base_name += kMacHelperSuffix_plugin;
     } else if (flags > CHILD_EMBEDDER_FIRST) {
-      return GetContentClient()->GetChildProcessPath(flags, child_path);
+      return GetContentClient()->browser()->GetChildProcessPath(flags,
+                                                                child_path);
     } else {
       NOTREACHED();
     }
@@ -144,8 +148,9 @@ ChildProcessHostImpl::~ChildProcessHostImpl() {
   // If a channel was never created than it wasn't registered and the filters
   // weren't notified. For the sake of symmetry don't call the matching teardown
   // functions. This is analogous to how RenderProcessHostImpl handles things.
-  if (!channel_)
+  if (!channel_) {
     return;
+  }
 
   for (auto& filter : filters_) {
     filter->OnChannelClosing();
@@ -156,8 +161,9 @@ ChildProcessHostImpl::~ChildProcessHostImpl() {
 void ChildProcessHostImpl::AddFilter(IPC::MessageFilter* filter) {
   filters_.push_back(filter);
 
-  if (channel_)
+  if (channel_) {
     filter->OnFilterAdded(channel_.get());
+  }
 }
 
 void ChildProcessHostImpl::BindReceiver(mojo::GenericPendingReceiver receiver) {
@@ -181,8 +187,9 @@ base::Process& ChildProcessHostImpl::GetPeerProcess() {
     const base::Process& process = delegate_->GetProcess();
     if (process.IsValid()) {
       peer_process_ = base::Process::OpenWithExtraPrivileges(process.Pid());
-      if (!peer_process_.IsValid())
+      if (!peer_process_.IsValid()) {
         peer_process_ = process.Duplicate();
+      }
       DCHECK(peer_process_.IsValid());
     }
   }
@@ -228,19 +235,22 @@ void ChildProcessHostImpl::CreateChannelMojo() {
   // Since we're initializing a legacy IPC Channel, we will use its connection
   // status to monitor child process lifetime instead of using the status of the
   // `receiver_` endpoint.
-  if (receiver_.is_bound())
+  if (receiver_.is_bound()) {
     receiver_.set_disconnect_handler(base::NullCallback());
+  }
 
   bool initialized = InitChannel();
   DCHECK(initialized);
 }
 
 bool ChildProcessHostImpl::InitChannel() {
-  if (!channel_->Connect())
+  if (!channel_->Connect()) {
     return false;
+  }
 
-  for (auto& filter : filters_)
+  for (auto& filter : filters_) {
     filter->OnFilterAdded(channel_.get());
+  }
 
   delegate_->OnChannelInitialized(channel_.get());
 
@@ -259,8 +269,9 @@ void ChildProcessHostImpl::OnDisconnectedFromChildProcess() {
   if (channel_) {
     opening_channel_ = false;
     delegate_->OnChannelError();
-    for (auto& filter : filters_)
+    for (auto& filter : filters_) {
       filter->OnChannelError();
+    }
   }
 
   // This will delete host_, which will also destroy this!
@@ -301,8 +312,9 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
   // takes care of the SPM special case while translating child process ids to
   // tracing process ids.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess))
+          switches::kSingleProcess)) {
     return memory_instrumentation::mojom::kServiceTracingProcessId;
+  }
 
   // The hash value is incremented so that the tracing id is never equal to
   // MemoryDumpManager::kInvalidTracingProcessId.
@@ -328,8 +340,9 @@ bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
     return true;
   }
 
-  if (logger->Enabled())
+  if (logger->Enabled()) {
     logger->OnPreDispatchMessage(msg);
+  }
 #endif
 
   bool handled = false;
@@ -345,8 +358,9 @@ bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
   }
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  if (logger->Enabled())
+  if (logger->Enabled()) {
     logger->OnPostDispatchMessage(msg);
+  }
 #endif
   return handled;
 }
@@ -374,8 +388,9 @@ void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
       peer_process.IsValid() ? peer_process.Pid() : base::GetCurrentProcId();
   opening_channel_ = false;
   delegate_->OnChannelConnected(pid);
-  for (auto& filter : filters_)
+  for (auto& filter : filters_) {
     filter->OnChannelConnected(pid);
+  }
 }
 
 void ChildProcessHostImpl::OnChannelError() {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_CHILD_PROCESS_HOST_H_
-#define CONTENT_PUBLIC_COMMON_CHILD_PROCESS_HOST_H_
+#ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_HOST_H_
+#define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_HOST_H_
 
 #include <stdint.h>
 
@@ -14,6 +14,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/common/content_constants.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,7 +52,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
 
   // This is a value never returned as the unique id of any child processes of
   // any kind, including the values returned by RenderProcessHost::GetID().
-  enum : int { kInvalidUniqueID = -1 };
+  enum : int { kInvalidUniqueID = kInvalidChildProcessUniqueId };
 
   // Every ChildProcessHost provides a single primordial Mojo message pipe to
   // the launched child process, with the other end held by the
@@ -209,4 +210,4 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_COMMON_CHILD_PROCESS_HOST_H_
+#endif  // CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_HOST_H_

@@ -271,6 +271,7 @@ static_library("browser") {
     "browsing_topics/browsing_topics_service_factory.h",
     "cart/commerce_hint_service.cc",
     "cart/commerce_hint_service.h",
+    "child_process_host_flags.h",
     "chooser_controller/title_util.cc",
     "chooser_controller/title_util.h",
     "chrome_browser_field_trials.cc",

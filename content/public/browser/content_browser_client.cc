@@ -1422,4 +1422,13 @@ bool ContentBrowserClient::IsFileSystemURLNavigationAllowed(
   return false;
 }
 
+#if BUILDFLAG(IS_MAC)
+base::FilePath ContentBrowserClient::GetChildProcessPath(
+    int child_flags,
+    const base::FilePath& helpers_path) {
+  NOTIMPLEMENTED();
+  return base::FilePath();
+}
+#endif
+
 }  // namespace content

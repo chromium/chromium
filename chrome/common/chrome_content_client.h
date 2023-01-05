@@ -70,11 +70,6 @@ class ChromeContentClient : public content::ContentClient {
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   std::string GetDataResourceString(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
-#if BUILDFLAG(IS_MAC)
-  base::FilePath GetChildProcessPath(
-      int child_flags,
-      const base::FilePath& helpers_path) override;
-#endif  // BUILDFLAG(IS_MAC)
   std::string GetProcessTypeNameInEnglish(int type) override;
   blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
 #if BUILDFLAG(IS_ANDROID)

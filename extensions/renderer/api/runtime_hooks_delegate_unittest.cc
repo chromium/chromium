@@ -8,7 +8,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/common/child_process_host.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"

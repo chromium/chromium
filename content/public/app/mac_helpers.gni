@@ -8,7 +8,7 @@
 # requirements of the process.
 #
 # This list should be kept in sync with the enum options defined in
-# //content/public/common/child_process_host.h.
+# //content/public/browser/child_process_host.h.
 #
 # Each element of the list list is a tuple representing a helper variant. The
 # elements of the tuple are:

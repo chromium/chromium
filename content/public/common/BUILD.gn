@@ -155,8 +155,6 @@ source_set("common_sources") {
     "bindings_policy.h",
     "cdm_info.cc",
     "cdm_info.h",
-    "child_process_host.h",
-    "child_process_host_delegate.h",
     "color_parser.h",
     "common_param_traits.cc",
     "common_param_traits.h",

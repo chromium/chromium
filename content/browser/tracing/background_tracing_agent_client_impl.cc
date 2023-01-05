@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include "base/memory/ptr_util.h"
+#include "content/browser/child_process_host_impl.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/common/child_process_host_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {

@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/child_process_host_flags.h"
 #include "chrome/common/child_process_logging.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -320,23 +319,6 @@ gfx::Image& ChromeContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
 }
-
-#if BUILDFLAG(IS_MAC)
-base::FilePath ChromeContentClient::GetChildProcessPath(
-    int child_flags,
-    const base::FilePath& helpers_path) {
-  std::string helper_name(chrome::kHelperProcessExecutableName);
-  if (child_flags == chrome::kChildProcessHelperAlerts) {
-    helper_name += chrome::kMacHelperSuffixAlerts;
-    return helpers_path.Append(helper_name + ".app")
-        .Append("Contents")
-        .Append("MacOS")
-        .Append(helper_name);
-  }
-  NOTREACHED() << "Unsupported child process flags!";
-  return {};
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
 #if BUILDFLAG(ENABLE_NACL)

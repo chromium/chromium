@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/supports_user_data.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
@@ -466,7 +466,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
       sender_builder.Set("tlsChannelId", std::string());
     }
 
-    if (info.guest_process_id != content::ChildProcessHost::kInvalidUniqueID) {
+    if (info.guest_process_id != content::kInvalidChildProcessUniqueId) {
       CHECK(Manifest::IsComponentLocation(extension->location()))
           << "GuestProcessId can only be exposed to component extensions.";
       sender_builder.Set("guestProcessId", info.guest_process_id)

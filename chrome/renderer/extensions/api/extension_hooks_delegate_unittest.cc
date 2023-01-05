@@ -5,7 +5,7 @@
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
 #include "base/strings/stringprintf.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/common/content_constants.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
@@ -193,7 +193,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
       MessagingEndpoint::ForExtension(extension()->id());
   external_connection_info.source_url = source_url;
   external_connection_info.guest_process_id =
-      content::ChildProcessHost::kInvalidUniqueID;
+      content::kInvalidChildProcessUniqueId;
   external_connection_info.guest_render_frame_routing_id = 0;
 
   // Open a receiver for the message.

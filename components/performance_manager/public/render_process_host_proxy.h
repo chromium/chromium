@@ -6,7 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RENDER_PROCESS_HOST_PROXY_H_
 
 #include "components/performance_manager/public/render_process_host_id.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 namespace content {
 class RenderProcessHost;

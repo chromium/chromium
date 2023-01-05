@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/common/child_process_host_flags.h"
+#include "chrome/browser/child_process_host_flags.h"
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "content/public/browser/service_process_host.h"

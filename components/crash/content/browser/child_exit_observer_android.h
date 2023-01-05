@@ -16,10 +16,10 @@
 #include "base/synchronization/lock.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "content/public/browser/browser_child_process_observer.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_host.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 

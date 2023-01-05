@@ -116,7 +116,6 @@ static_library("common_lib") {
   ]
   sources = [
     "all_messages.h",
-    "child_process_host_flags.h",
     "child_process_logging.h",
     "chrome_content_client.cc",
     "chrome_content_client.h",

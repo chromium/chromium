@@ -7,7 +7,7 @@
 
 #include <iosfwd>
 
-#include "content/common/child_process_host_impl.h"
+#include "content/browser/child_process_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

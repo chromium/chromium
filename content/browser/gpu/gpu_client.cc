@@ -4,8 +4,8 @@
 
 #include "content/public/browser/gpu_client.h"
 
+#include "content/browser/child_process_host_impl.h"
 #include "content/browser/gpu/browser_gpu_client_delegate.h"
-#include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

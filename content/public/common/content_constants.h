@@ -59,6 +59,10 @@ CONTENT_EXPORT extern const char kCorsExemptPurposeHeaderName[];
 // it at run time.
 CONTENT_EXPORT std::string GetCorsExemptRequestedWithHeaderName();
 
+// This is a value never returned as the unique id of any child processes of
+// any kind, including the values returned by RenderProcessHost::GetID().
+static constexpr int kInvalidChildProcessUniqueId = -1;
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The OOM score adj constants
 // The highest and lowest assigned OOM score adjustment (oom_score_adj) for

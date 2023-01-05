@@ -16,7 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"

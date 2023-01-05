@@ -20,7 +20,7 @@
 #include "components/nacl/common/nacl_switches.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"

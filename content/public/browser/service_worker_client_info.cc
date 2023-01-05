@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/service_worker_client_info.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 namespace content {
 

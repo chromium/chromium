@@ -31,8 +31,8 @@
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/push_messaging_service.h"
-#include "content/public/common/child_process_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 

@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace task_manager {

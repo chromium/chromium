@@ -14,11 +14,11 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/common/child_process_host.h"
 #include "content/public/common/referrer.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/cpp/resource_request_body.h"

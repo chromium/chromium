@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_CHILD_PROCESS_HOST_IMPL_H_
-#define CONTENT_COMMON_CHILD_PROCESS_HOST_IMPL_H_
+#ifndef CONTENT_BROWSER_CHILD_PROCESS_HOST_IMPL_H_
+#define CONTENT_BROWSER_CHILD_PROCESS_HOST_IMPL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -149,4 +149,4 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
 
 }  // namespace content
 
-#endif  // CONTENT_COMMON_CHILD_PROCESS_HOST_IMPL_H_
+#endif  // CONTENT_BROWSER_CHILD_PROCESS_HOST_IMPL_H_

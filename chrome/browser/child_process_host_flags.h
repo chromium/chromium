@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_CHILD_PROCESS_HOST_FLAGS_H_
-#define CHROME_COMMON_CHILD_PROCESS_HOST_FLAGS_H_
+#ifndef CHROME_BROWSER_CHILD_PROCESS_HOST_FLAGS_H_
+#define CHROME_BROWSER_CHILD_PROCESS_HOST_FLAGS_H_
 
 #include "build/build_config.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 namespace chrome {
 
@@ -23,4 +23,4 @@ enum ChildProcessHostFlags {
 
 }  // namespace chrome
 
-#endif  // CHROME_COMMON_CHILD_PROCESS_HOST_FLAGS_H_
+#endif  // CHROME_BROWSER_CHILD_PROCESS_HOST_FLAGS_H_

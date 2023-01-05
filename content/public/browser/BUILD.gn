@@ -101,6 +101,8 @@ source_set("browser_sources") {
     "certificate_request_result_type.h",
     "child_process_data.cc",
     "child_process_data.h",
+    "child_process_host.h",
+    "child_process_host_delegate.h",
     "child_process_launcher_utils.h",
     "child_process_security_policy.h",
     "child_process_termination_info.cc",

@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/common/child_process_host.h"
+#include "content/public/browser/child_process_host.h"
 
 namespace content {
 
