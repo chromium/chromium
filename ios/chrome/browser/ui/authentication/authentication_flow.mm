@@ -295,25 +295,12 @@ enum AuthenticationState {
     case CHECK_MERGE_CASE: {
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
       __weak AuthenticationFlow* weakSelf = self;
-      ios::CapabilitiesCallback callback =
-          ^(SystemIdentityCapabilityResult result) {
-            if (result == SystemIdentityCapabilityResult::kTrue) {
-              [weakSelf didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
-              return;
-            }
-            switch (weakSelf.postSignInAction) {
-              case POST_SIGNIN_ACTION_COMMIT_SYNC:
-                [weakSelf checkMergeCaseForUnsupervisedAccounts];
-                break;
-              case POST_SIGNIN_ACTION_NONE:
-                [weakSelf continueSignin];
-                break;
-            }
-          };
-      ios::ChromeIdentityService* identity_service =
-          ios::GetChromeBrowserProvider().GetChromeIdentityService();
-      identity_service->IsSubjectToParentalControls(_identityToSignIn,
-                                                    callback);
+      ios::GetChromeBrowserProvider()
+          .GetChromeIdentityService()
+          ->IsSubjectToParentalControls(
+              _identityToSignIn, ^(SystemIdentityCapabilityResult result) {
+                [weakSelf isSubjectToParentalControlCapabilityFetched:result];
+              });
       return;
     }
     case SHOW_MANAGED_CONFIRMATION:
@@ -379,6 +366,22 @@ enum AuthenticationState {
       return;
   }
   NOTREACHED();
+}
+
+- (void)isSubjectToParentalControlCapabilityFetched:
+    (SystemIdentityCapabilityResult)result {
+  if (result == SystemIdentityCapabilityResult::kTrue) {
+    [self didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
+    return;
+  }
+  switch (self.postSignInAction) {
+    case POST_SIGNIN_ACTION_COMMIT_SYNC:
+      [self checkMergeCaseForUnsupervisedAccounts];
+      break;
+    case POST_SIGNIN_ACTION_NONE:
+      [self continueSignin];
+      break;
+  }
 }
 
 - (void)checkMergeCaseForUnsupervisedAccounts {
