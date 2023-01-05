@@ -40,11 +40,9 @@ class ScriptState;
 class SocketCloseOptions;
 
 // UDPSocket interface from udp_socket.idl
-class MODULES_EXPORT UDPSocket final
-    : public ScriptWrappable,
-      public Socket,
-      public ActiveScriptWrappable<UDPSocket>,
-      public network::mojom::blink::UDPSocketListener {
+class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
+                                       public Socket,
+                                       public ActiveScriptWrappable<UDPSocket> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -65,7 +63,9 @@ class MODULES_EXPORT UDPSocket final
   // On net::OK initializes readable/writable streams and resolves opened
   // promise. Otherwise rejects the opened promise. Serves as callback for
   // Open(...).
-  void Init(int32_t result,
+  void Init(mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+                socket_listener,
+            int32_t result,
             const absl::optional<net::IPEndPoint>& local_addr,
             const absl::optional<net::IPEndPoint>& peer_addr);
 
@@ -77,24 +77,13 @@ class MODULES_EXPORT UDPSocket final
  private:
   mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
   GetUDPSocketReceiver();
-  mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
-  GetUDPSocketListener();
-
-  // network::mojom::blink::UDPSocketListener:
-  void OnReceived(int32_t result,
-                  const absl::optional<net::IPEndPoint>& src_addr,
-                  absl::optional<base::span<const uint8_t>> data) override;
 
   void OnServiceConnectionError() override;
-  void OnSocketConnectionError();
-
   void CloseOnError();
 
   void OnBothStreamsClosed(std::vector<ScriptValue> args);
 
   const Member<UDPSocketMojoRemote> udp_socket_;
-  HeapMojoReceiver<network::mojom::blink::UDPSocketListener, UDPSocket>
-      socket_listener_;
 };
 
 }  // namespace blink

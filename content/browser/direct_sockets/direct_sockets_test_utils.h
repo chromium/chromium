@@ -78,16 +78,16 @@ class MockUDPSocket : public network::TestUDPSocket {
 
   ~MockUDPSocket() override;
 
+  // network::TestUDPSocket:
   void Connect(const net::IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr socket_options,
                ConnectCallback callback) override;
-
   void ReceiveMore(uint32_t) override {}
-
   void Send(base::span<const uint8_t> data,
             const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
             SendCallback callback) override;
 
+  // Sends some data to the remote.
   void MockSend(int32_t result,
                 const absl::optional<base::span<uint8_t>>& data = {});
 
@@ -99,13 +99,21 @@ class MockUDPSocket : public network::TestUDPSocket {
     return receiver_;
   }
 
+  // Sets an additional callback to be run when a call to Send() arrives.
   void SetAdditionalSendCallback(base::OnceClosure additional_send_callback) {
     additional_send_callback_ = std::move(additional_send_callback);
   }
 
+  // Sets the value to run the callback supplied in Send() with.
+  // If not specified, callback will be stored and run with net::OK on class
+  // destruction.
+  void SetNextSendResult(int result) { next_send_result_ = result; }
+
  protected:
   mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
+
+  absl::optional<int> next_send_result_;
 
   SendCallback callback_;
   base::OnceClosure additional_send_callback_;

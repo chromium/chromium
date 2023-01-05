@@ -88,8 +88,7 @@ UDPSocket* UDPSocket::Create(ScriptState* script_state,
 UDPSocket::UDPSocket(ScriptState* script_state)
     : Socket(script_state),
       udp_socket_(
-          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())),
-      socket_listener_{this, GetExecutionContext()} {}
+          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())) {}
 
 UDPSocket::~UDPSocket() = default;
 
@@ -104,24 +103,33 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
 
   ConnectService();
 
+  mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+      socket_listener;
+  mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
+      socket_listener_remote = socket_listener.InitWithNewPipeAndPassRemote();
+
   service_->get()->OpenUdpSocket(
       std::move(open_udp_socket_options), GetUDPSocketReceiver(),
-      GetUDPSocketListener(),
-      WTF::BindOnce(&UDPSocket::Init, WrapPersistent(this)));
+      std::move(socket_listener_remote),
+      WTF::BindOnce(&UDPSocket::Init, WrapPersistent(this),
+                    std::move(socket_listener)));
 
   return true;
 }
 
-void UDPSocket::Init(int32_t result,
-                     const absl::optional<net::IPEndPoint>& local_addr,
-                     const absl::optional<net::IPEndPoint>& peer_addr) {
+void UDPSocket::Init(
+    mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+        socket_listener,
+    int32_t result,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK && peer_addr) {
     auto close_callback = base::BarrierCallback<ScriptValue>(
         /*num_callbacks=*/2, WTF::BindOnce(&UDPSocket::OnBothStreamsClosed,
                                            WrapWeakPersistent(this)));
 
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state_, close_callback, udp_socket_);
+        script_state_, close_callback, udp_socket_, std::move(socket_listener));
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         script_state_, close_callback, udp_socket_);
 
@@ -153,47 +161,11 @@ void UDPSocket::Init(int32_t result,
 
 mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
 UDPSocket::GetUDPSocketReceiver() {
-  return udp_socket_->get().BindNewPipeAndPassReceiver(
+  auto pending_receiver = udp_socket_->get().BindNewPipeAndPassReceiver(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
-}
-
-mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
-UDPSocket::GetUDPSocketListener() {
-  auto pending_remote = socket_listener_.BindNewPipeAndPassRemote(
-      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
-
-  socket_listener_.set_disconnect_handler(
-      WTF::BindOnce(&UDPSocket::OnSocketConnectionError, WrapPersistent(this)));
-
-  return pending_remote;
-}
-
-// Invoked when data is received.
-// - When UDPSocket is used with Bind() (i.e. when localAddress/localPort in
-// options)
-//   On success, |result| is net::OK. |src_addr| indicates the address of the
-//   sender. |data| contains the received data.
-//   On failure, |result| is a negative network error code. |data| is null.
-//   |src_addr| might be null.
-// - When UDPSocket is used with Connect():
-//   |src_addr| is always null. Data are always received from the remote
-//   address specified in Connect().
-//   On success, |result| is net::OK. |data| contains the received data.
-//   On failure, |result| is a negative network error code. |data| is null.
-//
-// Note that in both cases, |data| can be an empty buffer when |result| is
-// net::OK, which indicates a zero-byte payload.
-// For further details please refer to the
-// services/network/public/mojom/udp_socket.mojom file.
-void UDPSocket::OnReceived(int32_t result,
-                           const absl::optional<::net::IPEndPoint>& src_addr,
-                           absl::optional<::base::span<const ::uint8_t>> data) {
-  if (result != net::Error::OK) {
-    CloseOnError();
-    return;
-  }
-
-  readable_stream_wrapper_->Push(*data, src_addr);
+  udp_socket_->get().set_disconnect_handler(
+      WTF::BindOnce(&UDPSocket::CloseOnError, WrapWeakPersistent(this)));
+  return pending_receiver;
 }
 
 bool UDPSocket::HasPendingActivity() const {
@@ -202,7 +174,6 @@ bool UDPSocket::HasPendingActivity() const {
 
 void UDPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(udp_socket_);
-  visitor->Trace(socket_listener_);
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);
@@ -211,12 +182,9 @@ void UDPSocket::Trace(Visitor* visitor) const {
 
 void UDPSocket::OnServiceConnectionError() {
   if (opened_resolver_) {
-    Init(net::ERR_UNEXPECTED, absl::nullopt, absl::nullopt);
+    Init(mojo::NullReceiver(), net::ERR_UNEXPECTED, absl::nullopt,
+         absl::nullopt);
   }
-}
-
-void UDPSocket::OnSocketConnectionError() {
-  CloseOnError();
 }
 
 void UDPSocket::CloseOnError() {
@@ -240,8 +208,6 @@ void UDPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
     ResolveClosed();
   }
   CloseServiceAndResetFeatureHandle();
-
-  socket_listener_.reset();
 
   // Close the socket.
   udp_socket_->Close();

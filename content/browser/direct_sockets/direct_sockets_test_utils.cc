@@ -119,6 +119,10 @@ void MockUDPSocket::Send(
   if (additional_send_callback_) {
     std::move(additional_send_callback_).Run();
   }
+  if (next_send_result_) {
+    std::move(callback_).Run(*next_send_result_);
+    next_send_result_.reset();
+  }
 }
 
 void MockUDPSocket::MockSend(int32_t result,

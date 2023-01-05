@@ -87,18 +87,16 @@ void TCPReadableStreamWrapper::Pull() {
 
   DCHECK(data_pipe_);
 
-  const void* buffer = nullptr;
-  uint32_t buffer_num_bytes = 0;
-  auto result = data_pipe_->BeginReadData(&buffer, &buffer_num_bytes,
+  const void* data_buffer = nullptr;
+  uint32_t data_length = 0;
+  auto result = data_pipe_->BeginReadData(&data_buffer, &data_length,
                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
   switch (result) {
     case MOJO_RESULT_OK: {
-      auto chunk = base::make_span(static_cast<const uint8_t*>(buffer),
-                                   buffer_num_bytes);
-      uint32_t bytes_pushed = Push(chunk, /*src_addr=*/{});
-      DCHECK_LE(bytes_pushed, buffer_num_bytes);
-
-      result = data_pipe_->EndReadData(bytes_pushed);
+      auto* buffer = DOMUint8Array::Create(
+          static_cast<const uint8_t*>(data_buffer), data_length);
+      Controller()->Enqueue(buffer);
+      result = data_pipe_->EndReadData(data_length);
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
       break;
@@ -116,15 +114,6 @@ void TCPReadableStreamWrapper::Pull() {
       NOTREACHED() << "Unexpected result: " << result;
       return;
   }
-}
-
-uint32_t TCPReadableStreamWrapper::Push(
-    base::span<const uint8_t> data,
-    const absl::optional<net::IPEndPoint>&) {
-  auto* buffer = DOMUint8Array::Create(data.data(), data.size_bytes());
-  Controller()->Enqueue(buffer);
-
-  return static_cast<uint32_t>(data.size_bytes());
 }
 
 void TCPReadableStreamWrapper::CloseStream() {

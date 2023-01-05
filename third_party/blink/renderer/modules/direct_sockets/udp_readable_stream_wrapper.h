@@ -8,13 +8,14 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
 
@@ -22,24 +23,35 @@ class ScriptState;
 
 class MODULES_EXPORT UDPReadableStreamWrapper
     : public GarbageCollected<UDPReadableStreamWrapper>,
-      public ReadableStreamDefaultWrapper {
+      public ReadableStreamDefaultWrapper,
+      public network::mojom::blink::UDPSocketListener {
  public:
-  UDPReadableStreamWrapper(ScriptState*,
-                           CloseOnceCallback,
-                           const Member<UDPSocketMojoRemote>);
+  UDPReadableStreamWrapper(
+      ScriptState*,
+      CloseOnceCallback,
+      const Member<UDPSocketMojoRemote> udp_socket,
+      mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+          socket_listener);
 
   // ReadableStreamWrapper:
   void Pull() override;
-  uint32_t Push(base::span<const uint8_t> data,
-                const absl::optional<net::IPEndPoint>& src_addr) override;
   void CloseStream() override;
   void ErrorStream(int32_t error_code) override;
   void Trace(Visitor*) const override;
+
+  // network::mojom::blink::UDPSocketListener:
+  void OnReceived(int32_t result,
+                  const absl::optional<net::IPEndPoint>& src_addr,
+                  absl::optional<base::span<const uint8_t>> data) override;
 
  private:
   CloseOnceCallback on_close_;
   const Member<UDPSocketMojoRemote> udp_socket_;
   int32_t pending_receive_requests_ = 0;
+
+  HeapMojoReceiver<network::mojom::blink::UDPSocketListener,
+                   UDPReadableStreamWrapper>
+      socket_listener_;
 };
 
 }  // namespace blink

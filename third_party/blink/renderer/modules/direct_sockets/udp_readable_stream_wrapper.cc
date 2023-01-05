@@ -5,8 +5,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 
 #include "base/callback_forward.h"
-#include "base/notreached.h"
-#include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
@@ -14,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
@@ -40,10 +40,20 @@ constexpr uint32_t kReadableStreamBufferSize = 32;
 UDPReadableStreamWrapper::UDPReadableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    const Member<UDPSocketMojoRemote> udp_socket)
+    const Member<UDPSocketMojoRemote> udp_socket,
+    mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+        socket_listener)
     : ReadableStreamDefaultWrapper(script_state),
       on_close_(std::move(on_close)),
-      udp_socket_(udp_socket) {
+      udp_socket_(udp_socket),
+      socket_listener_(this, ExecutionContext::From(script_state)) {
+  socket_listener_.Bind(std::move(socket_listener),
+                        ExecutionContext::From(script_state)
+                            ->GetTaskRunner(TaskType::kNetworking));
+  socket_listener_.set_disconnect_handler(
+      WTF::BindOnce(&UDPReadableStreamWrapper::ErrorStream,
+                    WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
+
   ScriptState::Scope scope(script_state);
 
   auto* source =
@@ -66,29 +76,9 @@ void UDPReadableStreamWrapper::Pull() {
   }
 }
 
-uint32_t UDPReadableStreamWrapper::Push(
-    base::span<const uint8_t> data,
-    const absl::optional<net::IPEndPoint>& src_addr) {
-  DCHECK_GT(pending_receive_requests_, 0);
-  pending_receive_requests_--;
-
-  auto* buffer = DOMUint8Array::Create(data.data(), data.size_bytes());
-
-  auto* message = UDPMessage::Create();
-  message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-      NotShared<DOMUint8Array>(buffer)));
-  if (src_addr) {
-    message->setRemoteAddress(String{src_addr->ToStringWithoutPort()});
-    message->setRemotePort(src_addr->port());
-  }
-
-  Controller()->Enqueue(message);
-
-  return static_cast<uint32_t>(data.size_bytes());
-}
-
 void UDPReadableStreamWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(udp_socket_);
+  visitor->Trace(socket_listener_);
   ReadableStreamDefaultWrapper::Trace(visitor);
 }
 
@@ -98,6 +88,8 @@ void UDPReadableStreamWrapper::CloseStream() {
   }
   SetState(State::kClosed);
 
+  socket_listener_.reset();
+
   std::move(on_close_).Run(/*exception=*/ScriptValue());
 }
 
@@ -106,6 +98,8 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
   SetState(State::kAborted);
+
+  socket_listener_.reset();
 
   auto* script_state = GetScriptState();
   // Scope is needed because there's no ScriptState* on the call stack for
@@ -122,6 +116,49 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   Controller()->Error(exception);
 
   std::move(on_close_).Run(exception);
+}
+
+// Invoked when data is received.
+// - When UDPSocket is used with Bind() (i.e. when localAddress/localPort in
+// options)
+//   On success, |result| is net::OK. |src_addr| indicates the address of the
+//   sender. |data| contains the received data.
+//   On failure, |result| is a negative network error code. |data| is null.
+//   |src_addr| might be null.
+// - When UDPSocket is used with Connect():
+//   |src_addr| is always null. Data are always received from the remote
+//   address specified in Connect().
+//   On success, |result| is net::OK. |data| contains the received data.
+//   On failure, |result| is a negative network error code. |data| is null.
+//
+// Note that in both cases, |data| can be an empty buffer when |result| is
+// net::OK, which indicates a zero-byte payload.
+// For further details please refer to the
+// services/network/public/mojom/udp_socket.mojom file.
+void UDPReadableStreamWrapper::OnReceived(
+    int32_t result,
+    const absl::optional<::net::IPEndPoint>& src_addr,
+    absl::optional<::base::span<const ::uint8_t>> data) {
+  if (result != net::Error::OK) {
+    ErrorStream(result);
+    return;
+  }
+
+  DCHECK(data);
+  DCHECK_GT(pending_receive_requests_, 0);
+  pending_receive_requests_--;
+
+  auto* buffer = DOMUint8Array::Create(data->data(), data->size_bytes());
+
+  auto* message = UDPMessage::Create();
+  message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(buffer)));
+  if (src_addr) {
+    message->setRemoteAddress(String{src_addr->ToStringWithoutPort()});
+    message->setRemotePort(src_addr->port());
+  }
+
+  Controller()->Enqueue(message);
 }
 
 }  // namespace blink

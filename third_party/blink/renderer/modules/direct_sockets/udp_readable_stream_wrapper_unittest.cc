@@ -44,18 +44,26 @@ class FakeDirectUDPSocket : public blink::mojom::blink::DirectUDPSocket {
 
   void Close() override { NOTIMPLEMENTED(); }
 
-  void ProvideRequestedDatagrams(UDPReadableStreamWrapper* stream) {
+  void ProvideRequestedDatagrams() {
+    DCHECK(remote_.is_bound());
     while (num_requested_datagrams > 0) {
-      stream->Push(datagram_.Span8(),
-                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0U});
+      remote_->OnReceived(net::OK,
+                          net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0U},
+                          datagram_.Span8());
       num_requested_datagrams--;
     }
+  }
+
+  void Bind(mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
+                pending_remote) {
+    remote_.Bind(std::move(pending_remote));
   }
 
   const String& GetTestingDatagram() const { return datagram_; }
   void SetTestingDatagram(String datagram) { datagram_ = std::move(datagram); }
 
  private:
+  mojo::Remote<network::mojom::blink::UDPSocketListener> remote_;
   uint32_t num_requested_datagrams = 0;
   String datagram_{"abcde"};
 };
@@ -73,9 +81,12 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
         receiver_.BindNewPipeAndPassRemote(),
         scope.GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 
+    mojo::PendingReceiver<network::mojom::blink::UDPSocketListener> receiver;
+    fake_udp_socket_.Bind(receiver.InitWithNewPipeAndPassRemote());
+
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state, base::DoNothing(), udp_socket);
+        script_state, base::DoNothing(), udp_socket, std::move(receiver));
     return stream_wrapper_;
   }
 
@@ -138,7 +149,7 @@ TEST(UDPReadableStreamWrapperTest, ReadUdpMessage) {
   // fake_udp_socket.ProvideRequestedDiagrams().
   test::RunPendingTasks();
 
-  fake_udp_socket.ProvideRequestedDatagrams(udp_readable_stream_wrapper);
+  fake_udp_socket.ProvideRequestedDatagrams();
 
   auto* script_state = scope.GetScriptState();
   auto* reader =
@@ -177,7 +188,7 @@ TEST(UDPReadableStreamWrapperTest, ReadDelayedUdpMessage) {
   ScriptPromiseTester tester(script_state,
                              reader->read(script_state, ASSERT_NO_EXCEPTION));
 
-  fake_udp_socket.ProvideRequestedDatagrams(udp_readable_stream_wrapper);
+  fake_udp_socket.ProvideRequestedDatagrams();
 
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
@@ -203,7 +214,7 @@ TEST(UDPReadableStreamWrapperTest, ReadEmptyUdpMessage) {
 
   // Send empty datagrams.
   fake_udp_socket.SetTestingDatagram({});
-  fake_udp_socket.ProvideRequestedDatagrams(udp_readable_stream_wrapper);
+  fake_udp_socket.ProvideRequestedDatagrams();
 
   auto* script_state = scope.GetScriptState();
   auto* reader =

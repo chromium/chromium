@@ -35,8 +35,6 @@ class MODULES_EXPORT TCPReadableStreamWrapper
 
   // ReadableStreamWrapper:
   void Pull() override;
-  uint32_t Push(base::span<const uint8_t> data,
-                const absl::optional<net::IPEndPoint>&) override;
   void CloseStream() override;
   void ErrorStream(int32_t error_code) override;
   void Trace(Visitor*) const override;

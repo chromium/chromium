@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_STREAM_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_STREAM_WRAPPER_H_
 
-#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
@@ -15,10 +14,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-
-namespace net {
-class IPEndPoint;
-}  // namespace net
 
 namespace blink {
 
@@ -65,11 +60,6 @@ class ReadableStreamWrapper : public StreamWrapper {
 
   // Implements UnderlyingSource::pull(...)
   virtual void Pull() = 0;
-
-  // Enqueues the data in the stream controller queue.
-  // Returns the number of bytes enqueued.
-  virtual uint32_t Push(base::span<const uint8_t> data,
-                        const absl::optional<net::IPEndPoint>& src_addr) = 0;
 
   void Trace(Visitor*) const override;
 
