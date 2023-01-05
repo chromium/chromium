@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/input_device_pref_manager.h"
+#include "ash/system/input_device_settings/input_device_pref_manager_impl.h"
 
 #include "ash/test/ash_test_base.h"
 
@@ -19,7 +19,7 @@ class InputDevicePrefManagerTest : public AshTestBase {
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
-    controller_ = std::make_unique<InputDevicePrefManager>();
+    controller_ = std::make_unique<InputDevicePrefManagerImpl>();
   }
 
   void TearDown() override {
@@ -28,7 +28,7 @@ class InputDevicePrefManagerTest : public AshTestBase {
   }
 
  protected:
-  std::unique_ptr<InputDevicePrefManager> controller_;
+  std::unique_ptr<InputDevicePrefManagerImpl> controller_;
 };
 
 TEST_F(InputDevicePrefManagerTest, InitializationTest) {
