@@ -55,21 +55,21 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
 
 // Only RGBA formats supported by CreateSharedImage.
 absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
-    viz::SharedImageFormat si_format) {
-  switch (si_format.resource_format()) {
-    case viz::RGBA_F16:
+    viz::SharedImageFormat format) {
+  switch (format.resource_format()) {
+    case viz::ResourceFormat::RGBA_F16:
       return DXGI_FORMAT_R16G16B16A16_FLOAT;
-    case viz::BGRA_8888:
+    case viz::ResourceFormat::BGRA_8888:
       return DXGI_FORMAT_B8G8R8A8_UNORM;
-    case viz::RGBA_8888:
+    case viz::ResourceFormat::RGBA_8888:
       return DXGI_FORMAT_R8G8B8A8_UNORM;
-    case viz::RED_8:
+    case viz::ResourceFormat::RED_8:
       return DXGI_FORMAT_R8_UNORM;
-    case viz::RG_88:
+    case viz::ResourceFormat::RG_88:
       return DXGI_FORMAT_R8G8_UNORM;
-    case viz::R16_EXT:
+    case viz::ResourceFormat::R16_EXT:
       return DXGI_FORMAT_R16_UNORM;
-    case viz::RG16_EXT:
+    case viz::ResourceFormat::RG16_EXT:
       return DXGI_FORMAT_R16G16_UNORM;
     default:
       NOTREACHED();
@@ -78,15 +78,15 @@ absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
 }
 
 // Formats supported by CreateSharedImage(GMB).
-DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
-  switch (buffer_format) {
-    case gfx::BufferFormat::RGBA_8888:
+DXGI_FORMAT GetDXGIFormat(viz::SharedImageFormat format) {
+  switch (format.resource_format()) {
+    case viz::ResourceFormat::RGBA_8888:
       return DXGI_FORMAT_R8G8B8A8_UNORM;
-    case gfx::BufferFormat::BGRA_8888:
+    case viz::ResourceFormat::BGRA_8888:
       return DXGI_FORMAT_B8G8R8A8_UNORM;
-    case gfx::BufferFormat::RGBA_F16:
+    case viz::ResourceFormat::RGBA_F16:
       return DXGI_FORMAT_R16G16B16A16_FLOAT;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case viz::ResourceFormat::YUV_420_BIPLANAR:
       return DXGI_FORMAT_NV12;
     default:
       return DXGI_FORMAT_UNKNOWN;
@@ -94,13 +94,13 @@ DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
 }
 
 // Typeless formats supported by CreateSharedImage(GMB) for XR.
-DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
-  switch (buffer_format) {
-    case gfx::BufferFormat::RGBA_8888:
+DXGI_FORMAT GetDXGITypelessFormat(viz::SharedImageFormat format) {
+  switch (format.resource_format()) {
+    case viz::ResourceFormat::RGBA_8888:
       return DXGI_FORMAT_R8G8B8A8_TYPELESS;
-    case gfx::BufferFormat::BGRA_8888:
+    case viz::ResourceFormat::BGRA_8888:
       return DXGI_FORMAT_B8G8R8A8_TYPELESS;
-    case gfx::BufferFormat::RGBA_F16:
+    case viz::ResourceFormat::RGBA_F16:
       return DXGI_FORMAT_R16G16B16A16_TYPELESS;
     default:
       return DXGI_FORMAT_UNKNOWN;
@@ -110,7 +110,7 @@ DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
 scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
     DXGISharedHandleManager* dxgi_shared_handle_manager,
     gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size) {
   if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
     LOG(ERROR) << "Invalid handle with type: " << handle.type;
@@ -119,12 +119,6 @@ scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
 
   if (!handle.dxgi_token.has_value()) {
     LOG(ERROR) << "Missing token for DXGI handle";
-    return nullptr;
-  }
-
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
-    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
-               << gfx::BufferFormatToString(format);
     return nullptr;
   }
 
@@ -288,7 +282,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
   auto back_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
-      back_buffer_mailbox, format, size, color_space, surface_origin,
+      back_buffer_mailbox, si_format, size, color_space, surface_origin,
       alpha_type, usage, std::move(back_buffer_texture), swap_chain,
       /*is_back_buffer=*/true);
   if (!back_buffer_backing)
@@ -302,7 +296,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
   auto front_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
-      front_buffer_mailbox, format, size, color_space, surface_origin,
+      front_buffer_mailbox, si_format, size, color_space, surface_origin,
       alpha_type, usage, std::move(front_buffer_texture), swap_chain,
       /*is_back_buffer=*/false);
   if (!front_buffer_backing)
@@ -337,7 +331,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   // SHARED_IMAGE_USAGE_CPU_UPLOAD is set for shared memory GMBs.
   const bool is_shm_gmb = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  const auto resource_format = format.resource_format();
 
   D3D11_TEXTURE2D_DESC desc;
   desc.Width = size.width();
@@ -351,7 +344,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
   // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
   if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) &&
-      (resource_format == viz::RGBA_8888 || resource_format == viz::RGBA_F16)) {
+      (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+       format == viz::SinglePlaneFormat::kRGBA_F16)) {
     desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
   }
   if (is_shm_gmb) {
@@ -429,44 +423,51 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
+    gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
-  DCHECK_NE(GetDXGIFormat(format), DXGI_FORMAT_UNKNOWN);
-
-  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
+  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane)
-               << " for format " << gfx::BufferFormatToString(format);
+               << " for format " << gfx::BufferFormatToString(buffer_format);
+    return nullptr;
+  }
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+               << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
 
+  DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
   DCHECK(plane == gfx::BufferPlane::DEFAULT || plane == gfx::BufferPlane::Y ||
          plane == gfx::BufferPlane::UV);
 
+  auto si_format = viz::SharedImageFormat::SinglePlane(
+      viz::GetResourceFormat(buffer_format));
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
       ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
-                                  std::move(handle), format, size);
+                                  std::move(handle), si_format, size);
   if (!dxgi_shared_handle_state)
     return nullptr;
 
   auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
+  // Get format and size per plane. For multiplanar formats, `plane_format` is
+  // R/RG based on channels in plane.
   const gfx::Size plane_size = GetPlaneSize(plane, size);
-  const viz::ResourceFormat plane_format =
-      viz::GetResourceFormat(GetPlaneBufferFormat(plane, format));
-  auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
+  const viz::SharedImageFormat plane_format =
+      viz::SharedImageFormat::SinglePlane(
+          viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format)));
   const GLenum texture_target = GL_TEXTURE_2D;
   const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
 
   auto backing = D3DImageBacking::Create(
-      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
-      usage, std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
-      texture_target, /*array_slice=*/0u,
+      mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), texture_target, /*array_slice=*/0u,
       /*plane_index=*/plane_index);
   if (backing)
     backing->SetCleared();
@@ -520,8 +521,9 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
     if (!GetSupportedRGBAFormat(format))
       return false;
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {
-    if (GetDXGIFormat(ToBufferFormat(format)) == DXGI_FORMAT_UNKNOWN)
+    if (GetDXGIFormat(format) == DXGI_FORMAT_UNKNOWN) {
       return false;
+    }
   } else {
     return false;
   }

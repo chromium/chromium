@@ -212,7 +212,7 @@ D3DImageBacking::DawnExternalImageState::operator=(DawnExternalImageState&&) =
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -221,16 +221,16 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer) {
-  auto si_format = viz::SharedImageFormat::SinglePlane(format);
-  auto gl_texture = CreateGLTexture(
-      si_format, size, color_space, d3d11_texture, GL_TEXTURE_2D,
-      /*array_slice=*/0u, /*plane_index=*/0u, swap_chain);
+  DCHECK(format.is_single_plane());
+  auto gl_texture =
+      CreateGLTexture(format, size, color_space, d3d11_texture, GL_TEXTURE_2D,
+                      /*array_slice=*/0u, /*plane_index=*/0u, swap_chain);
   if (!gl_texture) {
     LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
   }
   return base::WrapUnique(new D3DImageBacking(
-      mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
       /*dxgi_shared_handle_state=*/nullptr, GL_TEXTURE_2D, /*array_slice=*/0u,
       /*plane_index=*/0u, std::move(swap_chain), is_back_buffer));
