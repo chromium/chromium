@@ -178,15 +178,24 @@ def RunXPy(sub, args, zlib_path, libxml2_dirs, build_mac_arm,
     # build for which the tool is controlled from `config.toml`, so these must
     # be duplicated there.
 
-    clang_path = os.path.join(LLVM_BUILD_DIR, 'bin')
+    clang_bin = os.path.join(LLVM_BUILD_DIR, 'bin')
     if sys.platform == 'win32':
-        RUSTENV['AR'] = os.path.join(clang_path, 'llvm-lib')
-        RUSTENV['CC'] = os.path.join(clang_path, 'clang-cl')
-        RUSTENV['CXX'] = os.path.join(clang_path, 'clang-cl')
+        RUSTENV['AR'] = os.path.join(clang_bin, 'llvm-lib.exe')
+        RUSTENV['CC'] = os.path.join(clang_bin, 'clang-cl.exe')
+        RUSTENV['CXX'] = os.path.join(clang_bin, 'clang-cl.exe')
     else:
-        RUSTENV['AR'] = os.path.join(clang_path, 'llvm-ar')
-        RUSTENV['CC'] = os.path.join(clang_path, 'clang')
-        RUSTENV['CXX'] = os.path.join(clang_path, 'clang++')
+        RUSTENV['AR'] = os.path.join(clang_bin, 'llvm-ar')
+        RUSTENV['CC'] = os.path.join(clang_bin, 'clang')
+        RUSTENV['CXX'] = os.path.join(clang_bin, 'clang++')
+
+    if RUSTENV['CARGO_BUILD_TARGET'].endswith('apple-darwin'):
+        # The system/xcode compiler would find system headers correctly, but
+        # the Clang we've built does not. See
+        # https://github.com/llvm/llvm-project/issues/45225
+        sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'],
+                                           text=True).rstrip()
+        RUSTENV['CFLAGS'] += f' -isysroot {sdk_path}'
+        RUSTENV['CXXFLAGS'] += f' -isysroot {sdk_path}'
 
     if zlib_path:
         RUSTENV['CFLAGS'] += f' -I{zlib_path}'
