@@ -12,13 +12,9 @@ PASS EventCounts interface: existence and properties of interface object
 FAIL EventCounts must be primary interface of performance.eventCounts assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL Stringification of performance.eventCounts assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL EventCounts interface: performance.eventCounts must not have property "undefined" Cannot use 'in' operator to search for 'undefined' in undefined
-PASS InteractionCounts interface: existence and properties of interface object
-FAIL InteractionCounts must be primary interface of performance.interactionCounts assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of performance.interactionCounts assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL InteractionCounts interface: performance.interactionCounts must not have property "undefined" Cannot use 'in' operator to search for 'undefined' in undefined
 PASS Performance interface: member eventCounts
-PASS Performance interface: member interactionCounts
+PASS Performance interface: member interactionCount
 PASS Performance interface: performance must not have property "eventCounts"
-PASS Performance interface: performance must not have property "interactionCounts"
+PASS Performance interface: performance must not have property "interactionCount"
 Harness: the test ran to completion.
 

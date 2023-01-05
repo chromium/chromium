@@ -3006,6 +3006,7 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]

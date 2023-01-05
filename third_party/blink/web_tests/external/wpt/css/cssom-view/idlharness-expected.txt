@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 404 tests; 329 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 406 tests; 329 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -132,6 +132,7 @@ PASS VisualViewport interface: attribute height
 PASS VisualViewport interface: attribute scale
 PASS VisualViewport interface: attribute onresize
 PASS VisualViewport interface: attribute onscroll
+FAIL VisualViewport interface: attribute onscrollend assert_true: The prototype object must have a property "onscrollend" expected true got false
 PASS VisualViewport must be primary interface of self.visualViewport
 PASS Stringification of self.visualViewport
 PASS VisualViewport interface: self.visualViewport must inherit property "offsetLeft" with the proper type
@@ -143,6 +144,7 @@ PASS VisualViewport interface: self.visualViewport must inherit property "height
 PASS VisualViewport interface: self.visualViewport must inherit property "scale" with the proper type
 PASS VisualViewport interface: self.visualViewport must inherit property "onresize" with the proper type
 PASS VisualViewport interface: self.visualViewport must inherit property "onscroll" with the proper type
+FAIL VisualViewport interface: self.visualViewport must inherit property "onscrollend" with the proper type assert_inherits: property "onscrollend" not found in prototype chain
 FAIL CSSPseudoElement interface: operation getBoxQuads(optional BoxQuadOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing

@@ -28,18 +28,9 @@ PASS EventCounts interface: existence and properties of interface prototype obje
 PASS EventCounts interface: maplike<DOMString, unsigned long long>
 PASS EventCounts must be primary interface of performance.eventCounts
 PASS Stringification of performance.eventCounts
-FAIL InteractionCounts interface: existence and properties of interface object assert_own_property: self does not have own property "InteractionCounts" expected property "InteractionCounts" missing
-FAIL InteractionCounts interface object length assert_own_property: self does not have own property "InteractionCounts" expected property "InteractionCounts" missing
-FAIL InteractionCounts interface object name assert_own_property: self does not have own property "InteractionCounts" expected property "InteractionCounts" missing
-FAIL InteractionCounts interface: existence and properties of interface prototype object assert_own_property: self does not have own property "InteractionCounts" expected property "InteractionCounts" missing
-FAIL InteractionCounts interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "InteractionCounts" expected property "InteractionCounts" missing
-FAIL InteractionCounts interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "InteractionCounts" expected property "InteractionCounts" missing
-FAIL InteractionCounts interface: maplike<DOMString, unsigned long long> Cannot read properties of undefined (reading 'prototype')
-FAIL InteractionCounts must be primary interface of performance.interactionCounts assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of performance.interactionCounts assert_equals: wrong typeof object expected "object" but got "undefined"
 PASS Performance interface: attribute eventCounts
-FAIL Performance interface: attribute interactionCounts assert_true: The prototype object must have a property "interactionCounts" expected true got false
+FAIL Performance interface: attribute interactionCount assert_true: The prototype object must have a property "interactionCount" expected true got false
 PASS Performance interface: performance must inherit property "eventCounts" with the proper type
-FAIL Performance interface: performance must inherit property "interactionCounts" with the proper type assert_inherits: property "interactionCounts" not found in prototype chain
+FAIL Performance interface: performance must inherit property "interactionCount" with the proper type assert_inherits: property "interactionCount" not found in prototype chain
 Harness: the test ran to completion.
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 391 tests; 97 PASS, 294 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 397 tests; 97 PASS, 300 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'createContext')"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -108,27 +108,33 @@ FAIL ML interface: existence and properties of interface prototype object's "con
 FAIL ML interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ML" expected property "ML" missing
 FAIL ML interface: operation createContext(optional MLContextOptions) assert_own_property: self does not have own property "ML" expected property "ML" missing
 FAIL ML interface: operation createContext(GPUDevice) assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: operation createContextSync(optional MLContextOptions) assert_own_property: self does not have own property "ML" expected property "ML" missing
+FAIL ML interface: operation createContextSync(GPUDevice) assert_own_property: self does not have own property "ML" expected property "ML" missing
 FAIL ML must be primary interface of navigator.ml assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL Stringification of navigator.ml assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: navigator.ml must inherit property "createContext(optional MLContextOptions)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: calling createContext(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: navigator.ml must inherit property "createContext(GPUDevice)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: calling createContext(GPUDevice) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: navigator.ml must inherit property "createContextSync(optional MLContextOptions)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: calling createContextSync(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: navigator.ml must inherit property "createContextSync(GPUDevice)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL ML interface: calling createContextSync(GPUDevice) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL MLContext interface: existence and properties of interface object assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface object length assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface object name assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
+FAIL MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
-FAIL MLContext interface: operation computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface: operation createCommandEncoder() assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext must be primary interface of context assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
 FAIL Stringification of context assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
 FAIL MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
 FAIL MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
-FAIL MLContext interface: context must inherit property "computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
-FAIL MLContext interface: calling computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
 FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
 FAIL MLOperand interface: existence and properties of interface object assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
 FAIL MLOperand interface object length assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
@@ -160,7 +166,7 @@ FAIL MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor) a
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation build(MLNamedOperands) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation buildAsync(MLNamedOperands) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation buildSync(MLNamedOperands) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation clamp(optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
@@ -215,7 +221,7 @@ FAIL MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLR
 FAIL MLGraphBuilder interface: operation relu(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation relu() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reshape(MLOperand, sequence<long>) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation reshape(MLOperand, sequence<unsigned long?>) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation sigmoid(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation sigmoid() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
@@ -239,8 +245,8 @@ FAIL MLGraphBuilder interface: builder must inherit property "constant(double, o
 FAIL MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
-FAIL MLGraphBuilder interface: builder must inherit property "buildAsync(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
-FAIL MLGraphBuilder interface: calling buildAsync(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "buildSync(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling buildSync(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, optional MLClampOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
@@ -347,8 +353,8 @@ FAIL MLGraphBuilder interface: calling relu(MLOperand) on builder with too few a
 FAIL MLGraphBuilder interface: builder must inherit property "relu()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "resample2d(MLOperand, optional MLResample2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling resample2d(MLOperand, optional MLResample2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
-FAIL MLGraphBuilder interface: builder must inherit property "reshape(MLOperand, sequence<long>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
-FAIL MLGraphBuilder interface: calling reshape(MLOperand, sequence<long>) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "reshape(MLOperand, sequence<unsigned long?>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling reshape(MLOperand, sequence<unsigned long?>) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "sigmoid(MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling sigmoid(MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "sigmoid()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"

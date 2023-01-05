@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS PressureObserver interface: existence and properties of interface object
+PASS PressureObserver interface object length
+PASS PressureObserver interface object name
+PASS PressureObserver interface: existence and properties of interface prototype object
+PASS PressureObserver interface: existence and properties of interface prototype object's "constructor" property
+PASS PressureObserver interface: existence and properties of interface prototype object's @@unscopables property
+PASS PressureObserver interface: operation observe(PressureSource)
+PASS PressureObserver interface: operation unobserve(PressureSource)
+PASS PressureObserver interface: operation disconnect()
+PASS PressureObserver interface: operation takeRecords()
+PASS PressureObserver interface: attribute supportedSources
+FAIL PressureObserver interface: operation requestPermission() assert_own_property: interface object missing static operation expected property "requestPermission" missing
+PASS PressureObserver must be primary interface of observer
+PASS Stringification of observer
+PASS PressureObserver interface: observer must inherit property "observe(PressureSource)" with the proper type
+PASS PressureObserver interface: calling observe(PressureSource) on observer with too few arguments must throw TypeError
+PASS PressureObserver interface: observer must inherit property "unobserve(PressureSource)" with the proper type
+PASS PressureObserver interface: calling unobserve(PressureSource) on observer with too few arguments must throw TypeError
+PASS PressureObserver interface: observer must inherit property "disconnect()" with the proper type
+PASS PressureObserver interface: observer must inherit property "takeRecords()" with the proper type
+PASS PressureObserver interface: observer must inherit property "supportedSources" with the proper type
+PASS PressureObserver interface: observer must inherit property "requestPermission()" with the proper type
+PASS PressureRecord interface: existence and properties of interface object
+PASS PressureRecord interface object length
+PASS PressureRecord interface object name
+PASS PressureRecord interface: existence and properties of interface prototype object
+PASS PressureRecord interface: existence and properties of interface prototype object's "constructor" property
+PASS PressureRecord interface: existence and properties of interface prototype object's @@unscopables property
+PASS PressureRecord interface: attribute source
+PASS PressureRecord interface: attribute state
+PASS PressureRecord interface: attribute factors
+PASS PressureRecord interface: attribute time
+Harness: the test ran to completion.
+

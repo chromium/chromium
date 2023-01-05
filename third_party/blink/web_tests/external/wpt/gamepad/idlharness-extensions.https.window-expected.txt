@@ -10,7 +10,10 @@ PASS GamepadHapticActuator interface: existence and properties of interface prot
 PASS GamepadHapticActuator interface: existence and properties of interface prototype object's "constructor" property
 PASS GamepadHapticActuator interface: existence and properties of interface prototype object's @@unscopables property
 PASS GamepadHapticActuator interface: attribute type
+FAIL GamepadHapticActuator interface: operation canPlayEffectType(GamepadHapticEffectType) assert_own_property: interface prototype object missing non-static operation expected property "canPlayEffectType" missing
+FAIL GamepadHapticActuator interface: operation playEffect(GamepadHapticEffectType, optional GamepadEffectParameters) assert_equals: property has wrong .length expected 1 but got 2
 FAIL GamepadHapticActuator interface: operation pulse(double, double) assert_own_property: interface prototype object missing non-static operation expected property "pulse" missing
+PASS GamepadHapticActuator interface: operation reset()
 FAIL GamepadPose interface: existence and properties of interface object assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
 FAIL GamepadPose interface object length assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
 FAIL GamepadPose interface object name assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
@@ -39,5 +42,6 @@ FAIL Gamepad interface: attribute hand assert_true: The prototype object must ha
 FAIL Gamepad interface: attribute hapticActuators assert_true: The prototype object must have a property "hapticActuators" expected true got false
 FAIL Gamepad interface: attribute pose assert_true: The prototype object must have a property "pose" expected true got false
 FAIL Gamepad interface: attribute touchEvents assert_true: The prototype object must have a property "touchEvents" expected true got false
+PASS Gamepad interface: attribute vibrationActuator
 Harness: the test ran to completion.
 

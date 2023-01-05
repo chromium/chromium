@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 246 tests; 230 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 248 tests; 231 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -17,6 +17,7 @@ PASS inbound-rtp's mid
 PASS inbound-rtp's remoteId
 PASS inbound-rtp's framesDecoded
 PASS inbound-rtp's keyFramesDecoded
+FAIL inbound-rtp's framesRendered assert_true: Is framesRendered present expected true got false
 PASS inbound-rtp's framesDropped
 PASS inbound-rtp's frameWidth
 PASS inbound-rtp's frameHeight
@@ -96,6 +97,7 @@ PASS outbound-rtp's pliCount
 PASS outbound-rtp's encoderImplementation
 PASS outbound-rtp's powerEfficientEncoder
 PASS outbound-rtp's active
+PASS outbound-rtp's scalabilityMode
 PASS outbound-rtp's packetsSent
 PASS outbound-rtp's bytesSent
 PASS outbound-rtp's ssrc
