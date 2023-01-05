@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -65,8 +66,8 @@ void FakeSkiaOutputSurface::Reshape(const ReshapeParams& params) {
   SkImageInfo image_info = SkImageInfo::Make(
       params.size.width(), params.size.height(), color_type,
       kPremul_SkAlphaType, params.color_space.ToSkColorSpace());
-  sk_surface =
-      SkSurface::MakeRenderTarget(gr_context(), SkBudgeted::kNo, image_info);
+  sk_surface = SkSurface::MakeRenderTarget(gr_context(), skgpu::Budgeted::kNo,
+                                           image_info);
 
   DCHECK(sk_surface);
 }
@@ -185,8 +186,8 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     SkImageInfo image_info = SkImageInfo::Make(
         surface_size.width(), surface_size.height(), color_type,
         kPremul_SkAlphaType, std::move(color_space));
-    sk_surface =
-        SkSurface::MakeRenderTarget(gr_context(), SkBudgeted::kNo, image_info);
+    sk_surface = SkSurface::MakeRenderTarget(gr_context(), skgpu::Budgeted::kNo,
+                                             image_info);
   }
   return sk_surface->getCanvas();
 }

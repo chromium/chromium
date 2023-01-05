@@ -45,6 +45,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -1753,7 +1754,7 @@ class OopTextBlobPixelTest
         UseLcdText() ? skia::LegacyDisplayGlobals::GetSkSurfaceProps(0)
                      : SkSurfaceProps(0, kUnknown_SkPixelGeometry);
     auto surface = SkSurface::MakeRenderTarget(
-        context_state->gr_context(), SkBudgeted::kNo, image_info, 0,
+        context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
         kTopLeft_GrSurfaceOrigin, &surface_props);
 
     SkCanvas* canvas = surface->getCanvas();

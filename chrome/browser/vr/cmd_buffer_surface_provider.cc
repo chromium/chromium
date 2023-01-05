@@ -10,6 +10,7 @@
 #include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
@@ -33,7 +34,7 @@ CmdBufferSurfaceProvider::~CmdBufferSurfaceProvider() = default;
 
 sk_sp<SkSurface> CmdBufferSurfaceProvider::MakeSurface(const gfx::Size& size) {
   return SkSurface::MakeRenderTarget(
-      gr_context_.get(), SkBudgeted::kNo,
+      gr_context_.get(), skgpu::Budgeted::kNo,
       SkImageInfo::MakeN32Premul(size.width(), size.height()), 0,
       kTopLeft_GrSurfaceOrigin, nullptr);
 }

@@ -64,6 +64,7 @@
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -414,7 +415,7 @@ void SkiaOutputSurfaceImplOnGpu::DrawOverdraw(
   DCHECK(overdraw_ddl);
 
   sk_sp<SkSurface> overdraw_surface = SkSurface::MakeRenderTarget(
-      gr_context(), overdraw_ddl->characterization(), SkBudgeted::kNo);
+      gr_context(), overdraw_ddl->characterization(), skgpu::Budgeted::kNo);
   overdraw_surface->draw(overdraw_ddl);
   destroy_after_swap_.push_back(std::move(overdraw_ddl));
 

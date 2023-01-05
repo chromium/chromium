@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/service/service_font_manager.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 struct Environment {
@@ -77,7 +78,7 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
       kRasterDimension, kRasterDimension, kOpaque_SkAlphaType);
   context_provider->BindToCurrentSequence();
   sk_sp<SkSurface> surface = SkSurface::MakeRenderTarget(
-      context_provider->GrContext(), SkBudgeted::kYes, image_info);
+      context_provider->GrContext(), skgpu::Budgeted::kYes, image_info);
   SkCanvas* canvas = surface->getCanvas();
 
   cc::PlaybackParams params(nullptr, canvas->getLocalToDevice());

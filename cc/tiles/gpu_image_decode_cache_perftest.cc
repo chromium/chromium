@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace cc {
@@ -135,7 +136,7 @@ INSTANTIATE_TEST_SUITE_P(P,
 TEST_P(GpuImageDecodeCachePerfTestNoSw, DecodeWithMips) {
   // Surface to render into.
   auto surface = SkSurface::MakeRenderTarget(
-      context_provider_->GrContext(), SkBudgeted::kNo,
+      context_provider_->GrContext(), skgpu::Budgeted::kNo,
       SkImageInfo::MakeN32Premul(2048, 2048));
 
   timer_.Reset();
