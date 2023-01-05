@@ -337,9 +337,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // tracking metrics in DidFinishNavigation.
   void StopTracking();
 
-  PageEndReason page_end_reason() const { return page_end_reason_; }
-  base::TimeTicks page_end_time() const { return page_end_time_; }
-
   void AddObserver(std::unique_ptr<PageLoadMetricsObserverInterface> observer);
   base::WeakPtr<PageLoadMetricsObserverInterface> FindObserver(
       char const* name);
