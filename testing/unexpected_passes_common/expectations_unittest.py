@@ -1528,6 +1528,46 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
                        FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
     self.assertEqual(urls, set())
 
+  def testRemoveCommonTags(self) -> None:
+    """Tests that scope narrowing removes common/redundant tags."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd', 'desktop']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel', 'desktop']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, {'crbug.com/1234'})
+
   def testConsolidateKnownOverlappingTags(self) -> None:
     """Tests that scope narrowing consolidates known overlapping tags."""
 

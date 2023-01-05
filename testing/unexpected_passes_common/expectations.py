@@ -623,6 +623,21 @@ class Expectations(object):
       if skip_to_next_expectation:
         continue
 
+      # Remove all instances of tags that are shared between all sets other than
+      # the tags that were used by the expectation, as they are redundant.
+      common_tags = set()
+      for ts in pass_tag_sets:
+        common_tags |= ts
+        # We only need one initial tag set, but sets do not have a way of
+        # retrieving a single element other than pop(), which removes the
+        # element, which we don't want.
+        break
+      for ts in pass_tag_sets | fail_tag_sets:
+        common_tags &= ts
+      common_tags -= e.tags
+      pass_tag_sets = {ts - common_tags for ts in pass_tag_sets}
+      fail_tag_sets = {ts - common_tags for ts in fail_tag_sets}
+
       # Calculate new tag sets that should be functionally equivalent to the
       # single, more broad tag set that we are replacing. This is done by
       # checking if the intersection between any pairs of fail tag sets are
