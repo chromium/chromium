@@ -1331,6 +1331,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'arc-vm-data-migration',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       // TODO(https://crbug.com/1261902): update debug overlay
       id: 'recommend-apps',
       kind: ScreenKind.NORMAL,

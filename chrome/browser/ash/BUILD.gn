@@ -1701,6 +1701,8 @@ source_set("ash") {
     "login/screens/app_downloading_screen.h",
     "login/screens/arc_terms_of_service_screen.cc",
     "login/screens/arc_terms_of_service_screen.h",
+    "login/screens/arc_vm_data_migration_screen.cc",
+    "login/screens/arc_vm_data_migration_screen.h",
     "login/screens/assistant_optin_flow_screen.cc",
     "login/screens/assistant_optin_flow_screen.h",
     "login/screens/base_screen.cc",

@@ -11,6 +11,7 @@ js_type_check("closure_compile") {
   closure_flags = default_closure_args
   deps = [
     ":active_directory_password_change",
+    ":arc_vm_data_migration",
     ":checking_downloading_update",
     ":cryptohome_recovery",
     ":encryption_migration",
@@ -38,6 +39,18 @@ js_library("active_directory_password_change") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("arc_vm_data_migration") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/arc_vm_data_migration.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -166,6 +179,7 @@ js_library("checking_downloading_update") {
 html_to_js("web_components") {
   js_files = [
     "active_directory_password_change.js",
+    "arc_vm_data_migration.js",
     "checking_downloading_update.js",
     "cryptohome_recovery.js",
     "encryption_migration.js",

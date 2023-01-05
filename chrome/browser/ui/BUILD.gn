@@ -2702,6 +2702,8 @@ static_library("ui") {
       "webui/ash/login/app_launch_splash_screen_handler.h",
       "webui/ash/login/arc_terms_of_service_screen_handler.cc",
       "webui/ash/login/arc_terms_of_service_screen_handler.h",
+      "webui/ash/login/arc_vm_data_migration_screen_handler.cc",
+      "webui/ash/login/arc_vm_data_migration_screen_handler.h",
       "webui/ash/login/assistant_optin_flow_screen_handler.cc",
       "webui/ash/login/assistant_optin_flow_screen_handler.h",
       "webui/ash/login/auto_enrollment_check_screen_handler.cc",

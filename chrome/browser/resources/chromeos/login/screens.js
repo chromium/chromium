@@ -46,6 +46,7 @@ import './screens/common/user_creation.js';
 import './screens/common/wrong_hwid.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/active_directory_password_change.js';
+import './screens/login/arc_vm_data_migration.js';
 import './screens/login/cryptohome_recovery.js';
 import './screens/login/encryption_migration.js';
 import './screens/login/gaia_password_changed.js';
@@ -128,6 +129,11 @@ export const commonScreensList = [
  */
 export const loginScreensList = [
   {tag: 'active-directory-password-change-element', id: 'ad-password-change'},
+  {
+    tag: 'arc-vm-data-migration-element',
+    id: 'arc-vm-data-migration',
+    condition: 'isArcVmDataMigrationEnabled',
+  },
   {tag: 'cryptohome-recovery-element', id: 'cryptohome-recovery'},
   {tag: 'encryption-migration-element', id: 'encryption-migration'},
   {tag: 'gaia-password-changed-element', id: 'gaia-password-changed'},

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/esim_manager.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -282,6 +284,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeFlow", is_oobe_flow);
   source->AddBoolean("isOobeJelly", features::IsOobeJellyEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
+  source->AddBoolean(
+      "isArcVmDataMigrationEnabled",
+      base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration));
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -391,6 +396,10 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<SyncConsentScreenHandler>());
 
   AddScreenHandler(std::make_unique<ArcTermsOfServiceScreenHandler>());
+
+  if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration)) {
+    AddScreenHandler(std::make_unique<ArcVmDataMigrationScreenHandler>());
+  }
 
   AddScreenHandler(std::make_unique<RecommendAppsScreenHandler>());
 
