@@ -2278,11 +2278,6 @@
       },
       'compositor_unittests': {},
       'content_browsertests': {
-        'args': [
-          '--test-arg=--disable-gpu',
-          '--test-arg=--headless',
-          '--test-arg=--ozone-platform=headless',
-        ],
         'swarming': {
           'shards': 14,
         },
