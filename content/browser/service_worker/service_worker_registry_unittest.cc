@@ -67,8 +67,6 @@ storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
   data->script = script_url;
   data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
   data->is_active = true;
-  data->policy_container_policies =
-      blink::mojom::PolicyContainerPolicies::New();
 
   int64_t resources_total_size_bytes = 0;
   for (auto& resource : resources) {
