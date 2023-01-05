@@ -106,7 +106,6 @@ enum GPUFeatureName {
     "timestamp-query",
     "indirect-first-instance",
     "shader-f16",
-    "bgra8unorm-storage",
     "rg11b10ufloat-renderable"
 };
 
@@ -583,6 +582,21 @@ interface GPUCompilationMessage {
 [Exposed=(Window, DedicatedWorker), Serializable, SecureContext]
 interface GPUCompilationInfo {
     readonly attribute FrozenArray<GPUCompilationMessage> messages;
+};
+
+[Exposed=(Window, DedicatedWorker), SecureContext, Serializable]
+interface GPUPipelineError : DOMException {
+    constructor(DOMString message, GPUPipelineErrorInit options);
+    readonly attribute GPUPipelineErrorReason reason;
+};
+
+dictionary GPUPipelineErrorInit {
+    required GPUPipelineErrorReason reason;
+};
+
+enum GPUPipelineErrorReason {
+    "validation",
+    "internal"
 };
 
 enum GPUAutoLayoutMode {

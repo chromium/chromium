@@ -261350,16 +261350,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "27f4d9f77894fe950db7a1b9c4449701188f7fbb",
-     []
-    ],
-    "mtime.json": [
-     "9c35ba7006d075ba14237be87266fc9f1bab8b36",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -366887,6 +366877,10 @@
      "d4074f647dab2b1af158a4f544ccd4737164b32c",
      []
     ],
+    "webcodecs-flac-codec-registration.idl": [
+     "0f7e13a53db8758b223ab42c0bd5816312fa2968",
+     []
+    ],
     "webcodecs-hevc-codec-registration.idl": [
      "b767db89e6fa6d6f527209b79c8bbd960fa87d9f",
      []
@@ -366916,7 +366910,7 @@
      []
     ],
     "webgpu.idl": [
-     "5b4fcc1aa8c42aedf132d877b4f78ef1fc0ec03d",
+     "b00e2374e586a63df1e09e36b5cbc008e3539772",
      []
     ],
     "webhid.idl": [
