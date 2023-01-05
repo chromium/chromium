@@ -6,8 +6,6 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {util} from '../../common/js/util.js';
 
-import {background} from './file_manager_base.js';
-import {launcher} from './launcher.js';
 import {test} from './test_util_base.js';
 
 export {test};
@@ -28,7 +26,7 @@ export function sanitizeDate(strDate) {
  *     App ID.
  */
 test.util.async.openMainWindow = (appState, callback) => {
-  launcher.launchFileManager(appState).then(callback);
+  window.background.launchFileManager(appState).then(callback);
 };
 
 /**
@@ -948,6 +946,6 @@ test.util.sync.sendProgressItem =
       item.progressValue = progressValue;
       item.itemCount = count;
 
-      background.progressCenter.updateItem(item);
+      window.background.progressCenter.updateItem(item);
       return true;
     };
