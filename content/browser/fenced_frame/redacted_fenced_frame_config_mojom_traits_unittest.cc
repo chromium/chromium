@@ -26,10 +26,25 @@ using Entity = content::FencedFrameEntity;
 //   mappings implicitly).
 // * Check that the desired property was copied correctly.
 //
+// Template Arguments:
+// `ClassName`: `FencedFrameConfig` or `FencedFrameProperties`
+//              Which base class to use for this test.
+// `RedactedClassName`: `RedactedFencedFrameConfig` or
+//                       `RedactedFencedFrameProperties`
+//                       The redacted version of `ClassName`.
+// `TestType`: The type of the value being tested.
+// `RedactedTestType`: The type of the redacted value being tested. Sometimes
+//                     the type of variable being stored in the non-redacted and
+//                     its redacted equivalent can differ.
+// `UnredactedToRedactedCompare`: The shape of the function that will compare
+//                                an unredacted config value to a redacted
+//                                config value.
+// `RedactedToRedactedCompare`: The shape of the function that will compare
+//                              two redacted config values.
+//
 // Arguments:
-// `type`: `FencedFrameConfig` or `FencedFrameProperties`.
-//         An object `config` with this type should already exist in scope.
-// `property`: The name of the field to test (e.g. `mapped_url_`)
+// `config`: The FencedFrameConfig or FencedFrameProperties object being tested.
+// `property`: A pointer to the class's field to test (e.g. `mapped_url_`)
 // `entity`: The entity (kEmbedder or kContent) that the config should be
 //           redacted for in the test.
 // `is_defined`: Whether we expect the property to have a defined value.
@@ -40,67 +55,105 @@ using Entity = content::FencedFrameEntity;
 // `redacted_redacted_equality_fn`: A comparator function that has the function
 //     signature is_eq(Redacted`type`, Redacted`type`). A return value of `true`
 //     means equal; `false` means not equal.
-#define TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                        \
-    type, property, entity, is_defined, is_opaque,                            \
-    unredacted_redacted_equality_fn, redacted_redacted_equality_fn)           \
-  {                                                                           \
-    /* Redact the config. */                                                  \
-    Redacted##type redacted_config = config.RedactFor(entity);                \
-    if (is_defined) {                                                         \
-      /* If the config has a value for the property, check that the redacted  \
-       * version does too. */                                                 \
-      ASSERT_TRUE(redacted_config.property.has_value());                      \
-      if (is_opaque) {                                                        \
-        /* If the value should be opaque, check that it is. */                \
-        ASSERT_FALSE(                                                         \
-            redacted_config.property->potentially_opaque_value.has_value());  \
-      } else {                                                                \
-        /* If the value should be transparent, check that it is, and that the \
-         * value was copied correctly. */                                     \
-        ASSERT_TRUE(                                                          \
-            redacted_config.property->potentially_opaque_value.has_value());  \
-        ASSERT_TRUE(unredacted_redacted_equality_fn(                          \
-            config.property->GetValueIgnoringVisibility(),                    \
-            redacted_config.property->potentially_opaque_value.value()));     \
-      }                                                                       \
-    } else {                                                                  \
-      /* If the config doesn't have a value for the property, check that the  \
-       * redacted version also doesn't. */                                    \
-      ASSERT_FALSE(redacted_config.property.has_value());                     \
-    }                                                                         \
-                                                                              \
-    /* Copy the config using mojom serialization/deserialization. */          \
-    Redacted##type copy;                                                      \
-    mojo::test::SerializeAndDeserialize<blink::mojom::type>(redacted_config,  \
-                                                            copy);            \
-    /* Check that the value for the property in the copy is the same as the   \
-     * original. */                                                           \
-    if (is_defined) {                                                         \
-      ASSERT_TRUE(copy.property.has_value());                                 \
-      if (is_opaque) {                                                        \
-        ASSERT_FALSE(copy.property->potentially_opaque_value.has_value());    \
-      } else {                                                                \
-        ASSERT_TRUE(copy.property->potentially_opaque_value.has_value());     \
-        ASSERT_TRUE(redacted_redacted_equality_fn(                            \
-            redacted_config.property->potentially_opaque_value.value(),       \
-            copy.property->potentially_opaque_value.value()));                \
-      }                                                                       \
-    } else {                                                                  \
-      ASSERT_FALSE(copy.property.has_value());                                \
-    }                                                                         \
+template <typename ClassName,
+          typename RedactedClassName,
+          typename TestType,
+          typename RedactedTestType,
+          typename UnredactedToRedactedCompare,
+          typename RedactedToRedactedCompare>
+void TestPropertyForEntityIsDefinedIsOpaque(
+    ClassName config,
+    absl::optional<FencedFrameProperty<TestType>> ClassName::*property,
+    absl::optional<
+        blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>
+        RedactedClassName::*redacted_property,
+    Entity entity,
+    bool is_defined,
+    bool is_opaque,
+    UnredactedToRedactedCompare unredacted_redacted_equality_fn,
+    RedactedToRedactedCompare redacted_redacted_equality_fn) {
+  // Redact the config.
+  RedactedClassName redacted_config = config.RedactFor(entity);
+  if (is_defined) {
+    // If the config has a value for the property, check that the redacted
+    // version does too.
+    ASSERT_TRUE((redacted_config.*redacted_property).has_value());
+    if (is_opaque) {
+      // If the value should be opaque, check that it is.
+      ASSERT_FALSE((redacted_config.*redacted_property)
+                       ->potentially_opaque_value.has_value());
+    } else {
+      // If the value should be transparent, check that it is, and that the
+      // value was copied correctly.
+      ASSERT_TRUE((redacted_config.*redacted_property)
+                      ->potentially_opaque_value.has_value());
+      ASSERT_TRUE(unredacted_redacted_equality_fn(
+          (config.*property)->GetValueIgnoringVisibility(),
+          (redacted_config.*redacted_property)
+              ->potentially_opaque_value.value()));
+    }
+  } else {
+    // If the config doesn't have a value for the property, check that the
+    // redacted version also doesn't.
+    ASSERT_FALSE((redacted_config.*redacted_property).has_value());
   }
 
-// This macro generates several test cases for a given property. We test:
+  // Copy the config using mojom serialization/deserialization.
+  RedactedClassName copy;
+
+  // deduce the mojo class being used
+  using MojoClassName =
+      std::conditional_t<std::is_same<FencedFrameConfig, ClassName>::value,
+                         blink::mojom::FencedFrameConfig,
+                         blink::mojom::FencedFrameProperties>;
+
+  mojo::test::SerializeAndDeserialize<MojoClassName>(redacted_config, copy);
+  // Check that the value for the property in the copy is the same as the
+  // original.
+  if (is_defined) {
+    ASSERT_TRUE((copy.*redacted_property).has_value());
+    if (is_opaque) {
+      ASSERT_FALSE(
+          (copy.*redacted_property)->potentially_opaque_value.has_value());
+    } else {
+      ASSERT_TRUE(
+          (copy.*redacted_property)->potentially_opaque_value.has_value());
+      ASSERT_TRUE(redacted_redacted_equality_fn(
+          (redacted_config.*redacted_property)
+              ->potentially_opaque_value.value(),
+          (copy.*redacted_property)->potentially_opaque_value.value()));
+    }
+  } else {
+    ASSERT_FALSE((copy.*redacted_property).has_value());
+  }
+}
+
+// This helper function generates several test cases for a given property:
 // * An empty config (`property` has no value)
 // * A config with `dummy_value` for `property`, opaque to embedder and
 //   transparent to content.
 // * A config with `dummy_value` for `property`, transparent to embedder and
 //   opaque to content.
 //
+// Template Arguments:
+// `ClassName`: `FencedFrameConfig` or `FencedFrameProperties`
+//              Which base class to use for this test.
+// `RedactedClassName`: `RedactedFencedFrameConfig` or
+//                       `RedactedFencedFrameProperties`
+//                       The redacted version of `ClassName`.
+// `TestType`: The type of the value being tested.
+// `RedactedTestType`: The type of the redacted value being tested. Sometimes
+//                     the type of variable being stored in the non-redacted and
+//                     its redacted equivalent can differ.
+// `UnredactedToRedactedCompare`: The shape of the function that will compare
+//                                an unredacted config value to a redacted
+//                                config value.
+// `RedactedToRedactedCompare`: The shape of the function that will compare
+//                              two redacted config values.
+//
 // Arguments:
-// `type`: `FencedFrameConfig` or `FencedFrameProperties`.
-//         An object `config` with this type should already exist in scope.
-// `property`: The name of the field to test (e.g. `mapped_url_`)
+// `property`: A pointer to the name of the field to test (e.g. `mapped_url_`)
+// `redacted_property`: The redacted equivalent of the `property` field.
 // `dummy_value`: A value that can be emplaced into `property`.
 // `unredacted_redacted_equality_fn`: A comparator function that has the
 //     function signature is_eq(`type`, Redacted`type`). A return value of
@@ -108,47 +161,60 @@ using Entity = content::FencedFrameEntity;
 // `redacted_redacted_equality_fn`: A comparator function that has the function
 //     signature is_eq(Redacted`type`, Redacted`type`). A return value of `true`
 //     means equal; `false` means not equal.
-#define TEST_PROPERTY(type, property, dummy_value,                            \
-                      unredacted_redacted_equality_fn,                        \
-                      redacted_redacted_equality_fn)                          \
-  {                                                                           \
-    /* Test an empty config */                                                \
-    type config;                                                              \
-    if constexpr (std::is_same<FencedFrameConfig, type>::value) {             \
-      /* The type is guaranteed to be a `FencedFrameConfig` */                \
-      FencedFrameConfig* ff_config =                                          \
-          reinterpret_cast<FencedFrameConfig*>(&config);                      \
-      ff_config->urn_uuid_.emplace(GenerateUrnUuid());                        \
-    }                                                                         \
-    TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
-        type, property, Entity::kEmbedder, false, false,                      \
-        unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
-    TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
-        type, property, Entity::kContent, false, false,                       \
-        unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
-                                                                              \
-    /* Test when `property` is opaque to embedder and transparent to content. \
-     */                                                                       \
-    config.property.emplace(dummy_value, VisibilityToEmbedder::kOpaque,       \
-                            VisibilityToContent::kTransparent);               \
-    TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
-        type, property, Entity::kEmbedder, true, true,                        \
-        unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
-    TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
-        type, property, Entity::kContent, true, false,                        \
-        unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
-                                                                              \
-    /* Test when `property` is transparent to embedder and opaque to content. \
-     */                                                                       \
-    config.property.emplace(dummy_value, VisibilityToEmbedder::kTransparent,  \
-                            VisibilityToContent::kOpaque);                    \
-    TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
-        type, property, Entity::kEmbedder, true, false,                       \
-        unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
-    TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
-        type, property, Entity::kContent, true, true,                         \
-        unredacted_redacted_equality_fn, redacted_redacted_equality_fn);      \
+template <typename ClassName,
+          typename RedactedClassName,
+          typename TestType,
+          typename RedactedTestType,
+          typename UnredactedToRedactedCompare,
+          typename RedactedToRedactedCompare>
+void TestProperty(
+    absl::optional<FencedFrameProperty<TestType>> ClassName::*property,
+    absl::optional<
+        blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>
+        RedactedClassName::*redacted_property,
+    TestType dummy_value,
+    UnredactedToRedactedCompare unredacted_redacted_equality_fn,
+    RedactedToRedactedCompare redacted_redacted_equality_fn) {
+  // Test an empty config
+  ClassName config;
+  if constexpr (std::is_same<FencedFrameConfig, ClassName>::value) {
+    config.urn_uuid_.emplace(GenerateUrnUuid());
   }
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kEmbedder, false, false,
+      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kContent, false, false,
+      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+
+  // Test when `property` is opaque to embedder and transparent to content.
+  (config.*property)
+      .emplace(dummy_value, VisibilityToEmbedder::kOpaque,
+               VisibilityToContent::kTransparent);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kEmbedder, true, true,
+      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kContent, true, false,
+      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+
+  // Test when `property` is transparent to embedder and opaque to content.
+  (config.*property)
+      .emplace(dummy_value, VisibilityToEmbedder::kTransparent,
+               VisibilityToContent::kOpaque);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kEmbedder, true, false,
+      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kContent, true, true,
+      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+}
 
 // Compare equality of two lists of nested configs.
 // Only compares the `mapped_url` field for convenience. (We don't need an
@@ -258,8 +324,12 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   // Test `mapped_url`.
   {
     auto eq_fn = [](const GURL& a, const GURL& b) { return a == b; };
-    TEST_PROPERTY(FencedFrameConfig, mapped_url_, test_url, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, mapped_url_, test_url, eq_fn, eq_fn);
+    TestProperty(&FencedFrameConfig::mapped_url_,
+                 &RedactedFencedFrameConfig::mapped_url_, test_url, eq_fn,
+                 eq_fn);
+    TestProperty(&FencedFrameProperties::mapped_url_,
+                 &RedactedFencedFrameProperties::mapped_url_, test_url, eq_fn,
+                 eq_fn);
   }
 
   // Test `container_size` and `content_size`.
@@ -267,26 +337,41 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     gfx::Size test_size(100, 200);
     auto eq_fn = [](const gfx::Size& a, const gfx::Size& b) { return a == b; };
 
-    TEST_PROPERTY(FencedFrameConfig, container_size_, test_size, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, container_size_, test_size, eq_fn,
-                  eq_fn);
+    TestProperty(&FencedFrameConfig::container_size_,
+                 &RedactedFencedFrameConfig::container_size_, test_size, eq_fn,
+                 eq_fn);
+    TestProperty(&FencedFrameProperties::container_size_,
+                 &RedactedFencedFrameProperties::container_size_, test_size,
+                 eq_fn, eq_fn);
 
-    TEST_PROPERTY(FencedFrameConfig, content_size_, test_size, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, content_size_, test_size, eq_fn,
-                  eq_fn);
+    TestProperty(&FencedFrameConfig::content_size_,
+                 &RedactedFencedFrameConfig::content_size_, test_size, eq_fn,
+                 eq_fn);
+    TestProperty(&FencedFrameProperties::content_size_,
+                 &RedactedFencedFrameProperties::content_size_, test_size,
+                 eq_fn, eq_fn);
   }
 
   // Test `deprecated_should_freeze_initial_size`.
   {
     auto eq_fn = [](const bool a, const bool b) { return a == b; };
-    TEST_PROPERTY(FencedFrameConfig, deprecated_should_freeze_initial_size_,
-                  true, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, deprecated_should_freeze_initial_size_,
-                  true, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameConfig, deprecated_should_freeze_initial_size_,
-                  false, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, deprecated_should_freeze_initial_size_,
-                  false, eq_fn, eq_fn);
+    TestProperty(
+        &FencedFrameConfig::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameConfig::deprecated_should_freeze_initial_size_,
+        true, eq_fn, eq_fn);
+    TestProperty(
+        &FencedFrameProperties::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameProperties::deprecated_should_freeze_initial_size_,
+        true, eq_fn, eq_fn);
+
+    TestProperty(
+        &FencedFrameConfig::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameConfig::deprecated_should_freeze_initial_size_,
+        false, eq_fn, eq_fn);
+    TestProperty(
+        &FencedFrameProperties::deprecated_should_freeze_initial_size_,
+        &RedactedFencedFrameProperties::deprecated_should_freeze_initial_size_,
+        false, eq_fn, eq_fn);
   }
 
   // Test `ad_auction_data`.
@@ -297,10 +382,13 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
       return a.interest_group_owner == b.interest_group_owner &&
              a.interest_group_name == b.interest_group_name;
     };
-    TEST_PROPERTY(FencedFrameConfig, ad_auction_data_, test_ad_auction_data,
-                  eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, ad_auction_data_, test_ad_auction_data,
-                  eq_fn, eq_fn);
+
+    TestProperty(&FencedFrameConfig::ad_auction_data_,
+                 &RedactedFencedFrameConfig::ad_auction_data_,
+                 test_ad_auction_data, eq_fn, eq_fn);
+    TestProperty(&FencedFrameProperties::ad_auction_data_,
+                 &RedactedFencedFrameProperties::ad_auction_data_,
+                 test_ad_auction_data, eq_fn, eq_fn);
   }
 
   // Test `nested_configs`.
@@ -315,8 +403,10 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
       auto redacted_redacted_eq_fn = NESTED_CONFIG_EQ_FN(
           RedactedFencedFrameConfig, potentially_opaque_value,
           RedactedFencedFrameConfig, potentially_opaque_value);
-      TEST_PROPERTY(FencedFrameConfig, nested_configs_, test_nested_configs,
-                    unredacted_redacted_eq_fn, redacted_redacted_eq_fn);
+      TestProperty(&FencedFrameConfig::nested_configs_,
+                   &RedactedFencedFrameConfig::nested_configs_,
+                   test_nested_configs, unredacted_redacted_eq_fn,
+                   redacted_redacted_eq_fn);
     }
 
     {
@@ -329,12 +419,14 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
       auto redacted_redacted_eq_fn = NESTED_URN_CONFIG_PAIR_EQ_FN(
           RedactedFencedFrameConfig, potentially_opaque_value,
           RedactedFencedFrameConfig, potentially_opaque_value);
-      TEST_PROPERTY(FencedFrameProperties, nested_urn_config_pairs_,
-                    test_nested_urn_config_pairs, unredacted_redacted_eq_fn,
-                    redacted_redacted_eq_fn);
+      TestProperty(&FencedFrameProperties::nested_urn_config_pairs_,
+                   &RedactedFencedFrameProperties::nested_urn_config_pairs_,
+                   test_nested_urn_config_pairs, unredacted_redacted_eq_fn,
+                   redacted_redacted_eq_fn);
     }
   }
 
+  // Test `shared_storage_budget_metadata`.
   {
     SharedStorageBudgetMetadata test_shared_storage_budget_metadata = {
         url::Origin::Create(test_url), 0.5};
@@ -342,8 +434,9 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
                     const SharedStorageBudgetMetadata& b) {
       return a.origin == b.origin && a.budget_to_charge == b.budget_to_charge;
     };
-    TEST_PROPERTY(FencedFrameConfig, shared_storage_budget_metadata_,
-                  test_shared_storage_budget_metadata, eq_fn, eq_fn);
+    TestProperty(&FencedFrameConfig::shared_storage_budget_metadata_,
+                 &RedactedFencedFrameConfig::shared_storage_budget_metadata_,
+                 test_shared_storage_budget_metadata, eq_fn, eq_fn);
 
     auto pointer_value_eq_fn =
         [](const raw_ptr<const SharedStorageBudgetMetadata>& a,
@@ -351,9 +444,12 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
           return a->origin == b.origin &&
                  a->budget_to_charge == b.budget_to_charge;
         };
-    TEST_PROPERTY(FencedFrameProperties, shared_storage_budget_metadata_,
-                  &test_shared_storage_budget_metadata, pointer_value_eq_fn,
-                  eq_fn);
+    TestProperty(
+        &FencedFrameProperties::shared_storage_budget_metadata_,
+        &RedactedFencedFrameProperties::shared_storage_budget_metadata_,
+        static_cast<base::raw_ptr<const SharedStorageBudgetMetadata>>(
+            &test_shared_storage_budget_metadata),
+        pointer_value_eq_fn, eq_fn);
   }
 
   // Test `reporting_metadata`.
@@ -365,10 +461,12 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     auto eq_fn = [](const ReportingMetadata& a, const ReportingMetadata& b) {
       return a.metadata == b.metadata;
     };
-    TEST_PROPERTY(FencedFrameConfig, reporting_metadata_,
-                  test_reporting_metadata, eq_fn, eq_fn);
-    TEST_PROPERTY(FencedFrameProperties, reporting_metadata_,
-                  test_reporting_metadata, eq_fn, eq_fn);
+    TestProperty(&FencedFrameConfig::reporting_metadata_,
+                 &RedactedFencedFrameConfig::reporting_metadata_,
+                 test_reporting_metadata, eq_fn, eq_fn);
+    TestProperty(&FencedFrameProperties::reporting_metadata_,
+                 &RedactedFencedFrameProperties::reporting_metadata_,
+                 test_reporting_metadata, eq_fn, eq_fn);
   }
 }
 
