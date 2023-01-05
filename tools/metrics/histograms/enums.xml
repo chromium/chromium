@@ -57348,6 +57348,8 @@ from previous Chrome versions.
   <int value="-2032940137" label="VariableCOLRV1:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
+  <int value="-2030972455"
+      label="AutofillSuggestServerCardInsteadOfLocalCard:enabled"/>
   <int value="-2030255112" label="Bruschetta:disabled"/>
   <int value="-2030217301" label="password-export:disabled"/>
   <int value="-2029912304" label="StaleWhileRevalidate2:enabled"/>
@@ -57375,6 +57377,8 @@ from previous Chrome versions.
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017821808" label="PrivacySandboxAdsAPIsOverride:disabled"/>
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
+  <int value="-2017250992"
+      label="AutofillSuggestServerCardInsteadOfLocalCard:disabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>

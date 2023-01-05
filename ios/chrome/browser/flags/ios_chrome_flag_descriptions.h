@@ -89,6 +89,11 @@ extern const char kAutofillPruneSuggestionsDescription[];
 extern const char kAutofillSaveCardDismissOnNavigationName[];
 extern const char kAutofillSaveCardDismissOnNavigationDescription[];
 
+// Title and description for the flag to suggest Server card instead of a
+// deduped Local card.
+extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];
+extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
+
 // Title and description for the flag to control allowing credit card upload
 // save for accounts from common email providers.
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];

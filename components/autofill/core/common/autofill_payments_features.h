@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kAutofillSaveCardUiExperiment);
 extern const base::FeatureParam<int>
     kAutofillSaveCardUiExperimentSelectorInNumber;
 BASE_DECLARE_FEATURE(kAutofillShowUnmaskedCachedCardInManualFillingView);
+BASE_DECLARE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard);
 BASE_DECLARE_FEATURE(kAutofillUpstream);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAdditionalEmailDomains);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAllEmailDomains);

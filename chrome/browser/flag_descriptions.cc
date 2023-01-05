@@ -546,6 +546,13 @@ const char kAutofillShowManualFallbackInContextMenuDescription[] =
     "When enabled, users would get address/credit cards/passwords autofilling "
     "options in the context menu if the context menu is opened on a text field";
 
+const char kAutofillSuggestServerCardInsteadOfLocalCardName[] =
+    "Suggest Server card instead of Local card for deduped cards";
+const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =
+    "When enabled, Autofill suggestions that consist of a local and server "
+    "version of the same card will attempt to fill the server card upon "
+    "selection instead of the local card.";
+
 const char kAutofillTouchToFillForCreditCardsAndroidName[] =
     "Enable Touch To Fill bottomsheet for Autofill credit card suggestions";
 const char kAutofillTouchToFillForCreditCardsAndroidDescription[] =

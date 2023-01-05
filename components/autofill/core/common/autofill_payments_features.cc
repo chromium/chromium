@@ -222,6 +222,13 @@ BASE_FEATURE(kAutofillShowUnmaskedCachedCardInManualFillingView,
              "AutofillShowUnmaskedCachedCardInManualFillingView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill suggestions that consist of a local and server
+// version of the same card will attempt to fill the server card upon selection
+// instead of the local card.
+BASE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard,
+             "AutofillSuggestServerCardInsteadOfLocalCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.
 // The set of launched countries is listed in autofill_experiments.cc, and this
