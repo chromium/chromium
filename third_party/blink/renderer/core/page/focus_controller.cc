@@ -79,10 +79,11 @@ bool IsOpenPopoverWithInvoker(const Node* node) {
          popover->GetPopoverData()->invoker();
 }
 
-const Element* InsideOpenPopoverWithInvoker(const Element* element) {
+const Element* InclusiveAncestorOpenPopoverWithInvoker(const Element* element) {
   for (; element; element = FlatTreeTraversal::ParentElement(*element)) {
-    if (IsOpenPopoverWithInvoker(element))
-      return element;
+    if (IsOpenPopoverWithInvoker(element)) {
+      return element;  // Return the popover
+    }
   }
   return nullptr;
 }
@@ -92,9 +93,10 @@ bool IsOpenPopoverInvoker(const Node* node) {
   if (!invoker)
     return false;
   HTMLElement* popover = invoker->popoverTargetElement().popover;
-  if (!popover)
-    return false;
-  return popover->popoverOpen();
+  // There could be more than one invoker for a given popover. Only return true
+  // if this invoker was the one that was actually used.
+  return popover && popover->popoverOpen() &&
+         popover->GetPopoverData()->invoker() == invoker;
 }
 
 // This class defines the navigation order.
@@ -324,7 +326,7 @@ ScopedFocusNavigation ScopedFocusNavigation::CreateFor(
           ScopedFocusNavigation::FindFallbackScopeOwnerSlot(current)) {
     return ScopedFocusNavigation(*slot, &current, owner_map);
   }
-  if (auto* popover = InsideOpenPopoverWithInvoker(&current)) {
+  if (auto* popover = InclusiveAncestorOpenPopoverWithInvoker(&current)) {
     return ScopedFocusNavigation(const_cast<Element&>(*popover), &current,
                                  owner_map);
   }

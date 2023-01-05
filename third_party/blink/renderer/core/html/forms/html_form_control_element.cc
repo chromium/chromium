@@ -377,6 +377,8 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   if (!IsDisabledFormControl()) {
     auto popover = popoverTargetElement();
     if (popover.popover) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+          GetDocument().GetExecutionContext()));
       auto trigger_support = SupportsPopoverTriggering();
       DCHECK_NE(popover.action, PopoverTriggerAction::kNone);
       DCHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
