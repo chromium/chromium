@@ -331,13 +331,13 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
 
   // Append whether each process is being profiled.
   for (base::Value& value : process_list) {
-    DCHECK_EQ(value.GetList().size(), 2u);
+    base::Value::List& list = value.GetList();
+    DCHECK_EQ(list.size(), 2u);
 
-    base::ProcessId pid =
-        static_cast<base::ProcessId>(value.GetList()[0].GetInt());
+    base::ProcessId pid = static_cast<base::ProcessId>(list[0].GetInt());
     bool is_profiled =
         std::binary_search(profiled_pids.begin(), profiled_pids.end(), pid);
-    value.Append(is_profiled);
+    list.Append(is_profiled);
   }
 
   // Pass the results in a dictionary.
