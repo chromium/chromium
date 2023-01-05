@@ -53,10 +53,6 @@ BASE_DECLARE_FEATURE(kWebSocketReassembleShortMessages);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAcceptCHFrame);
 
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kSCTAuditingRetryReports);
-
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kSCTAuditingPersistReports);
-
 enum class DataPipeAllocationSize {
   kDefaultSizeOnly,
   kLargerSizeIfPossible,

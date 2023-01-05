@@ -182,14 +182,6 @@ BASE_FEATURE(kWebSocketReassembleShortMessages,
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
 BASE_FEATURE(kAcceptCHFrame, "AcceptCHFrame", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSCTAuditingRetryReports,
-             "SCTAuditingRetryReports",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSCTAuditingPersistReports,
-             "SCTAuditingPersistReports",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 // The default Mojo ring buffer size, used to send the content body.
 static constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;

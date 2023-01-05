@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -74,28 +73,25 @@ SCTAuditingHandler::SCTAuditingHandler(NetworkContext* context,
       pending_reporters_(cache_size),
       persistence_path_(persistence_path),
       foreground_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-  if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports) &&
-      base::FeatureList::IsEnabled(features::kSCTAuditingPersistReports)) {
-    // If no persistence path is set, only store pending reporters in memory.
-    if (persistence_path_.empty()) {
-      return;
-    }
-
-    // Persisting reports uses a low priority task runner as it should not block
-    // anything user-visible, but it should block shutdown to ensure updates are
-    // persisted to disk (particularly clearing entries or the entire
-    // persisted state).
-    background_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-    writer_ = std::make_unique<base::ImportantFileWriter>(persistence_path_,
-                                                          background_runner_);
-
-    // Post a task to load persisted state after startup has finished.
-    foreground_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SCTAuditingHandler::OnStartupFinished,
-                                  weak_factory_.GetWeakPtr()));
+  // If no persistence path is set, only store pending reporters in memory.
+  if (persistence_path_.empty()) {
+    return;
   }
+
+  // Persisting reports uses a low priority task runner as it should not block
+  // anything user-visible, but it should block shutdown to ensure updates are
+  // persisted to disk (particularly clearing entries or the entire
+  // persisted state).
+  background_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  writer_ = std::make_unique<base::ImportantFileWriter>(persistence_path_,
+                                                        background_runner_);
+
+  // Post a task to load persisted state after startup has finished.
+  foreground_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SCTAuditingHandler::OnStartupFinished,
+                                weak_factory_.GetWeakPtr()));
 }
 
 SCTAuditingHandler::~SCTAuditingHandler() {

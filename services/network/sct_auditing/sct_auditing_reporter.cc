@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,7 +23,6 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -308,8 +306,7 @@ void SCTAuditingReporter::OnCheckReportAllowedStatusComplete(bool allowed) {
 
 void SCTAuditingReporter::ScheduleRequestWithBackoff(base::OnceClosure request,
                                                      base::TimeDelta delay) {
-  if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports) &&
-      backoff_entry_->ShouldRejectRequest()) {
+  if (backoff_entry_->ShouldRejectRequest()) {
     delay = std::max(backoff_entry_->GetTimeUntilRelease(), delay);
   }
   if (delay.is_positive()) {
@@ -575,32 +572,24 @@ void SCTAuditingReporter::OnSendReportComplete(
   // Notify the Cache that this Reporter is done. This will delete |this|,
   // so do not add code after this point.
   std::move(done_callback_).Run(reporter_key_);
-  return;
 }
 
 void SCTAuditingReporter::MaybeRetryRequest() {
-  if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports)) {
-    if (backoff_entry_->failure_count() >= max_retries_) {
-      // Retry limit reached.
-      ReportSCTAuditingCompletionStatusMetrics(
-          CompletionStatus::kRetriesExhausted);
+  if (backoff_entry_->failure_count() >= max_retries_) {
+    // Retry limit reached.
+    ReportSCTAuditingCompletionStatusMetrics(
+        CompletionStatus::kRetriesExhausted);
 
-      // Notify the Cache that this Reporter is done. This will delete |this|,
-      // so do not add code after this point.
-      std::move(done_callback_).Run(reporter_key_);
-      return;
-    }
-    // Schedule a retry and alert the SCTAuditingHandler to trigger a write so
-    // it can persist the updated backoff entry.
-    backoff_entry_->InformOfRequest(false);
-    update_callback_.Run();
-    Start();
+    // Notify the Cache that this Reporter is done. This will delete |this|,
+    // so do not add code after this point.
+    std::move(done_callback_).Run(reporter_key_);
     return;
   }
-  // Notify the Cache that this Reporter is done. This will delete |this|,
-  // so do not add code after this point.
-  std::move(done_callback_).Run(reporter_key_);
-  return;
+  // Schedule a retry and alert the SCTAuditingHandler to trigger a write so
+  // it can persist the updated backoff entry.
+  backoff_entry_->InformOfRequest(false);
+  update_callback_.Run();
+  Start();
 }
 
 }  // namespace network

@@ -531,12 +531,10 @@ NetworkContext::NetworkContext(
     SetCTPolicy(std::move(params_->ct_policy));
 
   base::FilePath sct_auditing_path;
-  if (base::FeatureList::IsEnabled(features::kSCTAuditingPersistReports)) {
-    GetFullDataFilePath(params_->file_paths,
-                        &network::mojom::NetworkContextFilePaths::
-                            sct_auditing_pending_reports_file_name,
-                        sct_auditing_path);
-  }
+  GetFullDataFilePath(params_->file_paths,
+                      &network::mojom::NetworkContextFilePaths::
+                          sct_auditing_pending_reports_file_name,
+                      sct_auditing_path);
   sct_auditing_handler_ =
       std::make_unique<SCTAuditingHandler>(this, sct_auditing_path);
   sct_auditing_handler()->SetMode(params_->sct_auditing_mode);

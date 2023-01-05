@@ -9,7 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -18,7 +17,6 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
@@ -183,11 +181,6 @@ class SCTAuditingReporterTest : public testing::Test {
   // Stores the mojo::Remote<mojom::NetworkContext> of the most recently created
   // NetworkContext.
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kSCTAuditingRetryReports,
-  };
 };
 
 TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataFromValue) {
