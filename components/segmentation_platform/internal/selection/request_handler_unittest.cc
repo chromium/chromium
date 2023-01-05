@@ -64,7 +64,8 @@ class RequestHandlerTest : public testing::Test {
     config_ = CreateTestConfig();
     auto provider = std::make_unique<MockResultProvider>();
     result_provider_ = provider.get();
-    request_handler_ = RequestHandler::Create(*config_, std::move(provider));
+    request_handler_ =
+        RequestHandler::Create(*config_, std::move(provider), nullptr);
   }
 
   void OnGetClassificationResult(base::RepeatingClosure closure,

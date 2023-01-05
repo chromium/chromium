@@ -28,10 +28,8 @@ class SegmentResultProvider;
 // 2. Dispatching requests to client specific request handlers.
 class RequestDispatcher {
  public:
-  RequestDispatcher(
-      const std::vector<std::unique_ptr<Config>>& configs,
-      std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-          result_providers);
+  explicit RequestDispatcher(
+      const std::vector<std::unique_ptr<Config>>& configs);
   ~RequestDispatcher();
 
   // Disallow copy/assign.
@@ -39,7 +37,11 @@ class RequestDispatcher {
   RequestDispatcher& operator=(RequestDispatcher&) = delete;
 
   // Called when platform and database initializations are completed.
-  void OnPlatformInitialized(bool success);
+  void OnPlatformInitialized(
+      bool success,
+      ExecutionService* execution_service,
+      std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+          result_providers);
 
   // Client API. See `SegmentationPlatformService::GetClassificationResult`.
   void GetClassificationResult(const std::string& segmentation_key,

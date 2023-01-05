@@ -34,7 +34,8 @@ PredictionStatus ResultStateToPredictionStatus(
 class RequestHandlerImpl : public RequestHandler {
  public:
   RequestHandlerImpl(const Config& config,
-                     std::unique_ptr<SegmentResultProvider> result_provider);
+                     std::unique_ptr<SegmentResultProvider> result_provider,
+                     ExecutionService* execution_service);
   ~RequestHandlerImpl() override;
 
   // Disallow copy/assign.
@@ -52,6 +53,7 @@ class RequestHandlerImpl : public RequestHandler {
                       SegmentResultProvider::SegmentResultCallback callback);
 
   void OnGetModelResultForClassification(
+      scoped_refptr<InputContext> input_context,
       ClassificationResultCallback classification_callback,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
@@ -62,13 +64,19 @@ class RequestHandlerImpl : public RequestHandler {
   // the model or getting results from the cache as necessary.
   std::unique_ptr<SegmentResultProvider> result_provider_;
 
+  // Pointer to the execution service.
+  const raw_ptr<ExecutionService> execution_service_{};
+
   base::WeakPtrFactory<RequestHandlerImpl> weak_ptr_factory_{this};
 };
 
 RequestHandlerImpl::RequestHandlerImpl(
     const Config& config,
-    std::unique_ptr<SegmentResultProvider> result_provider)
-    : config_(config), result_provider_(std::move(result_provider)) {}
+    std::unique_ptr<SegmentResultProvider> result_provider,
+    ExecutionService* execution_service)
+    : config_(config),
+      result_provider_(std::move(result_provider)),
+      execution_service_(execution_service) {}
 
 RequestHandlerImpl::~RequestHandlerImpl() = default;
 
@@ -80,7 +88,8 @@ void RequestHandlerImpl::GetClassificationResult(
   GetModelResult(
       options, input_context,
       base::BindOnce(&RequestHandlerImpl::OnGetModelResultForClassification,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), input_context,
+                     std::move(callback)));
 }
 
 void RequestHandlerImpl::GetModelResult(
@@ -101,6 +110,7 @@ void RequestHandlerImpl::GetModelResult(
 }
 
 void RequestHandlerImpl::OnGetModelResultForClassification(
+    scoped_refptr<InputContext> input_context,
     ClassificationResultCallback classification_callback,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   PostProcessor post_processor;
@@ -109,6 +119,14 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   if (result) {
     ordered_labels = post_processor.GetClassifierResults(result->result);
     status = ResultStateToPredictionStatus(result->state);
+
+    // Collect training data. The execution service and training data collector
+    // might be null in testing.
+    if (execution_service_ && execution_service_->training_data_collector()) {
+      execution_service_->training_data_collector()->OnDecisionTime(
+          config_.segments.begin()->first, input_context,
+          proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+    }
   }
   ClassificationResult classification_result(status);
   classification_result.ordered_labels = ordered_labels;
@@ -122,9 +140,10 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
 // static
 std::unique_ptr<RequestHandler> RequestHandler::Create(
     const Config& config,
-    std::unique_ptr<SegmentResultProvider> result_provider) {
-  return std::make_unique<RequestHandlerImpl>(config,
-                                              std::move(result_provider));
+    std::unique_ptr<SegmentResultProvider> result_provider,
+    ExecutionService* execution_service) {
+  return std::make_unique<RequestHandlerImpl>(
+      config, std::move(result_provider), execution_service);
 }
 
 }  // namespace segmentation_platform

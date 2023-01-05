@@ -14,20 +14,26 @@
 namespace segmentation_platform {
 
 RequestDispatcher::RequestDispatcher(
-    const std::vector<std::unique_ptr<Config>>& configs,
-    std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-        result_providers)
-    : configs_(configs) {
-  for (const auto& config : configs_) {
-    request_handlers_[config->segmentation_key] = RequestHandler::Create(
-        *config, std::move(result_providers[config->segmentation_key]));
-  }
-}
+    const std::vector<std::unique_ptr<Config>>& configs)
+    : configs_(configs) {}
 
 RequestDispatcher::~RequestDispatcher() = default;
 
-void RequestDispatcher::OnPlatformInitialized(bool success) {
+void RequestDispatcher::OnPlatformInitialized(
+    bool success,
+    ExecutionService* execution_service,
+    std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+        result_providers) {
   storage_init_status_ = success;
+
+  // Only set request handlers if it has not been set for testing already.
+  if (request_handlers_.empty()) {
+    for (const auto& config : configs_) {
+      request_handlers_[config->segmentation_key] = RequestHandler::Create(
+          *config, std::move(result_providers[config->segmentation_key]),
+          execution_service);
+    }
+  }
 
   // Run any method calls that were received during initialization.
   while (!pending_actions_.empty()) {

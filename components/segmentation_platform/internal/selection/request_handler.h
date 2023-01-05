@@ -7,6 +7,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/result.h"
@@ -26,7 +28,8 @@ class RequestHandler {
   // Creates the instance.
   static std::unique_ptr<RequestHandler> Create(
       const Config& config,
-      std::unique_ptr<SegmentResultProvider> result_provider);
+      std::unique_ptr<SegmentResultProvider> result_provider,
+      ExecutionService* execution_service);
 
   // Client API. See `SegmentationPlatformService::GetClassificationResult`.
   virtual void GetClassificationResult(

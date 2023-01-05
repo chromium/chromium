@@ -55,10 +55,8 @@ class RequestDispatcherTest : public testing::Test {
 
     configs_.emplace_back(CreateTestConfig(kTestClient1));
     configs_.emplace_back(CreateTestConfig(kTestClient2));
-    std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-        result_providers;
-    request_dispatcher_ = std::make_unique<RequestDispatcher>(
-        configs_, std::move(result_providers));
+
+    request_dispatcher_ = std::make_unique<RequestDispatcher>(configs_);
 
     auto handler1 = std::make_unique<MockRequestHandler>();
     request_handler1_ = handler1.get();
@@ -106,7 +104,11 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitFailure) {
 
   // Finish platform initialization with failure. The request queue is flushed
   // and callbacks are invoked with empty results.
-  request_dispatcher_->OnPlatformInitialized(false);
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  request_dispatcher_->OnPlatformInitialized(false, &execution_service,
+                                             std::move(result_providers));
   loop.Run();
   EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
 }
@@ -152,7 +154,11 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitSuccess) {
 
   // Finish platform initialization with success. The request queue is flushed,
   // and the request handler is invoked.
-  request_dispatcher_->OnPlatformInitialized(true);
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
   loop.Run();
   EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
 }
@@ -163,7 +169,11 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
   options.on_demand_execution = true;
 
   // Init platform.
-  request_dispatcher_->OnPlatformInitialized(true);
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
 
   // Request from client 1.
   ClassificationResult result1(PredictionStatus::kSucceeded);
