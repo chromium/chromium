@@ -232,16 +232,32 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     buffers.push_back({protected_params_->id(),
                        {protected_params_->type(), protected_params_->size(),
                         amd_decrypt_params.data()}});
+
+    // For transcrypted VP9 on AMD we need to send the UCH + cypher_bytes from
+    // the buffer as the slice data per AMD's instructions.
+    base::CheckedNumeric<size_t> protected_data_size =
+        decrypt_config->subsamples()[0].cypher_bytes;
+    protected_data_size += frame_hdr->uncompressed_header_size;
+    if (!protected_data_size.IsValid()) {
+      DVLOG(1) << "Invalid protected_data_size";
+      return DecodeStatus::kFail;
+    }
     encoded_data = vaapi_wrapper_->CreateVABuffer(
-        VASliceDataBufferType,
-        base::strict_cast<size_t>(
-            decrypt_config->subsamples()[0].cypher_bytes));
+        VASliceDataBufferType, protected_data_size.ValueOrDie());
     if (!encoded_data)
       return DecodeStatus::kFail;
-    buffers.push_back(
-        {encoded_data->id(),
-         {encoded_data->type(), encoded_data->size(),
-          frame_hdr->data + decrypt_config->subsamples()[0].clear_bytes}});
+    protected_vp9_data =
+        std::make_unique<uint8_t[]>(protected_data_size.ValueOrDie());
+    // Copy the UCH.
+    memcpy(protected_vp9_data.get(), frame_hdr->data,
+           frame_hdr->uncompressed_header_size);
+    // Copy the transcrypted data.
+    memcpy(protected_vp9_data.get() + frame_hdr->uncompressed_header_size,
+           frame_hdr->data + decrypt_config->subsamples()[0].clear_bytes,
+           base::strict_cast<size_t>(decrypt_config->subsamples()[0].cypher_bytes));
+    buffers.push_back({encoded_data->id(),
+                       {encoded_data->type(), encoded_data->size(),
+                        protected_vp9_data.get()}});
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
