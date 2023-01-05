@@ -53,32 +53,6 @@ iron-list {
   height: 100%;
 }
 
-.photo-container {
-  box-sizing: border-box;
-  height: 100%;
-  overflow: hidden;
-  padding: calc(var(--personalization-app-grid-item-spacing) / 2);
-  width: 100%;
-}
-
-.photo-container:focus-visible {
-  outline: none;
-}
-
-/* This extra position: relative element corrects for absolutely positioned
-   elements ignoring parent interior padding. */
-.photo-inner-container {
-  align-items: center;
-  border-radius: var(--personalization-app-grid-item-border-radius);
-  cursor: pointer;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-
 @keyframes ripple {
   /* 0 ms */
   from {
@@ -104,92 +78,6 @@ iron-list {
 
 .placeholder {
   animation: 2210ms linear var(--animation-delay, 1s) infinite ripple;
-}
-
-.photo-inner-container:focus-visible,
-.photo-loading-placeholder:focus-visible {
-  outline: 2px solid var(--cros-focus-ring-color);
-}
-
-.photo-images-container {
-  background-color: var(--personalization-app-grid-item-background-color);
-  border-radius: 12px;
-  box-sizing: border-box;
-  display: flex;
-  flex-flow: row wrap;
-  height: 100%;
-  justify-content: center;
-  /* stop img and gradient-mask from ignoring above border-radius. */
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-
-.photo-images-container img {
-  flex: 1 1 0;
-  height: 100%;
-  min-width: 50%;
-  object-fit: cover;
-  width: 100%;
-}
-
-.photo-images-container img.left {
-  clip-path: inset(0 50% 0 0);
-  position: absolute;
-}
-
-.photo-images-container img.right {
-  clip-path: inset(0 0 0 50%);
-  position: absolute;
-}
-
-@keyframes scale-up {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-.photo-container iron-icon[icon='personalization:checkmark'] {
-  --iron-icon-height: 20px;
-  --iron-icon-width: 20px;
-  animation-duration: 200ms;
-  animation-name: scale-up;
-  animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
-  left: 4px;
-  position: absolute;
-  top: 4px;
-}
-
-.photo-inner-container:not([aria-selected='true'])
-iron-icon[icon='personalization:checkmark'] {
-  display: none;
-}
-
-.photo-inner-container[aria-selected='true'] {
-  background-color: rgba(var(--cros-icon-color-prominent-rgb),
-      var(--personalization-app-second-tone-opacity));
-  border-radius: 16px;
-}
-
-@keyframes resize {
-  100% {
-    height: calc(100% - 8px);
-    width: calc(100% - 8px);
-  }
-}
-
-.photo-inner-container[aria-selected='true'] .photo-images-container {
-  animation-duration: 200ms;
-  animation-fill-mode: forwards;
-  animation-name: resize;
-  animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
-}
-
-.photo-inner-container[aria-selected='true'] .photo-images-border {
-  border: 0;
 }
 
 cr-button[aria-pressed=true],
