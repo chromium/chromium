@@ -59,6 +59,10 @@
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+#include "base/mac/mac_util.h"
+#endif
+
 using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
 using testing::UnorderedElementsAre;
@@ -267,11 +271,18 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder().Build();
 
+  bool expected_support = true;
+#if BUILDFLAG(IS_APPLE)
+  if (base::mac::GetCPUType() == base::mac::CPUType::kArm) {
+    expected_support = false;
+  }
+#endif
+
   EXPECT_THAT(
       EvaluateScript(web_contents,
                      "(document.createElement('canvas').getContext('webgl')"
                      "    instanceof WebGLRenderingContext)"),
-      DictHasValue("result.result.value", true));
+      DictHasValue("result.result.value", expected_support));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
