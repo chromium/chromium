@@ -23,10 +23,9 @@ class ConvertExplicitlyAllowedNetworkPortsPrefTest : public ::testing::Test {
         prefs::kExplicitlyAllowedNetworkPorts);
   }
 
-  void SetManagedPref(base::Value ports) {
-    local_state_.SetManagedPref(
-        prefs::kExplicitlyAllowedNetworkPorts,
-        base::Value::ToUniquePtrValue(std::move(ports)));
+  void SetList(base::Value::List ports) {
+    local_state_.SetList(prefs::kExplicitlyAllowedNetworkPorts,
+                         std::move(ports));
   }
 
   PrefService* local_state() { return &local_state_; }
@@ -36,38 +35,38 @@ class ConvertExplicitlyAllowedNetworkPortsPrefTest : public ::testing::Test {
 };
 
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, EmptyList) {
-  SetManagedPref(base::Value(base::Value::Type::LIST));
+  SetList(base::Value::List());
   auto ports = ConvertExplicitlyAllowedNetworkPortsPref(local_state());
   EXPECT_THAT(ports, IsEmpty());
 }
 
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, ValidList) {
-  base::Value list(base::Value::Type::LIST);
-  list.Append(base::Value(20));
-  list.Append(base::Value(21));
-  list.Append(base::Value(22));
-  SetManagedPref(std::move(list));
+  base::Value::List list;
+  list.Append(20);
+  list.Append(21);
+  list.Append(22);
+  SetList(std::move(list));
   auto ports = ConvertExplicitlyAllowedNetworkPortsPref(local_state());
   EXPECT_THAT(ports, ElementsAre(20, 21, 22));
 }
 
 // This shouldn't happen, but we handle it.
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, ListOfBools) {
-  base::Value list(base::Value::Type::LIST);
-  list.Append(base::Value(false));
-  list.Append(base::Value(true));
-  SetManagedPref(std::move(list));
+  base::Value::List list;
+  list.Append(false);
+  list.Append(true);
+  SetList(std::move(list));
   auto ports = ConvertExplicitlyAllowedNetworkPortsPref(local_state());
   EXPECT_THAT(ports, IsEmpty());
 }
 
 // This really shouldn't happen.
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, MixedTypesList) {
-  base::Value list(base::Value::Type::LIST);
-  list.Append(base::Value(true));
-  list.Append(base::Value("79"));
-  list.Append(base::Value(554));
-  SetManagedPref(std::move(list));
+  base::Value::List list;
+  list.Append(true);
+  list.Append("79");
+  list.Append(554);
+  SetList(std::move(list));
   auto ports = ConvertExplicitlyAllowedNetworkPortsPref(local_state());
   EXPECT_THAT(ports, ElementsAre(554));
 }
@@ -78,11 +77,11 @@ TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, OutOfRangeIntegers) {
       100000,  // Too big.
       119,     // Valid.
   };
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& value : kValues) {
-    list.Append(base::Value(value));
+    list.Append(value);
   }
-  SetManagedPref(std::move(list));
+  SetList(std::move(list));
   auto ports = ConvertExplicitlyAllowedNetworkPortsPref(local_state());
   EXPECT_THAT(ports, ElementsAre(119));
 }

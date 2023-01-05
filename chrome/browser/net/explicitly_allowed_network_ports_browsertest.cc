@@ -39,12 +39,12 @@ class ExplicitlyAllowedNetworkPortsBrowserTest : public policy::PolicyTest {
 
   void EnablePort79ByPolicy() {
     PolicyMap policies;
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     // Port 25 is just ignored, because it is not on the allowable ports list.
-    list.Append(base::Value("25"));
-    list.Append(base::Value("79"));
+    list.Append("25");
+    list.Append("79");
     SetPolicy(&policies, policy::key::kExplicitlyAllowedNetworkPorts,
-              std::move(list));
+              base::Value(std::move(list)));
     UpdateProviderPolicy(policies);
   }
 
