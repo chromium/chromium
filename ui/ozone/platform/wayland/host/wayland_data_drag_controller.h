@@ -80,10 +80,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
     kStarted,       // The outgoing drag is in progress.
     kTransferring,  // The incoming data is transferred from the source.
   };
-  enum class DragSource {
-    kMouse,
-    kTouch,
-  };
 
   WaylandDataDragController(WaylandConnection* connection,
                             WaylandDataDeviceManager* data_device_manager,
@@ -196,7 +192,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
-  absl::optional<DragSource> drag_source_;
+  absl::optional<mojom::DragEventSource> drag_source_;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;

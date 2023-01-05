@@ -1448,7 +1448,6 @@ TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
 }
 
 TEST_P(WaylandWindowDragControllerTest, GetSerial) {
-  using DragSource = WaylandWindowDragController::DragSource;
   auto* origin = static_cast<WaylandToplevelWindow*>(window_.get());
   auto& window_manager = *connection_->window_manager();
 
@@ -1456,20 +1455,20 @@ TEST_P(WaylandWindowDragControllerTest, GetSerial) {
   window_manager.SetTouchFocusedWindow(nullptr);
   serial_tracker().ClearForTesting();
   {  // No serial, no window focused.
-    auto serial = drag_controller()->GetSerial(DragSource::kMouse, origin);
+    auto serial = drag_controller()->GetSerial(DragEventSource::kMouse, origin);
     EXPECT_FALSE(serial.has_value());
   }
 
   // Check cases where only pointer focus info is set.
   {  // Serial available, but no window focused.
     serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 1u);
-    auto serial = drag_controller()->GetSerial(DragSource::kMouse, origin);
+    auto serial = drag_controller()->GetSerial(DragEventSource::kMouse, origin);
     EXPECT_FALSE(serial.has_value());
   }
 
   {  // Both serial and focused window available.
     window_manager.SetPointerFocusedWindow(window_.get());
-    auto serial = drag_controller()->GetSerial(DragSource::kMouse, origin);
+    auto serial = drag_controller()->GetSerial(DragEventSource::kMouse, origin);
     ASSERT_TRUE(serial.has_value());
     EXPECT_EQ(wl::SerialType::kMousePress, serial->type);
     EXPECT_EQ(1u, serial->value);
@@ -1481,12 +1480,12 @@ TEST_P(WaylandWindowDragControllerTest, GetSerial) {
   serial_tracker().ClearForTesting();
   {  // Serial available, but no window focused.
     serial_tracker().UpdateSerial(wl::SerialType::kTouchPress, 2u);
-    auto serial = drag_controller()->GetSerial(DragSource::kTouch, origin);
+    auto serial = drag_controller()->GetSerial(DragEventSource::kTouch, origin);
     EXPECT_FALSE(serial.has_value());
   }
   {  // Both serial and focused window available.
     window_manager.SetTouchFocusedWindow(window_.get());
-    auto serial = drag_controller()->GetSerial(DragSource::kTouch, origin);
+    auto serial = drag_controller()->GetSerial(DragEventSource::kTouch, origin);
     ASSERT_TRUE(serial.has_value());
     EXPECT_EQ(wl::SerialType::kTouchPress, serial->type);
     EXPECT_EQ(2u, serial->value);

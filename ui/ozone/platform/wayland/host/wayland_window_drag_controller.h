@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
@@ -56,10 +57,6 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     kCancelled,  // Drag cancel event was just received.
     kAttaching,  // About to transition back to |kAttached|.
   };
-  enum class DragSource {
-    kMouse,
-    kTouch,
-  };
 
   WaylandWindowDragController(WaylandConnection* connection,
                               WaylandDataDeviceManager* device_manager,
@@ -75,7 +72,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // the event type that is triggering the drag session, ie: mouse or touch. See
   // https://wayland.app/protocols/wayland#wl_data_device:request:start_drag for
   // more protocol-related information.
-  bool StartDragSession(WaylandToplevelWindow* origin, DragSource event_source);
+  bool StartDragSession(WaylandToplevelWindow* origin,
+                        mojom::DragEventSource event_source);
 
   bool Drag(WaylandToplevelWindow* window, const gfx::Vector2d& offset);
   void StopDragging();
@@ -94,7 +92,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   WaylandWindow* origin_window_for_testing() { return origin_window_; }
 
-  absl::optional<DragSource> drag_source() { return drag_source_; }
+  absl::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
 
  private:
   class ExtendedDragSource;
@@ -149,7 +147,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Returns the serial for the given |drag_source| if |origin| has the
   // corresponding focus, otherwise return null.
-  absl::optional<wl::Serial> GetSerial(DragSource drag_source,
+  absl::optional<wl::Serial> GetSerial(mojom::DragEventSource drag_source,
                                        WaylandToplevelWindow* origin);
 
   const raw_ptr<WaylandConnection> connection_;
@@ -160,7 +158,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
-  absl::optional<DragSource> drag_source_;
+  absl::optional<mojom::DragEventSource> drag_source_;
 
   gfx::Vector2d drag_offset_;
 

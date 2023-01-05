@@ -111,10 +111,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   DCHECK(!origin_window_);
   DCHECK(!icon_surface_);
 
-  WaylandWindow* origin_window =
-      source == DragEventSource::kTouch
-          ? window_manager_->GetCurrentTouchFocusedWindow()
-          : window_manager_->GetCurrentPointerFocusedWindow();
+  auto* origin_window = source == DragEventSource::kTouch
+                            ? window_manager_->GetCurrentTouchFocusedWindow()
+                            : window_manager_->GetCurrentPointerFocusedWindow();
   if (!origin_window) {
     LOG(ERROR) << "Failed to get focused window. source=" << source;
     return false;
@@ -163,9 +162,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
-  drag_source_ = serial->type == wl::SerialType::kTouchPress
-                     ? DragSource::kTouch
-                     : DragSource::kMouse;
+  drag_source_ = source;
   data_device_->StartDrag(*data_source_, *origin_window, serial->value,
                           icon_surface_ ? icon_surface_->surface() : nullptr,
                           this);
@@ -309,7 +306,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   // drag motion events.
   if (pointer_grabber_for_window_drag_) {
     DCHECK(drag_source_.has_value());
-    if (*drag_source_ == DragSource::kMouse) {
+    if (*drag_source_ == DragEventSource::kMouse) {
       pointer_delegate_->OnPointerFocusChanged(
           window, location, wl::EventDispatchPolicy::kImmediate);
     } else {

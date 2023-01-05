@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -756,8 +757,7 @@ void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
   // is a valid target window to transfer the touch points to.
   if (auto* target_window = window_manager_->GetCurrentTouchFocusedWindow()) {
     auto drag_source = connection_->window_drag_controller()->drag_source();
-    if (drag_source &&
-        *drag_source == WaylandWindowDragController::DragSource::kTouch) {
+    if (drag_source && *drag_source == mojom::DragEventSource::kTouch) {
       for (auto& touch_point : touch_points_)
         touch_point.second->window = target_window;
       return;

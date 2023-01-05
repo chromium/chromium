@@ -21,7 +21,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -53,6 +53,8 @@
 namespace ui {
 
 namespace {
+
+using mojom::DragEventSource;
 
 // Custom mime type used for window dragging DND sessions.
 constexpr char kMimeTypeChromiumWindow[] = "chromium/x-window";
@@ -113,14 +115,14 @@ WaylandWindowDragController::~WaylandWindowDragController() = default;
 
 bool WaylandWindowDragController::StartDragSession(
     WaylandToplevelWindow* origin,
-    DragSource drag_source) {
+    DragEventSource drag_source) {
   if (state_ != State::kIdle)
     return true;
 
   auto serial = GetSerial(drag_source, origin);
   if (!serial) {
     LOG(ERROR) << "Failed to retrieve dnd serial. origin=" << origin
-               << " drag_source=" << static_cast<int>(drag_source);
+               << " drag_source=" << drag_source;
     return false;
   }
 
@@ -226,7 +228,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
 
   DCHECK(drag_source_.has_value());
   // Check if this is necessary.
-  if (*drag_source_ == DragSource::kMouse) {
+  if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerFocusChanged(
         window, location, wl::EventDispatchPolicy::kImmediate);
   } else {
@@ -263,7 +265,7 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
   should_process_drag_event_ = true;
   pointer_location_ = location;
 
-  if (*drag_source_ == DragSource::kMouse) {
+  if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
         location, wl::EventDispatchPolicy::kImmediate);
   } else {
@@ -318,7 +320,7 @@ void WaylandWindowDragController::OnDragLeave() {
   if (state_ != State::kAttached)
     return;
 
-  if (*drag_source_ == DragSource::kMouse) {
+  if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
         {pointer_location_.x(), -1}, wl::EventDispatchPolicy::kImmediate);
   } else {
@@ -376,7 +378,7 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   // (see OnDragEnter function).
   // In case of touch, though, we simply reset the focus altogether.
   if (IsExtendedDragAvailableInternal() && dragged_window_) {
-    if (*drag_source_ == DragSource::kMouse) {
+    if (*drag_source_ == DragEventSource::kMouse) {
       // TODO: check if this usage is correct.
 
       pointer_delegate_->OnPointerFocusChanged(
@@ -492,7 +494,7 @@ void WaylandWindowDragController::HandleDropAndResetState() {
   if (!drag_source_.has_value())
     return;
 
-  if (*drag_source_ == DragSource::kMouse) {
+  if (*drag_source_ == DragEventSource::kMouse) {
     if (pointer_grab_owner_) {
       pointer_delegate_->OnPointerButtonEvent(
           ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, pointer_grab_owner_,
@@ -573,17 +575,17 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 absl::optional<wl::Serial> WaylandWindowDragController::GetSerial(
-    DragSource drag_source,
+    DragEventSource drag_source,
     WaylandToplevelWindow* origin) {
-  auto* focused = drag_source == DragSource::kMouse
+  auto* focused = drag_source == DragEventSource::kMouse
                       ? window_manager_->GetCurrentPointerFocusedWindow()
                       : window_manager_->GetCurrentTouchFocusedWindow();
   if (!origin || focused != origin) {
     return absl::nullopt;
   }
   return connection_->serial_tracker().GetSerial(
-      drag_source == DragSource::kMouse ? wl::SerialType::kMousePress
-                                        : wl::SerialType::kTouchPress);
+      drag_source == DragEventSource::kMouse ? wl::SerialType::kMousePress
+                                             : wl::SerialType::kTouchPress);
 }
 
 }  // namespace ui

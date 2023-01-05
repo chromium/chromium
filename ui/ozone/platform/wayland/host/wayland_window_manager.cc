@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 #include "base/observer_list.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
@@ -101,7 +102,7 @@ WaylandWindow* WaylandWindowManager::GetCurrentPointerOrTouchFocusedWindow()
   // TODO(https://crbug.com/1317063): Apply the same logic to data drag sessions
   // too?
   if (auto drag_source = connection_->window_drag_controller()->drag_source()) {
-    return *drag_source == WaylandWindowDragController::DragSource::kMouse
+    return *drag_source == mojom::DragEventSource::kMouse
                ? GetCurrentPointerFocusedWindow()
                : GetCurrentTouchFocusedWindow();
   }

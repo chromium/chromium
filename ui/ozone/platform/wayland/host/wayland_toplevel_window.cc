@@ -760,10 +760,7 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
       allow_system_drag) {
     return;
   }
-  connection()->window_drag_controller()->StartDragSession(
-      this, event_source == ui::mojom::DragEventSource::kTouch
-                ? WaylandWindowDragController::DragSource::kTouch
-                : WaylandWindowDragController::DragSource::kMouse);
+  connection()->window_drag_controller()->StartDragSession(this, event_source);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
