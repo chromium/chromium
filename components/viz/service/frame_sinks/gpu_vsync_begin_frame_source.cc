@@ -92,4 +92,10 @@ void GpuVSyncBeginFrameSource::OnNeedsBeginFrames(bool needs_begin_frames) {
   output_surface_->SetGpuVSyncEnabled(needs_begin_frames);
 }
 
+#if BUILDFLAG(IS_MAC)
+void GpuVSyncBeginFrameSource::SetVSyncDisplayID(int64_t display_id) {
+  // TODO (crbug/1404797): Use this Display id for VCDisplayLink
+}
+#endif
+
 }  // namespace viz

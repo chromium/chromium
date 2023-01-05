@@ -114,6 +114,12 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
   }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  static int64_t display_id(const viz::RendererSettings& input) {
+    return input.display_id;
+  }
+#endif
+
   static bool Read(viz::mojom::RendererSettingsDataView data,
                    viz::RendererSettings* out);
 };

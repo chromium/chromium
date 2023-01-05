@@ -59,6 +59,10 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
     return false;
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  out->display_id = data.display_id();
+#endif
+
   return true;
 }
 

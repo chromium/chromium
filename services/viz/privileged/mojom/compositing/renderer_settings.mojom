@@ -8,6 +8,9 @@ import "services/viz/privileged/mojom/compositing/overlay_strategy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 
+// same kInvalidDisplayId defined in ui/display/types/display_constants.h
+const int64 kInvalidDisplayId = -1;
+
 struct RendererSettings {
   bool apply_simple_frame_rate_throttling;
   bool allow_antialiasing;
@@ -29,6 +32,9 @@ struct RendererSettings {
 
   [EnableIf=use_ozone]
   array<OverlayStrategy> overlay_strategies;
+
+  [EnableIf=is_mac]
+  int64 display_id = kInvalidDisplayId;
 };
 
 struct DebugRendererSettings {

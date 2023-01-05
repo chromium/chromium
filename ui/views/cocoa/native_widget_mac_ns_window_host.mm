@@ -1185,6 +1185,7 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
                                display_.device_scale_factor(),
                                display_.color_spaces());
   }
+
   if (display_id_changed) {
     display_link_ = ui::DisplayLinkMac::GetForDisplay(
         base::checked_cast<CGDirectDisplayID>(display_.id()));
@@ -1192,6 +1193,10 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
       // Note that on some headless systems, the display link will fail to be
       // created, so this should not be a fatal error.
       LOG(ERROR) << "Failed to create display link.";
+    }
+
+    if (compositor_) {
+      compositor_->compositor()->SetVSyncDisplayID(display_.id());
     }
   }
 }

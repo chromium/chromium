@@ -500,6 +500,24 @@ void Compositor::SetDisplayColorSpaces(
     display_private_->SetDisplayColorSpaces(display_color_spaces_);
 }
 
+#if BUILDFLAG(IS_MAC)
+void Compositor::SetVSyncDisplayID(const int64_t display_id) {
+  if (display_id_ == display_id) {
+    return;
+  }
+
+  display_id_ = display_id;
+
+  if (display_private_) {
+    display_private_->SetVSyncDisplayID(display_id);
+  }
+}
+
+int64_t Compositor::display_id() const {
+  return display_id_;
+}
+#endif
+
 void Compositor::SetDisplayTransformHint(gfx::OverlayTransform hint) {
   host_->set_display_transform_hint(hint);
 }

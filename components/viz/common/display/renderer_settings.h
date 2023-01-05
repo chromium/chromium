@@ -61,6 +61,11 @@ class VIZ_COMMON_EXPORT RendererSettings {
   // then overlays aren't supported.
   std::vector<OverlayStrategy> overlay_strategies;
 #endif
+#if BUILDFLAG(IS_MAC)
+  // CGDirectDisplayID for the screen on which the browser is currently
+  // displayed.
+  int64_t display_id;
+#endif
 };
 
 // This is a set of debug flags that can be changed at runtime, so that we can

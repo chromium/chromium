@@ -11,6 +11,7 @@ include_rules = [
   "+ui/base",
   "+ui/accelerated_widget_mac",
   "+ui/display/display_switches.h",
+  "+ui/display/types/display_constants.h",
   "+ui/gfx",
   "+ui/gl",
 ]

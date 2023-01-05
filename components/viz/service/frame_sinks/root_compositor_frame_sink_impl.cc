@@ -266,6 +266,14 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
   display_->SetDisplayColorSpaces(display_color_spaces);
 }
 
+#if BUILDFLAG(IS_MAC)
+void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
+  if (external_begin_frame_source_) {
+    external_begin_frame_source_->SetVSyncDisplayID(display_id);
+  }
+}
+#endif
+
 void RootCompositorFrameSinkImpl::SetOutputIsSecure(bool secure) {
   display_->SetOutputIsSecure(secure);
 }

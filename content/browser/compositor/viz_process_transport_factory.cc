@@ -416,7 +416,9 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
 #endif
   root_params->gpu_compositing = gpu_compositing;
   root_params->renderer_settings = viz::CreateRendererSettings();
-
+#if BUILDFLAG(IS_MAC)
+  root_params->renderer_settings.display_id = compositor->display_id();
+#endif
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableFrameRateLimit))
     root_params->disable_frame_rate_limit = true;

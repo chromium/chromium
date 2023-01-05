@@ -47,6 +47,7 @@
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/compositor/throughput_tracker_host.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -245,6 +246,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // sets the SDR white level (in nits) used to scale HDR color space primaries.
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
+
+#if BUILDFLAG(IS_MAC)
+  // Set the current CGDirectDisplayID and update the private client.
+  void SetVSyncDisplayID(const int64_t display_id);
+  int64_t display_id() const;
+#endif
 
   const gfx::DisplayColorSpaces& display_color_spaces() const {
     return display_color_spaces_;
@@ -513,6 +520,11 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   // A sequence number of a current compositor frame for use with metrics.
   int activated_frame_count_ = 0;
+
+#if BUILDFLAG(IS_MAC)
+  // Current CGDirectDisplayID for the screen.
+  int64_t display_id_ = display::kInvalidDisplayId;
+#endif
 
   // Current vsync refresh rate per second. Initialized to 60hz as a reasonable
   // value until first begin frame arrives with the real refresh rate.
