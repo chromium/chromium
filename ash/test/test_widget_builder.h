@@ -49,6 +49,11 @@ class ASH_EXPORT TestWidgetBuilder {
   // Set the window id used on the window of a test widget.
   TestWidgetBuilder& SetWindowId(int window_id);
 
+  // Having a non-empty title helps avoid accessibility paint check failures
+  // in tests. For instance, `WindowMiniView` gets its accessible name from
+  // the window title.
+  TestWidgetBuilder& SetWindowTitle(const std::u16string& title);
+
   // A widget is shown when created by default. Use this if you want not
   // to show when created.
   TestWidgetBuilder& SetShow(bool show);
@@ -85,6 +90,7 @@ class ASH_EXPORT TestWidgetBuilder {
  private:
   views::Widget::InitParams widget_init_params_;
   int window_id_ = aura::Window::kInitialId;
+  std::u16string window_title_ = std::u16string();
   bool show_ = true;
   bool built_ = false;
 };

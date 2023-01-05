@@ -24,6 +24,7 @@ TestWindowBuilder::TestWindowBuilder(TestWindowBuilder& others)
       bounds_(others.bounds_),
       init_properties_(std::move(others.init_properties_)),
       window_id_(others.window_id_),
+      window_title_(others.window_title_),
       show_(others.show_) {
   DCHECK(!others.built_);
   others.built_ = true;
@@ -48,6 +49,13 @@ TestWindowBuilder& TestWindowBuilder::SetWindowType(
 TestWindowBuilder& TestWindowBuilder::SetWindowId(int id) {
   DCHECK(!built_);
   window_id_ = id;
+  return *this;
+}
+
+TestWindowBuilder& TestWindowBuilder::SetWindowTitle(
+    const std::u16string& title) {
+  DCHECK(!built_);
+  window_title_ = title;
   return *this;
 }
 
@@ -102,6 +110,9 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
   window->AcquireAllPropertiesFrom(std::move(init_properties_));
   if (window_id_ != aura::Window::kInitialId)
     window->SetId(window_id_);
+  if (!window_title_.empty()) {
+    window->SetTitle(window_title_);
+  }
   if (parent_) {
     if (!bounds_.IsEmpty())
       window->SetBounds(bounds_);

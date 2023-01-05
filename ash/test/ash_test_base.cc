@@ -250,6 +250,7 @@ std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     int shell_window_id,
     views::WidgetDelegate* delegate) {
   TestWidgetBuilder builder;
+  builder.SetWindowTitle(u"Window " + base::NumberToString16(shell_window_id));
   if (app_type != AppType::NON_APP) {
     builder.SetWindowProperty(aura::client::kAppType,
                               static_cast<int>(app_type));
@@ -322,6 +323,7 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
       .SetDelegate(delegate)
       .SetWindowType(type)
       .SetWindowId(id)
+      .SetWindowTitle(u"Window " + base::NumberToString16(id))
       .AllowAllWindowStates()
       .Build()
       .release();
