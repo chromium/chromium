@@ -380,33 +380,9 @@ export class App {
       }
     })();
 
-    const preloadImages = (async () => {
-      function loadImage(url: string) {
-        return new Promise<void>((resolve, reject) => {
-          const link = document.createElement('link');
-          link.rel = 'preload';
-          link.as = 'image';
-          link.href = url;
-          link.onload = () => resolve();
-          link.onerror = () =>
-              reject(new Error(`Failed to preload image ${url}`));
-          document.head.appendChild(link);
-        });
-      }
-      const results = await Promise.allSettled(
-          preloadImagesList.map((name) => loadImage(`/images/${name}`)));
-      for (const result of results) {
-        if (result.status === 'rejected') {
-          reportError(
-              ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
-              assertInstanceof(result.reason, Error));
-          break;
-        }
-      }
-    })();
-
+    preloadImages();
     metrics.sendLaunchEvent({launchType});
-    await Promise.all([showWindow, startCamera, preloadImages]);
+    await Promise.all([showWindow, startCamera]);
     await this.setupFeatureEffectsAndDialogs();
   }
 
@@ -478,6 +454,27 @@ function parseSearchParams(): {
   const openFrom = params.get('openFrom');
 
   return {intent, facing, mode, autoTake, openFrom};
+}
+
+/**
+ * Preload images to avoid flickering.
+ */
+function preloadImages() {
+  const imagesContainer = document.createElement('div');
+  imagesContainer.id = 'preload-images';
+  imagesContainer.hidden = true;
+  for (const imageName of preloadImagesList) {
+    const img = document.createElement('img');
+    const url = `/images/${imageName}`;
+    img.onerror = () => {
+      reportError(
+          ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
+          new Error(`Failed to preload image ${url}`));
+    };
+    img.src = url;
+    imagesContainer.appendChild(img);
+  }
+  document.body.appendChild(imagesContainer);
 }
 
 /**
