@@ -1112,6 +1112,9 @@ bool AXNodeData::IsMenuButton() const {
 }
 
 bool AXNodeData::IsTextField() const {
+  if (HasState(ax::mojom::State::kIgnored)) {
+    return false;
+  }
   return IsAtomicTextField() || IsNonAtomicTextField();
 }
 

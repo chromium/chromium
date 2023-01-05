@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
+#include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -1074,7 +1075,13 @@ TEST_F(AXTreeSourceArcTest, SerializeAndUnserialize) {
       "      id=2 genericContainer IGNORED INVISIBLE (0, 0)-(0, 0) "
       "restriction=disabled\n");
 
+  EXPECT_EQ(0U, tree()->GetFromId(100)->GetUnignoredChildCount());
+#if DCHECK_IS_ON()
+  EXPECT_DEATH_IF_SUPPORTED(tree()->GetFromId(10)->GetUnignoredChildCount(),
+                            "Called unignored method on ignored node");
+#else
   EXPECT_EQ(0U, tree()->GetFromId(10)->GetUnignoredChildCount());
+#endif
 
   // An unignored node.
   event->node_data.push_back(AXNodeInfoData::New());

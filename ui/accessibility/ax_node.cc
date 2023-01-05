@@ -71,7 +71,7 @@ size_t AXNode::GetChildCountCrossingTreeBoundary() const {
 }
 
 size_t AXNode::GetUnignoredChildCount() const {
-  // TODO(nektar): Should DCHECK that this node is not ignored.
+  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return unignored_child_count_;
 }
@@ -269,8 +269,10 @@ AXNode* AXNode::GetDeepestFirstChild() const {
 
   AXNode* deepest_child = GetFirstChild();
   DCHECK(deepest_child);
-  while (deepest_child->GetChildCount())
+  while (deepest_child->GetChildCount()) {
     deepest_child = deepest_child->GetFirstChild();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
@@ -282,34 +284,42 @@ AXNode* AXNode::GetDeepestFirstChildCrossingTreeBoundary() const {
 
   AXNode* deepest_child = GetFirstChildCrossingTreeBoundary();
   DCHECK(deepest_child);
-  while (deepest_child->GetChildCountCrossingTreeBoundary())
+  while (deepest_child->GetChildCountCrossingTreeBoundary()) {
     deepest_child = deepest_child->GetFirstChildCrossingTreeBoundary();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
 
 AXNode* AXNode::GetDeepestFirstUnignoredChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   if (!GetUnignoredChildCount())
     return nullptr;
 
   AXNode* deepest_child = GetFirstUnignoredChild();
   DCHECK(deepest_child);
-  while (deepest_child->GetUnignoredChildCount())
+  while (deepest_child->GetUnignoredChildCount()) {
     deepest_child = deepest_child->GetFirstUnignoredChild();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
 
 AXNode* AXNode::GetDeepestFirstUnignoredChildCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   if (!GetUnignoredChildCountCrossingTreeBoundary())
     return nullptr;
 
   AXNode* deepest_child = GetFirstUnignoredChildCrossingTreeBoundary();
   DCHECK(deepest_child);
-  while (deepest_child->GetUnignoredChildCountCrossingTreeBoundary())
+  while (deepest_child->GetUnignoredChildCountCrossingTreeBoundary()) {
     deepest_child = deepest_child->GetFirstUnignoredChildCrossingTreeBoundary();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
@@ -321,47 +331,58 @@ AXNode* AXNode::GetDeepestLastChild() const {
 
   AXNode* deepest_child = GetLastChild();
   DCHECK(deepest_child);
-  while (deepest_child->GetChildCount())
+  while (deepest_child->GetChildCount()) {
     deepest_child = deepest_child->GetLastChild();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
 
 AXNode* AXNode::GetDeepestLastChildCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   if (!GetChildCountCrossingTreeBoundary())
     return nullptr;
 
   AXNode* deepest_child = GetLastChildCrossingTreeBoundary();
   DCHECK(deepest_child);
-  while (deepest_child->GetChildCountCrossingTreeBoundary())
+  while (deepest_child->GetChildCountCrossingTreeBoundary()) {
     deepest_child = deepest_child->GetLastChildCrossingTreeBoundary();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
 
 AXNode* AXNode::GetDeepestLastUnignoredChild() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   if (!GetUnignoredChildCount())
     return nullptr;
 
   AXNode* deepest_child = GetLastUnignoredChild();
   DCHECK(deepest_child);
-  while (deepest_child->GetUnignoredChildCount())
+  while (deepest_child->GetUnignoredChildCount()) {
     deepest_child = deepest_child->GetLastUnignoredChild();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }
 
 AXNode* AXNode::GetDeepestLastUnignoredChildCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   if (!GetUnignoredChildCountCrossingTreeBoundary())
     return nullptr;
 
   AXNode* deepest_child = GetLastUnignoredChildCrossingTreeBoundary();
   DCHECK(deepest_child);
-  while (deepest_child->GetUnignoredChildCountCrossingTreeBoundary())
+  while (deepest_child->GetUnignoredChildCountCrossingTreeBoundary()) {
     deepest_child = deepest_child->GetLastUnignoredChildCrossingTreeBoundary();
+    DCHECK(deepest_child);
+  }
 
   return deepest_child;
 }

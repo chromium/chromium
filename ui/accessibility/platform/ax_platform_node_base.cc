@@ -1618,7 +1618,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
     return;
   hypertext_ = AXLegacyHypertext();
 
-  if (IsLeaf()) {
+  if (GetData().IsIgnored() || IsLeaf()) {
     hypertext_.hypertext = GetTextContentUTF16();
     hypertext_.needs_update = false;
     return;

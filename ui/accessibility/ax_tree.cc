@@ -2597,6 +2597,10 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
 }
 
 absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
+  if (node.IsIgnored()) {
+    return absl::nullopt;
+  }
+
   if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
        node.GetRole() == ax::mojom::Role::kPopUpButton) &&
       node.GetUnignoredChildCount() == 0 &&
@@ -2615,8 +2619,9 @@ absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
 
   // Only allow this to be called on nodes that can hold PosInSet values,
   // which are defined in the ARIA spec.
-  if (!node.IsOrderedSetItem() || node.IsIgnored())
+  if (!node.IsOrderedSetItem()) {
     return absl::nullopt;
+  }
 
   const AXNode* ordered_set = node.GetOrderedSet();
   if (!ordered_set)
@@ -2632,6 +2637,10 @@ absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
 }
 
 absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
+  if (node.IsIgnored()) {
+    return absl::nullopt;
+  };
+
   if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
        node.GetRole() == ax::mojom::Role::kPopUpButton) &&
       node.GetUnignoredChildCount() == 0 &&
@@ -2651,7 +2660,7 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   // Only allow this to be called on nodes that can hold SetSize values, which
   // are defined in the ARIA spec. However, we allow set-like items to receive
   // SetSize values for internal purposes.
-  if ((!node.IsOrderedSetItem() && !node.IsOrderedSet()) || node.IsIgnored() ||
+  if ((!node.IsOrderedSetItem() && !node.IsOrderedSet()) ||
       node.IsEmbeddedGroup()) {
     return absl::nullopt;
   }

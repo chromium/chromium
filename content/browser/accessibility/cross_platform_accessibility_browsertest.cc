@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(1u, root->children().size());
 
   const ui::AXNode* html_element = root->children()[0];
-  ASSERT_EQ(1u, html_element->GetUnignoredChildCount());
+  EXPECT_TRUE(html_element->IsIgnored());
 
   const ui::AXNode* body = html_element->children()[0];
   ASSERT_EQ(3u, body->GetUnignoredChildCount());
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(1u, sub_document->children().size());
 
   const ui::AXNode* sub_html_element = sub_document->children()[0];
-  ASSERT_EQ(1u, sub_html_element->GetUnignoredChildCount());
+  EXPECT_TRUE(sub_html_element->IsIgnored());
 
   const ui::AXNode* sub_body = sub_html_element->children()[0];
   ASSERT_EQ(1u, sub_body->GetUnignoredChildCount());

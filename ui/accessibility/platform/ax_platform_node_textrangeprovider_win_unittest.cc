@@ -5984,16 +5984,12 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(tree_update);
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 1),
                            GetNodeFromTree(tree_id, 1));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 2),
-                           GetNodeFromTree(tree_id, 1));
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 3),
                            GetNodeFromTree(tree_id, 3));
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 4),
                            GetNodeFromTree(tree_id, 4));
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 5),
                            GetNodeFromTree(tree_id, 5));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 8),
-                           GetNodeFromTree(tree_id, 1));
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 11),
                            GetNodeFromTree(tree_id, 11));
   EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 13),

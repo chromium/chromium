@@ -381,6 +381,12 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
   for (auto content_node_id : content_node_ids_) {
     ui::AXNode* content_node = GetAXNode(content_node_id);
     DCHECK(content_node);
+    // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
+    // not be the correct approach. Do we need a version of
+    // GetDeepestLastUnignoredChild() that works on ignored nodes?
+    if (content_node->IsIgnored()) {
+      continue;
+    }
 
     // Add all ancestor ids, including the content node itself, which is the
     // first ancestor in the queue. Exit the loop early if an ancestor is
