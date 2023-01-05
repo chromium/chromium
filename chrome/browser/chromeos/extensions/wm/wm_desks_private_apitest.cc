@@ -34,8 +34,7 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
 // Use API test for tests require other chrome API.
 // API test is flaky when involves animation. For APIs involving animation use
 // browser test instead.
-// TODO(crbug.com/1370233): Re-enable this test
-IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_WmDesksPrivateApiTest) {
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, WmDesksPrivateApiTest) {
   // This loads and runs an extension from
   // chrome/test/data/extensions/api_test/wm_desks_private.
   ASSERT_TRUE(RunExtensionTest("wm_desks_private")) << message_;
