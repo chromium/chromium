@@ -173,6 +173,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/location_bar/test",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar/test",
     "//ios/chrome/browser/url_loading",

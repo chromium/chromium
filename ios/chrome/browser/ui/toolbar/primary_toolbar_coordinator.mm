@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/components/webui/web_ui_url_constants.h"

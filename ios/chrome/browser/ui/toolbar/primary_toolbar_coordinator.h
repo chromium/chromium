@@ -10,7 +10,7 @@
 
 @protocol ActivityServicePositioner;
 @protocol OmniboxPopupPresenterDelegate;
-@protocol ToolbarCoordinatorDelegate;
+@protocol OmniboxFocusDelegate;
 @class ViewRevealingVerticalPanHandler;
 @protocol ViewRevealingAnimatee;
 
@@ -21,7 +21,7 @@
 
 // Delegate for this coordinator.
 // TODO(crbug.com/799446): Change this.
-@property(nonatomic, weak) id<ToolbarCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<OmniboxFocusDelegate> delegate;
 
 // Defines where the omnibox popup will be positioned.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>

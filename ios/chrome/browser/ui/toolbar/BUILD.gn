@@ -16,7 +16,6 @@ source_set("toolbar") {
     "toolbar_coordinatee.h",
     "toolbar_coordinator_adaptor.h",
     "toolbar_coordinator_adaptor.mm",
-    "toolbar_coordinator_delegate.h",
     "toolbar_mediator.h",
     "toolbar_mediator.mm",
   ]

@@ -144,6 +144,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/ntp:coordinator",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/ntp:util",
+    "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/browser/ui/open_in",

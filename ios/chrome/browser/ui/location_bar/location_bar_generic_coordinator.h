@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
-#import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
 
 class ChromeBrowserState;
 class WebStateList;
@@ -19,7 +18,7 @@ class WebStateList;
 @protocol EditViewAnimatee;
 @protocol LocationBarAnimatee;
 @protocol OmniboxPopupPresenterDelegate;
-@protocol ToolbarCoordinatorDelegate;
+@protocol OmniboxFocusDelegate;
 
 @protocol LocationBarGenericCoordinator <NSObject,
                                          LocationBarURLLoader,
@@ -35,7 +34,7 @@ class WebStateList;
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 // Delegate for this coordinator.
 // TODO(crbug.com/799446): Change this.
-@property(nonatomic, weak) id<ToolbarCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<OmniboxFocusDelegate> delegate;
 // The web state list this ToolbarCoordinator is handling.
 @property(nonatomic, assign) WebStateList* webStateList;
 

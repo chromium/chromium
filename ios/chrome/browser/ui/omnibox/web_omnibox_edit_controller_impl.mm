@@ -6,7 +6,8 @@
 
 #import "components/omnibox/browser/location_bar_model.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
-#import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_controller_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,8 +15,9 @@
 #endif
 
 WebOmniboxEditControllerImpl::WebOmniboxEditControllerImpl(
-    id<LocationBarDelegate> delegate)
-    : delegate_(delegate){
+    id<OmniboxControllerDelegate> delegate,
+    id<OmniboxFocusDelegate> focus_delegate)
+    : delegate_(delegate), focus_delegate_(focus_delegate) {
   // TODO(crbug.com/818645): add security icon and its a11y labels
 }
 
@@ -27,12 +29,12 @@ web::WebState* WebOmniboxEditControllerImpl::GetWebState() {
 
 void WebOmniboxEditControllerImpl::OnKillFocus() {
   // TODO(crbug.com/818648): disable fullscreen in LocationBarMediator.
-  [delegate_ locationBarHasResignedFirstResponder];
+  [focus_delegate_ omniboxDidResignFirstResponder];
 }
 
 void WebOmniboxEditControllerImpl::OnSetFocus() {
   // TODO(crbug.com/818648): reenable fullscreen in LocationBarMediator.
-  [delegate_ locationBarHasBecomeFirstResponder];
+  [focus_delegate_ omniboxDidBecomeFirstResponder];
 }
 
 void WebOmniboxEditControllerImpl::OnAutocompleteAccept(

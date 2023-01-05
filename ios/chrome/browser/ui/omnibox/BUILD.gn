@@ -6,7 +6,8 @@ source_set("omnibox") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
-    "location_bar_delegate.h",
+    "omnibox_controller_delegate.h",
+    "omnibox_focus_delegate.h",
     "web_omnibox_edit_controller.cc",
     "web_omnibox_edit_controller.h",
   ]

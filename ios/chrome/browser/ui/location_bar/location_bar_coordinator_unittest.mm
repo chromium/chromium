@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -43,17 +43,17 @@
 
 using variations::VariationsIdsProvider;
 
-@interface TestToolbarCoordinatorDelegate : NSObject<ToolbarCoordinatorDelegate>
+@interface TestOmniboxFocusDelegate : NSObject <OmniboxFocusDelegate>
 
 @end
 
-@implementation TestToolbarCoordinatorDelegate {
+@implementation TestOmniboxFocusDelegate {
   std::unique_ptr<LocationBarModel> _model;
 }
 
-- (void)locationBarDidBecomeFirstResponder {
+- (void)omniboxDidBecomeFirstResponder {
 }
-- (void)locationBarDidResignFirstResponder {
+- (void)omniboxDidResignFirstResponder {
 }
 
 - (LocationBarModel*)locationBarModel {
@@ -135,7 +135,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mockApplicationSettingsCommandHandler
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
-    delegate_ = [[TestToolbarCoordinatorDelegate alloc] init];
+    delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 
     coordinator_ = [[LocationBarCoordinator alloc]
         initWithBaseViewController:nil
@@ -157,7 +157,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   SceneState* scene_state_;
-  TestToolbarCoordinatorDelegate* delegate_;
+  TestOmniboxFocusDelegate* delegate_;
 };
 
 TEST_F(LocationBarCoordinatorTest, Stops) {
