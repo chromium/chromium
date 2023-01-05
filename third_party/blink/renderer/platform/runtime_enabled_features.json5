@@ -370,7 +370,6 @@
       base_feature: "BackForwardCacheSendNotRestoredReasons",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
-      public: true,
     },
     {
       name: "BackgroundFetch",
@@ -486,7 +485,6 @@
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "IdentityInCanMakePaymentEventFeature",
       origin_trial_type: "deprecation",
-      public: true,
     },
     {
       name: "ClickToCapturedPointer",
@@ -1068,7 +1066,6 @@
     },
     {
       name: "DocumentPictureInPictureAPI",
-      public: true,
       status: {
         "Android": "",
         "ChromeOS_Lacros": "",
@@ -1200,7 +1197,6 @@
       // This only exists so we can use RuntimeEnabled in the IDL file
       // when either implied_by flag is enabled.
       name: "FedCmIdentityProviderInterface",
-      public: true,
       implied_by: ["FedCmIdpSigninStatus", "FedCmUserInfo"],
     },
     {
@@ -1262,7 +1258,6 @@
       base_feature: "FencedFramesAPIChanges",
       base_feature_status: "disabled",
       copied_from_base_feature_if: "overridden",
-      public: true,
     },
     {
       name: "FetchUploadStreaming",
@@ -2083,7 +2078,6 @@
     {
       name: "PaymentInstruments",
       depends_on: ["PaymentApp"],
-      public: true,
       status: "stable",
     },
     {
