@@ -1551,8 +1551,11 @@
     <message name="IDS_SETTINGS_LANGUAGES_ADD_ARIA_LABEL" desc="Text read by screen readers when focusing on the checkbox for adding a language. This text is only announced by screen readers and is not visible in the UI.">
       Add <ph name="LANGUAGE_NAME">$1<ex>Swahili</ex></ph>
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_REMOVE_ARIA_LABEL" desc="Text read by screen readers when focusing on the trash can icon for removing a language. Activating this button will remove the selected language from its current list. This text is only announced by screen readers and is not visible in the UI.">
-      Remove <ph name="LANGUAGE_NAME">$1<ex>Swahili</ex></ph>
+    <message name="IDS_SETTINGS_LANGUAGES_REMOVE_AUTOMATIC_ARIA_LABEL" desc="Text read by screen readers when focusing on the remove icon for automatiaclly translated languages. Activating this button will remove the selected language. This text only announced by screen readers and is not visible in the UI.">
+      Remove <ph name="LANGUAGE_NAME">$1<ex>Swahili</ex></ph> from automatically translated languages
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_REMOVE_NEVER_ARIA_LABEL" desc="Text read by screen readers when focusing on the remove icon for never offer translate languages. Activating this button will remove the selected language. This text only announced by screen readers and is not visible in the UI.">
+      Remove <ph name="LANGUAGE_NAME">$1<ex>Swahili</ex></ph> from never offer translation languages
     </message>
     <message name="IDS_SETTINGS_TRANSLATE_PAGE_TITLE" desc="Name of the settings page which displays translate preferences.">
       Google Translate

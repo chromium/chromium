@@ -39,7 +39,8 @@
         <div class="list-item" role="listitem">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray"
-              aria-label="[[i18n('removeLanguageAriaLabel',item.displayName)]]"
+              aria-label="[[i18n('removeAutomaticLanguageAriaLabel',
+                            item.displayName)]]"
               on-click="onRemoveAlwaysTranslateLanguageClick_">
           </cr-icon-button>
         </div>
@@ -66,7 +67,8 @@
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
               disabled="[[hasLength_(languages.neverTranslate, 1)]]"
-              aria-label="[[i18n('removeLanguageAriaLabel', item.displayName)]]"
+              aria-label="[[i18n('removeNeverLanguageAriaLabel',
+                            item.displayName)]]"
               on-click="onRemoveNeverTranslateLanguageClick_">
           </cr-icon-button>
         </div>
