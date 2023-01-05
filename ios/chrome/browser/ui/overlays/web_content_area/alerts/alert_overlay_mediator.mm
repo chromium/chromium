@@ -25,7 +25,7 @@ using alert_overlays::AlertResponse;
 @property(nonatomic, readonly) AlertRequest* alertRequest;
 // Returns the alert actions to provide to the consumer.  Constructed using the
 // AlertRequest.
-@property(nonatomic, readonly) NSArray<AlertAction*>* alertActions;
+@property(nonatomic, readonly) NSArray<NSArray<AlertAction*>*>* alertActions;
 // Returns an array containing the current values of all alert text fields.
 @property(nonatomic, readonly) NSArray<NSString*>* textFieldValues;
 @end
@@ -49,7 +49,7 @@ using alert_overlays::AlertResponse;
   [_consumer setTitle:alertRequest->title()];
   [_consumer setMessage:alertRequest->message()];
   [_consumer setTextFieldConfigurations:alertRequest->text_field_configs()];
-  NSArray<AlertAction*>* alertActions = self.alertActions;
+  NSArray<NSArray<AlertAction*>*>* alertActions = self.alertActions;
   DCHECK_GT(alertActions.count, 0U);
   [_consumer setActions:alertActions];
   [_consumer
@@ -60,25 +60,32 @@ using alert_overlays::AlertResponse;
   return self.request ? self.request->GetConfig<AlertRequest>() : nullptr;
 }
 
-- (NSArray<AlertAction*>*)alertActions {
+- (NSArray<NSArray<AlertAction*>*>*)alertActions {
   AlertRequest* alertRequest = self.alertRequest;
   if (!alertRequest || !alertRequest->button_configs().size())
     return nil;
   const std::vector<std::vector<alert_overlays::ButtonConfig>>& buttonConfigs =
       alertRequest->button_configs();
-  // TODO(crbug.com/1356768): Currently the consumer could only display all the
-  // buttons verfically of buttons, so we only use the actions from the first
-  // column of each row of the button configs. Update this part when the
-  // consumer supports supporting multiple buttons on each row.
-  size_t buttonCount = buttonConfigs.size();
-  NSMutableArray<AlertAction*>* actions =
-      [[NSMutableArray<AlertAction*> alloc] initWithCapacity:buttonCount];
-  for (size_t i = 0; i < buttonCount; ++i) {
-    [actions addObject:[AlertAction
-                           actionWithTitle:buttonConfigs[i][0].title
-                                     style:buttonConfigs[i][0].style
-                                   handler:[self actionForButtonAtIndexRow:i
-                                                                    column:0]]];
+  size_t rowCount = buttonConfigs.size();
+  NSMutableArray<NSArray<AlertAction*>*>* actions =
+      [[NSMutableArray<NSArray<AlertAction*>*> alloc]
+          initWithCapacity:rowCount];
+  for (size_t i = 0; i < rowCount; ++i) {
+    const std::vector<alert_overlays::ButtonConfig> buttonConfigsForRow =
+        buttonConfigs[i];
+    size_t columnCount = buttonConfigsForRow.size();
+    DCHECK_GT(columnCount, 0U);
+    NSMutableArray<AlertAction*>* actionsForRow =
+        [[NSMutableArray<AlertAction*> alloc] initWithCapacity:columnCount];
+    for (size_t j = 0; j < columnCount; ++j) {
+      [actionsForRow
+          addObject:[AlertAction
+                        actionWithTitle:buttonConfigsForRow[j].title
+                                  style:buttonConfigsForRow[j].style
+                                handler:[self actionForButtonAtIndexRow:i
+                                                                 column:j]]];
+    }
+    [actions addObject:actionsForRow];
   }
   return actions;
 }

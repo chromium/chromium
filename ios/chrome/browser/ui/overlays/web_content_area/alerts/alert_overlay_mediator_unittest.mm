@@ -145,13 +145,15 @@ TEST_F(AlertOverlayMediatorTest, SetUpConsumer) {
   ASSERT_EQ(2U, alert_request->button_configs().size());
   ASSERT_EQ(1U, alert_request->button_configs()[0].size());
   ASSERT_EQ(2U, alert_request->button_configs()[1].size());
-  // TODO(crbug.com/1356768): Update when consumer supports multiple buttons on
-  // a row.
-  for (size_t i = 0; i < alert_request->button_configs().size(); ++i) {
-    AlertAction* consumer_action = consumer_.actions[i];
-    const ButtonConfig& button_config = alert_request->button_configs()[i][0];
-    EXPECT_NSEQ(button_config.title, consumer_action.title);
-    EXPECT_EQ(button_config.style, consumer_action.style);
+  size_t rows_count = alert_request->button_configs().size();
+  for (size_t i = 0; i < rows_count; ++i) {
+    NSArray<AlertAction*>* actions = consumer_.actions[i];
+    for (size_t j = 0; j < [actions count]; ++j) {
+      AlertAction* consumer_action = actions[j];
+      const ButtonConfig& button_config = alert_request->button_configs()[i][j];
+      EXPECT_NSEQ(button_config.title, consumer_action.title);
+      EXPECT_EQ(button_config.style, consumer_action.style);
+    }
   }
 }
 
@@ -165,9 +167,8 @@ TEST_F(AlertOverlayMediatorTest, ResponseConversion) {
   mediator_.dataSource = data_source;
 
   // Simulate a tap on the OK button.
-  // TODO(crbug.com/1356768): Update when consumer supports multiple buttons on
-  // a row.
-  AlertAction* ok_button_action = consumer_.actions[kButtonIndexOkRow];
+  AlertAction* ok_button_action =
+      consumer_.actions[kButtonIndexOkRow][kButtonIndexOkCol];
   ASSERT_TRUE(ok_button_action.handler);
   ok_button_action.handler(ok_button_action);
 
@@ -185,9 +186,8 @@ TEST_F(AlertOverlayMediatorTest, ResponseConversion) {
 // Tests UMA user action recording.
 TEST_F(AlertOverlayMediatorTest, UserActionRecording) {
   // Tapping OK button records User Action.
-  // TODO(crbug.com/1356768): Update when consumer supports multiple buttons on
-  // a row.
-  AlertAction* ok_button_action = consumer_.actions[kButtonIndexOkRow];
+  AlertAction* ok_button_action =
+      consumer_.actions[kButtonIndexOkRow][kButtonIndexOkCol];
   base::UserActionTester user_action_tester;
   EXPECT_EQ(0, user_action_tester.GetActionCount(kOKTappedUserActionName));
   ok_button_action.handler(ok_button_action);

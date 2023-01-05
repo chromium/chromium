@@ -39,7 +39,7 @@ TEST_F(AlertViewControllerTest, DeallocWithActions) {
                                style:UIAlertActionStyleDefault
                              handler:^(AlertAction* alert_action){
                              }];
-    [alert setActions:@[ action ]];
+    [alert setActions:@[ @[ action ] ]];
     weakAlert = alert;
   }
   EXPECT_FALSE(weakAlert);

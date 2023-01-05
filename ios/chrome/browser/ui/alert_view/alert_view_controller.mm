@@ -6,6 +6,7 @@
 
 #import <ostream>
 
+#import "base/check_op.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
@@ -63,13 +64,100 @@ constexpr CGFloat kTextfieldInset = 8;
 // UIViewAnimationOptions format. Must match the one in UIView.h.
 constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
+// Returns the width and height of a single pixel in point.
+CGFloat GetPixelLength() {
+  return 1.0 / [UIScreen mainScreen].scale;
+}
+
+// Positions the content view on the screen.
+void PositionContentViewInParentView(UIView* contentView, UIView* parentView) {
+  [NSLayoutConstraint activateConstraints:@[
+    [contentView.centerXAnchor
+        constraintEqualToAnchor:parentView.safeAreaLayoutGuide.centerXAnchor],
+    [contentView.centerYAnchor
+        constraintEqualToAnchor:parentView.safeAreaLayoutGuide.centerYAnchor],
+
+    // Minimum Size.
+    [contentView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kMinimumHeight],
+
+    // Maximum Size.
+    [contentView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:parentView.safeAreaLayoutGuide
+                                                 .topAnchor
+                                    constant:kMinimumMargin],
+    [contentView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:parentView.safeAreaLayoutGuide
+                                              .bottomAnchor
+                                 constant:-kMinimumMargin],
+    [contentView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:parentView.safeAreaLayoutGuide
+                                              .trailingAnchor
+                                 constant:-kMinimumMargin],
+    [contentView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:parentView.safeAreaLayoutGuide
+                                                 .leadingAnchor
+                                    constant:kMinimumMargin],
+  ]];
+}
+
+// Adds a grey line with a thickness of 1px to `stackView`, used to create a
+// separator that visually separates different elements.
+void AddSeparatorToStackView(UIStackView* stackView) {
+  UIView* separator = [[UIView alloc] init];
+  separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  separator.translatesAutoresizingMaskIntoConstraints = NO;
+  [stackView addArrangedSubview:separator];
+  if (stackView.axis == UILayoutConstraintAxisHorizontal) {
+    [separator.widthAnchor constraintEqualToConstant:GetPixelLength()].active =
+        YES;
+    AddSameConstraintsToSides(stackView, separator,
+                              LayoutSides::kTop | LayoutSides::kBottom);
+  } else {
+    [separator.heightAnchor constraintEqualToConstant:GetPixelLength()].active =
+        YES;
+    AddSameConstraintsToSides(stackView, separator,
+                              LayoutSides::kTrailing | LayoutSides::kLeading);
+  }
+}
+
+// Returns a GrayHighlightButton to be added to the alert for `action`.
+GrayHighlightButton* GetButtonForAction(AlertAction* action) {
+  GrayHighlightButton* button = [[GrayHighlightButton alloc] init];
+  UIFont* font = nil;
+  UIColor* textColor = nil;
+  if (action.style == UIAlertActionStyleDefault) {
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    textColor = [UIColor colorNamed:kBlueColor];
+  } else if (action.style == UIAlertActionStyleCancel) {
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    textColor = [UIColor colorNamed:kBlueColor];
+  } else {  // Style is UIAlertActionStyleDestructive
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    textColor = [UIColor colorNamed:kRedColor];
+  }
+  button.titleLabel.font = font;
+  button.titleLabel.adjustsFontForContentSizeCategory = YES;
+
+  [button setTitleColor:textColor forState:UIControlStateNormal];
+  [button setTitle:action.title forState:UIControlStateNormal];
+
+  button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading, kButtonInsetBottom,
+                       kButtonInsetTrailing);
+  button.tag = action.uniqueIdentifier;
+  return button;
+}
+
 }  // namespace
 
 @interface AlertViewController () <UITextFieldDelegate,
                                    UIGestureRecognizerDelegate>
 
 // The actions for to this alert. `copy` for safety against mutable objects.
-@property(nonatomic, copy) NSArray<AlertAction*>* actions;
+@property(nonatomic, copy) NSArray<NSArray<AlertAction*>*>* actions;
 
 // This maps UIButtons' tags with AlertActions' uniqueIdentifiers.
 @property(nonatomic, strong)
@@ -104,10 +192,8 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 // will end up calling `resignFirstResponder` on this.
 @property(nonatomic, weak) UITextField* lastFocusedTextField;
 
-// This holds the text field stack view. A reference is needed because its
-// layer.borderColor is manually set. As that is a CGColor, it must be updated
-// when the trait collection changes from light to dark mode.
-@property(nonatomic, weak) UIView* textFieldStackHolder;
+// This holds the text field stack view.
+@property(nonatomic, strong) UIView* textFieldStackHolder;
 
 @end
 
@@ -176,38 +262,8 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
               usingBlock:^(NSNotification* _Nonnull note) {
                 widthConstraint.constant = GetAlertWidth();
               }];
-  [NSLayoutConstraint activateConstraints:@[
-    widthConstraint,
-
-    // Centering
-    [self.contentView.centerXAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
-    [self.contentView.centerYAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerYAnchor],
-
-    // Minimum Size
-    [self.contentView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kMinimumHeight],
-
-    // Maximum Size
-    [self.contentView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                                 .topAnchor
-                                    constant:kMinimumMargin],
-    [self.contentView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .bottomAnchor
-                                 constant:-kMinimumMargin],
-    [self.contentView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .trailingAnchor
-                                 constant:-kMinimumMargin],
-    [self.contentView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                                 .leadingAnchor
-                                    constant:kMinimumMargin],
-
-  ]];
+  widthConstraint.active = YES;
+  PositionContentViewInParentView(self.contentView, self.view);
 
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.delaysContentTouches = NO;
@@ -277,25 +333,6 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   }
 
   if (self.textFieldConfigurations.count) {
-    // `stackHolder` has the background, border and round corners of the stacked
-    // fields.
-    UIView* stackHolder = [[UIView alloc] init];
-    stackHolder.layer.cornerRadius = kTextFieldCornerRadius;
-    stackHolder.layer.borderColor =
-        [UIColor colorNamed:kSeparatorColor].CGColor;
-    // Use performAsCurrentTraitCollection to get the correct CGColor for the
-    // given dynamic color and current userInterfaceStyle.
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      stackHolder.layer.borderColor =
-          [UIColor colorNamed:kSeparatorColor].CGColor;
-    }];
-    stackHolder.layer.borderWidth = 1.0 / [UIScreen mainScreen].scale;
-    stackHolder.clipsToBounds = YES;
-    stackHolder.backgroundColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-    stackHolder.translatesAutoresizingMaskIntoConstraints = NO;
-    self.textFieldStackHolder = stackHolder;
-
     // Updates the custom space before the text fields to account for their
     // inset.
     UIView* previousView = stackView.arrangedSubviews.lastObject;
@@ -307,66 +344,14 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       // There should always be a title or message.
       NOTREACHED() << "Presenting alert without a title or message.";
     }
-    [stackView addArrangedSubview:stackHolder];
-
+    [stackView addArrangedSubview:self.textFieldStackHolder];
     NSDirectionalEdgeInsets stackHolderContentInsets =
         NSDirectionalEdgeInsetsMake(0, kTextfieldStackInsetLeading, 0,
                                     kTextfieldStackInsetTrailing);
     AddSameConstraintsToSidesWithInsets(
-        stackHolder, self.contentView,
+        self.textFieldStackHolder, self.contentView,
         LayoutSides::kTrailing | LayoutSides::kLeading,
         stackHolderContentInsets);
-
-    UIStackView* fieldStack = [[UIStackView alloc] init];
-    fieldStack.axis = UILayoutConstraintAxisVertical;
-    fieldStack.translatesAutoresizingMaskIntoConstraints = NO;
-    fieldStack.spacing = kTextfieldInset;
-    fieldStack.alignment = UIStackViewAlignmentCenter;
-    [stackHolder addSubview:fieldStack];
-    NSDirectionalEdgeInsets fieldStackContentInsets =
-        NSDirectionalEdgeInsetsMake(kTextfieldInset, 0.0, kTextfieldInset, 0.0);
-    AddSameConstraintsWithInsets(fieldStack, stackHolder,
-                                 fieldStackContentInsets);
-
-    NSMutableArray<UITextField*>* textFields = [[NSMutableArray alloc]
-        initWithCapacity:self.textFieldConfigurations.count];
-    for (TextFieldConfiguration* textFieldConfiguration in self
-             .textFieldConfigurations) {
-      if (textFieldConfiguration !=
-          [self.textFieldConfigurations firstObject]) {
-        UIView* hairline = [[UIView alloc] init];
-        hairline.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-        hairline.translatesAutoresizingMaskIntoConstraints = NO;
-        [fieldStack addArrangedSubview:hairline];
-        CGFloat pixelHeight = 1.0 / [UIScreen mainScreen].scale;
-        [hairline.heightAnchor constraintEqualToConstant:pixelHeight].active =
-            YES;
-        AddSameConstraintsToSides(
-            fieldStack, hairline,
-            LayoutSides::kTrailing | LayoutSides::kLeading);
-      }
-      UITextField* textField = [[UITextField alloc] init];
-      textField.text = textFieldConfiguration.text;
-      textField.placeholder = textFieldConfiguration.placeholder;
-      textField.autocapitalizationType =
-          textFieldConfiguration.autocapitalizationType;
-      textField.secureTextEntry = textFieldConfiguration.secureTextEntry;
-      textField.accessibilityIdentifier =
-          textFieldConfiguration.accessibilityIdentifier;
-      textField.translatesAutoresizingMaskIntoConstraints = NO;
-      textField.delegate = self;
-      textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-      textField.adjustsFontForContentSizeCategory = YES;
-
-      [fieldStack addArrangedSubview:textField];
-      NSDirectionalEdgeInsets fieldInsets = NSDirectionalEdgeInsetsMake(
-          0.0, kTextfieldInset, 0.0, kTextfieldInset);
-      AddSameConstraintsToSidesWithInsets(
-          textField, fieldStack, LayoutSides::kTrailing | LayoutSides::kLeading,
-          fieldInsets);
-      [textFields addObject:textField];
-    }
-    self.textFields = textFields;
   }
 
   UIView* lastArrangedView = stackView.arrangedSubviews.lastObject;
@@ -375,53 +360,11 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
                       afterView:lastArrangedView];
   }
 
-  self.buttonAlertActionsDictionary = [[NSMutableDictionary alloc] init];
-  for (AlertAction* action in self.actions) {
-    UIView* hairline = [[UIView alloc] init];
-    hairline.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-    hairline.translatesAutoresizingMaskIntoConstraints = NO;
-    [stackView addArrangedSubview:hairline];
-
-    GrayHighlightButton* button = [[GrayHighlightButton alloc] init];
-    UIFont* font = nil;
-    UIColor* textColor = nil;
-    if (action.style == UIAlertActionStyleDefault) {
-      font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-      textColor = [UIColor colorNamed:kBlueColor];
-    } else if (action.style == UIAlertActionStyleCancel) {
-      font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      textColor = [UIColor colorNamed:kBlueColor];
-    } else {  // Style is UIAlertActionStyleDestructive
-      font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-      textColor = [UIColor colorNamed:kRedColor];
-    }
-    button.titleLabel.font = font;
-    button.titleLabel.adjustsFontForContentSizeCategory = YES;
-
-    [button setTitleColor:textColor forState:UIControlStateNormal];
-    [button setTitle:action.title forState:UIControlStateNormal];
-
-    button.contentHorizontalAlignment =
-        UIControlContentHorizontalAlignmentCenter;
-    [button addTarget:self
-                  action:@selector(didSelectActionForButton:)
-        forControlEvents:UIControlEventTouchUpInside];
-    button.translatesAutoresizingMaskIntoConstraints = NO;
-    button.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
-                         kButtonInsetBottom, kButtonInsetTrailing);
-    [stackView addArrangedSubview:button];
-
-    CGFloat pixelHeight = 1.0 / [UIScreen mainScreen].scale;
-    [hairline.heightAnchor constraintEqualToConstant:pixelHeight].active = YES;
-    AddSameConstraintsToSides(hairline, button,
-                              (LayoutSides::kTrailing | LayoutSides::kLeading));
-
-    AddSameConstraintsToSides(button, self.contentView,
+  if ([self.actions count] > 0) {
+    UIStackView* buttonStackView = [self createButtonStackView];
+    [stackView addArrangedSubview:buttonStackView];
+    AddSameConstraintsToSides(buttonStackView, self.contentView,
                               LayoutSides::kTrailing | LayoutSides::kLeading);
-
-    button.tag = action.uniqueIdentifier;
-    self.buttonAlertActionsDictionary[@(action.uniqueIdentifier)] = action;
   }
 
   [[NSNotificationCenter defaultCenter]
@@ -439,6 +382,31 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 #pragma mark - Getters
 
+- (NSArray<UITextField*>*)textFields {
+  if (!_textFields) {
+    NSMutableArray<UITextField*>* textFields = [[NSMutableArray alloc]
+        initWithCapacity:self.textFieldConfigurations.count];
+    for (TextFieldConfiguration* textFieldConfiguration in self
+             .textFieldConfigurations) {
+      UITextField* textField = [[UITextField alloc] init];
+      textField.text = textFieldConfiguration.text;
+      textField.placeholder = textFieldConfiguration.placeholder;
+      textField.autocapitalizationType =
+          textFieldConfiguration.autocapitalizationType;
+      textField.secureTextEntry = textFieldConfiguration.secureTextEntry;
+      textField.accessibilityIdentifier =
+          textFieldConfiguration.accessibilityIdentifier;
+      textField.translatesAutoresizingMaskIntoConstraints = NO;
+      textField.delegate = self;
+      textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      textField.adjustsFontForContentSizeCategory = YES;
+      [textFields addObject:textField];
+    }
+    _textFields = textFields;
+  }
+  return _textFields;
+}
+
 - (NSArray<NSString*>*)textFieldResults {
   if (!self.textFields) {
     return nil;
@@ -449,6 +417,66 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     [results addObject:textField.text];
   }
   return results;
+}
+
+- (UIView*)textFieldStackHolder {
+  if (!_textFieldStackHolder) {
+    // `stackHolder` has the background, border and round corners of the stacked
+    // fields.
+    _textFieldStackHolder = [[UIView alloc] init];
+    _textFieldStackHolder.layer.cornerRadius = kTextFieldCornerRadius;
+    _textFieldStackHolder.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
+    // Use performAsCurrentTraitCollection to get the correct CGColor for the
+    // given dynamic color and current userInterfaceStyle.
+    [self.traitCollection performAsCurrentTraitCollection:^{
+      _textFieldStackHolder.layer.borderColor =
+          [UIColor colorNamed:kSeparatorColor].CGColor;
+    }];
+    _textFieldStackHolder.layer.borderWidth = GetPixelLength();
+    _textFieldStackHolder.clipsToBounds = YES;
+    _textFieldStackHolder.backgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+    _textFieldStackHolder.translatesAutoresizingMaskIntoConstraints = NO;
+
+    // Add text field configurations.
+    UIStackView* fieldStack = [[UIStackView alloc] init];
+    fieldStack.axis = UILayoutConstraintAxisVertical;
+    fieldStack.translatesAutoresizingMaskIntoConstraints = NO;
+    fieldStack.spacing = kTextfieldInset;
+    fieldStack.alignment = UIStackViewAlignmentCenter;
+    [_textFieldStackHolder addSubview:fieldStack];
+    NSDirectionalEdgeInsets fieldStackContentInsets =
+        NSDirectionalEdgeInsetsMake(kTextfieldInset, 0.0, kTextfieldInset, 0.0);
+    AddSameConstraintsWithInsets(fieldStack, _textFieldStackHolder,
+                                 fieldStackContentInsets);
+    for (UITextField* textField in self.textFields) {
+      if (textField != [self.textFields firstObject]) {
+        AddSeparatorToStackView(fieldStack);
+      }
+      [fieldStack addArrangedSubview:textField];
+      NSDirectionalEdgeInsets fieldInsets = NSDirectionalEdgeInsetsMake(
+          0.0, kTextfieldInset, 0.0, kTextfieldInset);
+      AddSameConstraintsToSidesWithInsets(
+          textField, fieldStack, LayoutSides::kTrailing | LayoutSides::kLeading,
+          fieldInsets);
+    }
+  }
+  return _textFieldStackHolder;
+}
+
+- (NSDictionary<NSNumber*, AlertAction*>*)buttonAlertActionsDictionary {
+  if (!_buttonAlertActionsDictionary) {
+    NSMutableDictionary<NSNumber*, AlertAction*>* buttonAlertActionsDictionary =
+        [[NSMutableDictionary alloc] init];
+    for (NSArray<AlertAction*>* rowOfActions in self.actions) {
+      for (AlertAction* action in rowOfActions) {
+        buttonAlertActionsDictionary[@(action.uniqueIdentifier)] = action;
+      }
+    }
+    _buttonAlertActionsDictionary = buttonAlertActionsDictionary;
+  }
+  return _buttonAlertActionsDictionary;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -480,6 +508,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 #pragma mark - Private
 
+// Displays the keyboard.
 - (void)handleKeyboardWillShow:(NSNotification*)notification {
   CGRect keyboardFrame =
       [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -501,6 +530,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   self.swipeRecognizer.enabled = YES;
 }
 
+// Hides the keyboard.
 - (void)handleKeyboardWillHide:(NSNotification*)notification {
   self.additionalSafeAreaInsets = UIEdgeInsetsZero;
   [self animateLayoutFromKeyboardNotification:notification];
@@ -509,6 +539,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   self.swipeRecognizer.enabled = NO;
 }
 
+// Helper method that displays the keyboard with an animation.
 - (void)animateLayoutFromKeyboardNotification:(NSNotification*)notification {
   double duration =
       [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey]
@@ -528,6 +559,45 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
                    completion:nil];
 }
 
+// Returns a stack of formatted buttons to be added to the bottom of the alert.
+- (UIStackView*)createButtonStackView {
+  UIStackView* buttons = [[UIStackView alloc] init];
+  buttons.axis = UILayoutConstraintAxisVertical;
+  buttons.translatesAutoresizingMaskIntoConstraints = NO;
+  buttons.alignment = UIStackViewAlignmentCenter;
+  for (NSArray<AlertAction*>* rowOfActions in self.actions) {
+    DCHECK_GT([rowOfActions count], 0U);
+    AddSeparatorToStackView(buttons);
+    UIStackView* rowOfButtons = [[UIStackView alloc] init];
+    rowOfButtons.axis = UILayoutConstraintAxisHorizontal;
+    rowOfButtons.alignment = UIStackViewAlignmentCenter;
+    UIView* firstButton;
+    for (AlertAction* action in rowOfActions) {
+      if (action != [rowOfActions firstObject]) {
+        AddSeparatorToStackView(rowOfButtons);
+      }
+      GrayHighlightButton* button = GetButtonForAction(action);
+      [button addTarget:self
+                    action:@selector(didSelectActionForButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+      [rowOfButtons addArrangedSubview:button];
+      if (firstButton) {
+        [button.widthAnchor constraintEqualToAnchor:firstButton.widthAnchor]
+            .active = YES;
+      } else {
+        firstButton = button;
+      }
+      AddSameConstraintsToSides(button, rowOfButtons,
+                                (LayoutSides::kTop | LayoutSides::kBottom));
+    }
+    [buttons addArrangedSubview:rowOfButtons];
+    AddSameConstraintsToSides(rowOfButtons, buttons,
+                              (LayoutSides::kTrailing | LayoutSides::kLeading));
+  }
+  return buttons;
+}
+
+// React to user taps on `button`.
 - (void)didSelectActionForButton:(UIButton*)button {
   AlertAction* action = self.buttonAlertActionsDictionary[@(button.tag)];
   if (action.handler) {
@@ -535,6 +605,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   }
 }
 
+// Dismiss the keyboard, if visible.
 - (void)dismissKeyboard {
   [self.lastFocusedTextField resignFirstResponder];
 }

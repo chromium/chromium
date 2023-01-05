@@ -14,7 +14,7 @@
 @property(nonatomic, copy) NSString* message;
 @property(nonatomic, copy)
     NSArray<TextFieldConfiguration*>* textFieldConfigurations;
-@property(nonatomic, copy) NSArray<AlertAction*>* actions;
+@property(nonatomic, copy) NSArray<NSArray<AlertAction*>*>* actions;
 @property(nonatomic, copy) NSString* alertAccessibilityIdentifier;
 
 @end
