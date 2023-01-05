@@ -22,9 +22,9 @@
   }
 
   :host(:not([narrow_])) cr-toolbar-selection-overlay {
-    --selection-overlay-padding: var(--card-padding-side);
+    --cr-toolbar-selection-overlay-padding: var(--card-padding-side);
     --cr-toolbar-field-margin: var(--sidebar-width);
-    --selection-overlay-max-width: var(--card-max-width);
+    --cr-toolbar-selection-overlay-max-width: var(--card-max-width);
   }
 </style>
 <cr-toolbar page-name="$i18n{title}"
@@ -41,10 +41,11 @@
         aria-haspopup="menu"></cr-icon-button>
 </cr-toolbar>
 <cr-toolbar-selection-overlay show="[[showSelectionOverlay]]"
-    delete-label="$i18n{delete}"
     cancel-label="$i18n{cancel}"
     selection-label="[[getItemsSelectedString_(selectedItems_.size)]]"
-    delete-disabled="[[!canDeleteSelection_(selectedItems_)]]"
-    on-delete-selected-items="onDeleteSelectionTap_"
     on-clear-selected-items="onClearSelectionTap_">
+  <cr-button on-click="onDeleteSelectionTap_"
+      disabled$="[[!canDeleteSelection_(selectedItems_)]]">
+    $i18n{delete}
+  </cr-button>
 </cr-toolbar-selection-overlay>

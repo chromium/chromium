@@ -80,8 +80,8 @@ suite('<bookmarks-toolbar>', function() {
 
     flush();
     const button =
-        toolbar.shadowRoot!.querySelector(
-                               'cr-toolbar-selection-overlay')!.deleteButton;
+        toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
+            .querySelector('cr-button')!;
     assertFalse(button.disabled);
     button.click();
 
@@ -110,6 +110,6 @@ suite('<bookmarks-toolbar>', function() {
     assertTrue(toolbar.showSelectionOverlay);
     assertTrue(
         toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
-            .deleteButton.disabled);
+            .querySelector('cr-button')!.disabled);
   });
 });

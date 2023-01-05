@@ -37,12 +37,8 @@
         display: flex;
         flex: 1;
         margin: 0 auto;
-        max-width: var(--selection-overlay-max-width, initial);
-        padding: 0 var(--selection-overlay-padding, 24px);
-      }
-
-      cr-button {
-        margin-inline-start: 8px;
+        max-width: var(--cr-toolbar-selection-overlay-max-width, initial);
+        padding: 0 var(--cr-toolbar-selection-overlay-padding, 24px);
       }
 
       #number-selected {
@@ -55,15 +51,20 @@
         margin-inline-start: 2px;
         width: 36px;
       }
+
+      #slot {
+        align-items: center;
+        display: flex;
+        gap: 16px;
+        margin-inline-start: 8px;
+      }
     </style>
     <template is="dom-if" if="[[hasShown_]]">
       <div id="overlay-content">
-        <cr-icon-button title="[[cancelLabel]]" iron-icon="cr:clear"
+        <cr-icon-button part="clearIcon"
+            title="[[cancelLabel]]" iron-icon="cr:clear"
             on-click="onClearSelectionClick_"></cr-icon-button>
         <div id="number-selected">[[selectionLabel_]]</div>
-        <cr-button id="delete" on-click="onDeleteClick_"
-            disabled="[[deleteDisabled]]">
-          [[deleteLabel]]
-        </cr-button>
+        <div id="slot"><slot></slot></div>
       </div>
     </template>

@@ -20,7 +20,7 @@
 
       cr-toolbar-selection-overlay {
         opacity: 0;
-        --selection-overlay-max-width: var(--card-max-width);
+        --cr-toolbar-selection-overlay-max-width: var(--card-max-width);
         --cr-toolbar-field-margin: var(--side-bar-width);
       }
 
@@ -42,10 +42,11 @@
         on-search-changed="onSearchChanged_">
     </cr-toolbar>
     <cr-toolbar-selection-overlay show="[[itemsSelected_]]"
-        delete-label="$i18n{delete}"
         cancel-label="$i18n{cancel}"
-        delete-disabled="[[pendingDelete]]"
         selection-label="[[numberOfItemsSelected_(count)]]"
-        on-clear-selected-items="clearSelectedItems"
-        on-delete-selected-items="deleteSelectedItems">
+        on-clear-selected-items="clearSelectedItems">
+      <cr-button
+          on-click="deleteSelectedItems" disabled$="[[pendingDelete]]">
+        $i18n{delete}
+      </cr-button>
     </cr-toolbar-selection-overlay>

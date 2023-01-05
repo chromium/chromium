@@ -42,10 +42,8 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      deleteLabel: String,
       cancelLabel: String,
       selectionLabel: String,
-      deleteDisabled: Boolean,
       hasShown_: Boolean,
       selectionLabel_: String,
     };
@@ -58,10 +56,8 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
   }
 
   show: boolean;
-  deleteLabel: string;
   cancelLabel: string;
   selectionLabel: string;
-  deleteDisabled: boolean;
   private hasShown_: boolean;
   private selectionLabel_: string;
   private debouncer_: Debouncer;
@@ -82,10 +78,6 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
 
   private onClearSelectionClick_() {
     this.fire_('clear-selected-items');
-  }
-
-  private onDeleteClick_() {
-    this.fire_('delete-selected-items');
   }
 
   private updateSelectionLabel_() {
