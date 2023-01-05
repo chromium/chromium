@@ -169,6 +169,8 @@ component("cpp") {
     "in_session_auth_dialog_controller.cc",
     "in_session_auth_dialog_controller.h",
     "in_session_auth_token_provider.h",
+    "input_device_settings_controller.cc",
+    "input_device_settings_controller.h",
     "keyboard/arc/arc_input_method_bounds_tracker.cc",
     "keyboard/arc/arc_input_method_bounds_tracker.h",
     "keyboard/keyboard_config.h",

@@ -13,6 +13,7 @@ mojom("mojom") {
   sources = [
     "accelerator_keys.mojom",
     "assistant_volume_control.mojom",
+    "input_device_settings.mojom",
     "tray_action.mojom",
   ]
 

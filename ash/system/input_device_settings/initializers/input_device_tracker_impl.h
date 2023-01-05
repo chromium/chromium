@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/input_device_settings/initializers/input_device_tracker.h"
-#include "ash/system/input_device_settings/input_device_settings_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 

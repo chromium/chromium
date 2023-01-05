@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/input_device_settings_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 
 #include "ash/test/ash_test_base.h"
 
@@ -20,7 +20,7 @@ class InputDeviceSettingsControllerTest : public AshTestBase {
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
-    controller_ = std::make_unique<InputDeviceSettingsController>();
+    controller_ = std::make_unique<InputDeviceSettingsControllerImpl>();
   }
 
   void TearDown() override {
@@ -29,10 +29,10 @@ class InputDeviceSettingsControllerTest : public AshTestBase {
   }
 
  protected:
-  std::unique_ptr<InputDeviceSettingsController> controller_;
+  std::unique_ptr<InputDeviceSettingsControllerImpl> controller_;
 };
 
-TEST_F(InputDeviceSettingsControllerTest, PlaceholderTest) {
+TEST_F(InputDeviceSettingsControllerTest, InitializationTest) {
   EXPECT_NE(controller_.get(), nullptr);
 }
 

@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INITIALIZERS_INPUT_DEVICE_TRACKER_H_
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INITIALIZERS_INPUT_DEVICE_TRACKER_H_
 
-#include "ash/system/input_device_settings/input_device_settings_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/strings/string_piece.h"
 
 namespace ash {

@@ -4,7 +4,7 @@
 
 #include "ash/system/input_device_settings/initializers/input_device_tracker_impl.h"
 
-#include "ash/system/input_device_settings/input_device_settings_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 

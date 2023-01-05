@@ -1,0 +1,42 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_CONTROLLER_IMPL_H_
+#define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_CONTROLLER_IMPL_H_
+
+#include "ash/ash_export.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
+
+namespace ash {
+
+// Used to denote the category of a given input device.
+enum class InputDeviceCategory {
+  kMouse,
+  kTouchpad,
+  kPointingStick,
+  kKeyboard,
+};
+
+// Controller to manage input device settings.
+class ASH_EXPORT InputDeviceSettingsControllerImpl
+    : public InputDeviceSettingsController {
+ public:
+  InputDeviceSettingsControllerImpl();
+  InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
+      delete;
+  InputDeviceSettingsControllerImpl& operator=(
+      const InputDeviceSettingsControllerImpl&) = delete;
+  ~InputDeviceSettingsControllerImpl() override;
+
+  // InputDeviceSettingsController:
+  std::vector<mojom::KeyboardPtr> GetConnectedKeyboards() override;
+  void SetKeyboardSettings(DeviceId id,
+                           const mojom::KeyboardSettings& settings) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_CONTROLLER_IMPL_H_
