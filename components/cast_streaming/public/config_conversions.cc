@@ -99,6 +99,8 @@ openscreen::cast::VideoCodec ToVideoCaptureConfigCodec(
       return openscreen::cast::VideoCodec::kHevc;
     case media::VideoCodec::kVP9:
       return openscreen::cast::VideoCodec::kVp9;
+    case media::VideoCodec::kAV1:
+      return openscreen::cast::VideoCodec::kAv1;
     default:
       break;
   }
