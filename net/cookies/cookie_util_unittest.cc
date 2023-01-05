@@ -213,38 +213,32 @@ TEST(CookieUtilTest, TestRequestCookieParsing) {
   // Simple case.
   tests.emplace_back();
   tests.back().str = "key=value";
-  tests.back().parsed.push_back(std::make_pair(std::string("key"),
-                                               std::string("value")));
+  tests.back().parsed.emplace_back(std::string("key"), std::string("value"));
   // Multiple key/value pairs.
   tests.emplace_back();
   tests.back().str = "key1=value1; key2=value2";
-  tests.back().parsed.push_back(std::make_pair(std::string("key1"),
-                                               std::string("value1")));
-  tests.back().parsed.push_back(std::make_pair(std::string("key2"),
-                                               std::string("value2")));
+  tests.back().parsed.emplace_back(std::string("key1"), std::string("value1"));
+  tests.back().parsed.emplace_back(std::string("key2"), std::string("value2"));
   // Empty value.
   tests.emplace_back();
   tests.back().str = "key=; otherkey=1234";
-  tests.back().parsed.push_back(std::make_pair(std::string("key"),
-                                               std::string()));
-  tests.back().parsed.push_back(std::make_pair(std::string("otherkey"),
-                                               std::string("1234")));
+  tests.back().parsed.emplace_back(std::string("key"), std::string());
+  tests.back().parsed.emplace_back(std::string("otherkey"),
+                                   std::string("1234"));
   // Special characters (including equals signs) in value.
   tests.emplace_back();
   tests.back().str = "key=; a2=s=(./&t=:&u=a#$; a3=+~";
-  tests.back().parsed.push_back(std::make_pair(std::string("key"),
-                                               std::string()));
-  tests.back().parsed.push_back(std::make_pair(std::string("a2"),
-                                               std::string("s=(./&t=:&u=a#$")));
-  tests.back().parsed.push_back(std::make_pair(std::string("a3"),
-                                               std::string("+~")));
+  tests.back().parsed.emplace_back(std::string("key"), std::string());
+  tests.back().parsed.emplace_back(std::string("a2"),
+                                   std::string("s=(./&t=:&u=a#$"));
+  tests.back().parsed.emplace_back(std::string("a3"), std::string("+~"));
   // Quoted value.
   tests.emplace_back();
   tests.back().str = "key=\"abcdef\"; otherkey=1234";
-  tests.back().parsed.push_back(std::make_pair(std::string("key"),
-                                               std::string("\"abcdef\"")));
-  tests.back().parsed.push_back(std::make_pair(std::string("otherkey"),
-                                               std::string("1234")));
+  tests.back().parsed.emplace_back(std::string("key"),
+                                   std::string("\"abcdef\""));
+  tests.back().parsed.emplace_back(std::string("otherkey"),
+                                   std::string("1234"));
 
   for (size_t i = 0; i < tests.size(); i++) {
     SCOPED_TRACE(testing::Message() << "Test " << i);
@@ -259,8 +253,7 @@ TEST(CookieUtilTest, TestRequestCookieParsing_Malformed) {
   // Missing equal sign.
   tests.emplace_back();
   tests.back().str = "key";
-  tests.back().parsed.emplace_back(
-      std::make_pair(std::string("key"), std::string()));
+  tests.back().parsed.emplace_back(std::string("key"), std::string());
   tests.back().serialized = "key=";
 
   // Quoted value with unclosed quote.
@@ -274,17 +267,15 @@ TEST(CookieUtilTest, TestRequestCookieParsing_Malformed) {
   // Quoted value with unclosed quote followed by another quoted value.
   tests.emplace_back();
   tests.back().str = "key=\"abcdef; otherkey=\"1234\"";
-  tests.back().parsed.emplace_back(
-      std::make_pair(std::string("key"), std::string("\"abcdef; otherkey=\"")));
-  tests.back().parsed.emplace_back(
-      std::make_pair(std::string("234\""), std::string()));
+  tests.back().parsed.emplace_back(std::string("key"),
+                                   std::string("\"abcdef; otherkey=\""));
+  tests.back().parsed.emplace_back(std::string("234\""), std::string());
   tests.back().serialized = "key=\"abcdef; otherkey=\"; 234\"=";
 
   // Regular value followed by quoted value with unclosed quote.
   tests.emplace_back();
   tests.back().str = "key=abcdef; otherkey=\"1234";
-  tests.back().parsed.emplace_back(
-      std::make_pair(std::string("key"), std::string("abcdef")));
+  tests.back().parsed.emplace_back(std::string("key"), std::string("abcdef"));
   tests.back().serialized = "key=abcdef";
 
   for (size_t i = 0; i < tests.size(); i++) {

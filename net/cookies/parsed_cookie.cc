@@ -204,7 +204,7 @@ bool ParsedCookie::SetName(const std::string& name) {
   }
 
   if (pairs_.empty())
-    pairs_.push_back(std::make_pair("", ""));
+    pairs_.emplace_back("", "");
   pairs_[0].first = parsed_name;
 
   return true;
@@ -235,7 +235,7 @@ bool ParsedCookie::SetValue(const std::string& value) {
     return false;
   }
   if (pairs_.empty())
-    pairs_.push_back(std::make_pair("", ""));
+    pairs_.emplace_back("", "");
   pairs_[0].second = parsed_value;
 
   return true;
@@ -752,7 +752,7 @@ bool ParsedCookie::SetAttributePair(size_t* index,
   if (*index) {
     pairs_[*index].second = value;
   } else {
-    pairs_.push_back(std::make_pair(key, value));
+    pairs_.emplace_back(key, value);
     *index = pairs_.size() - 1;
   }
   return true;
