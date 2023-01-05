@@ -124,6 +124,22 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent::State> q) {
              << ")";
 }
 
+std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange::Type> q) {
+  using Type = mojom::FileChange::Type;
+  switch (q.value) {
+#define PRINT(s)   \
+  case Type::k##s: \
+    return out << #s;
+    PRINT(Create)
+    PRINT(Delete)
+    PRINT(Modify)
+#undef PRINT
+  }
+
+  return out << "FileChange::Type("
+             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
+}
+
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileMetadata> q) {
   const mojom::FileMetadata& md = q.value;
   return out << "{type: " << Quote(md.type)
@@ -140,6 +156,13 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
   return out << "{state: " << Quote(e.state) << ", path: " << Quote(e.path)
              << ", bytes_transferred: " << e.bytes_transferred
              << ", bytes_to_transfer: " << e.bytes_to_transfer << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange> q) {
+  const mojom::FileChange& change = q.value;
+  return out << "{path: " << Quote(change.path)
+             << ", type: " << Quote(change.type)
+             << ", stable_id: " << change.stable_id << "}";
 }
 
 constexpr int64_t kAverageHostedFileSizeInBytes = 7800;
@@ -667,7 +690,11 @@ void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
 
 void DriveFsPinManager::OnUnmounted() {}
 void DriveFsPinManager::OnFilesChanged(
-    const std::vector<mojom::FileChange>& changes) {}
+    const std::vector<mojom::FileChange>& changes) {
+  for (const auto& change : changes) {
+    VLOG(2) << " Got OnFilesChanged event: " << Quote(change);
+  }
+}
 
 void DriveFsPinManager::OnError(const mojom::DriveError& error) {
   LOG(ERROR) << "DriveFS error " << error.type << " with " << Quote(error.path);
