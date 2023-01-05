@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents a group of Websites that either share the same eTLD+1 or are embedded on it.
@@ -144,5 +145,15 @@ public class WebsiteGroup implements WebsiteEntry {
 
     public List<Website> getWebsites() {
         return mWebsites;
+    }
+
+    /** @return whether one of the underlying origins has an associated installed app. */
+    public boolean hasInstalledApp(Set<String> originsWithApps) {
+        for (Website site : mWebsites) {
+            if (originsWithApps.contains(site.getAddress().getOrigin())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

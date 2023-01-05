@@ -147,8 +147,9 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         if (storage > 0 || cookies > 0) {
             preference.setTitle(SiteSettingsUtil.generateStorageUsageText(
                     preference.getContext(), storage, cookies));
-            // TODO(crbug.com/1342991): Get clearingApps information from underlying sites.
-            preference.setDataForDisplay(mSiteGroup.getDomainAndRegistry(), /*clearingApps=*/false);
+            preference.setDataForDisplay(mSiteGroup.getDomainAndRegistry(),
+                    mSiteGroup.hasInstalledApp(
+                            getSiteSettingsDelegate().getOriginsWithInstalledApp()));
             if (mSiteGroup.isCookieDeletionDisabled(
                         getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);
