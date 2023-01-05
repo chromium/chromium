@@ -172,24 +172,25 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 
   // Set some pref data. Each content setting type has the following value:
   // {"[*.]example.com": {"setting": 1}}
-  base::Value plugins_data_pref(base::Value::Type::DICTIONARY);
+  base::Value::Dict plugins_data_pref;
   constexpr char kFlagKey[] = "flashPreviouslyChanged";
-  plugins_data_pref.SetKey(kFlagKey,
-                           base::Value(base::Value::Type::DICTIONARY));
+  plugins_data_pref.Set(kFlagKey, base::Value::Dict());
 
-  base::Value data_for_pattern(base::Value::Type::DICTIONARY);
-  data_for_pattern.SetIntKey("setting", CONTENT_SETTING_ALLOW);
-  base::Value pref_data(base::Value::Type::DICTIONARY);
-  pref_data.SetKey(kPattern, std::move(data_for_pattern));
-  prefs->Set(kFullscreenPrefPath, pref_data);
-  prefs->Set(kNfcPrefPath, pref_data);
+  base::Value::Dict data_for_pattern;
+  data_for_pattern.Set("setting", static_cast<int>(CONTENT_SETTING_ALLOW));
+  base::Value::Dict pref_data;
+  pref_data.Set(kPattern, std::move(data_for_pattern));
+  prefs->SetDict(kFullscreenPrefPath, pref_data.Clone());
+  prefs->SetDict(kNfcPrefPath, pref_data.Clone());
 #if !BUILDFLAG(IS_ANDROID)
-  prefs->Set(kMouselockPrefPath, pref_data);
-  prefs->Set(kObsoletePluginsExceptionsPref, pref_data);
-  prefs->Set(kObsoleteInstalledWebAppMetadataExceptionsPref, pref_data);
-  prefs->Set(kObsoletePluginsDataExceptionsPref, plugins_data_pref);
+  prefs->SetDict(kMouselockPrefPath, pref_data.Clone());
+  prefs->SetDict(kObsoletePluginsExceptionsPref, pref_data.Clone());
+  prefs->SetDict(kObsoleteInstalledWebAppMetadataExceptionsPref,
+                 pref_data.Clone());
+  prefs->SetDict(kObsoletePluginsDataExceptionsPref,
+                 std::move(plugins_data_pref));
 #endif
-  prefs->Set(kGeolocationPrefPath, pref_data);
+  prefs->SetDict(kGeolocationPrefPath, std::move(pref_data));
 
   // Instantiate a new PrefProvider here, because we want to test the
   // constructor's behavior after setting the above.

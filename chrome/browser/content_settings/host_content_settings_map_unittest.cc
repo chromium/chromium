@@ -284,12 +284,12 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   // Add setting for hosts[0].
   base::Value client_hint_value(42);
 
-  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
-  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
-                                 {std::move(client_hint_value)});
+  base::Value::Dict client_hints_dictionary;
+  client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
+                              {std::move(client_hint_value)});
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   // Reading the settings should now return one setting.
   host_content_settings_map->GetSettingsForOneType(
@@ -307,7 +307,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   // Add setting for hosts[1].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[1], GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   // Reading the settings should now return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -325,7 +325,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   // Add settings again for hosts[0].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   // Reading the settings should still return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -1025,15 +1025,16 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
             otr_map->GetWebsiteSetting(
                 host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
 
-  base::Value test_value(base::Value::Type::DICTIONARY);
-  test_value.SetKey("test", base::Value("value"));
+  base::Value::Dict test_dict;
+  test_dict.Set("test", "value");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      host, host, ContentSettingsType::USB_CHOOSER_DATA, test_value.Clone());
+      host, host, ContentSettingsType::USB_CHOOSER_DATA,
+      base::Value(test_dict.Clone()));
 
   // The setting is not inherted by |otr_map|.
   base::Value stored_value = host_content_settings_map->GetWebsiteSetting(
       host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr);
-  EXPECT_EQ(stored_value, test_value);
+  EXPECT_EQ(stored_value, test_dict);
   EXPECT_EQ(base::Value(),
             otr_map->GetWebsiteSetting(
                 host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
@@ -1431,11 +1432,11 @@ TEST_F(HostContentSettingsMapTest, InvalidPattern) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   GURL unsupported_url = GURL("view-source:http://www.google.com");
-  base::Value test_value(base::Value::Type::DICTIONARY);
-  test_value.SetKey("test", base::Value("value"));
+  base::Value::Dict test_dict;
+  test_dict.Set("test", "value");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       unsupported_url, unsupported_url, ContentSettingsType::APP_BANNER,
-      std::move(test_value));
+      base::Value(std::move(test_dict)));
   EXPECT_EQ(base::Value(), host_content_settings_map->GetWebsiteSetting(
                                unsupported_url, unsupported_url,
                                ContentSettingsType::APP_BANNER, nullptr));
@@ -1468,7 +1469,6 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
   host_content_settings_map->SetWebsiteSettingCustomScope(
       pattern2, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::APP_BANNER,
-
       base::Value(base::Value::Type::DICTIONARY));
 
   // First, test that we clear only COOKIES (not APP_BANNER), and pattern2.
@@ -1865,8 +1865,9 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
       ASSERT_NE(new_value.type(), base::Value::Type::NONE)
           << "Every content setting should have at least two values.";
     } else {
-      new_value = base::Value(base::Value::Type::DICTIONARY);
-      new_value.SetIntPath("foo.bar", 0);
+      base::Value::Dict dict;
+      dict.SetByDottedPath("foo.bar", 0);
+      new_value = base::Value(std::move(dict));
     }
     // Ensure a different value is received.
     ASSERT_NE(original_value, new_value);
