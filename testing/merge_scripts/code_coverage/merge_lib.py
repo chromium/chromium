@@ -24,7 +24,8 @@ logging.basicConfig(
 def _call_profdata_tool(profile_input_file_paths,
                         profile_output_file_path,
                         profdata_tool_path,
-                        sparse=False):
+                        sparse=False,
+                        timeout=3600):
   """Calls the llvm-profdata tool.
 
   Args:
@@ -34,7 +35,8 @@ def _call_profdata_tool(profile_input_file_paths,
     profdata_tool_path: The path to the llvm-profdata executable.
     sparse (bool): flag to indicate whether to run llvm-profdata with --sparse.
       Doc: https://llvm.org/docs/CommandGuide/llvm-profdata.html#profdata-merge
-
+    timeout (int): timeout (sec) for the call to merge profiles. This should
+      not take > 1 hr, and so defaults to 3600 seconds.
   Returns:
     A list of paths to profiles that had to be excluded to get the merge to
     succeed, suspected of being corrupted or malformed.
@@ -54,7 +56,10 @@ def _call_profdata_tool(profile_input_file_paths,
     # Redirecting stderr is required because when error happens, llvm-profdata
     # writes the error output to stderr and our error handling logic relies on
     # that output.
-    subprocess.check_call(subprocess_cmd, stderr=subprocess.STDOUT)
+    # Timeout in seconds, set to 1 hr (60*60)
+    subprocess.check_call(subprocess_cmd,
+                          stderr=subprocess.STDOUT,
+                          timeout=timeout)
   except subprocess.CalledProcessError as error:
     logging.error('Failed to merge profiles, return code (%d), output: %r' %
                   (error.returncode, error.output))
@@ -225,7 +230,8 @@ def merge_profiles(input_dir,
                    profdata_tool_path,
                    input_filename_pattern='.*',
                    sparse=False,
-                   skip_validation=False):
+                   skip_validation=False,
+                   merge_timeout=3600):
   """Merges the profiles produced by the shards using llvm-profdata.
 
   Args:
@@ -240,6 +246,8 @@ def merge_profiles(input_dir,
       Doc: https://llvm.org/docs/CommandGuide/llvm-profdata.html#profdata-merge
     skip_validation (bool): flag to skip the _validate_and_convert_profraws
         invocation. only applicable when input_extension is .profraw.
+    merge_timeout (int): timeout (sec) for the call to merge profiles. This
+      should not take > 1 hr, and so defaults to 3600 seconds.
 
   Returns:
     The list of profiles that had to be excluded to get the merge to
@@ -282,7 +290,8 @@ def merge_profiles(input_dir,
       profile_input_file_paths=profile_input_file_paths,
       profile_output_file_path=output_file,
       profdata_tool_path=profdata_tool_path,
-      sparse=sparse)
+      sparse=sparse,
+      timeout=merge_timeout)
 
   # Remove inputs when merging profraws as they won't be needed and they can be
   # pretty large. If the inputs are profdata files, do not remove them as they

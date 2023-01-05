@@ -5,6 +5,7 @@
 """This script merges code coverage profiles from multiple steps."""
 
 import argparse
+import logging
 import os
 import sys
 
@@ -28,6 +29,10 @@ def _merge_steps_argument_parser(*args, **kwargs):
       action='store_true',
       dest='sparse',
       help='run llvm-profdata with the sparse flag.')
+  parser.add_argument(
+      '--profile-merge-timeout',
+      default=3600,
+      help='Timeout (sec) for the call to merge profiles. Defaults to 3600.')
   return parser
 
 
@@ -35,10 +40,17 @@ def main():
   desc = "Merge profdata files in <--input-dir> into a single profdata."
   parser = _merge_steps_argument_parser(description=desc)
   params = parser.parse_args()
-  merger.merge_profiles(params.input_dir, params.output_file, '.profdata',
-                        params.llvm_profdata, params.profdata_filename_pattern,
-                        sparse=params.sparse)
+
+  merger.merge_profiles(params.input_dir,
+                        params.output_file,
+                        '.profdata',
+                        params.llvm_profdata,
+                        params.profdata_filename_pattern,
+                        sparse=params.sparse,
+                        merge_timeout=params.profile_merge_timeout)
 
 
 if __name__ == '__main__':
+  logging.basicConfig(
+      format='[%(asctime)s %(levelname)s] %(message)s', level=logging.INFO)
   sys.exit(main())

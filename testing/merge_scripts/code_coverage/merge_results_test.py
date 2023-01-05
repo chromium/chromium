@@ -77,7 +77,7 @@ class MergeProfilesTest(unittest.TestCase):
         self.assertEqual(
             mock_merge.call_args,
             mock.call(input_dir, output_file, '.profdata', 'llvm-profdata',
-                '.*', sparse=False))
+                '.*', sparse=False, merge_timeout=3600))
 
   @mock.patch.object(merger, '_validate_and_convert_profraws')
   def test_merge_profraw(self, mock_validate_and_convert_profraws):
@@ -116,6 +116,7 @@ class MergeProfilesTest(unittest.TestCase):
                       '/b/some/path/1/default-2.profdata',
                   ],
                   stderr=-2,
+                  timeout=3600
               ), mock_exec_cmd.call_args)
 
     self.assertTrue(mock_validate_and_convert_profraws.called)
@@ -152,6 +153,7 @@ class MergeProfilesTest(unittest.TestCase):
                       '/b/some/path/1/default-2.profraw'
                   ],
                   stderr=-2,
+                  timeout=3600
               ), mock_exec_cmd.call_args)
 
     # Skip validation should've passed all profraw files directly, and
@@ -197,6 +199,7 @@ class MergeProfilesTest(unittest.TestCase):
                       '/b/some/path/url_unittests/default.profdata',
                   ],
                   stderr=-2,
+                  timeout=3600
               ), mock_exec_cmd.call_args)
 
     # The mock method should only apply when merging .profraw files.
@@ -234,6 +237,7 @@ class MergeProfilesTest(unittest.TestCase):
                       '/b/some/path/url_unittests/url_unittests.profdata',
                   ],
                   stderr=-2,
+                  timeout=3600
               ), mock_exec_cmd.call_args)
 
     # The mock method should only apply when merging .profraw files.
@@ -268,7 +272,7 @@ class MergeProfilesTest(unittest.TestCase):
                     '--destfile',
                     'output/path',
                 ],
-                stderr=-2,
+                stderr=-2
             ), mock_exec_cmd.call_args)
 
   def test_merge_java_exec_files_if_there_is_no_file(self):
