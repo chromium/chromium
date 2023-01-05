@@ -205,12 +205,26 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
   private onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
     const interest = e.detail;
     assert(!interest.topic);
-    // TODO(b/254412955): Implement the logic required to correctly move or
-    // remove entries as the user block and unblocks them.
+    if (interest.removed) {
+      this.blockedSitesList_.splice(
+          this.blockedSitesList_.indexOf(interest), 1);
+    } else {
+      this.sitesList_.splice(this.sitesList_.indexOf(interest), 1);
+      // Move the removed site automatically to the removed section.
+      this.blockedSitesList_.push({site: interest.site, removed: true});
+      this.blockedSitesList_.sort(
+          (first, second) => (first.site! < second.site!) ? -1 : 1);
+    }
+    this.sitesList_ = this.sitesList_.slice();
+    this.blockedSitesList_ = this.blockedSitesList_.slice();
+    // If the interest was previously removed, set it to allowed, and vice
+    // versa.
+    this.privacySandboxBrowserProxy_.setFledgeJoiningAllowed(
+        interest.site!, /*allowed=*/ interest.removed);
+    // TODO(b/264379989): Record metrics when blocking/unblocking sites.
   }
 
-  // TODO(crbug.com/1378703): Record metrics when blocking/unblocking sites.
-  // Record a metric when expanding "More sites" section.
+  // TODO(b/264379989): Record a metric when expanding "More sites" section.
 
   private onBlockedSitesExpanded_() {
     if (this.blockedSitesExpanded_) {
