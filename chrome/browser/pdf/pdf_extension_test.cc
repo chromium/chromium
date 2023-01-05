@@ -2256,16 +2256,18 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibility) {
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
-  // Now enable accessibility globally, and assert that the PDF accessibility
-  // tree loads.
-  EnableAccessibilityForWebContents(guest_contents);
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
+  // Now enable accessibility globally, and assert that the PDF
+  // accessibility tree loads.
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+
+  WebContents* contents = GetActiveWebContents();
+  WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
@@ -2340,20 +2342,21 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityWordBoundaries) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilitySelection) {
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
+  WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
+      contents,
       "document.getElementsByTagName('embed')[0].postMessage("
       "{type: 'selectAll'});"));
 
-  EnableAccessibilityForWebContents(guest_contents);
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
   ui::AXTreeUpdate ax_tree_update =
-      GetAccessibilityTreeSnapshotForPdf(guest_contents);
+      GetAccessibilityTreeSnapshotForPdf(contents);
   ui::AXTree ax_tree(ax_tree_update);
 
   // Ensure that the selection spans the beginning of the first text
@@ -2398,28 +2401,29 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
       "2 Second Section\n"
       "3";
 
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
+  WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
+      contents,
       "document.getElementsByTagName('embed')[0].postMessage("
       "{type: 'selectAll'});"));
 
-  EnableAccessibilityForWebContents(guest_contents);
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
 
   // Find pdfRoot node in the accessibility tree.
   content::FindAccessibilityNodeCriteria find_criteria;
   find_criteria.role = ax::mojom::Role::kPdfRoot;
   ui::AXPlatformNodeDelegate* pdf_root =
-      content::FindAccessibilityNode(guest_contents, find_criteria);
+      content::FindAccessibilityNode(contents, find_criteria);
   ASSERT_TRUE(pdf_root);
 
   content::ContextMenuInterceptor context_menu_interceptor(
-      GetPluginFrame(guest_contents));
+      GetPluginFrame(guest));
 
   ContextMenuWaiter menu_waiter;
   // Invoke kShowContextMenu accessibility action on the node with the kPdfRoot
