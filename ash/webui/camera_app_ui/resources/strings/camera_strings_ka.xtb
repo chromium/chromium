@@ -53,7 +53,7 @@
 <translation id="2599796128805996109">უკანა კამერა</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> წმ</translation>
 <translation id="2761536921376153655">სკანირების ტიპი</translation>
-<translation id="28682968802727151">არეკვლის გადახედვა</translation>
+<translation id="28682968802727151">სარკისებური რეჟიმის გადახედვა</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> მიერთებულია.</translation>
 <translation id="2904654629665923749">ხელმისაწვდომია დოკუმენტების სკანირება</translation>
 <translation id="2968794441791257519">კამერით გადაღებული ფოტოები და ვიდეოები გადატანილი იქნება „ჩამოტვირთვების“ საქაღალდეში. მათზე წვდომა შეგიძლიათ ფაილების აპიდან.
@@ -90,7 +90,7 @@
 <translation id="428234092390943511">გვერდის ესკიზი</translation>
 <translation id="4329152592498422850">კვადრატული ფოტოს გადაღებაზე გადართვა</translation>
 <translation id="4340659173795395806">ამიერიდან შეგიძლიათ მრავალგვერდიანი PDF-ის შექმნა</translation>
-<translation id="4383571725254449280">ბეჭდვის წარმადობის ჟურნალები</translation>
+<translation id="4383571725254449280">წარმადობის ჟურნალების ბეჭდვა</translation>
 <translation id="4445542136948522167">ფოტოს გადაღების შეწყვეტა</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> მეგაპიქსელი</translation>
 <translation id="4570032796877367747">წინა კამერა</translation>
