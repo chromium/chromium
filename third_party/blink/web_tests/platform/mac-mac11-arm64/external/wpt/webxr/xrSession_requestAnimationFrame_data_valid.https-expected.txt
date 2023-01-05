@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL RequestAnimationFrame resolves with good data - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL RequestAnimationFrame resolves with good data - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-Harness: the test ran to completion.
-

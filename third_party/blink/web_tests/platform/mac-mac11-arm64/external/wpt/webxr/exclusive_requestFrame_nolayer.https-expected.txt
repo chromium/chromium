@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL XRSession requestAnimationFrame must fail if the session has no baseLayer for immersive - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL XRSession requestAnimationFrame must fail if the session has no baseLayer for immersive - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL XRSession requestAnimationFrame must fail if the session has no baseLayer for non immersive - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL XRSession requestAnimationFrame must fail if the session has no baseLayer for non immersive - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-Harness: the test ran to completion.
-

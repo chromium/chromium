@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that transferToImageBitmap returns an ImageBitmap with correct width and height Failed to execute 'transferToImageBitmap' on 'OffscreenCanvas': Cannot transfer an ImageBitmap from an OffscreenCanvas with no context
-PASS Test that transferToImageBitmap returns an ImageBitmap with correct color
-PASS Test that transferToImageBitmap won't change context's property
-PASS Test that transferToImageBitmap preserves transform
-PASS Test that call transferToImageBitmap on a detached OffscreenCanvas throws an exception
-PASS Test that transferToImageBitmap without a context throws an exception
-Harness: the test ran to completion.
-

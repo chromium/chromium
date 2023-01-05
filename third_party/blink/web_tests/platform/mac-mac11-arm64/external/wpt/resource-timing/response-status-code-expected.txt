@@ -86,7 +86,7 @@ PASS This test validates the response status of resources. 82
 PASS This test validates the response status of resources. 83
 PASS This test validates the response status of resources. 84
 PASS This test validates the response status of resources. 85
-FAIL This test validates the response status of resources. 86 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'responseStatus')"
+PASS This test validates the response status of resources. 86
 PASS This test validates the response status of resources. 87
 PASS This test validates the response status of resources. 88
 PASS This test validates the response status of resources. 89
@@ -253,7 +253,7 @@ PASS This test validates the response status of resources. 249
 PASS This test validates the response status of resources. 250
 PASS This test validates the response status of resources. 251
 PASS This test validates the response status of resources. 252
-PASS This test validates the response status of resources. 253
+FAIL This test validates the response status of resources. 253 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'responseStatus')"
 PASS This test validates the response status of resources. 254
 PASS This test validates the response status of resources. 255
 PASS This test validates the response status of resources. 256

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL XRRigidTransform position and orientation meet [SameObject] requirements - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL XRRigidTransform position and orientation meet [SameObject] requirements - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-Harness: the test ran to completion.
-

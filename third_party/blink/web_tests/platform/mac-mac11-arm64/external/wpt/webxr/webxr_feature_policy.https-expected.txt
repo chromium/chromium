@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Validate isSessionSupported behavior without xr-spatial-tracking policy
-PASS Validate requestSession behavior without xr-spatial-tracking policy
-PASS Validate devicechange event behavior without xr-spatial-tracking policy
-FAIL Validate xr compatibility requests without xr-spatial-tracking policy Cannot read properties of null (reading 'getContextAttributes')
-Harness: the test ran to completion.
-
