@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Ensures lighting estimation feature works when enabled - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures lighting estimation feature works when enabled - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensure lighting estimation feature does not work when not explicitly enabled - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensure lighting estimation feature does not work when not explicitly enabled - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

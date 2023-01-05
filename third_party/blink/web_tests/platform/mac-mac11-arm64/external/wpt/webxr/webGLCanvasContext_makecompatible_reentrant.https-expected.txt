@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Verify promise from a non-reentrant call to makeXRCompatible() is resolved for webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'getContextAttributes')"
+FAIL Verify promise from a non-reentrant call to makeXRCompatible() is resolved for webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'getContextAttributes')"
+FAIL Verify promises from reentrant calls to makeXRCompatible() are resolved for webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'getContextAttributes')"
+FAIL Verify promises from reentrant calls to makeXRCompatible() are resolved for webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'getContextAttributes')"
+Harness: the test ran to completion.
+

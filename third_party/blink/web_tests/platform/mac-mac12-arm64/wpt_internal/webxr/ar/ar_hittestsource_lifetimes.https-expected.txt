@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Ensures hit test source cancellation propagates to the device when manually cancelled. - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures hit test source cancellation propagates to the device when manually cancelled. - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures transient input hit test source cancellation propagates to the device when manually cancelled. - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures transient input hit test source cancellation propagates to the device when manually cancelled. - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures hit test source cancellation propagates to the device when relying on GC - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures hit test source cancellation propagates to the device when relying on GC - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures transient input hit test source cancellation propagates to the device when relying on GC - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensures transient input hit test source cancellation propagates to the device when relying on GC - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

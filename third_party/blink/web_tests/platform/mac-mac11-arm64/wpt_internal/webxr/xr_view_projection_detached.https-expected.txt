@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that xrview.projection being detached doesn't cause a crash. promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'XRWebGLLayer': The provided value is not of type '(WebGL2RenderingContext or WebGLRenderingContext)'."
+Harness: the test ran to completion.
+

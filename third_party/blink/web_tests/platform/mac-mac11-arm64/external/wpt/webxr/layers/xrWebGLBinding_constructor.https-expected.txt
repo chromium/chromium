@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Ensure that XRWebGLBinding's constructor throws appropriate errors using webgl assert_equals: Should get InvalidStateError for creating with inline session. expected "InvalidStateError" but got "TypeError"
+FAIL Ensure that XRWebGLBinding's constructor throws appropriate errors using webgl2 assert_equals: Should get InvalidStateError for creating with inline session. expected "InvalidStateError" but got "TypeError"
+Harness: the test ran to completion.
+
