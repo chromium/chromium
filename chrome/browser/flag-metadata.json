@@ -5100,6 +5100,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-multiline-search-suggest",
+    "owners": [ "christianxu", "stkhapugin", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-new-popup-ui",
     "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 110

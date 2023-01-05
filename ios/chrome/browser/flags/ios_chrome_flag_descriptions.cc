@@ -546,6 +546,11 @@ const char kOmniboxMaxZPSMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "zero-prefix state in the omnibox (e.g. on NTP when tapped on OB).";
 
+const char kOmniboxMultilineSearchSuggestName[] =
+    "Omnibox Multiline Search Suggestion";
+const char kOmniboxMultilineSearchSuggestDescription[] =
+    "Change the maximum number of line displayed for a search suggestion";
+
 const char kOmniboxNewImplementationName[] =
     "Use experimental omnibox textfield";
 const char kOmniboxNewImplementationDescription[] =

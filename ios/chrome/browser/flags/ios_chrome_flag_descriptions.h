@@ -494,6 +494,11 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 extern const char kOmniboxMaxZPSMatchesName[];
 extern const char kOmniboxMaxZPSMatchesDescription[];
 
+// Title and description for the flag to inscrease the maximum number of lines
+// for search suggestions.
+extern const char kOmniboxMultilineSearchSuggestName[];
+extern const char kOmniboxMultilineSearchSuggestDescription[];
+
 // Title and description for the flag to swap Omnibox Textfield implementation
 // to a new experimental one.
 extern const char kOmniboxNewImplementationName[];
