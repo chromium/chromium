@@ -177,10 +177,13 @@ std::unique_ptr<VideoDecodeAccelerator> VdVideoDecodeAccelerator::Create(
     CreateVideoDecoderCb create_vd_cb,
     Client* client,
     const Config& config,
+    bool low_delay,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  std::unique_ptr<VideoDecodeAccelerator> vda(new VdVideoDecodeAccelerator(
-      std::move(create_vd_cb), std::move(task_runner)));
-  if (!vda->Initialize(config, client))
+  std::unique_ptr<VdVideoDecodeAccelerator,
+                  std::default_delete<VideoDecodeAccelerator>>
+      vda(new VdVideoDecodeAccelerator(std::move(create_vd_cb),
+                                       std::move(task_runner)));
+  if (!vda->Initialize(config, client, low_delay))
     return nullptr;
   return vda;
 }
@@ -220,6 +223,12 @@ VdVideoDecodeAccelerator::~VdVideoDecodeAccelerator() {
 
 bool VdVideoDecodeAccelerator::Initialize(const Config& config,
                                           Client* client) {
+  return Initialize(config, client, false /* low_delay */);
+}
+
+bool VdVideoDecodeAccelerator::Initialize(const Config& config,
+                                          Client* client,
+                                          bool low_delay) {
   VLOGF(2) << "config: " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
@@ -271,7 +280,7 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
       base::BindOnce(&VdVideoDecodeAccelerator::OnInitializeDone, weak_this_);
   auto output_cb =
       base::BindRepeating(&VdVideoDecodeAccelerator::OnFrameReady, weak_this_);
-  vd_->Initialize(std::move(vd_config), false /* low_delay */, cdm_context,
+  vd_->Initialize(std::move(vd_config), low_delay, cdm_context,
                   std::move(init_cb), std::move(output_cb), base::DoNothing());
   return true;
 }
