@@ -5550,7 +5550,7 @@ void RenderFrameHostImpl::WriteIntoTrace(
   proto.Set(TraceProto::kRenderFrameHostId, GetGlobalId());
   proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
   proto->set_lifecycle_state(LifecycleStateToProto());
-  proto->set_frame_type(FrameTypeToProto(frame_tree_node_->GetFrameType()));
+  proto->set_frame_type(GetFrameTypeProto());
   proto->set_origin(GetLastCommittedOrigin().GetDebugString());
   proto->set_url(GetLastCommittedURL().possibly_invalid_spec());
   proto.Set(TraceProto::kProcess, GetProcess());
@@ -5590,6 +5590,26 @@ RenderFrameHostImpl::LifecycleStateToProto() const {
   }
 
   return RFHProto::UNSPECIFIED;
+}
+
+perfetto::protos::pbzero::FrameTreeNodeInfo::FrameType
+RenderFrameHostImpl::GetFrameTypeProto() const {
+  using RFHProto = perfetto::protos::pbzero::FrameTreeNodeInfo;
+
+  if (GetParent())
+    return RFHProto::SUBFRAME;
+  if (const_cast<RenderFrameHostImpl*>(this)->GetPage().IsPrimary())
+    return RFHProto::PRIMARY_MAIN_FRAME;
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+    return RFHProto::PRERENDER_MAIN_FRAME;
+  if (IsFencedFrameRoot())
+    return RFHProto::FENCED_FRAME_ROOT;
+
+  // It returns a different value from FrameTreeNode::GetFrameType() when
+  // - `this` is a speculative RFH or
+  // - `this` is not in a frame tree (e.g., IsInBackForwardCache() or
+  // IsPendingDeletion()).
+  return RFHProto::UNSPECIFIED_FRAME_TYPE;
 }
 
 StoragePartitionImpl* RenderFrameHostImpl::GetStoragePartition() {
