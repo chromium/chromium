@@ -31,8 +31,8 @@ struct UsesItself : public SupportsUserData::Data {
 };
 
 TEST(SupportsUserDataTest, ClearWorksRecursively) {
+  char key = 0;  // Must outlive `supports_user_data`.
   TestSupportsUserData supports_user_data;
-  char key = 0;
   supports_user_data.SetUserData(
       &key, std::make_unique<UsesItself>(&supports_user_data, &key));
   // Destruction of supports_user_data runs the actual test.
