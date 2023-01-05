@@ -794,16 +794,16 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
           /*card_linked_offer_available=*/false);
 
   if (keyboard_accessory_enabled()) {
-    // For the keyboard accessory, the main text is "Virtual card" and the minor
-    // text is the cardholder name. An example suggestion: "Virtual card  Elvis
-    // Presley".
+    // For the keyboard accessory, the "Virtual card" label is added as a prefix
+    // to the cardholder name, and the label is added as the suffix.
     EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
               u"Virtual card");
-    EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value,
-              u"Elvis Presley");
+    EXPECT_EQ(
+        virtual_card_name_field_suggestion.minor_text.value,
+        base::StrCat({u"Elvis Presley ",
+                      internal::GetObfuscatedStringForCardDigits(u"1111", 2)}));
 
-    // There should be only 1 line of label: obfuscated last 4 digits. The label
-    // is not shown.
+    // There should be only 1 line of label: obfuscated last 4 digits.
     ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
   } else {
     // On other platforms, the cardholder name is shown on the first line.
@@ -825,7 +825,8 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
   if (keyboard_accessory_enabled()) {
-    // For the keyboard accessory, the label is "..1111".
+    // For the keyboard accessory, the label is "..1111". This label is added as
+    // a suffix to the cardholder name.
     ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
               internal::GetObfuscatedStringForCardDigits(u"1111", 2));

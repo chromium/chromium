@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -657,27 +658,42 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
   suggestion.feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 
-  // TODO(crbug.com/1344629): Update "Virtual card" label for other fields.
-  // For virtual cards, prefix "Virtual card" label to field suggestions. For
-  // card number field in a dropdown, show the "Virtual card" label below the
-  // card number for Metadata experiment.
+  // Add virtual card labelling to suggestions. For keyboard accessory, it is
+  // prefixed to the suggestion, and for the dropdown, it is shown as a label on
+  // a separate line.
+  const std::u16string& VIRTUAL_CARD_LABEL = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardMetadata) ||
-      base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
+          features::kAutofillEnableVirtualCardMetadata)) {
     suggestion.minor_text.value = suggestion.main_text.value;
-    suggestion.main_text.value = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
-  } else if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-    // If the focused field is a credit card number field, reset all labels and
-    // populate only the virtual card text.
-    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}};
+    suggestion.main_text.value = VIRTUAL_CARD_LABEL;
+  } else if (IsKeyboardAccessoryEnabled()) {
+    suggestion.minor_text.value = suggestion.main_text.value;
+    suggestion.main_text.value = VIRTUAL_CARD_LABEL;
+
+    // For the card number field, the original label if any is removed. For
+    // other fields, it is retained and is appended to the `minor_text`.
+    if (type.GetStorableType() != CREDIT_CARD_NUMBER &&
+        suggestion.labels.size() > 0) {
+      // Verify that there is a single line of label, and it contains a single
+      // item.
+      DCHECK_EQ(suggestion.labels.size(), 1U);
+      DCHECK_EQ(suggestion.labels[0].size(), 1U);
+      suggestion.minor_text.value = base::StrCat(
+          {suggestion.minor_text.value, u" ", suggestion.labels[0][0].value});
+    }
+    // Desktop/Android dropdown.
   } else {
-    // Otherwise, add the virtual card text after the original label, so it
-    // will be shown on the third line.
-    suggestion.labels.push_back(std::vector<Suggestion::Text>{
-        Suggestion::Text(l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))});
+    if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
+      // If the focused field is a credit card number field, reset all labels
+      // and populate only the virtual card text.
+      suggestion.labels = {{Suggestion::Text(VIRTUAL_CARD_LABEL)}};
+    } else {
+      // For other fields, add the virtual card text after the original label,
+      // so it will be shown on the third line.
+      suggestion.labels.push_back(
+          std::vector<Suggestion::Text>{Suggestion::Text(VIRTUAL_CARD_LABEL)});
+    }
   }
 }
 
