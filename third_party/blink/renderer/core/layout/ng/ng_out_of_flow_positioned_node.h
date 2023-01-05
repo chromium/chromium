@@ -32,16 +32,16 @@ class NGContainingBlock {
   NGContainingBlock(OffsetType offset,
                     OffsetType relative_offset,
                     const NGPhysicalFragment* fragment,
+                    absl::optional<LayoutUnit> clipped_container_block_offset,
                     bool is_inside_column_spanner,
-                    bool requires_content_before_breaking,
-                    bool is_fragmented_inside_clipped_container)
+                    bool requires_content_before_breaking)
       : offset_(offset),
         relative_offset_(relative_offset),
         fragment_(std::move(fragment)),
+        clipped_container_block_offset_(
+            clipped_container_block_offset.value_or(LayoutUnit::Min())),
         is_inside_column_spanner_(is_inside_column_spanner),
-        requires_content_before_breaking_(requires_content_before_breaking),
-        is_fragmented_inside_clipped_container(
-            is_fragmented_inside_clipped_container) {}
+        requires_content_before_breaking_(requires_content_before_breaking) {}
 
   OffsetType Offset() const { return offset_; }
   void IncreaseBlockOffset(LayoutUnit block_offset) {
@@ -49,6 +49,12 @@ class NGContainingBlock {
   }
   OffsetType RelativeOffset() const { return relative_offset_; }
   const NGPhysicalFragment* Fragment() const { return fragment_; }
+  absl::optional<LayoutUnit> ClippedContainerBlockOffset() const {
+    if (clipped_container_block_offset_ == LayoutUnit::Min()) {
+      return absl::nullopt;
+    }
+    return clipped_container_block_offset_;
+  }
   bool IsInsideColumnSpanner() const { return is_inside_column_spanner_; }
 
   void SetRequiresContentBeforeBreaking(bool b) {
@@ -58,8 +64,11 @@ class NGContainingBlock {
     return requires_content_before_breaking_;
   }
 
+  // True if the containing block of an OOF is inside a clipped container inside
+  // a fragmentation context.
+  // For example: <multicol><clipped-overflow-container><relpos><abspos>
   bool IsFragmentedInsideClippedContainer() const {
-    return is_fragmented_inside_clipped_container;
+    return clipped_container_block_offset_ != LayoutUnit::Min();
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment_); }
@@ -70,6 +79,8 @@ class NGContainingBlock {
   // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
   OffsetType relative_offset_;
   Member<const NGPhysicalFragment> fragment_;
+  // The distance to the innermost container that clips block overflow, if any.
+  LayoutUnit clipped_container_block_offset_ = LayoutUnit::Min();
   // True if there is a column spanner between the containing block and the
   // multicol container (or if the containing block is a column spanner).
   bool is_inside_column_spanner_ = false;
@@ -77,10 +88,6 @@ class NGContainingBlock {
   // before breaking (even that overflows the fragmentainer). See
   // NGBoxFragmentBuilder::SetRequiresContentBeforeBreaking() for more details.
   bool requires_content_before_breaking_ = false;
-  // True if the containing block of an OOF is inside a clipped container inside
-  // a fragmentation context.
-  // For example: <multicol><clipped-overflow-container><relpos><abspos>
-  bool is_fragmented_inside_clipped_container = false;
 };
 
 // This holds the containing block for an out-of-flow positioned element

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+  testRunner.setPrinting();
+  internals.settings.setShouldPrintBackgrounds(true);
+</script>
+There should be two pages.
+There should be a green rectangle at the bottom of the first page,
+and another green rectangle at the top of the second page.
+No red anywhere.
+<div style="break-before:page; height:50px;"></div>
+<div style="position:absolute; margin-top:-150px; width:100px; height:200px; background:green;"></div>

@@ -255,6 +255,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       LogicalOffset offset_adjustment = LogicalOffset(),
       const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
       LayoutUnit containing_block_adjustment = LayoutUnit(),
+      const NGContainingBlock<LogicalOffset>* containing_block = nullptr,
       const NGContainingBlock<LogicalOffset>* fixedpos_containing_block =
           nullptr,
       const NGInlineContainer<LogicalOffset>* fixedpos_inline_container =
@@ -269,6 +270,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LayoutUnit containing_block_adjustment,
+      const NGContainingBlock<LogicalOffset>* containing_block,
       const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
       HeapVector<NGLogicalOOFNodeForFragmentation>* out_list = nullptr);
 

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script>
+  testRunner.setPrinting();
+  internals.settings.setShouldPrintBackgrounds(true);
+</script>
+There should be a green square on the next page. No red.
+<div style="break-before:page; height:50px;"></div>
+<div style="position:relative; overflow:clip; height:100px;">
+  <div style="position:absolute; width:100px;">
+    <div style="height:2px;"></div>
+    <div style="height:100px; background:green;"></div>
+  </div>
+</div>
