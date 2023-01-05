@@ -23,7 +23,6 @@ class SchedulerConfigurationManagerBase;
 
 namespace arc {
 
-class ArcDemoModePreferenceHandler;
 class ArcDiskSpaceMonitor;
 class ArcIconCacheDelegateProvider;
 class ArcPlayStoreEnabledPreferenceHandler;
@@ -92,8 +91,6 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
-  std::unique_ptr<ArcDemoModePreferenceHandler>
-      arc_demo_mode_preference_handler_;
   std::unique_ptr<ArcDiskSpaceMonitor> arc_disk_space_monitor_;
   std::unique_ptr<ArcIconCacheDelegateProvider>
       arc_icon_cache_delegate_provider_;
