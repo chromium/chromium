@@ -8,7 +8,6 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
-#include "base/win/windows_version.h"
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_com_win.h"
@@ -3494,11 +3493,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        DegenerateRangeBoundingRect) {
-  // Due to https://crbug.com/1193359, custom fonts do not load consistently in
-  // Windows 7. So not running this test on Windows 7.
-  if (base::win::GetVersion() == base::win::Version::WIN7)
-    return;
-
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/html/fixed-width-text.html");
 

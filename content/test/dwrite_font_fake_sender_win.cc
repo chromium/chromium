@@ -139,15 +139,6 @@ void FakeFontCollection::MapCharacters(
 void FakeFontCollection::MatchUniqueFont(const std::u16string& unique_font_name,
                                          MatchUniqueFontCallback callback) {}
 
-void FakeFontCollection::GetUniqueFontLookupMode(
-    GetUniqueFontLookupModeCallback callback) {}
-
-void FakeFontCollection::GetUniqueNameLookupTable(
-    GetUniqueNameLookupTableCallback callback) {}
-
-void FakeFontCollection::GetUniqueNameLookupTableIfAvailable(
-    GetUniqueNameLookupTableIfAvailableCallback callback) {}
-
 void FakeFontCollection::FallbackFamilyAndStyleForCodepoint(
     const std::string& base_family_name,
     const std::string& locale_name,

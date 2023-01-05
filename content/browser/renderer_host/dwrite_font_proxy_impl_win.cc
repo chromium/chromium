@@ -396,21 +396,6 @@ void DWriteFontProxyImpl::MapCharacters(
   DCHECK_GT(result->mapped_length, 0u);
 }
 
-void DWriteFontProxyImpl::GetUniqueNameLookupTableIfAvailable(
-    GetUniqueNameLookupTableIfAvailableCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
-  /* Table is not synchronously available, return immediately. */
-  if (!DWriteFontLookupTableBuilder::GetInstance()
-           ->FontUniqueNameTableReady()) {
-    std::move(callback).Run(false, base::ReadOnlySharedMemoryRegion());
-    return;
-  }
-
-  std::move(callback).Run(
-      true,
-      DWriteFontLookupTableBuilder::GetInstance()->DuplicateMemoryRegion());
-}
-
 void DWriteFontProxyImpl::MatchUniqueFont(
     const std::u16string& unique_font_name,
     MatchUniqueFontCallback callback) {
@@ -500,25 +485,6 @@ void DWriteFontProxyImpl::MatchUniqueFont(
   std::move(callback).Run(std::move(font_file), ttc_index);
 }
 
-void DWriteFontProxyImpl::GetUniqueFontLookupMode(
-    GetUniqueFontLookupModeCallback callback) {
-  InitializeDirectWrite();
-  // If factory3_ is available, that means we can use IDWriteFontSet to filter
-  // for PostScript name and full font name directly and do not need to build
-  // the lookup table.
-  blink::mojom::UniqueFontLookupMode lookup_mode =
-      factory3_.Get() ? blink::mojom::UniqueFontLookupMode::kSingleLookups
-                      : blink::mojom::UniqueFontLookupMode::kRetrieveTable;
-  std::move(callback).Run(lookup_mode);
-}
-
-void DWriteFontProxyImpl::GetUniqueNameLookupTable(
-    GetUniqueNameLookupTableCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
-  DWriteFontLookupTableBuilder::GetInstance()->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
-}
-
 void DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint(
     const std::string& base_family_name,
     const std::string& locale_name,
@@ -577,14 +543,15 @@ void DWriteFontProxyImpl::InitializeDirectWrite() {
     return;
   }
 
-  // QueryInterface for IDWriteFactory2. It's ok for this to fail if we are
-  // running an older version of DirectWrite (earlier than Win8.1).
+  // QueryInterface for IDWriteFactory2. This should succeed since we only
+  // support >= Win10.
   factory_.As<IDWriteFactory2>(&factory2_);
+  DCHECK(factory2_);
 
-  // QueryInterface for IDwriteFactory3, needed for MatchUniqueFont on Windows
-  // 10. May fail on older versions, in which case, unique font matching must be
-  // done through indexing system fonts using DWriteFontLookupTableBuilder.
+  // QueryInterface for IDwriteFactory3, needed for MatchUniqueFont on Windows.
+  // This should succeed since we only support >= Win10.
   factory_.As<IDWriteFactory3>(&factory3_);
+  DCHECK(factory3_);
 
   HRESULT hr = factory_->GetSystemFontCollection(&collection_);
   DCHECK(SUCCEEDED(hr));

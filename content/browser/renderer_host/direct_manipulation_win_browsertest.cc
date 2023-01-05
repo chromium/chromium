@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"
 
-#include "base/win/windows_version.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -87,9 +86,6 @@ class DirectManipulationBrowserTest : public DirectManipulationBrowserTestBase {
 // interaction begin and destroyed after direct manipulation interaction end.
 IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest,
                        ObserverDuringInteraction) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   LegacyRenderWidgetHostHWND* lrwhh = GetLegacyRenderWidgetHostHWND();
@@ -141,9 +137,6 @@ class EventLogger : public ui::EventRewriter {
 
 // Check DirectManipulation events convert to ui::event correctly.
 IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest, EventConvert) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   LegacyRenderWidgetHostHWND* lrwhh = GetLegacyRenderWidgetHostHWND();
@@ -300,9 +293,6 @@ class PrecisionTouchpadBrowserTest : public DirectManipulationBrowserTestBase {
 // Confirm that preventDefault correctly prevents pinch zoom on precision
 // touchpad.
 IN_PROC_BROWSER_TEST_F(PrecisionTouchpadBrowserTest, PreventDefaultPinchZoom) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(data:text/html,<!DOCTYPE html>
         <html>
           Hello, world
@@ -379,9 +369,6 @@ IN_PROC_BROWSER_TEST_F(PrecisionTouchpadBrowserTest, PreventDefaultPinchZoom) {
 // Confirm that preventDefault correctly prevents scrolling on precision
 // touchpad.
 IN_PROC_BROWSER_TEST_F(PrecisionTouchpadBrowserTest, PreventDefaultScroll) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(data:text/html,<!DOCTYPE html>
     <html>
       <body style='height:2000px; width:2000px;'>

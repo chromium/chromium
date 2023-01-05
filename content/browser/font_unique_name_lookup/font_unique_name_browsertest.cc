@@ -18,7 +18,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/files/scoped_temp_dir.h"
-#include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
 #endif
 
 namespace content {

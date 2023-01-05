@@ -24,10 +24,6 @@
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 // TODO(crbug.com/958242): Move the baselines to skia gold for easier
 //   rebaselining when all platforms are supported.
 
@@ -119,7 +115,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // Some versions have more significant differences than others, which are
     // tracked separately in separate baseline image files. The less significant
     // differences are accommodated for with this fuzzy pixel comparator.
-    // This also applies to different versions of windows.
+    // This also applies to different versions of Windows.
     cc::FuzzyPixelComparator comparator(
         /* discard_alpha */ true,
         /* error_pixels_percentage_limit */ 11.f,
@@ -146,16 +142,6 @@ class FormControlsBrowserTest : public ContentBrowserTest {
       return true;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    return false;
-  }
-
-  bool SkipTestForOldWinVersion() const {
-#if BUILDFLAG(IS_WIN)
-    // Win7 font rendering causes too large of rendering diff for pixel
-    // comparison.
-    if (base::win::GetVersion() <= base::win::Version::WIN7)
-      return true;
-#endif  // BUILDFLAG(IS_WIN)
     return false;
   }
 };
@@ -270,9 +256,6 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Textarea) {
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
   if (SkipTestForOldAndroidVersions())
-    return;
-
-  if (SkipTestForOldWinVersion())
     return;
 
   RunTest("form_controls_browsertest_button",

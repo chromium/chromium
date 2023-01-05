@@ -4,13 +4,14 @@
 
 #include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/process_mitigations.h"
@@ -36,11 +37,9 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
   // create the server side of Chrome pipes.
   sandbox::ResultCode result;
 #if !defined(NACL_WIN64)
-  // We don't support PPAPI win32k lockdown prior to Windows 10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
-    if (result != sandbox::SBOX_ALL_OK)
-      return false;
+  result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
   }
 #endif  // !defined(NACL_WIN64)
 

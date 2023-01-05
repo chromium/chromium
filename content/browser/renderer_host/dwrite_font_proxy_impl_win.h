@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/memory/read_only_shared_memory_region.h"
-#include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,15 +57,6 @@ class CONTENT_EXPORT DWriteFontProxyImpl
                      MapCharactersCallback callback) override;
   void MatchUniqueFont(const std::u16string& unique_font_name,
                        MatchUniqueFontCallback callback) override;
-  void GetUniqueFontLookupMode(
-      GetUniqueFontLookupModeCallback callback) override;
-
-  void GetUniqueNameLookupTableIfAvailable(
-      GetUniqueNameLookupTableIfAvailableCallback callback) override;
-
-  void GetUniqueNameLookupTable(
-      GetUniqueNameLookupTableCallback callback) override;
-
   void FallbackFamilyAndStyleForCodepoint(
       const std::string& base_family_name,
       const std::string& locale_name,

@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace content {
 
 void InitializeMojoCore() {
@@ -56,12 +52,9 @@ void InitializeMojoCore() {
       config.force_direct_shared_memory_allocation = true;
   } else {
 #if BUILDFLAG(IS_WIN)
-    if (base::win::GetVersion() >= base::win::Version::WIN8_1) {
-      // On Windows 8.1 and later it's not necessary to broker shared memory
-      // allocation, as even sandboxed processes can allocate their own without
-      // trouble.
-      config.force_direct_shared_memory_allocation = true;
-    }
+    // On Windows it's not necessary to broker shared memory allocation, as
+    // even sandboxed processes can allocate their own without trouble.
+    config.force_direct_shared_memory_allocation = true;
 #endif
   }
 
