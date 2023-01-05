@@ -80,7 +80,7 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver,
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
+  absl::optional<int> GetEffectState(int effect_id) override;
   void OnEffectControlActivated(int effect_id, int value) override;
 
   void set_effect_result_for_testing(

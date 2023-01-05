@@ -45,7 +45,7 @@ SimpleToggleEffect::SimpleToggleEffect(
   AddEffect(std::move(effect));
 }
 
-int SimpleToggleEffect::GetEffectState(int effect_id) {
+absl::optional<int> SimpleToggleEffect::GetEffectState(int effect_id) {
   return VcHostedEffect::kOff;
 }
 
@@ -110,7 +110,7 @@ ShaggyFurEffect::ShaggyFurEffect() {
 
 ShaggyFurEffect::~ShaggyFurEffect() = default;
 
-int ShaggyFurEffect::GetEffectState(int effect_id) {
+absl::optional<int> ShaggyFurEffect::GetEffectState(int effect_id) {
   return static_cast<int>(FurShagginess::kBuzzcut);
 }
 
@@ -169,9 +169,9 @@ SuperCutnessEffect::SuperCutnessEffect() {
 
 SuperCutnessEffect::~SuperCutnessEffect() = default;
 
-int SuperCutnessEffect::GetEffectState(int effect_id) {
+absl::optional<int> SuperCutnessEffect::GetEffectState(int effect_id) {
   if (has_invalid_effect_state_for_testing_) {
-    return VcEffectState::kUnusedId;
+    return absl::nullopt;
   }
 
   return static_cast<int>(HowCute::kTeddyBear);

@@ -108,12 +108,22 @@ ToggleEffectsView::ToggleEffectsView(
     for (auto* tile : row) {
       DCHECK_EQ(tile->type(), VcEffectType::kToggle);
       DCHECK_EQ(tile->GetNumStates(), 1);
+
+      // If `current_state` has no value, it means the state of the effect
+      // (represented by `tile`) cannot be obtained. This can happen if the
+      // `VcEffectsDelegate` hosting the effect has encountered an error or is
+      // in some bad state. In this case its controls are not presented.
+      absl::optional<int> current_state = tile->get_state_callback().Run();
+      if (!current_state.has_value()) {
+        continue;
+      }
+
+      // `current_state` can only be a `bool` for a toggle effect.
+      bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
-      bool current_state = tile->get_state_callback().Run();
       row_view->AddChildView(std::make_unique<ButtonContainer>(
-          state->button_callback(), state->icon(),
-          /*toggle_state=*/current_state, state->label_text(),
-          state->accessible_name_id()));
+          state->button_callback(), state->icon(), toggle_state,
+          state->label_text(), state->accessible_name_id()));
     }
 
     // Add the row as a child, now that it's fully populated,

@@ -90,6 +90,16 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         ->GetInteger(prefs::kBackgroundBlur);
   }
 
+  // Gets the state of the background blur effect from the effect's host,
+  // `camera_effects_controller_`.
+  int GetBackgroundBlurEffectState() {
+    absl::optional<int> effect_state =
+        camera_effects_controller_->GetEffectState(
+            static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur));
+    DCHECK(effect_state.has_value());
+    return effect_state.value();
+  }
+
   // Updates prefs::kPortraitRelighting pref values.
   void SetPortraitRelightingPref(bool active) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -102,6 +112,16 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         ->session_controller()
         ->GetActivePrefService()
         ->GetBoolean(prefs::kPortraitRelighting);
+  }
+
+  // Gets the state of the portrait relighting effect from the effect's host,
+  // `camera_effects_controller_`.
+  bool GetPortraitRelightingEffectState() {
+    absl::optional<int> effect_state =
+        camera_effects_controller_->GetEffectState(
+            static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight));
+    DCHECK(effect_state.has_value());
+    return static_cast<bool>(effect_state.value());
   }
 
   CameraEffectsController* camera_effects_controller() {
@@ -521,37 +541,30 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurGetEffectState) {
 
   // Pref value is `kBackgroundBlurLevelForDisabling` (off).
   SetBackgroundBlurPref(-1);
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kOff);
 
   // Test all values of `cros::mojom::BlurLevel`.
   SetBackgroundBlurPref(static_cast<int>(cros::mojom::BlurLevel::kLowest));
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kLowest);
   SetBackgroundBlurPref(static_cast<int>(cros::mojom::BlurLevel::kLight));
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kLight);
   SetBackgroundBlurPref(static_cast<int>(cros::mojom::BlurLevel::kMedium));
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kMedium);
   SetBackgroundBlurPref(static_cast<int>(cros::mojom::BlurLevel::kHeavy));
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kHeavy);
   SetBackgroundBlurPref(static_cast<int>(cros::mojom::BlurLevel::kMaximum));
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kMaximum);
 
   // Now verify with a pref value that isn't recognized as a valid background
   // blur state.
   SetBackgroundBlurPref(-999);
-  EXPECT_EQ(camera_effects_controller_->GetEffectState(
-                static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)),
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kOff);
 }
 
@@ -612,13 +625,11 @@ TEST_F(CameraEffectsControllerTest, PortraitRelightingGetEffectState) {
 
   // Pref value is "off."
   SetPortraitRelightingPref(false);
-  EXPECT_FALSE(camera_effects_controller_->GetEffectState(
-      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight)));
+  EXPECT_FALSE(GetPortraitRelightingEffectState());
 
   // Pref value is "on."
   SetPortraitRelightingPref(true);
-  EXPECT_TRUE(camera_effects_controller_->GetEffectState(
-      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight)));
+  EXPECT_TRUE(GetPortraitRelightingEffectState());
 }
 
 TEST_F(CameraEffectsControllerTest,

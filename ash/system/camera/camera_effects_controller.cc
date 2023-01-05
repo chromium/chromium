@@ -268,7 +268,7 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   InitializeEffectControls();
 }
 
-int CameraEffectsController::GetEffectState(int effect_id) {
+absl::optional<int> CameraEffectsController::GetEffectState(int effect_id) {
   switch (static_cast<cros::mojom::CameraEffect>(effect_id)) {
     case cros::mojom::CameraEffect::kBackgroundBlur: {
       DCHECK(pref_change_registrar_ && pref_change_registrar_->prefs());
@@ -289,11 +289,11 @@ int CameraEffectsController::GetEffectState(int effect_id) {
           prefs::kPortraitRelighting);
     case cros::mojom::CameraEffect::kBackgroundReplace:
     case cros::mojom::CameraEffect::kNone:
-      return VcEffectState::kUnusedId;
+      return absl::nullopt;
   }
 
   NOTREACHED();
-  return VcEffectState::kUnusedId;
+  return absl::nullopt;
 }
 
 void CameraEffectsController::OnEffectControlActivated(int effect_id,

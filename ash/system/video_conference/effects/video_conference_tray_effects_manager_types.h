@@ -102,7 +102,8 @@ class ASH_EXPORT VcHostedEffect {
 
   // Callback for obtaining the current state of the effect. The callback must
   // have the effect ID bound as an argument.
-  using GetEffectStateCallback = base::RepeatingCallback<int(void)>;
+  using GetEffectStateCallback =
+      base::RepeatingCallback<absl::optional<int>(void)>;
 
   // `type` is the type of value adjustment allowed.
   explicit VcHostedEffect(VcEffectType type,

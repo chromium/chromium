@@ -36,10 +36,9 @@ class ValueButtonContainer : public views::View {
     }
 
     // `effect` is expected to provide the current state of the effect, and
-    // a `current_state` of `VcEffectState::kUnusedId` means it couldn't be
-    // obtained.
-    const int current_state = effect->get_state_callback().Run();
-    DCHECK(current_state != VcEffectState::kUnusedId);
+    // a `current_state` with no value means it couldn't be obtained.
+    absl::optional<int> current_state = effect->get_state_callback().Run();
+    DCHECK(current_state.has_value());
 
     // Add a button for each state.
     for (int i = 0; i < effect->GetNumStates(); ++i) {
@@ -59,7 +58,7 @@ class ValueButtonContainer : public views::View {
       // Set-value effects require an actual integer state. Mark it checked
       // (selected) if the current state of the effect is this state's value,
       DCHECK(state->state().has_value());
-      state_button->SetChecked(state->state().value() == current_state);
+      state_button->SetChecked(state->state().value() == current_state.value());
 
       AddChildView(std::move(state_button));
     }
@@ -89,12 +88,11 @@ SetValueEffectsView::SetValueEffectsView(
 
   if (controller->effects_manager().HasSetValueEffects()) {
     for (auto* effect : controller->effects_manager().GetSetValueEffects()) {
-      // Make sure the current value of the effect can be obtained, and if it
-      // can't then don't present its controls.
-      if (effect->get_state_callback().Run() == VcEffectState::kUnusedId) {
-        LOG(ERROR) << __FUNCTION__ << " effect with id (" << effect->id()
-                   << ") label_text (" << effect->label_text()
-                   << ") could not obtain its current value";
+      // If the current state of `effect` has no value, it means the state of
+      // the effect cannot be obtained. This can happen if the
+      // `VcEffectsDelegate` hosting `effect` has encountered an error or is
+      // in some bad state. In this case its controls are not presented.
+      if (!effect->get_state_callback().Run().has_value()) {
         continue;
       }
 

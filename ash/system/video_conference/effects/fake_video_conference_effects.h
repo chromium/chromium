@@ -40,7 +40,7 @@ class SimpleToggleEffect : public VcEffectsDelegate {
   ~SimpleToggleEffect() override;
 
   // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
+  absl::optional<int> GetEffectState(int effect_id) override;
   void OnEffectControlActivated(int effect_id, int value) override;
 
   int num_activations_for_testing() { return num_activations_for_testing_; }
@@ -144,7 +144,7 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   ~ShaggyFurEffect() override;
 
   // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
+  absl::optional<int> GetEffectState(int effect_id) override;
   void OnEffectControlActivated(int effect_id, int value) override;
 
   // Returns the number of times the button/state for `value` has been
@@ -182,7 +182,7 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   ~SuperCutnessEffect() override;
 
   // VcEffectsDelegate:
-  int GetEffectState(int effect_id) override;
+  absl::optional<int> GetEffectState(int effect_id) override;
   void OnEffectControlActivated(int effect_id, int value) override;
 
   // Returns the number of times the button/state for `value` has been
