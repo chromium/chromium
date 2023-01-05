@@ -271,7 +271,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         process_return = self.process_and_upload_results()
 
         if (process_return != exit_codes.INTERRUPTED_EXIT_STATUS
-                and self.options.show_results_in_browser):
+                and self.options.show_results):
             self.show_results_in_browser()
 
     def show_results_in_browser(self):
@@ -335,9 +335,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                             default=True,
                             help=('Use this tag to not run wptrunner in'
                                   'headless mode'))
-        parser.add_argument('--show-results-in-browser',
-                            action='store_true',
-                            help='Open the results viewer in a browser.')
+        parser.add_argument('--no-show-results',
+                            dest="show_results",
+                            action='store_false',
+                            default=True,
+                            help=("Don't launch a browser with results after"
+                                  "the tests are done"))
         parser.add_argument(
             '--enable-sanitizer',
             action='store_true',

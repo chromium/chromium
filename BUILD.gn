@@ -1129,7 +1129,10 @@ if (!is_ios) {
     }
     script_test("wpt_tests_isolate") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = [ "--product=chrome" ]
+      args = [
+        "--product=chrome",
+        "--no-show-results",
+      ]
       data_deps = [
         "//chrome:chrome",
         "//chrome/test/chromedriver:chromedriver_server",
@@ -1138,6 +1141,7 @@ if (!is_ios) {
     }
     script_test("wpt_tests_isolate_content_shell") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
+      args = [ "--no-show-results" ]
       data_deps = [
         ":blink_web_tests_support_data",
         "//third_party/blink/tools:wpt_tests_isolate",
