@@ -10,6 +10,7 @@
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -76,6 +77,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::make_span(kSidePanelCustomizeChromeResources,
                       kSidePanelCustomizeChromeResourcesSize),
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
+
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<SanitizedImageSource>(profile_));
 }
 
 CustomizeChromeUI::~CustomizeChromeUI() = default;
