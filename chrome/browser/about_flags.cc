@@ -4894,10 +4894,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-docked-magnifier-resizing",
-     flag_descriptions::kDockedMagnifierResizingName,
-     flag_descriptions::kDockedMagnifierResizingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kDockedMagnifierResizing)},
     {"enable-experimental-accessibility-color-enhancement-settings",
      flag_descriptions::kExperimentalAccessibilityColorEnhancementSettingsName,
      flag_descriptions::

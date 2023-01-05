@@ -5333,12 +5333,6 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
-const char kDockedMagnifierResizingName[] =
-    "Enable ability to resize Docked Magnifier";
-const char kDockedMagnifierResizingDescription[] =
-    "Enable feature which adds ability for user to grab and resize divider of "
-    "Docked Magnifier.";
-
 const char kFileTransferEnterpriseConnectorName[] =
     "Enable Files Transfer Enterprise Connector.";
 const char kFileTransferEnterpriseConnectorDescription[] =

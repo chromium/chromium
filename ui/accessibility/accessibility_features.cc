@@ -116,14 +116,6 @@ bool IsSelectiveUIAEnablementEnabled() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kDockedMagnifierResizing,
-             "DockedMagnifierResizing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsDockedMagnifierResizingEnabled() {
-  return base::FeatureList::IsEnabled(::features::kDockedMagnifierResizing);
-}
-
 bool IsDictationOfflineAvailable() {
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);

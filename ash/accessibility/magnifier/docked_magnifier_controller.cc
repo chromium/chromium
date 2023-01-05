@@ -25,7 +25,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
@@ -273,9 +272,7 @@ void DockedMagnifierController::OnSigninScreenPrefServiceInitialized(
 
 void DockedMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
   DCHECK(GetEnabled());
-  if (::features::IsDockedMagnifierResizingEnabled())
-    MaybePerformViewportResizing(event);
-
+  MaybePerformViewportResizing(event);
   CenterOnPoint(GetCursorScreenPoint());
 }
 
@@ -677,9 +674,7 @@ void DockedMagnifierController::CreateMagnifierViewport() {
   separator_layer_->SetBounds(
       SeparatorBoundsFromViewportBounds(viewport_bounds));
   aura::Window* const separator_parent =
-      ::features::IsDockedMagnifierResizingEnabled()
-          ? GetViewportParentContainerForDivider(current_source_root_window_)
-          : viewport_parent;
+      GetViewportParentContainerForDivider(current_source_root_window_);
   separator_parent->layer()->Add(separator_layer_.get());
 
   // 3- Create a background layer that will show a dark gray color behind the
@@ -814,9 +809,7 @@ void DockedMagnifierController::ConfineMouseCursorOutsideViewport() {
       current_source_root_window_->GetBoundsInRootWindow();
   const auto viewport_bounds = magnifier_utils::GetViewportWidgetBoundsInRoot(
       current_source_root_window_, GetScreenHeightDivisor());
-  const int docked_height = ::features::IsDockedMagnifierResizingEnabled()
-                                ? viewport_bounds.height()
-                                : separator_layer_->bounds().bottom();
+  const int docked_height = viewport_bounds.height();
   confine_bounds.Offset(0, docked_height);
   confine_bounds.set_height(confine_bounds.height() - docked_height);
   RootWindowController::ForWindow(current_source_root_window_)

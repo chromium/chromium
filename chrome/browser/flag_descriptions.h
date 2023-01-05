@@ -3057,9 +3057,6 @@ extern const char
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
-extern const char kDockedMagnifierResizingName[];
-extern const char kDockedMagnifierResizingDescription[];
-
 extern const char kFileTransferEnterpriseConnectorName[];
 extern const char kFileTransferEnterpriseConnectorDescription[];
 
