@@ -70,6 +70,10 @@ uint8_t CrosAudioConfigImpl::GetOutputVolumePercent() const {
   return CrasAudioHandler::Get()->GetOutputVolumePercent();
 }
 
+uint8_t CrosAudioConfigImpl::GetInputGainPercent() const {
+  return CrasAudioHandler::Get()->GetInputGainPercent();
+}
+
 mojom::MuteState CrosAudioConfigImpl::GetOutputMuteState() const {
   // TODO(crbug.com/1092970): Add kMutedExternally.
   if (CrasAudioHandler::Get()->IsOutputMutedByPolicy())
@@ -153,6 +157,10 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,
                                                     int volume) {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnInputNodeGainChanged(uint64_t node_id, int gain) {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 

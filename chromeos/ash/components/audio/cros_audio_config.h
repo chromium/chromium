@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfig
   void NotifyObserversAudioSystemPropertiesChanged();
 
   virtual uint8_t GetOutputVolumePercent() const = 0;
+  virtual uint8_t GetInputGainPercent() const = 0;
   virtual mojom::MuteState GetOutputMuteState() const = 0;
   virtual void GetAudioDevices(
       std::vector<mojom::AudioDevicePtr>* output_devices_out,

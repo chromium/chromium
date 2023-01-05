@@ -68,6 +68,9 @@ struct AudioSystemProperties {
   // The volume of the active output device.
   uint8 output_volume_percent;
 
+  // The gain of the active input device.
+  uint8 input_gain_percent;
+
   // The mute state of the active output device.
   MuteState output_mute_state;
 

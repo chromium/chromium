@@ -21,12 +21,16 @@
 namespace ash::audio_config {
 
 constexpr uint8_t kTestOutputVolumePercent = 80u;
+constexpr uint8_t kTestInputGainPercent = 37u;
 constexpr uint8_t kTestUnderMuteThreshholdVolumePercent = 0u;
 constexpr uint8_t kTestOverMaxOutputVolumePercent = 105u;
 constexpr int8_t kTestUnderMinOutputVolumePercent = -5;
 
 constexpr int8_t kDefaultOutputVolumePercent =
     AudioDevicesPrefHandler::kDefaultOutputVolumePercent;
+
+constexpr int8_t kDefaultInputGainPercent =
+    AudioDevicesPrefHandler::kDefaultInputGainPercent;
 
 constexpr uint64_t kInternalSpeakerId = 10001;
 constexpr uint64_t kMicJackId = 10010;
@@ -135,6 +139,11 @@ class CrosAudioConfigImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetInputGainPercent(int gain_percent) {
+    cras_audio_handler_->SetInputGainPercent(gain_percent);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetOutputMuteState(mojom::MuteState mute_state) {
     switch (mute_state) {
       case mojom::MuteState::kMutedByUser:
@@ -238,6 +247,24 @@ class CrosAudioConfigImplTest : public testing::Test {
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   FakeCrasAudioClient* fake_cras_audio_client_;
 };
+
+TEST_F(CrosAudioConfigImplTest, HandleExternalInputGainUpdate) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  // |fake_observer| count is first incremented in Observe() method.
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  ASSERT_EQ(
+      kDefaultInputGainPercent,
+      fake_observer->last_audio_system_properties_.value()->input_gain_percent);
+
+  SetInputGainPercent(kTestInputGainPercent);
+
+  ASSERT_EQ(2u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  ASSERT_EQ(
+      kTestInputGainPercent,
+      fake_observer->last_audio_system_properties_.value()->input_gain_percent);
+}
 
 TEST_F(CrosAudioConfigImplTest, GetSetOutputVolumePercent) {
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();

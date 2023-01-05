@@ -92,6 +92,7 @@ export interface FakePropertiesObserverInterface {
 export const defaultFakeAudioSystemProperties: AudioSystemProperties = {
   outputDevices: [defaultFakeSpeaker, defaultFakeMicJack],
   outputVolumePercent: 75,
+  inputGainPercent: 87,
   outputMuteState: MuteState.kNotMuted,
   inputDevices: [fakeInternalFrontMic, fakeBluetoothMic],
   inputMuteState: MuteState.kNotMuted,
