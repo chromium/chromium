@@ -15855,6 +15855,37 @@
             ]
           }
         }
+      },
+      {
+        "note": "Simple value with dynamic protocol",
+        "policies": {
+          "RequiredClientCertificateForUser": [
+            {
+              "name": "Certificate Profile 1",
+              "cert_profile_id": "cert_profile_id_1",
+              "key_algorithm": "rsa",
+              "renewal_period_seconds": 2592000,
+              "policy_version": "some_hash",
+              "enable_remote_attestation_check": true,
+	      "protocol_version": 2
+            }
+          ]
+        },
+        "prefs": {
+          "required_client_certificate_for_user": {
+            "value": [
+              {
+                "name": "Certificate Profile 1",
+                "cert_profile_id": "cert_profile_id_1",
+                "key_algorithm": "rsa",
+                "renewal_period_seconds": 2592000,
+                "policy_version": "some_hash",
+                "enable_remote_attestation_check": true,
+	        "protocol_version": 2
+              }
+            ]
+          }
+        }
       }
     ]
   },
@@ -15899,6 +15930,37 @@
               }
             ],
             "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value with dynamic protocol",
+        "policies": {
+          "RequiredClientCertificateForUser": [
+            {
+              "name": "Certificate Profile 1",
+              "cert_profile_id": "cert_profile_id_1",
+              "key_algorithm": "rsa",
+              "renewal_period_seconds": 2592000,
+              "policy_version": "some_hash",
+              "enable_remote_attestation_check": true,
+	      "protocol_version": 2
+            }
+          ]
+        },
+        "prefs": {
+          "required_client_certificate_for_user": {
+            "value": [
+              {
+                "name": "Certificate Profile 1",
+                "cert_profile_id": "cert_profile_id_1",
+                "key_algorithm": "rsa",
+                "renewal_period_seconds": 2592000,
+                "policy_version": "some_hash",
+                "enable_remote_attestation_check": true,
+	        "protocol_version": 2
+              }
+            ]
           }
         }
       }

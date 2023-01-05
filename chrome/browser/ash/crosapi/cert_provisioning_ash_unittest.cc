@@ -250,7 +250,8 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveUserWorker) {
   // Setup a user mock worker.
   ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+      /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+      ash::cert_provisioning::ProtocolVersion::kStatic);
   // Any time should work. Any time in the past is a realistic value.
   base::Time last_update_time = base::Time::Now() - base::Hours(1);
   absl::optional<ash::cert_provisioning::BackendServerError> backend_error =
@@ -291,7 +292,8 @@ TEST_F(CertProvisioningAshTest, GetStatusAliveDeviceWorker) {
   // Setup a device mock worker.
   ash::cert_provisioning::CertProfile device_cert_profile(
       kDeviceCertProfileId, kDeviceCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+      /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+      ash::cert_provisioning::ProtocolVersion::kStatic);
   base::Time last_update_time = base::Time::Now() - base::Hours(2);
   absl::optional<ash::cert_provisioning::BackendServerError> backend_error =
       ash::cert_provisioning::BackendServerError(

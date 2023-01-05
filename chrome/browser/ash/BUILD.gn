@@ -4640,6 +4640,7 @@ source_set("unit_tests") {
     "camera_mic/vm_camera_mic_manager_unittest.cc",
     "camera_presence_notifier_unittest.cc",
     "cert_provisioning/cert_provisioning_client_unittest.cc",
+    "cert_provisioning/cert_provisioning_common_unittest.cc",
     "cert_provisioning/cert_provisioning_invalidator_unittest.cc",
     "cert_provisioning/cert_provisioning_platform_keys_helpers_unittest.cc",
     "cert_provisioning/cert_provisioning_scheduler_unittest.cc",

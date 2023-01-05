@@ -8,6 +8,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -125,12 +127,14 @@ CertProfile::CertProfile(CertProfileId profile_id,
                          std::string name,
                          std::string policy_version,
                          bool is_va_enabled,
-                         base::TimeDelta renewal_period)
+                         base::TimeDelta renewal_period,
+                         ProtocolVersion protocol_version)
     : profile_id(profile_id),
       name(std::move(name)),
       policy_version(std::move(policy_version)),
       is_va_enabled(is_va_enabled),
-      renewal_period(renewal_period) {}
+      renewal_period(renewal_period),
+      protocol_version(protocol_version) {}
 
 CertProfile::CertProfile(const CertProfile& other) = default;
 
@@ -139,7 +143,7 @@ CertProfile::~CertProfile() = default;
 
 absl::optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value::Dict& value) {
-  static_assert(kVersion == 5, "This function should be updated");
+  static_assert(kVersion == 6, "This function should be updated");
 
   const std::string* id = value.FindString(kCertProfileIdKey);
   const std::string* name = value.FindString(kCertProfileNameKey);
@@ -149,6 +153,8 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
       value.FindBool(kCertProfileIsVaEnabledKey);
   absl::optional<int> renewal_period_sec =
       value.FindInt(kCertProfileRenewalPeroidSec);
+  absl::optional<int> protocol_version =
+      value.FindInt(kCertProfileProtocolVersion);
 
   if (!id || !policy_version) {
     return absl::nullopt;
@@ -161,15 +167,29 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
   result.is_va_enabled = is_va_enabled.value_or(true);
   result.renewal_period = base::Seconds(renewal_period_sec.value_or(0));
 
+  absl::optional<ProtocolVersion> parsed_protocol_version =
+      ParseProtocolVersion(protocol_version);
+  if (!parsed_protocol_version) {
+    LOG(ERROR) << "Failed to parse ProtocolVersion "
+               << (protocol_version.has_value()
+                       ? base::NumberToString(*protocol_version)
+                       : std::string());
+    // If a protocol version is delivered which this client doesn't
+    // understand, there's no point using it.
+    return absl::nullopt;
+  }
+  result.protocol_version = *parsed_protocol_version;
+
   return result;
 }
 
 bool CertProfile::operator==(const CertProfile& other) const {
-  static_assert(kVersion == 5, "This function should be updated");
+  static_assert(kVersion == 6, "This function should be updated");
   return ((profile_id == other.profile_id) && (name == other.name) &&
           (policy_version == other.policy_version) &&
           (is_va_enabled == other.is_va_enabled) &&
-          (renewal_period == other.renewal_period));
+          (renewal_period == other.renewal_period) &&
+          (protocol_version == other.protocol_version));
 }
 
 bool CertProfile::operator!=(const CertProfile& other) const {
@@ -178,14 +198,28 @@ bool CertProfile::operator!=(const CertProfile& other) const {
 
 bool CertProfileComparator::operator()(const CertProfile& a,
                                        const CertProfile& b) const {
-  static_assert(CertProfile::kVersion == 5, "This function should be updated");
+  static_assert(CertProfile::kVersion == 6, "This function should be updated");
   return ((a.profile_id < b.profile_id) || (a.name < b.name) ||
           (a.policy_version < b.policy_version) ||
           (a.is_va_enabled < b.is_va_enabled) ||
-          (a.renewal_period < b.renewal_period));
+          (a.renewal_period < b.renewal_period) ||
+          (a.protocol_version < b.protocol_version));
 }
 
 //==============================================================================
+
+absl::optional<ProtocolVersion> ParseProtocolVersion(
+    absl::optional<int> protocol_version_value) {
+  switch (protocol_version_value.value_or(
+      base::strict_cast<int>(ProtocolVersion::kStatic))) {
+    case base::strict_cast<int>(ProtocolVersion::kStatic):
+      return ProtocolVersion::kStatic;
+    case base::strict_cast<int>(ProtocolVersion::kDynamic):
+      return ProtocolVersion::kDynamic;
+    default:
+      return absl::nullopt;
+  }
+}
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kRequiredClientCertificateForUser);

@@ -29,6 +29,7 @@ constexpr char kKeyNameInvalidationTopic[] = "invalidation_topic";
 constexpr char kKeyNameCertProfileId[] = "profile_id";
 constexpr char kKeyNameCertProfileName[] = "name";
 constexpr char kKeyNameCertProfileVersion[] = "policy_version";
+constexpr char kKeyNameCertProfileProtocolVersion[] = "protocol_version";
 constexpr char kKeyNameCertProfileVaEnabled[] = "va_enabled";
 constexpr char kKeyNameCertProfileRenewalPeriod[] = "renewal_period";
 
@@ -82,14 +83,33 @@ bool DeserializeRenewalPeriod(const base::Value::Dict& parent_dict,
   return true;
 }
 
+bool DeserializeProtocolVersion(const base::Value::Dict& parent_value,
+                                const char* value_name,
+                                ProtocolVersion* dst) {
+  absl::optional<int> protocol_version_value = parent_value.FindInt(value_name);
+  absl::optional<ProtocolVersion> protocol_version =
+      ParseProtocolVersion(protocol_version_value);
+  if (!protocol_version.has_value()) {
+    return false;
+  }
+  *dst = *protocol_version;
+  return true;
+}
+
 base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
-  static_assert(CertProfile::kVersion == 5, "This function should be updated");
+  static_assert(CertProfile::kVersion == 6, "This function should be updated");
 
   base::Value::Dict result;
   result.Set(kKeyNameCertProfileId, profile.profile_id);
   result.Set(kKeyNameCertProfileName, profile.name);
   result.Set(kKeyNameCertProfileVersion, profile.policy_version);
   result.Set(kKeyNameCertProfileVaEnabled, profile.is_va_enabled);
+  if (profile.protocol_version != ProtocolVersion::kStatic) {
+    // Only set the protocol_version if it's not kStatic to avoid changing how
+    // "static flow" workers are serialized.
+    result.Set(kKeyNameCertProfileProtocolVersion,
+               static_cast<int>(profile.protocol_version));
+  }
 
   if (!profile.renewal_period.is_zero()) {
     result.Set(kKeyNameCertProfileRenewalPeriod,
@@ -102,7 +122,7 @@ base::Value::Dict SerializeCertProfile(const CertProfile& profile) {
 bool DeserializeCertProfile(const base::Value::Dict& parent_dict,
                             const char* value_name,
                             CertProfile* dst) {
-  static_assert(CertProfile::kVersion == 5, "This function should be updated");
+  static_assert(CertProfile::kVersion == 6, "This function should be updated");
 
   const base::Value::Dict* serialized_profile =
       parent_dict.FindDict(value_name);
@@ -127,6 +147,9 @@ bool DeserializeCertProfile(const base::Value::Dict& parent_dict,
   is_ok = is_ok && DeserializeRenewalPeriod(*serialized_profile,
                                             kKeyNameCertProfileRenewalPeriod,
                                             &(dst->renewal_period));
+  is_ok = is_ok && DeserializeProtocolVersion(
+                       *serialized_profile, kKeyNameCertProfileProtocolVersion,
+                       &(dst->protocol_version));
   return is_ok;
 }
 

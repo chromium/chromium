@@ -268,6 +268,7 @@ CertProvisioningWorkerImpl::CertProvisioningWorkerImpl(
       request_backoff_(&kBackoffPolicy),
       cert_provisioning_client_(cert_provisioning_client),
       invalidator_(std::move(invalidator)) {
+  CHECK(cert_profile.protocol_version == ProtocolVersion::kStatic);
   CHECK(profile || cert_scope == CertScope::kDevice);
   platform_keys_service_ = GetPlatformKeysService(cert_scope, profile);
   CHECK(platform_keys_service_);

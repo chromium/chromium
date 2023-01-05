@@ -9,6 +9,7 @@ example_value:
   name: Certificate Profile 1
   policy_version: some_hash
   renewal_period_seconds: 2592000
+  protocol_version: 2
 features:
   can_be_mandatory: true
   can_be_recommended: false
@@ -43,6 +44,10 @@ schema:
       renewal_period_seconds:
         description: Number of seconds before expiration of a certificate when renewal
           should be triggered
+        type: integer
+      protocol_version:
+        description: Version of the certificate provisioning protocol. Defaults to 1.
+          1 is the 'static' protocol. 2 is the 'dynamic' protocol.
         type: integer
     required:
     - cert_profile_id

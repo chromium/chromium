@@ -521,7 +521,8 @@ TEST_F(CertProvisioningWorkerTest, Success) {
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -627,7 +628,8 @@ TEST_F(CertProvisioningWorkerTest, Success) {
 TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/false, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/false, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -688,7 +690,8 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
 TEST_F(CertProvisioningWorkerTest, NoHashInStartCsr) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -768,7 +771,8 @@ TEST_F(CertProvisioningWorkerTest, NoHashInStartCsr) {
 TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kDevice, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());
@@ -874,7 +878,8 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
 TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -993,7 +998,8 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
 TEST_F(CertProvisioningWorkerTest, ServiceActivationPendingResponse) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1116,7 +1122,8 @@ TEST_F(CertProvisioningWorkerTest, ServiceActivationPendingResponse) {
 TEST_F(CertProvisioningWorkerTest, InvalidationRespected) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1236,7 +1243,8 @@ TEST_F(CertProvisioningWorkerTest, StatusErrorHandling) {
   const CertScope kCertScope = CertScope::kUser;
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1282,7 +1290,8 @@ TEST_F(CertProvisioningWorkerTest, ResponseErrorHandling) {
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       kCertScope, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1330,7 +1339,8 @@ TEST_F(CertProvisioningWorkerTest, InconsistentDataErrorHandling) {
   const CertScope kCertScope = CertScope::kUser;
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   auto worker = CertProvisioningWorkerFactory::Get()->Create(
       kCertScope, GetProfile(), &testing_pref_service_, cert_profile,
@@ -1370,7 +1380,8 @@ TEST_F(CertProvisioningWorkerTest, InconsistentDataErrorHandling) {
 TEST_F(CertProvisioningWorkerTest, BackoffStrategy) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
 
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
@@ -1436,7 +1447,8 @@ TEST_F(CertProvisioningWorkerTest, BackoffStrategy) {
 TEST_F(CertProvisioningWorkerTest, ProcessBackendServerErrorResponse) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1490,7 +1502,8 @@ TEST_F(CertProvisioningWorkerTest, ProcessBackendServerErrorResponse) {
 TEST_F(CertProvisioningWorkerTest, ClearBackendServerError) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1530,7 +1543,8 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
 
@@ -1627,9 +1641,9 @@ class PrefServiceObserver {
 
 TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
   const base::TimeDelta kRenewalPeriod = base::Seconds(1200300);
-  CertProfile cert_profile(kCertProfileId, kCertProfileName,
-                           kCertProfileVersion,
-                           /*is_va_enabled=*/true, kRenewalPeriod);
+  CertProfile cert_profile(
+      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      /*is_va_enabled=*/true, kRenewalPeriod, ProtocolVersion::kStatic);
   const CertScope kCertScope = CertScope::kUser;
 
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
@@ -1819,7 +1833,8 @@ TEST_F(CertProvisioningWorkerTest, SerializationOnFailure) {
   const CertScope kCertScope = CertScope::kUser;
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
 
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   auto worker = CertProvisioningWorkerFactory::Get()->Create(
@@ -1883,7 +1898,8 @@ TEST_F(CertProvisioningWorkerTest, InformationalGetters) {
   const CertScope kCertScope = CertScope::kUser;
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
 
   MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
   CertProvisioningWorkerImpl worker(
@@ -1937,7 +1953,8 @@ TEST_F(CertProvisioningWorkerTest, CancelDeviceWorker) {
   const CertScope kCertScope = CertScope::kDevice;
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
-                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));

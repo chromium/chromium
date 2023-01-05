@@ -83,13 +83,27 @@ bool IsFinalState(CertProvisioningWorkerState state);
 using CertProfileId = std::string;
 
 // Names of CertProfile fields in a base::Value representation. Must be in sync
-// with definitions of RequiredClientCertificateForDevice and
-// RequiredClientCertificateForUser policies in policy_templates.json file.
+// with policy schema definitions in RequiredClientCertificateForDevice.yaml and
+// RequiredClientCertificateForUser.yaml.
 const char kCertProfileIdKey[] = "cert_profile_id";
 const char kCertProfileNameKey[] = "name";
 const char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
 const char kCertProfilePolicyVersionKey[] = "policy_version";
+const char kCertProfileProtocolVersion[] = "protocol_version";
 const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
+
+// The version of the certificate provisioning protocol between ChromeOS client
+// and device management server.
+// The values must match the description in
+// RequiredClientCertificateForDevice.yaml and
+// RequiredClientCertificateForUser.yaml.
+// They are also used in serialization so they should not be renumbered.
+enum class ProtocolVersion {
+  // Original "static" protocol.
+  kStatic = 1,
+  // "Dynamic" protocol.
+  kDynamic = 2,
+};
 
 struct CertProfile {
   static absl::optional<CertProfile> MakeFromValue(
@@ -101,7 +115,8 @@ struct CertProfile {
               std::string name,
               std::string policy_version,
               bool is_va_enabled,
-              base::TimeDelta renewal_period);
+              base::TimeDelta renewal_period,
+              ProtocolVersion protocol_version);
   CertProfile(const CertProfile& other);
   ~CertProfile();
 
@@ -113,11 +128,12 @@ struct CertProfile {
   // Default renewal period 0 means that a certificate will be renewed only
   // after the previous one has expired (0 seconds before it is expires).
   base::TimeDelta renewal_period = base::Seconds(0);
+  ProtocolVersion protocol_version = ProtocolVersion::kStatic;
 
   // IMPORTANT:
   // Increment this when you add/change any member in CertProfile (and update
   // all functions that fail to compile because of it).
-  static constexpr int kVersion = 5;
+  static constexpr int kVersion = 6;
 
   bool operator==(const CertProfile& other) const;
   bool operator!=(const CertProfile& other) const;
@@ -126,6 +142,10 @@ struct CertProfile {
 struct CertProfileComparator {
   bool operator()(const CertProfile& a, const CertProfile& b) const;
 };
+
+// Parses `protocol_version_value` as ProtocolVersion enum.
+absl::optional<ProtocolVersion> ParseProtocolVersion(
+    absl::optional<int> protocol_version_value);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
