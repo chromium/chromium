@@ -126,25 +126,6 @@ void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
   UpdateIconImage(std::move(callback), std::move(iv));
 }
 
-// TODO(crbug.com/1253250): Remove and use GetPermissionType
-apps::mojom::PermissionType GetAppServicePermissionType(
-    arc::mojom::AppPermission arc_permission_type) {
-  switch (arc_permission_type) {
-    case arc::mojom::AppPermission::CAMERA:
-      return apps::mojom::PermissionType::kCamera;
-    case arc::mojom::AppPermission::LOCATION:
-      return apps::mojom::PermissionType::kLocation;
-    case arc::mojom::AppPermission::MICROPHONE:
-      return apps::mojom::PermissionType::kMicrophone;
-    case arc::mojom::AppPermission::NOTIFICATIONS:
-      return apps::mojom::PermissionType::kNotifications;
-    case arc::mojom::AppPermission::CONTACTS:
-      return apps::mojom::PermissionType::kContacts;
-    case arc::mojom::AppPermission::STORAGE:
-      return apps::mojom::PermissionType::kStorage;
-  }
-}
-
 apps::PermissionType GetPermissionType(
     arc::mojom::AppPermission arc_permission_type) {
   switch (arc_permission_type) {
@@ -188,23 +169,6 @@ bool GetArcPermissionType(apps::PermissionType app_service_permission_type,
     case apps::PermissionType::kPrinting:
     case apps::PermissionType::kFileHandling:
       return false;
-  }
-}
-
-// TODO(crbug.com/1253250): Remove and use CreatePermissions
-void UpdateAppPermissions(
-    const base::flat_map<arc::mojom::AppPermission,
-                         arc::mojom::PermissionStatePtr>& new_permissions,
-    std::vector<apps::mojom::PermissionPtr>* permissions) {
-  for (const auto& new_permission : new_permissions) {
-    auto permission = apps::mojom::Permission::New();
-    permission->permission_type =
-        GetAppServicePermissionType(new_permission.first);
-    permission->value = apps::mojom::PermissionValue::NewBoolValue(
-        new_permission.second->granted);
-    permission->is_managed = new_permission.second->managed;
-
-    permissions->push_back(std::move(permission));
   }
 }
 
@@ -539,18 +503,6 @@ absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
   }
 }
 
-// TODO(crbug.com/1253250): Remove and use GetResizeLocked.
-apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
-                                         const std::string& app_id) {
-  auto resize_locked = GetResizeLocked(prefs, app_id);
-  if (!resize_locked.has_value()) {
-    return apps::mojom::OptionalBool::kUnknown;
-  }
-
-  return resize_locked.value() ? apps::mojom::OptionalBool::kTrue
-                               : apps::mojom::OptionalBool::kFalse;
-}
-
 bool IsWebAppShellPackage(Profile* profile,
                           const ArcAppListPrefs::AppInfo& app_info) {
   ash::ApkWebAppService* apk_web_app_service =
@@ -606,6 +558,30 @@ std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
   return intent_filters;
 }
 
+apps::InstallReason GetInstallReason(const ArcAppListPrefs* prefs,
+                                     const std::string& app_id,
+                                     const ArcAppListPrefs::AppInfo& app_info) {
+  // Sticky represents apps that cannot be uninstalled and are installed by the
+  // system.
+  if (app_info.sticky) {
+    return apps::InstallReason::kSystem;
+  }
+
+  if (prefs->IsOem(app_id)) {
+    return apps::InstallReason::kOem;
+  }
+
+  if (prefs->IsDefault(app_id)) {
+    return apps::InstallReason::kDefault;
+  }
+
+  if (prefs->IsControlledByPolicy(app_info.package_name)) {
+    return apps::InstallReason::kPolicy;
+  }
+
+  return apps::InstallReason::kUser;
+}
+
 }  // namespace
 
 namespace apps {
@@ -625,12 +601,6 @@ ArcApps::~ArcApps() = default;
 void ArcApps::Initialize() {
   if (!arc::IsArcAllowedForProfile(profile_) ||
       (arc::ArcServiceManager::Get() == nullptr)) {
-    return;
-  }
-
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
-  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
-      !app_service.is_bound()) {
     return;
   }
 
@@ -671,8 +641,6 @@ void ArcApps::Initialize() {
   if (web_app::AreWebAppsEnabled(profile_)) {
     web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile_);
   }
-
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kArc);
 
   RegisterPublisher(AppType::kArc);
 
@@ -1069,27 +1037,6 @@ void ArcApps::SetResizeLocked(const std::string& app_id, bool locked) {
                                         : arc::mojom::ArcResizeLockState::OFF);
 }
 
-void ArcApps::Connect(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-    apps::mojom::ConnectOptionsPtr opts) {
-  std::vector<apps::mojom::AppPtr> apps;
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (prefs) {
-    for (const auto& app_id : prefs->GetAppIds()) {
-      std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-          prefs->GetApp(app_id);
-      if (app_info) {
-        apps.push_back(Convert(prefs, app_id, *app_info));
-      }
-    }
-  }
-  mojo::Remote<apps::mojom::Subscriber> subscriber(
-      std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kArc,
-                     true /* should_notify_initialized */);
-  subscribers_.Add(std::move(subscriber));
-}
-
 void ArcApps::PauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeAddApp(app_id)) {
     SetIconEffect(app_id);
@@ -1163,7 +1110,6 @@ void ArcApps::OnAppRegistered(const std::string& app_id,
                               const ArcAppListPrefs::AppInfo& app_info) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (prefs && !IsWebAppShellPackage(profile_, app_info)) {
-    PublisherBase::Publish(Convert(prefs, app_id, app_info), subscribers_);
     AppPublisher::Publish(CreateApp(prefs, app_id, app_info));
   }
 }
@@ -1175,7 +1121,6 @@ void ArcApps::OnAppStatesChanged(const std::string& app_id,
     return;
   }
 
-  PublisherBase::Publish(Convert(prefs, app_id, app_info), subscribers_);
   AppPublisher::Publish(CreateApp(prefs, app_id, app_info));
 }
 
@@ -1190,12 +1135,6 @@ void ArcApps::OnAppRemoved(const std::string& app_id) {
     app_id_to_task_ids_.erase(app_id);
   }
 
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kArc;
-  mojom_app->app_id = app_id;
-  mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
   auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->readiness = Readiness::kUninstalledByUser;
   AppPublisher::Publish(std::move(app));
@@ -1208,12 +1147,6 @@ void ArcApps::OnAppIconUpdated(const std::string& app_id,
 
 void ArcApps::OnAppNameUpdated(const std::string& app_id,
                                const std::string& name) {
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kArc;
-  mojom_app->app_id = app_id;
-  mojom_app->name = name;
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
   auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->name = name;
   AppPublisher::Publish(std::move(app));
@@ -1228,11 +1161,6 @@ void ArcApps::OnAppLastLaunchTimeUpdated(const std::string& app_id) {
   if (!app_info || IsWebAppShellPackage(profile_, *app_info)) {
     return;
   }
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kArc;
-  mojom_app->app_id = app_id;
-  mojom_app->last_launch_time = app_info->last_launch_time;
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
   auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->last_launch_time = app_info->last_launch_time;
@@ -1262,8 +1190,6 @@ void ArcApps::OnPackageListInitialRefreshed() {
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info && !IsWebAppShellPackage(profile_, *app_info)) {
-      PublisherBase::Publish(Convert(prefs, app_id, *app_info, update_icon),
-                             subscribers_);
       AppPublisher::Publish(CreateApp(prefs, app_id, *app_info, update_icon));
     }
   }
@@ -1304,9 +1230,6 @@ void ArcApps::OnIntentFiltersUpdated(
   auto GetAppInfoAndPublish = [prefs, this](std::string app_id) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info) {
-      PublisherBase::Publish(
-          Convert(prefs, app_id, *app_info, false /* update_icon */),
-          subscribers_);
       AppPublisher::Publish(
           CreateApp(prefs, app_id, *app_info, false /* update_icon */));
     }
@@ -1333,13 +1256,6 @@ void ArcApps::OnArcSupportedLinksChanged(
     const std::vector<arc::mojom::SupportedLinksPackagePtr>& added,
     const std::vector<arc::mojom::SupportedLinksPackagePtr>& removed,
     arc::mojom::SupportedLinkChangeSource source) {
-  if (!base::FeatureList::IsEnabled(kStopMojomAppService)) {
-    mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
-    if (!app_service.is_bound()) {
-      return;
-    }
-  }
-
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
     return;
@@ -1529,37 +1445,11 @@ void ArcApps::LoadPlayStoreIcon(apps::IconType icon_type,
                        is_placeholder_icon, icon_effects, std::move(callback));
 }
 
-apps::mojom::InstallReason GetInstallReason(
-    const ArcAppListPrefs* prefs,
-    const std::string& app_id,
-    const ArcAppListPrefs::AppInfo& app_info) {
-  // Sticky represents apps that cannot be uninstalled and are installed by the
-  // system.
-  if (app_info.sticky) {
-    return apps::mojom::InstallReason::kSystem;
-  }
-
-  if (prefs->IsOem(app_id)) {
-    return apps::mojom::InstallReason::kOem;
-  }
-
-  if (prefs->IsDefault(app_id)) {
-    return apps::mojom::InstallReason::kDefault;
-  }
-
-  if (prefs->IsControlledByPolicy(app_info.package_name)) {
-    return apps::mojom::InstallReason::kPolicy;
-  }
-
-  return apps::mojom::InstallReason::kUser;
-}
-
 AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
                           const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info,
                           bool update_icon) {
-  auto install_reason = ConvertMojomInstallReasonToInstallReason(
-      GetInstallReason(prefs, app_id, app_info));
+  auto install_reason = GetInstallReason(prefs, app_id, app_info);
   auto app = AppPublisher::MakeApp(
       AppType::kArc, app_id,
       app_info.suspended ? Readiness::kDisabledByPolicy : Readiness::kReady,
@@ -1630,83 +1520,6 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   app->app_size_in_bytes = app_info.app_size_in_bytes;
   app->data_size_in_bytes = app_info.data_size_in_bytes;
 
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
-  return app;
-}
-
-apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
-                                     const std::string& app_id,
-                                     const ArcAppListPrefs::AppInfo& app_info,
-                                     bool update_icon) {
-  auto install_reason = GetInstallReason(prefs, app_id, app_info);
-  apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      apps::mojom::AppType::kArc, app_id,
-      app_info.suspended ? apps::mojom::Readiness::kDisabledByPolicy
-                         : apps::mojom::Readiness::kReady,
-      app_info.name, install_reason);
-
-  app->publisher_id = app_info.package_name;
-
-  auto paused = paused_apps_.IsPaused(app_id)
-                    ? apps::mojom::OptionalBool::kTrue
-                    : apps::mojom::OptionalBool::kFalse;
-
-  if (update_icon) {
-    app->icon_key =
-        icon_key_factory_.MakeIconKey(GetIconEffects(app_id, app_info));
-  }
-
-  app->version = app_info.version_name;
-
-  app->last_launch_time = app_info.last_launch_time;
-  app->install_time = app_info.install_time;
-  app->install_source = install_reason == apps::mojom::InstallReason::kSystem
-                            ? apps::mojom::InstallSource::kSystem
-                            : apps::mojom::InstallSource::kPlayStore;
-
-  auto show = ShouldShow(app_info) ? apps::mojom::OptionalBool::kTrue
-                                   : apps::mojom::OptionalBool::kFalse;
-  // All published ARC apps are launchable. All launchable apps should be
-  // permitted to be shown on the shelf, and have their pins on the shelf
-  // persisted.
-  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
-  app->show_in_launcher = show;
-  app->handles_intents = show;
-
-  if (app_id == arc::kPlayGamesAppId &&
-      show == apps::mojom::OptionalBool::kFalse) {
-    // Play Games should only be hidden in the launcher.
-    app->show_in_search = apps::mojom::OptionalBool::kTrue;
-    app->show_in_management = apps::mojom::OptionalBool::kTrue;
-  } else {
-    app->show_in_search = show;
-    app->show_in_management = show;
-  }
-
-  app->allow_uninstall = (app_info.ready && !app_info.sticky)
-                             ? apps::mojom::OptionalBool::kTrue
-                             : apps::mojom::OptionalBool::kFalse;
-
-  app->has_badge = app_notifications_.HasNotification(app_id)
-                       ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
-  app->paused = paused;
-  app->resize_locked = IsResizeLocked(prefs, app_id);
-
-  std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
-      prefs->GetPackage(app_info.package_name);
-  if (package) {
-    UpdateAppPermissions(package->permissions, &app->permissions);
-  }
-
-  auto* intent_helper_bridge =
-      arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
-  if (intent_helper_bridge &&
-      app_info.package_name != arc::kArcIntentHelperPackageName) {
-    UpdateAppIntentFilters(app_info.package_name, intent_helper_bridge,
-                           &app->intent_filters);
-  }
-
   return app;
 }
 
@@ -1720,8 +1533,6 @@ void ArcApps::ConvertAndPublishPackageApps(
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
           prefs->GetApp(app_id);
       if (app_info && !IsWebAppShellPackage(profile_, *app_info)) {
-        PublisherBase::Publish(Convert(prefs, app_id, *app_info, update_icon),
-                               subscribers_);
         AppPublisher::Publish(CreateApp(prefs, app_id, *app_info, update_icon));
       }
     }
@@ -1752,13 +1563,6 @@ void ArcApps::SetIconEffect(const std::string& app_id) {
     return;
   }
 
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kArc;
-  mojom_app->app_id = app_id;
-  mojom_app->icon_key =
-      icon_key_factory_.MakeIconKey(GetIconEffects(app_id, *app_info));
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
   auto app = std::make_unique<App>(AppType::kArc, app_id);
   app->icon_key = std::move(
       *icon_key_factory_.CreateIconKey(GetIconEffects(app_id, *app_info)));
@@ -1775,18 +1579,6 @@ void ArcApps::CloseTasks(const std::string& app_id) {
     task_id_to_app_id_.erase(task_id);
   }
   app_id_to_task_ids_.erase(app_id);
-}
-
-void ArcApps::UpdateAppIntentFilters(
-    std::string package_name,
-    arc::ArcIntentHelperBridge* intent_helper_bridge,
-    std::vector<apps::mojom::IntentFilterPtr>* intent_filters) {
-  const std::vector<arc::IntentFilter>& arc_intent_filters =
-      intent_helper_bridge->GetIntentFilterForPackage(package_name);
-  for (auto& arc_intent_filter : arc_intent_filters) {
-    intent_filters->push_back(
-        apps_util::ConvertArcToAppServiceIntentFilter(arc_intent_filter));
-  }
 }
 
 void ArcApps::BuildMenuForShortcut(

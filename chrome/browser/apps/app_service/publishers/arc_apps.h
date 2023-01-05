@@ -44,10 +44,6 @@
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -61,12 +57,7 @@ struct AppLaunchParams;
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
 class ArcApps : public KeyedService,
-                public apps::PublisherBase,
                 public AppPublisher,
                 public ArcAppListPrefs::Observer,
                 public arc::ArcIntentHelperObserver,
@@ -142,9 +133,6 @@ class ArcApps : public KeyedService,
       ReplacedAppPreferences replaced_app_preferences) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
 
-  // apps::mojom::Publisher overrides.
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
@@ -218,10 +206,6 @@ class ArcApps : public KeyedService,
                    const std::string& app_id,
                    const ArcAppListPrefs::AppInfo& app_info,
                    bool update_icon = true);
-  apps::mojom::AppPtr Convert(ArcAppListPrefs* prefs,
-                              const std::string& app_id,
-                              const ArcAppListPrefs::AppInfo& app_info,
-                              bool update_icon = true);
   void ConvertAndPublishPackageApps(
       const arc::mojom::ArcPackageInfo& package_info,
       bool update_icon = true);
@@ -229,10 +213,6 @@ class ArcApps : public KeyedService,
                              const ArcAppListPrefs::AppInfo& app_info);
   void SetIconEffect(const std::string& app_id);
   void CloseTasks(const std::string& app_id);
-  void UpdateAppIntentFilters(
-      std::string package_name,
-      arc::ArcIntentHelperBridge* intent_helper_bridge,
-      std::vector<apps::mojom::IntentFilterPtr>* intent_filters);
 
   void BuildMenuForShortcut(const std::string& package_name,
                             MenuItems menu_items,
@@ -244,8 +224,6 @@ class ArcApps : public KeyedService,
       MenuItems menu_items,
       base::OnceCallback<void(MenuItems)> callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
-
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;
   ArcIconOnceLoader arc_icon_once_loader_;
