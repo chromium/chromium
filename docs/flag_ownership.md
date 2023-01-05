@@ -2,47 +2,50 @@
 
 ellyjones@ / avi@
 
-This document introduces the concept of flag ownership in Chromium.
+This document explains flag ownership in Chromium, and gives some principles and
+best practices.
 
 See also [Chromium Flag Expiry](flag_expiry.md).
 
 [TOC]
 
-## TL;DR / What Do I Need To Do?
+## What Is Flag Ownership?
 
-Look through
-[`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json)
-for flags that your team added, maintains, or cares about. For each such flag
-you find, either:
+Every entry in chrome://flags is required to have at least one listed owner,
+which can be:
 
-- **If it is still in use:** ensure that the entries in the owners list are
-  correct (see the comment at the top of the file) and that an appropriate
-  expiration milestone is set;
+* A single person
+* A mailing list
+* A reference to an OWNERS file
 
-- **If it is not in use:** delete the entry from the [`//chrome/browser/flag-metadata.json`](../chrome/browser/flag-metadata.json)
-  file, and delete it from `kFeatureEntries` in
-  [`//chrome/browser/about_flags.cc`](../chrome/browser/about_flags.cc) or
-  [`//ios/chrome/browser/flags/about_flags.mm`](../ios/chrome/browser/flags/about_flags.mm)
-  for iOS. Remember to file a cleanup bug to remove code paths that become dead.
+The owners of a flag serve as points of contact for it, and are notified when
+it expires.
 
-## Wait, What Are You Doing?
+## Who Should Be An Owner?
 
-When the flag ownership project started, many of the hundreds of flags in
-`chrome://flags` were obsolete and unused, but each of them represented
-configuration surface that was exposed to users and to QA. Worse, obsolete flags
-often prevented removal of legacy code paths that were not used in the field but
-were still reachable via a flag setting.
+In general, it's a good idea to include:
 
-The flag ownership project has dealt with that by moving Chromium towards a
-model where `chrome://flags` entries are what they were originally intended to
-be: temporary, experimental options. Each flag must have a set owner who can
-keep track of whether or when that flag should expire and an express time by
-which it will expire, either because the feature it controls will have become
-default-enabled or because the feature it controls will have been cancelled.
+* The one or two SWEs who know the most about the flag and why it exists
+* An appropriate mailing list for the team that owns it, so that expirations are
+  not missed, or
+* An owners file that contains all the members of the owning team, again so that
+  expirations are not missed.
 
-Note that this change only affects `chrome://flags` entries, not features
-controlled via [`FeatureList`](../base/feature_list.h) (commonly used to run
-Finch trials) or command-line switches.
+Three important notes about listing owners:
+
+* Any entry that is just a bare word (like "username") is treated as being
+  @chromium.org; by far the most common mistake is to write "username" when
+  "username@google.com" is meant. This is not a problem if you have both
+  chromium.org and google.com addresses.
+* The flag ownership database is *public*, so if your team's name is supposed to
+  be secret, don't list it; in that situation, it's better to create a new list
+  with a less revealing name and have it forward to your team's list.
+* Every listed owner must be able to receive email from an *unprivileged*
+  google.com account, so please don't list your team's private list that
+  requires joining to post or similar - your flag expiration email will bounce.
+  If your team's list needs to remain closed to posting, you should instead make
+  a separate list that allows open posting, or list an OWNERS file full of
+  individuals.
 
 ## I Don't Want My Flag To Expire!
 
@@ -67,15 +70,20 @@ which will require approval from the flags team.
 
 ## What Should My Expiry Be?
 
-A good rule of thumb is that your flag should expire one milestone after you
-expect your feature to have launched to stable. In other words, if your feature
-will be 100% enabled on Stable in M74, your flag should be marked as expiring in
-M75.
+A good rule of thumb is that your flag should expire at least one milestone
+after you expect your feature to have launched to stable. In other words, if
+your feature will be 100% enabled on Stable in M74, your flag should be marked
+as expiring in M75 or later. However, you can freely leave yourself lots of
+slack - the purpose of expiration is to ensure that obsolete flags eventually
+get cleaned up, but whether that takes one milestone or five for any given flag
+is not a big deal. It is also very easy to adjust the expiration milestone later
+if you need to.
 
-Please do not stress about the expiration date. The purpose of the expiration
-milestone is to let us remove *abandoned* flags. Pick a reasonable milestone by
-which you'll be done with the flag; you can always adjust it later if your
-schedule changes.
+One practice is to always set your expirations to the next "round" milestone
+after you expect to launch, so that your team can batch flag cleanup work - for
+example, if your feature is planned to go out in M101, you might set the
+expiration to M105, and then your team might schedule a flag cleanup for the 105
+branch time.
 
 ## I Have Other Questions
 
