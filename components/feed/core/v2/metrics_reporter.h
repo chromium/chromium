@@ -133,7 +133,6 @@ class MetricsReporter {
   virtual void OnLoadMore(const StreamType& stream_type,
                           LoadStreamStatus final_status,
                           const ContentStats& content_stats);
-  virtual void OnClearAll(base::TimeDelta time_since_last_clear);
   // Called each time the surface receives new content.
   void SurfaceReceivedContent(SurfaceId surface_id);
   // Called when Chrome is entering the background.

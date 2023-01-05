@@ -1201,8 +1201,6 @@ void FeedStream::IncrementFollowedFromWebPageMenuCount() {
 }
 
 void FeedStream::ClearAll() {
-  metrics_reporter_->OnClearAll(
-      base::Time::Now() - GetLastFetchTime(StreamType(StreamKind::kForYou)));
   clear_all_in_progress_ = true;
   task_queue_.AddTask(FROM_HERE, std::make_unique<ClearAllTask>(this));
 }

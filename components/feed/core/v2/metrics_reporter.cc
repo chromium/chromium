@@ -1102,13 +1102,6 @@ void MetricsReporter::SurfaceReceivedContent(SurfaceId surface_id) {
   ReportGetMoreIfNeeded(surface_id, true);
 }
 
-void MetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
-  base::UmaHistogramCustomTimes(
-      "ContentSuggestions.Feed.Scheduler.TimeSinceLastFetchOnClear",
-      time_since_last_clear, base::Seconds(1), base::Days(7),
-      /*buckets=*/50);
-}
-
 void MetricsReporter::ReportPersistentDataIfDayIsDone() {
   // Reset the persistent data if 24 hours have elapsed, or if it has never
   // been initialized.

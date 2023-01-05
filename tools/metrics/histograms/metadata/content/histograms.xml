@@ -1426,19 +1426,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Scheduler.TimeSinceLastFetchOnClear"
-    units="ms" expires_after="2020-10-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    When the previous last fetch attempt time is cleared, log the time since the
-    last fetch attempt. This typically occurs when suggestions are cleared. A
-    client that has never made a successful fetch (at least since it was last
-    cleared) will report the time since epoch.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.SendFeedback"
     enum="FeedSendFeedbackType" expires_after="2023-03-01">
   <owner>carlosk@chromium.org</owner>

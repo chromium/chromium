@@ -834,10 +834,6 @@ TestMetricsReporter::StreamMetrics& TestMetricsReporter::Stream(
   return for_you;
 }
 
-void TestMetricsReporter::OnClearAll(base::TimeDelta since_last_clear) {
-  time_since_last_clear = since_last_clear;
-  MetricsReporter::OnClearAll(time_since_last_clear.value());
-}
 void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   upload_action_status = status;
   MetricsReporter::OnUploadActions(status);
