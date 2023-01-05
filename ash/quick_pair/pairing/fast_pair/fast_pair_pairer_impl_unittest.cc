@@ -34,7 +34,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -351,11 +350,11 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void DeviceUnpaired() {
-    adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, false);
+    adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, false);
   }
 
   void DevicePaired() {
-    adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+    adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   }
 
   void ExpectStepMetrics(std::string metric,
@@ -407,7 +406,7 @@ class FastPairPairerImplTest : public AshTestBase {
     RunWritePasskeyCallback(kResponseBytes);
     EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
     EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-    adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+    adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
     RunWriteAccountKeyCallback();
   }
 
@@ -1131,7 +1130,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
@@ -1195,7 +1194,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_FactoryCreate) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
@@ -1235,7 +1234,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagEnabled) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
@@ -1283,7 +1282,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagDisabled) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
@@ -1322,7 +1321,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_StrictFlagDisabled) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
@@ -1365,7 +1364,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
   // Ensure that the account key is not written to the peripheral until the
   // peripheral is successfully paired.
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1408,7 +1407,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
   // Ensure that the account key is not written to the peripheral until the
   // peripheral is successfully paired.
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1450,7 +1449,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
   // Ensure that the account key is not written to the peripheral until the
   // peripheral is successfully paired.
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1482,7 +1481,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1516,7 +1515,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_KioskAppLoggedIn) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
@@ -1543,7 +1542,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_NotLoggedIn) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
@@ -1571,7 +1570,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_Locked) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
@@ -1609,7 +1608,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
   // Ensure that the account key is not written to the peripheral until the
   // peripheral is successfully paired.
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 
   // With Subsequent pairing, we expect to save the account key to the
   // Saved Device registry, but not upload the key to Footprints.
@@ -1651,7 +1650,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
   // Ensure that the account key is not written to the peripheral until the
   // peripheral is successfully paired.
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 
   // With Subsequent pairing, we expect to save the account key to the
   // Saved Device registry, but not upload the key to Footprints.
@@ -1692,7 +1691,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
   // Ensure that the account key is not written to the peripheral until the
   // peripheral is successfully paired.
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 
   // With Subsequent pairing, we expect to save the account key to the
   // Saved Device registry, but not upload the key to Footprints.
@@ -1801,7 +1800,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorFailed);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1826,7 +1825,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorUnknown);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1851,7 +1850,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattInProgress);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1876,7 +1875,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorInvalidLength);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1901,7 +1900,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPermitted);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1926,7 +1925,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotAuthorized);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1951,7 +1950,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPaired);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -1976,7 +1975,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotSupported);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
@@ -2001,7 +2000,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
 
   // Mock that the device was paired successfully.
   EXPECT_CALL(*fake_bluetooth_device_ptr_, IsPaired()).WillOnce(Return(true));
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorFailed);
 
   // Check to make sure that, after bonding a device, we don't cancel pairing
@@ -2054,7 +2053,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagEnabled) {
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   RunWritePasskeyCallback(kResponseBytes);
@@ -2076,7 +2075,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -2182,7 +2181,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagEnabled) {
 
   EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   RunWritePasskeyCallback(kResponseBytes);
@@ -2243,7 +2242,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -2297,7 +2296,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
 
   // Expect that the user is now opted in.
@@ -2393,7 +2392,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 
   // Expect that the user is opted in now.
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,

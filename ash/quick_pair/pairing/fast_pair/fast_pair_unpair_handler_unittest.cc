@@ -34,7 +34,7 @@ class FastPairUnpairHandlerTest : public testing::Test {
   }
 
  protected:
-  void NotifyRemoved() { adapter_->NotifyRemoved(device_.get()); }
+  void NotifyRemoved() { adapter_->NotifyDeviceRemoved(device_.get()); }
 
   void SetPaired(bool paired) { device_->SetPaired(paired); }
 

@@ -27,7 +27,8 @@ void FakeBluetoothAdapter::SetHardwareOffloadingStatus(
       hardware_offloading_status);
 }
 
-void FakeBluetoothAdapter::NotifyRemoved(device::BluetoothDevice* device) {
+void FakeBluetoothAdapter::NotifyDeviceRemoved(
+    device::BluetoothDevice* device) {
   for (auto& observer : observers_) {
     observer.DeviceRemoved(this, device);
   }
@@ -44,10 +45,18 @@ void FakeBluetoothAdapter::NotifyConfirmPasskey(
   pairing_delegate_->ConfirmPasskey(device, passkey);
 }
 
-void FakeBluetoothAdapter::DevicePairedChanged(device::BluetoothDevice* device,
-                                               bool new_paired_status) {
+void FakeBluetoothAdapter::NotifyDevicePairedChanged(
+    device::BluetoothDevice* device,
+    bool new_paired_status) {
   for (auto& observer : GetObservers()) {
     observer.DevicePairedChanged(this, device, new_paired_status);
+  }
+}
+
+void FakeBluetoothAdapter::NotifyDeviceChanged(
+    device::BluetoothDevice* device) {
+  for (auto& observer : GetObservers()) {
+    observer.DeviceChanged(this, device);
   }
 }
 

@@ -24,7 +24,7 @@ class FakeBluetoothAdapter
       device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
           hardware_offloading_status);
 
-  void NotifyRemoved(device::BluetoothDevice* device);
+  void NotifyDeviceRemoved(device::BluetoothDevice* device);
 
   void SetConnectFailure() { connect_device_failure_ = true; }
 
@@ -41,8 +41,10 @@ class FakeBluetoothAdapter
 
   void NotifyConfirmPasskey(uint32_t passkey, device::BluetoothDevice* device);
 
-  void DevicePairedChanged(device::BluetoothDevice* device,
-                           bool new_paired_status);
+  void NotifyDevicePairedChanged(device::BluetoothDevice* device,
+                                 bool new_paired_status);
+
+  void NotifyDeviceChanged(device::BluetoothDevice* device);
 
   bool IsPowered() const override;
 
