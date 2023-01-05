@@ -139,6 +139,12 @@ class Config {
            name == "HashMap";
   }
 
+  static bool IsSTDCollection(llvm::StringRef name) {
+    return name == "vector" || name == "map" || name == "unordered_map" ||
+           name == "set" || name == "unordered_set" || name == "array" ||
+           name == "optional" || name == "variant";
+  }
+
   static bool IsGCCollection(llvm::StringRef name) {
     return name == "HeapVector" || name == "HeapDeque" ||
            name == "HeapHashSet" || name == "HeapLinkedHashSet" ||
@@ -146,11 +152,17 @@ class Config {
   }
 
   static bool IsHashMap(llvm::StringRef name) {
-    return name == "HashMap" || name == "HeapHashMap";
+    return name == "HashMap" || name == "HeapHashMap" || name == "map" ||
+           name == "unordered_map";
   }
 
   // Assumes name is a valid collection name.
   static size_t CollectionDimension(llvm::StringRef name) {
+    // In case we're dealing with a variant, we want to collect the whole
+    // parameter pack.
+    if (name == "variant") {
+      return 0;
+    }
     return (IsHashMap(name) || name == "pair") ? 2 : 1;
   }
 

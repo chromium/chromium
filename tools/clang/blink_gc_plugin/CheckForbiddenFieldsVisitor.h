@@ -39,6 +39,7 @@ class CheckForbiddenFieldsVisitor : public RecursiveEdgeVisitor {
   bool ContainsForbiddenFields(RecordInfo* info);
 
   void VisitValue(Value* edge) override;
+  void VisitArrayEdge(ArrayEdge* edge) override;
 
  private:
   bool ContainsForbiddenFieldsInternal(RecordInfo* info);

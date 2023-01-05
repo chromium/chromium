@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -204,6 +205,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 
  private:
   probe::AsyncTaskContext async_task_context_;
+  GC_PLUGIN_IGNORE("crbug.com/1404924")
   absl::optional<probe::AsyncTask> async_task_;
   Persistent<ScriptPromiseResolver> promise_resolver_;
 };

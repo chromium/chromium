@@ -47,18 +47,38 @@ void CheckForbiddenFieldsVisitor::VisitValue(Value* edge) {
 
   visiting_set_.insert(edge->value());
 
-  // If the value is an embedded object, then continue checking for invalid
-  // fields.
-  for (Edge* edge : llvm::reverse(context())) {
-    if (!edge->IsCollection())
-      return;
+  // We want to keep recursing into the current field if we did not encounter
+  // something else than a collection during our recursion. However, in case of
+  // pointers, we still want to check whether their template specializations
+  // are forbidden classes, and then stop the recursion.
+  bool keep_recursing = true;
+  bool check_for_forbidden_fields = true;
+  for (Edge* e : llvm::reverse(context())) {
+    if (!e->IsCollection()) {
+      keep_recursing = false;
+      check_for_forbidden_fields = false;
+      if (e->IsRawPtr() || e->IsRefPtr() || e->IsUniquePtr()) {
+        check_for_forbidden_fields = true;
+      }
+    }
   }
 
-  if (ContainsInvalidFieldTypes(edge))
+  if (check_for_forbidden_fields && ContainsInvalidFieldTypes(edge)) {
+    visiting_set_.erase(edge->value());
     return;
+  }
 
-  ContainsForbiddenFieldsInternal(edge->value());
+  if (keep_recursing) {
+    ContainsForbiddenFieldsInternal(edge->value());
+  }
+
   visiting_set_.erase(edge->value());
+}
+
+void CheckForbiddenFieldsVisitor::VisitArrayEdge(ArrayEdge* edge) {
+  if (edge->element()->IsValue()) {
+    edge->element()->Accept(this);
+  }
 }
 
 bool CheckForbiddenFieldsVisitor::ContainsInvalidFieldTypes(Value* edge) {

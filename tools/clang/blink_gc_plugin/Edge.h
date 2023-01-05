@@ -25,6 +25,7 @@ class UniquePtr;
 class Value;
 class WeakMember;
 class TraceWrapperV8Reference;
+class ArrayEdge;
 
 // Bare-bones visitor.
 class EdgeVisitor {
@@ -41,6 +42,7 @@ class EdgeVisitor {
   virtual void VisitCollection(Collection*) {}
   virtual void VisitIterator(Iterator*) {}
   virtual void VisitTraceWrapperV8Reference(TraceWrapperV8Reference*) {}
+  virtual void VisitArrayEdge(ArrayEdge*) {}
 };
 
 // Recursive edge visitor. The traversed path is accessible in context.
@@ -58,6 +60,7 @@ class RecursiveEdgeVisitor : public EdgeVisitor {
   void VisitCollection(Collection*) override;
   void VisitIterator(Iterator*) override;
   void VisitTraceWrapperV8Reference(TraceWrapperV8Reference*) override;
+  void VisitArrayEdge(ArrayEdge*) override;
 
  protected:
   typedef std::deque<Edge*> Context;
@@ -81,6 +84,7 @@ class RecursiveEdgeVisitor : public EdgeVisitor {
   virtual void AtCrossThreadPersistent(CrossThreadPersistent*);
   virtual void AtCollection(Collection*);
   virtual void AtIterator(Iterator*);
+  virtual void AtArrayEdge(ArrayEdge*);
 
  private:
   Context context_;
@@ -123,6 +127,18 @@ class Value : public Edge {
 
  private:
   RecordInfo* value_;
+};
+
+class ArrayEdge : public Edge {
+ public:
+  explicit ArrayEdge(Edge* value) : value_(value){};
+  LivenessKind Kind() override { return kStrong; }
+  bool NeedsFinalization() override { return false; }
+  void Accept(EdgeVisitor* visitor) override { visitor->VisitArrayEdge(this); }
+  Edge* element() { return value_; }
+
+ private:
+  Edge* value_;
 };
 
 // Shared base for smart-pointer edges.
@@ -259,6 +275,7 @@ class Collection : public Edge {
     }
   }
   bool IsCollection() override { return true; }
+  bool IsSTDCollection();
   LivenessKind Kind() override { return kStrong; }
   bool on_heap() { return on_heap_; }
   Members& members() { return members_; }
@@ -271,6 +288,12 @@ class Collection : public Edge {
   TracingStatus NeedsTracing(NeedsTracingOption) override {
     if (on_heap_)
       return TracingStatus::Needed();
+
+    // This will be handled by matchers.
+    if (IsSTDCollection()) {
+      return TracingStatus::Unknown();
+    }
+
     // For off-heap collections, determine tracing status of members.
     TracingStatus status = TracingStatus::Unneeded();
     for (Members::iterator it = members_.begin(); it != members_.end(); ++it) {

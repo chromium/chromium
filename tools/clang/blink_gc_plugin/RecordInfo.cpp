@@ -23,6 +23,35 @@ RecordInfo::~RecordInfo() {
   delete bases_;
 }
 
+bool RecordInfo::GetTemplateArgsInternal(
+    const llvm::ArrayRef<clang::TemplateArgument>& args,
+    size_t count,
+    TemplateArgs* output_args) {
+  bool getAllParameters = count == 0;
+  if (args.size() < count)
+    return false;
+  if (count == 0) {
+    count = args.size();
+  }
+  for (unsigned i = 0; i < count; ++i) {
+    const TemplateArgument& arg = args[i];
+    if (arg.getKind() == TemplateArgument::Type && !arg.getAsType().isNull()) {
+      output_args->push_back(arg.getAsType().getTypePtr());
+    } else if (arg.getKind() == TemplateArgument::Pack) {
+      if (!getAllParameters) {
+        return false;
+      }
+      const auto& packs = arg.getPackAsArray();
+      if (!GetTemplateArgsInternal(packs, 0, output_args)) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Get |count| number of template arguments. Returns false if there
 // are fewer than |count| arguments or any of the arguments are not
 // of a valid Type structure. If |count| is non-positive, all
@@ -30,22 +59,11 @@ RecordInfo::~RecordInfo() {
 bool RecordInfo::GetTemplateArgs(size_t count, TemplateArgs* output_args) {
   ClassTemplateSpecializationDecl* tmpl =
       dyn_cast<ClassTemplateSpecializationDecl>(record_);
-  if (!tmpl)
+  if (!tmpl) {
     return false;
-  const TemplateArgumentList& args = tmpl->getTemplateArgs();
-  if (args.size() < count)
-    return false;
-  if (count <= 0)
-    count = args.size();
-  for (unsigned i = 0; i < count; ++i) {
-    TemplateArgument arg = args[i];
-    if (arg.getKind() == TemplateArgument::Type && !arg.getAsType().isNull()) {
-      output_args->push_back(arg.getAsType().getTypePtr());
-    } else {
-      return false;
-    }
   }
-  return true;
+  const TemplateArgumentList& args = tmpl->getTemplateArgs();
+  return GetTemplateArgsInternal(args.asArray(), count, output_args);
 }
 
 // Test if a record is a HeapAllocated collection.
@@ -641,6 +659,13 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return 0;
   }
 
+  if (type->isArrayType()) {
+    if (Edge* ptr = CreateEdge(type->getPointeeOrArrayElementType())) {
+      return new ArrayEdge(ptr);
+    }
+    return 0;
+  }
+
   RecordInfo* info = cache_->Lookup(type);
 
   // If the type is neither a pointer or a C++ record we ignore it.
@@ -705,7 +730,8 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
   }
 
   if (Config::IsGCCollection(info->name()) ||
-      Config::IsWTFCollection(info->name())) {
+      Config::IsWTFCollection(info->name()) ||
+      Config::IsSTDCollection(info->name())) {
     bool on_heap = info->IsHeapAllocatedCollection();
     size_t count = Config::CollectionDimension(info->name());
     if (!info->GetTemplateArgs(count, &args))

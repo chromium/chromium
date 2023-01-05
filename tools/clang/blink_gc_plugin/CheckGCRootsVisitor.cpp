@@ -54,3 +54,11 @@ void CheckGCRootsVisitor::VisitUniquePtr(UniquePtr* edge) {
 void CheckGCRootsVisitor::VisitPersistent(Persistent* edge) {
   gc_roots_.push_back(current_);
 }
+
+void CheckGCRootsVisitor::VisitCollection(Collection* edge) {
+  // There already is a matcher for handling this.
+  if (edge->IsSTDCollection()) {
+    return;
+  }
+  RecursiveEdgeVisitor::VisitCollection(edge);
+}

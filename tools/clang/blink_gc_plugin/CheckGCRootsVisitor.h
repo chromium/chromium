@@ -30,6 +30,7 @@ class CheckGCRootsVisitor : public RecursiveEdgeVisitor {
   void VisitValue(Value* edge) override;
   void VisitUniquePtr(UniquePtr*) override;
   void VisitPersistent(Persistent* edge) override;
+  void VisitCollection(Collection* edge) override;
 
  private:
   RootPath current_;

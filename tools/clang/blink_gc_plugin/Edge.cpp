@@ -12,6 +12,9 @@ TracingStatus Value::NeedsTracing(NeedsTracingOption option) {
 
 bool Value::NeedsFinalization() { return value_->NeedsFinalization(); }
 bool Collection::NeedsFinalization() { return info_->NeedsFinalization(); }
+bool Collection::IsSTDCollection() {
+  return Config::IsSTDCollection(info_->name());
+}
 
 void RecursiveEdgeVisitor::AtValue(Value*) {}
 void RecursiveEdgeVisitor::AtRawPtr(RawPtr*) {}
@@ -25,6 +28,7 @@ void RecursiveEdgeVisitor::AtCollection(Collection*) {}
 void RecursiveEdgeVisitor::AtIterator(Iterator*) {}
 void RecursiveEdgeVisitor::AtTraceWrapperV8Reference(TraceWrapperV8Reference*) {
 }
+void RecursiveEdgeVisitor::AtArrayEdge(ArrayEdge*) {}
 
 void RecursiveEdgeVisitor::VisitValue(Value* e) {
   AtValue(e);
@@ -97,4 +101,8 @@ void RecursiveEdgeVisitor::VisitTraceWrapperV8Reference(
   Enter(e);
   e->ptr()->Accept(this);
   Leave();
+}
+
+void RecursiveEdgeVisitor::VisitArrayEdge(ArrayEdge* e) {
+  AtArrayEdge(e);
 }

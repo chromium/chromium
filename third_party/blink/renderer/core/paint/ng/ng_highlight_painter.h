@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -215,6 +216,9 @@ class CORE_EXPORT NGHighlightPainter {
     const NGHighlightOverlay::HighlightLayer id;
     const scoped_refptr<const ComputedStyle> style;
     const TextPaintStyle text_style;
+    // TextDecorationInfo is stack allocated only type, but we're using it
+    // as a stored type here, which shouldn't be permitted.
+    GC_PLUGIN_IGNORE("crbug.com/1404921")
     absl::optional<TextDecorationInfo> decoration_info{};
   };
 

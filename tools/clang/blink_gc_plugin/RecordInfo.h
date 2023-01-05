@@ -134,6 +134,10 @@ class RecordInfo {
   bool HasOptionalFinalizer();
 
   bool HasTypeAlias(std::string marker_name) const;
+  bool GetTemplateArgsInternal(
+      const llvm::ArrayRef<clang::TemplateArgument>& args,
+      size_t count,
+      TemplateArgs* output_args);
 
   RecordCache* cache_;
   clang::CXXRecordDecl* record_;
