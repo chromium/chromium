@@ -22,6 +22,8 @@ import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.core.UserAgentManager;
+import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.PageImpl;
@@ -348,7 +350,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                         if (WebContentsStateBridge.restoreFromState(
                                 arkWeb.getWebContents(), tabState.contentsState,
                                 isHidden(), false)) {
-                            ArkLogger.e(TAG, "selectPage restoreFromState");
+                            ArkLogger.e(TAG, "selectPage restoreFromState url=" + mArkWeb.getUrl().getSpec());
+                            ContentUtils.setUserAgentOverride(mArkWeb.getWebContents(), UserAgentManager.getUserAgentByUrl(arkWeb.getUrl()));
                             loadIfNeeded();
                             return;
                         }
@@ -654,9 +657,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void reloadIgnoringCache() {
-        if (getWebContents() != null) {
-//            switchUserAgentIfNeeded();
-            getWebContents().getNavigationController().reloadBypassingCache(true);
+        if (mArkWeb != null) {
+            mArkWeb.reloadIgnoringCache();
         }
     }
 
@@ -703,7 +705,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (mArkWeb != null && mArkWeb.canGoBack()) {
             return true;
         }
-        ArkLogger.e(TAG, "canGoBack pageIndex=" + mTabInfo.getPageIndex());
         return mTabInfo.getPageIndex() > 0;
     }
 
@@ -796,7 +797,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
             // If the page is still loading, update the progress bar (otherwise it would not show
             // until the renderer notifies of new progress being made).
-            if (getProgress() < 100) {
+            if (getProgress() < 1f) {
                 notifyLoadProgress(getProgress());
             }
 

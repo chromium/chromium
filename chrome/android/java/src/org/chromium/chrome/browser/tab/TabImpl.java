@@ -628,7 +628,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             // If the page is still loading, update the progress bar (otherwise it would not show
             // until the renderer notifies of new progress being made).
-            if (getProgress() < 100) {
+            if (getProgress() < 1f) {
                 notifyLoadProgress(getProgress());
             }
 

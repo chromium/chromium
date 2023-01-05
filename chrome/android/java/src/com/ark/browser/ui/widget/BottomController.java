@@ -186,11 +186,12 @@ public class BottomController {
                 }
                 loadingCancel.setImageResource(R.drawable.ic_refresh);
 //                faviconImg.setImageDrawable(new BitmapDrawable(faviconImg.getResources(), tab.getFavicon()));
-                if (toDifferentDocument) {
-                    if (tab.getProgress() > 5 && tab.getProgress() < 100) {
-                        updateLoadProgress(100);
-                    }
-                }
+//                if (toDifferentDocument) {
+//                    if (tab.getProgress() > 5 && tab.getProgress() < 100) {
+//                        updateLoadProgress(100);
+//                    }
+//                    updateLoadProgress(100);
+//                }
                 finishLoadProgress(true);
             }
 
@@ -201,14 +202,19 @@ public class BottomController {
 
             @Override
             public void onContentChanged(Tab tab) {
-                Log.d(TAG, "onContentChanged");
+                Log.e(TAG, "onContentChanged");
                 loadingTitle.setText(tab.getTitle());
             }
 
             @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                Log.d(TAG, "onWebContentsSwapped didStartLoad=" + didStartLoad + "  didFinishLoad=" + didFinishLoad);
+                Log.e(TAG, "onWebContentsSwapped didStartLoad=" + didStartLoad + "  didFinishLoad=" + didFinishLoad);
                 if (!didStartLoad) return;
+                if (didFinishLoad) {
+                    finishLoadProgress(true);
+                } else if (!mProgressBar.isRunning()) {
+                    updateLoadProgress((int) (tab.getProgress() * 100));
+                }
             }
 
             @Override

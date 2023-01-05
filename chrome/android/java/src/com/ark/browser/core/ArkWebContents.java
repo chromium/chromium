@@ -160,6 +160,7 @@ public class ArkWebContents {
     }
 
     public void reload() {
+
         if (OfflinePageUtils.isOfflinePage(mWebContents)) {
             // If current page is an offline page, reload it with custom behavior defined in extra
             // header respected.
@@ -173,6 +174,11 @@ public class ArkWebContents {
             return;
         }
         getWebContents().getNavigationController().reload(true);
+    }
+
+    public void reloadIgnoringCache() {
+        //            switchUserAgentIfNeeded();
+        mWebContents.getNavigationController().reloadBypassingCache(true);
     }
 
     public void loadUrl(LoadUrlParams params) {

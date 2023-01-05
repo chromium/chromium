@@ -9,6 +9,7 @@ import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.Keys;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.toast.ZToast;
 
@@ -133,7 +134,7 @@ public class TabActionDialog extends AttachListDialogFragment<String>
                 HistoryStackDialogFragment.newInstance(mTab.getId()).show(context);
                 break;
             case 9:
-//                SingleWebsiteFragment.start(mTab.getCurrentPageInfo());
+                start(SingleWebsiteFragment.newInstance(mTab.getCurrentPageInfo()));
                 break;
             default:
                 break;
