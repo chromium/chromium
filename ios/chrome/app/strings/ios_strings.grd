@@ -2753,6 +2753,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE" desc="Confirmation that the site URL of a saved credential was copied. This is shown alone in an infobar at the bottom of the screen. [Length: one line]">
         Site address copied
       </message>
+      <message name="IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE" desc="Confirmation that the sites URL's of a saved credential was copied. This is shown alone in an infobar at the bottom of the screen. [Length: one line]">
+        Site addresses copied
+      </message>
       <message name="IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE" desc="Confirmation that the username was copied. This is shown alone in an infobar at the bottom of the screen. [Length: one line]">
         Username copied
       </message>

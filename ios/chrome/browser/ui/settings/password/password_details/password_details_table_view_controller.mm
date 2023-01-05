@@ -1028,17 +1028,30 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   NSString* message = nil;
 
   switch (menuItem.itemType) {
-    case ItemTypeWebsite:
-      // TODO(crbug.com/1358982): Copy to pasteboard all websites in
-      // PasswordDetails.
-      generalPasteboard.string =
-          self.passwords[IsPasswordGroupingEnabled()
-                             ? self.tableView.indexPathForSelectedRow.section
-                             : 0]
-              .websites[0];
-      message =
-          l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE);
+    case ItemTypeWebsite: {
+      PasswordDetails* detailsToCopy;
+      if (IsPasswordGroupingEnabled()) {
+        detailsToCopy =
+            self.passwords[self.tableView.indexPathForSelectedRow.section];
+        message =
+            l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE);
+      } else {
+        message =
+            l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE);
+        detailsToCopy = self.passwords.firstObject;
+      }
+      // Copy websites to pasteboard separated by a whitespace.
+      NSArray<NSString*>* websites = detailsToCopy.websites;
+      NSMutableString* websitesForPasteboard =
+          [websites.firstObject mutableCopy];
+
+      for (NSUInteger index = 1U; index < websites.count; index++) {
+        [websitesForPasteboard appendFormat:@" %@", websites[index]];
+      }
+
+      generalPasteboard.string = websitesForPasteboard;
       break;
+    }
     case ItemTypeUsername:
       generalPasteboard.string =
           self.passwords[IsPasswordGroupingEnabled()

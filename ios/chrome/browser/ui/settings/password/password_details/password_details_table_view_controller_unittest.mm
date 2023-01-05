@@ -10,8 +10,10 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -304,6 +306,30 @@ class PasswordDetailsTableViewControllerTest
     return (FakeSnackbarImplementation*)snack_bar_;
   }
 
+  void CheckCopyWebsites(const std::vector<std::string>& websites,
+                         NSString* expected_pasteboard,
+                         NSString* expected_snackbar_message) {
+    base::HistogramTester histogram_tester;
+    SetPassword(websites);
+
+    PasswordDetailsTableViewController* password_details =
+        base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+            controller());
+
+    [password_details tableView:password_details.tableView
+        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    UIMenuController* menu = [UIMenuController sharedMenuController];
+    EXPECT_EQ(1u, menu.menuItems.count);
+    [password_details copyPasswordDetails:menu];
+
+    UIPasteboard* general_pasteboard = [UIPasteboard generalPasteboard];
+    EXPECT_NSEQ(expected_pasteboard, general_pasteboard.string);
+    EXPECT_NSEQ(expected_snackbar_message, snack_bar().snackbarMessage);
+    // Verify that the error histogram was emitted to the success bucket.
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
+  }
+
   void SetCredentialType(CredentialType credentialType) {
     credential_type_ = credentialType;
   }
@@ -583,26 +609,37 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
 
 // Tests copy website works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopySite) {
-  base::HistogramTester histogram_tester;
-  SetPassword();
+  std::vector<std::string> websites = {"http://www.example.com/"};
+  NSString* expected_pasteboard = @"http://www.example.com/";
+  // Test without password grouping.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        password_manager::features::kPasswordsGrouping);
+    CheckCopyWebsites(
+        websites, expected_pasteboard,
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE));
+  }
+  // Test with password grouping.
+  {
+    base::test::ScopedFeatureList feature_list(
+        password_manager::features::kPasswordsGrouping);
+    CheckCopyWebsites(
+        websites, expected_pasteboard,
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE));
+  }
+}
 
-  PasswordDetailsTableViewController* passwordDetails =
-      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
-          controller());
+// Tests copy multiple websites works as intended.
+TEST_F(PasswordDetailsTableViewControllerTest, CopySites) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordsGrouping);
 
-  [passwordDetails tableView:passwordDetails.tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  EXPECT_EQ(1u, menu.menuItems.count);
-  [passwordDetails copyPasswordDetails:menu];
-
-  UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
-  EXPECT_NSEQ(@"http://www.example.com/", generalPasteboard.string);
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE),
-              snack_bar().snackbarMessage);
-  // Verify that the error histogram was emitted to the success bucket.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
+  std::vector<std::string> websites = {"http://www.example.com/",
+                                       "http://example.com/"};
+  CheckCopyWebsites(
+      websites, @"http://www.example.com/ http://example.com/",
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE));
 }
 
 // Tests copy username works as intended.

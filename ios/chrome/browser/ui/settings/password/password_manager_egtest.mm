@@ -730,8 +730,9 @@ id<GREYMatcher> EditDoneButton() {
   CopyPasswordDetailWithInteraction(GetInteractionForPasswordDetailItem(
       [self matcherForPasswordDetailCellWithWebsites:@"https://example.com/"]));
 
-  NSString* snackbarLabel =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE);
+  NSString* snackbarLabel = l10n_util::GetNSString(
+      [self groupingEnabled] ? IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE
+                             : IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE);
   // The tap checks the existence of the snackbar and also closes it.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
       performAction:grey_tap()];
