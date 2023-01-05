@@ -26,7 +26,7 @@ def ConstructHistogram(doc, name, histogram_dict):
   if 'expires_after' in histogram_dict:
     histogram.setAttribute('expires_after', histogram_dict['expires_after'])
   if histogram_dict.get('base', False):
-    histogram.setAttribute('base', 'True')
+    histogram.setAttribute('base', 'true')
   # Populate the obsolete node.
   if 'obsolete' in histogram_dict:
     obsolete_node = doc.createElement('obsolete')

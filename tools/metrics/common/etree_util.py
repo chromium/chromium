@@ -95,5 +95,8 @@ def ParseXMLString(raw_xml):
   if sys.version_info.major == 2:
     return ET.fromstring(raw_xml.encode('utf-8'), _CommentedXMLParser())
   else:
-    return ET.fromstring(
-        raw_xml, ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))
+    if sys.version_info >= (3, 8, 0):
+      tree_builder = ET.TreeBuilder(insert_comments=True)
+    else:
+      tree_builder = ET.TreeBuilder()
+    return ET.fromstring(raw_xml, ET.XMLParser(target=tree_builder))
