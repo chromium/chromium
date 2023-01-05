@@ -92,8 +92,10 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
     return;
   }
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::PrimarySignInButton()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
+      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];

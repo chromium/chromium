@@ -1400,8 +1400,10 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::PrimarySignInButton()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
+      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
   [ChromeEarlGrey waitForMatcher:chrome_test_util::SettingsAccountButton()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
