@@ -974,7 +974,6 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
     if (use_v8_context_snapshot) {
       renaming_sources += [ "$root_out_dir/v8_context_snapshot_32.bin" ]
       renaming_destinations += [ "v8_context_snapshot_$arch_suffix.bin" ]
-      deps = [ "//tools/v8_context_snapshot($android_secondary_abi_toolchain)" ]
     } else {
       _secondary_abi_out_dir =
           get_label_info("//v8($android_secondary_abi_toolchain)",
@@ -983,6 +982,10 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
       renaming_destinations = [ "snapshot_blob_$arch_suffix.bin" ]
     }
     disable_compression = true
+    deps = [
+      "//tools/v8_context_snapshot($android_secondary_abi_toolchain)",
+      "//v8($android_secondary_abi_toolchain)",
+    ]
   }
 }
 
