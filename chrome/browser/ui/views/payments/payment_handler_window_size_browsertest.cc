@@ -53,27 +53,23 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
-  // Add autofill profile and credit card so that payment sheet is shown.
+  // Add an autofill profile, so [Continue] button is enabled.
   autofill::AutofillProfile profile(autofill::test::GetFullProfile());
   AddAutofillProfile(profile);
-  autofill::CreditCard card(autofill::test::GetCreditCard());  // Visa card.
-  card.set_billing_address_id(profile.guid());
-  AddCreditCard(card);
 
   // Install a payment handler which opens a window.
   std::string payment_method;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
 
-  // Invoke a payment request with basic-card and `payment_method`
-  // supportedMethods (see payment_handler.js). Then check the dialog size when
-  // payment sheet is shown.
+  // Invoke a payment request and then check the dialog size when payment sheet
+  // is shown.
   ResetEventWaiterForDialogOpened();
-  EXPECT_EQ("success",
-            content::EvalJs(
-                GetActiveWebContents(),
-                content::JsReplace(
-                    "paymentRequestWithOptions({requestShipping: true}, $1)",
-                    payment_method)));
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace(
+          "paymentRequestWithOptions({requestShipping: true}, $1)",
+          payment_method),
+      /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   WaitForObservedEvent();
   EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
 

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace sync_preferences {
@@ -113,6 +114,24 @@ class PaymentRequestTestController {
     return app_descriptions_;
   }
 
+  // Whether the browser payment sheet is displaying a section for selecting a
+  // shipping address.
+  absl::optional<bool> is_shipping_section_visible() const {
+    return is_shipping_section_visible_;
+  }
+  void set_shipping_section_visible(bool is_shipping_section_visible) {
+    is_shipping_section_visible_ = is_shipping_section_visible;
+  }
+
+  // Whether the browser payment sheet is displaying a section for selecting
+  // contact info.
+  absl::optional<bool> is_contact_section_visible() const {
+    return is_contact_section_visible_;
+  }
+  void set_contact_section_visible(bool is_contact_section_visible) {
+    is_contact_section_visible_ = is_contact_section_visible;
+  }
+
  private:
   // Observers that forward through to the PaymentRequestTestObserver.
   void OnCanMakePaymentCalled();
@@ -137,6 +156,8 @@ class PaymentRequestTestController {
   std::string twa_payment_app_method_name_;
   std::string twa_payment_app_response_;
   std::vector<AppDescription> app_descriptions_;
+  absl::optional<bool> is_shipping_section_visible_;
+  absl::optional<bool> is_contact_section_visible_;
 
 #if !BUILDFLAG(IS_ANDROID)
   void UpdateDelegateFactory();

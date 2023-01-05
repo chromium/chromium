@@ -107,6 +107,8 @@ public class PaymentRequestTestBridge {
         private final long mOnHasEnrolledInstrumentReturnedPtr;
         private final long mOnAppListReadyPtr;
         private final long mSetAppDescriptionsPtr;
+        private final long mSetShippingSectionVisiblePtr;
+        private final long mSetContactSectionVisiblePtr;
         private final long mOnErrorDisplayedPtr;
         private final long mOnNotSupportedErrorPtr;
         private final long mOnConnectionTerminatedPtr;
@@ -117,15 +119,18 @@ public class PaymentRequestTestBridge {
         PaymentRequestNativeObserverBridgeToNativeForTest(long onCanMakePaymentCalledPtr,
                 long onCanMakePaymentReturnedPtr, long onHasEnrolledInstrumentCalledPtr,
                 long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
-                long setAppDescriptionPtr, long onErrorDisplayedPtr, long onNotSupportedErrorPtr,
-                long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteHandledPtr,
-                long onUiDisplayed) {
+                long setAppDescriptionPtr, long setShippingSectionVisiblePtr,
+                long setContactSectionVisiblePtr, long onErrorDisplayedPtr,
+                long onNotSupportedErrorPtr, long onConnectionTerminatedPtr, long onAbortCalledPtr,
+                long onCompleteHandledPtr, long onUiDisplayed) {
             mOnCanMakePaymentCalledPtr = onCanMakePaymentCalledPtr;
             mOnCanMakePaymentReturnedPtr = onCanMakePaymentReturnedPtr;
             mOnHasEnrolledInstrumentCalledPtr = onHasEnrolledInstrumentCalledPtr;
             mOnHasEnrolledInstrumentReturnedPtr = onHasEnrolledInstrumentReturnedPtr;
             mOnAppListReadyPtr = onAppListReadyPtr;
             mSetAppDescriptionsPtr = setAppDescriptionPtr;
+            mSetShippingSectionVisiblePtr = setShippingSectionVisiblePtr;
+            mSetContactSectionVisiblePtr = setContactSectionVisiblePtr;
             mOnErrorDisplayedPtr = onErrorDisplayedPtr;
             mOnNotSupportedErrorPtr = onNotSupportedErrorPtr;
             mOnConnectionTerminatedPtr = onConnectionTerminatedPtr;
@@ -184,6 +189,16 @@ public class PaymentRequestTestBridge {
         }
 
         @Override
+        public void onShippingSectionVisibilityChange(boolean isShippingSectionVisible) {
+            nativeInvokeBooleanCallback(mSetShippingSectionVisiblePtr, isShippingSectionVisible);
+        }
+
+        @Override
+        public void onContactSectionVisibilityChange(boolean isContactSectionVisible) {
+            nativeInvokeBooleanCallback(mSetContactSectionVisiblePtr, isContactSectionVisible);
+        }
+
+        @Override
         public void onErrorDisplayed() {
             nativeResolvePaymentRequestObserverCallback(mOnErrorDisplayedPtr);
         }
@@ -227,13 +242,15 @@ public class PaymentRequestTestBridge {
     private static void setUseNativeObserverForTest(long onCanMakePaymentCalledPtr,
             long onCanMakePaymentReturnedPtr, long onHasEnrolledInstrumentCalledPtr,
             long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
-            long setAppDescriptionPtr, long onErrorDisplayedPtr, long onNotSupportedErrorPtr,
+            long setAppDescriptionPtr, long setShippingSectionVisiblePtr,
+            long setContactSectionVisiblePtr, long onErrorDisplayedPtr, long onNotSupportedErrorPtr,
             long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteCalledPtr,
             long onUiDisplayedPtr) {
         PaymentRequestService.setNativeObserverForTest(
                 new PaymentRequestNativeObserverBridgeToNativeForTest(onCanMakePaymentCalledPtr,
                         onCanMakePaymentReturnedPtr, onHasEnrolledInstrumentCalledPtr,
                         onHasEnrolledInstrumentReturnedPtr, onAppListReadyPtr, setAppDescriptionPtr,
+                        setShippingSectionVisiblePtr, setContactSectionVisiblePtr,
                         onErrorDisplayedPtr, onNotSupportedErrorPtr, onConnectionTerminatedPtr,
                         onAbortCalledPtr, onCompleteCalledPtr, onUiDisplayedPtr));
     }
@@ -281,10 +298,13 @@ public class PaymentRequestTestBridge {
     }
 
     /**
-     * The native method responsible to executing RepeatingCallback pointers.
+     * The native method responsible to executing RepeatingClosure pointers.
      */
     private static native void nativeResolvePaymentRequestObserverCallback(long callbackPtr);
 
     private static native void nativeSetAppDescriptions(
             long callbackPtr, String[] appLabels, String[] appSublabels, String[] appTotals);
+
+    /** The native method responsible for executing RepatingCallback<void(bool)> pointers. */
+    private static native void nativeInvokeBooleanCallback(long callbackPtr, boolean value);
 }

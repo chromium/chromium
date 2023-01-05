@@ -4,41 +4,11 @@
  * found in the LICENSE file.
  */
 
-const DEFAULT_METHOD_NAME = window.location.origin + '/pay';
+const DEFAULT_METHOD_NAME = window.location.origin;
 const SW_SRC_URL = 'payment_handler_sw.js';
 
 let methodName = DEFAULT_METHOD_NAME;
 var request;
-
-/** Installs the payment handler.
- * @param {string} method - The payment method that this service worker
- *    supports.
- * @return {Promise<string>} - 'success' or error message on failure.
- */
-async function install(method = DEFAULT_METHOD_NAME) {
-  try {
-    methodName = method;
-    let registration =
-        await navigator.serviceWorker.getRegistration(SW_SRC_URL);
-    if (registration) {
-      return 'The payment handler is already installed.';
-    }
-
-    await navigator.serviceWorker.register(SW_SRC_URL);
-    registration = await navigator.serviceWorker.ready;
-    if (!registration.paymentManager) {
-      return 'PaymentManager API not found.';
-    }
-
-    await registration.paymentManager.instruments.set('instrument-id', {
-      name: 'Instrument Name',
-      method,
-    });
-    return 'success';
-  } catch (e) {
-    return e.toString();
-  }
-}
 
 /**
  * Uninstalls the payment handler.
@@ -149,18 +119,16 @@ var paymentOptions = null;
  * are supported: One URL-based and one 'basic-card'.
  * @param {Object} options - The list of requested paymentOptions.
  * @param {string} paymentMethod - A URL-based payment method identifier.
- * @return {string} - The 'success' or error message.
+ * @return {Promise<string>} - The 'success' or error message.
  */
-function paymentRequestWithOptions(options, paymentMethod = methodName) {
+async function paymentRequestWithOptions(options, paymentMethod) {
   paymentOptions = options;
+  if (!paymentMethod) {
+    return 'Payment method required';
+  }
   try {
-    const request = new PaymentRequest([{
-          supportedMethods: paymentMethod,
-        },
-        {
-          supportedMethods: 'basic-card',
-        },
-      ], {
+    const request = new PaymentRequest([{supportedMethods: paymentMethod}],
+      {
         total: {
           label: 'Total',
           amount: {
@@ -180,10 +148,8 @@ function paymentRequestWithOptions(options, paymentMethod = methodName) {
       },
       options);
 
-    request.show().then(validatePaymentResponse).catch(function(err) {
-      return err.toString();
-    });
-    return 'success';
+    const response = await request.show();
+    return validatePaymentResponse(response);
   } catch (e) {
     return e.toString();
   }
@@ -191,31 +157,31 @@ function paymentRequestWithOptions(options, paymentMethod = methodName) {
 
 /**
  * Validates the response received from payment handler.
- * @param {Object} response The response received from payment handler.
+ * @param {Object} response - The response received from payment handler.
+ * @param {Promise<string>} - Either 'success' or an error message.
  */
-function validatePaymentResponse(response) {
-  var isValid = true;
-  if (paymentOptions.requestShipping) {
-    isValid = ('freeShippingOption' === response.shippingOption) &&
-        ('Reston' === response.shippingAddress.city) &&
-        ('US' === response.shippingAddress.country) &&
-        ('20190' === response.shippingAddress.postalCode) &&
-        ('VA' === response.shippingAddress.region);
+async function validatePaymentResponse(response) {
+  try {
+    var isValid = true;
+    if (paymentOptions.requestShipping) {
+      isValid = ('freeShippingOption' === response.shippingOption) &&
+          ('Reston' === response.shippingAddress.city) &&
+          ('US' === response.shippingAddress.country) &&
+          ('20190' === response.shippingAddress.postalCode) &&
+          ('VA' === response.shippingAddress.region);
+    }
+
+    isValid = isValid &&
+        (!paymentOptions.requestPayerName ||
+        ('John Smith' === response.payerName)) &&
+        (!paymentOptions.requestPayerEmail ||
+        ('smith@gmail.com' === response.payerEmail)) &&
+        (!paymentOptions.requestPayerPhone ||
+        ('+15555555555' === response.payerPhone));
+
+    await response.complete(isValid ? 'success' : 'fail');
+    return 'success';
+  } catch (e) {
+    return e.toString();
   }
-
-  isValid = isValid &&
-      (!paymentOptions.requestPayerName ||
-       ('John Smith' === response.payerName)) &&
-      (!paymentOptions.requestPayerEmail ||
-       ('smith@gmail.com' === response.payerEmail)) &&
-      (!paymentOptions.requestPayerPhone ||
-       ('+15555555555' === response.payerPhone));
-
-  response.complete(isValid ? 'success' : 'fail')
-      .then(() => {
-        return 'success';
-      })
-      .catch(function(err) {
-        return err.toString();
-      });
 }

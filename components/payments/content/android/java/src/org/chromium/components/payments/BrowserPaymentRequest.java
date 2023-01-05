@@ -218,4 +218,14 @@ public interface BrowserPaymentRequest {
      *         by {@link PaymentApp#isComplete()}.
      */
     boolean hasAnyCompleteApp();
+
+    /** @return Whether the shipping address section is visible. */
+    default boolean isShippingSectionVisible() {
+        return false;
+    }
+
+    /** @return Whether the contact info section is visible. */
+    default boolean isContactSectionVisible() {
+        return false;
+    }
 }

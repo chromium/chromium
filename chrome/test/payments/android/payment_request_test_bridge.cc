@@ -63,6 +63,8 @@ struct NativeObserverCallbacks {
   base::RepeatingClosure on_has_enrolled_instrument_returned;
   base::RepeatingClosure on_show_instruments_ready;
   SetAppDescriptionsCallback set_app_descriptions;
+  base::RepeatingCallback<void(bool)> set_shipping_section_visible;
+  base::RepeatingCallback<void(bool)> set_contact_section_visible;
   base::RepeatingClosure on_error_displayed;
   base::RepeatingClosure on_not_supported_error;
   base::RepeatingClosure on_connection_terminated;
@@ -83,6 +85,8 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_has_enrolled_instrument_returned,
     base::RepeatingClosure on_show_instruments_ready,
     SetAppDescriptionsCallback set_app_descriptions,
+    base::RepeatingCallback<void(bool)> set_shipping_section_visible,
+    base::RepeatingCallback<void(bool)> set_contact_section_visible,
     base::RepeatingClosure on_error_displayed,
     base::RepeatingClosure on_not_supported_error,
     base::RepeatingClosure on_connection_terminated,
@@ -102,6 +106,10 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
       std::move(on_has_enrolled_instrument_returned);
   callbacks.on_show_instruments_ready = std::move(on_show_instruments_ready);
   callbacks.set_app_descriptions = std::move(set_app_descriptions);
+  callbacks.set_shipping_section_visible =
+      std::move(set_shipping_section_visible);
+  callbacks.set_contact_section_visible =
+      std::move(set_contact_section_visible);
   callbacks.on_error_displayed = std::move(on_error_displayed);
   callbacks.on_not_supported_error = std::move(on_not_supported_error);
   callbacks.on_connection_terminated = std::move(on_connection_terminated);
@@ -116,6 +124,8 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
       reinterpret_cast<jlong>(&callbacks.on_has_enrolled_instrument_returned),
       reinterpret_cast<jlong>(&callbacks.on_show_instruments_ready),
       reinterpret_cast<jlong>(&callbacks.set_app_descriptions),
+      reinterpret_cast<jlong>(&callbacks.set_shipping_section_visible),
+      reinterpret_cast<jlong>(&callbacks.set_contact_section_visible),
       reinterpret_cast<jlong>(&callbacks.on_error_displayed),
       reinterpret_cast<jlong>(&callbacks.on_not_supported_error),
       reinterpret_cast<jlong>(&callbacks.on_connection_terminated),
@@ -165,6 +175,15 @@ static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
 
   auto* callback = reinterpret_cast<SetAppDescriptionsCallback*>(callback_ptr);
   callback->Run(descriptions);
+}
+
+static void JNI_PaymentRequestTestBridge_InvokeBooleanCallback(
+    JNIEnv* env,
+    jlong callback_ptr,
+    jboolean jvalue) {
+  auto* callback =
+      reinterpret_cast<base::RepeatingCallback<void(bool)>*>(callback_ptr);
+  callback->Run(jvalue);
 }
 
 }  // namespace payments

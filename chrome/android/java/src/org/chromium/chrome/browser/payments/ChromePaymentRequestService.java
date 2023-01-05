@@ -493,6 +493,18 @@ public class ChromePaymentRequestService
         mPaymentUiService.onPayButtonProcessingCancelled();
     }
 
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean isShippingSectionVisible() {
+        return mPaymentUiService.shouldShowShippingSection();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean isContactSectionVisible() {
+        return mPaymentUiService.shouldShowContactSection();
+    }
+
     // Implement PaymentUiService.Delegate:
     @Override
     public void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail) {

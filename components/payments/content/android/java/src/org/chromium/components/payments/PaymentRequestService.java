@@ -164,6 +164,8 @@ public class PaymentRequestService
         void onHasEnrolledInstrumentCalled();
         void onHasEnrolledInstrumentReturned();
         void onAppListReady(@Nullable List<PaymentApp> paymentApps, PaymentItem total);
+        void onShippingSectionVisibilityChange(boolean isShippingSectionVisible);
+        void onContactSectionVisibilityChange(boolean isContactSectionVisible);
         void onErrorDisplayed();
         void onNotSupportedError();
         void onConnectionTerminated();
@@ -898,6 +900,10 @@ public class PaymentRequestService
         if (ensureError != null) return ensureError;
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onShippingSectionVisibilityChange(
+                    mBrowserPaymentRequest.isShippingSectionVisible());
+            sNativeObserverForTest.onContactSectionVisibilityChange(
+                    mBrowserPaymentRequest.isContactSectionVisible());
             sNativeObserverForTest.onAppListReady(
                     mBrowserPaymentRequest.getPaymentApps(), mSpec.getRawTotal());
         }
