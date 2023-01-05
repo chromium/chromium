@@ -61,6 +61,7 @@ constexpr int BUTTON_FORWARD_KEYCODE = 277;
 constexpr int BUTTON_BACK_KEYCODE = 278;
 constexpr int BUTTON_UNKNOWN_KEYCODE = -1;
 constexpr int MIN_KEYCODE = 8;
+constexpr int SHIFT_KEY_CODE = 42;
 
 ScrollDirection WheelDeltaToScrollDirection(float num) {
   return (num > 0)   ? ScrollDirection::UP
@@ -154,9 +155,18 @@ class InputInjectorWayland : public InputInjector {
     // Mirrors the InputInjector interface.
     void Start(std::unique_ptr<protocol::ClipboardStub> client_clipboard);
 
+    // Sets a keyboard capability ready callback on the global
+    // WaylandManager class.
+    void SetKeyboardCapabilityCallback();
+
    private:
     friend class base::RefCountedThreadSafe<Core>;
     virtual ~Core();
+
+    void SeatAcquiredKeyboardCapability();
+    void InjectFakeKeyEvent();
+    bool IsReady();
+    void MaybeFlushPendingEvents();
 
     void InjectScrollWheelClicks(int button, int count);
 
@@ -196,6 +206,10 @@ class InputInjectorWayland : public InputInjector {
     // clipboard.
     bool clipboard_initialized_ = false;
     absl::optional<ClipboardEvent> pending_clipboard_event_;
+
+    // Keeps track of whether or not the associated seat has keyboard
+    // capability.
+    bool seat_has_keyboard_capability_ = false;
   };
 
   scoped_refptr<Core> core_;
@@ -204,6 +218,7 @@ class InputInjectorWayland : public InputInjector {
 InputInjectorWayland::InputInjectorWayland(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   core_ = new Core(task_runner);
+  core_->SetKeyboardCapabilityCallback();
 
   // Register callback with the wayland manager so that it can get details
   // about the desktop capture metadata (which include session details of the
@@ -254,6 +269,47 @@ InputInjectorWayland::Core::Core(
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner)
     : input_task_runner_(input_task_runner) {}
 
+void InputInjectorWayland::Core::SetKeyboardCapabilityCallback() {
+  if (!input_task_runner_->BelongsToCurrentThread()) {
+    input_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::SetKeyboardCapabilityCallback, this));
+    return;
+  }
+  auto on_seat_acquired_keyboard_capability =
+      base::BindOnce(&Core::SeatAcquiredKeyboardCapability, this);
+  auto on_seat_present =
+      base::BindOnce(&WaylandManager::SetKeyboardCapabilityCallback,
+                     base::Unretained(WaylandManager::Get()),
+                     std::move(on_seat_acquired_keyboard_capability));
+  WaylandManager::Get()->SetSeatPresentCallback(std::move(on_seat_present));
+}
+
+void InputInjectorWayland::Core::InjectFakeKeyEvent() {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  if (seat_has_keyboard_capability_) {
+    return;
+  }
+
+  // Press shift key once.
+  InjectKeyPress(SHIFT_KEY_CODE, /*pressed=*/true);
+  InjectKeyPress(SHIFT_KEY_CODE, /*pressed=*/false);
+}
+
+void InputInjectorWayland::Core::SeatAcquiredKeyboardCapability() {
+  if (!input_task_runner_->BelongsToCurrentThread()) {
+    input_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::SeatAcquiredKeyboardCapability, this));
+    return;
+  }
+  seat_has_keyboard_capability_ = true;
+  MaybeFlushPendingEvents();
+}
+
+bool InputInjectorWayland::Core::IsReady() {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  return seat_has_keyboard_capability_ && remote_desktop_initialized_;
+}
+
 void InputInjectorWayland::Core::InjectClipboardEvent(
     const ClipboardEvent& event) {
   if (!input_task_runner_->BelongsToCurrentThread()) {
@@ -277,7 +333,7 @@ void InputInjectorWayland::Core::InjectKeyEvent(const KeyEvent& event) {
     return;
   }
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  if (!remote_desktop_initialized_) {
+  if (!IsReady()) {
     pending_remote_desktop_tasks_.push(
         base::BindOnce(&Core::InjectKeyEvent, this, event));
     return;
@@ -344,7 +400,9 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
     return;
   }
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  if (!remote_desktop_initialized_) {
+  // We wait for keyboard capability here so that we can inject all the mouse
+  // and keyboard events in the correct order in which they were received.
+  if (!IsReady()) {
     pending_remote_desktop_tasks_.push(
         base::BindOnce(&Core::InjectMouseEvent, this, event));
     return;
@@ -477,6 +535,16 @@ void InputInjectorWayland::Core::SetRemoteDesktopSessionDetails(
   remotedesktop_portal_.SetSessionDetails(session_details);
   remote_desktop_initialized_ = true;
 
+  // This is needed so that we can acquire keyboard capability.
+  InjectFakeKeyEvent();
+  MaybeFlushPendingEvents();
+}
+
+void InputInjectorWayland::Core::MaybeFlushPendingEvents() {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  if (!IsReady()) {
+    return;
+  }
   while (!pending_remote_desktop_tasks_.empty()) {
     base::OnceClosure task = std::move(pending_remote_desktop_tasks_.front());
     pending_remote_desktop_tasks_.pop();

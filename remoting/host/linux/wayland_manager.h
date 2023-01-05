@@ -16,6 +16,7 @@
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/wayland_connection.h"
 #include "remoting/host/linux/wayland_display.h"
+#include "remoting/host/linux/wayland_seat.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
@@ -95,7 +96,19 @@ class WaylandManager {
   // Gets the current information about displays available on the host.
   DesktopDisplayInfo GetCurrentDisplayInfo();
 
+  void SetSeatPresentCallback(WaylandSeat::OnSeatPresentCallback callback);
+
+  // Sets callback to be invoked when the associated seat gains a keyboard
+  // capability. It is an error to call this method before the seat is
+  // available.
+  void SetKeyboardCapabilityCallback(base::OnceClosure callback);
+
  private:
+  friend class WaylandSeat;
+
+  // Invoked by wayland seat when it acquires the wayland keyboard capability.
+  void OnSeatKeyboardCapability();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
@@ -110,10 +123,17 @@ class WaylandManager {
       keyboard_modifier_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   ClipboardMetadataCallback clipboard_metadata_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosure keyboard_capability_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keeps track of the latest keymap for the case where the keyboard layout
   // monitor has not yet registered a callback.
   XkbKeyMapUniquePtr keymap_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+
+  // Used to match the keyboard capability to make sure that we don't send
+  // the capability to the input injector if a stale keyboard capability has
+  // arrived.
+  uint32_t desired_seat_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 };
 
 }  // namespace remoting

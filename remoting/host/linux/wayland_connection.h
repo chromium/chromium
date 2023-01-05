@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -30,6 +31,8 @@ class WaylandConnection {
   WaylandConnection& operator=(const WaylandConnection&) = delete;
 
   DesktopDisplayInfo GetCurrentDisplayInfo() const;
+  uint32_t GetSeatId() const;
+  void SetSeatPresentCallback(WaylandSeat::OnSeatPresentCallback callback);
 
  private:
   void DispatchWaylandEvents();
@@ -56,6 +59,7 @@ class WaylandConnection {
   base::RepeatingTimer timer_;
   WaylandDisplay wayland_display_;
   WaylandSeat wayland_seat_;
+  uint32_t seat_id_ = 0;
 };
 
 }  // namespace remoting

@@ -137,6 +137,18 @@ void WaylandManager::OnUpdateScreenResolution(ScreenResolution resolution,
   }
 }
 
+void WaylandManager::SetSeatPresentCallback(
+    WaylandSeat::OnSeatPresentCallback callback) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::SetSeatPresentCallback,
+                                  base::Unretained(this), std::move(callback)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  wayland_connection_->SetSeatPresentCallback(std::move(callback));
+}
+
 void WaylandManager::SetKeyboardLayoutCallback(
     KeyboardLayoutCallback callback) {
   if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
@@ -183,6 +195,43 @@ void WaylandManager::AddKeyboardModifiersCallback(
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   keyboard_modifier_callbacks_.AddUnsafe(std::move(callback));
+}
+
+void WaylandManager::SetKeyboardCapabilityCallback(base::OnceClosure callback) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandManager::SetKeyboardCapabilityCallback,
+                       base::Unretained(this),
+                       base::BindPostTask(
+                           base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(callback))));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  desired_seat_id_ = wayland_connection_->GetSeatId();
+  keyboard_capability_callback_ = std::move(callback);
+}
+
+void WaylandManager::OnSeatKeyboardCapability() {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::OnSeatKeyboardCapability,
+                                  base::Unretained(this)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const uint32_t seat_id = wayland_connection_->GetSeatId();
+  if (seat_id != desired_seat_id_) {
+    LOG(WARNING) << "Received keyboard capability for a different seat "
+                 << "(desired: " << desired_seat_id_ << ", current: " << seat_id
+                 << ") discarding it now";
+    return;
+  }
+  DCHECK(keyboard_capability_callback_)
+      << "Seat gained keyboard capability before a listener is "
+      << "registered. This can cause the first key to be dropped";
+  std::move(keyboard_capability_callback_).Run();
 }
 
 void WaylandManager::OnKeyboardModifiers(uint32_t group) {
