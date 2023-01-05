@@ -11,6 +11,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
@@ -111,91 +112,10 @@ constexpr char kProtocolPairingStepSubsequent[] =
 constexpr char kInitializePairingProcessInitial[] =
     "FastPair.InitialPairing.Initialization";
 
-class FakeBluetoothAdapter
-    : public testing::NiceMock<device::MockBluetoothAdapter> {
- public:
-  FakeBluetoothAdapter() = default;
-
-  // Move-only class
-  FakeBluetoothAdapter(const FakeBluetoothAdapter&) = delete;
-  FakeBluetoothAdapter& operator=(const FakeBluetoothAdapter&) = delete;
-
-  device::BluetoothDevice* GetDevice(const std::string& address) override {
-    // There are a few situations where we want GetDevice to return nullptr. For
-    // example, if we want the Pairer to "pair by address" then GetDevice should
-    // return nullptr when called on the mac address.
-    if (get_device_returns_nullptr_ &&
-        address == kBluetoothCanonicalizedAddress) {
-      get_device_returns_nullptr_ = false;
-      return nullptr;
-    }
-
-    for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address) {
-        return it.get();
-      }
-    }
-
-    return nullptr;
-  }
-
-  void AddPairingDelegate(
-      device::BluetoothDevice::PairingDelegate* pairing_delegate,
-      PairingDelegatePriority priority) override {
-    pairing_delegate_ = pairing_delegate;
-  }
-
-  void NotifyGattDiscoveryCompleteForService(
-      device::BluetoothRemoteGattService* service) {
-    device::BluetoothAdapter::NotifyGattDiscoveryComplete(service);
-  }
-
-  void NotifyConfirmPasskey(uint32_t passkey, device::BluetoothDevice* device) {
-    pairing_delegate_->ConfirmPasskey(device, passkey);
-  }
-
-  void DevicePairedChanged(device::BluetoothDevice* device,
-                           bool new_paired_status) {
-    for (auto& observer : GetObservers()) {
-      observer.DevicePairedChanged(this, device, new_paired_status);
-    }
-  }
-
-  void ConnectDevice(
-      const std::string& address,
-      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
-      base::OnceCallback<void(device::BluetoothDevice*)> callback,
-      base::OnceCallback<void(const std::string&)> error_callback) override {
-    if (connect_device_failure_) {
-      std::move(error_callback).Run("");
-      return;
-    }
-
-    if (connect_device_timeout_) {
-      return;
-    }
-
-    std::move(callback).Run(GetDevice(address));
-  }
-
-  void SetConnectFailure() { connect_device_failure_ = true; }
-
-  void SetConnectDeviceTimeout() { connect_device_timeout_ = true; }
-
-  void SetGetDeviceNullptr() { get_device_returns_nullptr_ = true; }
-
- protected:
-  ~FakeBluetoothAdapter() override = default;
-  bool connect_device_failure_ = false;
-  bool connect_device_timeout_ = false;
-  bool get_device_returns_nullptr_ = false;
-  device::BluetoothDevice::PairingDelegate* pairing_delegate_ = nullptr;
-};
-
 class FakeBluetoothDevice
     : public testing::NiceMock<device::MockBluetoothDevice> {
  public:
-  explicit FakeBluetoothDevice(FakeBluetoothAdapter* adapter)
+  explicit FakeBluetoothDevice(ash::quick_pair::FakeBluetoothAdapter* adapter)
       : testing::NiceMock<device::MockBluetoothDevice>(
             adapter,
             0,
@@ -234,7 +154,7 @@ class FakeBluetoothDevice
   bool IsDevicePaired() { return is_device_paired_; }
 
  protected:
-  FakeBluetoothAdapter* fake_adapter_;
+  ash::quick_pair::FakeBluetoothAdapter* fake_adapter_;
   bool pair_failure_ = false;
   bool pair_timeout_ = false;
   bool is_device_paired_ = false;

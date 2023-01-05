@@ -26,6 +26,24 @@ class FakeBluetoothAdapter
 
   void NotifyRemoved(device::BluetoothDevice* device);
 
+  void SetConnectFailure() { connect_device_failure_ = true; }
+
+  // This will force the next 'GetDevice()' call to return a nullptr. This is
+  // used to test codepaths where the adapter is not able to return the device.
+  void SetGetDeviceNullptr() { get_device_returns_nullptr_ = true; }
+
+  // This will alter the 'ConnectDevice()' call to return before firing its
+  // callback, mimicking a timeout situation.
+  void SetConnectDeviceTimeout() { connect_device_timeout_ = true; }
+
+  void NotifyGattDiscoveryCompleteForService(
+      device::BluetoothRemoteGattService* service);
+
+  void NotifyConfirmPasskey(uint32_t passkey, device::BluetoothDevice* device);
+
+  void DevicePairedChanged(device::BluetoothDevice* device,
+                           bool new_paired_status);
+
   bool IsPowered() const override;
 
   bool IsPresent() const override;
@@ -35,11 +53,25 @@ class FakeBluetoothAdapter
 
   device::BluetoothDevice* GetDevice(const std::string& address) override;
 
+  void AddPairingDelegate(
+      device::BluetoothDevice::PairingDelegate* pairing_delegate,
+      PairingDelegatePriority priority) override;
+
+  void ConnectDevice(
+      const std::string& address,
+      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      base::OnceCallback<void(device::BluetoothDevice*)> callback,
+      base::OnceCallback<void(const std::string&)> error_callback) override;
+
  private:
   ~FakeBluetoothAdapter() = default;
 
   bool is_bluetooth_powered_ = false;
   bool is_bluetooth_present_ = true;
+  bool connect_device_failure_ = false;
+  bool get_device_returns_nullptr_ = false;
+  bool connect_device_timeout_ = false;
+  device::BluetoothDevice::PairingDelegate* pairing_delegate_ = nullptr;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_offloading_status_ = device::BluetoothAdapter::
           LowEnergyScanSessionHardwareOffloadingStatus::kSupported;

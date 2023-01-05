@@ -4,8 +4,7 @@
 
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 void FakeBluetoothAdapter::NotifyPoweredChanged(bool powered) {
   device::BluetoothAdapter::NotifyAdapterPoweredChanged(powered);
@@ -34,6 +33,24 @@ void FakeBluetoothAdapter::NotifyRemoved(device::BluetoothDevice* device) {
   }
 }
 
+void FakeBluetoothAdapter::NotifyGattDiscoveryCompleteForService(
+    device::BluetoothRemoteGattService* service) {
+  device::BluetoothAdapter::NotifyGattDiscoveryComplete(service);
+}
+
+void FakeBluetoothAdapter::NotifyConfirmPasskey(
+    uint32_t passkey,
+    device::BluetoothDevice* device) {
+  pairing_delegate_->ConfirmPasskey(device, passkey);
+}
+
+void FakeBluetoothAdapter::DevicePairedChanged(device::BluetoothDevice* device,
+                                               bool new_paired_status) {
+  for (auto& observer : GetObservers()) {
+    observer.DevicePairedChanged(this, device, new_paired_status);
+  }
+}
+
 bool FakeBluetoothAdapter::IsPowered() const {
   return is_bluetooth_powered_;
 }
@@ -49,13 +66,46 @@ FakeBluetoothAdapter::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 
 device::BluetoothDevice* FakeBluetoothAdapter::GetDevice(
     const std::string& address) {
+  // There are a few situations where we want GetDevice to return nullptr. For
+  // example, if we want the Pairer to "pair by address" then GetDevice should
+  // return nullptr when called on the mac address.
+  if (get_device_returns_nullptr_) {
+    get_device_returns_nullptr_ = false;
+    return nullptr;
+  }
+
   for (const auto& it : mock_devices_) {
     if (it->GetAddress() == address) {
       return it.get();
     }
   }
+
   return nullptr;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+void FakeBluetoothAdapter::AddPairingDelegate(
+    device::BluetoothDevice::PairingDelegate* pairing_delegate,
+    PairingDelegatePriority priority) {
+  pairing_delegate_ = pairing_delegate;
+}
+
+void FakeBluetoothAdapter::ConnectDevice(
+    const std::string& address,
+    const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+    base::OnceCallback<void(device::BluetoothDevice*)> callback,
+    base::OnceCallback<void(const std::string&)> error_callback) {
+  if (connect_device_failure_) {
+    std::move(error_callback).Run(std::string());
+    return;
+  }
+
+  // If |connect_device_timeout_| is set, mimic a timeout by returning before
+  // calling the success callback.
+  if (connect_device_timeout_) {
+    return;
+  }
+
+  std::move(callback).Run(GetDevice(address));
+}
+
+}  // namespace ash::quick_pair
