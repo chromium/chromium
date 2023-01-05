@@ -1,0 +1,100 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_TASK_UPDATE_CLUSTER_TRIGGERABILITY_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_TASK_UPDATE_CLUSTER_TRIGGERABILITY_H_
+
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/history_clusters_service_task.h"
+#include "components/history_clusters/core/history_clusters_types.h"
+
+namespace history {
+class HistoryService;
+}  // namespace history
+
+namespace history_clusters {
+
+class HistoryClustersService;
+
+// `HistoryClustersServiceTaskUpdateClusterTriggerability` gets the most recent
+// persisted clusters and updates their triggering metadata. It continues doing
+// so, moving the threshold forward 1 day each time, until reaching today.
+class HistoryClustersServiceTaskUpdateClusterTriggerability
+    : public HistoryClustersServiceTask {
+ public:
+  HistoryClustersServiceTaskUpdateClusterTriggerability(
+      base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
+      ClusteringBackend* const backend,
+      history::HistoryService* const history_service,
+      base::OnceClosure callback);
+  ~HistoryClustersServiceTaskUpdateClusterTriggerability() override;
+
+ private:
+  // When there remain clusters without their triggerability calculated,
+  // calculate them and persist the new values:
+  //   Start() ->
+  //   OnGotPersistedClusters() ->
+  //   OnGotModelClusters() ->
+  //   OnPersistedClusterTriggerability() ->
+  //   Start()
+
+  // When neither clusters were fetched nor was history exhausted:
+  //   Start() ->
+  //   OnGotPersistedClusters() ->
+  //   Start()
+
+  // Invoked syncly during construction, after `OnGotPersistedClusters()`
+  // receives no clusters while history isn't exhuasted, and after
+  // `OnPersistedClusterTriggerability()` records metrics. This fetches
+  // persisted clusters.
+  void Start();
+
+  // Invoked after `Start()` asyncly fetches clusters. May syncly invoke
+  // `callback_` if no clusters were returned. If clusters are returned, this
+  // will filter for clusters that do not have their triggerability calculated
+  // yet so that triggerability metadata can be calculated. Otherwise, it
+  // invokes `Start()` to fetch more clusters.
+  void OnGotPersistedClusters(std::vector<history::Cluster> clusters);
+
+  // Invoked after `OnGotPersistedClusters()` asyncly obtains clusters.
+  void OnGotModelClusters(std::vector<history::Cluster> clusters);
+
+  // Invoked after `OnGotModelClusters()` asyncly persists clusters. Will syncly
+  // invoke `Start()` to initiate the next iteration.
+  void OnPersistedClusterTriggerability();
+
+  // Never nullptr.
+  base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;
+  // Non-owning pointer, but never nullptr.
+  const raw_ptr<ClusteringBackend> backend_;
+  // Non-owning pointer, but never nullptr.
+  const raw_ptr<history::HistoryService> history_service_;
+
+  // Used to make requests to `HistoryService`.
+  base::Time continuation_time_;
+  base::CancelableTaskTracker task_tracker_;
+
+  // Invoked after `OnGotPersistedClusters()` when all clusters have been
+  // exhausted.
+  base::OnceClosure callback_;
+
+  // Tracks the time `this` was created to use for the max time we should update
+  // clusters for.
+  base::Time task_created_time_;
+
+  // Used for async callbacks.
+  base::WeakPtrFactory<HistoryClustersServiceTaskUpdateClusterTriggerability>
+      weak_ptr_factory_{this};
+};
+
+}  // namespace history_clusters
+
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_TASK_UPDATE_CLUSTER_TRIGGERABILITY_H_

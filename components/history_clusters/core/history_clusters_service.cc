@@ -26,6 +26,7 @@
 #include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters_for_ui.h"
+#include "components/history_clusters/core/history_clusters_service_task_update_cluster_triggerability.h"
 #include "components/history_clusters/core/history_clusters_service_task_update_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -254,10 +255,18 @@ void HistoryClustersService::UpdateClusters() {
   // Reset the timer.
   update_clusters_timer_ = {};
 
-  update_clusters_task_ =
-      std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
-          weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
-          backend_.get(), history_service_, base::DoNothing());
+  if (GetConfig().use_navigation_context_clusters) {
+    update_clusters_task_ =
+        std::make_unique<HistoryClustersServiceTaskUpdateClusterTriggerability>(
+            weak_ptr_factory_.GetWeakPtr(), backend_.get(), history_service_,
+            base::DoNothing());
+  } else {
+    update_clusters_task_ =
+        std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
+            weak_ptr_factory_.GetWeakPtr(),
+            incomplete_visit_context_annotations_, backend_.get(),
+            history_service_, base::DoNothing());
+  }
 }
 
 absl::optional<history::ClusterKeywordData>

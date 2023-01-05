@@ -44,6 +44,8 @@ static_library("core") {
     "history_clusters_service_task_get_most_recent_clusters.h",
     "history_clusters_service_task_get_most_recent_clusters_for_ui.cc",
     "history_clusters_service_task_get_most_recent_clusters_for_ui.h",
+    "history_clusters_service_task_update_cluster_triggerability.cc",
+    "history_clusters_service_task_update_cluster_triggerability.h",
     "history_clusters_service_task_update_clusters.cc",
     "history_clusters_service_task_update_clusters.h",
     "history_clusters_types.cc",

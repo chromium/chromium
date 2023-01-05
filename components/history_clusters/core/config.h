@@ -364,6 +364,10 @@ struct Config {
   // navigation time.
   bool persist_context_clusters_at_navigation = false;
 
+  // The duration since the most recent visit for which a context cluster is
+  // considered to be fully frozen and triggerability can be finalized.
+  base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);
+
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

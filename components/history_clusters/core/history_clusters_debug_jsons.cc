@@ -97,6 +97,8 @@ std::string GetDebugJSONForClusters(
                       std::move(debug_keyword_to_data_map));
     debug_cluster.Set("should_show_on_prominent_ui_surfaces",
                       cluster.should_show_on_prominent_ui_surfaces);
+    debug_cluster.Set("triggerability_calculated",
+                      cluster.triggerability_calculated);
 
     base::Value::List debug_visits;
     for (const auto& visit : cluster.visits) {
