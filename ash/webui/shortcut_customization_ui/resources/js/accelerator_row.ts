@@ -98,6 +98,14 @@ export class AcceleratorRowElement extends PolymerElement {
     }
   }
 
+  override ready(): void {
+    super.ready();
+    const numberOfAccelerators = this.layoutStyle == LayoutStyle.kDefault ?
+        this.acceleratorInfos.length :
+        1;
+    this.updateStyles({'--accelerator-row-num-accels': numberOfAccelerators});
+  }
+
   protected onSourceChanged(): void {
     this.shortcutInterfaceProvider.isMutable(this.source)
         .then(({isMutable}) => {
@@ -114,14 +122,6 @@ export class AcceleratorRowElement extends PolymerElement {
 
   private isTextLayout(): boolean {
     return this.layoutStyle === LayoutStyle.kText;
-  }
-
-  private shouldShowLockIcon(): boolean {
-    if (isCustomizationDisabled()) {
-      return false;
-    }
-
-    return this.isLocked;
   }
 
   private showDialog(): void {

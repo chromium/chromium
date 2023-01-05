@@ -1,49 +1,37 @@
 <style include="shortcut-customization-shared">
   #container {
-    border-bottom: var(--cr-separator-line);
-    display: flex;
-    flex-direction: row;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 286px 1fr;
+    grid-template-rows: repeat(var(--accelerator-row-num-accels), 52px);
+  }
+
+  accelerator-view {
+    grid-column-start: 2;
     padding-bottom: 10px;
     padding-top: 10px;
   }
 
-  #acceleratorViewList {
-    display: grid;
-    flex: 1;
-    row-gap: 5px;
+  accelerator-view:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
   }
 
   #descriptionText {
     align-items: center;
     display: flex;
-    width: 320px;
-  }
-
-  #lockIconContainer {
-    align-items: center;
-    display: flex;
-  }
-
-  #lockIconContainer[hidden] {
-    display: none;  /* Required for flexbox hidden. */
   }
 </style>
 
 <div id="container">
   <div id="descriptionText">[[description]]</div>
-  <div id="acceleratorViewList">
-    <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
-      <template is="dom-repeat" items="[[acceleratorInfos]]">
-        <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
-            action="[[action]]" source="[[source]]">
-        </accelerator-view>
-      </template>
+  <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
+    <template is="dom-repeat" items="[[acceleratorInfos]]">
+      <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
+          action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]">
+      </accelerator-view>
     </template>
-    <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
-      <text-accelerator text="[[acceleratorText]]"></text-accelerator>
-    </template>
-  </div>
-  <div id="lockIconContainer" hidden="[[!shouldShowLockIcon(isLocked)]]">
-    <iron-icon icon="shortcut-customization:lock"></iron-icon>
-  </div>
+  </template>
+  <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
+    <text-accelerator text="[[acceleratorText]]"></text-accelerator>
+  </template>
 </div>

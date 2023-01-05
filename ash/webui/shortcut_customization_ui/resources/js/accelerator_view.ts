@@ -13,7 +13,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator} from './shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -116,6 +116,11 @@ export class AcceleratorViewElement extends PolymerElement {
         type: Number,
         value: 0,
       },
+
+      sourceIsLocked: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -125,6 +130,7 @@ export class AcceleratorViewElement extends PolymerElement {
   hasError: boolean;
   action: number;
   source: AcceleratorSource;
+  sourceIsLocked: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   private modifiers: string[];
   private acceleratorOnHold: string;
@@ -482,6 +488,15 @@ export class AcceleratorViewElement extends PolymerElement {
 
     // Always end input capturing if an update event was fired.
     this.endCapture();
+  }
+
+  private shouldShowLockIcon(): boolean {
+    if (isCustomizationDisabled()) {
+      return false;
+    }
+
+    return (this.acceleratorInfo && this.acceleratorInfo.locked) ||
+        this.sourceIsLocked;
   }
 
   static get template(): HTMLTemplateElement {

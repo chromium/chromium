@@ -72,25 +72,6 @@ suite('acceleratorEditViewTest', function() {
     assertFalse(isVisible(getElementById('cancelButtonContainer')));
   });
 
-  test('LockedAccelerator', async () => {
-    const acceleratorInfo = createUserAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g',
-        /*locked=*/ true);
-
-    editViewElement!.acceleratorInfo = acceleratorInfo;
-    await flush();
-
-    // Check that the edit buttons are not visible.
-    assertFalse(
-        !!editViewElement!.shadowRoot!.querySelector('#editButtonsContainer'));
-    assertFalse(
-        !!editViewElement!.shadowRoot!.querySelector('#cancelButtonContainer'));
-    // Lock icon should be visible.
-    assertTrue(isVisible(getElementById('lockContainer')));
-  });
-
   test('DetectShortcutConflict', async () => {
     const acceleratorInfo = createStandardAcceleratorInfo(
         Modifier.ALT,

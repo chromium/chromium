@@ -11,6 +11,16 @@
     padding-top: 8px;
   }
 
+  #acceleratorView {
+    align-items: center;
+    display: flex;
+    flex: 1;
+  }
+
+  #acceleratorView accelerator-view {
+    flex: 1;
+  }
+
   #acceleratorInfoText {
     padding-top: 10px
   }
@@ -42,14 +52,12 @@
 </style>
 
 <div id="container">
-  <div id="acceleratorContainer">
-    <div id="acceleratorView">
-      <accelerator-view id="acceleratorItem"
-          accelerator-info=[[acceleratorInfo]] view-state={{viewState}}
-          status-message={{statusMessage}} has-error={{hasError}}
-          action=[[action]] source=[[source]]>
-      </accelerator-view>
-    </div>
+  <div id="acceleratorView">
+    <accelerator-view id="acceleratorItem"
+        accelerator-info="[[acceleratorInfo]]" view-state="{{viewState}}"
+        status-message="{{statusMessage}}" has-error="{{hasError}}"
+        action="[[action]]" source="[[source]]">
+    </accelerator-view>
   </div>
   <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
     <div id="editButtonsContainer" hidden="[[showEditView(viewState)]]">
@@ -72,10 +80,6 @@
       </cr-button>
     </div>
   </template>
-  <div id="lockContainer" hidden="[[!acceleratorInfo.locked]]">
-    <iron-icon id="lockedIcon" icon="shortcut-customization:lock">
-    </iron-icon>
-  </div>
 </div>
 
 <div id="acceleratorInfoText" hidden="[[!showEditView(viewState)]]">

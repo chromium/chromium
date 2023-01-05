@@ -2,6 +2,12 @@
   .flex-row {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+  }
+
+  #accelerator-keys {
+    display: flex;
+    flex-direction: row;
   }
 
   #container:focus {
@@ -11,19 +17,35 @@
   #acceleratorSeparator {
     align-items: center;
     display: flex;
-    padding-inline-start: 5px;
+    padding-inline-end: 5px;
+  }
+
+  #lockIconContainer {
+    align-items: center;
+    display: flex;
+  }
+
+  #lockIconContainer[hidden] {
+    display: none;  /* Required for flexbox hidden. */
   }
 </style>
 
 <div id="container" class="flex-row" tabindex="0">
   <template is="dom-if" if="[[!showEditView(viewState)]]">
-    <template is="dom-repeat" items=[[modifiers]]>
-      <input-key key=[[item]] key-state="modifier-selected"></input-key>
-    </template>
-    <input-key
-        key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
-        key-state="alpha-numeric-selected">
-    </input-key>
+    <div id="accelerator-keys">
+      <template is="dom-repeat" items="[[modifiers]]">
+        <input-key key="[[item]]" key-state="modifier-selected"></input-key>
+      </template>
+      <input-key
+          key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
+          key-state="alpha-numeric-selected">
+      </input-key>
+    </div>
+    <div 
+      id="lockIconContainer" 
+      hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
+      <iron-icon icon="shortcut-customization:lock"></iron-icon>
+    </div>
   </template>
   <template is="dom-if" if="[[showEditView(viewState)]]">
     <div id="editContainer" class="flex-row">

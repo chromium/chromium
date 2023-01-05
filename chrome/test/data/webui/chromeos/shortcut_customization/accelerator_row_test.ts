@@ -84,59 +84,6 @@ suite('acceleratorRowTest', function() {
         'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
   });
 
-  test('LockIconVisibleWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
-    const acceleratorInfo1 = createUserAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-
-    const accelerators = [acceleratorInfo1];
-    const description = 'test shortcut';
-
-    rowElement.acceleratorInfos = accelerators;
-    rowElement.description = description;
-    rowElement.layoutStyle = LayoutStyle.kDefault;
-    rowElement.source = AcceleratorSource.kBrowser;
-    await flushTasks();
-
-    // Expected the lock icon to appear if the source is kBrowser.
-    let lockItemContainer = rowElement!.shadowRoot!.querySelector(
-                                '#lockIconContainer') as HTMLDivElement;
-    assertFalse(lockItemContainer.hidden);
-
-    // Update source to be kAsh, lock icon should no longer appear.
-    rowElement!.source = AcceleratorSource.kAsh;
-    await flushTasks();
-    lockItemContainer = rowElement!.shadowRoot!.querySelector(
-                            '#lockIconContainer') as HTMLDivElement;
-
-    assertTrue(lockItemContainer.hidden);
-  });
-
-  test('LockIconHiddenWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
-    rowElement = initAcceleratorRowElement();
-    const acceleratorInfo1 = createUserAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-
-    const accelerators = [acceleratorInfo1];
-    const description = 'test shortcut';
-
-    rowElement.acceleratorInfos = accelerators;
-    rowElement.description = description;
-    rowElement.source = AcceleratorSource.kBrowser;
-    await flushTasks();
-
-    // Expected the lock icon to appear if the source is kBrowser.
-    const lockItemContainer = rowElement.shadowRoot!.querySelector(
-                                  '#lockIconContainer') as HTMLDivElement;
-    assertTrue(lockItemContainer.hidden);
-  });
-
   test('ShowDialogOnClickWhenCustomizationEnabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     rowElement = initAcceleratorRowElement();
