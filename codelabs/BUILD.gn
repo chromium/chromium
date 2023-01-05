@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/dcheck_always_on.gni")
+
 group("codelabs") {
   testonly = true
   deps = [
@@ -10,7 +12,15 @@ group("codelabs") {
     ":codelab_hello_world",
     ":codelab_mojo",
     ":codelab_sleep",
+
+    # threading_and_scheduling examples:
+    ":codelab_multiple_threads",
+    ":codelab_single_task_queue",
+    ":codelab_task_queue_priorities",
   ]
+  if (is_debug || dcheck_always_on) {
+    deps += [ ":codelab_randomized_task_queues" ]
+  }
 }
 
 executable("codelab_hello_world") {
@@ -51,4 +61,26 @@ executable("codelab_mojo") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/base",
   ]
+}
+
+executable("codelab_single_task_queue") {
+  sources = [ "threading_and_scheduling/01-single-task-queue.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_task_queue_priorities") {
+  sources = [ "threading_and_scheduling/02-task-queue-priorities.cc" ]
+  deps = [ "//base" ]
+}
+
+if (is_debug || dcheck_always_on) {
+  executable("codelab_randomized_task_queues") {
+    sources = [ "threading_and_scheduling/03-randomized-task-queues.cc" ]
+    deps = [ "//base" ]
+  }
+}
+
+executable("codelab_multiple_threads") {
+  sources = [ "threading_and_scheduling/04-multiple-threads.cc" ]
+  deps = [ "//base" ]
 }
