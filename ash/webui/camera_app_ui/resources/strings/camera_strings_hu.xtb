@@ -47,12 +47,12 @@
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2501853267655415902">A felvétel leállt</translation>
 <translation id="2501953888035679275">Fotókat és videókat készíthet a kamerával.</translation>
-<translation id="2517472476991765520">Keresés</translation>
+<translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
 <translation id="2577915835281444458">A felvétel hamarosan leáll. Szabadítson fel tárhelyet az eszközön.</translation>
 <translation id="2599796128805996109">Hátsó kamera</translation>
 <translation id="2759905922487820242"><ph name="MAXIMAL" />/<ph name="CURRENT" /> mp</translation>
-<translation id="2761536921376153655">Keresés típusa</translation>
+<translation id="2761536921376153655">Szkennelés típusa</translation>
 <translation id="28682968802727151">Tükrözés előnézete</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> csatlakoztatva.</translation>
 <translation id="2904654629665923749">A dokumentumbeolvasás készen áll a használatra</translation>
@@ -71,7 +71,7 @@
 <translation id="3411958449466169012">Időzítés ki</translation>
 <translation id="3448774564454087943">A videót nem mentette a rendszer, mert túl rövid</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
-<translation id="3517926952904427380">Nem sikerült álló fényképet készíteni</translation>
+<translation id="3517926952904427380">Nem sikerült portréfotót készíteni</translation>
 <translation id="3566302376254083266">Mozgatás a bal felső sarok irányába</translation>
 <translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Váltás a beolvasási módra</translation>
