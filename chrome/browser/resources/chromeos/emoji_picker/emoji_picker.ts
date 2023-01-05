@@ -23,7 +23,7 @@ import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -422,7 +422,7 @@ export class EmojiPicker extends PolymerElement {
     emoji: string,
     isVariant: boolean,
     baseEmoji: string,
-    allVariants?: string[], name: string, text: string,
+    allVariants?: Emoji[], name: string, text: string,
   }) {
     const {text, isVariant, baseEmoji, allVariants, name} = item;
     const message = this.getMessage();
@@ -707,7 +707,7 @@ export class EmojiPicker extends PolymerElement {
    * Gets recently used emojis for a category. It gets the history items
    * and convert them to emojis.
    */
-  getHistoryEmojis(category: CategoryEnum) {
+  getHistoryEmojis(category: CategoryEnum): EmojiVariants[] {
     if (this.incognito) {
       return [];
     }
@@ -715,9 +715,15 @@ export class EmojiPicker extends PolymerElement {
     return this.categoriesHistory[category]?.data?.history?.map(
                emoji => ({
                  base: {string: emoji.base, name: emoji.name, keywords: []},
-                 alternates: emoji.alternates.map(alternate => {
-                   return {string: alternate, name: emoji.name, keywords: []};
-                 }),
+                 alternates: emoji.alternates.map(
+                     (alternate: Emoji):
+                         Emoji => {
+                           return {
+                             string: alternate.string,
+                             name: alternate.name,
+                             keywords: [...(alternate.keywords ?? [])],
+                           };
+                         }),
                })) ??
         [];
   }
@@ -771,7 +777,7 @@ export class EmojiPicker extends PolymerElement {
   insertHistoryItem(category: CategoryEnum, item: {
     selectedEmoji: string,
     baseEmoji: string,
-    alternates: string[],
+    alternates: Emoji[],
     name: string,
   }) {
     if (this.incognito) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CategoryEnum} from './types';
+import {CategoryEnum, Emoji} from './types';
 
 export type CategoryButtonClickEvent =
     CustomEvent<{categoryName: CategoryEnum}>;
@@ -17,7 +17,7 @@ export type EmojiButtonClickEvent = CustomEvent<{
   emoji: string,
   isVariant: boolean,
   baseEmoji: string,
-  allVariants: string[],
+  allVariants: Emoji[],
   name: string,
   text: string,
   category: CategoryEnum,

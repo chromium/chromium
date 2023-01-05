@@ -30,7 +30,7 @@ export type EmojiGroupData = EmojiGroup[];
 
 export interface StoredItem {
   base: string;
-  alternates: string[];
+  alternates: Emoji[];
   name: string;
 }
 
