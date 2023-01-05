@@ -398,11 +398,11 @@
          *
          * @example
          * await test_driver.set_permission({ name: "background-fetch" }, "denied");
-         * await test_driver.set_permission({ name: "push", userVisibleOnly: true }, "granted", true);
+         * await test_driver.set_permission({ name: "push", userVisibleOnly: true }, "granted");
          *
-         * @param {Object} descriptor - a `PermissionDescriptor
-         *                              <https://w3c.github.io/permissions/#dictdef-permissiondescriptor>`_
-         *                              object
+         * @param {PermissionDescriptor} descriptor - a `PermissionDescriptor
+         *                              <https://w3c.github.io/permissions/#dom-permissiondescriptor>`_
+         *                              dictionary.
          * @param {String} state - the state of the permission
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
