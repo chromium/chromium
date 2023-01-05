@@ -71,7 +71,7 @@ class MergeProfilesTest(unittest.TestCase):
         '.*'
     ]
     with mock.patch.object(merger, 'merge_profiles') as mock_merge:
-      mock_merge.return_value = None
+      mock_merge.return_value = [], []
       with mock.patch.object(sys, 'argv', args):
         merge_steps.main()
         self.assertEqual(

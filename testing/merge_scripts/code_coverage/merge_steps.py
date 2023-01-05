@@ -41,13 +41,20 @@ def main():
   parser = _merge_steps_argument_parser(description=desc)
   params = parser.parse_args()
 
-  merger.merge_profiles(params.input_dir,
-                        params.output_file,
-                        '.profdata',
-                        params.llvm_profdata,
-                        params.profdata_filename_pattern,
-                        sparse=params.sparse,
-                        merge_timeout=params.profile_merge_timeout)
+  # counter overflow profiles should be logged as warnings as part of the
+  # merger.merge_profiles call.
+  invalid_profiles, _  =  merger.merge_profiles(params.input_dir,
+                          params.output_file,
+                          '.profdata',
+                          params.llvm_profdata,
+                          params.profdata_filename_pattern,
+                          sparse=params.sparse,
+                          merge_timeout=params.profile_merge_timeout)
+  if invalid_profiles:
+    logging.error('Invalid profiles were generated:\n%r' % invalid_profiles)
+    return 1
+
+  return 0
 
 
 if __name__ == '__main__':
