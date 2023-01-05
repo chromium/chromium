@@ -122,6 +122,10 @@ source_set("crc32c_arm64") {
         "-target-feature",
         "-Xclang",
         "+crypto",
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+aes",
       ]
     } else {
       cflags = [ "-march=armv8-a+crc+crypto" ]
