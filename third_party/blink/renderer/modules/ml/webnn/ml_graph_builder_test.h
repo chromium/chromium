@@ -45,6 +45,9 @@ MLOperand* BuildConstant(V8TestingScope& scope,
                          const Vector<uint32_t>& dimensions,
                          V8MLOperandType::Enum type);
 
+NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
+    const MLOperand* operand);
+
 MLOperand* BuildClamp(V8TestingScope& scope,
                       MLGraphBuilder* builder,
                       const MLOperand* input,

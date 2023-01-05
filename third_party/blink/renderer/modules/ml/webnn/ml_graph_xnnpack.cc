@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -15,6 +16,7 @@
 #include "build/buildflag.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
@@ -534,12 +536,19 @@ MLGraphXnnpack::GetOperatorsInTopologicalOrder(
   return toposorted_operators;
 }
 
-const ExternalValueIdMap& MLGraphXnnpack::GetInputExternalValueIdMap() const {
+const ExternalValueIdMap& MLGraphXnnpack::GetInputExternalValueIdMapForTesting()
+    const {
   return input_external_value_id_map_;
 }
 
-const ExternalValueIdMap& MLGraphXnnpack::GetOutputExternalValueIdMap() const {
+const ExternalValueIdMap&
+MLGraphXnnpack::GetOutputExternalValueIdMapForTesting() const {
   return output_external_value_id_map_;
+}
+
+const Vector<xnn_external_value>& MLGraphXnnpack::GetXnnExternalValuesTesting()
+    const {
+  return xnn_external_values_;
 }
 
 void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
@@ -628,9 +637,11 @@ MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
 void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                       const MLNamedArrayBufferViews& outputs,
                                       ScriptPromiseResolver* resolver) {
-  // TODO(ningxin.hu@intel.com): Implement this method by posting the inputs and
-  // outputs to a background thread and invoking XNNPACK Runtime object in the
-  // background thread.
+  // TODO(crbug.com/1273291): There is an issue of current WebNN asynchronous
+  // execution design: https://github.com/webmachinelearning/webnn/issues/318.
+  // After the spec issue is fixed, implement this method by posting the inputs
+  // and outputs to a background thread and invoking XNNPACK Runtime object in
+  // the background thread.
 
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Not implemented."));
@@ -639,12 +650,12 @@ void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
 void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                                      const MLNamedArrayBufferViews& outputs,
                                      ExceptionState& exception_state) {
-  // TODO(ningxin.hu@intel.com): Setup the external values of the XNNPACK
-  // Runtime object by input and output buffers, and invoke the XNNPACK Runtime
-  // object for accelerated execution in the caller's thread.
-
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented.");
+  String error_message;
+  xnn_status status = InvokeXnnRuntime(inputs, outputs, error_message);
+  if (status != xnn_status_success) {
+    exception_state.ThrowDOMException(XnnStatusToDOMExceptionCode(status),
+                                      error_message);
+  }
 }
 
 xnn_status MLGraphXnnpack::CreateXnnSubgraphAndRuntime(
@@ -780,6 +791,58 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraphAndRuntime(
       xnn_create_runtime(subgraph.get(), &runtime_ptr));
   DCHECK_NE(runtime_ptr, nullptr);
   xnn_runtime_.reset(runtime_ptr);
+  return xnn_status_success;
+}
+
+Vector<xnn_external_value> MLGraphXnnpack::CreateExternalValues(
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs) const {
+  Vector<xnn_external_value> external_values;
+  external_values.reserve((inputs.size() + outputs.size()));
+  // Although XNNPACK doesn't validate the pointers, the base address and the
+  // byte length of the array buffer views are already validated by
+  // ValidateNamedArrayBufferViews(). It should be safe to setup XNNPACK Runtime
+  // object with them.
+  for (const auto& [name, array_buffer_view] : inputs) {
+    DCHECK(input_external_value_id_map_.Contains(name));
+    external_values.emplace_back(
+        xnn_external_value{.id = input_external_value_id_map_.at(name),
+                           .data = array_buffer_view->BaseAddress()});
+  }
+  for (const auto& [name, array_buffer_view] : outputs) {
+    DCHECK(output_external_value_id_map_.Contains(name));
+    external_values.emplace_back(
+        xnn_external_value{.id = output_external_value_id_map_.at(name),
+                           .data = array_buffer_view->BaseAddress()});
+  }
+  base::ranges::sort(external_values, base::ranges::less{},
+                     &xnn_external_value::id);
+  return external_values;
+}
+
+bool MLGraphXnnpack::NeedToSetupExternalValues(
+    const Vector<xnn_external_value>& external_values) const {
+  return !base::ranges::equal(external_values, xnn_external_values_,
+                              [](const auto& a, const auto& b) {
+                                return a.id == b.id && a.data == b.data;
+                              });
+}
+
+xnn_status MLGraphXnnpack::InvokeXnnRuntime(
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs,
+    String& error_message) {
+  TRACE_EVENT("blink", "MLGraphXnnpack::InvokeXnnRuntime");
+
+  auto external_values = CreateExternalValues(inputs, outputs);
+  if (NeedToSetupExternalValues(external_values)) {
+    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_setup_runtime(
+        xnn_runtime_.get(), external_values.size(), external_values.data()));
+    xnn_external_values_ = external_values;
+  }
+
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_invoke_runtime(xnn_runtime_.get()));
   return xnn_status_success;
 }
 
