@@ -665,8 +665,8 @@ void PageLoadTracker::OnStorageAccessed(const GURL& url,
 
 void PageLoadTracker::StopTracking() {
   did_stop_tracking_ = true;
-  observers_.clear();
   observers_map_.clear();
+  observers_.clear();
 }
 
 void PageLoadTracker::AddObserver(
