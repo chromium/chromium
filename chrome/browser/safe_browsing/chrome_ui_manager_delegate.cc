@@ -51,6 +51,18 @@ void ChromeSafeBrowsingUIManagerDelegate::
                                                  net_error_code);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeSafeBrowsingUIManagerDelegate::
+    TriggerUrlFilteringInterstitialExtensionEventIfDesired(
+        content::WebContents* web_contents,
+        const GURL& page_url,
+        const std::string& threat_type,
+        safe_browsing::RTLookupResponse rt_lookup_response) {
+  MaybeTriggerUrlFilteringInterstitialEvent(web_contents, page_url, threat_type,
+                                            rt_lookup_response);
+}
+#endif
+
 prerender::NoStatePrefetchContents*
 ChromeSafeBrowsingUIManagerDelegate::GetNoStatePrefetchContentsIfExists(
     content::WebContents* web_contents) {

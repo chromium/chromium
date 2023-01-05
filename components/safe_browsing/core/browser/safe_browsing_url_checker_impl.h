@@ -195,6 +195,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
                    SBThreatType threat_type,
                    const ThreatMetadata& metadata,
                    bool is_from_real_time_check,
+                   std::unique_ptr<RTLookupResponse> response,
                    bool timed_out = false);
 
   void CheckUrlImpl(const GURL& url,
@@ -278,7 +279,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       const GURL& url,
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      bool is_from_real_time_check);
+      bool is_from_real_time_check,
+      std::unique_ptr<RTLookupResponse> response);
 
   enum State {
     // Haven't started checking or checking is complete.

@@ -66,27 +66,43 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
       blocking_page =
           manager_->blocking_page_factory()->CreateEnterpriseWarnPage(
               manager_, handle->GetWebContents(), handle->GetURL(), {resource});
+
+      manager_->ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
+          handle->GetWebContents(), handle->GetURL(), "ENTERPRISE_WARNED_SEEN",
+          resource.rt_lookup_response);
     } else if (resource.threat_type ==
                SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK) {
       blocking_page =
           manager_->blocking_page_factory()->CreateEnterpriseBlockPage(
               manager_, handle->GetWebContents(), handle->GetURL(), {resource});
+
+      manager_->ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
+          handle->GetWebContents(), handle->GetURL(), "ENTERPRISE_BLOCKED_SEEN",
+          resource.rt_lookup_response);
     } else {
       blocking_page = manager_->blocking_page_factory()->CreateSafeBrowsingPage(
           manager_, handle->GetWebContents(), handle->GetURL(), {resource},
           true);
+
+      manager_->ForwardSecurityInterstitialShownExtensionEventToEmbedder(
+          handle->GetWebContents(), handle->GetURL(),
+          SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
+              resource.threat_type),
+          /*net_error_code=*/0);
     }
 
 #else
+
     blocking_page = manager_->blocking_page_factory()->CreateSafeBrowsingPage(
         manager_, handle->GetWebContents(), handle->GetURL(), {resource}, true);
-#endif
 
     manager_->ForwardSecurityInterstitialShownExtensionEventToEmbedder(
         handle->GetWebContents(), handle->GetURL(),
         SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
             resource.threat_type),
         /*net_error_code=*/0);
+#endif
+
     std::string error_page_content = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle, base::WrapUnique(blocking_page));

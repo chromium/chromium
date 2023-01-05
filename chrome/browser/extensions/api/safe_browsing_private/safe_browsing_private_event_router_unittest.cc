@@ -198,16 +198,14 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             event_result);
   }
 
-  void TriggerOnUrlFilteringInterstitial(
-      safe_browsing::EventResult event_result,
-      const std::string& threat_type) {
+  void TriggerOnUrlFilteringInterstitial(const std::string& threat_type) {
     safe_browsing::RTLookupResponse response;
     auto* threat_info = response.add_threat_info();
-    if (event_result == safe_browsing::EventResult::WARNED ||
-        event_result == safe_browsing::EventResult::BYPASSED) {
+    if (threat_type == "ENTERPRISE_WARNED_SEEN" ||
+        threat_type == "ENTERPRISE_WARNED_BYPASS") {
       threat_info->set_verdict_type(
           safe_browsing::RTLookupResponse::ThreatInfo::WARN);
-    } else if (event_result == safe_browsing::EventResult::BLOCKED) {
+    } else if (threat_type == "ENTERPRISE_BLOCKED_SEEN") {
       threat_info->set_verdict_type(
           safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
     }
@@ -219,7 +217,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnUrlFilteringInterstitial(GURL("https://filteredurl.com"),
-                                     threat_type, response, event_result);
+                                     threat_type, response);
   }
 
   void TriggerOnUnscannedFileEvent(safe_browsing::EventResult result) {
@@ -1066,8 +1064,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
-  TriggerOnUrlFilteringInterstitial(safe_browsing::EventResult::BLOCKED,
-                                    "ENTERPRISE_BLOCKED_SEEN");
+  TriggerOnUrlFilteringInterstitial("ENTERPRISE_BLOCKED_SEEN");
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
@@ -1106,8 +1103,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
-  TriggerOnUrlFilteringInterstitial(safe_browsing::EventResult::WARNED,
-                                    "ENTERPRISE_WARNED_SEEN");
+  TriggerOnUrlFilteringInterstitial("ENTERPRISE_WARNED_SEEN");
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
@@ -1146,8 +1142,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce(CaptureArg(&report));
 
-  TriggerOnUrlFilteringInterstitial(safe_browsing::EventResult::BYPASSED,
-                                    "ENTERPRISE_WARNED_BYPASS");
+  TriggerOnUrlFilteringInterstitial("ENTERPRISE_WARNED_BYPASS");
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());

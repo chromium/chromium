@@ -235,7 +235,8 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    bool is_from_real_time_check) {
+    bool is_from_real_time_check,
+    std::unique_ptr<RTLookupResponse> rt_lookup_response) {
   UnsafeResource resource;
   resource.url = url;
   resource.original_url = urls_[0].url;
@@ -262,6 +263,9 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   resource.threat_source = is_from_real_time_check
                                ? ThreatSource::REAL_TIME_CHECK
                                : database_manager_->GetThreatSource();
+  if (rt_lookup_response) {
+    resource.rt_lookup_response = *rt_lookup_response;
+  }
   return resource;
 }
 
@@ -270,14 +274,17 @@ void SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult(
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {
   is_async_database_manager_check_in_progress_ = false;
-  OnUrlResult(url, threat_type, metadata, /*is_from_real_time_check=*/false);
+  OnUrlResult(url, threat_type, metadata, /*is_from_real_time_check=*/false,
+              /*rt_lookup_response=*/nullptr);
 }
 
-void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
-                                             SBThreatType threat_type,
-                                             const ThreatMetadata& metadata,
-                                             bool is_from_real_time_check,
-                                             bool timed_out) {
+void SafeBrowsingUrlCheckerImpl::OnUrlResult(
+    const GURL& url,
+    SBThreatType threat_type,
+    const ThreatMetadata& metadata,
+    bool is_from_real_time_check,
+    std::unique_ptr<RTLookupResponse> rt_lookup_response,
+    bool timed_out) {
   DCHECK_EQ(STATE_CHECKING_URL, state_);
   DCHECK_LT(next_index_, urls_.size());
   DCHECK_EQ(urls_[next_index_].url, url);
@@ -303,7 +310,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
       // happens. Create an interaction observer and continue like there wasn't
       // a warning. The observer will create the interstitial when necessary.
       UnsafeResource unsafe_resource = MakeUnsafeResource(
-          url, threat_type, metadata, is_from_real_time_check);
+          url, threat_type, metadata, is_from_real_time_check,
+          std::move(rt_lookup_response));
       unsafe_resource.is_delayed_warning = true;
       url_checker_delegate_
           ->StartObservingInteractionsForDelayedBlockingPageHelper(
@@ -353,7 +361,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
                             request_destination_);
 
   UnsafeResource resource =
-      MakeUnsafeResource(url, threat_type, metadata, is_from_real_time_check);
+      MakeUnsafeResource(url, threat_type, metadata, is_from_real_time_check,
+                         std::move(rt_lookup_response));
 
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;
   url_checker_delegate_->StartDisplayingBlockingPageHelper(
@@ -370,6 +379,7 @@ void SafeBrowsingUrlCheckerImpl::OnTimeout() {
 
   OnUrlResult(urls_[next_index_].url, safe_browsing::SB_THREAT_TYPE_SAFE,
               ThreatMetadata(), /*is_from_real_time_check=*/false,
+              /*rt_lookup_response=*/nullptr,
               /*timed_out=*/true);
 }
 
@@ -667,7 +677,8 @@ void SafeBrowsingUrlCheckerImpl::PerformHashBasedCheck(const GURL& url) {
     // No match found in the local database. Safe to call |OnUrlResult| here
     // directly.
     OnUrlResult(url, SB_THREAT_TYPE_SAFE, ThreatMetadata(),
-                /*is_from_real_time_check=*/false);
+                /*is_from_real_time_check=*/false,
+                /*rt_lookup_response=*/nullptr);
   }
 }
 
@@ -732,7 +743,8 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
     PerformHashBasedCheck(url);
   } else {
     OnUrlResult(url, sb_threat_type, ThreatMetadata(),
-                /*is_from_real_time_check=*/true);
+                /*is_from_real_time_check=*/true, std::move(response),
+                /*timed_out=*/false);
   }
 }
 
