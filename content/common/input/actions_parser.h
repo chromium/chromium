@@ -54,33 +54,38 @@ class CONTENT_EXPORT ActionsParser {
   }
 
  private:
-  bool ActionsDictionaryUsesTestDriverApi(const base::Value& action_sequence);
+  bool ActionsDictionaryUsesTestDriverApi(
+      const base::Value::Dict& action_sequence);
   // For testdriver actions JSON format, please refer to Webdriver spec
   // https://www.w3.org/TR/webdriver/#actions.
-  bool ParseTestDriverActionSequence(const base::Value& action_sequence);
-  bool ParseGpuBenchmarkingActionSequence(const base::Value& action_sequence);
-  bool ParseActionItemList(const base::Value& actions, std::string source_type);
-  bool ParseAction(const base::Value& action,
+  bool ParseTestDriverActionSequence(const base::Value::Dict& action_sequence);
+  bool ParseGpuBenchmarkingActionSequence(
+      const base::Value::Dict& action_sequence);
+  bool ParseActionItemList(const base::Value::List& actions,
+                           std::string source_type);
+  bool ParseAction(const base::Value::Dict& action,
                    SyntheticPointerActionListParams::ParamList& param_list,
                    std::string source_type);
-  bool ParsePointerParameters(const base::Value& action_sequence);
-  bool ParseWheelAction(const base::Value& action, std::string subtype);
+  bool ParsePointerParameters(const base::Value::Dict& action_sequence);
+  bool ParseWheelAction(const base::Value::Dict& action, std::string subtype);
   bool ParsePointerAction(
-      const base::Value& action,
+      const base::Value::Dict& action,
       std::string subtype,
       SyntheticPointerActionListParams::ParamList& param_list);
-  bool ParseNullAction(const base::Value& action,
+  bool ParseNullAction(const base::Value::Dict& action,
                        std::string subtype,
                        SyntheticPointerActionListParams::ParamList& param_list);
-  bool GetPosition(const base::Value& action,
+  bool GetPosition(const base::Value::Dict& action,
                    double& position_x,
                    double& position_y);
-  bool GetScrollDelta(const base::Value& action, int& delta_x, int& delta_y);
-  bool GetPauseDuration(const base::Value& action, int& duration);
+  bool GetScrollDelta(const base::Value::Dict& action,
+                      int& delta_x,
+                      int& delta_y);
+  bool GetPauseDuration(const base::Value::Dict& action, int& duration);
 
   std::unique_ptr<SyntheticGestureParams> gesture_params_;
-  // This is a list of action sequence lists, which have all the actions for all
-  // pointers.
+  // This is a list of action sequence lists, which have all the actions for
+  // all pointers.
   std::vector<SyntheticPointerActionListParams::ParamList>
       pointer_actions_lists_;
   size_t longest_action_sequence_ = 0;

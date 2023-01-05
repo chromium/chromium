@@ -89,9 +89,10 @@ ActionsParser::ActionsParser(base::Value action_sequence_list)
   // gpuBenchmarking.pointerActionSequence. Below we are deciding where the
   // action sequence list comes from.
   if (action_sequence_list_.is_list() &&
-      action_sequence_list_.GetList().size() > 0) {
-    use_testdriver_api_ =
-        ActionsDictionaryUsesTestDriverApi(action_sequence_list_.GetList()[0]);
+      action_sequence_list_.GetList().size() > 0 &&
+      action_sequence_list_.GetList()[0].is_dict()) {
+    use_testdriver_api_ = ActionsDictionaryUsesTestDriverApi(
+        action_sequence_list_.GetList()[0].GetDict());
   }
 }
 
@@ -113,11 +114,13 @@ bool ActionsParser::Parse() {
     }
 
     if (use_testdriver_api_) {
-      if (!ParseTestDriverActionSequence(action_sequence))
+      if (!ParseTestDriverActionSequence(action_sequence.GetDict())) {
         return false;
+      }
     } else {
-      if (!ParseGpuBenchmarkingActionSequence(action_sequence))
+      if (!ParseGpuBenchmarkingActionSequence(action_sequence.GetDict())) {
         return false;
+      }
     }
   }
 
@@ -163,19 +166,20 @@ bool ActionsParser::Parse() {
 }
 
 bool ActionsParser::ActionsDictionaryUsesTestDriverApi(
-    const base::Value& action_sequence) {
+    const base::Value::Dict& action_sequence) {
   // If the JSON format of each action_sequence has "type" element, it is from
   // the new Action API, otherwise it is from
   // gpuBenchmarking.pointerActionSequence API. We have to keep both formats
   // for now, but later on once we switch to the new Action API in all tests,
   // we will remove the old format.
-  if (action_sequence.is_dict() && action_sequence.FindKey("type"))
+  if (action_sequence.contains("type")) {
     return true;
+  }
   return false;
 }
 
 bool ActionsParser::ParseGpuBenchmarkingActionSequence(
-    const base::Value& action_sequence) {
+    const base::Value::Dict& action_sequence) {
   // The GpuBenchmarking format is implicitly for pointers only and for
   // historic reasons, the "source" key refers to what TestDriver calls the
   // pointer_type_.
@@ -187,7 +191,7 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
     return false;
   }
 
-  const std::string* pointer_type = action_sequence.FindStringKey("source");
+  const std::string* pointer_type = action_sequence.FindString("source");
   if (!pointer_type) {
     error_message_ = std::string("source type is not defined or not a string");
     return false;
@@ -215,14 +219,13 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
     return false;
   }
 
-  const base::Value* actions =
-      action_sequence.FindKeyOfType("actions", base::Value::Type::LIST);
+  const base::Value::List* actions = action_sequence.FindList("actions");
   if (!actions) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is not defined or not a list",
         action_index_);
     return false;
-  } else if (actions->GetList().size() == 0) {
+  } else if (actions->size() == 0) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
@@ -236,7 +239,7 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
 }
 
 bool ActionsParser::ParseTestDriverActionSequence(
-    const base::Value& action_sequence) {
+    const base::Value::Dict& action_sequence) {
   if (use_testdriver_api_ !=
       ActionsDictionaryUsesTestDriverApi(action_sequence)) {
     error_message_ = std::string(
@@ -244,7 +247,7 @@ bool ActionsParser::ParseTestDriverActionSequence(
     return false;
   }
 
-  const std::string* source_type = action_sequence.FindStringKey("type");
+  const std::string* source_type = action_sequence.FindString("type");
   if (!source_type) {
     error_message_ =
         std::string("input source type is not defined or not a string");
@@ -278,18 +281,17 @@ bool ActionsParser::ParseTestDriverActionSequence(
     return false;
   }
 
-  const base::Value* actions =
-      action_sequence.FindKeyOfType("actions", base::Value::Type::LIST);
+  const base::Value::List* actions = action_sequence.FindList("actions");
   if (!actions) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is not defined or not a list",
         action_index_);
     return false;
-  } else if (actions->GetList().size() == 0) {
+  } else if (actions->size() == 0) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
-  } else if (*source_type == "wheel" && actions->GetList().size() > 1) {
+  } else if (*source_type == "wheel" && actions->size() > 1) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions should only have one action for the "
         "wheel input source",
@@ -306,8 +308,9 @@ bool ActionsParser::ParseTestDriverActionSequence(
   return true;
 }
 
-bool ActionsParser::ParsePointerParameters(const base::Value& action_sequence) {
-  const base::Value* parameters = action_sequence.FindKey("parameters");
+bool ActionsParser::ParsePointerParameters(
+    const base::Value::Dict& action_sequence) {
+  const base::Value* parameters = action_sequence.Find("parameters");
   // The default pointer type is mouse.
   std::string pointer_type = "mouse";
   if (parameters) {
@@ -318,7 +321,7 @@ bool ActionsParser::ParsePointerParameters(const base::Value& action_sequence) {
     }
 
     const std::string* pointer_type_value =
-        parameters->FindStringKey("pointerType");
+        parameters->GetDict().FindString("pointerType");
     if (!pointer_type_value) {
       error_message_ = std::string(
           "action sequence pointer type is not defined or not a string");
@@ -353,7 +356,7 @@ bool ActionsParser::ParsePointerParameters(const base::Value& action_sequence) {
   // TODO(lanwei): according to the Webdriver spec, "Let id be the result of
   // getting the property id from action sequence.", we should move "id" from
   // parameters dictionary to action sequence.
-  const std::string* pointer_name = action_sequence.FindStringKey("id");
+  const std::string* pointer_name = action_sequence.FindString("id");
   if (!pointer_name) {
     error_message_ = std::string("pointer name is not defined or not a string");
     return false;
@@ -368,17 +371,17 @@ bool ActionsParser::ParsePointerParameters(const base::Value& action_sequence) {
   return true;
 }
 
-bool ActionsParser::ParseActionItemList(const base::Value& actions,
+bool ActionsParser::ParseActionItemList(const base::Value::List& actions,
                                         std::string source_type) {
   DCHECK(source_type == "none" || source_type == source_type_);
   SyntheticPointerActionListParams::ParamList param_list;
-  for (const auto& action : actions.GetList()) {
+  for (const auto& action : actions) {
     if (!action.is_dict()) {
       error_message_ = base::StringPrintf(
           "actions[%zu].actions is not defined or not a dictionary",
           action_index_);
       return false;
-    } else if (!ParseAction(action, param_list, source_type)) {
+    } else if (!ParseAction(action.GetDict(), param_list, source_type)) {
       return false;
     }
   }
@@ -391,12 +394,12 @@ bool ActionsParser::ParseActionItemList(const base::Value& actions,
 }
 
 bool ActionsParser::ParseAction(
-    const base::Value& action,
+    const base::Value::Dict& action,
     SyntheticPointerActionListParams::ParamList& param_list,
     std::string source_type) {
   std::string subtype;
   if (use_testdriver_api_) {
-    const std::string* type_value = action.FindStringKey("type");
+    const std::string* type_value = action.FindString("type");
     if (!type_value) {
       error_message_ = base::StringPrintf(
           "actions[%zu].actions.type is not defined or not a string",
@@ -405,7 +408,7 @@ bool ActionsParser::ParseAction(
     }
     subtype = *type_value;
   } else {
-    const std::string* name_value = action.FindStringKey("name");
+    const std::string* name_value = action.FindString("name");
     if (!name_value) {
       error_message_ = base::StringPrintf(
           "actions[%zu].actions.name is not defined or not a string",
@@ -427,7 +430,7 @@ bool ActionsParser::ParseAction(
   return false;
 }
 
-bool ActionsParser::ParseWheelAction(const base::Value& action,
+bool ActionsParser::ParseWheelAction(const base::Value::Dict& action,
                                      std::string subtype) {
   if (subtype == "pause") {
     error_message_ = base::StringPrintf(
@@ -468,7 +471,7 @@ bool ActionsParser::ParseWheelAction(const base::Value& action,
 }
 
 bool ActionsParser::ParsePointerAction(
-    const base::Value& action,
+    const base::Value::Dict& action,
     std::string subtype,
     SyntheticPointerActionListParams::ParamList& param_list) {
   double position_x = 0;
@@ -490,7 +493,7 @@ bool ActionsParser::ParsePointerAction(
   Button button = pointer_action_type == PointerActionType::MOVE
                       ? Button::NO_BUTTON
                       : Button::LEFT;
-  const base::Value* button_id_value = action.FindKey("button");
+  const base::Value* button_id_value = action.Find("button");
   if (button_id_value) {
     if (!button_id_value->is_int()) {
       error_message_ = base::StringPrintf(
@@ -508,7 +511,7 @@ bool ActionsParser::ParsePointerAction(
   }
 
   std::string keys;
-  const base::Value* keys_value = action.FindKey("keys");
+  const base::Value* keys_value = action.Find("keys");
   if (keys_value) {
     if (!keys_value->is_string()) {
       error_message_ = base::StringPrintf(
@@ -531,57 +534,46 @@ bool ActionsParser::ParsePointerAction(
     key_modifiers |= key_modifier;
   }
 
-  double width = 40;
-  const base::Value* width_value = action.FindKey("width");
-  if (width_value) {
-    width = width_value->GetDouble();
-    if (width < 0) {
-      error_message_ = base::StringPrintf(
-          "actions[%zu].actions.width should not be negative", action_index_);
-      return false;
-    }
+  const absl::optional<double> width_optional = action.FindDouble("width");
+  double width = width_optional.value_or(40);
+  if (width < 0) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.width should not be negative", action_index_);
+    return false;
   }
 
-  double height = 40;
-  const base::Value* height_value = action.FindKey("height");
-  if (height_value) {
-    height = height_value->GetDouble();
-    if (height < 0) {
-      error_message_ = base::StringPrintf(
-          "actions[%zu].actions.height should not be negative", action_index_);
-      return false;
-    }
+  const absl::optional<double> height_optional = action.FindDouble("height");
+  double height = height_optional.value_or(40);
+  if (height < 0) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.height should not be negative", action_index_);
+    return false;
   }
 
-  double pressure = 0.5;
-  const base::Value* pressure_value = action.FindKey("pressure");
-  if (pressure_value) {
-    pressure = pressure_value->GetDouble();
-    if (pressure < 0 || pressure > 1) {
-      error_message_ = base::StringPrintf(
-          "actions[%zu].actions.pressure must be a non-negative number in the "
-          "range of [0,1]",
-          action_index_);
-      return false;
-    }
+  const absl::optional<double> pressure_optional =
+      action.FindDouble("pressure");
+  double pressure = pressure_optional.value_or(0.5);
+  if (pressure < 0 || pressure > 1) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.pressure must be a non-negative number in the "
+        "range of [0,1]",
+        action_index_);
+    return false;
   }
 
-  double tangential_pressure = 0;
-  const base::Value* tangential_pressure_value =
-      action.FindKey("tangentialPressure");
-  if (tangential_pressure_value) {
-    tangential_pressure = tangential_pressure_value->GetDouble();
-    if (tangential_pressure < -1 || tangential_pressure > 1) {
-      error_message_ = base::StringPrintf(
-          "actions[%zu].actions.tangentialPressure must be a non-negative "
-          "number in the range of [-1,1]",
-          action_index_);
-      return false;
-    }
+  const absl::optional<double> tangential_pressure_optional =
+      action.FindDouble("tangentialPressure");
+  double tangential_pressure = tangential_pressure_optional.value_or(0);
+  if (tangential_pressure < -1 || tangential_pressure > 1) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.tangentialPressure must be a non-negative "
+        "number in the range of [-1,1]",
+        action_index_);
+    return false;
   }
 
   int tilt_x = 0;
-  const base::Value* tilt_x_value = action.FindKey("tiltX");
+  const base::Value* tilt_x_value = action.Find("tiltX");
   if (tilt_x_value) {
     if (!tilt_x_value->is_int()) {
       error_message_ = base::StringPrintf(
@@ -599,7 +591,7 @@ bool ActionsParser::ParsePointerAction(
   }
 
   int tilt_y = 0;
-  const base::Value* tilt_y_value = action.FindKey("tiltY");
+  const base::Value* tilt_y_value = action.Find("tiltY");
   if (tilt_y_value) {
     if (!tilt_y_value->is_int()) {
       error_message_ = base::StringPrintf(
@@ -617,7 +609,7 @@ bool ActionsParser::ParsePointerAction(
   }
 
   int twist = 0;
-  const base::Value* twist_value = action.FindKey("twist");
+  const base::Value* twist_value = action.Find("twist");
   if (twist_value) {
     if (!twist_value->is_int()) {
       error_message_ = base::StringPrintf(
@@ -684,7 +676,7 @@ bool ActionsParser::ParsePointerAction(
 }
 
 bool ActionsParser::ParseNullAction(
-    const base::Value& action,
+    const base::Value::Dict& action,
     std::string subtype,
     SyntheticPointerActionListParams::ParamList& param_list) {
   PointerActionType pointer_action_type = PointerActionType::NOT_INITIALIZED;
@@ -706,57 +698,56 @@ bool ActionsParser::ParseNullAction(
   return true;
 }
 
-bool ActionsParser::GetPosition(const base::Value& action,
+bool ActionsParser::GetPosition(const base::Value::Dict& action,
                                 double& position_x,
                                 double& position_y) {
-  const base::Value* position_x_value = action.FindKey("x");
-  const base::Value* position_y_value = action.FindKey("y");
+  const absl::optional<double> position_x_optional = action.FindDouble("x");
+  const absl::optional<double> position_y_optional = action.FindDouble("y");
   // TODO(lanwei): we should clarify the case when x or y is undefined in the
   // WebDriver spec.
   // https://www.w3.org/TR/webdriver/#dfn-process-a-pointer-move-action.
-  if (!position_x_value ||
-      (!position_x_value->is_int() && !position_x_value->is_double())) {
+  if (!position_x_optional) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.x is not defined or not a number", action_index_);
     return false;
   }
-  position_x = position_x_value->GetDouble();
+  position_x = position_x_optional.value();
 
-  if (!position_y_value ||
-      (!position_y_value->is_int() && !position_y_value->is_double())) {
+  if (!position_y_optional) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.y is not defined or not a number", action_index_);
     return false;
   }
-  position_y = position_y_value->GetDouble();
+  position_y = position_y_optional.value();
   return true;
 }
 
-bool ActionsParser::GetScrollDelta(const base::Value& action,
+bool ActionsParser::GetScrollDelta(const base::Value::Dict& action,
                                    int& delta_x,
                                    int& delta_y) {
-  const base::Value* delta_x_value = action.FindKey("deltaX");
-  const base::Value* delta_y_value = action.FindKey("deltaY");
-  if (!delta_x_value || !delta_x_value->is_int()) {
+  const absl::optional<int> delta_x_optional = action.FindInt("deltaX");
+  const absl::optional<int> delta_y_optional = action.FindInt("deltaY");
+  if (!delta_x_optional) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.delta_x is not defined or not an integer",
         action_index_);
     return false;
   }
-  delta_x = delta_x_value->GetInt();
+  delta_x = delta_x_optional.value();
 
-  if (!delta_y_value || !delta_y_value->is_int()) {
+  if (!delta_y_optional) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.delta_y is not defined or not an integer",
         action_index_);
     return false;
   }
-  delta_y = delta_y_value->GetInt();
+  delta_y = delta_y_optional.value();
   return true;
 }
 
-bool ActionsParser::GetPauseDuration(const base::Value& action, int& duration) {
-  const base::Value* duration_value = action.FindKey("duration");
+bool ActionsParser::GetPauseDuration(const base::Value::Dict& action,
+                                     int& duration) {
+  const base::Value* duration_value = action.Find("duration");
   // TODO(lanwei): we should always have a duration value for pause action.
   if (duration_value) {
     if (!duration_value->is_double() && !duration_value->is_int()) {
