@@ -19,6 +19,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
@@ -38,7 +39,7 @@ interface Repeaterevent extends Event {
 }
 
 const SettingsAddLanguagesDialogElementBase =
-    CrScrollableMixin(FindShortcutMixin(PolymerElement));
+    CrScrollableMixin(FindShortcutMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAddLanguagesDialogElement extends
     SettingsAddLanguagesDialogElementBase {
@@ -111,9 +112,7 @@ export class SettingsAddLanguagesDialogElement extends
     this.filterValue_ = e.detail;
   }
 
-  /**
-   * @return A list of languages to be displayed.
-   */
+  /** @return A list of languages to be displayed. */
   private getLanguages_(): chrome.languageSettingsPrivate.Language[] {
     if (!this.filterValue_) {
       return this.languages;
@@ -125,6 +124,16 @@ export class SettingsAddLanguagesDialogElement extends
       return language.displayName.toLowerCase().includes(filterValue) ||
           language.nativeDisplayName.toLowerCase().includes(filterValue);
     });
+  }
+
+  /** @return The number of languages to be displayed. */
+  private getLanguagesCount_(): number {
+    return this.getLanguages_().length;
+  }
+
+  /** @return A 1-based index for aria-rowindex. */
+  private getAriaRowindex_(index: number): number {
+    return index + 1;
   }
 
   private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
@@ -140,9 +149,7 @@ export class SettingsAddLanguagesDialogElement extends
     return this.languagesToAdd_.has(languageCode);
   }
 
-  /**
-   * Handler for checking or unchecking a language item.
-   */
+  /** Handler for checking or unchecking a language item. */
   private onLanguageCheckboxChange_(e: Repeaterevent) {
     // Add or remove the item to the Set. No need to worry about data binding:
     // willAdd_ is called to initialize the checkbox state (in case the
@@ -162,9 +169,7 @@ export class SettingsAddLanguagesDialogElement extends
     this.$.dialog.close();
   }
 
-  /**
-   * Enables the checked languages.
-   */
+  /** Enables the checked languages. */
   private onActionButtonTap_() {
     this.dispatchEvent(new CustomEvent('languages-added', {
       bubbles: true,
