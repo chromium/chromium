@@ -543,10 +543,7 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/f
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 
 # Mac ASAN
-crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ RetryOnFailure ]
 crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/single_attribute.first.html [ RetryOnFailure ]
-crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/single_attribute.usage.stream_copy.html [ RetryOnFailure ]
-crbug.com/1403830 [ mac asan passthrough ] deqp/data/gles3/shaders/declarations.html [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
@@ -596,8 +593,6 @@ crbug.com/906742 [ android qualcomm no-passthrough ] conformance2/glsl3/compare-
 crbug.com/1176485 [ android qualcomm ] conformance2/glsl3/uint-int-shift-bug.html [ Failure ]
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1027125 [ android qualcomm ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
-crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
