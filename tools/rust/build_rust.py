@@ -35,6 +35,7 @@ TODO(https://crbug.com/1245714): Do a proper 3-stage build
 import argparse
 import collections
 import hashlib
+import platform
 import os
 import pipes
 import shutil
@@ -134,7 +135,7 @@ def Configure(llvm_libs_root):
         output.write(template.substitute(subs))
 
 
-def RunXPy(sub, args, gcc_toolchain_path, verbose):
+def RunXPy(sub, args, build_mac_arm, gcc_toolchain_path, verbose):
     ''' Run x.py, Rust's build script'''
     RUSTENV = collections.defaultdict(str, os.environ)
 
@@ -237,6 +238,9 @@ def main():
                         '--verbose',
                         action='count',
                         help='run subcommands with verbosity')
+    parser.add_argument('--build-mac-arm',
+                        action='store_true',
+                        help='Build arm binaries. Only valid on macOS.')
     parser.add_argument(
         '--verify-stage0-hash',
         action='store_true',
@@ -270,6 +274,13 @@ def main():
         'debugging. Running x.py directly will not set the appropriate env '
         'variables nor update config.toml')
     args, rest = parser.parse_known_args()
+
+    if args.build_mac_arm and sys.platform != 'darwin':
+        print('--build-mac-arm only valid on macOS')
+        return 1
+    if args.build_mac_arm and platform.machine() == 'arm64':
+        print('--build-mac-arm only valid on intel to cross-build arm')
+        return 1
 
     # Get the LLVM root for libs. We use LLVM_BUILD_DIR tools either way.
     #
@@ -305,19 +316,22 @@ def main():
     if args.run_xpy:
         if rest[0] == '--':
             rest = rest[1:]
-        RunXPy(rest[0], rest[1:], args.gcc_toolchain, args.verbose)
+        RunXPy(rest[0], rest[1:], args.build_mac_arm, args.gcc_toolchain,
+               args.verbose)
         return 0
     else:
         assert not rest
 
     if not args.skip_clean:
         print('Cleaning build artifacts...')
-        RunXPy('clean', [], args.gcc_toolchain, args.verbose)
+        RunXPy('clean', [], args.build_mac_arm, args.gcc_toolchain,
+               args.verbose)
 
     if not args.skip_test:
         print('Running stage 2 tests...')
         # Run a subset of tests. Tell x.py to keep the rustc we already built.
-        RunXPy('test', GetTestArgs(), args.gcc_toolchain, args.verbose)
+        RunXPy('test', GetTestArgs(), args.build_mac_arm, args.gcc_toolchain,
+               args.verbose)
 
     targets = [
         'library/proc_macro', 'library/std', 'src/tools/cargo',
@@ -327,8 +341,8 @@ def main():
     # Build stage 2 compiler, tools, and libraries. This should reuse earlier
     # stages from the test command (if run).
     print('Building stage 2 artifacts...')
-    RunXPy('build', ['--stage', '2'] + targets, args.gcc_toolchain,
-           args.verbose)
+    RunXPy('build', ['--stage', '2'] + targets, args.build_mac_arm,
+           args.gcc_toolchain, args.verbose)
 
     if args.skip_install:
         # Rust is fully built. We can quit.

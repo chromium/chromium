@@ -26,9 +26,11 @@ RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tgz'
 BUILD_MAC_ARM = False
 
 
-def BuildCrubit():
+def BuildCrubit(build_mac_arm):
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
+        if build_mac_arm:
+            build_cmd.append('--build-mac-arm')
         # TODO(lukasza): Default to `fail_hard` once we actually depend on the
         # build step (i.e. once we start packaging Crubit).
         TeeCmd(build_cmd, log, fail_hard=False)
@@ -54,8 +56,6 @@ def main():
     if args.build_mac_arm and platform.machine() == 'arm64':
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
-    # Share this argument with other build scripts that we execute here.
-    BUILD_MAC_ARM = args.build_mac_arm
 
     # The gcs_platform logic copied from `//tools/clang/scripts/upload.sh`.
     if sys.platform == 'darwin':
@@ -76,9 +76,11 @@ def main():
 
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_rust.py')]
+        if args.build_mac_arm:
+            build_cmd.append('--build-mac-arm')
         TeeCmd(build_cmd, log)
 
-    BuildCrubit()
+    BuildCrubit(args.build_mac_arm)
 
     with tarfile.open(
             os.path.join(THIRD_PARTY_DIR, RUST_TOOLCHAIN_PACKAGE_NAME),
