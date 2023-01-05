@@ -482,18 +482,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.DeepScan.Download.BypassedByUser.Duration"
-    units="ms" expires_after="2023-02-01">
-  <owner>domfc@chromium.org</owner>
-  <owner>webprotect-team@google.com</owner>
-  <summary>
-    This records the duration from the time the binary is uploaded for deep
-    scanning of a download request until the time the user decides to bypass the
-    verdict. It is logged once for each binary upload when the user bypasses the
-    verdict.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.DelayedWarnings.Event"
     enum="SafeBrowsingDelayedWarningEvent" expires_after="2021-08-22">
   <obsolete>
@@ -2302,6 +2290,7 @@ failing to fetch the updates which puts users' security at risk. -->
   <token key="Connector" variants="EnterpriseConnector"/>
   <token key="Result">
     <variant name="" summary="any"/>
+    <variant name=".BypassedByUser" summary="a BypassedByUser"/>
     <variant name=".CancelledByUser" summary="a CancelledByUser"/>
     <variant name=".FailedToGetToken" summary="a FailedToGetToken"/>
     <variant name=".FailedToGetVerdict" summary="a FailedToGetVerdict"/>
