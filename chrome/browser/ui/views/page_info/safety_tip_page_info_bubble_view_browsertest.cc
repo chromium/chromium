@@ -86,6 +86,8 @@ const int kHighEngagement = 20;
 // An engagement score below MEDIUM.
 const int kLowEngagement = 1;
 
+const char kSafetyTipShownHistogram[] = "Security.SafetyTips.SafetyTipShown";
+
 // A single test case for UKM collection on triggered heuristics.
 // |navigated_url| is the URL that will be navigated to.
 // |expected_lookalike| is true if the navigated url is expected to trigger a
@@ -247,7 +249,10 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    SetUpLookalikeTestParams();
+    test_helper_ =
+        std::make_unique<LookalikeTestHelper>(test_ukm_recorder_.get());
+
+    LookalikeTestHelper::SetUpLookalikeTestParams();
     // Check that the test top domain list contains google.
     ASSERT_TRUE(IsTopDomain(GetDomainInfo("google.com")));
 
@@ -256,7 +261,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
-    TearDownLookalikeTestParams();
+    LookalikeTestHelper::TearDownLookalikeTestParams();
     ReputationService::Get(browser()->profile())
         ->ResetWarningDismissedETLDPlusOnesForTesting();
   }
@@ -372,15 +377,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  // Checks that a certain amount of safety tip heuristics UKM events have been
-  // recorded.
-  void CheckRecordedHeuristicsUkmCount(size_t expected_event_count) {
-    std::vector<const ukm::mojom::UkmEntry*> entries =
-        test_ukm_recorder_->GetEntriesByName(
-            ukm::builders::Security_SafetyTip::kEntryName);
-    ASSERT_EQ(expected_event_count, entries.size());
-  }
-
   // Checks that the metrics specified in |test_case| are properly recorded,
   // at the index in the UKM data specified by |expected_idx|.
   void CheckHeuristicsUkmRecord(const HeuristicsTestCase& test_case,
@@ -403,9 +399,12 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
                                           "TriggeredKeywordsHeuristics", false);
   }
 
+  LookalikeTestHelper* test_helper() { return test_helper_.get(); }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<LookalikeTestHelper> test_helper_;
 };
 
 // Ensure normal sites with low engagement are not blocked.
@@ -417,6 +416,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Ensure normal sites with low engagement are not blocked in incognito.
@@ -433,6 +433,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       CheckPageInfoDoesNotShowSafetyTipInfo(incognito_browser));
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Ensure blocked sites with high engagement are not blocked.
@@ -445,6 +446,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Ensure blocked sites with high engagement are not blocked in incognito.
@@ -461,6 +463,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       CheckPageInfoDoesNotShowSafetyTipInfo(incognito_browser));
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Ensure blocked sites get blocked.
@@ -473,6 +476,13 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, ShowOnBlock) {
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
+
+  // Navigate away to record UKM.
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Ensure blocked sites that don't load don't get blocked.
@@ -484,12 +494,13 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
   EXPECT_FALSE(IsUIShowing());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Ensure blocked sites get blocked in incognito.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        ShowOnBlockIncognito) {
-  const GURL kNavigatedUrl = GetURL("accounts-google.com");
+  auto kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
@@ -501,6 +512,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       incognito_browser, security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
+
+  // Navigate away to record UKM. Incognito doesn't record UKM.
+  NavigateToURL(incognito_browser, GURL("about:blank"),
+                WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Ensure same-document navigations don't close the Safety Tip.
@@ -520,6 +537,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
+
+  // Navigate away to record metrics.
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::CURRENT_TAB);
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Ensure sites allowed by enterprise policy don't get blocked.
@@ -542,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   }
 
   // TODO(crbug.com/1401102): This shouldn't record a UKM.
-  CheckRecordedHeuristicsUkmCount(2);
+  test_helper()->CheckSafetyTipUkmCount(2);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // After the user clicks 'leave site', the user should end up on a safe domain.
@@ -561,6 +585,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                                ->GetLastCommittedURL());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Test that clicking 'learn more' opens a help center article.
@@ -575,6 +602,11 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ClickLearnMoreLink();
   EXPECT_NE(kNavigatedUrl,
             new_tab_observer.GetWebContents()->GetLastCommittedURL());
+
+  CloseWarningLeaveSite(browser());
+  EXPECT_FALSE(IsUIShowing());
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // If the user clicks 'leave site', the warning should re-appear when the user
@@ -600,6 +632,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // After the user closes the warning, they should still be on the same domain.
@@ -619,6 +654,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // If the user closes the bubble, the warning should not re-appear when the user
@@ -641,6 +679,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
+
+  // We visited kNavigatedUrl twice.
+  test_helper()->CheckSafetyTipUkmCount(2);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Non main-frame navigations should be ignored.
@@ -700,7 +742,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                      browser()->tab_strip_model()->active_index() + 1);
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
-  CheckRecordedHeuristicsUkmCount(0);
+
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Tests that Safety Tips do NOT trigger on lookalike domains that trigger an
@@ -711,7 +754,13 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+
+  // Navigate away so that the interstitial records UKM.
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::CURRENT_TAB);
+
+  test_helper()->CheckSafetyTipUkmCount(0);
+  test_helper()->CheckInterstitialUkmCount(1);
 }
 
 // Tests that Safety Tips trigger on lookalike domains that don't qualify for an
@@ -726,7 +775,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
+
+  // Navigate away so that the safety tip bubble records UKM.
+  NavigateToURL(browser(), GURL("about:blank"),
+                WindowOpenDisposition::CURRENT_TAB);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tips don't trigger on lookalike domains that are explicitly
@@ -752,7 +808,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // TODO(crbug.com/1401102): Only one UKM should have been recorded, but
   // allowlisted domain also records one.
-  CheckRecordedHeuristicsUkmCount(2);
+  test_helper()->CheckSafetyTipUkmCount(2);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tips don't trigger on lookalike domains that are explicitly
@@ -771,7 +828,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
-  CheckRecordedHeuristicsUkmCount(0);
+
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Tests that Safety Tips trigger on lookalike domains with edit distance.
@@ -784,10 +842,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 
   CloseWarningLeaveSite(browser());
-  CheckRecordedHeuristicsUkmCount(1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tips don't trigger when using a scoped allowlist.
@@ -804,7 +864,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 
   // TODO(crbug.com/1401102): This shouldn't record metrics.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tips trigger when the URL is on the allowlist, but is
@@ -819,10 +880,11 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 
   CloseWarningLeaveSite(browser());
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Character Swap is enabled for lookalikes matching engaged sites.
@@ -834,10 +896,11 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckSafetyTipUkmCount(0);
 
   CloseWarningLeaveSite(browser());
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Same as TriggersOnCharacterSwap_SiteEngagement, but this time
@@ -852,10 +915,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 
   CloseWarningLeaveSite(browser());
-  CheckRecordedHeuristicsUkmCount(1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Character Swap is enabled for lookalikes matching top sites.
@@ -870,10 +935,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 
   CloseWarningLeaveSite(browser());
-  CheckRecordedHeuristicsUkmCount(1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that a hostname on a safe TLD can spoof another hostname without a
@@ -890,8 +957,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
 
   histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
+
   // TODO(crbug.com/1401102): This shouldn't record metrics.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Navigate to a domain within a character swap of 1 to a top domain,
@@ -910,10 +979,13 @@ IN_PROC_BROWSER_TEST_F(
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  // Make sure that the UI is not showing, and that no metric has been
+  // recorded.
   EXPECT_FALSE(IsUIShowing());
 
   histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Tests that Safety Tips trigger on lookalike domains with tail embedding when
@@ -925,6 +997,11 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+
+  CloseWarningLeaveSite(browser());
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tips don't trigger on lookalike domains with non-tail
@@ -935,19 +1012,20 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
+
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Tests that the SafetyTipShown histogram triggers correctly.
 // Flaky on all platforms: https://crbug.com/1139955
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_SafetyTipShownHistogram) {
-  const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
   base::HistogramTester histograms;
 
   auto kNavigatedUrl = GetURL("site1.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-  histograms.ExpectBucketCount(kHistogramName,
+  histograms.ExpectBucketCount(kSafetyTipShownHistogram,
                                security_state::SafetyTipStatus::kNone, 1);
 
   const GURL kLookalikeUrl = GetURL("accounts-google.com");
@@ -955,9 +1033,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kLookalikeUrl, WindowOpenDisposition::CURRENT_TAB);
 
   // Verify metrics for lookalike domains.
-  histograms.ExpectBucketCount(kHistogramName,
+  histograms.ExpectBucketCount(kSafetyTipShownHistogram,
                                security_state::SafetyTipStatus::kLookalike, 1);
-  histograms.ExpectTotalCount(kHistogramName, 2);
+  histograms.ExpectTotalCount(kSafetyTipShownHistogram, 2);
+
+  CloseWarningLeaveSite(browser());
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that the SafetyTipIgnoredPageLoad histogram triggers correctly.
@@ -973,6 +1056,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histograms.ExpectBucketCount(
       "Security.SafetyTips.SafetyTipIgnoredPageLoad",
       security_state::SafetyTipStatus::kLookalikeIgnored, 1);
+  // UKM recorded twice because we revisited the same page.
+  test_helper()->CheckSafetyTipUkmCount(2);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tip interactions are recorded in a histogram when the user
@@ -993,6 +1079,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectUniqueSample(
       GetInteractionHistogram("SafetyTip_Lookalike"),
       SafetyTipInteraction::kLeaveSite, 1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tip interactions are recorded in a histogram when the user
@@ -1015,6 +1104,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectBucketCount(
       GetInteractionHistogram("SafetyTip_Lookalike"),
       SafetyTipInteraction::kDismissWithClose, 1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tip interactions are recorded in a histogram when the user
@@ -1034,6 +1126,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectBucketCount(
       GetInteractionHistogram("SafetyTip_Lookalike"),
       SafetyTipInteraction::kDismissWithEsc, 1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tip interactions are recorded in a histogram.
@@ -1064,6 +1159,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectBucketCount(
       GetInteractionHistogram("SafetyTip_Lookalike"),
       SafetyTipInteraction::kCloseTab, 1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tip interactions are recorded in a histogram when the user
@@ -1091,6 +1189,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectBucketCount(
       GetInteractionHistogram("SafetyTip_Lookalike"),
       SafetyTipInteraction::kSwitchTab, 1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that Safety Tip interactions are recorded in a histogram when the user
@@ -1117,6 +1218,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectBucketCount(
       GetInteractionHistogram("SafetyTip_Lookalike"),
       SafetyTipInteraction::kChangePrimaryPage, 1);
+
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Ensure that a metrics-only heuristic doesn't show up in PageInfo. Also
@@ -1137,6 +1241,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                                NavigationSuggestionEvent::kComboSquatting, 1);
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+
+  test_helper()->CheckSafetyTipUkmCount(0);
+  test_helper()->CheckInterstitialUkmCount(1);
 }
 
 // Tests that UKM data gets properly recorded when safety tip heuristics get
@@ -1168,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
       test_cases, [](const HeuristicsTestCase& test_case) {
         return test_case.expected_lookalike;
       });
-  CheckRecordedHeuristicsUkmCount(expected_event_count);
+  test_helper()->CheckSafetyTipUkmCount(expected_event_count);
 
   size_t expected_event_idx = 0;
   for (const HeuristicsTestCase& test_case : test_cases) {
@@ -1178,6 +1285,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
     CheckHeuristicsUkmRecord(test_case, expected_event_idx);
     expected_event_idx++;
   }
+
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that UKM data is only recorded after the safety tip warning is
@@ -1191,14 +1300,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // Make sure that the UI is now showing, and that no UKM data has been
   // recorded yet.
   ASSERT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckSafetyTipUkmCount(0);
 
   // Once we close the warning, ensure that the UI is no longer showing, and
   // that UKM data has now been recorded.
   CloseWarningLeaveSite(browser());
   ASSERT_FALSE(IsUIShowing());
 
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   // Navigate to the same site again, but close the warning with an ignore
@@ -1208,14 +1317,17 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_TRUE(IsUIShowing());
 
   // Make sure the already collected UKM data still exists.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(2);
+
+  test_helper()->CheckSafetyTipUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 1);
+
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Tests that UKM data is only recorded after the safety tip warning is
@@ -1230,13 +1342,13 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure that the UI is now showing, and that no UKM data has been
   // recorded yet.
   ASSERT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckSafetyTipUkmCount(0);
 
   // Once we close the warning, ensure that the UI is no longer showing, and
   // that UKM data has now been recorded.
   CloseWarningLeaveSite(browser());
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   // Navigate to the same site again, but close the warning with an ignore
@@ -1246,14 +1358,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(IsUIShowing());
 
   // Make sure the already collected UKM data still exists.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(2);
+
+  test_helper()->CheckSafetyTipUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 1);
+
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Test that a Safety Tip is shown and metrics are recorded when
@@ -1272,6 +1387,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
 
+  histograms.ExpectBucketCount(kSafetyTipShownHistogram,
+                               security_state::SafetyTipStatus::kLookalike, 1);
+  // Lookalike throttle also records an entry for all heuristic matches.
   histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
   histograms.ExpectBucketCount(lookalikes::kHistogramName,
                                NavigationSuggestionEvent::kComboSquatting, 1);
@@ -1279,15 +1397,16 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // Make sure that the UI is now showing, and that no UKM data has been
   // recorded yet.
   ASSERT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 
   // Once we close the warning, ensure that the UI is no longer showing, and
   // that UKM data has now been recorded.
   CloseWarningLeaveSite(browser());
   ASSERT_FALSE(IsUIShowing());
 
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
+  test_helper()->CheckInterstitialUkmCount(0);
 
   // Navigate to the same site again, but close the warning with an ignore
   // instead of an accept. This should still record UKM data.
@@ -1296,14 +1415,46 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_TRUE(IsUIShowing());
 
   // Make sure the already collected UKM data still exists.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
+  test_helper()->CheckInterstitialUkmCount(0);
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(2);
+  test_helper()->CheckSafetyTipUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 1);
+
+  test_helper()->CheckInterstitialUkmCount(0);
+}
+
+// Test that a Safety Tip is shown and metrics are recorded when
+// a combo squatting url is flagged with a hard-coded brand name.
+// This test case trigger `keyword` heuristic as well because of `google`
+// in the URL.
+// TODO(crbug.com/1343630): keyword (embedded keyword) heuristic should
+// be removed from the code including CheckHeuristicsUkmRecord.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       DontTriggerOnAllowlistedComboSquatting) {
+  // Set a launch config with 100% rollout for Combo Squatting.
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
+      100);
+  base::HistogramTester histograms;
+  const GURL kNavigatedUrl = GetURL("google-login.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  reputation::SetSafetyTipAllowlistPatterns({"google-login.com/"}, {}, {});
+
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  // Make sure that the UI is not showing, and that no histogram has been
+  // recorded.
+  ASSERT_FALSE(IsUIShowing());
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
+
+  // TODO(crbug.com/1401102): This shouldn't record a UKM.
+  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Test that a Safety Tip is shown and metrics are recorded when
@@ -1322,6 +1473,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
 
+  histograms.ExpectBucketCount(kSafetyTipShownHistogram,
+                               security_state::SafetyTipStatus::kLookalike, 1);
+  // Lookalike throttle always records an entry for heuristic matches.
   histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
   histograms.ExpectBucketCount(lookalikes::kHistogramName,
                                NavigationSuggestionEvent::kComboSquatting, 1);
@@ -1329,14 +1483,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // Make sure that the UI is now showing, and that no UKM data has been
   // recorded yet.
   ASSERT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckSafetyTipUkmCount(0);
 
   // Once we close the warning, ensure that the UI is no longer showing, and
   // that UKM data has now been recorded.
   CloseWarningLeaveSite(browser());
   ASSERT_FALSE(IsUIShowing());
 
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   // Navigate to the same site again, but close the warning with an ignore
@@ -1346,14 +1500,17 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_TRUE(IsUIShowing());
 
   // Make sure the already collected UKM data still exists.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(2);
+
+  test_helper()->CheckSafetyTipUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 1);
+
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
 // Test that a Safety Tip is shown and metrics are recorded when
@@ -1361,8 +1518,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // In this test case, engaged site is not one of the keywords in `keyword`
 // heuristic.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       TriggerOnComboSquattingSiteEngagement) {
-  // Set a launch config with 100% rollout for Combo Squatting.
+                       ComboSquattingSiteEngagement_UIEnabled) {
+  // Set a launch config with 100% rollout for Combo Squatting UI.
   reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::
           HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
@@ -1375,6 +1532,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
 
+  histograms.ExpectBucketCount(kSafetyTipShownHistogram,
+                               security_state::SafetyTipStatus::kLookalike, 1);
+  // Lookalike navigation throttle always records an entry for heuristic
+  // matches.
   histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
   histograms.ExpectBucketCount(
       lookalikes::kHistogramName,
@@ -1383,14 +1544,14 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // Make sure that the UI is now showing, and that no UKM data has been
   // recorded yet.
   ASSERT_TRUE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 
   // Once we close the warning, ensure that the UI is no longer showing, and
   // that UKM data has now been recorded.
   CloseWarningLeaveSite(browser());
   ASSERT_FALSE(IsUIShowing());
 
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   // Navigate to the same site again, but close the warning with an ignore
@@ -1400,20 +1561,27 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_TRUE(IsUIShowing());
 
   // Make sure the already collected UKM data still exists.
-  CheckRecordedHeuristicsUkmCount(1);
+  test_helper()->CheckSafetyTipUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(2);
+  test_helper()->CheckSafetyTipUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, /*expected_lookalike=*/true}, 1);
+
+  test_helper()->CheckInterstitialUkmCount(0);
 }
 
-// This test checks that Safety Tip is not showing when the Combo Squatting
-// is not enabled for hard coded list by gradual roll out.
+// This test checks that a Safety Tip is not shown when the UI is disabled
+// via gradual rollout for Combo Squatting with hardcoded brand and keywords.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       NotTriggerOnComboSquattingButNotLaunched) {
+                       ComboSquatting_UIDisabled_ShouldRecordMetrics) {
+  // Set a launch config with 0% rollout for Combo Squatting UI.
+  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+      reputation::HeuristicLaunchConfig::
+          HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
+      0);
   base::HistogramTester histograms;
   const GURL kNavigatedUrl = GetURL("costco-login.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -1424,16 +1592,19 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   histograms.ExpectBucketCount(lookalikes::kHistogramName,
                                NavigationSuggestionEvent::kComboSquatting, 1);
 
-  // Make sure that the UI is not showing, and that no UKM data has been
-  // recorded.
+  // Make sure that the UI is not showing, and that no safety tip UKM has been
+  // recorded. Instead, the interstitial should record UKM.
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+
+  test_helper()->CheckSafetyTipUkmCount(0);
+  test_helper()->CheckInterstitialUkmCount(1);
 }
 
-// This test checks that Safety Tip is not showing when the Combo Squatting
-// is not enabled for engaged sites by gradual roll out.
-IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       NotTriggerOnComboSquattingSiteEngagementNotLaunched) {
+// This test checks that a Safety Tip is not shown when the UI is disabled
+// via gradual rollout for Combo Squatting with engaged sites.
+IN_PROC_BROWSER_TEST_F(
+    SafetyTipPageInfoBubbleViewBrowserTest,
+    ComboSquattingSiteEngagement_UIDisabled_ShouldRecordMetrics) {
   base::HistogramTester histograms;
   const GURL kEngagedUrl = GetURL("example.com");
   const GURL kNavigatedUrl = GetURL("example-login.com");
@@ -1447,10 +1618,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
       lookalikes::kHistogramName,
       NavigationSuggestionEvent::kComboSquattingSiteEngagement, 1);
 
-  // Make sure that the UI is not showing, and that no UKM data has been
-  // recorded.
+  // Make sure that the UI is not showing, and that no safety tip UKM has been
+  // recorded. Instead, the interstitial should record UKM.
   ASSERT_FALSE(IsUIShowing());
-  CheckRecordedHeuristicsUkmCount(0);
+
+  test_helper()->CheckSafetyTipUkmCount(0);
+  test_helper()->CheckInterstitialUkmCount(1);
 }
 
 class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
@@ -1547,13 +1720,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
       embedded_test_server()->GetURL("accounts-google.com", "/title1.html");
 
   base::HistogramTester histograms;
-  const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
 
   // Generate a Safety Tip.
   content::TestNavigationObserver navigation_observer(web_contents());
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
-  histograms.ExpectTotalCount(kHistogramName, 1);
+  histograms.ExpectTotalCount(kSafetyTipShownHistogram, 1);
 
   // Wait until the primary page is loaded and start a prerender.
   navigation_observer.Wait();
@@ -1563,7 +1735,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   // Ensure the tip isn't closed by prerender navigation and isn't from the
   // prerendered page.
   EXPECT_TRUE(IsUIShowing());
-  histograms.ExpectTotalCount(kHistogramName, 1);
+  histograms.ExpectTotalCount(kSafetyTipShownHistogram, 1);
 }
 
 class SafetyTipPageInfoBubbleViewDialogTest : public DialogBrowserTest {

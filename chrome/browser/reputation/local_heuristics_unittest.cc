@@ -37,9 +37,11 @@ TEST(SafetyTipHeuristicsTest, ShouldTriggerSafetyTipFromLookalike) {
       engaged_sites.push_back(GetDomainInfo(test_case.engaged_url));
     }
     GURL safe_url;
+    LookalikeUrlMatchType match_type;
     EXPECT_TRUE(ShouldTriggerSafetyTipFromLookalike(
         test_case.navigated_url, GetDomainInfo(test_case.navigated_url),
-        engaged_sites, &safe_url));
+        engaged_sites, &safe_url, &match_type));
+    EXPECT_NE(LookalikeUrlMatchType::kNone, match_type);
     EXPECT_EQ(test_case.expected_safe_url, safe_url);
   }
 }

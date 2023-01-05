@@ -942,25 +942,6 @@ bool IsTopDomain(const DomainInfo& domain_info) {
   return false;
 }
 
-bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
-  if (match_type == LookalikeUrlMatchType::kSkeletonMatchSiteEngagement) {
-    return true;
-  }
-  if (match_type == LookalikeUrlMatchType::kTargetEmbedding) {
-#if BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1104384): Only enable target embedding on iOS once we can
-    //    check engaged sites. Otherwise, false positives are too high.
-    return false;
-#else
-    return true;
-#endif
-  }
-  if (match_type == LookalikeUrlMatchType::kFailedSpoofChecks) {
-    return true;
-  }
-  return match_type == LookalikeUrlMatchType::kSkeletonMatchTop500;
-}
-
 bool GetMatchingDomain(
     const DomainInfo& navigated_domain,
     const std::vector<DomainInfo>& engaged_sites,
@@ -1460,4 +1441,70 @@ bool IsSafeTLD(const std::string& hostname) {
   // This is intentionally kept simple and currently ignores hostnames with
   // ccTLDs (e.g. gov.in).
   return base::EndsWith(hostname, ".gov") || base::EndsWith(hostname, ".mil");
+}
+
+LookalikeActionType GetActionForMatchType(
+    const reputation::SafetyTipsConfig* config,
+    version_info::Channel channel,
+    const std::string& etld_plus_one,
+    LookalikeUrlMatchType match_type) {
+  switch (match_type) {
+    case LookalikeUrlMatchType::kEditDistance:
+      // Edit distance is too noisy, just record metrics.
+      return LookalikeActionType::kRecordMetrics;
+
+    case LookalikeUrlMatchType::kEditDistanceSiteEngagement:
+      return LookalikeActionType::kShowSafetyTip;
+
+    case LookalikeUrlMatchType::kTargetEmbedding:
+#if BUILDFLAG(IS_IOS)
+      // TODO(crbug.com/1104384): Only enable target embedding on iOS once we
+      // can
+      //    check engaged sites. Otherwise, false positives are too high.
+      return LookalikeActionType::kRecordMetrics;
+#else
+      return LookalikeActionType::kShowInterstitial;
+#endif
+
+    case LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips:
+      return LookalikeActionType::kShowSafetyTip;
+
+    case LookalikeUrlMatchType::kSkeletonMatchTop5k:
+      return LookalikeActionType::kShowSafetyTip;
+
+    case LookalikeUrlMatchType::kFailedSpoofChecks:
+      return LookalikeActionType::kShowInterstitial;
+
+    case LookalikeUrlMatchType::kSkeletonMatchSiteEngagement:
+    case LookalikeUrlMatchType::kSkeletonMatchTop500:
+      return LookalikeActionType::kShowInterstitial;
+
+    case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+    case LookalikeUrlMatchType::kCharacterSwapTop500:
+      return LookalikeActionType::kShowSafetyTip;
+
+    case LookalikeUrlMatchType::kComboSquatting:
+      return IsHeuristicEnabledForHostname(
+                 config,
+                 reputation::HeuristicLaunchConfig::
+                     HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
+                 etld_plus_one, channel)
+                 ? LookalikeActionType::kShowSafetyTip
+                 : LookalikeActionType::kRecordMetrics;
+
+    case LookalikeUrlMatchType::kComboSquattingSiteEngagement:
+      return IsHeuristicEnabledForHostname(
+                 config,
+                 reputation::HeuristicLaunchConfig::
+                     HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
+                 etld_plus_one, channel)
+                 ? LookalikeActionType::kShowSafetyTip
+                 : LookalikeActionType::kRecordMetrics;
+
+    case LookalikeUrlMatchType::kNone:
+      NOTREACHED();
+  }
+
+  NOTREACHED();
+  return LookalikeActionType::kNone;
 }

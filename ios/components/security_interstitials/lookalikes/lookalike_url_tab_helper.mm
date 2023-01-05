@@ -147,7 +147,12 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     return;
   }
 
-  if (!ShouldBlockLookalikeUrlNavigation(match_type)) {
+  // GetActionForMatchType checks gradual rollout which currently only controls
+  // Safety Tips. Since Safety Tips aren't implemented on iOS, ignore gradual
+  // rollout checks by passing null proto and unknown channel.
+  if (GetActionForMatchType(nullptr, version_info::Channel::UNKNOWN,
+                            navigated_domain.domain_and_registry, match_type) ==
+      LookalikeActionType::kRecordMetrics) {
     // Interstitial normally records UKM, but still record when it's not shown.
     RecordUkmForLookalikeUrlBlockingPage(
         ukm::GetSourceIdForWebStateDocument(web_state()), match_type,

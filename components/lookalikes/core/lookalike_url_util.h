@@ -216,10 +216,6 @@ bool IsTopDomain(const DomainInfo& domain_info);
 // which doesn't have a notion of private registries.
 std::string GetETLDPlusOne(const std::string& hostname);
 
-// Returns true if a lookalike interstitial should be shown for the given
-// match type.
-bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type);
-
 // Returns true if a domain is visually similar to the hostname of |url|. The
 // matching domain can be a top domain or an engaged site. Similarity
 // check is made using both visual skeleton and edit distance comparison.  If
@@ -306,5 +302,26 @@ ComboSquattingType GetComboSquattingType(
 // Returns true if `etld_plus_one` has a TLD that's considered safe for
 // lookalike checks, such as government sites.
 bool IsSafeTLD(const std::string& hostname);
+
+// The action to take for a given lookalike match.
+enum class LookalikeActionType {
+  // No action.
+  kNone,
+  // Only record metrics, don't show any UI warnings.
+  kRecordMetrics,
+  // Show a safety tip.
+  kShowSafetyTip,
+  // Show an interstitial.
+  kShowInterstitial,
+};
+
+// Returns the action to take for the given `etld_plus_one` and lookalike
+// `match_type`. Uses `config` to check whether the heuristic UI is enabled
+// via gradual rollout.
+LookalikeActionType GetActionForMatchType(
+    const reputation::SafetyTipsConfig* config,
+    version_info::Channel channel,
+    const std::string& etld_plus_one,
+    LookalikeUrlMatchType match_type);
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

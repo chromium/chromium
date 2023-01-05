@@ -78,10 +78,12 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("accounts-google.com", "127.0.0.1");
-    SetUpLookalikeTestParams();
+    LookalikeTestHelper::SetUpLookalikeTestParams();
   }
 
-  void TearDownOnMainThread() override { TearDownLookalikeTestParams(); }
+  void TearDownOnMainThread() override {
+    LookalikeTestHelper::TearDownLookalikeTestParams();
+  }
 
  protected:
   void StartHttpsServer(net::EmbeddedTestServer::ServerCertificate cert) {

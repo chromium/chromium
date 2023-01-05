@@ -30,7 +30,9 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/reputation/local_heuristics.h"
 #include "chrome/browser/reputation/reputation_service.h"
+#include "chrome/common/channel_info.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
@@ -452,29 +454,27 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   ukm::SourceId source_id = ukm::ConvertToSourceId(
       navigation_handle()->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
 
-  if (first_is_lookalike &&
-      ShouldBlockLookalikeUrlNavigation(first_match_type)) {
-    return CheckAndMaybeShowInterstitial(first_suggested_url, first_url,
-                                         source_id, first_match_type,
-                                         first_is_lookalike);
-  }
-
-  if (last_is_lookalike && ShouldBlockLookalikeUrlNavigation(last_match_type)) {
-    return CheckAndMaybeShowInterstitial(last_suggested_url, last_url,
-                                         source_id, last_match_type,
-                                         first_is_lookalike);
-  }
-
   LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
-  if (match_type == LookalikeUrlMatchType::kCharacterSwapTop500 ||
-      match_type == LookalikeUrlMatchType::kCharacterSwapSiteEngagement) {
-    // Character Swap is enabled as a safety tip by default. Don't record
-    // metrics here.
-    // TODO(crbug.com/1394808): Replace this with a more generalized check
-    // to decide which UI to show (Safety Tip or interstitial), and reuse it
-    // from the throttle and the safety tips code.
-    return NavigationThrottle::PROCEED;
+  std::string etld_plus_one = first_is_lookalike
+                                  ? GetETLDPlusOne(first_url.host())
+                                  : GetETLDPlusOne(last_url.host());
+  LookalikeActionType action_type =
+      GetActionForMatchType(reputation::GetSafetyTipsRemoteConfigProto(),
+                            chrome::GetChannel(), etld_plus_one, match_type);
+
+  if (first_is_lookalike &&
+      action_type == LookalikeActionType::kShowInterstitial) {
+    return CheckAndMaybeShowInterstitial(
+        first_suggested_url, first_url, source_id, first_match_type,
+        /*triggered_by_initial_url=*/first_is_lookalike);
+  }
+
+  if (last_is_lookalike &&
+      action_type == LookalikeActionType::kShowInterstitial) {
+    return CheckAndMaybeShowInterstitial(
+        last_suggested_url, last_url, source_id, last_match_type,
+        /*triggered_by_initial_url=*/first_is_lookalike);
   }
 
   // IMPORTANT: Every time that a new lookalike heuristic is added, before
@@ -483,15 +483,23 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   // called with `is_new_heuristic=true`. The `lookalike_url` could be first_url
   // or last_url depending on the value of `first_is_lookalike`.
 
+  // Always record UMA for any heuristic match.
+  DCHECK_NE(LookalikeUrlMatchType::kNone, match_type);
+  DCHECK(action_type == LookalikeActionType::kRecordMetrics ||
+         action_type == LookalikeActionType::kShowSafetyTip);
   RecordUMAFromMatchType(match_type);
-  // Interstitial normally records UKM, but still record when it's not shown.
-  RecordUkmForLookalikeUrlBlockingPage(
-      source_id, match_type,
-      LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
-      first_is_lookalike);
   RecordPerformCheckLatenciesForAllowedNavigation(
       perform_checks_start, is_lookalike_url_duration,
       total_get_domain_info_duration);
+
+  // ...but only record interstitial UKM if we aren't going to show a safety
+  // tip. Otherwise, we'll double record UKM, both here and in safety tips.
+  if (action_type == LookalikeActionType::kRecordMetrics) {
+    RecordUkmForLookalikeUrlBlockingPage(
+        source_id, match_type,
+        LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
+        first_is_lookalike);
+  }
   return NavigationThrottle::PROCEED;
 }
 

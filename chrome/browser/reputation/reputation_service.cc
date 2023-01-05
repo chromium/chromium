@@ -192,14 +192,14 @@ void ReputationService::GetReputationStatusWithEngagedSites(
 
   // 3. Lookalike heuristics.
   GURL safe_url;
+  LookalikeUrlMatchType match_type;
   if (!already_engaged &&
       ShouldTriggerSafetyTipFromLookalike(url, navigated_domain, engaged_sites,
-                                          &safe_url)) {
+                                          &safe_url, &match_type)) {
     if (!done_checking_reputation_status) {
       result.suggested_url = safe_url;
       result.safety_tip_status = SafetyTipStatus::kLookalike;
     }
-
     result.lookalike_heuristic_triggered = true;
     done_checking_reputation_status = true;
   }
