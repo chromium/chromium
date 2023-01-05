@@ -11,9 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
-#include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/session_proto_db/session_proto_db_test_proto.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,7 +113,8 @@ class SessionProtoDBTest : public testing::Test {
         new SessionProtoDB<persisted_state_db::PersistedStateContentProto>(
             std::move(storage_db),
             base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::USER_VISIBLE})));
+                {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+            content::GetUIThreadTaskRunner({})));
   }
 
   void MockInitCallbackPersistedStateDB(
@@ -193,7 +196,8 @@ class SessionProtoDBTest : public testing::Test {
         new SessionProtoDB<session_proto_db::SessionProtoDBTestProto>(
             std::move(storage_db),
             base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::USER_VISIBLE})));
+                {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+            content::GetUIThreadTaskRunner({})));
   }
 
   void GetTestEvaluationTestProtoDB(
@@ -307,7 +311,7 @@ class SessionProtoDBTest : public testing::Test {
       test_content_db_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // For persisted_state_db::PersistedStateContentProto database
   raw_ptr<leveldb_proto::test::FakeDB<

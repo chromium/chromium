@@ -24,6 +24,7 @@ source_set("commerce") {
     "//ios/chrome/browser/signin:signin",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/web",
+    "//ios/web/public",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
