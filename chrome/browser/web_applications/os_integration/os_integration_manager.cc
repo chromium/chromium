@@ -185,16 +185,16 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
     url_handler_manager_->SetSubsystems(registrar);
 
   sub_managers_.clear();
-  auto shortcut_handling_sub_manager = std::make_unique<ShortcutSubManager>(
+
+  auto shortcut_sub_manager = std::make_unique<ShortcutSubManager>(
       *profile_, *icon_manager, *registrar);
   auto protocol_handling_sub_manager =
-      std::make_unique<ProtocolHandlingSubManager>(*registrar);
+      std::make_unique<ProtocolHandlingSubManager>(profile_, *registrar);
   auto run_on_os_login_sub_manager =
       std::make_unique<RunOnOsLoginSubManager>(*registrar);
-
   auto uninstallation_via_os_settings_sub_manager =
       std::make_unique<UninstallationViaOsSettingsSubManager>(*registrar);
-  sub_managers_.push_back(std::move(shortcut_handling_sub_manager));
+  sub_managers_.push_back(std::move(shortcut_sub_manager));
   sub_managers_.push_back(std::move(protocol_handling_sub_manager));
   sub_managers_.push_back(std::move(run_on_os_login_sub_manager));
   sub_managers_.push_back(
@@ -823,6 +823,15 @@ void OsIntegrationManager::UpdateProtocolHandlers(
     const AppId& app_id,
     bool force_shortcut_updates_if_needed,
     base::OnceClosure callback) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (AreSubManagersExecuteEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+
   if (!protocol_handler_manager_) {
     std::move(callback).Run();
     return;

@@ -54,7 +54,9 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                       const std::u16string& old_app_title,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
-
+  void OnShortcutsDeleted(const AppId& app_id,
+                          base::OnceClosure final_callback,
+                          bool success);
   void StoreIconDataFromDisk(proto::ShortcutDescription* shortcut,
                              base::flat_map<SquareSizePx, base::Time> time_map);
 

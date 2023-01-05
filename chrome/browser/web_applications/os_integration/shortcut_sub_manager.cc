@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -152,6 +153,12 @@ void ShortcutSubManager::Execute(
 
   // Second, handle shortcut creation.
   if (desired_state.has_shortcut() && !current_state.has_shortcut()) {
+    // This is required to create the app shim registry for the current profile
+    // on Mac, otherwise updates to the AppShimRegistry do not happen.
+#if BUILDFLAG(IS_MAC)
+    AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                     profile_->GetPath());
+#endif
     std::unique_ptr<ShortcutInfo> desired_shortcut_info =
         BuildShortcutInfoWithoutFavicon(
             app_id, registrar_->GetAppStartUrl(app_id), profile_->GetPath(),
@@ -172,11 +179,12 @@ void ShortcutSubManager::Execute(
             app_id, registrar_->GetAppStartUrl(app_id), profile_->GetPath(),
             profile_->GetPrefs()->GetString(prefs::kProfileName),
             current_state);
+
     internals::ScheduleDeletePlatformShortcuts(
         shortcut_data_dir, std::move(current_shortcut_info),
-        base::BindOnce([](bool success) {
-          base::UmaHistogramBoolean("WebApp.Shortcuts.Delete.Result", success);
-        }).Then(std::move(callback)));
+        base::BindOnce(&ShortcutSubManager::OnShortcutsDeleted,
+                       weak_ptr_factory_.GetWeakPtr(), app_id,
+                       std::move(callback)));
     return;
   }
 
@@ -284,6 +292,32 @@ void ShortcutSubManager::UpdateShortcut(
         base::UmaHistogramBoolean("WebApp.Shortcuts.Update.Result",
                                   (result == Result::kOk));
       }).Then(std::move(on_complete)));
+}
+
+void ShortcutSubManager::OnShortcutsDeleted(const AppId& app_id,
+                                            base::OnceClosure final_callback,
+                                            bool success) {
+  ResultCallback final_result_callback =
+      base::BindOnce([](Result result) {
+        bool final_success = (result == Result::kOk) ? true : false;
+        base::UmaHistogramBoolean("WebApp.Shortcuts.Delete.Result",
+                                  final_success);
+      }).Then(std::move(final_callback));
+
+#if BUILDFLAG(IS_MAC)
+  bool delete_multi_profile_shortcuts =
+      AppShimRegistry::Get()->OnAppUninstalledForProfile(app_id,
+                                                         profile_->GetPath());
+  if (delete_multi_profile_shortcuts) {
+    internals::ScheduleDeleteMultiProfileShortcutsForApp(
+        app_id, std::move(final_result_callback));
+  } else {
+    std::move(final_result_callback)
+        .Run(success ? Result::kOk : Result::kError);
+  }
+#else
+  std::move(final_result_callback).Run(success ? Result::kOk : Result::kError);
+#endif
 }
 
 void ShortcutSubManager::StoreIconDataFromDisk(

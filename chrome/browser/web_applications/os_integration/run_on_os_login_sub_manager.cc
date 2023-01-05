@@ -41,12 +41,12 @@ void RunOnOsLoginSubManager::Configure(
     const AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
-  if (!registrar_->GetAppById(app_id)) {
+  DCHECK(!desired_state.has_run_on_os_login());
+
+  if (!registrar_->IsLocallyInstalled(app_id)) {
     std::move(configure_done).Run();
     return;
   }
-
-  DCHECK(!desired_state.has_run_on_os_login());
 
   proto::RunOnOsLogin* run_on_os_login =
       desired_state.mutable_run_on_os_login();
