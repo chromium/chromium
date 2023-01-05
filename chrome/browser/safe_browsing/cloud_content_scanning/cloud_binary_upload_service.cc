@@ -698,11 +698,6 @@ void CloudBinaryUploadService::ResetAuthorizationData(const GURL& url) {
 }
 
 void CloudBinaryUploadService::Shutdown() {
-  if (!active_requests_.empty()) {
-    base::UmaHistogramCounts10000(
-        "SafeBrowsingCloudBinaryUploadService.ActiveRequestsAtShutdown",
-        active_requests_.size());
-  }
   if (binary_fcm_service_)
     binary_fcm_service_->Shutdown();
 }
