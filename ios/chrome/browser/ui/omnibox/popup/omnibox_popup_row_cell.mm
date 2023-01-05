@@ -37,6 +37,9 @@ const CGFloat kTextSpacing = 2.0f;
 /// omnibox image. If Variation 2 becomes default, probably we don't need the
 /// fancy layout guide setup and can get away with simple margins.
 const CGFloat kTrailingButtonPointSize = 17.0f;
+/// Maximum number of lines displayed for search suggestion when
+/// `kOmniboxMultilineSearchSuggest` is enabled.
+const NSInteger kSearchSuggestNumberOfLines = 2;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
@@ -468,6 +471,15 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
       self.highlighted
           ? [self highlightedAttributedStringWithString:suggestion.text]
           : suggestion.text;
+  if (base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest) &&
+      suggestion.isMatchTypeSearch) {
+    self.textTruncatingLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
+  } else {
+    // Default values for FadeTruncatingLabel.
+    self.textTruncatingLabel.lineBreakMode = NSLineBreakByClipping;
+    self.textTruncatingLabel.numberOfLines = 1;
+  }
 
   // URLs have have special layout requirements.
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;
