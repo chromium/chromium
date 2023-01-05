@@ -692,6 +692,11 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     if (parsed_response.license_type.has_value())
       state.Set(kDeviceStateLicenseType, *parsed_response.license_type);
 
+    if (parsed_response.assigned_upgrade_type.has_value()) {
+      state.Set(kDeviceStateAssignedUpgradeType,
+                *parsed_response.assigned_upgrade_type);
+    }
+
     // Store the enrollment state obtained from the server to local state.
     // Depending on the value, this can be used later to trigger enrollment or
     // to disable the device.

@@ -9,6 +9,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,6 +77,24 @@ std::string ConvertInitialEnrollmentMode(
     case em::DeviceInitialEnrollmentStateResponse::
         INITIAL_ENROLLMENT_MODE_DISABLED:
       return kDeviceStateModeDisabled;
+  }
+}
+
+// Converts an assigned upgrade type enum value from the DM protocol for
+// initial enrollment into the corresponding prefs string constant.
+std::string ConvertAssignedUpgradeType(
+    em::DeviceInitialEnrollmentStateResponse::AssignedUpgradeType
+        assigned_upgrade_type) {
+  switch (assigned_upgrade_type) {
+    case em::DeviceInitialEnrollmentStateResponse::
+        ASSIGNED_UPGRADE_TYPE_UNSPECIFIED:
+      return std::string();
+    case em::DeviceInitialEnrollmentStateResponse::
+        ASSIGNED_UPGRADE_TYPE_CHROME_ENTERPRISE:
+      return kDeviceStateAssignedUpgradeTypeChromeEnterprise;
+    case em::DeviceInitialEnrollmentStateResponse::
+        ASSIGNED_UPGRADE_TYPE_KIOSK_AND_SIGNAGE:
+      return kDeviceStateAssignedUpgradeTypeKiosk;
   }
 }
 
@@ -155,6 +175,11 @@ class InitialEnrollmentStateMessageProcessor
           ConvertLicenseType(state_response.license_packaging_sku());
     }
 
+    if (state_response.has_assigned_upgrade_type()) {
+      parsed_response.assigned_upgrade_type =
+          ConvertAssignedUpgradeType(state_response.assigned_upgrade_type());
+    }
+
     if (state_response.has_disabled_state()) {
       parsed_response.disabled_message =
           state_response.disabled_state().message();
@@ -162,10 +187,22 @@ class InitialEnrollmentStateMessageProcessor
 
     LOG(WARNING) << "Received initial_enrollment_mode="
                  << state_response.initial_enrollment_mode() << " ("
-                 << parsed_response.restore_mode << "). "
-                 << (state_response.is_license_packaged_with_device()
+                 << parsed_response.restore_mode << "). ";
+
+    LOG(WARNING) << (state_response.is_license_packaged_with_device()
                          ? "Device has a packaged license for management."
-                         : "No packaged license.");
+                         : "No packaged license. ");
+
+    LOG(WARNING) << (state_response.has_assigned_upgrade_type()
+                         ? base::StrCat(
+                               {"Assigned upgrade type=",
+                                base::NumberToString(
+                                    state_response.assigned_upgrade_type()),
+                                " (",
+                                parsed_response.assigned_upgrade_type.value_or(
+                                    std::string()),
+                                ")."})
+                         : "No assigned upgrade type.");
 
     return parsed_response;
   }

@@ -35,6 +35,27 @@ bool IsEnrollingAfterRollback() {
   return wizard_context && ash::IsRollbackFlow(*wizard_context);
 }
 
+// Returns the license type to use based on the license type, assigned
+// upgrade type and the license packaged from device state.
+policy::LicenseType GetLicenseTypeToUse(
+    const std::string license_type, const bool is_license_packaged_with_device,
+    const std::string assigned_upgrade_type) {
+  if (license_type == policy::kDeviceStateLicenseTypeEnterprise) {
+    return policy::LicenseType::kEnterprise;
+  } else if (license_type == policy::kDeviceStateLicenseTypeEducation) {
+    return policy::LicenseType::kEducation;
+  } else if (license_type == policy::kDeviceStateLicenseTypeTerminal) {
+    return policy::LicenseType::kTerminal;
+  }
+
+  if (!is_license_packaged_with_device &&
+      assigned_upgrade_type == policy::kDeviceStateAssignedUpgradeTypeKiosk) {
+    return policy::LicenseType::kTerminal;
+  }
+
+  return policy::LicenseType::kNone;
+}
+
 }  // namespace
 
 namespace policy {
@@ -125,18 +146,20 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
       device_state.FindBool(kDeviceStatePackagedLicense).value_or(false);
   const std::string license_type =
       GetString(device_state, kDeviceStateLicenseType);
+  const std::string assigned_upgrade_type = GetString(device_state, kDeviceStateAssignedUpgradeType);
 
   config.is_license_packaged_with_device = is_license_packaged_with_device;
 
-  if (license_type == kDeviceStateLicenseTypeEnterprise) {
-    config.license_type = LicenseType::kEnterprise;
-  } else if (license_type == kDeviceStateLicenseTypeEducation) {
-    config.license_type = LicenseType::kEducation;
-  } else if (license_type == kDeviceStateLicenseTypeTerminal) {
-    config.license_type = LicenseType::kTerminal;
-  } else {
-    config.license_type = LicenseType::kNone;
+  if(assigned_upgrade_type == kDeviceStateAssignedUpgradeTypeChromeEnterprise) {
+    config.assigned_upgrade_type =
+        AssignedUpgradeType::kAssignedUpgradeTypeChromeEnterprise;
+  } else if(assigned_upgrade_type == kDeviceStateAssignedUpgradeTypeKiosk) {
+    config.assigned_upgrade_type =
+        AssignedUpgradeType::kAssignedUpgradeTypeKioskAndSignage;
   }
+
+  config.license_type = GetLicenseTypeToUse(
+      license_type, is_license_packaged_with_device, assigned_upgrade_type);
 
   const bool pref_enrollment_auto_start_present =
       local_state.HasPrefPath(prefs::kDeviceEnrollmentAutoStart);
