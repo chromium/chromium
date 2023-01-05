@@ -1757,6 +1757,14 @@ void AttributionStorageSql::ClearData(
   // the above histogram.
   SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.ClearDataWithFilterDuration");
 
+  // Delete the data in a transaction to avoid cases where the source part
+  // of a report is deleted without deleting the associated report, or
+  // vice versa.
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin()) {
+    return;
+  }
+
   // TODO(csharrison, johnidel): This query can be split up and optimized by
   // adding indexes on the time and trigger_time columns.
   // See this comment for more information:
@@ -1803,14 +1811,6 @@ void AttributionStorageSql::ClearData(
   // TODO(csharrison, johnidel): Should we consider poisoning the DB if some of
   // the delete operations fail?
   if (!statement.Succeeded()) {
-    return;
-  }
-
-  // Delete the data in a transaction to avoid cases where the source part
-  // of a report is deleted without deleting the associated report, or
-  // vice versa.
-  sql::Transaction transaction(db_.get());
-  if (!transaction.Begin()) {
     return;
   }
 
