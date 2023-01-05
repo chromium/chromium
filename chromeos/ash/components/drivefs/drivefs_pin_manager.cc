@@ -351,20 +351,17 @@ size_t DriveFsPinManager::InProgressSyncingItems::GetItemCount() {
   return in_progress_items_.size();
 }
 
-std::vector<std::string>
-DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
+std::vector<std::string> DriveFsPinManager::InProgressSyncingItems::GetPaths() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::string> unstarted_items;
+  std::vector<std::string> paths;
+  paths.reserve(in_progress_items_.size());
   for (const auto& [path, progress] : in_progress_items_) {
-    if (progress.total <= 0) {
-      unstarted_items.push_back(path);
-    }
+    paths.push_back(path);
   }
 
-  VLOG_IF(1, !unstarted_items.empty())
-      << "[InProgressSyncingItems] There are " << unstarted_items.size()
-      << " unstarted items";
-  return unstarted_items;
+  VLOG_IF(1, !paths.empty())
+      << "[InProgressSyncingItems] There are " << paths.size() << " items";
+  return paths;
 }
 
 bool ManagerState::SetupInProgress() const {
@@ -383,10 +380,7 @@ DriveFsPinManager::DriveFsPinManager(
                                        : std::make_unique<FreeDiskSpaceImpl>()),
       profile_path_(profile_path),  // The GCache directory is located in the
                                     // users profile path.
-      drivefs_interface_(drivefs_interface),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-      syncing_items_(
-          base::SequenceBound<InProgressSyncingItems>{task_runner_}) {}
+      drivefs_interface_(drivefs_interface) {}
 
 DriveFsPinManager::~DriveFsPinManager() = default;
 
@@ -574,8 +568,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     }
 
     VLOG(2) << "Pinning " << Quote(md.type) << " " << Quote(path) << "...";
-    syncing_items_.AsyncCall(&InProgressSyncingItems::AddItem)
-        .WithArgs(path.value());
+    syncing_items_.AddItem(path.value());
     drivefs_interface_->SetPinned(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
@@ -599,10 +592,7 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot pin " << Quote(path) << ": " << status;
     state_.progress.error_count++;
-    syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
-        .WithArgs(path, 0)
-        .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
-                             weak_ptr_factory_.GetWeakPtr()));
+    ReportTotalBytesTransferred(syncing_items_.RemoveItem(path, 0));
     return;
   }
 
@@ -628,7 +618,7 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
 
       case State::kCompleted:
         VLOG(2) << "Synced " << Quote(event->path);
-        GetMetadataForPath(event->path);
+        // TODO(b/264481646) GetMetadataForPath(event->path);
         continue;
 
       case State::kFailed:
@@ -643,19 +633,13 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
         LOG_IF(ERROR, event->bytes_to_transfer < 0)
             << "Negative bytes_to_transfer " << event->bytes_to_transfer
             << " for " << Quote(event->path);
-        syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
-            .WithArgs(event->path, event->bytes_transferred,
-                      event->bytes_to_transfer)
-            .Then(
-                base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
-                               weak_ptr_factory_.GetWeakPtr()));
+        ReportTotalBytesTransferred(syncing_items_.UpdateItem(
+            event->path, event->bytes_transferred, event->bytes_to_transfer));
         continue;
     }
   }
 
-  syncing_items_.AsyncCall(&InProgressSyncingItems::GetItemCount)
-      .Then(base::BindOnce(&DriveFsPinManager::MaybeStartSearch,
-                           weak_ptr_factory_.GetWeakPtr()));
+  MaybeStartSearch(syncing_items_.GetItemCount());
 }
 
 void DriveFsPinManager::ReportTotalBytesTransferred(
@@ -711,11 +695,8 @@ void DriveFsPinManager::RemoveObserver(DriveFsBulkPinObserver* observer) {
 }
 
 void DriveFsPinManager::PeriodicallyRemovePinnedItems() {
-  VLOG(1) << "Removing already pinned items from list of items to sync";
-
-  syncing_items_.AsyncCall(&InProgressSyncingItems::GetUnstartedItems)
-      .Then(base::BindOnce(&DriveFsPinManager::GetMetadata,
-                           weak_ptr_factory_.GetWeakPtr()));
+  VLOG(2) << "Cleaning tracked item list...";
+  GetMetadata(syncing_items_.GetPaths());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -727,15 +708,10 @@ void DriveFsPinManager::PeriodicallyRemovePinnedItems() {
 void DriveFsPinManager::GetMetadata(
     const std::vector<std::string>& unstarted_paths) {
   for (const std::string& path : unstarted_paths) {
-    drivefs_interface_->GetMetadata(
-        base::FilePath(path),
-        base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
-                       weak_ptr_factory_.GetWeakPtr(), path));
+    GetMetadataForPath(path);
   }
 
-  syncing_items_.AsyncCall(&InProgressSyncingItems::GetItemCount)
-      .Then(base::BindOnce(&DriveFsPinManager::MaybeStartSearch,
-                           weak_ptr_factory_.GetWeakPtr()));
+  MaybeStartSearch(syncing_items_.GetItemCount());
 }
 
 void DriveFsPinManager::GetMetadataForPath(const std::string& path) {
@@ -751,10 +727,7 @@ void DriveFsPinManager::OnMetadataRetrieved(
     const mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot get metadata of " << Quote(path) << ": " << error;
-    syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
-        .WithArgs(path, 0)
-        .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
-                             weak_ptr_factory_.GetWeakPtr()));
+    ReportTotalBytesTransferred(syncing_items_.RemoveItem(path, 0));
     return;
   }
 
@@ -767,16 +740,13 @@ void DriveFsPinManager::OnMetadataRetrieved(
             ? kAverageHostedFileSizeInBytes
             : metadata->size;
 
-    VLOG_IF(2, !metadata->pinned)
-        << "Skipped " << Quote(path) << ": Not pinned";
-    VLOG_IF(2, metadata->available_offline)
-        << "Skipped " << Quote(path) << ": Already available offline";
-    VLOG_IF(2, metadata->size == 0)
-        << "Skipped " << Quote(path) << ": Empty file";
-    syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
-        .WithArgs(path, file_size)
-        .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
-                             weak_ptr_factory_.GetWeakPtr()));
+    VLOG_IF(1, !metadata->pinned)
+        << "Stop tracking " << Quote(path) << ": Not pinned";
+    VLOG_IF(1, metadata->available_offline)
+        << "Stop tracking " << Quote(path) << ": Already available offline";
+    VLOG_IF(1, metadata->size == 0)
+        << "Stop tracking " << Quote(path) << ": Empty file";
+    ReportTotalBytesTransferred(syncing_items_.RemoveItem(path, file_size));
   }
 }
 

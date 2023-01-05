@@ -16,9 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -195,12 +193,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
                        int64_t bytes_transferred,
                        int64_t bytes_to_transfer);
 
-    // Return the number of items currently being tracked as in progress.
+    // Returns the number of items currently being tracked as in progress.
     size_t GetItemCount();
 
-    // Returns any items that have 0 `bytes_to_transfer` which corresponds to
-    // items that haven't received a syncing status update.
-    std::vector<std::string> GetUnstartedItems();
+    // Returns the paths of items currently being tracked as in progress.
+    std::vector<std::string> GetPaths();
 
    private:
     SEQUENCE_CHECKER(sequence_checker_);
@@ -296,11 +293,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   const raw_ptr<mojom::DriveFs> drivefs_interface_;
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
-
-  // The in progress syncing items and the task runner which guarantees items
-  // are added / removed / updated in sequence.
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::SequenceBound<InProgressSyncingItems> syncing_items_;
+  InProgressSyncingItems syncing_items_;
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };
