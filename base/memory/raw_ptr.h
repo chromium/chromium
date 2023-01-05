@@ -1120,16 +1120,7 @@ struct RawPtrTypeToImpl<RawPtrMayDangle> {
 
 template <>
 struct RawPtrTypeToImpl<RawPtrMayDangleUntriaged> {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
-#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  using Impl = internal::AsanBackupRefPtrImpl;
-#elif defined(RAW_PTR_USE_MTE_CHECKED_PTR)
-  using Impl = internal::MTECheckedPtrImpl<
-      internal::MTECheckedPtrImplPartitionAllocSupport>;
-#else
-  using Impl = internal::RawPtrNoOpImpl;
-#endif
+  using Impl = RawPtrTypeToImpl<RawPtrMayDangle>::Impl;
 };
 
 template <>
