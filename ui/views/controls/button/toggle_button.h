@@ -101,6 +101,12 @@ class VIEWS_EXPORT ToggleButton : public Button {
   bool accepts_events_ = true;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ToggleButton, Button)
+VIEW_BUILDER_PROPERTY(bool, IsOn)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ToggleButton)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_

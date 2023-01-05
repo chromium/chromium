@@ -5730,6 +5730,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_DISCOVER_MORE_TITLE" desc="Text of the button in the installed extensions tab used to open the webstore page">
         Discover more extensions
       </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site setting toggle button when is on.">
+        Extensions are allowed on this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP" desc="Tooltip text for the site setting toggle button when is off.'">
+        Extensions are blocked on this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button when is on.">
+        Select to block all extensions on this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button when is off.'">
+        Select to allow extensions on this site
+      </message>
       <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE" desc="Title of the requests access section that lists the extensions requesting site access">
         Requests access
       </message>

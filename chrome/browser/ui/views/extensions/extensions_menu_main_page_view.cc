@@ -8,8 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
@@ -21,6 +23,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -31,6 +34,8 @@
 
 namespace {
 
+using PermissionsManager = extensions::PermissionsManager;
+
 // Returns the current site pointed by `web_contents`. This method should only
 // be called when web contents are present.
 std::u16string GetCurrentSite(content::WebContents* web_contents) {
@@ -38,6 +43,33 @@ std::u16string GetCurrentSite(content::WebContents* web_contents) {
   const GURL& url = web_contents->GetLastCommittedURL();
   return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
       url);
+}
+
+// Updates the `toggle_button` text based on its state.
+void UpdateSiteSettingToggleText(views::ToggleButton* toggle_button) {
+  bool is_on = toggle_button->GetIsOn();
+  toggle_button->SetTooltipText(l10n_util::GetStringUTF16(
+      is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
+            : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP));
+  toggle_button->SetAccessibleName(l10n_util::GetStringUTF16(
+      is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
+            : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP));
+}
+
+// Returns whether `site_settings_toggle_` should be on or off.
+bool IsSiteSettingsToggleOn(Browser* browser,
+                            content::WebContents* web_contents) {
+  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  return PermissionsManager::Get(browser->profile())
+             ->GetUserSiteSetting(origin) ==
+         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
+}
+
+// Returns whether `site_setting_toggle_` should be visible.
+bool IsSiteSettingsToggleVisible(
+    const raw_ptr<ToolbarActionsModel> toolbar_model,
+    content::WebContents* web_contents) {
+  return !toolbar_model->IsRestrictedUrl(web_contents->GetLastCommittedURL());
 }
 
 }  // namespace
@@ -87,12 +119,15 @@ RequestsAccessSection::RequestsAccessSection() {
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     Browser* browser,
     ExtensionsMenuNavigationHandler* navigation_handler)
-    : browser_(browser), navigation_handler_(navigation_handler) {
+    : browser_(browser),
+      navigation_handler_(navigation_handler),
+      toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width =*/true)
           .WithWeight(1);
+  content::WebContents* web_contents = GetActiveWebContents();
 
   views::Builder<ExtensionsMenuMainPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -121,7 +156,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetTextStyle(views::style::STYLE_SECONDARY),
                           views::Builder<views::Label>()
                               .CopyAddressTo(&subheader_subtitle_)
-                              .SetText(GetCurrentSite(GetActiveWebContents()))
+                              .SetText(GetCurrentSite(web_contents))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                               .SetTextContext(views::style::CONTEXT_LABEL)
                               .SetTextStyle(views::style::STYLE_SECONDARY)
@@ -129,6 +164,18 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetMultiLine(true)
                               .SetProperty(views::kFlexBehaviorKey,
                                            stretch_specification)),
+                  // Toggle site settings button.
+                  // TODO(crbug.com/1390952): Move button under close button.
+                  // This will be done as part of adding margins to the menu.
+                  views::Builder<views::ToggleButton>()
+                      .CopyAddressTo(&site_settings_toggle_)
+                      .SetCallback(base::BindRepeating(
+                          &ExtensionsMenuMainPageView::OnToggleButtonPressed,
+                          base::Unretained(this)))
+                      .SetVisible(IsSiteSettingsToggleVisible(toolbar_model_,
+                                                              web_contents))
+                      .SetIsOn(IsSiteSettingsToggleOn(browser_, web_contents)),
+                  // Close button.
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
                           base::BindRepeating(
@@ -146,13 +193,28 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   base::Unretained(navigation_handler_))))
       .BuildChildren();
 
+  // Update toggle button text after it's build, as it depends on its state.
+  UpdateSiteSettingToggleText(site_settings_toggle_);
+
   browser_->tab_strip_model()->AddObserver(this);
 }
 
 void ExtensionsMenuMainPageView::Update() {
   content::WebContents* web_contents = GetActiveWebContents();
-  if (web_contents)
+  if (web_contents) {
     subheader_subtitle_->SetText(GetCurrentSite(web_contents));
+
+    site_settings_toggle_->SetVisible(
+        IsSiteSettingsToggleVisible(toolbar_model_, web_contents));
+    site_settings_toggle_->SetIsOn(
+        IsSiteSettingsToggleOn(browser_, web_contents));
+    UpdateSiteSettingToggleText(site_settings_toggle_);
+  }
+}
+
+void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
+  // TODO(crbug.com/1390952): Update user site setting and add test.
+  UpdateSiteSettingToggleText(site_settings_toggle_);
 }
 
 void ExtensionsMenuMainPageView::TabChangedAt(content::WebContents* contents,

@@ -10,10 +10,12 @@
 
 namespace views {
 class Label;
+class ToggleButton;
 }
 
 class Browser;
 class ExtensionsMenuNavigationHandler;
+class ToolbarActionsModel;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View,
@@ -28,6 +30,8 @@ class ExtensionsMenuMainPageView : public views::View,
       const ExtensionsMenuMainPageView&) = delete;
 
   void Update();
+
+  void OnToggleButtonPressed();
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
@@ -44,10 +48,13 @@ class ExtensionsMenuMainPageView : public views::View,
  private:
   content::WebContents* GetActiveWebContents() const;
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<ExtensionsMenuNavigationHandler> navigation_handler_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<ExtensionsMenuNavigationHandler> navigation_handler_;
+  const raw_ptr<ToolbarActionsModel> toolbar_model_;
 
+  // Subheader.
   raw_ptr<views::Label> subheader_subtitle_;
+  raw_ptr<views::ToggleButton> site_settings_toggle_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuMainPageView, views::View)
