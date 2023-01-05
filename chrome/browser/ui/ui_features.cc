@@ -146,6 +146,10 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
              "SidePanelJourneysQueryless",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSidePanelSearchCompanion,
+             "SidePanelSearchCompanion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStrip,
              "ScrollableTabStrip",

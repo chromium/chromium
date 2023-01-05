@@ -42,6 +42,7 @@ class SidePanelEntry final {
     kAssistant,
     kAboutThisSite,
     kCustomizeChrome,
+    kSearchCompanion,
     // Extensions (nothing more should be added below here)
     kExtension
   };
