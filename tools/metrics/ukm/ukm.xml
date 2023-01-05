@@ -17998,6 +17998,18 @@ be describing additional metrics about the same event.
       metric, we measure the latency of user interactions by
       Responsiveness.UserInteraction.MaxEventDuration.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.country,profile.system_ram"/>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration">
     <summary>
