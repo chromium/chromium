@@ -17,6 +17,8 @@
 #include <sys/param.h>
 #include <unistd.h>
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -30,6 +32,7 @@
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/memory/scoped_policy.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -57,13 +60,13 @@ namespace {
 // IOHDIXHDDriveInKernel for disk images mounted "in-kernel." (See the
 // documentation for "hdiutil attach -kernel" for more information on the
 // distinction.)
-io_service_t CopyDiskImageAncestorForMedia(const char* disk_image_class,
-                                           io_service_t media) {
+base::mac::ScopedIOObject<io_service_t> GetDiskImageAncestorForMedia(
+    const char* disk_image_class,
+    base::mac::ScopedIOObject<io_service_t> media) {
   // This is highly unlikely. media as passed in is expected to be of class
   // IOMedia. Since the media service's entire ancestor chain will be checked,
   // though, check it as well.
   if (IOObjectConformsTo(media, disk_image_class)) {
-    IOObjectRetain(media);
     return media;
   }
 
@@ -73,7 +76,7 @@ io_service_t CopyDiskImageAncestorForMedia(const char* disk_image_class,
       kIORegistryIterateRecursively | kIORegistryIterateParents, &iterator_ref);
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "IORegistryEntryCreateIterator";
-    return IO_OBJECT_NULL;
+    return base::mac::ScopedIOObject<io_service_t>();
   }
   base::mac::ScopedIOObject<io_iterator_t> iterator(iterator_ref);
   iterator_ref = IO_OBJECT_NULL;
@@ -87,12 +90,12 @@ io_service_t CopyDiskImageAncestorForMedia(const char* disk_image_class,
            IOIteratorNext(iterator));
        ancestor; ancestor.reset(IOIteratorNext(iterator))) {
     if (IOObjectConformsTo(ancestor, disk_image_class)) {
-      return ancestor.release();
+      return ancestor;
     }
   }
 
   // The media does not reside on a disk image.
-  return IO_OBJECT_NULL;
+  return base::mac::ScopedIOObject<io_service_t>();
 }
 
 // Given an io_service_t (expected to be of class IOMedia), determines whether
@@ -100,12 +103,14 @@ io_service_t CopyDiskImageAncestorForMedia(const char* disk_image_class,
 // present, it will be set to the pathname of the disk image file, encoded in
 // filesystem encoding.
 //
-// There are two SPI ways to do this: One is in the DiskImages private
-// framework: DIHLCopyImageForVolume(). One is a set of keys in
-// CFURLPriv: _kCFURLVolumeIsDiskImageKey and _kCFURLDiskImageBackingURLKey.
-// However, because downstream users want to use Chromium as a base for code in
-// the MAS, neither are used here. The request for a real API is FB9139935.
-bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
+// There are two ways to do this using SPI: The first way would be to use
+// DIHLCopyImageForVolume() from the DiskImages private framework.  The second
+// way would be to use _kCFURLVolumeIsDiskImageKey and
+// _kCFURLDiskImageBackingURLKey from CFURLPriv. However, because downstream
+// users want to use Chromium as a base for code in the MAS, neither are used
+// here. The request for a real API is FB9139935.
+bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
+                             std::string* image_path) {
   if (image_path) {
     image_path->clear();
   }
@@ -115,13 +120,14 @@ bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
     // type "AppleDiskImageDevice" that has a property "DiskImageURL" of string
     // type.
 
-    base::mac::ScopedIOObject<io_service_t> di_device(
-        CopyDiskImageAncestorForMedia("AppleDiskImageDevice", media));
+    base::mac::ScopedIOObject<io_service_t> di_device =
+        GetDiskImageAncestorForMedia("AppleDiskImageDevice", media);
     if (di_device) {
       if (image_path) {
         base::ScopedCFTypeRef<CFTypeRef> disk_image_url_cftyperef(
             IORegistryEntryCreateCFProperty(di_device, CFSTR("DiskImageURL"),
-                                            nullptr, 0));
+                                            /*allocator=*/nullptr,
+                                            /*options=*/0));
         if (!disk_image_url_cftyperef) {
           LOG(ERROR)
               << "IORegistryEntryCreateCFProperty failed for DiskImageURL";
@@ -139,7 +145,7 @@ bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
         }
 
         base::ScopedCFTypeRef<CFURLRef> disk_image_url(CFURLCreateWithString(
-            kCFAllocatorDefault, disk_image_url_string, nullptr));
+            /*allocator=*/nullptr, disk_image_url_string, /*baseURL=*/nullptr));
         if (!disk_image_url) {
           LOG(ERROR) << "CFURLCreateWithString failed";
           return true;
@@ -162,13 +168,14 @@ bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
     // ancestor of type "IOHDIXHDDrive" that has a property "image-path" of data
     // type.
 
-    base::mac::ScopedIOObject<io_service_t> hdix_drive(
-        CopyDiskImageAncestorForMedia("IOHDIXHDDrive", media));
+    base::mac::ScopedIOObject<io_service_t> hdix_drive =
+        GetDiskImageAncestorForMedia("IOHDIXHDDrive", media);
     if (hdix_drive) {
       if (image_path) {
         base::ScopedCFTypeRef<CFTypeRef> image_path_cftyperef(
             IORegistryEntryCreateCFProperty(hdix_drive, CFSTR("image-path"),
-                                            nullptr, 0));
+                                            /*allocator=*/nullptr,
+                                            /*options=*/0));
         if (!image_path_cftyperef) {
           LOG(ERROR) << "IORegistryEntryCreateCFProperty failed for image-path";
           return true;
@@ -201,10 +208,10 @@ bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
   return false;
 }
 
-// Returns true if |path| is located on a read-only filesystem of a disk
-// image. Returns false if not, or in the event of an error. If
-// out_dmg_bsd_device_name is present, it will be set to the BSD device name
-// for the disk image's device, in "diskNsM" form.
+// Returns `DiskImageStatusTrue` if `path` is located on a read-only filesystem
+// of a disk image, `DiskImageStatusFalse` if not, or `DiskImageStatusFailure`
+// in the event of an error. If `out_dmg_bsd_device_name` is non-null, it will
+// be set to the BSD device name for the disk image's device, in "diskNsM" form.
 DiskImageStatus IsPathOnReadOnlyDiskImage(
     const char path[],
     std::string* out_dmg_bsd_device_name) {
@@ -236,28 +243,20 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
     out_dmg_bsd_device_name->assign(dmg_bsd_device_name);
   }
 
-  const mach_port_t master_port = kIOMasterPortDefault;
-
-  // IOBSDNameMatching gives ownership of match_dict to the caller, but
-  // IOServiceGetMatchingServices will assume that reference.
-  CFMutableDictionaryRef match_dict = IOBSDNameMatching(master_port,
-                                                        0,
-                                                        dmg_bsd_device_name);
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> match_dict(IOBSDNameMatching(
+      kIOMasterPortDefault, /*options=*/0, dmg_bsd_device_name));
   if (!match_dict) {
     LOG(ERROR) << "IOBSDNameMatching " << dmg_bsd_device_name;
     return DiskImageStatusFailure;
   }
 
-  io_iterator_t iterator_ref;
-  kern_return_t kr = IOServiceGetMatchingServices(master_port,
-                                                  match_dict,
-                                                  &iterator_ref);
+  base::mac::ScopedIOObject<io_iterator_t> iterator;
+  kern_return_t kr = IOServiceGetMatchingServices(
+      kIOMasterPortDefault, match_dict.release(), iterator.InitializeInto());
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "IOServiceGetMatchingServices";
     return DiskImageStatusFailure;
   }
-  base::mac::ScopedIOObject<io_iterator_t> iterator(iterator_ref);
-  iterator_ref = IO_OBJECT_NULL;
 
   // There needs to be exactly one matching service.
   base::mac::ScopedIOObject<io_service_t> media(IOIteratorNext(iterator));
@@ -272,10 +271,9 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
     return DiskImageStatusFailure;
   }
 
-  iterator.reset();
-
-  return MediaResidesOnDiskImage(media, NULL) ? DiskImageStatusTrue
-                                              : DiskImageStatusFalse;
+  return MediaResidesOnDiskImage(media, /*image_path=*/nullptr)
+             ? DiskImageStatusTrue
+             : DiskImageStatusFalse;
 }
 
 // Shows a dialog asking the user whether or not to install from the disk
@@ -290,12 +288,13 @@ bool ShouldInstallDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSAlertStyleInformational];
-  [alert setMessageText:title];
-  [alert setInformativeText:prompt];
+  alert.alertStyle = NSAlertStyleInformational;
+  alert.messageText = title;
+  alert.informativeText = prompt;
+
   [alert addButtonWithTitle:yes];
   NSButton* cancel_button = [alert addButtonWithTitle:no];
-  [cancel_button setKeyEquivalent:@"\e"];
+  cancel_button.keyEquivalent = @"\e";
 
   NSInteger result = [alert runModal];
 
@@ -322,51 +321,46 @@ base::mac::ScopedAuthorizationRef MaybeShowAuthorizationDialog(
       base::mac::NSToCFCast(prompt));
 }
 
-// Invokes the installer program at installer_path to copy source_path to
-// target_path and perform any additional on-disk bookkeeping needed to be
-// able to launch target_path properly.  If authorization_arg is non-NULL,
-// function will assume ownership of it, will invoke the installer with that
-// authorization reference, and will attempt Keystone ticket promotion.
-bool InstallFromDiskImage(AuthorizationRef authorization_arg,
-                          NSString* installer_path,
+// Invokes the installer program at `installer_path` to copy `source_path` to
+// `target_path` and perform any additional on-disk bookkeeping needed to be
+// able to launch `target_path` properly. If `authorization_arg` is non-null,
+// this function will invoke the installer with that authorization reference,
+// and will attempt Keystone ticket promotion.
+bool InstallFromDiskImage(base::mac::ScopedAuthorizationRef authorization,
+                          NSURL* installer_url,
                           NSString* source_path,
                           NSString* target_path) {
-  base::mac::ScopedAuthorizationRef authorization(authorization_arg);
-  authorization_arg = NULL;
   int exit_status;
   if (authorization) {
-    const char* installer_path_c = [installer_path fileSystemRepresentation];
-    const char* source_path_c = [source_path fileSystemRepresentation];
-    const char* target_path_c = [target_path fileSystemRepresentation];
-    const char* arguments[] = {source_path_c, target_path_c, NULL};
+    const char* installer_path_c = installer_url.fileSystemRepresentation;
+    const char* source_path_c = source_path.fileSystemRepresentation;
+    const char* target_path_c = target_path.fileSystemRepresentation;
+    const char* arguments[] = {source_path_c, target_path_c, nullptr};
 
     OSStatus status = base::mac::ExecuteWithPrivilegesAndWait(
-        authorization,
-        installer_path_c,
-        kAuthorizationFlagDefaults,
-        arguments,
-        NULL,  // pipe
-        &exit_status);
+        authorization, installer_path_c, kAuthorizationFlagDefaults, arguments,
+        /*pipe=*/nullptr, &exit_status);
     if (status != errAuthorizationSuccess) {
       OSSTATUS_LOG(ERROR, status)
           << "AuthorizationExecuteWithPrivileges install";
       return false;
     }
   } else {
-    NSArray* arguments = @[ source_path, target_path ];
+    NSError* error = nil;
+    NSTask* task =
+        [NSTask launchedTaskWithExecutableURL:installer_url
+                                    arguments:@[ source_path, target_path ]
+                                        error:&error
+                           terminationHandler:nil];
 
-    NSTask* task;
-    @try {
-      task = [NSTask launchedTaskWithLaunchPath:installer_path
-                                      arguments:arguments];
-    } @catch(NSException* exception) {
-      LOG(ERROR) << "+[NSTask launchedTaskWithLaunchPath:arguments:]: "
-                 << [[exception description] UTF8String];
+    if (!task) {
+      LOG(ERROR) << "NSTask launch error: "
+                 << base::SysNSStringToUTF8(error.description);
       return false;
     }
 
     [task waitUntilExit];
-    exit_status = [task terminationStatus];
+    exit_status = task.terminationStatus;
   }
 
   if (exit_status != 0) {
@@ -393,7 +387,7 @@ bool InstallFromDiskImage(AuthorizationRef authorization_arg,
 // call EjectAndTrashDiskImage on dmg_bsd_device_name.
 bool LaunchInstalledApp(NSString* installed_path,
                         const std::string& dmg_bsd_device_name) {
-  base::FilePath browser_path([installed_path fileSystemRepresentation]);
+  base::FilePath browser_path = base::mac::NSStringToFilePath(installed_path);
 
   base::FilePath helper_path = browser_path.Append("Contents/Frameworks");
   helper_path = helper_path.Append(chrome::kFrameworkName);
@@ -429,9 +423,10 @@ void ShowErrorDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSAlertStyleWarning];
-  [alert setMessageText:title];
-  [alert setInformativeText:error];
+  alert.alertStyle = NSAlertStyleWarning;
+  alert.messageText = title;
+  alert.informativeText = error;
+
   [alert addButtonWithTitle:ok];
 
   [alert runModal];
@@ -442,7 +437,7 @@ void ShowErrorDialog() {
 DiskImageStatus IsAppRunningFromReadOnlyDiskImage(
     std::string* dmg_bsd_device_name) {
   return IsPathOnReadOnlyDiskImage(
-      [[base::mac::OuterBundle() bundlePath] fileSystemRepresentation],
+      base::mac::OuterBundle().bundlePath.fileSystemRepresentation,
       dmg_bsd_device_name);
 }
 
@@ -456,37 +451,39 @@ bool MaybeInstallFromDiskImage() {
 
     NSArray* application_directories = NSSearchPathForDirectoriesInDomains(
         NSApplicationDirectory, NSLocalDomainMask, YES);
-    if ([application_directories count] == 0) {
+    if (application_directories.count) {
       LOG(ERROR) << "NSSearchPathForDirectoriesInDomains: "
                  << "no local application directories";
       return false;
     }
-    NSString* application_directory = application_directories[0];
+    NSString* application_directory = application_directories.firstObject;
 
-    NSFileManager* file_manager = [NSFileManager defaultManager];
+    NSFileManager* file_manager = NSFileManager.defaultManager;
 
     BOOL is_directory;
     if (![file_manager fileExistsAtPath:application_directory
                             isDirectory:&is_directory] ||
         !is_directory) {
       VLOG(1) << "No application directory at "
-              << [application_directory UTF8String];
+              << base::SysNSStringToUTF8(application_directory);
       return false;
     }
 
-    NSString* source_path = [base::mac::OuterBundle() bundlePath];
-    NSString* application_name = [source_path lastPathComponent];
+    NSString* source_path = base::mac::OuterBundle().bundlePath;
+    NSString* application_name = source_path.lastPathComponent;
     NSString* target_path =
         [application_directory stringByAppendingPathComponent:application_name];
 
     if ([file_manager fileExistsAtPath:target_path]) {
-      VLOG(1) << "Something already exists at " << [target_path UTF8String];
+      VLOG(1) << "Something already exists at "
+              << base::SysNSStringToUTF8(target_path);
       return false;
     }
 
-    NSString* installer_path =
-        [base::mac::FrameworkBundle() pathForResource:@"install" ofType:@"sh"];
-    if (!installer_path) {
+    NSURL* installer_url =
+        [base::mac::FrameworkBundle() URLForResource:@"install"
+                                       withExtension:@"sh"];
+    if (!installer_url) {
       VLOG(1) << "Could not locate install.sh";
       return false;
     }
@@ -501,7 +498,7 @@ bool MaybeInstallFromDiskImage() {
     // authentication fails.  In either case, try to install without privilege
     // escalation.
 
-    if (!InstallFromDiskImage(authorization.release(), installer_path,
+    if (!InstallFromDiskImage(std::move(authorization), installer_url,
                               source_path, target_path)) {
       ShowErrorDialog();
       return false;
@@ -556,21 +553,10 @@ class ScopedDASessionScheduleWithRunLoop {
 // A small structure used to ferry data between SynchronousDAOperation and
 // SynchronousDACallbackAdapter.
 struct SynchronousDACallbackData {
- public:
-  SynchronousDACallbackData()
-      : callback_called(false),
-        run_loop_running(false),
-        can_log(true) {
-  }
-
-  SynchronousDACallbackData(const SynchronousDACallbackData&) = delete;
-  SynchronousDACallbackData& operator=(const SynchronousDACallbackData&) =
-      delete;
-
   base::ScopedCFTypeRef<DADissenterRef> dissenter;
-  bool callback_called;
-  bool run_loop_running;
-  bool can_log;
+  bool callback_called = false;
+  bool run_loop_running = false;
+  bool can_log = true;
 };
 
 // The callback target for SynchronousDAOperation. Set the fields in
@@ -584,8 +570,7 @@ void SynchronousDACallbackAdapter(DADiskRef disk,
   callback_data->callback_called = true;
 
   if (dissenter) {
-    CFRetain(dissenter);
-    callback_data->dissenter.reset(dissenter);
+    callback_data->dissenter.reset(dissenter, base::scoped_policy::RETAIN);
   }
 
   // Only stop the run loop if SynchronousDAOperation started it. Don't stop
@@ -659,14 +644,15 @@ bool SynchronousDADiskEject(DADiskRef disk, DADiskEjectOptions options) {
 }  // namespace
 
 void EjectAndTrashDiskImage(const std::string& dmg_bsd_device_name) {
-  base::ScopedCFTypeRef<DASessionRef> session(DASessionCreate(NULL));
+  base::ScopedCFTypeRef<DASessionRef> session(
+      DASessionCreate(/*allocator=*/nullptr));
   if (!session.get()) {
     LOG(ERROR) << "DASessionCreate";
     return;
   }
 
-  base::ScopedCFTypeRef<DADiskRef> disk(
-      DADiskCreateFromBSDName(NULL, session, dmg_bsd_device_name.c_str()));
+  base::ScopedCFTypeRef<DADiskRef> disk(DADiskCreateFromBSDName(
+      /*allocator=*/nullptr, session, dmg_bsd_device_name.c_str()));
   if (!disk.get()) {
     LOG(ERROR) << "DADiskCreateFromBSDName";
     return;
@@ -723,12 +709,11 @@ void EjectAndTrashDiskImage(const std::string& dmg_bsd_device_name) {
 
   NSURL* disk_image_path_nsurl =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(disk_image_path)];
-  NSError* ns_error = nil;
-  if (![[NSFileManager defaultManager] trashItemAtURL:disk_image_path_nsurl
-                                     resultingItemURL:nil
-                                                error:&ns_error]) {
-    LOG(ERROR) << base::SysNSStringToUTF8([ns_error localizedDescription]);
+  NSError* error = nil;
+  if (![NSFileManager.defaultManager trashItemAtURL:disk_image_path_nsurl
+                                   resultingItemURL:nil
+                                              error:&error]) {
+    LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
     return;
   }
-
 }
