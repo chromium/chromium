@@ -41,7 +41,7 @@ class Thumbnail : public cc::UIResourceClient {
       TabId tab_id,
       const base::Time& time_stamp,
       float scale,
-      ui::UIResourceProvider* ui_resource_provider,
+      base::WeakPtr<ui::UIResourceProvider> ui_resource_provider,
       ThumbnailDelegate* thumbnail_delegate);
 
   Thumbnail(const Thumbnail&) = delete;
@@ -69,7 +69,7 @@ class Thumbnail : public cc::UIResourceClient {
   Thumbnail(TabId tab_id,
             const base::Time& time_stamp,
             float scale,
-            ui::UIResourceProvider* ui_resource_provider,
+            base::WeakPtr<ui::UIResourceProvider> ui_resource_provider,
             ThumbnailDelegate* thumbnail_delegate);
 
   void ClearUIResourceId();
@@ -87,7 +87,7 @@ class Thumbnail : public cc::UIResourceClient {
 
   bool retrieved_;
 
-  raw_ptr<ui::UIResourceProvider, DanglingUntriaged> ui_resource_provider_;
+  base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
   raw_ptr<ThumbnailDelegate> thumbnail_delegate_;
 
   base::WeakPtrFactory<Thumbnail> weak_factory_{this};

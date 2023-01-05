@@ -32,7 +32,7 @@ std::unique_ptr<Thumbnail> Thumbnail::Create(
     TabId tab_id,
     const base::Time& time_stamp,
     float scale,
-    ui::UIResourceProvider* ui_resource_provider,
+    base::WeakPtr<ui::UIResourceProvider> ui_resource_provider,
     ThumbnailDelegate* thumbnail_delegate) {
   return base::WrapUnique(new Thumbnail(
       tab_id, time_stamp, scale, ui_resource_provider, thumbnail_delegate));
@@ -41,7 +41,7 @@ std::unique_ptr<Thumbnail> Thumbnail::Create(
 Thumbnail::Thumbnail(TabId tab_id,
                      const base::Time& time_stamp,
                      float scale,
-                     ui::UIResourceProvider* ui_resource_provider,
+                     base::WeakPtr<ui::UIResourceProvider> ui_resource_provider,
                      ThumbnailDelegate* thumbnail_delegate)
     : tab_id_(tab_id),
       time_stamp_(time_stamp),
@@ -80,8 +80,9 @@ void Thumbnail::SetCompressedBitmap(sk_sp<SkPixelRef> compressed_bitmap,
 
 void Thumbnail::CreateUIResource() {
   DCHECK(ui_resource_provider_);
-  if (!ui_resource_id_)
+  if (!ui_resource_id_) {
     ui_resource_id_ = ui_resource_provider_->CreateUIResource(this);
+  }
 }
 
 cc::UIResourceBitmap Thumbnail::GetBitmap(cc::UIResourceId uid,
@@ -105,12 +106,14 @@ cc::UIResourceBitmap Thumbnail::GetBitmap(cc::UIResourceId uid,
 }
 
 void Thumbnail::DoInvalidate() {
-  if (thumbnail_delegate_)
+  if (thumbnail_delegate_) {
     thumbnail_delegate_->InvalidateCachedThumbnail(this);
+  }
 }
 
 void Thumbnail::ClearUIResourceId() {
-  if (ui_resource_id_ && ui_resource_provider_)
+  if (ui_resource_id_ && ui_resource_provider_) {
     ui_resource_provider_->DeleteUIResource(ui_resource_id_);
+  }
   ui_resource_id_ = 0;
 }

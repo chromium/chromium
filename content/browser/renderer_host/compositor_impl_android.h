@@ -48,13 +48,13 @@ class Layer;
 class LayerTreeHost;
 
 struct CommitState;
-}
+}  // namespace cc
 
 namespace viz {
 class FrameSinkId;
 class HostDisplayClient;
 class OutputSurface;
-}
+}  // namespace viz
 
 namespace content {
 class CompositorClient;
@@ -117,7 +117,7 @@ class CONTENT_EXPORT CompositorImpl
   void SetRequiresAlphaChannel(bool flag) override;
   void SetNeedsComposite() override;
   void SetNeedsRedraw() override;
-  ui::UIResourceProvider& GetUIResourceProvider() override;
+  base::WeakPtr<ui::UIResourceProvider> GetUIResourceProvider() override;
   ui::ResourceManager& GetResourceManager() override;
   void CacheBackBufferForCurrentSurface() override;
   void EvictCachedBackBuffer() override;

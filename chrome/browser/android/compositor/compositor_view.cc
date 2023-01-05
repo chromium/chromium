@@ -60,9 +60,9 @@ jlong JNI_CompositorView_Init(
   view = new CompositorView(env, obj, low_mem_device, window_android,
                             tab_content_manager);
 
-  ui::UIResourceProvider* ui_resource_provider = view->GetUIResourceProvider();
-  if (tab_content_manager)
-    tab_content_manager->SetUIResourceProvider(ui_resource_provider);
+  if (tab_content_manager) {
+    tab_content_manager->SetUIResourceProvider(view->GetUIResourceProvider());
+  }
 
   return reinterpret_cast<intptr_t>(view);
 }
@@ -145,8 +145,8 @@ void CompositorView::DidSwapBuffers(const gfx::Size& swap_size) {
   Java_CompositorView_didSwapBuffers(env, obj_, swapped_current_size);
 }
 
-ui::UIResourceProvider* CompositorView::GetUIResourceProvider() {
-  return compositor_ ? &compositor_->GetUIResourceProvider() : nullptr;
+base::WeakPtr<ui::UIResourceProvider> CompositorView::GetUIResourceProvider() {
+  return compositor_ ? compositor_->GetUIResourceProvider() : nullptr;
 }
 
 void CompositorView::OnSurfaceControlFeatureStatusUpdate(bool available) {
@@ -241,8 +241,9 @@ void CompositorView::SetBackground(bool visible, SkColor color) {
 void CompositorView::SetOverlayVideoMode(JNIEnv* env,
                                          const JavaParamRef<jobject>& object,
                                          bool enabled) {
-  if (overlay_video_mode_ == enabled)
+  if (overlay_video_mode_ == enabled) {
     return;
+  }
   overlay_video_mode_ = enabled;
   compositor_->SetRequiresAlphaChannel(enabled);
   SetNeedsComposite(env, object);
@@ -323,8 +324,9 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
 
 void CompositorView::FinalizeLayers(JNIEnv* env,
                                     const JavaParamRef<jobject>& jobj) {
-  if (GetResourceManager())
+  if (GetResourceManager()) {
     GetResourceManager()->OnFrameUpdatesFinished();
+  }
 #if !defined(OFFICIAL_BUILD)
   TRACE_EVENT0("compositor", "CompositorView::FinalizeLayers");
 #endif
@@ -376,8 +378,9 @@ void CompositorView::EvictCachedBackBuffer(
 void CompositorView::OnTabChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& object) {
-  if (!compositor_)
+  if (!compositor_) {
     return;
+  }
   std::unique_ptr<content::PeakGpuMemoryTracker> tracker =
       content::PeakGpuMemoryTracker::Create(
           content::PeakGpuMemoryTracker::Usage::CHANGE_TAB);

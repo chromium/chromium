@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "content/common/content_export.h"
@@ -23,12 +24,12 @@ class Layer;
 namespace gpu {
 struct ContextCreationAttribs;
 struct SharedMemoryLimits;
-}
+}  // namespace gpu
 
 namespace ui {
 class ResourceManager;
 class UIResourceProvider;
-}
+}  // namespace ui
 
 namespace viz {
 class ContextProvider;
@@ -92,7 +93,7 @@ class CONTENT_EXPORT Compositor {
   virtual void SetNeedsRedraw() = 0;
 
   // Returns the UI resource provider associated with the compositor.
-  virtual ui::UIResourceProvider& GetUIResourceProvider() = 0;
+  virtual base::WeakPtr<ui::UIResourceProvider> GetUIResourceProvider() = 0;
 
   // Returns the resource manager associated with the compositor.
   virtual ui::ResourceManager& GetResourceManager() = 0;

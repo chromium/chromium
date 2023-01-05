@@ -125,7 +125,7 @@ class CompositorView : public content::CompositorClient,
   void UpdateLayerTreeHost() override;
   void DidSwapFrame(int pending_frames) override;
   void DidSwapBuffers(const gfx::Size& swap_size) override;
-  ui::UIResourceProvider* GetUIResourceProvider();
+  base::WeakPtr<ui::UIResourceProvider> GetUIResourceProvider();
 
  private:
   ~CompositorView() override;

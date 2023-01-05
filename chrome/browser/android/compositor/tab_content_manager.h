@@ -55,7 +55,8 @@ class TabContentManager : public ThumbnailCacheObserver {
 
   void Destroy(JNIEnv* env);
 
-  void SetUIResourceProvider(ui::UIResourceProvider* ui_resource_provider);
+  void SetUIResourceProvider(
+      base::WeakPtr<ui::UIResourceProvider> ui_resource_provider);
 
   // Get the live layer from the cache.
   scoped_refptr<cc::Layer> GetLiveLayer(int tab_id);
@@ -75,7 +76,7 @@ class TabContentManager : public ThumbnailCacheObserver {
                  jint tab_id);
 
   // Should be called when a tab removes a live layer because it should no
-  // longer be served by the CompositorView.  If |layer| is NULL, will
+  // longer be served by the CompositorView.  If `layer` is nullptr, will
   // make sure all live layers are detached.
   void DetachTab(JNIEnv* env,
                  const base::android::JavaParamRef<jobject>& obj,
@@ -126,7 +127,7 @@ class TabContentManager : public ThumbnailCacheObserver {
 
  private:
   class TabReadbackRequest;
-  // TODO(bug 714384) check sizes and consider using base::flat_map if these
+  // TODO(crbug/714384) check sizes and consider using base::flat_map if these
   // layer maps are small.
   using LayerMap = std::map<int, scoped_refptr<cc::Layer>>;
   using ThumbnailLayerMap = std::map<int, scoped_refptr<ThumbnailLayer>>;
