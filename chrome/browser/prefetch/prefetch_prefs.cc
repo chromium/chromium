@@ -72,11 +72,12 @@ content::PreloadingEligibility IsSomePreloadingEnabled(
 
 content::PreloadingEligibility IsSomePreloadingEnabledIgnoringFinch(
     const PrefService& prefs) {
-  if (battery::IsBatterySaverEnabled()) {
-    return content::PreloadingEligibility::kBatterySaverEnabled;
-  }
+  // Arrange the results roughly in order of decreasing transience.
   if (GetPreloadPagesState(prefs) == PreloadPagesState::kNoPreloading) {
     return content::PreloadingEligibility::kPreloadingDisabled;
+  }
+  if (battery::IsBatterySaverEnabled()) {
+    return content::PreloadingEligibility::kBatterySaverEnabled;
   }
 
   return content::PreloadingEligibility::kEligible;
