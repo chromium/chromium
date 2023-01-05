@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/policy/policy_app_interface.h"
-#import "ios/testing/earl_grey/earl_grey_test.h"
+
+#import <TestLib/EarlGreyImpl/EarlGrey.h>
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -12,6 +12,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -253,6 +254,10 @@ void ResetAuthentication() {
       [[self class] removeAnyOpenMenusAndInfoBars];
     }
     [[self class] closeAllTabs];
+
+    // Clear testing policies to make sure they don't change the browser's
+    // behavior in follow-up tests.
+    policy_test_utils::ClearPolicies();
   }
 
   if ([[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation] !=
