@@ -5,7 +5,6 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -15,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 /**
  * Tests for (@link WebViewCompatibilityHelper}.
@@ -24,7 +22,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 public class WebViewCompatibilityHelperTest {
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     public void testLibraryPaths() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
         ClassLoader classLoader = WebViewCompatibilityHelper.initialize(appContext);

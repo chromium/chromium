@@ -582,15 +582,11 @@ class WebLayer {
         sAppContext = appContext;
         if (implPackageName != null) {
             sRemoteContext = createRemoteContextFromPackageName(appContext, implPackageName);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        } else {
             Method getContext =
                     webViewFactoryClass.getDeclaredMethod("getWebViewContextAndSetProvider");
             getContext.setAccessible(true);
             sRemoteContext = (Context) getContext.invoke(null);
-        } else {
-            implPackageName =
-                    (String) webViewFactoryClass.getMethod("getWebViewPackageName").invoke(null);
-            sRemoteContext = createRemoteContextFromPackageName(appContext, implPackageName);
         }
         sContextCreationTime = SystemClock.elapsedRealtime() - start;
         return sRemoteContext;

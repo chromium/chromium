@@ -69,7 +69,6 @@ public class WebLayerNotificationChannels extends ChannelDefinitions {
     }
 
     // Map defined in static inner class so it's only initialized lazily.
-    @RequiresApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
     private static class PredefinedChannels {
         static final Map<String, PredefinedChannel> MAP;
 

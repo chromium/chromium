@@ -738,28 +738,11 @@ public final class WebLayerImpl extends IWebLayer.Stub {
      */
     private static int getPackageId(Context appContext, String implPackageName) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                Constructor<WebViewDelegate> constructor =
-                        WebViewDelegate.class.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                WebViewDelegate delegate = constructor.newInstance();
-                return delegate.getPackageId(appContext.getResources(), implPackageName);
-            } else {
-                // In L WebViewDelegate did not yet exist, so we have to look inside AssetManager.
-                Method getAssignedPackageIdentifiers =
-                        AssetManager.class.getMethod("getAssignedPackageIdentifiers");
-                SparseArray<String> packageIdentifiers =
-                        (SparseArray) getAssignedPackageIdentifiers.invoke(
-                                appContext.getResources().getAssets());
-                for (int i = 0; i < packageIdentifiers.size(); i++) {
-                    final String name = packageIdentifiers.valueAt(i);
-
-                    if (implPackageName.equals(name)) {
-                        return packageIdentifiers.keyAt(i);
-                    }
-                }
-                throw new RuntimeException("Package not found: " + implPackageName);
-            }
+            Constructor<WebViewDelegate> constructor =
+                    WebViewDelegate.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            WebViewDelegate delegate = constructor.newInstance();
+            return delegate.getPackageId(appContext.getResources(), implPackageName);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
@@ -820,11 +803,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     private static boolean supportsBindingToWebViewService(Context context, String packageName) {
-        // BIND_EXTERNAL_SERVICE is not supported before N.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return false;
-        }
-
         // Android N has issues with WebView with the non-system user.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             try {
