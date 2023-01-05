@@ -191,8 +191,20 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // display snapshot. Note: do not use |display_infos| beyond this point,
     // since some of the objects' internal references will be surrendered.
     for (size_t i = 0; i < display_infos.size(); ++i) {
+      // If the DrmDisplay was present previously, copy its origin to the
+      // corresponding DisplaySnapshot before creating a new DrmDisplay.
+      const auto& display_info = display_infos[i];
+      auto old_drm_display_it = base::ranges::find_if(
+          old_displays,
+          DisplayComparator(drm, display_info->crtc()->crtc_id,
+                            display_info->connector()->connector_id));
+      if (old_drm_display_it != old_displays.end()) {
+        params_list[i]->set_origin(old_drm_display_it->get()->origin());
+        old_displays.erase(old_drm_display_it);
+      }
+
       displays_.emplace_back(std::make_unique<DrmDisplay>(
-          drm, display_infos[i].get(), params_list[i].get()));
+          drm, display_info.get(), params_list[i].get()));
     }
     device_index++;
   }
@@ -311,6 +323,11 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
 
   if (displays_configured_callback_)
     displays_configured_callback_.Run();
+
+  if (config_success && modeset_flag != display::kTestModeset) {
+    for (const auto& controller : controllers_to_configure)
+      FindDisplay(controller.display_id)->SetOrigin(controller.origin);
+  }
 
   return config_success;
 }

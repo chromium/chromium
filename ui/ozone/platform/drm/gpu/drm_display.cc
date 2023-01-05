@@ -148,6 +148,7 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       crtc_(info->crtc()->crtc_id),
       connector_(info->ReleaseConnector()) {
   modes_ = GetDrmModeVector(connector_.get());
+  origin_ = display_snapshot->origin();
   is_hdr_capable_ = display_snapshot->bits_per_channel() > 8 &&
                     display_snapshot->color_space().IsHDR();
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -73,7 +73,9 @@ class DrmDisplay {
   uint32_t crtc() const { return crtc_; }
   uint32_t connector() const;
   const std::vector<drmModeModeInfo>& modes() const { return modes_; }
+  const gfx::Point& origin() { return origin_; }
 
+  void SetOrigin(const gfx::Point origin) { origin_ = origin; }
   bool GetHDCPState(display::HDCPState* state,
                     display::ContentProtectionMethod* protection_method);
   bool SetHDCPState(display::HDCPState state,
@@ -100,6 +102,7 @@ class DrmDisplay {
   const uint32_t crtc_;
   const ScopedDrmConnectorPtr connector_;
   std::vector<drmModeModeInfo> modes_;
+  gfx::Point origin_;
   bool is_hdr_capable_ = false;
   gfx::ColorSpace current_color_space_;
   std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
