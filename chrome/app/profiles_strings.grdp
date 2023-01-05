@@ -565,7 +565,7 @@
       Create
     </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX" desc="Label of the checkbox on the enterprise profile welcome screen that allows a user to link existing data to the new profile. The label informs the user that a profile will be created.">
-      Keep local browsing data (bookmarks, passwords, history, etc.)
+      Add existing browsing data to managed profile
     </message>
 
     <!-- Profile Picker -->
