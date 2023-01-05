@@ -260,6 +260,7 @@ wheel: <
 
 # Used by:
 # //third_party/blink/tools/wpt_upload.py
+# //third_party/chromite/bin/cros chrome-sdk
 wheel: <
   name: "infra/python/wheels/crcmod/${vpython_platform}"
   version: "version:1.7.chromium.3"

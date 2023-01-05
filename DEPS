@@ -4700,6 +4700,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome_with_vms and not checkout_src_internal',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4718,6 +4719,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome and not checkout_src_internal',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4735,6 +4737,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome and checkout_src_internal',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4751,6 +4754,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome_with_vms and checkout_src_internal',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4770,6 +4774,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome_with_vms and not checkout_src_internal and checkout_lacros_sdk',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4789,6 +4794,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome and not checkout_src_internal and checkout_lacros_sdk',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4808,6 +4814,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome_with_vms and checkout_src_internal and checkout_lacros_sdk',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
@@ -4826,6 +4833,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_simplechrome and checkout_src_internal and checkout_lacros_sdk',
     'action': [
+      'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
       '--fallback-versions=20',
