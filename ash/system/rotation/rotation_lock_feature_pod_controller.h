@@ -10,10 +10,17 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
+class FeaturePodButton;
+class FeatureTile;
+
 // Controller of a feature pod button that toggles rotation lock mode.
+// Pre-QsRevamp the button is toggled when rotation is locked.
+// Post-QsRevamp the tile is toggled when rotation is unlocked (i.e. auto-rotate
+// is enabled).
 class ASH_EXPORT RotationLockFeaturePodController
     : public FeaturePodControllerBase,
       public TabletModeObserver,
@@ -30,6 +37,7 @@ class ASH_EXPORT RotationLockFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
 
@@ -41,8 +49,13 @@ class ASH_EXPORT RotationLockFeaturePodController
 
  private:
   void UpdateButton();
+  void UpdateTile();
 
+  // Owned by views hierarchy.
   FeaturePodButton* button_ = nullptr;
+  FeatureTile* tile_ = nullptr;
+
+  base::WeakPtrFactory<RotationLockFeaturePodController> weak_factory_{this};
 };
 
 }  // namespace ash

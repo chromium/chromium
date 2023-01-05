@@ -203,6 +203,8 @@ void FeatureTile::SetSubLabel(const std::u16string& sub_label) {
 }
 
 void FeatureTile::SetSubLabelVisibility(bool visible) {
+  // Only primary tiles have a sub-label.
+  DCHECK(sub_label_);
   sub_label_->SetVisible(visible);
 }
 
