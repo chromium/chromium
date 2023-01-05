@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_observer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,7 +27,8 @@ namespace ash::settings {
 class SearchTagRegistry;
 
 class InternetSection : public OsSettingsSection,
-                        public network_config::CrosNetworkConfigObserver {
+                        public network_config::CrosNetworkConfigObserver,
+                        public hotspot_config::CrosHotspotConfigObserver {
  public:
   InternetSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~InternetSection() override;
@@ -53,6 +55,9 @@ class InternetSection : public OsSettingsSection,
           networks) override;
   void OnDeviceStateListChanged() override;
 
+  // hotspot_config::CrosHotspotConfigObserver:
+  void OnHotspotInfoChanged() override;
+
   void FetchDeviceList();
   void OnGlobalPolicy(
       chromeos::network_config::mojom::GlobalPolicyPtr global_policy);
@@ -65,6 +70,9 @@ class InternetSection : public OsSettingsSection,
   void OnNetworkList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
+
+  void FetchHotspotInfo();
+  void OnHotspotInfo(hotspot_config::mojom::HotspotInfoPtr hotspot_info);
 
   // Null if no active cellular network exists. The active cellular network
   // corresponds to the currently active SIM slot, and may not be
@@ -82,9 +90,12 @@ class InternetSection : public OsSettingsSection,
   bool does_ethernet_device_exist_ = false;
 
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
-      receiver_{this};
+      network_config_receiver_{this};
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
+  mojo::Receiver<hotspot_config::mojom::CrosHotspotConfigObserver>
+      hotspot_config_receiver_{this};
+  mojo::Remote<hotspot_config::mojom::CrosHotspotConfig> cros_hotspot_config_;
 };
 
 }  // namespace ash::settings

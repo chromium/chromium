@@ -716,6 +716,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:google-play';
       case SearchResultIcon.kHardDrive:
         return 'os-settings:hard-drive';
+      case SearchResultIcon.kHotspot:
+        return 'os-settings:hotspot';
       case SearchResultIcon.kInstantTethering:
         return 'os-settings:magic-tethering';
       case SearchResultIcon.kKeyboard:

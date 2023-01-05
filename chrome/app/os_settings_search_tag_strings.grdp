@@ -188,6 +188,24 @@
   <message name="IDS_OS_SETTINGS_TAG_PROXY_ALT4" desc="Text for search result item which, when clicked, navigates the user to network proxy settings. Alternate phrase for: 'Proxy settings', 'Automatic proxy configuration', 'Direct Internet connection', 'Web proxy autodiscovery'">
     Manual proxy configuration
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_HOTSPOT" desc="Text for search result item which, when clicked, navigates the user to hotspot settings.">
+    Hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_HOTSPOT_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to Hotspot settings, with a toggle to turn on Bluetooth.">
+    Turn on hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_HOTSPOT_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to Hotspot settings, with a toggle to turn off Bluetooth.">
+    Turn off hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_HOTSPOT_AUTO_DISABLED" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the hotspot turns off automatically when no devices is connected to it after a fixed of time. Alternate phrase for: 'Automatically turn off hotspot', 'Automatically disable hotspot'">
+    Turn off hotspot automatically
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_HOTSPOT_AUTO_DISABLED_ALT1" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the hotspot turns off automatically when no devices is connected to it after a fixed of time. Alternate phrase for: 'Automatically turn off hotspot', 'Automatically disable hotspot'">
+    Automatically turn off hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_HOTSPOT_AUTO_DISABLED_ALT2" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the hotspot turns off automatically when no devices is connected to it after a fixed of time. Alternate phrase for: 'Automatically turn off hotspot', 'Automatically disable hotspot'">
+    Automatically disable hotspot
+  </message>
 
   <!-- Bluetooth section. -->
   <message name="IDS_OS_SETTINGS_TAG_BLUETOOTH" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings.">
