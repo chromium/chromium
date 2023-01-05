@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 
 namespace blink {
@@ -35,8 +37,7 @@ PlatformNotificationData& PlatformNotificationData::operator=(
   silent = other.silent;
   require_interaction = other.require_interaction;
   data = other.data;
-  for (auto& action : other.actions)
-    actions.push_back(action.Clone());
+  actions = mojo::Clone(other.actions);
   show_trigger_timestamp = other.show_trigger_timestamp;
   scenario = other.scenario;
 

@@ -393,6 +393,7 @@ source_set("common_unittests_sources") {
     "metrics/post_message_counter_unittest.cc",
     "mime_util/mime_util_unittest.cc",
     "notifications/notification_mojom_traits_unittest.cc",
+    "notifications/platform_notification_data_unittest.cc",
     "origin_trials/origin_trials_test.cc",
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
