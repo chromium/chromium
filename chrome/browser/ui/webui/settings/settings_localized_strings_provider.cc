@@ -464,8 +464,6 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
     {"passwordsDeletionDialogTitle",
      IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_TITLE},
     {"passwordsDeletionDialogOK", IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_OK},
-    {"installedAppsConfirm", IDS_SETTINGS_CLEAR_INSTALLED_APPS_DATA_CONFIRM},
-    {"installedAppsTitle", IDS_SETTINGS_CLEAR_INSTALLED_APPS_DATA_TITLE},
     {"notificationWarning", IDS_SETTINGS_NOTIFICATION_WARNING},
   };
 
@@ -1821,9 +1819,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "exceptionsLearnMoreURL",
       base::ASCIIToUTF16(chrome::kContentSettingsExceptionsLearnMoreURL));
-  html_source->AddBoolean(
-      "installedAppsInCbd",
-      base::FeatureList::IsEnabled(features::kInstalledAppsInCbd));
   html_source->AddBoolean(
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));

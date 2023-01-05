@@ -25,7 +25,6 @@
 #include "components/sync/driver/sync_service.h"
 
 namespace content {
-class BrowsingDataFilterBuilder;
 class WebUI;
 }
 
@@ -51,11 +50,6 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Calls |HandleClearBrowsingData| with test data for browser test.
   void HandleClearBrowsingDataForTest();
 
- protected:
-  // Fetches a list of installed apps to be displayed in the clear browsing
-  // data confirmation dialog. Called by Javascript.
-  void GetRecentlyLaunchedInstalledApps(const base::Value::List& args);
-
  private:
   friend class TestingClearBrowsingDataHandler;
   friend class ClearBrowsingDataHandlerUnitTest;
@@ -65,19 +59,6 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
                            UpdateSyncState_NonGoogleDsePrepopulated);
   FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
                            UpdateSyncState_NonGoogleDseNotPrepopulated);
-
-  // Respond to the WebUI callback with the list of installed apps.
-  void OnGotInstalledApps(
-      const std::string& webui_callback_id,
-      const std::vector<
-          site_engagement::ImportantSitesUtil::ImportantDomainInfo>&
-          installed_apps);
-
-  // Build a filter of sites to include and exclude from site data removal
-  // based on whether installed apps were marked for deletion by the checkbox on
-  // the installed apps warning dialog.
-  std::unique_ptr<content::BrowsingDataFilterBuilder> ProcessInstalledApps(
-      const base::Value::List& installed_apps);
 
   // Clears browsing data, called by Javascript.
   void HandleClearBrowsingData(const base::Value::List& value);

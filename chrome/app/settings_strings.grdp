@@ -1355,12 +1355,6 @@
   <message name="IDS_SETTINGS_CLEAR_PERIOD_EVERYTHING" desc="The option to delete browsing data from the beginning of time.">
     All time
   </message>
-  <message name="IDS_SETTINGS_CLEAR_INSTALLED_APPS_DATA_TITLE" desc="Text for title of the important sites dialog.">
-    Also clear data from these apps?
-  </message>
-  <message name="IDS_SETTINGS_CLEAR_INSTALLED_APPS_DATA_CONFIRM" desc="Text for confirmation button of the important sites dialog.">
-    Clear
-  </message>
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
   </message>

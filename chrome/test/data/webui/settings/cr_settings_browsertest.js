@@ -215,10 +215,6 @@ TEST_F(
       runMochaSuite('ClearBrowsingDataAllPlatforms');
     });
 
-TEST_F('CrSettingsClearBrowsingDataTest', 'InstalledApps', () => {
-  runMochaSuite('InstalledApps');
-});
-
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'CrSettingsClearBrowsingDataTest', 'ClearBrowsingDataDesktop', function() {

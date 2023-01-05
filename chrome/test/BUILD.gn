@@ -2305,7 +2305,6 @@ if (!is_android) {
       "../browser/ui/webui/prefs_internals_browsertest.cc",
       "../browser/ui/webui/profile_helper_browsertest.cc",
       "../browser/ui/webui/realbox/realbox_handler_browsertest.cc",
-      "../browser/ui/webui/settings/settings_clear_browsing_data_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_secure_dns_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_ui_browsertest.cc",
       "../browser/ui/webui/side_panel/customize_chrome/customize_chrome_browsertest.cc",

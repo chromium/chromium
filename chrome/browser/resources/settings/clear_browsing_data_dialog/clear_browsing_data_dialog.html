@@ -59,8 +59,7 @@
         margin-top: auto;
       }
 
-      settings-checkbox,
-      installed-app-checkbox {
+      settings-checkbox {
         --settings-row-two-line-min-height: 48px;
       }
 
@@ -292,7 +291,7 @@
             disabled="[[clearingInProgress_]]"
             on-click="onCancelTap_">$i18n{cancel}</cr-button>
         <cr-button id="clearBrowsingDataConfirm"
-            class="action-button" on-click="onClearBrowsingDataClick_"
+            class="action-button" on-click="clearBrowsingData_"
             disabled="[[isClearButtonDisabled_(clearingInProgress_,
                                                clearButtonDisabled_)]]">
             $i18n{clearData}
@@ -328,37 +327,6 @@
           </div>
         </div>
       </template>
-    </cr-dialog>
-
-    <cr-dialog id="installedAppsDialog" close-text="$i18n{close}"
-               ignore-popstate show-scroll-borders
-               on-cancel="hideInstalledApps_">
-      <div slot="title">
-        $i18n{installedAppsTitle}
-      </div>
-      <div slot="body">
-        <template is="dom-repeat" items="[[installedApps_]]">
-          <div class="row">
-            <installed-app-checkbox
-                installed-app="[[item]]"
-                disabled="[[clearingInProgress_]]">
-            </installed-app-checkbox>
-          </div>
-        </template>
-      </div>
-      <div slot="button-container">
-        <paper-spinner-lite active="[[clearingInProgress_]]">
-        </paper-spinner-lite>
-        <cr-button class="cancel-button" disabled="[[clearingInProgress_]]"
-            on-click="onCancelInstalledApps_">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="installedAppsConfirm" class="action-button"
-            disabled="[[clearingInProgress_]]"
-            on-click="onInstalledAppsConfirmClick_">
-          $i18n{installedAppsConfirm}
-        </cr-button>
-      </div>
     </cr-dialog>
 
     <template is="dom-if" if="[[showHistoryDeletionDialog_]]" restamp>

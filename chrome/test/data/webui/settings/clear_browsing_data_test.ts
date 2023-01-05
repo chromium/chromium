@@ -6,10 +6,10 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult,InstalledApp, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -307,7 +307,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
   test('ClearBrowsingDataTap', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
-    assertFalse(element.$.installedAppsDialog.open);
 
     const cancelButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.cancel-button');
@@ -332,14 +331,12 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const dataTypes = args[0];
-    const installedApps = args[2];
     assertEquals(1, dataTypes.length);
     assertEquals('browser.clear_data.cookies_basic', dataTypes[0]);
     assertTrue(element.$.clearBrowsingDataDialog.open);
     assertTrue(cancelButton!.disabled);
     assertTrue(actionButton!.disabled);
     assertTrue(spinner!.active);
-    assertTrue(installedApps.length === 0);
 
     // Simulate signal from browser indicating that clearing has
     // completed.
@@ -357,9 +354,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertFalse(spinner!.active);
     assertFalse(!!element.shadowRoot!.querySelector('#historyNotice'));
     assertFalse(!!element.shadowRoot!.querySelector('#passwordsNotice'));
-
-    // Check that the dialog didn't switch to installed apps.
-    assertFalse(element.$.installedAppsDialog.open);
   });
 
   test('ClearBrowsingDataClearButton', function() {
@@ -653,81 +647,4 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         '#clearBrowsingDataDialog [slot=footer]'));
   });
   // </if>
-});
-
-suite('InstalledApps', function() {
-  let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
-  let element: SettingsClearBrowsingDataDialogElement;
-
-  const installedApps: InstalledApp[] = [
-    {
-      registerableDomain: 'google.com',
-      reasonBitfield: 0,
-      exampleOrigin: '',
-      isChecked: true,
-      storageSize: 0,
-      hasNotifications: false,
-      appName: '',
-    },
-    {
-      registerableDomain: 'yahoo.com',
-      reasonBitfield: 0,
-      exampleOrigin: '',
-      isChecked: true,
-      storageSize: 0,
-      hasNotifications: false,
-      appName: '',
-    },
-  ];
-
-  setup(() => {
-    loadTimeData.overrideValues({installedAppsInCbd: true});
-    testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
-    testBrowserProxy.setInstalledApps(installedApps);
-    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = document.createElement('settings-clear-browsing-data-dialog');
-    element.set('prefs', getClearBrowsingDataPrefs());
-    document.body.appendChild(element);
-    return testBrowserProxy.whenCalled('initialize');
-  });
-
-  teardown(() => {
-    element.remove();
-  });
-
-  test('getInstalledApps', async function() {
-    assertTrue(element.$.clearBrowsingDataDialog.open);
-    assertFalse(element.$.installedAppsDialog.open);
-
-    // Select cookie checkbox.
-    element.$.cookiesCheckboxBasic.$.checkbox.click();
-    assertTrue(element.$.cookiesCheckboxBasic.checked);
-    // Clear browsing data.
-    element.$.clearBrowsingDataConfirm.click();
-    assertTrue(element.$.clearBrowsingDataDialog.open);
-
-    await testBrowserProxy.whenCalled('getInstalledApps');
-    await whenAttributeIs(element.$.installedAppsDialog, 'open', '');
-    const firstInstalledApp =
-        element.shadowRoot!.querySelector('installed-app-checkbox');
-    assertTrue(!!firstInstalledApp);
-    assertEquals(
-        'google.com', firstInstalledApp!.installedApp.registerableDomain);
-    assertTrue(firstInstalledApp!.installedApp.isChecked);
-    // Choose to keep storage for google.com.
-    firstInstalledApp!.shadowRoot!.querySelector('cr-checkbox')!.click();
-    assertFalse(firstInstalledApp!.installedApp.isChecked);
-    // Confirm deletion.
-    element.$.installedAppsConfirm.click();
-    const [dataTypes, _timePeriod, apps] =
-        await testBrowserProxy.whenCalled('clearBrowsingData');
-    assertEquals(1, dataTypes.length);
-    assertEquals('browser.clear_data.cookies_basic', dataTypes[0]);
-    assertEquals(2, apps.length);
-    assertEquals('google.com', apps[0].registerableDomain);
-    assertFalse(apps[0].isChecked);
-    assertEquals('yahoo.com', apps[1].registerableDomain);
-    assertTrue(apps[1].isChecked);
-  });
 });

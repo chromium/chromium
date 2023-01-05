@@ -15,7 +15,6 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './history_deletion_dialog.js';
 import './passwords_deletion_dialog.js';
-import './installed_app_checkbox.js';
 import '../controls/settings_checkbox.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
@@ -31,26 +30,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PrefControlMixinInterface} from '../controls/pref_control_mixin.js';
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
-import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog.html.js';
-
-/**
- * InstalledAppsDialogActions enum.
- * These values are persisted to logs and should not be renumbered or
- * re-used.
- * See tools/metrics/histograms/enums.xml.
- */
-enum InstalledAppsDialogActions {
-  CLOSE = 0,
-  CANCEL_BUTTON = 1,
-  CLEAR_BUTTON = 2,
-}
 
 /**
  * @param dialog the dialog to close
@@ -67,24 +54,11 @@ function closeDialog(dialog: CrDialogElement, isLast: boolean) {
   dialog.close();
 }
 
-/**
- * @param oldDialog the dialog to close
- * @param newDialog the dialog to open
- */
-function replaceDialog(oldDialog: CrDialogElement, newDialog: CrDialogElement) {
-  closeDialog(oldDialog, false);
-  if (!newDialog.open) {
-    newDialog.showModal();
-  }
-}
-
 export interface SettingsClearBrowsingDataDialogElement {
   $: {
-    installedAppsConfirm: HTMLElement,
     clearBrowsingDataConfirm: HTMLElement,
     cookiesCheckboxBasic: SettingsCheckboxElement,
     clearBrowsingDataDialog: CrDialogElement,
-    installedAppsDialog: CrDialogElement,
     tabs: IronPagesElement,
   };
 }
@@ -229,20 +203,6 @@ export class SettingsClearBrowsingDataDialogElement extends
     ],
       },
 
-      /**
-       * Installed apps that might be cleared if the user clears browsing data
-       * for the selected time period.
-       */
-      installedApps_: {
-        type: Array,
-        value: () => [],
-      },
-
-      installedAppsFlagEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('installedAppsInCbd'),
-      },
-
       googleSearchHistoryString_: {
         type: String,
         computed: 'computeGoogleSearchHistoryString_(isNonGoogleDse_)',
@@ -276,8 +236,6 @@ export class SettingsClearBrowsingDataDialogElement extends
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
   private tabsNames_: string[];
-  private installedApps_: InstalledApp[];
-  private installedAppsFlagEnabled_: boolean;
   private googleSearchHistoryString_: TrustedHTML;
   private isNonGoogleDse_: boolean;
   private nonGoogleSearchHistoryString_: TrustedHTML;
@@ -417,48 +375,6 @@ export class SettingsClearBrowsingDataDialogElement extends
     return dataTypes;
   }
 
-  /**
-   * Gets a list of top 5 installed apps that have been launched
-   * within the time period selected. This is used to warn the user
-   * that data for these apps will be cleared as well, and offers
-   * them the option to exclude deletion of this data.
-   */
-  private async getInstalledApps_() {
-    const tab = this.$.tabs.selectedItem as HTMLElement;
-    const timePeriod = tab.querySelector<SettingsDropdownMenuElement>(
-                              '.time-range-select')!.pref!.value;
-    this.installedApps_ = await this.browserProxy_.getInstalledApps(timePeriod);
-  }
-
-  private shouldShowInstalledApps_(): boolean {
-    if (!this.installedAppsFlagEnabled_) {
-      return false;
-    }
-    const haveInstalledApps = this.installedApps_.length > 0;
-    chrome.send('metricsHandler:recordBooleanHistogram', [
-      'History.ClearBrowsingData.InstalledAppsDialogShown',
-      haveInstalledApps,
-    ]);
-    return haveInstalledApps;
-  }
-
-  /** Logs interactions with the installed app dialog to UMA. */
-  private recordInstalledAppsInteractions_() {
-    if (this.installedApps_.length === 0) {
-      return;
-    }
-
-    const uncheckedAppCount =
-        this.installedApps_.filter(app => !app.isChecked).length;
-    chrome.metricsPrivate.recordBoolean(
-        'History.ClearBrowsingData.InstalledAppExcluded', !!uncheckedAppCount);
-    chrome.metricsPrivate.recordCount(
-        'History.ClearBrowsingData.InstalledDeselectedNum', uncheckedAppCount);
-    chrome.metricsPrivate.recordPercentage(
-        'History.ClearBrowsingData.InstalledDeselectedPercent',
-        Math.round(100 * uncheckedAppCount / this.installedApps_.length));
-  }
-
   /** Clears browsing data and maybe shows a history notice. */
   private async clearBrowsingData_() {
     this.clearingInProgress_ = true;
@@ -481,8 +397,7 @@ export class SettingsClearBrowsingDataDialogElement extends
         .forEach(checkbox => checkbox.sendPrefChange());
 
     const {showHistoryNotice, showPasswordsNotice} =
-        await this.browserProxy_.clearBrowsingData(
-            dataTypes, timePeriod, this.installedApps_);
+        await this.browserProxy_.clearBrowsingData(dataTypes, timePeriod);
     this.clearingInProgress_ = false;
     getAnnouncerInstance().announce(loadTimeData.getString('clearedData'));
     this.showHistoryDeletionDialog_ = showHistoryNotice;
@@ -494,13 +409,10 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.showPasswordsDeletionDialogLater_ =
         showPasswordsNotice && showHistoryNotice;
 
-    // Close the clear browsing data or installed apps dialog if they are open.
+    // Close the clear browsing data if it is open.
     const isLastDialog = !showHistoryNotice && !showPasswordsNotice;
     if (this.$.clearBrowsingDataDialog.open) {
       closeDialog(this.$.clearBrowsingDataDialog, isLastDialog);
-    }
-    if (this.$.installedAppsDialog.open) {
-      closeDialog(this.$.installedAppsDialog, isLastDialog);
     }
   }
 
@@ -597,41 +509,6 @@ export class SettingsClearBrowsingDataDialogElement extends
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;
-  }
-
-  private async onClearBrowsingDataClick_() {
-    await this.getInstalledApps_();
-    if (this.shouldShowInstalledApps_()) {
-      replaceDialog(this.$.clearBrowsingDataDialog, this.$.installedAppsDialog);
-    } else {
-      await this.clearBrowsingData_();
-    }
-  }
-
-  private hideInstalledApps_() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'History.ClearBrowsingData.InstalledAppsDialogAction',
-        InstalledAppsDialogActions.CLOSE,
-        Object.keys(InstalledAppsDialogActions).length);
-    replaceDialog(this.$.installedAppsDialog, this.$.clearBrowsingDataDialog);
-  }
-
-  private onCancelInstalledApps_() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'History.ClearBrowsingData.InstalledAppsDialogAction',
-        InstalledAppsDialogActions.CANCEL_BUTTON,
-        Object.keys(InstalledAppsDialogActions).length);
-    replaceDialog(this.$.installedAppsDialog, this.$.clearBrowsingDataDialog);
-  }
-
-  /** Handles the tap confirm button in installed apps. */
-  private async onInstalledAppsConfirmClick_() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'History.ClearBrowsingData.InstalledAppsDialogAction',
-        InstalledAppsDialogActions.CLEAR_BUTTON,
-        Object.keys(InstalledAppsDialogActions).length);
-    this.recordInstalledAppsInteractions_();
-    await this.clearBrowsingData_();
   }
 }
 
