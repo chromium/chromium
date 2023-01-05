@@ -86,8 +86,6 @@ class CONTENT_EXPORT AggregatableReportScheduler {
       AggregationServiceStorage::RequestId request_id,
       int previous_failed_attempts);
 
-  // TODO(crbug.com/1340042): Implement offline and startup handling
-
  private:
   class TimerDelegate : public ReportSchedulerTimer::Delegate {
    public:
