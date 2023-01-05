@@ -47,7 +47,7 @@ class RunOnOsLoginSubManagerTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       shortcut_override_ =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
     }
     if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -129,7 +129,7 @@ class RunOnOsLoginSubManagerTest
  private:
   raw_ptr<FakeWebAppProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       shortcut_override_;
 };
 

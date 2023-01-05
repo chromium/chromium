@@ -45,7 +45,7 @@ class UpdateProtocolHandlerApprovalCommandTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       shortcut_override_ =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
   }
@@ -127,7 +127,7 @@ class UpdateProtocolHandlerApprovalCommandTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       shortcut_override_;
 };
 
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest, Install) {
 
   if (AreProtocolsRegisteredWithOs()) {
     // Installation registers the protocol handlers.
-    EXPECT_THAT(GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+    EXPECT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
                 testing::ElementsAre(std::make_tuple(
                     app_id, std::vector({protocol_handler.protocol}))));
   }
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   if (AreProtocolsRegisteredWithOs()) {
     // Since they were already registered, no work needed to register them
     // again.
-    EXPECT_THAT(GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+    EXPECT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
                 testing::ElementsAre(std::make_tuple(
                     app_id, std::vector({protocol_handler.protocol}))));
   }
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   if (AreProtocolsRegisteredWithOs()) {
     // Since they were already registered, no work needed to register them
     // again.
-    EXPECT_THAT(GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+    EXPECT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
                 testing::ElementsAre(std::make_tuple(
                     app_id, std::vector({protocol_handler.protocol}))));
   }
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   if (AreProtocolsRegisteredWithOs()) {
     // They should be registered on first install, then removed on disallow.
     EXPECT_THAT(
-        GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+        GetOsIntegrationTestOverride()->protocol_scheme_registrations,
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>())));
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
     // the 2nd command run with the same inputs, this should not change because
     // OS integration does not re-run again.
     EXPECT_THAT(
-        GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+        GetOsIntegrationTestOverride()->protocol_scheme_registrations,
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>())));
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   if (AreProtocolsRegisteredWithOs()) {
     // They should be registered on first install, then removed on disallow.
     EXPECT_THAT(
-        GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+        GetOsIntegrationTestOverride()->protocol_scheme_registrations,
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>())));
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
 
   if (AreProtocolsRegisteredWithOs()) {
     EXPECT_THAT(
-        GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+        GetOsIntegrationTestOverride()->protocol_scheme_registrations,
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>()),
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   // added back when removed from the disallowed list.
   if (AreProtocolsRegisteredWithOs()) {
     EXPECT_THAT(
-        GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+        GetOsIntegrationTestOverride()->protocol_scheme_registrations,
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>()),
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   // They should be registered on first install and not modified on addition or
   // removal from the allowed list.
   if (AreProtocolsRegisteredWithOs()) {
-    EXPECT_THAT(GetShortcutOverrideForTesting()->protocol_scheme_registrations,
+    EXPECT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
                 testing::ElementsAre(std::make_tuple(
                     app_id, std::vector({protocol_handler.protocol}))));
   }

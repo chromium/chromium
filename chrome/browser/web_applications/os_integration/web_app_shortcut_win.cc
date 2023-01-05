@@ -424,7 +424,7 @@ void GetShortcutLocationsAndDeleteShortcuts(
 
   // Calling UnpinShortcuts in unit-tests currently crashes the test, so skip it
   // for now using the shortcut override mechanism.
-  if (web_app::GetShortcutOverrideForTesting()) {
+  if (web_app::GetOsIntegrationTestOverride()) {
     DeleteShortcuts(all_shortcuts, std::move(result_callback));
     return;
   }
@@ -567,8 +567,8 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in `GetShortcutPaths()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
 
   // Shortcut paths under which to create shortcuts.
   std::vector<base::FilePath> shortcut_paths =
@@ -622,8 +622,8 @@ Result UpdatePlatformShortcuts(const base::FilePath& web_app_path,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in `GetShortcutPaths()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
 
   // Update the icon if necessary.
   const base::FilePath icon_file =
@@ -656,8 +656,8 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in `GetShortcutPaths()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   ShortcutLocations result;
   ShortcutLocations desktop;
   desktop.on_desktop = true;
@@ -732,8 +732,8 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              DeleteShortcutsCallback callback) {
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in `GetShortcutPaths()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   GetShortcutLocationsAndDeleteShortcuts(
       web_app_path, shortcut_info.profile_path, shortcut_info.title,
       base::BindOnce(&FinishDeletingPlatformShortcuts, web_app_path,
@@ -756,8 +756,8 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in `GetShortcutPaths()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   GetShortcutLocationsAndDeleteShortcuts(
       base::FilePath(), profile_path, std::u16string(),
       base::BindOnce(&FinishDeletingAllShortcutsForProfile));
@@ -768,8 +768,8 @@ std::vector<base::FilePath> GetShortcutPaths(
   // Shortcut paths under which to create shortcuts.
   std::vector<base::FilePath> shortcut_paths;
   // if there is no ShortcutOverrirdeForTesting, set it to empty.
-  scoped_refptr<ShortcutOverrideForTesting> testing_shortcuts =
-      GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> testing_shortcuts =
+      GetOsIntegrationTestOverride();
   // Locations to add to shortcut_paths.
   struct {
     bool use_this_location;

@@ -450,7 +450,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       override_registration_;
 
   std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =

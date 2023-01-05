@@ -1301,8 +1301,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
-      registration = ShortcutOverrideForTesting::OverrideForTesting();
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      registration = OsIntegrationTestOverride::OverrideForTesting();
 
   NavigateToURLAndWait(
       browser(),
@@ -1369,8 +1369,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenuSuccess) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
-      registration = ShortcutOverrideForTesting::OverrideForTesting();
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      registration = OsIntegrationTestOverride::OverrideForTesting();
   NavigateToURLAndWait(
       browser(),
       https_server()->GetURL(
@@ -1450,8 +1450,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
-      registration = ShortcutOverrideForTesting::OverrideForTesting();
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      registration = OsIntegrationTestOverride::OverrideForTesting();
   NavigateToURLAndWait(
       browser(),
       https_server()->GetURL("/banners/"
@@ -1515,8 +1515,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
-      registration = ShortcutOverrideForTesting::OverrideForTesting();
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      registration = OsIntegrationTestOverride::OverrideForTesting();
 
   auto* provider = WebAppProvider::GetForTest(profile());
 
@@ -1624,9 +1624,9 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
       &g_app_shims_allow_update_and_launch_in_tests, true);
 #endif
   base::ScopedAllowBlockingForTesting allow_blocking;
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       shortcut_override =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
 
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
@@ -2187,9 +2187,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::HistogramTester tester;
 
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       registration =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
   std::vector<std::string> expected_extensions{"bar", "baz", "foo", "foobar"};
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2289,9 +2289,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       registration =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
   std::vector<std::string> expected_extensions{"bar", "baz", "foo", "foobar"};
 
   ASSERT_TRUE(embedded_test_server()->Start());

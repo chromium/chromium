@@ -48,13 +48,13 @@ void RegisterProtocolHandlersWithOSInBackground(
     const std::wstring& app_name_extension) {
   base::AssertLongCPUWorkAllowed();
 
-  if (web_app::GetShortcutOverrideForTesting()) {  // IN-TEST
+  if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
     // Instead of modifying the registry, add them to the testing data.
     std::vector<std::string> protocols_registered;
     for (apps::ProtocolHandlerInfo& info : protocol_handlers) {
       protocols_registered.push_back(info.protocol);
     }
-    web_app::GetShortcutOverrideForTesting()
+    web_app::GetOsIntegrationTestOverride()
         ->protocol_scheme_registrations.emplace_back(
             app_id, std::move(protocols_registered));
     return;
@@ -102,7 +102,7 @@ void UnregisterProtocolHandlersWithOsInBackground(
     const base::FilePath& profile_path) {
   base::AssertLongCPUWorkAllowed();
 
-  if (web_app::GetShortcutOverrideForTesting()) {  // IN-TEST
+  if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
     // The unregistration is not tested due to complication in the
     // implementation of other OS's. Instead, we check if the updated
     // registrations are empty / don't have the offending protocol.
@@ -140,8 +140,8 @@ void RegisterProtocolHandlersWithOs(
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
   if (protocol_handlers.empty()) {
-    if (web_app::GetShortcutOverrideForTesting()) {  // IN-TEST
-      web_app::GetShortcutOverrideForTesting()
+    if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
+      web_app::GetOsIntegrationTestOverride()
           ->protocol_scheme_registrations.emplace_back(
               app_id, std::vector<std::string>());
     }

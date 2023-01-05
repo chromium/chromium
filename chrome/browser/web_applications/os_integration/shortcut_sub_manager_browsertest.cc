@@ -45,7 +45,7 @@ class ShortcutSubManagerBrowserTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       shortcut_override_ =
-          ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
   }
@@ -101,7 +101,7 @@ class ShortcutSubManagerBrowserTest
   }
 
  private:
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       shortcut_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

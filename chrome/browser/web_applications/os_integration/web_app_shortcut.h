@@ -54,27 +54,49 @@ struct LinuxFileRegistration {
 };
 #endif
 
+// This class is used to help test OS integration code and operations running on
+// trybots. Among other complexities, trybots are often running multiple tests
+// at the same times, so anything that operates in shared OS state could have
+// side effects that this class attempts to solve. (For example, this class
+// makes sure that on Mac, we 'install' the application to a temporary directory
+// to avoid overwriting one from another test).
+//
+// The general rules for adding / using this are:
+// - If the OS integration CAN be fully tested on a trybot, do so. The presence
+//   of this class can allow customization of the integration if needed (e.g.
+//   changing folders).
+//   - If the information 'written' to the OS CAN be easily read back / verified
+//     in a test, then no further work needed, and tests can do this.
+//   - If the information 'written' to the OS CANNOT be easily read back /
+//     verified in a test, then populate metadata in this object about the
+//     final OS call for tests to check.
+// - If the OS integration CANNOT be fully tested on a trybot (it doesn't work
+// or
+//   messes up the environment), then the presence of this object disables the
+//   os integration, and information is populated about the final OS call in
+//   this class.
+//
 // This class is used across multiple different sequenced task runners:
 // - Created on the UI thread.
 // - Accessed & sometimes modified by the shortcut task runner.
 // - Accessed by the UI thread.
 // It is up to the user to ensure thread safety of this struct through
 // ordering guarantees.
-struct ShortcutOverrideForTesting
-    : public base::RefCountedThreadSafe<ShortcutOverrideForTesting> {
+struct OsIntegrationTestOverride
+    : public base::RefCountedThreadSafe<OsIntegrationTestOverride> {
  public:
   // Destroying this class blocks the thread until all users of
-  // GetShortcutOverrideForTesting() have completed.
+  // GetOsIntegrationTestOverride() have completed.
   struct BlockingRegistration {
     BlockingRegistration();
     ~BlockingRegistration();
 
-    scoped_refptr<ShortcutOverrideForTesting> shortcut_override;
+    scoped_refptr<OsIntegrationTestOverride> shortcut_override;
   };
 
-  ShortcutOverrideForTesting(const ShortcutOverrideForTesting&) = delete;
+  OsIntegrationTestOverride(const OsIntegrationTestOverride&) = delete;
 
-  // Overrides applicable directories for shortcut integration and returns an
+  // Overrides applicable directories for OS integration and returns an
   // object that:
   // 1) Contains the directories.
   // 2) Keeps the override active until the object is destroyed.
@@ -82,10 +104,10 @@ struct ShortcutOverrideForTesting
   //    hooks are NOT cleanup by the test. This ensures that trybots don't have
   //    old test artifacts on them that can make future tests flaky.
   // All installs that occur during the lifetime of the
-  // ShortcutOverrideForTesting MUST be uninstalled before it is
+  // OsIntegrationTestOverride MUST be uninstalled before it is
   // destroyed.
   // The returned value, on destruction, will block until all usages of the
-  // GetShortcutOverrideForTesting() are destroyed.
+  // GetOsIntegrationTestOverride() are destroyed.
   static std::unique_ptr<BlockingRegistration> OverrideForTesting(
       const base::FilePath& base_path = base::FilePath());
 
@@ -112,13 +134,13 @@ struct ShortcutOverrideForTesting
       protocol_scheme_registrations;
 
  private:
-  friend class base::RefCountedThreadSafe<ShortcutOverrideForTesting>;
+  friend class base::RefCountedThreadSafe<OsIntegrationTestOverride>;
 
-  explicit ShortcutOverrideForTesting(const base::FilePath& base_path);
-  ~ShortcutOverrideForTesting();
+  explicit OsIntegrationTestOverride(const base::FilePath& base_path);
+  ~OsIntegrationTestOverride();
 
   // |on_destruction| has it's closure set only once (when BlockingRegistration
-  // is destroyed) and executed when ShortcutOverrideForTesting is destroyed.
+  // is destroyed) and executed when OsIntegrationTestOverride is destroyed.
   // The destructor of BlockingRegistration explicitly sets this closure with a
   // global lock, then destroys the object, then waits on the closure, so it is
   // thread-compatible.
@@ -126,7 +148,7 @@ struct ShortcutOverrideForTesting
 };
 
 // Returns an active shortcut override for testing, if there is one.
-scoped_refptr<ShortcutOverrideForTesting> GetShortcutOverrideForTesting();
+scoped_refptr<OsIntegrationTestOverride> GetOsIntegrationTestOverride();
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {

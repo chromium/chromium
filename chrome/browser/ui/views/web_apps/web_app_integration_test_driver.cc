@@ -792,7 +792,7 @@ void WebAppIntegrationTestDriver::SetUp() {
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   override_registration_ =
-      ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+      OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
 
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.

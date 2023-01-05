@@ -219,7 +219,7 @@ bool AppShimCreationDisabledForTest() {
   // Because shims created in ~/Applications will not be cleaned up.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kTestType) &&
-         !GetShortcutOverrideForTesting();
+         !GetOsIntegrationTestOverride();
 }
 
 bool AppShimRevealDisabledForTest() {
@@ -732,7 +732,7 @@ bool AppShimLaunchDisabled() {
 }
 
 base::FilePath GetChromeAppsFolder() {
-  auto override = GetShortcutOverrideForTesting();
+  auto override = GetOsIntegrationTestOverride();
   if (override) {
     if (override->chrome_apps_folder.IsValid())
       return override->chrome_apps_folder.GetPath();
@@ -763,7 +763,7 @@ void WebAppAutoLoginUtil::SetInstanceForTesting(
 
 void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
                                           bool hide_on_startup) {
-  auto override = GetShortcutOverrideForTesting();
+  auto override = GetOsIntegrationTestOverride();
   if (override) {
     override->startup_enabled[app_bundle_path] = true;
   } else {
@@ -773,7 +773,7 @@ void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
 
 void WebAppAutoLoginUtil::RemoveFromLoginItems(
     const base::FilePath& app_bundle_path) {
-  auto override = GetShortcutOverrideForTesting();
+  auto override = GetOsIntegrationTestOverride();
   if (override) {
     override->startup_enabled[app_bundle_path] = false;
   } else {
@@ -1228,12 +1228,12 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
       app_mode::kCFBundleURLSchemesKey : handlers
     } ];
   }
-  if (GetShortcutOverrideForTesting()) {  // IN-TEST
+  if (GetOsIntegrationTestOverride()) {  // IN-TEST
     std::vector<std::string> protocol_handlers_vec;
     protocol_handlers_vec.insert(protocol_handlers_vec.end(),
                                  protocol_handlers.begin(),
                                  protocol_handlers.end());
-    GetShortcutOverrideForTesting()  // IN-TEST
+    GetOsIntegrationTestOverride()  // IN-TEST
         ->protocol_scheme_registrations.emplace_back(
             info_->extension_id, std::move(protocol_handlers_vec));
   }
@@ -1500,8 +1500,8 @@ bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   if (AppShimCreationDisabledForTest())
     return true;
 
@@ -1516,8 +1516,8 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   WebAppShortcutCreator shortcut_creator(
       internals::GetShortcutDataDir(shortcut_info), &shortcut_info);
   ShortcutLocations locations;
@@ -1536,8 +1536,8 @@ void DeletePlatformShortcuts(const base::FilePath& app_data_path,
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   const std::string bundle_id = GetBundleIdentifier(shortcut_info.extension_id,
                                                     shortcut_info.profile_path);
   auto bundle_infos = SearchForBundlesById(bundle_id);
@@ -1558,8 +1558,8 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   const std::string bundle_id = GetBundleIdentifier(app_id);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   for (const auto& bundle_info : bundle_infos) {
@@ -1577,8 +1577,8 @@ Result UpdatePlatformShortcuts(const base::FilePath& app_data_path,
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   if (AppShimLaunchDisabled())
     return Result::kOk;
 
@@ -1601,8 +1601,8 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
   std::list<BundleInfoPlist> bundles_info = BundleInfoPlist::GetAllInPath(
       GetChromeAppsFolder(), true /* recursive */);
   for (const auto& info : bundles_info) {

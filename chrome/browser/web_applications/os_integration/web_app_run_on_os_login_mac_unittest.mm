@@ -79,7 +79,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     WebAppTest::SetUp();
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
 
-    override_registration_ = ShortcutOverrideForTesting::OverrideForTesting();
+    override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
     destination_dir_ =
         override_registration_->shortcut_override->chrome_apps_folder.GetPath();
 
@@ -143,7 +143,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   std::unique_ptr<WebAppAutoLoginUtilMock> auto_login_util_mock_;
   std::unique_ptr<ShortcutInfo> info_;
   base::FilePath shim_path_;
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       override_registration_;
 };
 

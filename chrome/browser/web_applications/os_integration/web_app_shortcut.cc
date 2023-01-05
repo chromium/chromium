@@ -127,15 +127,14 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(const std::string& app_id,
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
-struct ShortcutOverrideForTestingState {
+struct OsIntegrationTestOverrideState {
   base::Lock lock;
-  raw_ptr<ShortcutOverrideForTesting> global_shortcut_override
-      GUARDED_BY(lock) = nullptr;
+  raw_ptr<OsIntegrationTestOverride> global_shortcut_override GUARDED_BY(lock) =
+      nullptr;
 };
 
-ShortcutOverrideForTestingState& GetMutableShortcutOverrideStateForTesting() {
-  static base::NoDestructor<ShortcutOverrideForTestingState>
-      g_shortcut_override;
+OsIntegrationTestOverrideState& GetMutableShortcutOverrideStateForTesting() {
+  static base::NoDestructor<OsIntegrationTestOverrideState> g_shortcut_override;
   return *g_shortcut_override.get();
 }
 
@@ -151,9 +150,9 @@ std::string GetAllFilesInDir(const base::FilePath& file_path) {
 
 }  // namespace
 
-ShortcutOverrideForTesting::BlockingRegistration::BlockingRegistration() =
+OsIntegrationTestOverride::BlockingRegistration::BlockingRegistration() =
     default;
-ShortcutOverrideForTesting::BlockingRegistration::~BlockingRegistration() {
+OsIntegrationTestOverride::BlockingRegistration::~BlockingRegistration() {
   base::ScopedAllowBlockingForTesting blocking;
   base::RunLoop wait_until_destruction_loop;
   // Lock the global state.
@@ -180,15 +179,14 @@ ShortcutOverrideForTesting::BlockingRegistration::~BlockingRegistration() {
 }
 
 // static
-std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
-ShortcutOverrideForTesting::OverrideForTesting(
-    const base::FilePath& base_path) {
+std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+OsIntegrationTestOverride::OverrideForTesting(const base::FilePath& base_path) {
   auto& state = GetMutableShortcutOverrideStateForTesting();
   base::AutoLock state_lock(state.lock);
   DCHECK(!state.global_shortcut_override)
       << "Cannot have multiple registrations at the same time.";
   auto shortcut_override =
-      base::WrapRefCounted(new ShortcutOverrideForTesting(base_path));
+      base::WrapRefCounted(new OsIntegrationTestOverride(base_path));
   state.global_shortcut_override = shortcut_override.get();
 
   std::unique_ptr<BlockingRegistration> registration =
@@ -197,7 +195,7 @@ ShortcutOverrideForTesting::OverrideForTesting(
   return registration;
 }
 
-ShortcutOverrideForTesting::ShortcutOverrideForTesting(
+OsIntegrationTestOverride::OsIntegrationTestOverride(
     const base::FilePath& base_path) {
   // Initialize all directories used. The success & the DCHECK are separated to
   // ensure that these function calls occur on release builds.
@@ -245,7 +243,7 @@ ShortcutOverrideForTesting::ShortcutOverrideForTesting(
   auto callback =
       base::BindRepeating([](base::FilePath filename, std::string xdg_command,
                              std::string file_contents) {
-        auto shortcut_override = GetShortcutOverrideForTesting();
+        auto shortcut_override = GetOsIntegrationTestOverride();
         DCHECK(shortcut_override);
         LinuxFileRegistration file_registration = LinuxFileRegistration();
         file_registration.xdg_command = xdg_command;
@@ -257,7 +255,7 @@ ShortcutOverrideForTesting::ShortcutOverrideForTesting(
 #endif
 }
 
-ShortcutOverrideForTesting::~ShortcutOverrideForTesting() {
+OsIntegrationTestOverride::~OsIntegrationTestOverride() {
   std::vector<base::ScopedTempDir*> directories;
 #if BUILDFLAG(IS_WIN)
   directories = {&desktop, &application_menu, &quick_launch, &startup};
@@ -291,7 +289,7 @@ ShortcutOverrideForTesting::~ShortcutOverrideForTesting() {
   }
 }
 
-scoped_refptr<ShortcutOverrideForTesting> GetShortcutOverrideForTesting() {
+scoped_refptr<OsIntegrationTestOverride> GetOsIntegrationTestOverride() {
   auto& state = GetMutableShortcutOverrideStateForTesting();
   base::AutoLock state_lock(state.lock);
   return base::WrapRefCounted(state.global_shortcut_override.get());

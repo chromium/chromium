@@ -59,7 +59,7 @@ web_app::LaunchXdgUtilityForTesting& GetInstalledLaunchXdgUtilityForTesting() {
 
 base::FilePath GetDesktopPath() {
   base::FilePath desktop_path;
-  auto shortcut_override = web_app::GetShortcutOverrideForTesting();
+  auto shortcut_override = web_app::GetOsIntegrationTestOverride();
   if (shortcut_override)
     return shortcut_override->desktop.GetPath();
   base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
@@ -67,7 +67,7 @@ base::FilePath GetDesktopPath() {
 }
 
 base::FilePath GetAutostartPath(base::Environment* env) {
-  auto shortcut_override = web_app::GetShortcutOverrideForTesting();
+  auto shortcut_override = web_app::GetOsIntegrationTestOverride();
   if (shortcut_override)
     return shortcut_override->startup.GetPath();
   return AutoStart::GetAutostartDirectory(env);
@@ -256,7 +256,7 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
                                       const std::string& contents,
                                       const base::FilePath& directory_filename,
                                       const std::string& directory_contents) {
-  DCHECK(!web_app::GetShortcutOverrideForTesting());
+  DCHECK(!web_app::GetOsIntegrationTestOverride());
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToCreateTempDir);
@@ -387,7 +387,7 @@ bool DeleteShortcutInApplicationsMenu(
     const base::FilePath& shortcut_filename,
     const base::FilePath& directory_filename) {
   // TODO(crbug.com/1276141): Support shortcut testing in Applications Menu.
-  DCHECK(!web_app::GetShortcutOverrideForTesting());
+  DCHECK(!web_app::GetOsIntegrationTestOverride());
   std::vector<std::string> argv;
   argv.push_back("xdg-desktop-menu");
   argv.push_back("uninstall");
@@ -414,8 +414,8 @@ bool CreateDesktopShortcut(base::Environment* env,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
 
   bool create_shortcut_in_startup = creation_locations.in_startup;
 
@@ -591,8 +591,8 @@ bool DeleteDesktopShortcuts(base::Environment* env,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
 
   base::FilePath shortcut_filename =
       GetAppShortcutFilename(profile_path, extension_id);
@@ -622,8 +622,8 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
 
   bool result = true;
   // Delete shortcuts from Desktop.
@@ -694,8 +694,8 @@ std::vector<base::FilePath> GetShortcutLocations(
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<ShortcutOverrideForTesting> shortcut_override =
-      web_app::GetShortcutOverrideForTesting();
+  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+      web_app::GetOsIntegrationTestOverride();
 
   std::vector<base::FilePath> shortcut_locations;
   base::FilePath shortcut_filename =

@@ -36,7 +36,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
     // Put shortcuts somewhere under the home dir, as otherwise LaunchServices
     // won't be able to find them.
     override_registration_ =
-        ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
+        OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
 
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -107,7 +107,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
   const GURL kTestApp2Url = GURL("https://example.com");
 
  private:
-  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
       override_registration_;
 
   raw_ptr<FakeWebAppProvider> provider_;
