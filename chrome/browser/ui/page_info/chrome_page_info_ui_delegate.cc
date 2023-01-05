@@ -182,6 +182,11 @@ void ChromePageInfoUiDelegate::ShowPrivacySandboxAdPersonalization() {
   chrome::ShowPrivacySandboxAdPersonalization(browser);
 }
 
+void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  chrome::ShowPrivacySandboxSettings(browser);
+}
+
 std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(
     ContentSettingsType type) {
   switch (type) {

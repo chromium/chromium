@@ -62,7 +62,11 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   std::u16string GetPermissionDetail(ContentSettingsType type);
 
   // Opens Privacy Sandbox's "Ad Personalzation" settings page.
+  // TODO(crbug.com/1378703): Remove after the feature is launched.
   void ShowPrivacySandboxAdPersonalization();
+
+  // Opens Privacy Sandbox settings page.
+  void ShowPrivacySandboxSettings();
 
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;

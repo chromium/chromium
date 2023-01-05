@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
@@ -32,14 +33,18 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
       views::BoxLayout::Orientation::kVertical));
 
   AddChildView(PageInfoViewFactory::CreateSeparator());
-  // TODO(olesiamarukhno): Use correct strings.
   AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
           [](PageInfoAdPersonalizationContentView* view) {
             view->presenter_->RecordPageInfoAction(
                 PageInfo::PageInfoAction::
                     PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            view->ui_delegate_->ShowPrivacySandboxAdPersonalization();
+            if (base::FeatureList::IsEnabled(
+                    privacy_sandbox::kPrivacySandboxSettings4)) {
+              view->ui_delegate_->ShowPrivacySandboxSettings();
+            } else {
+              view->ui_delegate_->ShowPrivacySandboxAdPersonalization();
+            }
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),

@@ -40,6 +40,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -470,7 +471,11 @@ void ShowWebStore(Browser* browser) {
 
 void ShowPrivacySandboxSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    ShowSettingsSubPage(browser, kAdPrivacySubPage);
+  } else {
+    ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
+  }
 }
 
 void ShowPrivacySandboxAdPersonalization(Browser* browser) {

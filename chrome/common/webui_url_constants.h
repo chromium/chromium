@@ -504,6 +504,7 @@ extern const char kCfmNetworkSettingsURL[];
 
 // Settings sub-pages.
 extern const char kAccessibilitySubPage[];
+extern const char kAdPrivacySubPage[];
 extern const char kAddressesSubPage[];
 extern const char kAppearanceSubPage[];
 extern const char kAutofillSubPage[];
@@ -535,6 +536,8 @@ extern const char kSearchEnginesSubPage[];
 extern const char kSignOutSubPage[];
 extern const char kSyncSetupSubPage[];
 extern const char kTriggeredResetProfileSettingsSubPage[];
+// TODO(crbug.com/1378703): Remove these constants after the feature is
+// launched.
 extern const char kPrivacySandboxAdPersonalizationSubPage[];
 extern const char kPrivacySandboxLearnMoreSubPage[];
 extern const char kPrivacySandboxSubPage[];

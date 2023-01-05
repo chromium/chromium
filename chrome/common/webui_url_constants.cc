@@ -578,6 +578,7 @@ const char kChromeUIWebRtcLogsHost[] = "webrtc-logs";
 // AutocompleteProvider.
 
 const char kAccessibilitySubPage[] = "accessibility";
+const char kAdPrivacySubPage[] = "adPrivacy";
 const char kAddressesSubPage[] = "addresses";
 const char kAppearanceSubPage[] = "appearance";
 const char kAutofillSubPage[] = "autofill";
