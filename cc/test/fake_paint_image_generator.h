@@ -35,9 +35,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
 
   // PaintImageGenerator implementation.
   sk_sp<SkData> GetEncodedData() const override;
-  bool GetPixels(const SkImageInfo& info,
-                 void* pixels,
-                 size_t row_bytes,
+  bool GetPixels(SkPixmap pixmap,
                  size_t frame_index,
                  PaintImage::GeneratorClientId client_id,
                  uint32_t lazy_pixel_ref) override;

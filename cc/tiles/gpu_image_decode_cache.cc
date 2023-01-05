@@ -211,169 +211,183 @@ size_t EstimateHardwareDecodedDataSize(
 // draw/scale can be done directly, calls directly into PaintImage::Decode.
 // if not, decodes to a compatible temporary pixmap and then converts that into
 // the |target_pixmap|.
-//
-// For RGBX decoding, the default, the parameters |pixmap_y|,
-// |pixmap_u|, and |pixmap_v| are NULL. Otherwise, the pixmaps share a
-// contiguous block of allocated backing memory. If scaling needs to happen,
-// it is done individually for each plane.
-//
-// The |do_yuv_decode| parameter indicates whether YUV decoding can and should
-// be done, which is a combination of the underlying data requesting YUV and the
-// cache mode (i.e. OOP-R or not) supporting it. The |yuva_data_type| field
-// indicates the bit depth and type that should be used for Y, U, and V values.
-bool DrawAndScaleImage(
-    const DrawImage& draw_image,
-    SkPixmap* target_pixmap,
-    PaintImage::GeneratorClientId client_id,
-    const bool do_yuv_decode,
-    const SkYUVAPixmapInfo::SupportedDataTypes& yuva_supported_data_types,
-    const SkYUVAPixmapInfo::DataType yuva_data_type =
-        SkYUVAPixmapInfo::DataType::kUnorm8,
-    SkPixmap* pixmap_y = nullptr,
-    SkPixmap* pixmap_u = nullptr,
-    SkPixmap* pixmap_v = nullptr) {
-  // We will pass color_space explicitly to PaintImage::Decode, so pull it out
-  // of the pixmap and populate a stand-alone value.
-  // Note: To pull colorspace out of the pixmap, we create a new pixmap with
-  // null colorspace but the same memory pointer.
-  // The backing memory for |pixmap| has been allocated based on
-  // image_data->size, so it is correct for YUV even if the other parameters
-  // for |pixmap| do not quite make sense for YUV (e.g. rowBytes).
-  SkPixmap pixmap(target_pixmap->info().makeColorSpace(nullptr),
-                  target_pixmap->writable_addr(), target_pixmap->rowBytes());
-  uint8_t* data_ptr = reinterpret_cast<uint8_t*>(pixmap.writable_addr());
-  sk_sp<SkColorSpace> color_space = target_pixmap->info().refColorSpace();
-
+bool DrawAndScaleImageRGB(const DrawImage& draw_image,
+                          SkPixmap& target_pixmap,
+                          PaintImage::GeneratorClientId client_id) {
   const PaintImage& paint_image = draw_image.paint_image();
-  const bool is_original_decode =
+  const bool is_original_size_decode =
       SkISize::Make(paint_image.width(), paint_image.height()) ==
-      pixmap.bounds().size();
+      target_pixmap.dimensions();
   const bool is_nearest_neighbor =
       draw_image.filter_quality() == PaintFlags::FilterQuality::kNone;
-  SkImageInfo info = pixmap.info();
-  SkYUVAPixmapInfo yuva_pixmap_info;
-  if (do_yuv_decode) {
-    DCHECK(pixmap_y);
-    DCHECK(pixmap_u);
-    DCHECK(pixmap_v);
-    // If |do_yuv_decode| is true, IsYuv() must be true.
-    const bool yuva_info_initialized =
-        paint_image.IsYuv(yuva_supported_data_types, &yuva_pixmap_info);
-    DCHECK(yuva_info_initialized);
-    DCHECK_EQ(yuva_pixmap_info.dataType(), yuva_data_type);
-    // Only tri-planar YUV with no alpha is currently supported.
-    DCHECK_EQ(yuva_pixmap_info.numPlanes(), 3);
-  }
+
   SkISize supported_size =
-      paint_image.GetSupportedDecodeSize(pixmap.bounds().size());
+      paint_image.GetSupportedDecodeSize(target_pixmap.dimensions());
+
   // We can directly decode into target pixmap if we are doing an original
   // decode or we are decoding to scale without nearest neighbor filtering.
-  // TODO(crbug.com/927437): Although the JPEG decoder supports decoding to
-  // scale, we have not yet implemented YUV + decoding to scale, so we skip it.
   const bool can_directly_decode =
-      is_original_decode || (!is_nearest_neighbor && !do_yuv_decode);
-  if (supported_size == pixmap.bounds().size() && can_directly_decode) {
-    if (do_yuv_decode) {
-      SkYUVAPixmaps yuva_pixmaps = SkYUVAPixmaps::FromExternalMemory(
-          yuva_pixmap_info, pixmap.writable_addr());
-      // Only tri-planar YUV with no alpha is currently supported.
-      DCHECK_EQ(yuva_pixmaps.numPlanes(), 3);
-      *pixmap_y = yuva_pixmaps.plane(0);
-      *pixmap_u = yuva_pixmaps.plane(1);
-      *pixmap_v = yuva_pixmaps.plane(2);
-      return paint_image.DecodeYuv(yuva_pixmaps, draw_image.frame_index(),
-                                   client_id);
+      is_original_size_decode || !is_nearest_neighbor;
+  if (supported_size == target_pixmap.dimensions() && can_directly_decode) {
+    if (!paint_image.Decode(target_pixmap, draw_image.frame_index(),
+                            client_id)) {
+      DLOG(ERROR) << "Failed to decode image.";
+      return false;
     }
-    return paint_image.Decode(pixmap.writable_addr(), &info, color_space,
-                              draw_image.frame_index(), client_id);
+    return true;
   }
 
   // If we can't decode/scale directly, we will handle this in 2 steps.
   // Step 1: Decode at the nearest (larger) directly supported size or the
   // original size if nearest neighbor quality is requested.
-  // Step 2: Scale to |pixmap| size. If decoded image is half float backed and
-  // the device does not support image resize, decode to N32 color type and
-  // convert to F16 afterward. If doing YUV decoding, use an assumption of
-  // YUV420 and the dimensions of |pixmap|. Resizing happens on a plane-by-plane
-  // basis.
-  SkImageInfo decode_info;
-  SkColorType yuva_color_type;
-  if (do_yuv_decode) {
-    const size_t yuva_bytes = yuva_pixmap_info.computeTotalBytes();
-    if (SkImageInfo::ByteSizeOverflowed(yuva_bytes)) {
-      return false;
-    }
-    // We temporarily abuse the dimensions of the pixmap to ensure we allocate
-    // the proper number of bytes, but the actual plane dimensions are stored in
-    // |yuva_pixmap_info| and accessed within PaintImage::DecodeYuv() and below.
-    yuva_color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
-        yuva_pixmap_info.dataType(), 1);
-    decode_info = info.makeColorType(yuva_color_type).makeWH(yuva_bytes, 1);
-  } else {
-    SkISize decode_size =
-        is_nearest_neighbor
-            ? SkISize::Make(paint_image.width(), paint_image.height())
-            : supported_size;
-    decode_info = info.makeWH(decode_size.width(), decode_size.height());
+  const SkISize decode_size =
+      is_nearest_neighbor
+          ? SkISize::Make(paint_image.width(), paint_image.height())
+          : supported_size;
+  SkImageInfo decode_info = target_pixmap.info().makeDimensions(decode_size);
+  SkBitmap decode_bitmap;
+  if (!decode_bitmap.tryAllocPixels(decode_info)) {
+    DLOG(ERROR) << "Failed to allocate bitmap.";
+    return false;
+  }
+  SkPixmap decode_pixmap = decode_bitmap.pixmap();
+  if (!paint_image.Decode(decode_pixmap, draw_image.frame_index(), client_id)) {
+    DLOG(ERROR) << "Failed to decode unscaled image.";
+    return false;
   }
 
+  // Step 2: Scale to |pixmap| size.
   const PaintFlags::FilterQuality filter_quality =
       CalculateDesiredFilterQuality(draw_image);
   const SkSamplingOptions sampling(
       PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
+  if (!decode_pixmap.scalePixels(target_pixmap, sampling)) {
+    DLOG(ERROR) << "Failed to scale image.";
+    return false;
+  }
+  return true;
+}
 
+// Decode and scale for YUV pixmaps.
+//
+// The pixmaps `pixmap_y`, `pixmap_u`, and `pixmap_v` share a contiguous block
+// of allocated backing memory. If scaling needs to happen, it is done
+// individually for each plane.
+//
+// The |yuva_data_type| field indicates the bit depth and type that should be
+// used for Y, U, and V values.
+bool DrawAndScaleImageYUV(
+    const DrawImage& draw_image,
+    const SkISize& target_size,
+    void* buffer,
+    PaintImage::GeneratorClientId client_id,
+    const SkYUVAPixmapInfo::SupportedDataTypes& yuva_supported_data_types,
+    const SkYUVAPixmapInfo::DataType yuva_data_type,
+    SkPixmap& pixmap_y,
+    SkPixmap& pixmap_u,
+    SkPixmap& pixmap_v) {
+  const PaintImage& paint_image = draw_image.paint_image();
+  const bool is_original_size_decode =
+      SkISize::Make(paint_image.width(), paint_image.height()) == target_size;
+  SkYUVAPixmapInfo yuva_pixmap_info;
+
+  const bool yuva_info_initialized =
+      paint_image.IsYuv(yuva_supported_data_types, &yuva_pixmap_info);
+  DCHECK(yuva_info_initialized);
+  DCHECK_EQ(yuva_pixmap_info.dataType(), yuva_data_type);
+  // Only tri-planar YUV with no alpha is currently supported.
+  DCHECK_EQ(yuva_pixmap_info.numPlanes(), 3);
+  const size_t yuva_bytes = yuva_pixmap_info.computeTotalBytes();
+  if (SkImageInfo::ByteSizeOverflowed(yuva_bytes)) {
+    DLOG(ERROR) << "YUVA image size overflowed.";
+    return false;
+  }
+
+  SkISize supported_size = paint_image.GetSupportedDecodeSize(target_size);
+  // We can directly decode into target pixmap if we are doing an original
+  // decode.
+  // TODO(crbug.com/927437): Although the JPEG decoder supports decoding to
+  // scale, we have not yet implemented YUV + decoding to scale, so we skip it.
+  const bool can_directly_decode = is_original_size_decode;
+  if (supported_size == target_size && can_directly_decode) {
+    SkYUVAPixmaps yuva_pixmaps =
+        SkYUVAPixmaps::FromExternalMemory(yuva_pixmap_info, buffer);
+    // Only tri-planar YUV with no alpha is currently supported.
+    DCHECK_EQ(yuva_pixmaps.numPlanes(), 3);
+    pixmap_y = yuva_pixmaps.plane(0);
+    pixmap_u = yuva_pixmaps.plane(1);
+    pixmap_v = yuva_pixmaps.plane(2);
+    if (!paint_image.DecodeYuv(yuva_pixmaps, draw_image.frame_index(),
+                               client_id)) {
+      DLOG(ERROR) << "Failed to decode image as YUV.";
+      return false;
+    }
+    return true;
+  }
+
+  // Allocate `yuva_bytes` in an SkBitmap (so that we can use tryAlloc to avoid
+  // crashing if allocation fails).
   SkBitmap decode_bitmap;
-  if (!decode_bitmap.tryAllocPixels(decode_info))
+  if (!decode_bitmap.tryAllocPixels(SkImageInfo::Make(
+          yuva_bytes, 1, kR8_unorm_SkColorType, kOpaque_SkAlphaType))) {
+    DLOG(ERROR) << "Failed to allocate unscaled YUV storage.";
     return false;
+  }
 
-  SkPixmap decode_pixmap = decode_bitmap.pixmap();
+  // If we can't decode/scale directly, we will handle this in 2 steps.
+  // Step 1: Decode at the nearest (larger) directly supported size or the
+  // original size if nearest neighbor quality is requested.
   SkYUVAPixmaps unscaled_yuva_pixmaps;
-  if (do_yuv_decode) {
-    unscaled_yuva_pixmaps = SkYUVAPixmaps::FromExternalMemory(
-        yuva_pixmap_info, decode_pixmap.writable_addr());
-  }
-  bool initial_decode_failed =
-      do_yuv_decode
-          ? !paint_image.DecodeYuv(unscaled_yuva_pixmaps,
-                                   draw_image.frame_index(), client_id)
-          : !paint_image.Decode(decode_pixmap.writable_addr(), &decode_info,
-                                color_space, draw_image.frame_index(),
-                                client_id);
-  if (initial_decode_failed)
+  unscaled_yuva_pixmaps = SkYUVAPixmaps::FromExternalMemory(
+      yuva_pixmap_info, decode_bitmap.getPixels());
+  if (!paint_image.DecodeYuv(unscaled_yuva_pixmaps, draw_image.frame_index(),
+                             client_id)) {
+    DLOG(ERROR) << "Failed to decode unscaled image as YUV.";
     return false;
-
-  if (do_yuv_decode) {
-    const SkImageInfo y_info_scaled = info.makeColorType(yuva_color_type);
-
-    // Always promote scaled images to 4:4:4 to avoid blurriness. By using the
-    // same dimensions for the UV planes, we can avoid scaling them completely
-    // or at least avoid scaling the width.
-    //
-    // E.g., consider an original (100, 100) image scaled to mips level 1 (50%),
-    // the Y plane size will be (50, 50), but unscaled UV planes are already
-    // (50, 50) for 4:2:0, and (50, 100) for 4:2:2, so leaving them completely
-    // unscaled or only scaling the height for 4:2:2 has superior quality.
-    SkImageInfo u_info_scaled = y_info_scaled;
-    SkImageInfo v_info_scaled = y_info_scaled;
-
-    const size_t y_plane_bytes = y_info_scaled.computeMinByteSize();
-    const size_t u_plane_bytes = u_info_scaled.computeMinByteSize();
-    DCHECK(!SkImageInfo::ByteSizeOverflowed(y_plane_bytes));
-    DCHECK(!SkImageInfo::ByteSizeOverflowed(u_plane_bytes));
-
-    pixmap_y->reset(y_info_scaled, data_ptr, y_info_scaled.minRowBytes());
-    pixmap_u->reset(u_info_scaled, data_ptr + y_plane_bytes,
-                    u_info_scaled.minRowBytes());
-    pixmap_v->reset(v_info_scaled, data_ptr + y_plane_bytes + u_plane_bytes,
-                    v_info_scaled.minRowBytes());
-
-    const bool all_planes_scaled_successfully =
-        unscaled_yuva_pixmaps.plane(0).scalePixels(*pixmap_y, sampling) &&
-        unscaled_yuva_pixmaps.plane(1).scalePixels(*pixmap_u, sampling) &&
-        unscaled_yuva_pixmaps.plane(2).scalePixels(*pixmap_v, sampling);
-    return all_planes_scaled_successfully;
   }
-  return decode_pixmap.scalePixels(pixmap, sampling);
+  const SkPixmap& pixmap_y_unscaled = unscaled_yuva_pixmaps.plane(0);
+  const SkPixmap& pixmap_u_unscaled = unscaled_yuva_pixmaps.plane(1);
+  const SkPixmap& pixmap_v_unscaled = unscaled_yuva_pixmaps.plane(2);
+
+  // Always promote scaled images to 4:4:4 to avoid blurriness. By using the
+  // same dimensions for the UV planes, we can avoid scaling them completely
+  // or at least avoid scaling the width.
+  //
+  // E.g., consider an original (100, 100) image scaled to mips level 1 (50%),
+  // the Y plane size will be (50, 50), but unscaled UV planes are already
+  // (50, 50) for 4:2:0, and (50, 100) for 4:2:2, so leaving them completely
+  // unscaled or only scaling the height for 4:2:2 has superior quality.
+  const SkImageInfo y_info_scaled =
+      pixmap_y_unscaled.info().makeDimensions(target_size);
+  const SkImageInfo u_info_scaled =
+      pixmap_u_unscaled.info().makeDimensions(target_size);
+  const SkImageInfo v_info_scaled =
+      pixmap_v_unscaled.info().makeDimensions(target_size);
+
+  // The backing memory for `buffer` has been allocated based on
+  // image_data->size, so it is big enough for a YUV 4:4:4 image.
+  pixmap_y.reset(y_info_scaled, buffer, y_info_scaled.minRowBytes());
+  pixmap_u.reset(u_info_scaled,
+                 reinterpret_cast<const uint8_t*>(pixmap_y.addr()) +
+                     pixmap_y.computeByteSize(),
+                 u_info_scaled.minRowBytes());
+  pixmap_v.reset(v_info_scaled,
+                 reinterpret_cast<const uint8_t*>(pixmap_u.addr()) +
+                     pixmap_u.computeByteSize(),
+                 v_info_scaled.minRowBytes());
+
+  // Step 2: Scale to `target_size`. Resizing happens on a plane-by-plane basis.
+  const PaintFlags::FilterQuality filter_quality =
+      CalculateDesiredFilterQuality(draw_image);
+  const SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
+  if (!pixmap_y_unscaled.scalePixels(pixmap_y, sampling) ||
+      !pixmap_u_unscaled.scalePixels(pixmap_u, sampling) ||
+      !pixmap_v_unscaled.scalePixels(pixmap_v, sampling)) {
+    DLOG(ERROR) << "Failed to scale YUV planes.";
+    return false;
+  }
+  return true;
 }
 
 // Takes ownership of the backing texture of an SkImage. This allows us to
@@ -2108,27 +2122,23 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
                                            base::Unretained(this)));
     }
 
-    sk_sp<SkColorSpace> color_space =
-        ColorSpaceForImageDecode(draw_image, image_data->mode);
-    auto release_proc = [](const void*, void*) {};
     SkImageInfo image_info = CreateImageInfoForDrawImage(
         draw_image, image_data->upload_scale_mip_level);
-    SkPixmap pixmap(image_info, backing_memory->data(),
-                    image_info.minRowBytes());
-
-    // Set |pixmap| to the desired colorspace to decode into.
-    pixmap.setColorSpace(color_space);
+    image_info = image_info.makeColorSpace(
+        ColorSpaceForImageDecode(draw_image, image_data->mode));
+    auto release_proc = [](const void*, void*) {};
 
     if (image_data->yuva_pixmap_info.has_value()) {
       DVLOG(3) << "GpuImageDecodeCache wants to do YUV decoding/rendering";
       SkPixmap pixmap_y;
       SkPixmap pixmap_u;
       SkPixmap pixmap_v;
-      if (!DrawAndScaleImage(draw_image, &pixmap, generator_client_id_, true,
-                             yuva_supported_data_types_,
-                             image_data->yuva_pixmap_info->dataType(),
-                             &pixmap_y, &pixmap_u, &pixmap_v)) {
-        DLOG(ERROR) << "DrawAndScaleImage failed.";
+      if (!DrawAndScaleImageYUV(draw_image, image_info.dimensions(),
+                                backing_memory->data(), generator_client_id_,
+                                yuva_supported_data_types_,
+                                image_data->yuva_pixmap_info->dataType(),
+                                pixmap_y, pixmap_u, pixmap_v)) {
+        DLOG(ERROR) << "DrawAndScaleImageYUV failed.";
         backing_memory->Unlock();
         backing_memory.reset();
       } else {
@@ -2137,9 +2147,10 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
         image_v = SkImage::MakeFromRaster(pixmap_v, release_proc, nullptr);
       }
     } else {  // RGBX decoding is the default path.
-      if (!DrawAndScaleImage(draw_image, &pixmap, generator_client_id_, false,
-                             yuva_supported_data_types_)) {
-        DLOG(ERROR) << "DrawAndScaleImage failed.";
+      SkPixmap pixmap(image_info, backing_memory->data(),
+                      image_info.minRowBytes());
+      if (!DrawAndScaleImageRGB(draw_image, pixmap, generator_client_id_)) {
+        DLOG(ERROR) << "DrawAndScaleImageRGB failed.";
         backing_memory->Unlock();
         backing_memory.reset();
       } else {

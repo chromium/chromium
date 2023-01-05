@@ -31,15 +31,13 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   // Returns a reference to the encoded content of this image.
   virtual sk_sp<SkData> GetEncodedData() const = 0;
 
-  // Decode into the given pixels, a block of memory of size at least
-  // (info.fHeight - 1) * rowBytes + (info.fWidth *  bytesPerPixel). |info|
-  // represents the desired output format. Returns true on success.
+  // Decode into the given SkPixmap. This will modify the pixels pointed to by
+  // `dst_pixmap`, but will not modify any of its properties (e.g, its
+  // SkImageInfo).
   //
   // TODO(khushalsagar): |lazy_pixel_ref| is only present for
   // DecodingImageGenerator tracing needs. Remove it.
-  virtual bool GetPixels(const SkImageInfo& info,
-                         void* pixels,
-                         size_t row_bytes,
+  virtual bool GetPixels(SkPixmap dst_pixmap,
                          size_t frame_index,
                          PaintImage::GeneratorClientId client_id,
                          uint32_t lazy_pixel_ref) = 0;

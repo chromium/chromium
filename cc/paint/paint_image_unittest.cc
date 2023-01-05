@@ -34,8 +34,8 @@ TEST(PaintImageTest, DecodesCorrectFrames) {
   // The recorded index is 0u but ask for 1u frame.
   SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
   std::vector<size_t> memory(info.computeMinByteSize());
-  image.Decode(memory.data(), &info, nullptr, 1u,
-               PaintImage::GetNextGeneratorClientId());
+  SkPixmap pixmap(info, memory.data(), info.minRowBytes());
+  image.Decode(pixmap, 1u, PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_EQ(generator->frames_decoded().count(1u), 1u);
   generator->reset_frames_decoded();
@@ -43,8 +43,8 @@ TEST(PaintImageTest, DecodesCorrectFrames) {
   // Not N32 color type.
   info.makeColorType(kRGB_565_SkColorType);
   memory = std::vector<size_t>(info.computeMinByteSize());
-  image.Decode(memory.data(), &info, nullptr, 1u,
-               PaintImage::GetNextGeneratorClientId());
+  pixmap = SkPixmap(info, memory.data(), info.minRowBytes());
+  image.Decode(pixmap, 1u, PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_EQ(generator->frames_decoded().count(1u), 1u);
   generator->reset_frames_decoded();

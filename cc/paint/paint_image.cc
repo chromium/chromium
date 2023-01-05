@@ -206,24 +206,16 @@ SkISize PaintImage::GetSupportedDecodeSize(
   return SkISize::Make(width(), height());
 }
 
-bool PaintImage::Decode(void* memory,
-                        SkImageInfo* info,
-                        sk_sp<SkColorSpace> color_space,
+bool PaintImage::Decode(SkPixmap pixmap,
                         size_t frame_index,
                         GeneratorClientId client_id) const {
-  // We don't support SkImageInfo's with color spaces on them. Color spaces
-  // should always be passed via the |color_space| arg.
-  DCHECK(!info->colorSpace());
-
   // We only support decode to supported decode size.
-  DCHECK(info->dimensions() == GetSupportedDecodeSize(info->dimensions()));
+  DCHECK(pixmap.dimensions() == GetSupportedDecodeSize(pixmap.dimensions()));
 
   if (paint_image_generator_) {
-    return DecodeFromGenerator(memory, info, std::move(color_space),
-                               frame_index, client_id);
+    return DecodeFromGenerator(pixmap, frame_index, client_id);
   }
-  return DecodeFromSkImage(memory, info, std::move(color_space), frame_index,
-                           client_id);
+  return DecodeFromSkImage(pixmap, frame_index, client_id);
 }
 
 bool PaintImage::DecodeYuv(const SkYUVAPixmaps& pixmaps,
@@ -236,26 +228,19 @@ bool PaintImage::DecodeYuv(const SkYUVAPixmaps& pixmaps,
                                                lazy_pixel_ref, client_id);
 }
 
-bool PaintImage::DecodeFromGenerator(void* memory,
-                                     SkImageInfo* info,
-                                     sk_sp<SkColorSpace> color_space,
+bool PaintImage::DecodeFromGenerator(SkPixmap pixmap,
                                      size_t frame_index,
                                      GeneratorClientId client_id) const {
   DCHECK(paint_image_generator_);
-  // First convert the info to have the requested color space, since the decoder
-  // will convert this for us.
-  *info = info->makeColorSpace(std::move(color_space));
   const uint32_t lazy_pixel_ref = stable_id();
-  return paint_image_generator_->GetPixels(*info, memory, info->minRowBytes(),
-                                           frame_index, client_id,
+  return paint_image_generator_->GetPixels(pixmap, frame_index, client_id,
                                            lazy_pixel_ref);
 }
 
-bool PaintImage::DecodeFromSkImage(void* memory,
-                                   SkImageInfo* info,
-                                   sk_sp<SkColorSpace> color_space,
+bool PaintImage::DecodeFromSkImage(SkPixmap pixmap,
                                    size_t frame_index,
                                    GeneratorClientId client_id) const {
+  sk_sp<SkColorSpace> color_space = pixmap.refColorSpace();
   auto image = GetSkImageForFrame(frame_index, client_id);
   DCHECK(image);
   if (color_space) {
@@ -263,12 +248,7 @@ bool PaintImage::DecodeFromSkImage(void* memory,
     if (!image)
       return false;
   }
-  // Note that the readPixels has to happen before converting the info to the
-  // given color space, since it can produce incorrect results.
-  bool result = image->readPixels(*info, memory, info->minRowBytes(), 0, 0,
-                                  SkImage::kDisallow_CachingHint);
-  *info = info->makeColorSpace(std::move(color_space));
-  return result;
+  return image->readPixels(pixmap, 0, 0, SkImage::kDisallow_CachingHint);
 }
 
 bool PaintImage::ShouldAnimate() const {

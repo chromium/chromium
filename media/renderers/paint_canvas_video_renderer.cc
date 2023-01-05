@@ -740,23 +740,23 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
   sk_sp<SkData> GetEncodedData() const override { return nullptr; }
 
-  bool GetPixels(const SkImageInfo& info,
-                 void* pixels,
-                 size_t row_bytes,
+  bool GetPixels(SkPixmap dst_pixmap,
                  size_t frame_index,
                  cc::PaintImage::GeneratorClientId client_id,
                  uint32_t lazy_pixel_ref) override {
     DCHECK_EQ(frame_index, 0u);
 
     // If skia couldn't do the YUV conversion on GPU, we will on CPU.
-    PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(frame_.get(), pixels,
-                                                           row_bytes);
+    PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+        frame_.get(), dst_pixmap.writable_addr(), dst_pixmap.rowBytes());
 
     if (!SkColorSpace::Equals(GetSkImageInfo().colorSpace(),
-                              info.colorSpace())) {
-      SkPixmap src(GetSkImageInfo(), pixels, row_bytes);
-      if (!src.readPixels(info, pixels, row_bytes))
+                              dst_pixmap.colorSpace())) {
+      SkPixmap src(GetSkImageInfo(), dst_pixmap.writable_addr(),
+                   dst_pixmap.rowBytes());
+      if (!src.readPixels(dst_pixmap)) {
         return false;
+      }
     }
     return true;
   }

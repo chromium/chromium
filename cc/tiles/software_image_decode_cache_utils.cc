@@ -47,11 +47,6 @@ gfx::Rect GetSrcRect(const DrawImage& image) {
   return gfx::Rect(x, y, right - x, bottom - y);
 }
 
-SkImageInfo CreateImageInfo(const SkISize& size, SkColorType color_type) {
-  return SkImageInfo::Make(size.width(), size.height(), color_type,
-                           kPremul_SkAlphaType);
-}
-
 // Does *not* return nullptr.
 std::unique_ptr<base::DiscardableMemory> AllocateDiscardable(
     const SkImageInfo& info,
@@ -73,23 +68,25 @@ SoftwareImageDecodeCacheUtils::DoDecodeImage(
     SkColorType color_type,
     PaintImage::GeneratorClientId client_id,
     base::OnceClosure on_no_memory) {
-  SkISize target_size =
+  const SkISize target_size =
       SkISize::Make(key.target_size().width(), key.target_size().height());
   DCHECK(target_size == paint_image.GetSupportedDecodeSize(target_size));
-
-  SkImageInfo target_info = CreateImageInfo(target_size, color_type);
+  sk_sp<SkColorSpace> target_color_space =
+      key.target_color_params().color_space.ToSkColorSpace();
+  SkImageInfo target_info = SkImageInfo::Make(
+      target_size, color_type, kPremul_SkAlphaType, target_color_space);
   std::unique_ptr<base::DiscardableMemory> target_pixels =
       AllocateDiscardable(target_info, std::move(on_no_memory));
   if (!target_pixels->data())
     return nullptr;
+  SkPixmap target_pixmap(target_info, target_pixels->data(),
+                         target_info.minRowBytes());
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCacheUtils::DoDecodeImage - "
                "decode");
-  bool result =
-      paint_image.Decode(target_pixels->data(), &target_info,
-                         key.target_color_params().color_space.ToSkColorSpace(),
-                         key.frame_key().frame_index(), client_id);
+  bool result = paint_image.Decode(target_pixmap, key.frame_key().frame_index(),
+                                   client_id);
   if (!result) {
     target_pixels->Unlock();
     return nullptr;
@@ -107,7 +104,8 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
     SkColorType color_type) {
   SkISize target_size =
       SkISize::Make(key.target_size().width(), key.target_size().height());
-  SkImageInfo target_info = CreateImageInfo(target_size, color_type);
+  SkImageInfo target_info =
+      SkImageInfo::Make(target_size, color_type, kPremul_SkAlphaType);
   // TODO(crbug.com/983348): If this turns into a crasher, pass an actual
   // "free memory" closure.
   std::unique_ptr<base::DiscardableMemory> target_pixels =

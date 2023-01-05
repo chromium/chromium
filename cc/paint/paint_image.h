@@ -209,17 +209,10 @@ class CC_PAINT_EXPORT PaintImage {
   // GetSupportedDecodeSize(size).
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const;
 
-  // Decode the image into RGBX into the given memory for the given SkImageInfo.
-  // - Size in |info| must be supported.
-  // - The amount of memory allocated must be at least
-  //   |info|.minRowBytes() * |info|.height()
-  // Returns true on success and false on failure. Updates |info| to match the
-  // requested color space, if provided.
-  // Note that for non-lazy images this will do a copy or readback if the image
-  // is texture backed.
-  bool Decode(void* memory,
-              SkImageInfo* info,
-              sk_sp<SkColorSpace> color_space,
+  // Decode the image into RGBX into the pixels of the specified SkPixmap.
+  // Returns true on success and false on failure. Note that for non-lazy images
+  // this will do a copy or readback if the image is texture backed.
+  bool Decode(SkPixmap pixmap,
               size_t frame_index,
               GeneratorClientId client_id) const;
 
@@ -344,14 +337,10 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PaintShader;
   friend class blink::VideoFrame;
 
-  bool DecodeFromGenerator(void* memory,
-                           SkImageInfo* info,
-                           sk_sp<SkColorSpace> color_space,
+  bool DecodeFromGenerator(SkPixmap pixmap,
                            size_t frame_index,
                            GeneratorClientId client_id) const;
-  bool DecodeFromSkImage(void* memory,
-                         SkImageInfo* info,
-                         sk_sp<SkColorSpace> color_space,
+  bool DecodeFromSkImage(SkPixmap pixmap,
                          size_t frame_index,
                          GeneratorClientId client_id) const;
   void CreateSkImage();
