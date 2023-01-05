@@ -123,6 +123,10 @@ std::u16string TranslateInfoBarDelegate::source_language_name() const {
   return language_name_at(ui_delegate_.GetSourceLanguageIndex());
 }
 
+std::u16string TranslateInfoBarDelegate::initial_source_language_name() const {
+  return language_name_at(ui_delegate_.GetInitialSourceLanguageIndex());
+}
+
 std::u16string TranslateInfoBarDelegate::target_language_name() const {
   return language_name_at(ui_delegate_.GetTargetLanguageIndex());
 }
