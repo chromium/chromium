@@ -122,7 +122,7 @@ function onImportBegan() {
 }
 
 function onImportEnded() {
-  chrome.bookmarks.getTree(function(results) {
+  chrome.bookmarks.getTree().then((results) => {
     dispatch(refreshNodes(normalizeNodes(results[0]!)));
   });
   chrome.bookmarks.onCreated.addListener(onBookmarkCreated);
@@ -176,4 +176,8 @@ export function destroy() {
     removeWebUiListener(/** @type {{eventName: string, uid: number}} */ (
         canEditBookmarksListener));
   }
+}
+
+export function setDebouncerForTesting() {
+  debouncer = new Debouncer(() => {});
 }

@@ -15,6 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
+import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import {getTemplate} from './edit_dialog.html.js';
 import {BookmarkNode} from './types.js';
@@ -153,7 +154,8 @@ export class BookmarksEditDialogElement extends PolymerElement {
     } else {
       edit['parentId'] = this.parentId_;
       trackUpdatedItems();
-      chrome.bookmarks.create(edit, highlightUpdatedItems);
+      BookmarksApiProxyImpl.getInstance().create(edit).then(
+          highlightUpdatedItems);
     }
     this.$.dialog.close();
   }

@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksEditDialogElement, normalizeNode} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, BookmarksEditDialogElement, normalizeNode, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {createFolder, createItem, replaceBody} from './test_util.js';
 
 suite('<bookmarks-edit-dialog>', function() {
+  let bookmarksApi: TestBookmarksApiProxy;
   let dialog: BookmarksEditDialogElement;
   let lastUpdate: {id: string, edit: {url?: string, title?: string}};
-  let lastCreation: chrome.bookmarks.CreateDetails;
 
   suiteSetup(function() {
     chrome.bookmarks.update = function(id, edit) {
       lastUpdate.id = id;
       lastUpdate.edit = edit;
-    };
-    chrome.bookmarks.create = function(node) {
-      lastCreation = node;
+      return Promise.resolve({id: '', title: ''});
     };
   });
 
   setup(function() {
+    bookmarksApi = new TestBookmarksApiProxy();
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
     lastUpdate = {id: '', edit: {}};
-    lastCreation = {};
     dialog = document.createElement('bookmarks-edit-dialog');
     replaceBody(dialog);
   });
@@ -49,7 +49,7 @@ suite('<bookmarks-edit-dialog>', function() {
     assertTrue(dialog.$.url.hidden);
   });
 
-  test('editing passes the correct details to the update', function() {
+  test('editing passes the correct details to the update', async function() {
     // Editing an item without changing anything.
     const item = normalizeNode(
         createItem('1', {url: 'http://website.com', title: 'website'}));
@@ -73,18 +73,22 @@ suite('<bookmarks-edit-dialog>', function() {
     assertEquals('Awesome websites', lastUpdate.edit.title);
   });
 
-  test('add passes the correct details to the backend', function() {
+  test('add passes the correct details to the backend', async function() {
     dialog.showAddDialog(false, '1');
 
     dialog.$.name.value = 'Permission Site';
     dialog.$.url.value = 'permission.site';
     flush();
 
+    setDebouncerForTesting();
+
     dialog.$.saveButton.click();
 
-    assertEquals('1', lastCreation.parentId);
-    assertEquals('http://permission.site', lastCreation.url);
-    assertEquals('Permission Site', lastCreation.title);
+    const args = await bookmarksApi.whenCalled('create');
+
+    assertEquals('1', args.parentId);
+    assertEquals('http://permission.site', args.url);
+    assertEquals('Permission Site', args.title);
   });
 
   test('validates urls correctly', function() {
