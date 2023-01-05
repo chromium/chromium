@@ -14,9 +14,9 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
@@ -80,12 +80,12 @@ class TestObserver : public crosapi::mojom::CrosDisplayConfigObserver {
 
 class CrosDisplayConfigTest : public AshTestBase {
  public:
-  CrosDisplayConfigTest() {}
+  CrosDisplayConfigTest() = default;
 
   CrosDisplayConfigTest(const CrosDisplayConfigTest&) = delete;
   CrosDisplayConfigTest& operator=(const CrosDisplayConfigTest&) = delete;
 
-  ~CrosDisplayConfigTest() override {}
+  ~CrosDisplayConfigTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kDisplayAlignAssist);

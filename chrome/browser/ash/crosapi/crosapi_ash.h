@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"

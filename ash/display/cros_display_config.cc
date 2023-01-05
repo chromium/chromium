@@ -20,10 +20,11 @@
 #include "ash/shell.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -31,7 +32,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_util.h"
-#include "ui/display/mojom/display_mojom_traits.h"
 #include "ui/display/screen.h"
 
 namespace ash {
@@ -978,12 +978,10 @@ void CrosDisplayConfig::TouchCalibration(
   calibration_points[3] = GetCalibrationPair(*calibration->pairs[3]);
 
   gfx::Size bounds = calibration->bounds;
-  for (size_t row = 0; row < calibration_points.size(); row++) {
+  for (auto& calibration_point : calibration_points) {
     // Coordinates for display and touch point cannot be negative.
-    if (calibration_points[row].first.x() < 0 ||
-        calibration_points[row].first.y() < 0 ||
-        calibration_points[row].second.x() < 0 ||
-        calibration_points[row].second.y() < 0) {
+    if (calibration_point.first.x() < 0 || calibration_point.first.y() < 0 ||
+        calibration_point.second.x() < 0 || calibration_point.second.y() < 0) {
       LOG(ERROR)
           << "Display points and touch points cannot have negative coordinates";
       touch_calibrator_->StopCalibrationAndResetParams();
@@ -993,8 +991,8 @@ void CrosDisplayConfig::TouchCalibration(
     }
     // Coordinates for display points cannot be greater than the screen
     // bounds.
-    if (calibration_points[row].first.x() > bounds.width() ||
-        calibration_points[row].first.y() > bounds.height()) {
+    if (calibration_point.first.x() > bounds.width() ||
+        calibration_point.first.y() > bounds.height()) {
       LOG(ERROR) << "Display point coordinates cannot be more than size of the "
                     "display.";
       touch_calibrator_->StopCalibrationAndResetParams();

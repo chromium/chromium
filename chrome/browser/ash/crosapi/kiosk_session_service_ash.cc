@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chromeos/dbus/power/power_manager_client.h"
-#include "components/user_manager/user_manager.h"
 
 namespace crosapi {
 
