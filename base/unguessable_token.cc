@@ -43,6 +43,19 @@ UnguessableToken UnguessableToken::Deserialize(uint64_t high, uint64_t low) {
   return UnguessableToken(Token{high, low});
 }
 
+// static
+absl::optional<UnguessableToken> UnguessableToken::Deserialize2(uint64_t high,
+                                                                uint64_t low) {
+  // Receiving a zeroed out UnguessableToken from another process means that it
+  // was never initialized via Create(). Since this method might also be used to
+  // create an UnguessableToken from data on disk, we will handle this case more
+  // gracefully since data could have been corrupted.
+  if (high == 0 && low == 0) {
+    return absl::nullopt;
+  }
+  return UnguessableToken(Token{high, low});
+}
+
 bool UnguessableToken::operator==(const UnguessableToken& other) const {
 #if BUILDFLAG(IS_NACL)
   // BoringSSL is unavailable for NaCl builds so it remains timing dependent.
