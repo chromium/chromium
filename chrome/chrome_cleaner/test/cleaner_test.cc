@@ -550,8 +550,10 @@ TEST_P(CleanerTest, NoPotentialFalsePositivesOnCleanMachine) {
 }
 
 TEST_P(CleanerTest, NoUnsanitizedPaths) {
-  // Fails on Windows7
-  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+  // Fails on Windows7/8/8.1
+  // TODO(crbug/1405033): This is temporary while we disable these tests in
+  // pre-M110 branches.
+  if (base::win::GetVersion() <= base::win::Version::WIN8_1) {
     return;
   }
 
