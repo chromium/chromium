@@ -250,7 +250,10 @@ component("gl") {
         "gl_fence_android_native_fence_sync.h",
       ]
 
-      deps += [ "//third_party/libsync" ]
+      deps += [
+        "//components/crash/core/common",
+        "//third_party/libsync",
+      ]
     }
   }
 
