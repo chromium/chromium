@@ -14,7 +14,7 @@ package metrics;
 import "omnibox_input_type.proto";
 
 // Stores information about an omnibox interaction.
-// Next tag: 24
+// Next tag: 25
 message OmniboxEventProto {
   // The timestamp for the event, in seconds.
   // This value comes from Chromium's TimeTicks::Now(), which is an abstract
@@ -515,8 +515,10 @@ message OmniboxEventProto {
     // possibly affecting the shown suggestions.  Each element is a hash
     // of the corresponding field trial name.
     // See chrome/browser/autocomplete/search_provider.cc for a specific usage
+    // DEPRECATED with crrev.com/c/4126664 1/4/23; replaced by
+    // `feature_triggered`.
     // example.
-    repeated fixed32 field_trial_triggered = 3;
+    repeated fixed32 field_trial_triggered = 3 [deprecated = true];
 
     // Same as above except that the set of field trials is a union of all field
     // trials that have triggered within the current omnibox session including
@@ -525,7 +527,9 @@ message OmniboxEventProto {
     // definition of a session.
     // See chrome/browser/autocomplete/search_provider.cc for a specific usage
     // example.
-    repeated fixed32 field_trial_triggered_in_session = 4;
+    // DEPRECATED with crrev.com/c/4126664 1/4/23; replaced by
+    // `feature_triggered_in_session`.
+    repeated fixed32 field_trial_triggered_in_session = 4 [deprecated = true];
 
     // The number of times this provider returned a non-zero number of
     // suggestions during this omnibox session.
@@ -564,10 +568,14 @@ message OmniboxEventProto {
   // by clicking on a image tile.
   optional bool is_query_started_from_tile = 21;
 
-  // The set of features that triggered within the current omnibox session.
-  // Each element is a value of |OmniboxTriggeredFeatureService::Features| enum
-  // in components/omnibox/browser/omnibox_triggered_feature_service.h .
-  // See AutocompleteController::ResetSession() for more details on the
+  // The set of features triggered in the most recent query. Each element is a
+  // value of `OmniboxTriggeredFeatureService::Features` enum in
+  // components/omnibox/browser/omnibox_triggered_feature_service.h .
+  repeated int32 feature_triggered = 24;
+
+  // Like above except that the set of features is a union of all features that
+  // triggered within the current omnibox session including the most recent
+  // query. See `AutocompleteController::ResetSession()` for more details on the
   // definition of a session.
   repeated int32 feature_triggered_in_session = 22;
 
