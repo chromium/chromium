@@ -397,7 +397,7 @@ general rules of thumb can be helpful in navigating how to structure changes:
   Reducing the number of languages eases toolchain and infrastructure
   requirements, and minimizes the learning hurdles for developers to be
   successful contributing across the codebase. Additions of new languages must
-  be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+  be approved by [//ATL_OWNERS](../ATL_OWNERS).
 
 - **When your team is making API changes or migrating between services, the
   team mandating the change needs to do at least 80% of the work.** The
