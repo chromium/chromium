@@ -2862,6 +2862,13 @@ if (enable_java_templates && is_android) {
           resources_config_paths += invoker.resources_config_paths
         }
       }
+
+      if (_strip_unused_resources) {
+        # Copy the unused resources config to the final bundle output dir.
+        _copy_unused_resources_target =
+            "${_template_name}__copy_unused_resources"
+        _final_deps += [ ":$_copy_unused_resources_target" ]
+      }
     } else {
       not_needed(invoker, [ "resources_config_paths" ])
     }
@@ -5125,6 +5132,14 @@ if (enable_java_templates && is_android) {
         }
         output_config = _unused_resources_config
         output_r_txt = _unused_resources_r_txt_out
+      }
+      _unused_resources_final_path = "${_bundle_path}.unused_resources"
+      _copy_unused_resources_target =
+          "${_base_target_name}__copy_unused_resources"
+      copy(_copy_unused_resources_target) {
+        deps = [ ":$_unused_resources_target" ]
+        sources = [ _unused_resources_config ]
+        outputs = [ _unused_resources_final_path ]
       }
     }
 
