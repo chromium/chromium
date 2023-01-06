@@ -41,6 +41,7 @@ namespace {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusRing*, kFocusRingIdKey, nullptr)
 
+constexpr int kMinFocusRingInset = 2;
 constexpr float kOutlineThickness = 1.0f;
 
 bool IsPathUsable(const SkPath& path) {
@@ -79,13 +80,12 @@ SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
 
   gfx::Rect client_rect = view->GetLocalBounds();
   const double corner_radius = GetCornerRadius(halo_thickness);
-  // Make sure the path is large enough to contain the corners. This covers
-  // narrow views and the case where view->GetLocalBounds() are empty. Doing so
-  // prevents DCHECK(IsPathUsable(path)) from failing in GetRingRoundRect()
-  // because the resulting path is empty.
-  if (client_rect.width() < 2 * corner_radius ||
-      client_rect.height() < 2 * corner_radius) {
-    client_rect.Outset(corner_radius);
+  // Make sure we don't return an empty focus ring. This covers narrow views and
+  // the case where view->GetLocalBounds() are empty. Doing so prevents
+  // DCHECK(IsPathUsable(path)) from failing in GetRingRoundRect() because the
+  // resulting path is empty.
+  if (client_rect.IsEmpty()) {
+    client_rect.Outset(kMinFocusRingInset);
   }
   return SkPath().addRRect(SkRRect::MakeRectXY(RectToSkRect(client_rect),
                                                corner_radius, corner_radius));
