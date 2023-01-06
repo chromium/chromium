@@ -69,9 +69,11 @@ void GenerateSalt(uint8_t (&salt)[LINK_SALT_LENGTH]) {
 }
 
 // Opens file on a background thread to not block UI thread.
-void AsyncOpen(FILE** file, const base::FilePath& filename) {
-  *file = base::OpenFile(filename, "wb+");
-  DLOG_IF(ERROR, !(*file)) << "Failed to open file " << filename.value();
+void AsyncOpen(base::ScopedFILE* file, const base::FilePath& filename) {
+  DCHECK(file);
+  DCHECK(!*file);
+  file->reset(base::OpenFile(filename, "wb+"));
+  DLOG_IF(ERROR, !*file) << "Failed to open file " << filename.value();
 }
 
 // Returns true if the write was complete.
@@ -94,28 +96,25 @@ static bool WriteToFile(FILE* file,
 }
 
 // This task executes on a background thread and executes a write. This
-// prevents us from blocking the UI thread doing I/O. Double pointer to FILE
-// is used because file may still not be opened by the time of scheduling
-// the task for execution.
-void AsyncWrite(FILE** file, int32_t offset, const std::string& data) {
-  if (*file)
-    WriteToFile(*file, offset, data.data(), data.size());
+// prevents us from blocking the UI thread doing I/O. This is ignored if the
+// previous call to AsyncOpen() failed to open the file.
+void AsyncWrite(base::ScopedFILE* file,
+                int32_t offset,
+                const std::string& data) {
+  DCHECK(file);
+  if (*file) {
+    WriteToFile(file->get(), offset, data.data(), data.size());
+  }
 }
 
 // Truncates the file to the current position asynchronously on a background
-// thread. Double pointer to FILE is used because file may still not be opened
-// by the time of scheduling the task for execution.
-void AsyncTruncate(FILE** file) {
-  if (*file)
-    base::IgnoreResult(base::TruncateFile(*file));
-}
-
-// Closes the file on a background thread and releases memory used for storage
-// of FILE* value. Double pointer to FILE is used because file may still not
-// be opened by the time of scheduling the task for execution.
-void AsyncClose(std::unique_ptr<FILE*, base::FreeDeleter> file) {
-  if (*file)
-    base::IgnoreResult(fclose(*file));
+// thread. This is ignored if the previous call to AsyncOpen() failed to open
+// the file.
+void AsyncTruncate(base::ScopedFILE* file) {
+  DCHECK(file);
+  if (*file) {
+    base::IgnoreResult(base::TruncateFile(file->get()));
+  }
 }
 
 }  // namespace
@@ -230,13 +229,13 @@ VisitedLinkWriter::VisitedLinkWriter(Listener* listener,
                                      bool suppress_rebuild,
                                      const base::FilePath& filename,
                                      int32_t default_table_size)
-    : delegate_(delegate), persist_to_disk_(persist_to_disk) {
-  listener_.reset(listener);
+    : delegate_(delegate),
+      listener_(listener),
+      persist_to_disk_(persist_to_disk),
+      database_name_override_(filename),
+      table_size_override_(default_table_size),
+      suppress_rebuild_(suppress_rebuild) {
   DCHECK(listener_);
-
-  database_name_override_ = filename;
-  table_size_override_ = default_table_size;
-  suppress_rebuild_ = suppress_rebuild;
 }
 
 VisitedLinkWriter::~VisitedLinkWriter() {
@@ -260,6 +259,9 @@ VisitedLinkWriter::~VisitedLinkWriter() {
     GetDatabaseFileName(&filename);
     PostIOTask(FROM_HERE, base::GetDeleteFileCallback(filename));
   }
+
+  DCHECK(!file_);  // Must have been moved to the IO thread for releasing the
+                   // file in the correct sequence.
 }
 
 bool VisitedLinkWriter::Init() {
@@ -571,7 +573,7 @@ void VisitedLinkWriter::WriteFullTable() {
   DCHECK(persist_to_disk_);
 
   if (!file_) {
-    file_.reset(static_cast<FILE**>(calloc(1, sizeof(*file_))));
+    file_ = std::make_unique<base::ScopedFILE>();
     base::FilePath filename;
     GetDatabaseFileName(&filename);
     PostIOTask(FROM_HERE, base::BindOnce(&AsyncOpen, file_.get(), filename));
@@ -597,7 +599,7 @@ void VisitedLinkWriter::WriteFullTable() {
 bool VisitedLinkWriter::InitFromFile() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DCHECK(file_ == nullptr);
+  DCHECK(!file_);
   DCHECK(persist_to_disk_);
 
   base::FilePath filename;
@@ -701,8 +703,8 @@ void VisitedLinkWriter::OnTableLoadComplete(
   // Assign the open file.
   DCHECK(!file_);
   DCHECK(load_from_file_result->file.get());
-  file_.reset(static_cast<FILE**>(malloc(sizeof(*file_))));
-  *file_ = load_from_file_result->file.release();
+  file_ = std::make_unique<base::ScopedFILE>();
+  *file_ = std::move(load_from_file_result->file);
 
   // Assign the loaded table.
   DCHECK(load_from_file_result->hash_table_memory.region.IsValid() &&
@@ -897,11 +899,12 @@ bool VisitedLinkWriter::BeginReplaceURLTable(int32_t num_entries) {
 
 void VisitedLinkWriter::FreeURLTable() {
   mapped_table_memory_ = base::MappedReadOnlyRegion();
-  if (!persist_to_disk_ || !file_)
-    return;
+  if (file_) {
+    DCHECK(persist_to_disk_);
 
-  // AsyncClose() will close the file and free the memory pointed by |file_|.
-  PostIOTask(FROM_HERE, base::BindOnce(&AsyncClose, std::move(file_)));
+    // Release the file on the IO thread:
+    PostIOTask(FROM_HERE, base::DoNothingWithBoundArgs(std::move(file_)));
+  }
 }
 
 bool VisitedLinkWriter::ResizeTableIfNecessary() {
@@ -1062,10 +1065,11 @@ void VisitedLinkWriter::OnTableRebuildComplete(
     std::move(rebuild_complete_task_).Run();
 }
 
-void VisitedLinkWriter::WriteToFile(FILE** file,
+void VisitedLinkWriter::WriteToFile(base::ScopedFILE* file,
                                     off_t offset,
                                     void* data,
                                     int32_t data_size) {
+  DCHECK(file);
   DCHECK(persist_to_disk_);
   DCHECK(!table_is_loading_from_file_);
   PostIOTask(
