@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DATA_SAVER_DATA_SAVER_H_
 #define CHROME_BROWSER_DATA_SAVER_DATA_SAVER_H_
 
-#include "content/public/browser/browser_context.h"
-
 namespace data_saver {
 
 // Overrides the data saver setting when testing.
@@ -27,7 +25,7 @@ void FetchDataSaverOSSettingAsynchronously();
 // value and fires of OS calls in a background thread. If there is no cached
 // value, this function may lookup the setting synchronously, depending on the
 // state of the DataSaverSettingBlockWhenUninitialized Finch feature.
-bool IsDataSaverEnabled(content::BrowserContext* browser_context);
+bool IsDataSaverEnabled();
 
 }  // namespace data_saver
 

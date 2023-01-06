@@ -3005,7 +3005,7 @@ bool ChromeContentBrowserClient::IsDataSaverEnabled(
   if (!browser_context || browser_context->IsOffTheRecord())
     return false;
 
-  return data_saver::IsDataSaverEnabled(browser_context);
+  return data_saver::IsDataSaverEnabled();
 }
 
 void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(

@@ -1477,7 +1477,7 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(
     return std::make_pair(false, absl::nullopt);
   }
 
-  if (data_saver::IsDataSaverEnabled(profile)) {
+  if (data_saver::IsDataSaverEnabled()) {
     return std::make_pair(
         false,
         PrefetchProxyPrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
