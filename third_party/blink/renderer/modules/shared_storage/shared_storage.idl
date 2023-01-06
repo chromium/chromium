@@ -1,5 +1,8 @@
 // The Shared Storage API.
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+
+typedef (USVString or FencedFrameConfig) SharedStorageResponse;
+
 [
   RuntimeEnabled=SharedStorageAPI,
   Exposed=(Window)
@@ -33,7 +36,7 @@
     CallWith=ScriptState,
     RaisesException,
     MeasureAs=SharedStorageAPI_SelectURL_Method
-  ] Promise<USVString> selectURL(DOMString name,
+  ] Promise<SharedStorageResponse> selectURL(DOMString name,
                                  FrozenArray<SharedStorageUrlWithMetadata> urls,
                                  optional SharedStorageRunOperationMethodOptions options);
 

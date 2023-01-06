@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
@@ -337,6 +338,10 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
   return promise;
 }
 
+// This C++ overload is called by JavaScript:
+// sharedStorage.selectURL('foo', [{url: "bar.com"}]);
+//
+// It returns a JavaScript promise that resolves to an urn::uuid.
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
@@ -347,6 +352,18 @@ ScriptPromise SharedStorage::selectURL(
                    exception_state);
 }
 
+// This C++ overload is called by JavaScript:
+// 1. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0}});
+// 2. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
+// resolveToConfig: true});
+//
+// It returns a JavaScript promise:
+// 1. that resolves to an urn::uuid, when `resolveToConfig` is false or
+// unspecified.
+// 2. that resolves to a fenced frame config, when `resolveToConfig` is true.
+//
+// This function implements the other overload, with `resolveToConfig`
+// defaulting to false.
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
@@ -511,13 +528,23 @@ ScriptPromise SharedStorage::selectURL(
     return promise;
   }
 
+  bool resolve_to_config = options->resolveToConfig();
+  if (!RuntimeEnabledFeatures::FencedFramesAPIChangesEnabled(
+          execution_context)) {
+    // If user specifies returning a `FencedFrameConfig` but the feature is not
+    // enabled, fall back to return a urn::uuid.
+    resolve_to_config = false;
+  }
+
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
           name, std::move(converted_urls), std::move(serialized_data),
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
-                 base::TimeTicks start_time, bool success,
-                 const String& error_message, const KURL& opaque_url) {
+                 base::TimeTicks start_time, bool resolve_to_config,
+                 bool success, const String& error_message,
+                 const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
+                     result_config) {
                 DCHECK(resolver);
                 ScriptState* script_state = resolver->GetScriptState();
 
@@ -534,9 +561,18 @@ ScriptPromise SharedStorage::selectURL(
                 base::UmaHistogramMediumTimes(
                     "Storage.SharedStorage.Document.Timing.SelectURL",
                     base::TimeTicks::Now() - start_time);
-                resolver->Resolve(opaque_url);
+                // `result_config` must have value. Otherwise `success` should
+                // be false and program should not reach here.
+                DCHECK(result_config.has_value());
+                if (resolve_to_config) {
+                  resolver->Resolve(
+                      FencedFrameConfig::From(result_config.value()));
+                } else {
+                  resolver->Resolve(KURL(result_config->urn_uuid().value()));
+                }
               },
-              WrapPersistent(resolver), WrapPersistent(this), start_time));
+              WrapPersistent(resolver), WrapPersistent(this), start_time,
+              resolve_to_config));
 
   return promise;
 }

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "url/mojom/url.mojom";
 
 // The input argument of the shared storage key. The data will be checked at
@@ -46,8 +47,8 @@ interface SharedStorageDocumentService {
           string error_message);
 
   // Handle sharedStorage.runOperation(): run the operation previously
-  // registered by registerOperation() with matching `name`. `serialized_data`
-  // is the serialization result of JavaScript value
+  // registered by register() with matching `name`. `serialized_data` is the
+  // serialization result of JavaScript value
   // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
   // There's no need to sanitize `serialized_data` at the browser process as the
   // data will be only consumed in an environment (i.e. the worklet) in control
@@ -58,10 +59,10 @@ interface SharedStorageDocumentService {
           string error_message);
 
   // Handle sharedStorage.runURLSelectionOperation(): run the operation
-  // previously registered by registerURLSelectionOperation() with matching
-  // `name`. Restrictions will be checked at the renderer and enforced at the
-  // browser: the length of the `urls` array is below the configured limit
-  // number `kSharedStorageURLSelectionOperationInputURLSizeLimit`.
+  // previously registered by register() with matching `name`. Restrictions will
+  // be checked at the renderer and enforced at the browser: the length of the
+  // `urls` array is below the configured limit number
+  // `kSharedStorageURLSelectionOperationInputURLSizeLimit`.
   // `serialized_data` is the serialization result of JavaScript value
   // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
   // There's no need to sanitize `serialized_data` at the browser process as the
@@ -71,7 +72,7 @@ interface SharedStorageDocumentService {
                                     array<SharedStorageUrlWithMetadata>
                                       urls_with_metadata,
                                     array<uint8> serialized_data)
-    => (bool success, string error_message, url.mojom.Url opaque_url);
+    => (bool success, string error_message, FencedFrameConfig? config);
 
   // Handle sharedStorage.set(): set `key`’s entry to `value`. If
   // `ignore_if_present` is true, the entry is not updated if `key` already
@@ -106,4 +107,3 @@ interface SharedStorageDocumentService {
       => (bool success,
           string error_message);
 };
-
