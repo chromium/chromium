@@ -16,7 +16,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
-#include "ui/events/platform/scoped_event_dispatcher.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -31,6 +30,7 @@
 
 namespace ui {
 
+class ScopedEventDispatcher;
 class WaylandConnection;
 class WaylandDataDeviceManager;
 class WaylandDataOffer;

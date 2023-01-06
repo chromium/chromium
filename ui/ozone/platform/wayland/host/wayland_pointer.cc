@@ -7,6 +7,7 @@
 #include <linux/input.h>
 #include <stylus-unstable-v2-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -28,6 +29,22 @@ wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
 #else
       wl::EventDispatchPolicy::kImmediate;
 #endif
+}
+
+bool ShouldSuppressPointerEnterOrLeaveEvents(WaylandConnection* connection) {
+  // Some Compositors (eg Exo) send spurious wl_pointer.enter|leave events
+  // during ongoing drag 'n drop operations.
+  //
+  // While this needs to be fixed on the Compositor side, the particular
+  // scenario of bogus events interfere w/ Lacros' tab dragging detaching
+  // and retaching behavior.
+  // Basically, the spurious `wl_pointer.enter` and `wl_pointer.leave` events
+  // conflict with logic that sets the 'focused window' when a
+  // `wl_drag_source.enter` event is received. For this reason, ignore those
+  // events.
+  //
+  // TODO(https://crbug.com/1405471): Remove this when Exo is properly fixed.
+  return connection->IsDragInProgress();
 }
 
 }  // namespace
@@ -63,6 +80,13 @@ void WaylandPointer::Enter(void* data,
                            wl_fixed_t surface_x,
                            wl_fixed_t surface_y) {
   auto* pointer = static_cast<WaylandPointer*>(data);
+
+  if (ShouldSuppressPointerEnterOrLeaveEvents(pointer->connection_)) {
+    LOG(ERROR) << "Compositor sent a spurious wl_pointer.enter event during"
+                  "a window drag 'n drop operation. IGNORING.";
+    return;
+  }
+
   pointer->connection_->serial_tracker().UpdateSerial(
       wl::SerialType::kMouseEnter, serial);
 
@@ -81,6 +105,13 @@ void WaylandPointer::Leave(void* data,
                            uint32_t serial,
                            wl_surface* surface) {
   auto* pointer = static_cast<WaylandPointer*>(data);
+
+  if (ShouldSuppressPointerEnterOrLeaveEvents(pointer->connection_)) {
+    LOG(ERROR) << "Compositor sent a spurious wl_pointer.leave event during"
+                  "a window drag 'n drop operation. IGNORING.";
+    return;
+  }
+
   pointer->connection_->serial_tracker().ResetSerial(
       wl::SerialType::kMouseEnter);
 
