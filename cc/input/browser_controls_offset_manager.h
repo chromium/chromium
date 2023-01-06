@@ -81,6 +81,11 @@ class CC_EXPORT BrowserControlsOffsetManager {
   std::pair<float, float> BottomControlsShownRatioRange();
 
   bool HasAnimation();
+  bool IsAnimatingToShowControls() const {
+    return top_controls_animation_.IsInitialized() &&
+           top_controls_animation_.Direction() ==
+               AnimationDirection::SHOWING_CONTROLS;
+  }
 
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,
@@ -177,6 +182,15 @@ class CC_EXPORT BrowserControlsOffsetManager {
   absl::optional<std::pair<float, float>>
       bottom_min_height_offset_animation_range_;
 
+  // Should ScrollEnd() animate the controls into view?  This is used if there's
+  // a race between chrome starting an animation to show the controls while the
+  // user is doing a scroll gesture, which would cancel animations.  We want to
+  // err on the side of showing the controls, so that the user realizes that
+  // they're an option. If we have started, but not yet completed an animation
+  // to show the controls when the scroll starts, or if one starts during the
+  // gesture, then we reorder the animation until after the scroll.
+  bool show_controls_when_scroll_completes_ = false;
+
   // Class that holds and manages the state of the controls animations.
   class Animation {
    public:
@@ -184,8 +198,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
     // Whether the animation is initialized with a direction and start and stop
     // values.
-    bool IsInitialized() { return initialized_; }
-    AnimationDirection Direction() { return direction_; }
+    bool IsInitialized() const { return initialized_; }
+    AnimationDirection Direction() const { return direction_; }
     void Initialize(AnimationDirection direction,
                     float start_value,
                     float stop_value,

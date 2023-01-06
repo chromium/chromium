@@ -1299,5 +1299,65 @@ TEST(BrowserControlsOffsetManagerTest,
   EXPECT_FLOAT_EQ(20.f, manager->TopControlsMinHeightOffset());
 }
 
+// Tests that a "show" animation that's interrupted by a scroll is restarted
+// when the gesture completes.
+TEST(BrowserControlsOffsetManagerTest,
+     InterruptedShowAnimationsAreRestartedAfterScroll) {
+  MockBrowserControlsOffsetManagerClient client(100.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+  // Start off with the controls mostly hidden, so that they will, by default,
+  // try to fully hide at the end of a scroll.
+  client.SetCurrentBrowserControlsShownRatio(/*top_ratio=*/0.2,
+                                             /*bottom_ratio=*/0.2);
+
+  EXPECT_FALSE(manager->HasAnimation());
+
+  // Start an animation to show the controls
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kShown, true);
+  EXPECT_TRUE(manager->IsAnimatingToShowControls());
+
+  // Start a scroll, which should cancel the animation.
+  manager->ScrollBegin();
+  EXPECT_FALSE(manager->HasAnimation());
+
+  // Finish the scroll, which should restart the show animation.  Since the
+  // animation didn't run yet, the controls would auto-hide otherwise since they
+  // started almost hidden.
+  manager->ScrollEnd();
+  EXPECT_TRUE(manager->IsAnimatingToShowControls());
+}
+
+// If chrome tries to animate in browser controls during a scroll gesture, it
+// should animate them in after the scroll completes.
+TEST(BrowserControlsOffsetManagerTest,
+     ShowingControlsDuringScrollStartsAnimationAfterScroll) {
+  MockBrowserControlsOffsetManagerClient client(100.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+  // Start off with the controls mostly hidden, so that they will, by default,
+  // try to fully hide at the end of a scroll.
+  client.SetCurrentBrowserControlsShownRatio(/*top_ratio=*/0.2,
+                                             /*bottom_ratio=*/0.2);
+
+  EXPECT_FALSE(manager->HasAnimation());
+
+  // Start a scroll. Make sure that there's no animation running, else we're
+  // testing the wrong case.
+  ASSERT_FALSE(manager->HasAnimation());
+  manager->ScrollBegin();
+  EXPECT_FALSE(manager->HasAnimation());
+
+  // Start an animation to show the controls.
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kShown, true);
+  EXPECT_TRUE(manager->IsAnimatingToShowControls());
+
+  // Finish the scroll, and the animation should still be in progress and/or
+  // restarted.  We don't really care which, as long as it wasn't cancelled and
+  // is trying to show the controls.
+  manager->ScrollEnd();
+  EXPECT_TRUE(manager->IsAnimatingToShowControls());
+}
+
 }  // namespace
 }  // namespace cc
