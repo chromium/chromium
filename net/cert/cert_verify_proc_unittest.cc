@@ -4862,6 +4862,60 @@ TEST_P(CertVerifyProcConstraintsTest, PoliciesRoot) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTest, PolicyMappingsRoot) {
+  static const char kPolicy1[] = "1.2.3.4";
+  static const char kPolicy2[] = "1.2.3.5";
+  static const char kPolicy3[] = "1.2.3.6";
+
+  for (bool root_has_matching_policy : {false, true}) {
+    SCOPED_TRACE(root_has_matching_policy);
+
+    chain_[3]->SetCertificatePolicies({kPolicy1});
+    if (root_has_matching_policy) {
+      // This chain should be valid if the policies and policy mapping on the
+      // root are processed, or if neither is processed. It will not be valid
+      // if the policies were processed and the policyMappings were not.
+      chain_[3]->SetPolicyMappings({{kPolicy1, kPolicy2}});
+    } else {
+      // This chain should not be valid if the policies on the root were
+      // processed, regardless if the policyMappings were processed.
+      chain_[3]->SetPolicyMappings({{kPolicy1, kPolicy3}});
+    }
+
+    // Policy constraints are specified on an intermediate so that an explicit
+    // policy will be required regardless if root constraints are applied.
+    chain_[2]->SetPolicyConstraints(
+        /*require_explicit_policy=*/0,
+        /*inhibit_policy_mapping=*/absl::nullopt);
+
+    chain_[2]->SetCertificatePolicies({kPolicy2});
+    chain_[1]->SetCertificatePolicies({kPolicy2});
+    chain_[0]->SetCertificatePolicies({kPolicy2});
+
+    if (root_has_matching_policy) {
+      EXPECT_THAT(Verify(), IsOk());
+      if (VerifyProcTypeIsBuiltin()) {
+        // TODO(https://crbug.com/1072083): policyMapping and policyConstraints
+        // on root not yet implemented.
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+      }
+    } else {
+      if (VerifyProcTypeIsBuiltin()) {
+        EXPECT_THAT(Verify(), IsOk());
+        // TODO(https://crbug.com/1072083): policies on root not yet
+        // implemented.
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+                 verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+        EXPECT_THAT(Verify(), IsOk());
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      }
+    }
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignRoot) {
   chain_[3]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
 
