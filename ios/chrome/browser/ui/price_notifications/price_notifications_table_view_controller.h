@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol PriceNotificationsMutator;
+@protocol SnackbarCommands;
 
 // View controller that displays PriceNotifications list items in a table view.
 @interface PriceNotificationsTableViewController
@@ -19,6 +20,9 @@
 // Mutator for Price Tracking related actions e.g price tracking event
 // subscription.
 @property(nonatomic, weak) id<PriceNotificationsMutator> mutator;
+
+// Handler for displaying snackbar messages on the UI.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 @end
 

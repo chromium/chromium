@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
@@ -63,6 +64,8 @@
                      webState:webState];
   self.mediator.consumer = self.tableViewController;
   self.tableViewController.mutator = self.mediator;
+  self.tableViewController.snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
 
   // Add the "Done" button and hook it up to stop.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]

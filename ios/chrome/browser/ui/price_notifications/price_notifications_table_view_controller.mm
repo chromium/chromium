@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
@@ -173,6 +176,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
         }
       }
                completion:nil];
+  NSString* messageText = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING);
+  MDCSnackbarMessage* message =
+      [MDCSnackbarMessage messageWithText:messageText];
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:message
+           withHapticType:UINotificationFeedbackTypeSuccess];
 }
 
 - (void)didStartPriceTrackingForItem:
