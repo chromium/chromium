@@ -494,6 +494,7 @@ int HttpCache::Writers::DoCacheWriteData(int num_bytes) {
     partial = all_writers_.find(active_transaction_)->second.partial;
 
   if (!partial) {
+    last_disk_cache_access_start_time_ = base::TimeTicks::Now();
     rv = entry_->disk_entry->WriteData(kResponseContentIndex, current_size,
                                        read_buf_.get(), num_bytes,
                                        std::move(io_callback), true);
@@ -529,6 +530,13 @@ int HttpCache::Writers::DoCacheWriteDataComplete(int result) {
         return result;
       }
     }
+  }
+
+  if (!last_disk_cache_access_start_time_.is_null() && active_transaction_ &&
+      !all_writers_.find(active_transaction_)->second.partial) {
+    active_transaction_->AddDiskCacheWriteTime(
+        base::TimeTicks::Now() - last_disk_cache_access_start_time_);
+    last_disk_cache_access_start_time_ = base::TimeTicks();
   }
 
   next_state_ = State::NONE;

@@ -187,6 +187,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}"
+    units="ms" expires_after="2023-05-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For each HTTP cache transaction, record total time spent {AccessType} the
+    disk cache. Recorded when a transaction finished. This histogram does not
+    record partial requests.
+  </summary>
+  <token key="AccessType">
+    <variant name="Read" summary="reading from"/>
+    <variant name="Write" summary="writing to"/>
+  </token>
+</histogram>
+
 <histogram name="Net.AlternateProtocolBrokenLocation"
     enum="BrokenAlternateProtocolLocation" expires_after="2023-02-19">
   <owner>dschinazi@chromium.org</owner>

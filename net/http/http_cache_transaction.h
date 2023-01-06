@@ -198,6 +198,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   bool ResponseChecksumMatches(
       std::unique_ptr<crypto::SecureHash> checksum) const;
 
+  // Add time spent writing data in the disk cache. Used for histograms.
+  void AddDiskCacheWriteTime(base::TimeDelta elapsed);
+
  private:
   static const size_t kNumValidationHeaders = 2;
   // Helper struct to pair a header name with its value, for
@@ -608,6 +611,13 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // forwarded might need to set these headers again to avoid being blocked.
   void UpdateSecurityHeadersBeforeForwarding();
 
+  enum class DiskCacheAccessType {
+    kRead,
+    kWrite,
+  };
+  void BeginDiskCacheAccessTimeCount();
+  void EndDiskCacheAccessTimeCount(DiskCacheAccessType type);
+
   State next_state_{STATE_NONE};
 
   // Used for tracing.
@@ -704,6 +714,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
   base::Time open_entry_last_used_;
+  base::TimeTicks last_disk_cache_access_start_time_;
+  base::TimeDelta total_disk_cache_read_time_;
+  base::TimeDelta total_disk_cache_write_time_;
   bool recorded_histograms_ = false;
   bool has_opened_or_created_entry_ = false;
   bool record_entry_open_or_creation_time_ = false;

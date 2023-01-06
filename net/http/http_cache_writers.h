@@ -292,6 +292,9 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // written.
   bool should_keep_entry_ = true;
 
+  // The latest time `this` starts writing data to the disk cache.
+  base::TimeTicks last_disk_cache_access_start_time_;
+
   // Set if we are currently calculating a checksum of the resource to validate
   // it against the expected checksum for the single-keyed cache. Initialised
   // with selected headers and accumulates the body of the response.
