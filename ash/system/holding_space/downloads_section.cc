@@ -33,6 +33,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -43,30 +45,29 @@ namespace {
 class Header : public views::Button {
  public:
   Header() {
-    SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE));
-    SetCallback(
-        base::BindRepeating(&Header::OnPressed, base::Unretained(this)));
-    SetID(kHoldingSpaceDownloadsSectionHeaderId);
-
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        kHoldingSpaceSectionHeaderSpacing));
-
-    // Label.
-    auto* label = AddChildView(
-        holding_space_ui::CreateSectionHeaderLabel(
-            IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)
-            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-            .Build());
-    layout->SetFlexForView(label, 1);
-
-    // Chevron.
-    chevron_ = AddChildView(std::make_unique<views::ImageView>());
-    chevron_->SetFlipCanvasOnPaintForRTLUI(true);
-    chevron_->SetImage(ui::ImageModel::FromVectorIcon(
-        kChevronRightSmallIcon, kColorAshIconColorPrimary,
-        kHoldingSpaceSectionChevronIconSize));
+    // Layout/Properties.
+    views::Builder<views::Button>(this)
+        .SetID(kHoldingSpaceDownloadsSectionHeaderId)
+        .SetAccessibleName(
+            l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE))
+        .SetCallback(
+            base::BindRepeating(&Header::OnPressed, base::Unretained(this)))
+        .SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+            kHoldingSpaceSectionHeaderSpacing))
+        .AddChildren(
+            holding_space_ui::CreateSectionHeaderLabel(
+                IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)
+                .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                .SetProperty(views::kFlexBehaviorKey,
+                             views::FlexSpecification().WithWeight(1)),
+            views::Builder<views::ImageView>()
+                .CopyAddressTo(&chevron_)
+                .SetFlipCanvasOnPaintForRTLUI(true)
+                .SetImage(ui::ImageModel::FromVectorIcon(
+                    kChevronRightSmallIcon, kColorAshIconColorPrimary,
+                    kHoldingSpaceSectionChevronIconSize)))
+        .BuildChildren();
 
     // Focus ring.
     // Though the entirety of the header is focusable and behaves as a single

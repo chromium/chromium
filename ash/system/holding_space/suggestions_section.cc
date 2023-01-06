@@ -34,8 +34,10 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -46,27 +48,25 @@ namespace {
 class Header : public views::Button {
  public:
   Header() {
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        kHoldingSpaceSectionHeaderSpacing));
-
-    views::Label* label = nullptr;
+    // Layout/Properties.
     views::Builder<views::Button>(this)
         .SetID(kHoldingSpaceSuggestionsSectionHeaderId)
         .SetAccessibleName(
             l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE))
         .SetCallback(
             base::BindRepeating(&Header::OnPressed, base::Unretained(this)))
+        .SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+            kHoldingSpaceSectionHeaderSpacing))
         .AddChildren(
             holding_space_ui::CreateSuggestionsSectionHeaderLabel(
                 IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE)
-                .CopyAddressTo(&label)
-                .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
+                .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                .SetProperty(views::kFlexBehaviorKey,
+                             views::FlexSpecification().WithWeight(1)),
             views::Builder<views::ImageView>().CopyAddressTo(&chevron_).SetID(
                 kHoldingSpaceSuggestionsChevronIconId))
         .BuildChildren();
-
-    layout->SetFlexForView(label, 1);
 
     // Though the entirety of the header is focusable and behaves as a single
     // button, the focus ring is drawn as a circle around just the `chevron_`.
