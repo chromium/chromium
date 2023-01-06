@@ -4,14 +4,14 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../../testing/chromevox_next_e2e_test_base.js',
+  '../../testing/chromevox_e2e_test_base.js',
   '../../testing/fake_objects.js',
 ]);
 
 /**
  * Test fixture.
  */
-ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

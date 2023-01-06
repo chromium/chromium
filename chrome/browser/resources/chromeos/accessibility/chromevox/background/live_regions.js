@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Implements support for live regions in ChromeVox Next.
+ * @fileoverview Implements support for live regions in ChromeVox.
  */
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';

@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 
 GEN_INCLUDE(['../testing/fake_objects.js']);
 
 /**
  * Test fixture for Download_Handler.
  */
-ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxDownloadTest = class extends ChromeVoxE2ETest {
   addFakeApi(timeRemainingUnits) {
     // Fake out Chrome Downloads API namespace.
     chrome.downloads = {};

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE([
-  '../../testing/chromevox_next_e2e_test_base.js',
+  '../../testing/chromevox_e2e_test_base.js',
   '../../../common/testing/assert_additions.js',
 ]);
 
@@ -13,7 +13,7 @@ GEN_INCLUDE([
  * out classes not under test but it runs under a full extension test
  * environment to get things like extension api literals.
  */
-ChromeVoxIntentHandlerTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxIntentHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

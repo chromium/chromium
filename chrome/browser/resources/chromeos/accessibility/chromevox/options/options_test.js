@@ -4,13 +4,13 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../testing/chromevox_next_e2e_test_base.js',
+  '../testing/chromevox_e2e_test_base.js',
 ]);
 
 /**
  * Test fixture for ChromeVox options page.
  */
-ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxOptionsTest = class extends ChromeVoxE2ETest {
   constructor() {
     super();
     window.press = this.press;

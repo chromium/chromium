@@ -8,9 +8,9 @@
  */
 
 // Include test fixture.
-GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
-ChromeVoxLibLouisTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

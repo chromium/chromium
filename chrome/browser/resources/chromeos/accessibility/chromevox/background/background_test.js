@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 
 GEN_INCLUDE(['../testing/fake_objects.js']);
 
 /**
  * Test fixture for Background.
  */
-ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -783,7 +783,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', async function() {
-  // Undoes the ChromeVoxNextE2E call setting this to true. The doDefault
+  // Undoes the ChromeVoxE2E call setting this to true. The doDefault
   // action should always be read.
   BaseAutomationHandler.announceActions = false;
   const mockFeedback = this.createMockFeedback();

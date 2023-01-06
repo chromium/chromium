@@ -4,13 +4,13 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../testing/chromevox_next_e2e_test_base.js',
+  '../testing/chromevox_e2e_test_base.js',
 ]);
 
 /**
  * Test fixture for ChromeVox Learn Mode page.
  */
-ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
   constructor() {
     super();
     window.doKeyDown = this.doKeyDown.bind(this);

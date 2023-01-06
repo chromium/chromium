@@ -4,7 +4,7 @@
 
 GEN_INCLUDE([
   '../../../common/testing/documents.js',
-  '../../testing/chromevox_next_e2e_test_base.js',
+  '../../testing/chromevox_e2e_test_base.js',
 ]);
 
 // Fake Msgs object.
@@ -19,7 +19,7 @@ const PanelBridge = {
 };
 
 /** Test fixture for PanelNodeMenuBackground. */
-ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
+ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

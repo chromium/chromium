@@ -13,7 +13,7 @@ GEN_INCLUDE(['mock_feedback.js']);
  * These tests run against production ChromeVox inside of the extension's
  * background context.
  */
-ChromeVoxNextE2ETest = class extends E2ETestBase {
+ChromeVoxE2ETest = class extends E2ETestBase {
   constructor() {
     super();
 
@@ -62,8 +62,7 @@ ChromeVoxNextE2ETest = class extends E2ETestBase {
       `);
 
     super.testGenPreambleCommon(
-        'kChromeVoxExtensionId',
-        ChromeVoxNextE2ETest.prototype.failOnConsoleError);
+        'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
   }
 
   /** @return {!MockFeedback} */
@@ -209,4 +208,4 @@ ChromeVoxNextE2ETest = class extends E2ETestBase {
 // TODO: wasm logs errors if it takes too long to load (e.g. liblouis wasm).
 // Separately, LibLouis also logs errors.
 // See https://crbug.com/1170991.
-ChromeVoxNextE2ETest.prototype.failOnConsoleError = false;
+ChromeVoxE2ETest.prototype.failOnConsoleError = false;
