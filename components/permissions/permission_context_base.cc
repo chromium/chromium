@@ -20,6 +20,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
@@ -363,11 +364,15 @@ void PermissionContextBase::DecidePermission(
   // Under permission delegation, when we display a permission prompt, the
   // origin displayed in the prompt should never differ from the top-level
   // origin. Storage access API requests are excluded as they are expected to
-  // request permissions from the frame origin needing access.
+  // request permissions from the frame origin needing access. The same is true
+  // of top-level storage access requests, which are also requests on behalf of
+  // another origin.
   DCHECK(PermissionsClient::Get()->CanBypassEmbeddingOriginCheck(
              requesting_origin, embedding_origin) ||
          requesting_origin == embedding_origin ||
-         content_settings_type_ == ContentSettingsType::STORAGE_ACCESS);
+         content_settings_type_ == ContentSettingsType::STORAGE_ACCESS ||
+         content_settings_type_ ==
+             ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(id.global_render_frame_host_id());

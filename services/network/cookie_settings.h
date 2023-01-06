@@ -91,6 +91,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     storage_access_grants_ = settings;
   }
 
+  void set_top_level_storage_access_grants(
+      const ContentSettingsForOneType& settings) {
+    top_level_storage_access_grants_ = settings;
+  }
+
   // Returns a predicate that takes the domain of a cookie and a bool whether
   // the cookie is secure and returns true if the cookie should be deleted on
   // exit.
@@ -248,6 +253,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
 
+  // Returns true if there's a matching top-level Storage Access grant that
+  // allows access in this context.
+  bool IsAllowedByTopLevelStorageAccessGrant(const GURL& url,
+                                             const GURL& first_party_url) const;
+
   ContentSettingsForOneType content_settings_;
   bool block_third_party_cookies_ = false;
   std::set<std::string> secure_origin_cookies_allowed_schemes_;
@@ -258,6 +268,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Will only be populated when the StorageAccessAPI feature is enabled
   // https://crbug.com/989663.
   ContentSettingsForOneType storage_access_grants_;
+  // Used similarly to `storage_access_grants_`, but applicable at page-level.
+  // The two permissions are in the process of being split.
+  ContentSettingsForOneType top_level_storage_access_grants_;
 };
 
 }  // namespace network

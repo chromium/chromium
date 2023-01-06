@@ -4157,6 +4157,8 @@ chromium-metrics-reviews@google.com.
       label="registerProtocolHandler permission"/>
   <suffix name="SecurityKeyAttestation" label="Security Key attestation"/>
   <suffix name="StorageAccess" label="Storage Access API permission"/>
+  <suffix name="TopLevelStorageAccess"
+      label="Top-level Storage Access API permission"/>
   <suffix name="VideoCapture" label="Camera permission"/>
   <suffix name="VR" label="VR permission"/>
   <suffix name="WindowPlacement" label="Window Management permission"/>
@@ -4183,6 +4185,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="ProtectedMedia" label="Protected media permission actions"/>
   <suffix name="PushMessaging" label="Push messaging permission actions"/>
   <suffix name="StorageAccess" label="Storage Access API permission actions"/>
+  <suffix name="TopLevelStorageAccess"
+      label="Top-level Storage Access API permission actions"/>
   <suffix name="VideoCapture" label="Camera permission actions"/>
   <suffix name="VR" label="VR permission actions"/>
   <suffix name="WindowPlacement" label="Window Management permission actions"/>

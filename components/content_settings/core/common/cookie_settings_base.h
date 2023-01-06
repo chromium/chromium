@@ -216,6 +216,14 @@ class CookieSettingsBase {
   // Returns true iff the query should consider Storage Access API permission
   // grants.
   bool ShouldConsiderStorageAccessGrants(QueryReason query_reason) const;
+
+  // Returns true iff the query should consider top-level Storage Access API
+  // permission grants. Note that this is handled similarly to storage access
+  // grants, but applies to subresources more broadly (at the top-level rather
+  // than only for a single frame).
+  bool ShouldConsiderTopLevelStorageAccessGrants(
+      QueryReason query_reason) const;
+
   // Static version of the above, exposed for testing.
   static bool ShouldConsiderStorageAccessGrantsInternal(
       QueryReason query_reason,

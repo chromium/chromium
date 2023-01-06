@@ -275,14 +275,24 @@ CastNetworkContexts::CreateCookieManagerParams() {
 
   ContentSettingsForOneType settings;
   ContentSettingsForOneType settings_for_storage_access;
+  ContentSettingsForOneType settings_for_top_level_storage_access;
 
   // Grant cookie and storage access to domains in the allowlist.
   for (const auto& domain : allowed_domains_for_persistent_cookies_) {
-    auto allow_setting = CreateContentSetting(
+    auto allow_storage_access_setting = CreateContentSetting(
         /*primary_pattern=*/base::StrCat({"[*.]", domain}),
         /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_ALLOW);
-    settings.push_back(allow_setting);
-    settings_for_storage_access.push_back(std::move(allow_setting));
+    settings.push_back(allow_storage_access_setting);
+    settings_for_storage_access.push_back(
+        std::move(allow_storage_access_setting));
+
+    // TODO(crbug.com/1385156): Consolidate this with the regular STORAGE_ACCESS
+    // setting as usage becomes better-defined.
+    auto allow_top_level_storage_access_setting = CreateContentSetting(
+        /*primary_pattern=*/base::StrCat({"[*.]", domain}),
+        /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_ALLOW);
+    settings_for_top_level_storage_access.push_back(
+        std::move(allow_top_level_storage_access_setting));
   }
 
   // Restrict cookie access to session only and block storage access for
@@ -295,8 +305,14 @@ CastNetworkContexts::CreateCookieManagerParams() {
   settings_for_storage_access.push_back(CreateContentSetting(
       /*primary_pattern=*/"*",
       /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_BLOCK));
+  settings_for_top_level_storage_access.push_back(CreateContentSetting(
+      /*primary_pattern=*/"*",
+      /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_BLOCK));
   params->settings = std::move(settings);
   params->settings_for_storage_access = std::move(settings_for_storage_access);
+  params->settings_for_top_level_storage_access =
+      std::move(settings_for_top_level_storage_access);
+
   return params;
 }
 

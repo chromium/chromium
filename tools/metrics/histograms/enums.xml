@@ -18554,6 +18554,7 @@ Called by update_net_error_codes.py.-->
   <int value="91"
       label="Federated identity identity-provider-sign-in-status API"/>
   <int value="92" label="Unused site permissions"/>
+  <int value="93" label="Top-level Storage Access"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

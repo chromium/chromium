@@ -101,7 +101,10 @@ int PermissionPromptAndroid::GetIconId() const {
 std::u16string PermissionPromptAndroid::GetMessageText() const {
   const std::vector<PermissionRequest*>& requests = delegate_->Requests();
   if (requests.size() == 1) {
-    if (requests[0]->request_type() == RequestType::kStorageAccess) {
+    if (requests[0]->request_type() == RequestType::kStorageAccess ||
+        requests[0]->request_type() == RequestType::kTopLevelStorageAccess) {
+      // TODO(crbug.com/1385156): Adapt this check once top-level storage access
+      // prompting is fully removed.
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_INFOBAR_TEXT,
           url_formatter::FormatUrlForSecurityDisplay(

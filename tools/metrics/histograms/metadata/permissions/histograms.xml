@@ -41,6 +41,7 @@ chromium-metrics-reviews@google.com.
   <variant name="RegisterProtocolHandler"/>
   <variant name="SecurityKeyAttestation"/>
   <variant name="StorageAccess"/>
+  <variant name="TopLevelStorageAccess"/>
   <variant name="U2fApiRequest"/>
   <variant name="VideoCapture"/>
   <variant name="VR"/>

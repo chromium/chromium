@@ -42,6 +42,12 @@ struct CookieManagerParams {
   // the Storage Access API.
   array<content_settings.mojom.ContentSettingPatternSource>
       settings_for_storage_access;
+  // Much like the Storage Access API, but applicable at the page-level instead
+  // of per-frame. The two permissions are being separated; some duplication
+  // will be present until that process completes. TODO(crbug.com/1385156):
+  // consolidate as much as possible.
+  array<content_settings.mojom.ContentSettingPatternSource>
+      settings_for_top_level_storage_access;
 
   // The type of CookieAccessDelegate to pass to the underlying CookieStore.
   // If these params are not present, CookieManager defaults to using
@@ -464,5 +470,10 @@ interface CookieManager {
   // Sets content settings for which storage access grants exist. Will ack
   // the caller with a callback when settings have been updated.
   SetStorageAccessGrantSettings(
+      array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
+
+  // Sets content settings for which top-level storage access grants exist. Will
+  // ack the caller with a callback when settings have been updated.
+  SetTopLevelStorageAccessSettings(
       array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
 };

@@ -242,6 +242,14 @@ CookieSettings::GetCookieSettingWithMetadata(
         storage_access_result = net::cookie_util::StorageAccessResult::
             ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
         third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
+      } else if (ShouldConsiderTopLevelStorageAccessGrants(query_reason) &&
+                 IsAllowedByTopLevelStorageAccessGrant(url, first_party_url)) {
+        // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
+        // and the page-level variant.
+        cookie_setting = CONTENT_SETTING_ALLOW;
+        storage_access_result = net::cookie_util::StorageAccessResult::
+            ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+        third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
       } else if (overrides.Has(
                      net::CookieSettingOverride::kForceThirdPartyByUser)) {
         // See if a user bypass can unblock.
@@ -388,6 +396,14 @@ bool CookieSettings::IsAllowedByStorageAccessGrant(
     const GURL& first_party_url) const {
   const ContentSettingPatternSource* match =
       FindMatchingSetting(url, first_party_url, storage_access_grants_);
+  return match && match->GetContentSetting() == CONTENT_SETTING_ALLOW;
+}
+
+bool CookieSettings::IsAllowedByTopLevelStorageAccessGrant(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  const ContentSettingPatternSource* match = FindMatchingSetting(
+      url, first_party_url, top_level_storage_access_grants_);
   return match && match->GetContentSetting() == CONTENT_SETTING_ALLOW;
 }
 

@@ -253,6 +253,8 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kWindowManagement:
       return ContentSettingsType::WINDOW_MANAGEMENT;
 #endif
+    case RequestType::kTopLevelStorageAccess:
+      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
     default:
       // Not associated with a ContentSettingsType.
       return absl::nullopt;

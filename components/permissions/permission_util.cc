@@ -54,8 +54,10 @@ PermissionDelegationMode GetPermissionDelegationMode(
   // durable storage, background sync, etc.
   if (permission == ContentSettingsType::NOTIFICATIONS)
     return PermissionDelegationMode::kUndelegated;
-  if (permission == ContentSettingsType::STORAGE_ACCESS)
+  if (permission == ContentSettingsType::STORAGE_ACCESS ||
+      permission == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
     return PermissionDelegationMode::kDoubleKeyed;
+  }
   return PermissionDelegationMode::kDelegated;
 }
 }  // namespace
@@ -146,11 +148,10 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
       *out = PermissionType::AR;
       break;
     case ContentSettingsType::STORAGE_ACCESS:
-    // These two permissions are in the process of being split; they share logic
-    // for now. TODO(crbug.com/1385156): split and consolidate as much as
-    // possible.
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       *out = PermissionType::STORAGE_ACCESS_GRANT;
+      break;
+    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
+      *out = PermissionType::TOP_LEVEL_STORAGE_ACCESS;
       break;
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       *out = PermissionType::CAMERA_PAN_TILT_ZOOM;
@@ -284,11 +285,9 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
     case PermissionType::AR:
       return ContentSettingsType::AR;
     case PermissionType::STORAGE_ACCESS_GRANT:
-    // These two permissions are in the process of being split; they share logic
-    // for now. TODO(crbug.com/1385156): split and consolidate as much as
-    // possible.
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return ContentSettingsType::STORAGE_ACCESS;
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
     case PermissionType::WINDOW_MANAGEMENT:

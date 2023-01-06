@@ -697,6 +697,52 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAA) {
             SettingWithForceAllowThirdPartyCookies());
 }
 
+// A top-level storage access grant should behave similarly to standard SAA
+// grants. TODO(crbug.com/1385156): as requirements for the two APIs solidify,
+// this will likely not continue to be true.
+TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
+  const GURL top_level_url = GURL(kFirstPartySite);
+  const GURL url = GURL(kAllowedSite);
+  const GURL third_url = GURL(kBlockedSite);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::FromURLNoWildcard(top_level_url),
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithEitherOverride());
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      static_cast<int>(BlockedStorageAccessResultWithEitherOverride()), 1);
+
+  // Invalid pair the |top_level_url| granting access to |url| is now
+  // being loaded under |url| as the top level url.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(top_level_url, url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
+
+  // Invalid pairs where a |third_url| is used.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, third_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(third_url, top_level_url,
+                                               GetCookieSettingOverrides(),
+                                               nullptr, QueryReason::kCookies),
+            SettingWithForceAllowThirdPartyCookies());
+}
+
 // Subdomains of the granted resource url should not gain access if a valid
 // grant exists; the grant should also not apply on different schemes.
 TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {

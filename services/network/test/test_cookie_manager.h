@@ -62,6 +62,9 @@ class TestCookieManager : public network::mojom::CookieManager {
   void SetStorageAccessGrantSettings(
       const std::vector<::ContentSettingPatternSource>& settings,
       SetStorageAccessGrantSettingsCallback callback) override {}
+  void SetTopLevelStorageAccessSettings(
+      const std::vector<::ContentSettingPatternSource>& settings,
+      SetTopLevelStorageAccessSettingsCallback callback) override {}
 
   void DispatchCookieChange(const net::CookieChangeInfo& change);
 
