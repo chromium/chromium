@@ -9,7 +9,7 @@ import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
-export class EventSourceState {
+export class EventSource {
   constructor() {
     /** @private {!EventSourceType} */
     this.state_ = chrome.accessibilityPrivate.IS_DEFAULT_EVENT_SOURCE_TOUCH ?
@@ -18,21 +18,20 @@ export class EventSourceState {
   }
 
   static init() {
-    EventSourceState.instance = new EventSourceState();
+    EventSource.instance = new EventSource();
 
     BridgeHelper.registerHandler(
-        BridgeConstants.EventSourceState.TARGET,
-        BridgeConstants.EventSourceState.Action.GET,
-        () => EventSourceState.get());
+        BridgeConstants.EventSource.TARGET,
+        BridgeConstants.EventSource.Action.GET, () => EventSource.get());
   }
 
   /** @param {!EventSourceType} source */
   static set(source) {
-    EventSourceState.instance.state_ = source;
+    EventSource.instance.state_ = source;
   }
 
   /** @return {!EventSourceType} */
   static get() {
-    return EventSourceState.instance.state_;
+    return EventSource.instance.state_;
   }
 }

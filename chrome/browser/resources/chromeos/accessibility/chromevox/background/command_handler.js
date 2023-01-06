@@ -40,7 +40,7 @@ import {Color} from './color.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TypingEcho} from './editing/editable_text_base.js';
-import {EventSourceState} from './event_source.js';
+import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
 import {LogStore} from './logging/log_store.js';
 import {Output} from './output/output.js';
@@ -500,7 +500,7 @@ export class CommandHandler extends CommandHandlerInterface {
       case Command.NEXT_OBJECT:
         skipSettingSelection = true;
         didNavigate = true;
-        unit = (EventSourceState.get() === EventSourceType.TOUCH_GESTURE) ?
+        unit = (EventSource.get() === EventSourceType.TOUCH_GESTURE) ?
             CursorUnit.GESTURE_NODE :
             CursorUnit.NODE;
         currentRange = currentRange.move(unit, dir);
@@ -1053,7 +1053,7 @@ export class CommandHandler extends CommandHandlerInterface {
   announceNoCurrentRange_() {
     new Output()
         .withString(Msgs.getMsg(
-            EventSourceState.get() === EventSourceType.TOUCH_GESTURE ?
+            EventSource.get() === EventSourceType.TOUCH_GESTURE ?
                 'no_focus_touch' :
                 'no_focus'))
         .withQueueMode(QueueMode.FLUSH)
@@ -1197,7 +1197,7 @@ export class CommandHandler extends CommandHandlerInterface {
       return;
     }
 
-    if (EventSourceState.get() === EventSourceType.TOUCH_GESTURE &&
+    if (EventSource.get() === EventSourceType.TOUCH_GESTURE &&
         actionNode.state.editable) {
       // Dispatch a click to ensure the VK gets shown.
       const center = RectUtil.center(actionNode.location);

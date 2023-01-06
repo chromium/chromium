@@ -24,7 +24,7 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TextEditHandler} from './editing/editing.js';
-import {EventSourceState} from './event_source.js';
+import {EventSource} from './event_source.js';
 import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
 
@@ -634,7 +634,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     if (currentRange && currentRange.isValid()) {
       new Output().withLocation(currentRange, null, evt.type).go();
 
-      if (EventSourceState.get() !== EventSourceType.TOUCH_GESTURE) {
+      if (EventSource.get() !== EventSourceType.TOUCH_GESTURE) {
         return;
       }
 

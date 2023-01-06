@@ -19,8 +19,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
-    await importModule(
-        'EventSourceState', '/chromevox/background/event_source.js');
+    await importModule('EventSource', '/chromevox/background/event_source.js');
     await importModule(
         'EventSourceType', '/chromevox/common/event_source_type.js');
     await importModule(
@@ -90,7 +89,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   enableTouchMode() {
-    EventSourceState.set(EventSourceType.TOUCH_GESTURE);
+    EventSource.set(EventSourceType.TOUCH_GESTURE);
   }
 
   isMenuTitleMessage(menuTitleMessage) {

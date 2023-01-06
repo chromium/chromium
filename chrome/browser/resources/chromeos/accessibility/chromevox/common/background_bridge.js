@@ -120,7 +120,7 @@ BackgroundBridge.CommandHandler = {
   },
 };
 
-BackgroundBridge.EventSourceState = {
+BackgroundBridge.EventSource = {
   /**
    * Gets the current event source.
    * TODO(accessibility): this type is ES6; replace once possible.
@@ -128,8 +128,8 @@ BackgroundBridge.EventSourceState = {
    */
   async get() {
     return BridgeHelper.sendMessage(
-        BridgeConstants.EventSourceState.TARGET,
-        BridgeConstants.EventSourceState.Action.GET);
+        BridgeConstants.EventSource.TARGET,
+        BridgeConstants.EventSource.Action.GET);
   },
 };
 

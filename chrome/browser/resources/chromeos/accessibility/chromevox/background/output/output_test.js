@@ -100,8 +100,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await super.setUpDeferred();
 
     // Alphabetical based on file path.
-    await importModule(
-        'EventSourceState', '/chromevox/background/event_source.js');
+    await importModule('EventSource', '/chromevox/background/event_source.js');
     await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule('Output', '/chromevox/background/output/output.js');
     await importModule(
@@ -1404,7 +1403,7 @@ AX_TEST_F(
 
       // Force a few properties to be set so that hints are triggered.
       Object.defineProperty(button, 'clickable', {get: () => true});
-      EventSourceState.set(EventSourceType.TOUCH_GESTURE);
+      EventSource.set(EventSourceType.TOUCH_GESTURE);
 
       o = new Output().withSpeech(range, null, 'navigate');
       assertEqualsJSON(

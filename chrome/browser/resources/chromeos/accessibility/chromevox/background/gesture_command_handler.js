@@ -15,7 +15,7 @@ import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
-import {EventSourceState} from './event_source.js';
+import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
 import {Output} from './output/output.js';
 import {PointerHandler} from './pointer_handler.js';
@@ -79,7 +79,7 @@ export class GestureCommandHandler {
       return;
     }
 
-    EventSourceState.set(EventSourceType.TOUCH_GESTURE);
+    EventSource.set(EventSourceType.TOUCH_GESTURE);
 
     const monitor = UserActionMonitor.instance;
     if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&

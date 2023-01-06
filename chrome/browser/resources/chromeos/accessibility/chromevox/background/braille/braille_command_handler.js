@@ -22,7 +22,7 @@ import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {CommandHandlerInterface} from '../command_handler_interface.js';
 import {DesktopAutomationInterface} from '../desktop_automation_interface.js';
-import {EventSourceState} from '../event_source.js';
+import {EventSource} from '../event_source.js';
 import {Output} from '../output/output.js';
 import {OutputNodeSpan, OutputSelectionSpan} from '../output/output_types.js';
 import {ChromeVoxPrefs} from '../prefs.js';
@@ -65,7 +65,7 @@ export class BrailleCommandHandler {
       return true;
     }
 
-    EventSourceState.set(EventSourceType.BRAILLE_KEYBOARD);
+    EventSource.set(EventSourceType.BRAILLE_KEYBOARD);
 
     // Try to restore to the last valid range.
     ChromeVoxState.instance.restoreLastValidRangeIfNeeded();

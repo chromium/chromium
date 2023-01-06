@@ -22,7 +22,7 @@ import {Spannable} from '../../common/spannable.js';
 import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
-import {EventSourceState} from '../event_source.js';
+import {EventSource} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
@@ -1402,7 +1402,7 @@ export class Output {
    */
   static computeDelayedHints_(node, uniqueAncestors, type) {
     const ret = [];
-    if (EventSourceState.get() === EventSourceType.TOUCH_GESTURE) {
+    if (EventSource.get() === EventSourceType.TOUCH_GESTURE) {
       if (node.state[StateType.EDITABLE]) {
         ret.push({
           msgId: node.state[StateType.FOCUSED] ? 'hint_is_editing' :

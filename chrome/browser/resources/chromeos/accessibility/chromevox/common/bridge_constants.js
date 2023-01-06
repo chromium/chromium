@@ -79,8 +79,8 @@ BridgeConstants.CommandHandler = {
 };
 
 /** @public {!BridgeEntry} */
-BridgeConstants.EventSourceState = {
-  TARGET: 'EventSourceState',
+BridgeConstants.EventSource = {
+  TARGET: 'EventSource',
   Action: {
     GET: 'get',
   },

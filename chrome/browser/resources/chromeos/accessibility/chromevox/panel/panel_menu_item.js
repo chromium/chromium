@@ -65,8 +65,8 @@ export class PanelMenuItem {
     title.title = this.menuItemTitle;
     this.element.appendChild(title);
 
-    const eventSourceState = await BackgroundBridge.EventSourceState.get();
-    if (eventSourceState === EventSourceType.TOUCH_GESTURE) {
+    const eventSource = await BackgroundBridge.EventSource.get();
+    if (eventSource === EventSourceType.TOUCH_GESTURE) {
       const gestureNode = document.createElement('td');
       gestureNode.className = 'menu-item-shortcut';
       gestureNode.textContent = this.gesture;

@@ -11,7 +11,7 @@ import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
-import {EventSourceState} from './event_source.js';
+import {EventSource} from './event_source.js';
 import {Output} from './output/output.js';
 
 const ActionType = chrome.automation.ActionType;
@@ -114,7 +114,7 @@ export class BaseAutomationHandler {
     // when interacting via touch. Touch never sets focus without a double tap.
     if (prevRange && evt.type === 'focus' &&
         ChromeVoxState.instance.currentRange.equalsWithoutRecovery(prevRange) &&
-        EventSourceState.get() !== EventSourceType.TOUCH_GESTURE) {
+        EventSource.get() !== EventSourceType.TOUCH_GESTURE) {
       return;
     }
 

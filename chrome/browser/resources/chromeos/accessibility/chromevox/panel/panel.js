@@ -322,8 +322,8 @@ export class Panel extends PanelInterface {
       this.clearMenus_();
       this.pendingCallback_ = null;
 
-      const eventSourceState = await BackgroundBridge.EventSourceState.get();
-      const touchScreen = (eventSourceState === EventSourceType.TOUCH_GESTURE);
+      const eventSource = await BackgroundBridge.EventSource.get();
+      const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
 
       // Build the top-level menus.
       const searchMenu = this.addSearchMenu_('panel_search_menu');
