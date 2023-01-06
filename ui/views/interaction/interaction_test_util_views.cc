@@ -493,7 +493,7 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectDropdownItem(
   // dropdown and selecting individual items.
   if (input_type == InputType::kDontCare) {
     if (combobox) {
-      combobox->SetSelectedRow(index);
+      combobox->MenuSelectionAt(index);
     } else {
       editable_combobox->SetText(model->GetItemAt(index));
     }

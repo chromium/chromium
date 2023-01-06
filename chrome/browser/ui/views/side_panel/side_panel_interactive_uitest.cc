@@ -43,17 +43,6 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
     auto* config = SideSearchConfig::Get(browser()->profile());
     config->set_skip_on_template_url_changed_for_testing(true);
   }
-
-  // We can't use SelectDropdownItem directly in the test sequence since
-  // SidePanel uses a delayed combobox implementation
-  static auto SelectSidePanelEntry(SidePanelEntry::Id id) {
-    return base::BindOnce(
-        [](int index, ui::TrackedElement* element) {
-          auto* const combobox = AsView<views::Combobox>(element);
-          combobox->MenuSelectionAt(index);
-        },
-        static_cast<int>(id));
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
@@ -84,14 +73,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
       // Click the toolbar button to open the side panel
       PressButton(kSidePanelButtonElementId), WaitForShow(kSidePanelElementId),
       // Switch to the bookmarks entry using the header combobox
-      WithElement(kSidePanelComboboxElementId,
-                  SelectSidePanelEntry(SidePanelEntry::Id::kBookmarks)),
+      SelectDropdownItem(kSidePanelComboboxElementId,
+                         static_cast<int>(SidePanelEntry::Id::kBookmarks)),
       InstrumentNonTabWebView(kBookmarksWebContentsId,
                               kBookmarkSidePanelWebViewElementId),
       FlushEvents(),
       // Switch to the reading list entry using the header combobox
-      WithElement(kSidePanelComboboxElementId,
-                  SelectSidePanelEntry(SidePanelEntry::Id::kReadingList)),
+      SelectDropdownItem(kSidePanelComboboxElementId,
+                         static_cast<int>(SidePanelEntry::Id::kReadingList)),
       InstrumentNonTabWebView(kReadLaterWebContentsId,
                               kReadLaterSidePanelWebViewElementId),
       // Click on the close button to dismiss the side panel
@@ -133,8 +122,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
       // Click the toolbar button to open the side panel
       PressButton(kSidePanelButtonElementId), WaitForShow(kSidePanelElementId),
       // Switch to the bookmarks entry using the header combobox
-      WithElement(kSidePanelComboboxElementId,
-                  SelectSidePanelEntry(SidePanelEntry::Id::kBookmarks)),
+      SelectDropdownItem(kSidePanelComboboxElementId,
+                         static_cast<int>(SidePanelEntry::Id::kBookmarks)),
       WaitForShow(kBookmarkSidePanelWebViewElementId), FlushEvents(),
       // Click on the close button to dismiss the side panel
       PressButton(kSidePanelCloseButtonElementId),
