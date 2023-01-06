@@ -35,7 +35,7 @@ absl::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
 
   const std::string* name = paper_size_dict.FindString(kPaperSizeName);
   DCHECK(name);
-  return ParsePaper(*name).size_um;
+  return ParsePaperSize(*name);
 }
 
 }  // namespace printing

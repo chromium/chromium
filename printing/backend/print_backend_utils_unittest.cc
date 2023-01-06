@@ -10,6 +10,40 @@
 
 namespace printing {
 
+TEST(PrintBackendUtilsTest, ParsePaperSizeA4) {
+  gfx::Size size = ParsePaperSize("iso_a4_210x297mm");
+  EXPECT_EQ(gfx::Size(210000, 297000), size);
+}
+
+TEST(PrintBackendUtilsTest, ParsePaperSizeNaLetter) {
+  gfx::Size size = ParsePaperSize("na_letter_8.5x11in");
+  EXPECT_EQ(gfx::Size(215900, 279400), size);
+}
+
+TEST(PrintBackendUtilsTest, ParsePaperSizeNaIndex4x6) {
+  // Note that "na_index-4x6_4x6in" has a dimension within the media name. Test
+  // that parsing is not affected.
+  gfx::Size size = ParsePaperSize("na_index-4x6_4x6in");
+  EXPECT_EQ(gfx::Size(101600, 152400), size);
+}
+
+TEST(PrintBackendUtilsTest, ParsePaperSizeNaNumber10) {
+  // Test that a paper size with a fractional dimension is not affected by
+  // rounding errors.
+  gfx::Size size = ParsePaperSize("na_number-10_4.125x9.5in");
+  EXPECT_EQ(gfx::Size(104775, 241300), size);
+}
+
+TEST(PrintBackendUtilsTest, ParsePaperSizeBadUnit) {
+  gfx::Size size = ParsePaperSize("bad_unit_666x666bad");
+  EXPECT_TRUE(size.IsEmpty());
+}
+
+TEST(PrintBackendUtilsTest, ParsePaperSizeBadOneDimension) {
+  gfx::Size size = ParsePaperSize("bad_one_dimension_666mm");
+  EXPECT_TRUE(size.IsEmpty());
+}
+
 TEST(PrintBackendUtilsTest, ParsePaperA4) {
   PrinterSemanticCapsAndDefaults::Paper paper = ParsePaper("iso_a4_210x297mm");
   EXPECT_EQ(gfx::Size(210000, 297000), paper.size_um);
