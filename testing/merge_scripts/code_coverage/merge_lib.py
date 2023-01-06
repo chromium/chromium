@@ -37,9 +37,6 @@ def _call_profdata_tool(profile_input_file_paths,
       Doc: https://llvm.org/docs/CommandGuide/llvm-profdata.html#profdata-merge
     timeout (int): timeout (sec) for the call to merge profiles. This should
       not take > 1 hr, and so defaults to 3600 seconds.
-  Returns:
-    A list of paths to profiles that had to be excluded to get the merge to
-    succeed, suspected of being corrupted or malformed.
 
   Raises:
     CalledProcessError: An error occurred merging profiles.
@@ -55,18 +52,24 @@ def _call_profdata_tool(profile_input_file_paths,
 
     # Redirecting stderr is required because when error happens, llvm-profdata
     # writes the error output to stderr and our error handling logic relies on
-    # that output.
+    # that output. stdout=None should print to console.
     # Timeout in seconds, set to 1 hr (60*60)
-    subprocess.check_call(subprocess_cmd,
-                          stderr=subprocess.STDOUT,
-                          timeout=timeout)
+    p = subprocess.run(subprocess_cmd,
+                        capture_output=True,
+                        text=True,
+                        timeout=timeout,
+                        check=True)
+    logging.info(p.stdout)
   except subprocess.CalledProcessError as error:
-    logging.error('Failed to merge profiles, return code (%d), output: %r' %
-                  (error.returncode, error.output))
+    logging.info('stdout: %s' % error.output)
+    logging.error('Failed to merge profiles, return code (%d), error: %r' %
+                  (error.returncode, error.stderr))
     raise error
+  except subprocess.TimeoutExpired as e:
+    logging.info('stdout: %s' % e.output)
+    raise e
 
   logging.info('Profile data is created as: "%r".', profile_output_file_path)
-  return []
 
 
 def _get_profile_paths(input_dir,
@@ -286,7 +289,7 @@ def merge_profiles(input_dir,
                  'invoking profdata tools.')
     return invalid_profraw_files, counter_overflows
 
-  invalid_profdata_files = _call_profdata_tool(
+  _call_profdata_tool(
       profile_input_file_paths=profile_input_file_paths,
       profile_output_file_path=output_file,
       profdata_tool_path=profdata_tool_path,
@@ -300,7 +303,7 @@ def merge_profiles(input_dir,
     for input_file in profile_input_file_paths:
       os.remove(input_file)
 
-  return invalid_profraw_files + invalid_profdata_files, counter_overflows
+  return invalid_profraw_files, counter_overflows
 
 # We want to retry shards that contain one or more profiles that cannot be
 # merged (typically due to corruption described in crbug.com/937521).
