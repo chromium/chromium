@@ -6,7 +6,6 @@ per-file crash_*=rsesek@chromium.org
 per-file crash_*=thestig@chromium.org
 per-file dom_distiller*=file://components/dom_distiller/OWNERS
 per-file flags_ui*=file://components/flags_ui/OWNERS
-per-file gcm_driver_resources.grdp=fgorski@chromium.org
 per-file gcm_driver_resources.grdp=peter@chromium.org
 per-file neterror*=mmenke@chromium.org
 per-file neterror*=file://net/OWNERS
