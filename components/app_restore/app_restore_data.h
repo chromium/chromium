@@ -82,6 +82,10 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // Returns apps::WindowInfoPtr for app launch interfaces.
   apps::WindowInfoPtr GetAppWindowInfo() const;
 
+  bool operator==(const AppRestoreData& other) const;
+
+  bool operator!=(const AppRestoreData& other) const;
+
   // App launch parameters.
   // TODO(crbug.com/1326250): Remove optional wrappers around vector fields.
   absl::optional<int32_t> event_flag;

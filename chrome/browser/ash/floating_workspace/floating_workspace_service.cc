@@ -23,6 +23,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "components/app_restore/restore_data.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -250,7 +251,9 @@ void FloatingWorkspaceService::OnTemplateCaptured(
           desk_template.get())) {
     // Upload and save the template.
     desk_sync_service_->GetDeskModel()->AddOrUpdateEntry(
-        std::move(desk_template), base::DoNothing());
+        std::move(desk_template),
+        base::BindOnce(&FloatingWorkspaceService::OnTemplateUploaded,
+                       weak_pointer_factory_.GetWeakPtr()));
   }
 }
 
@@ -298,8 +301,55 @@ void FloatingWorkspaceService::OnTemplateLaunched(
 // are different, thus periodic checks will happen every 30 seconds
 // regardless of if no changes exist.
 bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
-    DeskTemplate* current) const {
-  return false;
+    DeskTemplate* current_desk_template) const {
+  if (!previously_captured_desk_template_) {
+    return false;
+  }
+  const auto& previous_app_id_to_app_launch_list =
+      previously_captured_desk_template_->desk_restore_data()
+          ->app_id_to_launch_list();
+  const auto& current_app_id_to_app_launch_list =
+      current_desk_template->desk_restore_data()->app_id_to_launch_list();
+
+  // If previous and current template have different number of apps they are
+  // different.
+  if (previous_app_id_to_app_launch_list.size() !=
+      current_app_id_to_app_launch_list.size()) {
+    return false;
+  }
+
+  for (const auto& it : previous_app_id_to_app_launch_list) {
+    const std::string app_id = it.first;
+    // Cannot find app id in currently captured desk.
+    if (current_app_id_to_app_launch_list.find(app_id) ==
+        current_app_id_to_app_launch_list.end()) {
+      return false;
+    }
+    for (const auto& [restore_window_id, previous_app_restore_data] :
+         it.second) {
+      auto& current_app_restore_data_launch_list =
+          current_app_id_to_app_launch_list.at(app_id);
+      // Cannot find window id in currently captured template.
+      if (current_app_restore_data_launch_list.find(restore_window_id) ==
+          current_app_restore_data_launch_list.end()) {
+        return false;
+      }
+      // For the same window the data inside are different.
+      if (*current_app_restore_data_launch_list.at(restore_window_id) !=
+          *previous_app_restore_data) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+void FloatingWorkspaceService::OnTemplateUploaded(
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<DeskTemplate> new_entry) {
+  if (status == desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk) {
+    previously_captured_desk_template_ = std::move(new_entry);
+  }
 }
 
 }  // namespace ash

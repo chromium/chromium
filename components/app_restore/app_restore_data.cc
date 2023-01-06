@@ -622,4 +622,30 @@ apps::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
   return window_info;
 }
 
+bool AppRestoreData::operator==(const AppRestoreData& other) const {
+  return event_flag == other.event_flag && container == other.container &&
+         disposition == other.disposition &&
+         override_url == other.override_url && display_id == other.display_id &&
+         handler_id == other.handler_id && urls == other.urls &&
+         active_tab_index == other.active_tab_index &&
+         first_non_pinned_tab_index == other.first_non_pinned_tab_index &&
+         intent == other.intent && file_paths == other.file_paths &&
+         app_type_browser == other.app_type_browser &&
+         app_name == other.app_name && title == other.title &&
+         activation_index == other.activation_index &&
+         desk_id == other.desk_id && current_bounds == other.current_bounds &&
+         window_state_type == other.window_state_type &&
+         pre_minimized_show_state_type == other.pre_minimized_show_state_type &&
+         snap_percentage == other.snap_percentage &&
+         tab_group_infos == other.tab_group_infos &&
+         minimum_size == other.minimum_size &&
+         maximum_size == other.maximum_size &&
+         bounds_in_root == other.bounds_in_root &&
+         primary_color == other.primary_color &&
+         status_bar_color == other.status_bar_color;
+}
+
+bool AppRestoreData::operator!=(const AppRestoreData& other) const {
+  return !(*this == other);
+}
 }  // namespace app_restore
