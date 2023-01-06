@@ -281,7 +281,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGridLayoutAndroid,
     &kTabSelectionEditorV2,
     &kTabStripImprovements,
-    &kTabSwitcherOnReturn,
     &kTabToGTSAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -895,10 +894,6 @@ BASE_FEATURE(kDiscoverFeedMultiColumn,
 BASE_FEATURE(kTabStripRedesign,
              "TabStripRedesign",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabSwitcherOnReturn,
-             "TabSwitcherOnReturn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabToGTSAnimation,
              "TabToGTSAnimation",

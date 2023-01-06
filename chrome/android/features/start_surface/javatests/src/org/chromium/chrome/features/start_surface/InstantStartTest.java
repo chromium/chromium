@@ -108,7 +108,7 @@ import java.util.concurrent.CountDownLatch;
 public class InstantStartTest {
     // clang-format on
     private static final String IMMEDIATE_RETURN_PARAMS = "force-fieldtrial-params=Study.Group:"
-            + ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
+            + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
     private static final String START_PARAMS =
             "force-fieldtrial-params=Study.Group:start_surface_variation/single";
     private Bitmap mBitmap;
@@ -200,7 +200,7 @@ public class InstantStartTest {
     @Test
     @SmallTest
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study"})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION, IMMEDIATE_RETURN_PARAMS})
     public void layoutManagerChromePhonePreNativeTest() {
         // clang-format on
@@ -220,7 +220,7 @@ public class InstantStartTest {
     @Test
     @SmallTest
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
             ChromeFeatureList.TAB_GROUPS_ANDROID,
@@ -391,7 +391,7 @@ public class InstantStartTest {
     @MediumTest
     @Feature({"RenderTest"})
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
@@ -419,14 +419,15 @@ public class InstantStartTest {
     @Test
     @MediumTest
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({START_PARAMS})
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
         // clang-format on
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertEquals(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getDefaultValue(),
-                ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
@@ -438,7 +439,7 @@ public class InstantStartTest {
     @Test
     @MediumTest
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({START_PARAMS})
@@ -446,8 +447,9 @@ public class InstantStartTest {
           throws IOException {
         // clang-format on
         Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertEquals(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getDefaultValue(),
-                ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));

@@ -105,7 +105,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-    ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
@@ -445,7 +445,8 @@ public class InstantStartTabSwitcherTest {
     public void testShowStartWhenHomepageDisabledWithImmediateReturn() throws IOException {
         // clang-format on
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(
+                0, StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
         testShowStartWhenHomepageDisabledWithImmediateReturnImpl();
     }
 
@@ -456,7 +457,8 @@ public class InstantStartTabSwitcherTest {
     public void testShowStartWhenHomepageDisabledWithImmediateReturn_NoInstant()
             throws IOException {
         Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(
+                0, StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
         testShowStartWhenHomepageDisabledWithImmediateReturnImpl();
     }
 

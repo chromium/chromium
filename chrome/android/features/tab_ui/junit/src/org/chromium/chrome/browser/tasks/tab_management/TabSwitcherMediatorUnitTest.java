@@ -87,7 +87,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(
-        {ChromeFeatureList.TAB_SWITCHER_ON_RETURN, ChromeFeatureList.START_SURFACE_ANDROID})
+        {ChromeFeatureList.START_SURFACE_RETURN_TIME, ChromeFeatureList.START_SURFACE_ANDROID})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, ChromeFeatureList.TAB_TO_GTS_ANIMATION})
 public class TabSwitcherMediatorUnitTest {
     @Rule

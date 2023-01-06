@@ -58,7 +58,7 @@ def run_apk(variant, dry_run=False, reinstall=False, check_state=False):
         '--disable-fre', '--disable-field-trial-config', features,
         '--force-fieldtrials=Study/Group',
         '--force-fieldtrial-params=Study.Group:'
-        'tab_switcher_on_return_time_ms/0'
+        'start_surface_return_time_seconds/0'
         '/start_surface_variation/single'
         '/show_last_active_tab_only/true'
         '/open_ntp_instead_of_start/true'

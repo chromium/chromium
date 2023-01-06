@@ -106,7 +106,8 @@ public class StartSurfaceConfiguration {
                     ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
 
     // Start return time experiment:
-    private static final String START_SURFACE_RETURN_TIME_SECONDS_PARAM =
+    @VisibleForTesting
+    public static final String START_SURFACE_RETURN_TIME_SECONDS_PARAM =
             "start_surface_return_time_seconds";
     public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_SECONDS =
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_RETURN_TIME,

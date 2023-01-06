@@ -2019,27 +2019,6 @@ const FeatureEntry::FeatureVariation kFilteringPredictionFeatureVariations[] = {
      std::size(kFilteringPredictionOneEuroFilterEnabled), nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTabSwitcherOnReturn_Immediate[] = {
-    {"tab_switcher_on_return_time_ms", "0"}};
-const FeatureEntry::FeatureParam kTabSwitcherOnReturn_1Minute[] = {
-    {"tab_switcher_on_return_time_ms", "60000"}};
-const FeatureEntry::FeatureParam kTabSwitcherOnReturn_30Minutes[] = {
-    {"tab_switcher_on_return_time_ms", "1800000"}};
-const FeatureEntry::FeatureParam kTabSwitcherOnReturn_60Minutes[] = {
-    {"tab_switcher_on_return_time_ms", "3600000"}};
-const FeatureEntry::FeatureVariation kTabSwitcherOnReturnVariations[] = {
-    {"Immediate", kTabSwitcherOnReturn_Immediate,
-     std::size(kTabSwitcherOnReturn_30Minutes), nullptr},
-    {"1 minute", kTabSwitcherOnReturn_1Minute,
-     std::size(kTabSwitcherOnReturn_30Minutes), nullptr},
-    {"30 minutes", kTabSwitcherOnReturn_30Minutes,
-     std::size(kTabSwitcherOnReturn_30Minutes), nullptr},
-    {"60 minutes", kTabSwitcherOnReturn_60Minutes,
-     std::size(kTabSwitcherOnReturn_60Minutes), nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_Immediate[] = {
     {"start_surface_return_time_seconds", "0"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_1Minute[] = {
@@ -6158,13 +6137,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsUiImprovementsAndroidName,
      flag_descriptions::kTabGroupsUiImprovementsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupsUiImprovementsAndroid)},
-
-    {"enable-tab-switcher-on-return",
-     flag_descriptions::kTabSwitcherOnReturnName,
-     flag_descriptions::kTabSwitcherOnReturnDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabSwitcherOnReturn,
-                                    kTabSwitcherOnReturnVariations,
-                                    "ChromeStart")},
 
     {"enable-start-surface-return-time",
      flag_descriptions::kStartSurfaceReturnTimeName,

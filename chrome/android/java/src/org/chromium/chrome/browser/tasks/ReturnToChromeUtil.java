@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -82,12 +81,6 @@ public final class ReturnToChromeUtil {
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
-
-    @VisibleForTesting
-    public static final String TAB_SWITCHER_ON_RETURN_MS_PARAM = "tab_switcher_on_return_time_ms";
-    public static final IntCachedFieldTrialParameter TAB_SWITCHER_ON_RETURN_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_SWITCHER_ON_RETURN,
-                    TAB_SWITCHER_ON_RETURN_MS_PARAM, 28800000); // 8 hours
 
     @VisibleForTesting
     static final String UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT =
@@ -161,22 +154,18 @@ public final class ReturnToChromeUtil {
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
     public static boolean shouldShowTabSwitcher(final long lastBackgroundedTimeMillis) {
-        long tabSwitcherAfterMillis = TAB_SWITCHER_ON_RETURN_MS.getValue();
+        long tabSwitcherAfterMillis =
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue()
+                * DateUtils.SECOND_IN_MILLIS;
         if (ChromeFeatureList.sStartSurfaceReturnTime.isEnabled()
-                && TAB_SWITCHER_ON_RETURN_MS.getValue() != 0) {
-            if (!StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
-                tabSwitcherAfterMillis =
-                        START_SURFACE_RETURN_TIME_SECONDS.getValue() * DateUtils.SECOND_IN_MILLIS;
-            } else {
-                tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
-            }
+                && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue() != 0
+                && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
+            tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
         }
 
         if (lastBackgroundedTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
-            // Even when {@link ChromeFeatureList.START_SURFACE_RETURN_TIME} is enabled, we still
-            // check the value of "enable-tab-switcher-on-return".
-            return TAB_SWITCHER_ON_RETURN_MS.getValue() == 0 || tabSwitcherAfterMillis == 0;
+            return tabSwitcherAfterMillis == 0;
         }
 
         if (tabSwitcherAfterMillis < 0) {
@@ -746,7 +735,9 @@ public final class ReturnToChromeUtil {
 
     @VisibleForTesting
     public static void cacheReturnTimeFromSegmentationImpl(SegmentSelectionResult result) {
-        long returnTimeMs = TAB_SWITCHER_ON_RETURN_MS.getDefaultValue();
+        long returnTimeMs =
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue()
+                * DateUtils.SECOND_IN_MILLIS;
         if (result.isReady) {
             if (result.selectedSegment
                     != SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2) {

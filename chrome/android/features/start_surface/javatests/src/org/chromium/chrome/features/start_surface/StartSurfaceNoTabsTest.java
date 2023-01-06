@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.espresso.action.GeneralClickAction;
@@ -93,8 +93,8 @@ public class StartSurfaceNoTabsTest {
     @Before
     public void setUp() throws IOException {
         if (mImmediateReturn) {
-            TAB_SWITCHER_ON_RETURN_MS.setForTesting(0);
-            assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+            START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+            assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
             assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         } else {
             assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));

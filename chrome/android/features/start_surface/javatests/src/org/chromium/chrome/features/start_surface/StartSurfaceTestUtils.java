@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
-import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -100,7 +99,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StartSurfaceTestUtils {
     public static final String INSTANT_START_TEST_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:"
-            + ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
+            + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
     public static final String START_SURFACE_TEST_SINGLE_ENABLED_PARAMS =
             "force-fieldtrial-params=Study.Group:show_last_active_tab_only/false"
             + "/open_ntp_instead_of_start/false/open_start_as_homepage/true";
@@ -116,7 +115,7 @@ public class StartSurfaceTestUtils {
 
     /**
      * Set up StartSurfaceTest* based on whether it's immediateReturn or not.
-     * @param immediateReturn Whether feature {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} is
+     * @param immediateReturn Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is
      *                        enabled as "immediately". When immediate return is enabled, the Start
      *                        surface is showing when Chrome is launched.
      * @param activityTestRule The test rule of activity under test.
@@ -134,8 +133,8 @@ public class StartSurfaceTestUtils {
             createTabStateFile(tabIDs);
         }
         if (immediateReturn) {
-            TAB_SWITCHER_ON_RETURN_MS.setForTesting(0);
-            assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+            StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+            assertEquals(0, StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
             assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
             // Need to start main activity from launcher for immediate return to be effective.

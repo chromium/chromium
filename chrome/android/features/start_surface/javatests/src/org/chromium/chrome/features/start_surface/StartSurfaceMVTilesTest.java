@@ -96,8 +96,9 @@ public class StartSurfaceMVTilesTest {
     private final boolean mUseInstantStart;
 
     /**
-     * Whether feature {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} is enabled as "immediately".
-     * When immediate return is enabled, the Start surface is showing when Chrome is launched.
+     * Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is enabled as
+     * "immediately". When immediate return is enabled, the Start surface is showing when Chrome is
+     * launched.
      */
     private final boolean mImmediateReturn;
 
@@ -256,7 +257,7 @@ public class StartSurfaceMVTilesTest {
 
     /**
      * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and
-     * {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} are enabled.
+     * {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceMediator.FEED_VISIBILITY_CONSISTENCY;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
@@ -129,8 +130,9 @@ public class StartSurfaceTest {
     private final boolean mUseInstantStart;
 
     /**
-     * Whether feature {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} is enabled as "immediately".
-     * When immediate return is enabled, the Start surface is showing when Chrome is launched.
+     * Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is enabled as
+     * "immediately". When immediate return is enabled, the Start surface is showing when Chrome is
+     * launched.
      */
     private final boolean mImmediateReturn;
 
@@ -498,7 +500,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
@@ -516,7 +518,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
         ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS,
@@ -530,10 +532,10 @@ public class StartSurfaceTest {
 
     private void startSurfaceRecordHistogramsTest(boolean isSingleTabSwitcher) {
         if (!mImmediateReturn) {
-            assertNotEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+            assertNotEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         } else {
-            assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+            assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
         }
 
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
@@ -832,7 +834,7 @@ public class StartSurfaceTest {
 
     /**
      * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and
-     * {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} are enabled.
+     * {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;

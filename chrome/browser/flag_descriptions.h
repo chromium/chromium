@@ -918,9 +918,6 @@ extern const char kTabAudioMutingDescription[];
 extern const char kTabSelectionEditorV2Name[];
 extern const char kTabSelectionEditorV2Description[];
 
-extern const char kTabSwitcherOnReturnName[];
-extern const char kTabSwitcherOnReturnDescription[];
-
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 

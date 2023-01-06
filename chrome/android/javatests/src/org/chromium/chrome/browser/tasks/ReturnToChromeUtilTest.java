@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
-import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 
 import android.app.Activity;
@@ -71,7 +71,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-        ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
+        ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -85,7 +85,7 @@ public class ReturnToChromeUtilTest {
                     new ParameterSet().value(true).name("Instant"));
 
     private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
+            "force-fieldtrial-params=Study.Group:" + START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -178,7 +178,7 @@ public class ReturnToChromeUtilTest {
     @SmallTest
     @Feature({"ReturnToChrome", "RenderTest"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
+    @CommandLineFlags.Add({BASE_PARAMS + "/" + START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0"
             + "/start_surface_variation/single"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisabledTest(message = "https://crbug.com/1023079, crbug.com/1063984")
