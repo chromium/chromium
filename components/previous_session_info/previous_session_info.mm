@@ -91,15 +91,6 @@ NSString* const kPreviousSessionInfoOSVersion = @"PreviousSessionInfoOSVersion";
 //   the device thermal state.
 NSString* const kPreviousSessionInfoThermalState =
     @"PreviousSessionInfoThermalState";
-// TODO(crbug.com/1266034): Remove key for no longer logged state.
-// - A (boolean) describing whether or not low power mode is enabled.
-NSString* const kPreviousSessionInfoLowPowerMode =
-    @"PreviousSessionInfoLowPowerMode";
-// TODO(crbug.com/1295763): Remove key for no longer used state.
-// - A (boolean) describing whether the last session was on Multi-Window enabled
-//   version of the application.
-NSString* const kPreviousSessionInfoMultiWindowEnabled =
-    @"PreviousSessionInfoMultiWindowEnabled";
 // - A (boolean) describing whether the last session received
 // ApplicationWillTerminate Notification.
 NSString* const kPreviousSessionInfoAppWillTerminate =
@@ -308,8 +299,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
 
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kPreviousSessionInfoAppWillTerminate];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kPreviousSessionInfoLowPowerMode];
 
   [defaults setObject:[NSDate date] forKey:kPreviousSessionInfoStartTime];
 
