@@ -4,8 +4,10 @@
 
 #include "base/supports_user_data.h"
 
+#include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -30,7 +32,22 @@ struct UsesItself : public SupportsUserData::Data {
   raw_ptr<const void> key_;
 };
 
-TEST(SupportsUserDataTest, ClearWorksRecursively) {
+class SupportsUserDataTest : public ::testing::TestWithParam<bool> {
+ public:
+  SupportsUserDataTest() {
+    if (GetParam()) {
+      scoped_features_.InitWithFeatures(
+          {features::kSupportsUserDataFlatHashMap}, {});
+    } else {
+      scoped_features_.InitWithFeatures(
+          {}, {features::kSupportsUserDataFlatHashMap});
+    }
+  }
+
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+TEST_P(SupportsUserDataTest, ClearWorksRecursively) {
   char key = 0;  // Must outlive `supports_user_data`.
   TestSupportsUserData supports_user_data;
   supports_user_data.SetUserData(
@@ -40,7 +57,7 @@ TEST(SupportsUserDataTest, ClearWorksRecursively) {
 
 struct TestData : public SupportsUserData::Data {};
 
-TEST(SupportsUserDataTest, Movable) {
+TEST_P(SupportsUserDataTest, Movable) {
   TestSupportsUserData supports_user_data_1;
   char key1 = 0;
   supports_user_data_1.SetUserData(&key1, std::make_unique<TestData>());
@@ -56,7 +73,7 @@ TEST(SupportsUserDataTest, Movable) {
   EXPECT_EQ(nullptr, supports_user_data_2.GetUserData(&key2));
 }
 
-TEST(SupportsUserDataTest, ClearAllUserData) {
+TEST_P(SupportsUserDataTest, ClearAllUserData) {
   TestSupportsUserData supports_user_data;
   char key1 = 0;
   supports_user_data.SetUserData(&key1, std::make_unique<TestData>());
@@ -71,6 +88,10 @@ TEST(SupportsUserDataTest, ClearAllUserData) {
   EXPECT_FALSE(supports_user_data.GetUserData(&key1));
   EXPECT_FALSE(supports_user_data.GetUserData(&key2));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SupportsUserDataTest,
+                         testing::Values(false, true));
 
 }  // namespace
 }  // namespace base

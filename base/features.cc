@@ -14,4 +14,8 @@ BASE_FEATURE(kOptimizeDataUrls,
              "OptimizeDataUrls",
              FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSupportsUserDataFlatHashMap,
+             "SupportsUserDataFlatHashMap",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace base::features

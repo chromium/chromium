@@ -16,6 +16,8 @@ namespace base::features {
 // Alphabetical:
 BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);
+
 }  // namespace base::features
 
 #endif  // BASE_FEATURES_H_
