@@ -5434,6 +5434,21 @@
             ]
         }
     ],
+    "IOSAppStoreRating": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppStoreRating"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillBranding": [
         {
             "platforms": [
