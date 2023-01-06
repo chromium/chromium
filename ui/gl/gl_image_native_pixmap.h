@@ -28,12 +28,16 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
       gfx::BufferFormat format,
       scoped_refptr<gfx::NativePixmap> pixmap);
 
-  // Create an EGLImage from a given NativePixmap and plane.
+  // Create an EGLImage from a given NativePixmap and plane. The color space is
+  // for the external sampler: When we sample the YUV buffer as RGB, we need to
+  // tell it the encoding (BT.601, BT.709, or BT.2020) and range (limited or
+  // null), and |color_space| conveys this.
   static scoped_refptr<GLImageNativePixmap> CreateForPlane(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      scoped_refptr<gfx::NativePixmap> pixmap);
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      const gfx::ColorSpace& color_space);
   // Create an EGLImage from a given GL texture.
   static scoped_refptr<GLImageNativePixmap> CreateFromTexture(
       const gfx::Size& size,
@@ -42,15 +46,6 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
 
   // Export the wrapped EGLImage to dmabuf fds.
   gfx::NativePixmapHandle ExportHandle();
-
-  // Set the color space when the image is used as an overlay. The color space
-  // may also be useful for images backed by YUV buffers: if the GL driver can
-  // sample the YUV buffer as RGB, we need to tell it the encoding (BT.601,
-  // BT.709, or BT.2020) and range (limited or null), and |color_space| conveys
-  // this.
-  void SetColorSpace(const gfx::ColorSpace& color_space) {
-    color_space_ = color_space;
-  }
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
@@ -72,7 +67,8 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
                       gfx::BufferFormat format,
                       gfx::BufferPlane plane);
   // Create an EGLImage from a given NativePixmap.
-  bool InitializeFromNativePixmap(scoped_refptr<gfx::NativePixmap> pixmap);
+  bool InitializeFromNativePixmap(scoped_refptr<gfx::NativePixmap> pixmap,
+                                  const gfx::ColorSpace& color_space);
   // Create an EGLImage from a given GL texture.
   bool InitializeFromTexture(uint32_t texture_id);
 
@@ -97,7 +93,6 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
   scoped_refptr<gfx::NativePixmap> pixmap_;
   gfx::BufferPlane plane_;
   bool has_image_dma_buf_export_;
-  gfx::ColorSpace color_space_;
 };
 
 }  // namespace gl

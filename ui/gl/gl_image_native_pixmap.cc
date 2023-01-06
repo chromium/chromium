@@ -131,17 +131,19 @@ scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::Create(
     gfx::BufferFormat format,
     scoped_refptr<gfx::NativePixmap> pixmap) {
   return CreateForPlane(size, format, gfx::BufferPlane::DEFAULT,
-                        std::move(pixmap));
+                        std::move(pixmap), gfx::ColorSpace());
 }
 
 scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::CreateForPlane(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferPlane plane,
-    scoped_refptr<gfx::NativePixmap> pixmap) {
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    const gfx::ColorSpace& color_space) {
   auto image =
       base::WrapRefCounted(new GLImageNativePixmap(size, format, plane));
-  if (!image->InitializeFromNativePixmap(std::move(pixmap))) {
+
+  if (!image->InitializeFromNativePixmap(std::move(pixmap), color_space)) {
     return nullptr;
   }
   return image;
@@ -183,7 +185,8 @@ GLImageNativePixmap::~GLImageNativePixmap() {
 }
 
 bool GLImageNativePixmap::InitializeFromNativePixmap(
-    scoped_refptr<gfx::NativePixmap> pixmap) {
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    const gfx::ColorSpace& color_space) {
   DCHECK(!pixmap_);
   if (GLInternalFormat(format_) == GL_NONE) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
@@ -223,7 +226,7 @@ bool GLImageNativePixmap::InitializeFromNativePixmap(
     // promoted to overlays). We'll need to revisit this once we plumb the
     // color space and range to DRM/KMS.
     attrs.push_back(EGL_YUV_COLOR_SPACE_HINT_EXT);
-    switch (color_space_.GetMatrixID()) {
+    switch (color_space.GetMatrixID()) {
       case gfx::ColorSpace::MatrixID::BT2020_NCL:
         attrs.push_back(EGL_ITU_REC2020_EXT);
         break;
@@ -232,7 +235,7 @@ bool GLImageNativePixmap::InitializeFromNativePixmap(
     }
 
     attrs.push_back(EGL_SAMPLE_RANGE_HINT_EXT);
-    switch (color_space_.GetRangeID()) {
+    switch (color_space.GetRangeID()) {
       case gfx::ColorSpace::RangeID::FULL:
         attrs.push_back(EGL_YUV_FULL_RANGE_EXT);
         break;
