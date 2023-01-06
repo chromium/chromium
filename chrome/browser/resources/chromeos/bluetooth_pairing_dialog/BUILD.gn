@@ -26,6 +26,7 @@ if (optimize_webui) {
       ":preprocess_generated",
       "../../../../../ui/webui/resources:library",
       "../../../../../ui/webui/resources:preprocess",
+      "../../../../../ui/webui/resources/cr_components/localized_link:build_ts",
     ]
 
     excludes = [
