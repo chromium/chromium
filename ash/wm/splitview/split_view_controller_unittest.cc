@@ -63,6 +63,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -3262,9 +3263,8 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
 // Tests that snap between different ratios in the same position works as
 // intended.
 TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
-  const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
-  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
 
   // Snap `window1` to primary position and `window2` to secondary position,
   // both with default snap ratios.
@@ -3300,6 +3300,47 @@ TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
   ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
               divider_bounds.width());
   ASSERT_NEAR(work_area_bounds.width() * 0.67f, window2->bounds().x(),
+              divider_bounds.width());
+}
+
+// Tests that swap partial windows keeps the window sizes.
+TEST_F(SplitViewControllerTest, SwapPartialWindows) {
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+
+  // Snap `window1` to primary with 2/3 width and `window2` to secondary with
+  // 1/3 width. Verify the divider is at 2/3 of the work area.
+  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                 chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
+  WMEvent snap_secondary_one_third(WM_EVENT_SNAP_SECONDARY,
+                                   chromeos::kOneThirdSnapRatio);
+  WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_one_third);
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
+      /*is_dragging=*/false);
+  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.67f,
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
+              divider_bounds.width());
+
+  // Verify that after swapping windows, the window widths remain the same, and
+  // the divider is now at 1/3 of the work area.
+  split_view_controller()->SwapWindows();
+  EXPECT_EQ(WindowState::Get(window1.get())->GetStateType(),
+            chromeos::WindowStateType::kSecondarySnapped);
+  EXPECT_EQ(WindowState::Get(window2.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
+      /*is_dragging=*/false);
+  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.33f,
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
               divider_bounds.width());
 }
 

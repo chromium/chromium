@@ -52,6 +52,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/window_properties.h"
@@ -1049,13 +1050,19 @@ void SplitViewController::SwapWindows() {
   // the opposite position. If there is no window, i.e. Overview is open,
   // `UpdateStateAndNotifyObservers()` will update the bounds themselves.
   if (IsSnapped(primary_window_)) {
-    const WMEvent primary_window_event(WM_EVENT_SNAP_PRIMARY);
-    WindowState::Get(primary_window_)->OnWMEvent(&primary_window_event);
+    auto* window_state = WindowState::Get(primary_window_);
+    const WMEvent primary_window_event(
+        WM_EVENT_SNAP_PRIMARY,
+        window_state->snap_ratio().value_or(kDefaultSnapRatio));
+    window_state->OnWMEvent(&primary_window_event);
   }
   secondary_window_ = new_right_window;
   if (IsSnapped(secondary_window_)) {
-    const WMEvent secondary_window_event(WM_EVENT_SNAP_SECONDARY);
-    WindowState::Get(secondary_window_)->OnWMEvent(&secondary_window_event);
+    auto* window_state = WindowState::Get(secondary_window_);
+    const WMEvent secondary_window_event(
+        WM_EVENT_SNAP_SECONDARY,
+        window_state->snap_ratio().value_or(kDefaultSnapRatio));
+    window_state->OnWMEvent(&secondary_window_event);
   }
 
   // Update |default_snap_position_| if necessary.
