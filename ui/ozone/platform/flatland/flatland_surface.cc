@@ -46,28 +46,77 @@ zx::event DuplicateZxEvent(const zx::event& event) {
   return result;
 }
 
-// Converts OverlayTransform enum to angle in radians.
-fuchsia::ui::composition::Orientation OverlayTransformToOrientation(
-    gfx::OverlayTransform plane_transform) {
+// A struct containing Flatland properties for an associated overlay transform.
+// See |OverlayTransformToFlatlandProperties|.
+struct OverlayTransformFlatlandProperties {
+  fuchsia::math::Vec translation;
+  fuchsia::ui::composition::Orientation orientation;
+  fuchsia::ui::composition::ImageFlip image_flip;
+};
+
+// Converts the overlay transform to the associated Flatland properties. For
+// rotation, converts OverlayTransform enum to angle in radians. Since rotation
+// occurs around the top-left corner, also returns the associated translation to
+// recenter the overlay.
+OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
+    gfx::OverlayTransform plane_transform,
+    gfx::Rect rounded_bounds) {
   switch (plane_transform) {
     case gfx::OVERLAY_TRANSFORM_NONE:
-      return fuchsia::ui::composition::Orientation::CCW_0_DEGREES;
+      return {
+          .translation = {rounded_bounds.x(), rounded_bounds.y()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
+          .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-      return fuchsia::ui::composition::Orientation::CCW_90_DEGREES;
+      return {
+          .translation = {rounded_bounds.x(),
+                          rounded_bounds.y() + rounded_bounds.height()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_90_DEGREES,
+          .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_ROTATE_180:
-      return fuchsia::ui::composition::Orientation::CCW_180_DEGREES;
+      return {
+          .translation = {rounded_bounds.x() + rounded_bounds.width(),
+                          rounded_bounds.y() + rounded_bounds.height()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_180_DEGREES,
+          .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_ROTATE_270:
-      return fuchsia::ui::composition::Orientation::CCW_270_DEGREES;
+      return {
+          .translation = {rounded_bounds.x() + rounded_bounds.width(),
+                          rounded_bounds.y()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_270_DEGREES,
+          .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
+      return {
+          .translation = {rounded_bounds.x(), rounded_bounds.y()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
+          .image_flip = fuchsia::ui::composition::ImageFlip::LEFT_RIGHT};
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
+      return {
+          .translation = {rounded_bounds.x(), rounded_bounds.y()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
+          .image_flip = fuchsia::ui::composition::ImageFlip::UP_DOWN,
+      };
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }
   NOTREACHED();
-  return fuchsia::ui::composition::Orientation::CCW_0_DEGREES;
+  return {
+      .translation = {rounded_bounds.x(), rounded_bounds.y()},
+      .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
+      .image_flip = fuchsia::ui::composition::ImageFlip::NONE,
+  };
 }
 
-fuchsia::math::SizeU GfxSizeToFuchsiaSize(const gfx::Size& size) {
+// Converts a gfx size to the associated Fuchsia size, and accounts for any
+// rotation that may be specified in the plane transform (if specified).
+fuchsia::math::SizeU GfxSizeToFuchsiaSize(
+    const gfx::Size& size,
+    gfx::OverlayTransform plane_transform = gfx::OVERLAY_TRANSFORM_NONE) {
+  if (plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
+      plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+    return fuchsia::math::SizeU{static_cast<uint32_t>(size.height()),
+                                static_cast<uint32_t>(size.width())};
+  }
   return fuchsia::math::SizeU{static_cast<uint32_t>(size.width()),
                               static_cast<uint32_t>(size.height())};
 }
@@ -153,20 +202,26 @@ void FlatlandSurface::Present(
         overlay.pixmap.get(), /*is_primary_plane=*/false);
     const auto image_id = flatland_ids.image_id;
     const auto transform_id = flatland_ids.transform_id;
+    const auto overlay_plane_transform =
+        overlay.overlay_plane_data.plane_transform;
+
     if (overlay.gpu_fence)
       acquire_fences.push_back(overlay.gpu_fence->GetGpuFenceHandle().Clone());
     child_transforms_[overlay.overlay_plane_data.z_order] = transform_id;
 
-    flatland_.flatland()->SetOrientation(
-        transform_id, OverlayTransformToOrientation(
-                          overlay.overlay_plane_data.plane_transform));
     const auto rounded_bounds =
         gfx::ToRoundedRect(overlay.overlay_plane_data.display_bounds);
-    const fuchsia::math::Vec translation = {rounded_bounds.x(),
-                                            rounded_bounds.y()};
-    flatland_.flatland()->SetTranslation(transform_id, translation);
+
+    const auto flatland_properties = OverlayTransformToFlatlandProperties(
+        overlay_plane_transform, rounded_bounds);
+    flatland_.flatland()->SetOrientation(transform_id,
+                                         flatland_properties.orientation);
+    flatland_.flatland()->SetTranslation(transform_id,
+                                         flatland_properties.translation);
     flatland_.flatland()->SetImageDestinationSize(
-        image_id, GfxSizeToFuchsiaSize(rounded_bounds.size()));
+        image_id,
+        GfxSizeToFuchsiaSize(rounded_bounds.size(), overlay_plane_transform));
+
     gfx::RectF crop_rect = overlay.overlay_plane_data.crop_rect;
     crop_rect.Scale(rounded_bounds.width(), rounded_bounds.height());
     const auto rounded_crop_rect = gfx::ToRoundedRect(crop_rect);
@@ -182,6 +237,8 @@ void FlatlandSurface::Present(
                       : fuchsia::ui::composition::BlendMode::SRC);
     flatland_.flatland()->SetImageOpacity(image_id,
                                           overlay.overlay_plane_data.opacity);
+    flatland_.flatland()->SetImageFlip(image_id,
+                                       flatland_properties.image_flip);
   }
 
   // Prepare primary plane.

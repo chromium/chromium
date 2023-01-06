@@ -28,6 +28,10 @@
 #include "ui/ozone/platform/flatland/flatland_sysmem_native_pixmap.h"
 #include "ui/ozone/public/overlay_plane.h"
 
+using ::fuchsia::math::SizeU;
+using ::fuchsia::math::Vec;
+using ::fuchsia::ui::composition::ImageFlip;
+using ::fuchsia::ui::composition::Orientation;
 using ::scenic::FakeGraph;
 using ::scenic::FakeImage;
 using ::scenic::FakeTransform;
@@ -85,22 +89,26 @@ Matcher<FakeTransformPtr> IsImageTransform(
     const fuchsia::math::SizeU& size,
     fuchsia::ui::composition::BlendMode blend_mode,
     const fuchsia::math::Vec& translation = FakeTransform::kDefaultTranslation,
+    Orientation orientation = FakeTransform::kDefaultOrientation,
     const fuchsia::math::SizeU& destination_size =
         FakeImage::kDefaultDestinationSize,
-    float image_opacity = FakeImage::kDefaultOpacity) {
+    float image_opacity = FakeImage::kDefaultOpacity,
+    ImageFlip image_flip = FakeImage::kDefaultFlip) {
   return Pointee(AllOf(
       Field("translation", &FakeTransform::translation, translation),
+      Field("orientation", &FakeTransform::orientation, orientation),
       Field("scale", &FakeTransform::scale, FakeTransform::kDefaultScale),
       Field("opacity", &FakeTransform::opacity, FakeTransform::kDefaultOpacity),
       Field("children", &FakeTransform::children, IsEmpty()),
       Field("content", &FakeTransform::content,
-            Pointee(VariantWith<FakeImage>(AllOf(
-                Field("image_properties", &FakeImage::image_properties,
-                      IsImageProperties(size)),
-                Field("destination_size", &FakeImage::destination_size,
-                      destination_size),
-                Field("blend_mode", &FakeImage::blend_mode, blend_mode),
-                Field("opacity", &FakeImage::opacity, image_opacity)))))));
+            Pointee(VariantWith<FakeImage>(
+                AllOf(Field("image_properties", &FakeImage::image_properties,
+                            IsImageProperties(size)),
+                      Field("destination_size", &FakeImage::destination_size,
+                            destination_size),
+                      Field("blend_mode", &FakeImage::blend_mode, blend_mode),
+                      Field("opacity", &FakeImage::opacity, image_opacity),
+                      Field("flip", &FakeImage::flip, image_flip)))))));
 }
 
 scoped_refptr<FlatlandSysmemNativePixmap> CreateFlatlandSysmemNativePixmap(
@@ -127,15 +135,16 @@ class MockFlatlandSurfaceFactory : public FlatlandSurfaceFactory {
   MOCK_METHOD1(RemoveSurface, void(gfx::AcceleratedWidget widget));
 };
 
-class FlatlandSurfaceTest : public ::testing::Test {
+template <class T>
+class FlatlandSurfaceTestBase : public T {
  protected:
-  FlatlandSurfaceTest()
+  FlatlandSurfaceTestBase()
       : fake_flatland_publisher_(test_context_.additional_services(),
                                  fake_flatland_.GetFlatlandRequestHandler()),
         fake_allocator_publisher_(test_context_.additional_services(),
                                   fake_flatland_.GetAllocatorRequestHandler()) {
   }
-  ~FlatlandSurfaceTest() override = default;
+  ~FlatlandSurfaceTestBase() override = default;
 
   FlatlandSurface* CreateFlatlandSurface() {
     EXPECT_CALL(mock_factory_, AddSurface(_, _));
@@ -165,7 +174,6 @@ class FlatlandSurfaceTest : public ::testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scenic::FakeFlatland fake_flatland_;
 
- private:
   base::TestComponentContextForProcess test_context_;
   // Injects binding for responding to Flatland protocol connection requests.
   const base::ScopedServicePublisher<fuchsia::ui::composition::Flatland>
@@ -176,6 +184,8 @@ class FlatlandSurfaceTest : public ::testing::Test {
   MockFlatlandSurfaceFactory mock_factory_;
   std::unique_ptr<FlatlandSurface> flatland_surface_;
 };
+
+class FlatlandSurfaceTest : public FlatlandSurfaceTestBase<testing::Test> {};
 
 TEST_F(FlatlandSurfaceTest, Initialization) {
   MockFlatlandSurfaceFactory mock_factory;
@@ -271,34 +281,95 @@ TEST_F(FlatlandSurfaceTest, PresentBeforeLayoutInfo) {
                             fuchsia::ui::composition::BlendMode::SRC_OVER)}));
 }
 
-TEST_F(FlatlandSurfaceTest, PresentOverlayPlane) {
+// The parameters for an overlay transform test are:
+// - The input overlay transform.
+// - The expected Flatland Transform orientation.
+// - The expected Flatland image flip.
+// - The expected Flatland Transform translation.
+// - The expected destination image size.
+using OverlayPlaneTestParams =
+    std::tuple<gfx::OverlayTransform, Orientation, ImageFlip, Vec, SizeU>;
+
+class FlatlandSurfaceOverlayPlaneTransformTest
+    : public FlatlandSurfaceTestBase<
+          testing::TestWithParam<OverlayPlaneTestParams>> {
+ protected:
+  const int kTestLogicalSize = 100;
+  const float kTestDevicePixelRatio = 1.5;
+
+  // Expected image size should be equal to |kTestLogicalSize| *
+  // |kTestDevicePixelRatioSize|.
+  const uint32_t kExpectedImageSize = 150;
+
+  // Overlay properties.
+  const int32_t kOverlayX = 10;
+  const int32_t kOverlayY = 20;
+  const uint32_t kOverlayWidth = 120;
+  const uint32_t kOverlayHeight = 115;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ParameterizedFlatlandSurfaceOverlayPlaneTransformTest,
+    FlatlandSurfaceOverlayPlaneTransformTest,
+    // Expected translation and expected destination image size are based on the
+    // overlay position and size as defined in
+    // |FlatlandSurfaceOverlayPlaneTransformTest|.
+    testing::Values(std::make_tuple(gfx::OVERLAY_TRANSFORM_NONE,
+                                    Orientation::CCW_0_DEGREES,
+                                    ImageFlip::NONE,
+                                    Vec{10, 20},
+                                    SizeU{120U, 115U}),
+                    std::make_tuple(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+                                    Orientation::CCW_90_DEGREES,
+                                    ImageFlip::NONE,
+                                    Vec{10, 135},
+                                    SizeU{115U, 120U}),
+                    std::make_tuple(gfx::OVERLAY_TRANSFORM_ROTATE_180,
+                                    Orientation::CCW_180_DEGREES,
+                                    ImageFlip::NONE,
+                                    Vec{130, 135},
+                                    SizeU{120U, 115U}),
+                    std::make_tuple(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+                                    Orientation::CCW_270_DEGREES,
+                                    ImageFlip::NONE,
+                                    Vec{130, 20},
+                                    SizeU{115U, 120U}),
+                    std::make_tuple(gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL,
+                                    Orientation::CCW_0_DEGREES,
+                                    ImageFlip::LEFT_RIGHT,
+                                    Vec{10, 20},
+                                    SizeU{120U, 115U}),
+                    std::make_tuple(gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL,
+                                    Orientation::CCW_0_DEGREES,
+                                    ImageFlip::UP_DOWN,
+                                    Vec{10, 20},
+                                    SizeU{120U, 115U})));
+
+TEST_P(FlatlandSurfaceOverlayPlaneTransformTest, PresentOverlayPlane) {
   size_t presents_called = 0u;
   fake_flatland_.SetPresentHandler(
       [&presents_called](auto) { ++presents_called; });
+
+  const auto [input_transform, expected_orientation, expected_image_flip,
+              expected_translation, expected_image_destination_size] =
+      GetParam();
 
   FlatlandSurface* surface = CreateFlatlandSurface();
   auto platform_handle = surface->CreateView();
   fuchsia::ui::views::ViewportCreationToken viewport_creation_token;
   viewport_creation_token.value = zx::channel(platform_handle.TakeHandle());
 
-  const int kTestLogicalSize = 100;
-  const float kTestDevicePixelRatio = 1.5;
   SetLayoutInfo(kTestLogicalSize, kTestLogicalSize, kTestDevicePixelRatio);
   const float expected_scale = 1 / kTestDevicePixelRatio;
-  const uint32_t expected_image_size = kTestLogicalSize * kTestDevicePixelRatio;
 
   auto primary_plane_pixmap =
-      CreateFlatlandSysmemNativePixmap(expected_image_size);
+      CreateFlatlandSysmemNativePixmap(kExpectedImageSize);
 
   const float kOverlayOpacity = .7f;
-  const int32_t kOverlayX = 10;
-  const int32_t kOverlayY = 20;
-  const uint32_t kOverlayWidth = expected_image_size - 30;
-  const uint32_t kOverlayHeight = expected_image_size - 40;
   const gfx::RectF kOverlayBounds(kOverlayX, kOverlayY, kOverlayWidth,
                                   kOverlayHeight);
   gfx::OverlayPlaneData overlay_data(
-      /*z_order=*/1, gfx::OVERLAY_TRANSFORM_NONE, kOverlayBounds,
+      /*z_order=*/1, input_transform, kOverlayBounds,
       /*crop_rect=*/gfx::RectF(),
       /*enable_blend=*/true,
       /*damage_rect=*/gfx::Rect(), kOverlayOpacity,
@@ -306,7 +377,7 @@ TEST_F(FlatlandSurfaceTest, PresentOverlayPlane) {
       /*rounded_corners=*/gfx::RRectF(), gfx::ColorSpace(),
       /*hdr_metadata=*/absl::nullopt);
   ui::OverlayPlane overlay_plane(
-      CreateFlatlandSysmemNativePixmap(expected_image_size), nullptr,
+      CreateFlatlandSysmemNativePixmap(kExpectedImageSize), nullptr,
       overlay_data);
   std::vector<ui::OverlayPlane> overlays;
   overlays.push_back(std::move(overlay_plane));
@@ -325,13 +396,13 @@ TEST_F(FlatlandSurfaceTest, PresentOverlayPlane) {
       IsSurfaceGraph(
           parent_viewport_watcher(), viewport_creation_token,
           {expected_scale, expected_scale},
-          {IsImageTransform({expected_image_size, expected_image_size},
+          {IsImageTransform({kExpectedImageSize, kExpectedImageSize},
                             fuchsia::ui::composition::BlendMode::SRC_OVER),
-           IsImageTransform({expected_image_size, expected_image_size},
+           IsImageTransform({kExpectedImageSize, kExpectedImageSize},
                             fuchsia::ui::composition::BlendMode::SRC_OVER,
-                            {kOverlayX, kOverlayY},
-                            {kOverlayWidth, kOverlayHeight},
-                            kOverlayOpacity)}));
+                            expected_translation, expected_orientation,
+                            expected_image_destination_size, kOverlayOpacity,
+                            expected_image_flip)}));
 }
 
 }  // namespace ui

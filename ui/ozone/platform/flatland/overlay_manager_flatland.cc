@@ -12,12 +12,6 @@
 namespace ui {
 namespace {
 
-bool IsSupportedOverlayTransform(gfx::OverlayTransform transform) {
-  // Flatland doesn't support flip transforms yet.
-  return (transform == gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL ||
-          transform == gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL);
-}
-
 class OverlayCandidatesFlatland : public OverlayCandidatesOzone {
  public:
   OverlayCandidatesFlatland() = default;
@@ -27,8 +21,6 @@ class OverlayCandidatesFlatland : public OverlayCandidatesOzone {
   void CheckOverlaySupport(
       std::vector<OverlaySurfaceCandidate>* candidates) override {
     for (auto& candidate : *candidates) {
-      if (IsSupportedOverlayTransform(candidate.transform))
-        continue;
       if (!candidate.native_pixmap)
         continue;
       FlatlandSysmemNativePixmap* sysmem_native_pixmap =

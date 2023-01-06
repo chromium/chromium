@@ -57,7 +57,8 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   }
 
  private:
-  friend class FlatlandSurfaceTest;
+  template <typename T>
+  friend class FlatlandSurfaceTestBase;
 
   struct PresentationState {
     base::TimeTicks presentation_time;
