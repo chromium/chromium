@@ -97,41 +97,11 @@ class AcceleratorConfigurationProvider
   void OnAcceleratorsUpdated(mojom::AcceleratorSource source,
                              const ActionIdToAcceleratorsMap& mapping);
 
-  mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator) const;
-
   void UpdateKeyboards();
 
   AcceleratorConfigurationMap CreateConfigurationMap();
 
   void NotifyAcceleratorsUpdated();
-
-  // Create accelerator info using accelerator and extra properties.
-  mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
-      const ui::Accelerator& accelerator,
-      bool locked,
-      mojom::AcceleratorType type,
-      mojom::AcceleratorState state) const;
-
-  // Create base accelerator info using accelerator.
-  mojom::AcceleratorInfoPtr CreateBaseAcceleratorInfo(
-      const ui::Accelerator& accelerator) const;
-
-  // Create alias accelerator info for top row key if applicable.
-  mojom::AcceleratorInfoPtr CreateRemappedTopRowAcceleratorInfo(
-      const ui::Accelerator& accelerator) const;
-
-  // Create alias accelerator info for six pack key if applicable.
-  mojom::AcceleratorInfoPtr CreateRemappedSixPackAcceleratorInfo(
-      const ui::Accelerator& accelerator) const;
-
-  // Create alias accelerator infos when the accelerator contains a top row key
-  // or six pack key. For |top_row_key|, replace the base accelerator with
-  // top-row remapped accelerator, For |six_pack_key|, show both the base
-  // accelerator and the six-pack remapped accelerator. Therefore, return a
-  // vector here since it may display two accelerator infos for six pack
-  // remapping case.
-  std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfoVariants(
-      const ui::Accelerator& accelerator) const;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
