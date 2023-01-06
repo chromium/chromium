@@ -558,6 +558,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
             this, &kDesksNewDeskButtonIcon,
             l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
             cros_tokens::kCrosSysOnPrimary, cros_tokens::kCrosSysPrimary,
+            /*initially_enabled=*/DesksController::Get()->CanCreateDesks(),
             base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                                 base::Unretained(this),
                                 DesksCreationRemovalSource::kButton)));
@@ -594,6 +595,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
               l10n_util::GetStringUTF16(button_text_id),
               cros_tokens::kCrosSysOnPrimaryContainer,
               cros_tokens::kCrosSysSystemPrimaryContainer,
+              /*initially_enabled=*/true,
               base::BindRepeating(&DesksBarView::OnLibraryButtonPressed,
                                   base::Unretained(this))));
     } else {
@@ -1072,7 +1074,6 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
       this, removed_mini_view,
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
       std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
-      expanded_state_new_desk_button_, expanded_state_library_button_,
       begin_x - GetFirstMiniViewXOffset());
 
   MaybeUpdateCombineDesksTooltips();
@@ -1165,10 +1166,9 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
                                     right_partition_iter) == new_mini_views);
 
   PerformNewDeskMiniViewAnimation(
-      new_mini_views,
+      this, new_mini_views,
       std::vector<DeskMiniView*>(mini_views_.begin(), left_partition_iter),
       std::vector<DeskMiniView*>(right_partition_iter, mini_views_.end()),
-      expanded_state_new_desk_button_, expanded_state_library_button_,
       begin_x - GetFirstMiniViewXOffset());
 }
 
@@ -1203,9 +1203,16 @@ void DesksBarView::UpdateButtonsForSavedDeskGrid() {
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateFocusColor();
-  expanded_state_library_button_->set_active(
-      overview_grid_->IsShowingSavedDeskLibrary());
-  expanded_state_library_button_->UpdateFocusColor();
+
+  if (features::IsJellyrollEnabled()) {
+    library_button_->set_paint_as_active(
+        overview_grid_->IsShowingSavedDeskLibrary());
+    library_button_->UpdateFocusState();
+  } else {
+    expanded_state_library_button_->set_active(
+        overview_grid_->IsShowingSavedDeskLibrary());
+    expanded_state_library_button_->UpdateFocusColor();
+  }
 }
 
 void DesksBarView::UpdateDeskButtonsVisibility() {

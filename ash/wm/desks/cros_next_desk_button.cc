@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -121,15 +122,15 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
     const std::u16string& text,
     ui::ColorId icon_color_id,
     ui::ColorId background_color_id,
+    bool initially_enabled,
     base::RepeatingClosure callback)
     : CrOSNextDeskButtonBase(text, /*set_text=*/false, callback),
       bar_view_(bar_view),
-      state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded) {
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(*button_icon, icon_color_id));
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id, kIconButtonCornerRadius));
-
+      state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded),
+      button_icon_(button_icon),
+      icon_color_id_(icon_color_id),
+      background_color_id_(background_color_id) {
+  SetEnabled(initially_enabled);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
@@ -199,6 +200,40 @@ void CrOSNextDeskIconButton::UpdateFocusState() {
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(new_focus_color_id);
   focus_ring->SchedulePaint();
+}
+
+void CrOSNextDeskIconButton::OnThemeChanged() {
+  CrOSNextDeskButtonBase::OnThemeChanged();
+  UpdateEnabledState();
+}
+
+void CrOSNextDeskIconButton::StateChanged(ButtonState old_state) {
+  // Don't trigger `UpdateEnabledState` when the button is not added to the
+  // views hierarchy yet, since we need to get the color from the widget's color
+  // provider. The moment the button is added to the view hierarchy,
+  // `OnThemeChanged` will be triggered and then `UpdateEnabledState` will be
+  // called.
+  if (GetWidget()) {
+    UpdateEnabledState();
+  }
+}
+
+void CrOSNextDeskIconButton::UpdateEnabledState() {
+  const bool is_disabled = !GetEnabled();
+  const auto* color_provider = GetColorProvider();
+
+  const auto icon_enabled_color = color_provider->GetColor(icon_color_id_);
+  const auto background_enabled_color =
+      color_provider->GetColor(background_color_id_);
+  SetBackground(views::CreateRoundedRectBackground(
+      is_disabled ? ColorUtil::GetDisabledColor(background_enabled_color)
+                  : background_enabled_color,
+      kIconButtonCornerRadius));
+  SetImageModel(STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    *button_icon_, is_disabled ? ColorUtil::GetDisabledColor(
+                                                     icon_enabled_color)
+                                               : icon_enabled_color));
 }
 
 BEGIN_METADATA(CrOSNextDeskIconButton, CrOSNextDeskButtonBase)

@@ -263,13 +263,17 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
 }  // namespace
 
 void PerformNewDeskMiniViewAnimation(
+    DesksBarView* bar_view,
     std::vector<DeskMiniView*> new_mini_views,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
-    ExpandedDesksBarButton* expanded_state_new_desk_button,
-    ExpandedDesksBarButton* expanded_state_library_button,
     int shift_x) {
-  DCHECK(expanded_state_new_desk_button);
+  if (features::IsJellyrollEnabled()) {
+    DCHECK(bar_view->new_desk_button());
+  } else {
+    DCHECK(bar_view->expanded_state_new_desk_button());
+  }
+
   gfx::Transform mini_views_left_begin_transform;
   mini_views_left_begin_transform.Translate(shift_x, 0);
   gfx::Transform mini_views_right_begin_transform;
@@ -296,9 +300,17 @@ void PerformNewDeskMiniViewAnimation(
   const auto& button_transform = base::i18n::IsRTL()
                                      ? mini_views_left_begin_transform
                                      : mini_views_right_begin_transform;
-  AnimateView(expanded_state_new_desk_button, button_transform);
-  if (expanded_state_library_button) {
-    AnimateView(expanded_state_library_button, button_transform);
+  if (features::IsJellyrollEnabled()) {
+    AnimateView(bar_view->new_desk_button(), button_transform);
+    if (auto* library_button = bar_view->library_button()) {
+      AnimateView(library_button, button_transform);
+    }
+  } else {
+    AnimateView(bar_view->expanded_state_new_desk_button(), button_transform);
+    if (auto* expanded_state_library_button =
+            bar_view->expanded_state_library_button()) {
+      AnimateView(expanded_state_library_button, button_transform);
+    }
   }
 }
 
@@ -307,8 +319,6 @@ void PerformRemoveDeskMiniViewAnimation(
     DeskMiniView* removed_mini_view,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
-    ExpandedDesksBarButton* expanded_state_new_desk_button,
-    ExpandedDesksBarButton* expanded_state_library_button,
     int shift_x) {
   gfx::Transform mini_views_left_begin_transform;
   mini_views_left_begin_transform.Translate(shift_x, 0);
@@ -324,9 +334,17 @@ void PerformRemoveDeskMiniViewAnimation(
   const auto& button_transform = base::i18n::IsRTL()
                                      ? mini_views_left_begin_transform
                                      : mini_views_right_begin_transform;
-  AnimateView(expanded_state_new_desk_button, button_transform);
-  if (expanded_state_library_button) {
-    AnimateView(expanded_state_library_button, button_transform);
+  if (features::IsJellyrollEnabled()) {
+    AnimateView(bar_view->new_desk_button(), button_transform);
+    if (auto* library_button = bar_view->library_button()) {
+      AnimateView(library_button, button_transform);
+    }
+  } else {
+    AnimateView(bar_view->expanded_state_new_desk_button(), button_transform);
+    if (auto* expanded_state_library_button =
+            bar_view->expanded_state_library_button()) {
+      AnimateView(expanded_state_library_button, button_transform);
+    }
   }
 }
 
