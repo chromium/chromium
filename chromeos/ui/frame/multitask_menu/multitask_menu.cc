@@ -37,9 +37,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   set_margins(gfx::Insets());
   set_parent_window(parent_window);
 
-  SetAnchorView(anchor);
-  // TODO(shidi): Confirm with UX/UI for additional arrow choices when parent
-  // window has no space for `MultitaskMenu` to arrow at `TOP_CENTER`.
+  SetAnchorRect(anchor->GetAnchorBoundsInScreen());
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetUseDefaultFillLayout(true);
