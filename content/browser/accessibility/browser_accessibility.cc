@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,6 +31,14 @@
 #include "ui/strings/grit/ax_strings.h"
 
 namespace content {
+
+#if DCHECK_IS_ON()
+static int browser_accessibility_count = 0;
+static bool has_dumped_possible_leak = false;
+// If there are more than 10 million objects alive at once, dump.
+// It is likely to be a leak if we have > 100 tabs x 10000 objects.
+constexpr int kDumpBrowserAccessibilityLeakNumObjects = 10000000;
+#endif
 
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 // static
@@ -55,9 +64,20 @@ BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
   DCHECK(manager);
   DCHECK(node);
   DCHECK(node->IsDataValid());
+#if DCHECK_IS_ON()
+  if (++browser_accessibility_count > kDumpBrowserAccessibilityLeakNumObjects &&
+      !has_dumped_possible_leak) {
+    NOTREACHED();
+    has_dumped_possible_leak = true;
+  }
+#endif
 }
 
-BrowserAccessibility::~BrowserAccessibility() = default;
+BrowserAccessibility::~BrowserAccessibility() {
+#if DCHECK_IS_ON()
+  --browser_accessibility_count;
+#endif
+}
 
 namespace {
 
