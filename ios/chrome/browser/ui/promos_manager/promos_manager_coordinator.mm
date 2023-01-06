@@ -13,11 +13,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
@@ -454,6 +457,14 @@
   if (IsWhatsNewEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
         [[WhatsNewPromoDisplayHandler alloc] init];
+  }
+
+  // CredentialProvider Promo handler
+  if (IsCredentialProviderExtensionPromoEnabled()) {
+    id<CredentialProviderPromoCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
+    _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
+        [[CredentialProviderPromoDisplayHandler alloc] initWithHandler:handler];
   }
 }
 

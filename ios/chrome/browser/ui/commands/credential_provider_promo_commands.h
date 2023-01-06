@@ -10,6 +10,8 @@ enum class CredentialProviderPromoTrigger {
   PasswordSaved,                         // User is saving a password.
   SuccessfulLoginUsingExistingPassword,  // User successfully logs in using
                                          // existing password.
+  RemindMeLater,                         // User has tapped Remind Me Later in
+                                         // the promo before.
 };
 
 // Commands to show app-wide promos.

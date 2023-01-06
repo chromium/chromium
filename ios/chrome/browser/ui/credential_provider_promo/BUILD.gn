@@ -7,12 +7,15 @@ source_set("credential_provider_promo") {
   sources = [
     "credential_provider_promo_coordinator.h",
     "credential_provider_promo_coordinator.mm",
+    "credential_provider_promo_display_handler.h",
+    "credential_provider_promo_display_handler.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/promos_manager:promos",
   ]
 }
 
