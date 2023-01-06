@@ -21,13 +21,17 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+using ::chromeos::network_config::FakeCrosNetworkConfig;
+using ::chromeos::network_config::OverrideInProcessInstanceForTesting;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
@@ -76,6 +80,8 @@ class ApnMigratorTest : public testing::Test {
         new testing::NiceMock<MockManagedNetworkConfigurationHandler>);
     network_metadata_store_ =
         base::WrapUnique(new testing::NiceMock<MockNetworkMetadataStore>());
+    cros_network_config_ = std::make_unique<FakeCrosNetworkConfig>();
+    OverrideInProcessInstanceForTesting(cros_network_config_.get());
 
     apn_migrator_ = std::make_unique<ApnMigrator>(
         managed_cellular_pref_handler_.get(),
@@ -148,6 +154,7 @@ class ApnMigratorTest : public testing::Test {
   std::unique_ptr<MockManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
   std::unique_ptr<MockNetworkMetadataStore> network_metadata_store_;
+  std::unique_ptr<FakeCrosNetworkConfig> cros_network_config_;
 
   // Class under test
   std::unique_ptr<ApnMigrator> apn_migrator_;

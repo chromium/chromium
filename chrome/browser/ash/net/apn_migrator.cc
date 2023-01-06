@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/apn_migrator.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/network_config_service.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -40,6 +41,10 @@ ApnMigrator::ApnMigrator(
   if (!NetworkHandler::IsInitialized()) {
     return;
   }
+  // TODO(b/162365553): Only bind this lazily when CrosNetworkConfig is actually
+  // used.
+  ash::GetNetworkConfigService(
+      remote_cros_network_config_.BindNewPipeAndPassReceiver());
   network_state_handler_observer_.Observe(network_state_handler_);
 }
 

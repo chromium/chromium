@@ -8,6 +8,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -59,6 +61,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   ManagedNetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkMetadataStore* network_metadata_store_ = nullptr;
+
+  // Remote for sending requests to the CrosNetworkConfig service.
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      remote_cros_network_config_;
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
