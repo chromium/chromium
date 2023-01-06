@@ -139,6 +139,13 @@ unique_ptr<T> make_unique(Args&&... args) {
   return unique_ptr<T>();
 }
 
+template <typename Key>
+class set {};
+template <typename Key, typename Value>
+class map {};
+template <typename Elem>
+class vector {};
+
 }  // namespace std
 
 namespace base {

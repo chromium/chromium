@@ -5,10 +5,6 @@
 #ifndef TOOLS_CLANG_BLINK_GC_PLUGIN_TESTS_FORBIDDEN_FIELDS_H_
 #define TOOLS_CLANG_BLINK_GC_PLUGIN_TESTS_FORBIDDEN_FIELDS_H_
 
-#include <map>
-#include <set>
-#include <vector>
-
 #include "heap/stubs.h"
 
 namespace blink {
