@@ -4,6 +4,9 @@
 
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 
+#include <memory>
+
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_pref_manager.h"
 #include "ash/test/ash_test_base.h"
@@ -63,6 +66,23 @@ class FakeInputDevicePrefManager : public InputDevicePrefManager {
   uint32_t num_keyboard_settings_initialized_ = 0;
 };
 
+class FakeInputDeviceSettingsControllerObserver
+    : public InputDeviceSettingsController::Observer {
+ public:
+  void OnKeyboardConnected(const mojom::Keyboard& keyboard) override {
+    num_keyboards_connected_++;
+  }
+
+  void OnKeyboardDisconnected(const mojom::Keyboard& keyboard) override {
+    num_keyboards_connected_--;
+  }
+
+  uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
+
+ private:
+  uint32_t num_keyboards_connected_;
+};
+
 class InputDeviceSettingsControllerTest : public AshTestBase {
  public:
   InputDeviceSettingsControllerTest() = default;
@@ -76,15 +96,22 @@ class InputDeviceSettingsControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     InitializeDeviceDataManager();
+
+    observer_ = std::make_unique<FakeInputDeviceSettingsControllerObserver>();
+
     std::unique_ptr<FakeInputDevicePrefManager> pref_manager =
         std::make_unique<FakeInputDevicePrefManager>();
     pref_manager_ = pref_manager.get();
 
     controller_ = std::make_unique<InputDeviceSettingsControllerImpl>(
         std::move(pref_manager));
+    controller_->AddObserver(observer_.get());
   }
 
   void TearDown() override {
+    controller_->RemoveObserver(observer_.get());
+    observer_.reset();
+
     pref_manager_ = nullptr;
     controller_.reset();
     AshTestBase::TearDown();
@@ -104,6 +131,7 @@ class InputDeviceSettingsControllerTest : public AshTestBase {
  protected:
   std::vector<ui::InputDevice> sample_keyboards_;
   std::unique_ptr<InputDeviceSettingsControllerImpl> controller_;
+  std::unique_ptr<FakeInputDeviceSettingsControllerObserver> observer_;
 
   FakeInputDevicePrefManager* pref_manager_ = nullptr;
 };
@@ -116,6 +144,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardLoadingList) {
   ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
   ASSERT_EQ(pref_manager_->num_keyboard_settings_initialized(),
             sample_keyboards_.size());
 }
@@ -128,6 +157,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardLoadingListUnsorted) {
 
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
   ASSERT_EQ(pref_manager_->num_keyboard_settings_initialized(),
             sample_keyboards_.size());
 }
@@ -136,12 +166,14 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardRemovingOneAtATime) {
   ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 
   while (!sample_keyboards_.empty()) {
     sample_keyboards_.pop_back();
     ui::DeviceDataManagerTestApi().SetKeyboardDevices(sample_keyboards_);
     output_keyboards = controller_->GetConnectedKeyboards();
     AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+    EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
   }
 }
 
@@ -149,6 +181,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardRemoveAllAtOnce) {
   ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
   output_keyboards = controller_->GetConnectedKeyboards();
@@ -163,11 +196,13 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardRemoveMiddleDevice) {
 
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 
   sample_keyboards_ = {kSampleKeyboardInternal, kSampleKeyboardUsb};
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(sample_keyboards_);
   output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 }
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardRemoveMultipleDevices) {
@@ -178,11 +213,13 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardRemoveMultipleDevices) {
 
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 
   sample_keyboards_ = {kSampleKeyboardUsb};
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(sample_keyboards_);
   output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 }
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardAddOneAtATime) {
@@ -234,12 +271,14 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardAddMoreAfterInitialization) {
 
   auto output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
 
   sample_keyboards_.push_back(kSampleKeyboardBluetooth);
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(sample_keyboards_);
 
   output_keyboards = controller_->GetConnectedKeyboards();
   AssertKeyboardListsEqual(sample_keyboards_, output_keyboards);
+  EXPECT_EQ(sample_keyboards_.size(), observer_->num_keyboards_connected());
   EXPECT_EQ(pref_manager_->num_keyboard_settings_initialized(),
             sample_keyboards_.size());
 }

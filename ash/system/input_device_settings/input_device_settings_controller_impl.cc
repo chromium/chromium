@@ -11,6 +11,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_pref_manager.h"
 #include "ash/system/input_device_settings/input_device_pref_manager_impl.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/identity.h"
 #include "base/notreached.h"
@@ -112,14 +113,12 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   NOTIMPLEMENTED();
 }
 
-// TODO(dpad): Implement adding/removing of observers.
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
-  NOTIMPLEMENTED();
+  observers_.AddObserver(observer);
 }
 
-// TODO(dpad): Implement adding/removing of observers.
 void InputDeviceSettingsControllerImpl::RemoveObserver(Observer* observer) {
-  NOTIMPLEMENTED();
+  observers_.RemoveObserver(observer);
 }
 
 // TODO(dpad): Implement pulling of device lists.
@@ -127,15 +126,21 @@ void InputDeviceSettingsControllerImpl::RefreshDeviceLists() {
   RefreshKeyboardList();
 }
 
-// TODO(dpad): Dispatch updates to keyboard settings consumers.
 void InputDeviceSettingsControllerImpl::DispatchKeyboardConnected(DeviceId id) {
-  NOTIMPLEMENTED();
+  DCHECK(base::Contains(keyboards_, id));
+  const auto& keyboard = *keyboards_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardConnected(keyboard);
+  }
 }
 
-// TODO(dpad): Dispatch updates to keyboard settings consumers.
 void InputDeviceSettingsControllerImpl::DispatchKeyboardDisconnected(
     DeviceId id) {
-  NOTIMPLEMENTED();
+  DCHECK(base::Contains(keyboards_, id));
+  const auto& keyboard = *keyboards_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardDisconnected(keyboard);
+  }
 }
 
 void InputDeviceSettingsControllerImpl::RefreshKeyboardList() {

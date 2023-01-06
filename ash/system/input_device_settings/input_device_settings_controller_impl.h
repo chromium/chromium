@@ -9,6 +9,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/system/input_device_settings/input_device_pref_manager.h"
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {
@@ -57,6 +58,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   std::unique_ptr<InputDevicePrefManager> pref_manager_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
+  base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 };
 
 }  // namespace ash
