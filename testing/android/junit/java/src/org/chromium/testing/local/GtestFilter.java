@@ -27,6 +27,8 @@ class GtestFilter extends Filter {
     private static final Pattern DASH = Pattern.compile("-");
     private static final Pattern DOLLAR = Pattern.compile("\\$");
     private static final Pattern PERIOD = Pattern.compile("\\.");
+    private static final Pattern OPEN_BRACKET = Pattern.compile("\\[");
+    private static final Pattern CLOSED_BRACKET = Pattern.compile("\\]");
 
     /**
      *  Creates the filter and converts the provided googletest-style filter
@@ -53,6 +55,9 @@ class GtestFilter extends Filter {
             String sanitized = PERIOD.matcher(f).replaceAll(Matcher.quoteReplacement("\\."));
             sanitized = DOLLAR.matcher(sanitized).replaceAll(Matcher.quoteReplacement("\\$"));
             sanitized = ASTERISK.matcher(sanitized).replaceAll(".*");
+            sanitized = OPEN_BRACKET.matcher(sanitized).replaceAll(Matcher.quoteReplacement("\\["));
+            sanitized =
+                    CLOSED_BRACKET.matcher(sanitized).replaceAll(Matcher.quoteReplacement("\\]"));
             patterns.add(Pattern.compile(sanitized));
         }
         return patterns;
