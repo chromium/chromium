@@ -590,7 +590,7 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
               kBitrateTolerance * config.bitrate_allocation.GetSumBps());
 
   // Encode the video with the second framerate.
-  const uint32_t second_framerate = first_framerate * 3 / 2;
+  const uint32_t second_framerate = std::max(first_framerate * 2 / 3, 10u);
   encoder->ResetStats();
   encoder->UpdateBitrate(config.bitrate_allocation, second_framerate);
   encoder->Encode();
