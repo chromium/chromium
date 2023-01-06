@@ -249,6 +249,9 @@ class TemplateURLRef {
     // search-by-image frontend.
     std::string image_thumbnail_content;
 
+    // The content type string for `image_thumbnail_content`.
+    std::string image_thumbnail_content_type;
+
     // When searching for an image, the URL of the original image. Callers
     // should leave this empty for images specified via data: URLs.
     GURL image_url;
@@ -385,6 +388,8 @@ class TemplateURLRef {
  private:
   friend class TemplateURL;
   friend class TemplateURLTest;
+  FRIEND_TEST_ALL_PREFIXES(TemplateURLTest,
+                           ImageThumbnailContentTypePostParams);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLTest, SetPrepopulatedAndParse);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLTest, ParseParameterKnown);
   FRIEND_TEST_ALL_PREFIXES(TemplateURLTest, ParseParameterUnknown);

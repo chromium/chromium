@@ -222,12 +222,14 @@ void CoreTabHelper::SearchByImageImpl(
                              &data)) {
     image_format = lens::mojom::ImageFormat::WEBP;
     search_args.image_thumbnail_content.assign(data.begin(), data.end());
+    search_args.image_thumbnail_content_type = "image/webp";
   } else if (lens::features::IsJpegForRegionSearchEnabled() &&
              gfx::JPEGCodec::Encode(
                  image.AsBitmap(),
                  lens::features::GetRegionSearchEncodingQuality(), &data)) {
     image_format = lens::mojom::ImageFormat::JPEG;
     search_args.image_thumbnail_content.assign(data.begin(), data.end());
+    search_args.image_thumbnail_content_type = "image/jpeg";
   } else {
     // If the WebP/JPEG encoding fails, fall back to PNG.
     // Get the front and end of the image bytes in order to store them in the
@@ -238,6 +240,7 @@ void CoreTabHelper::SearchByImageImpl(
     image_format = lens::mojom::ImageFormat::PNG;
     search_args.image_thumbnail_content.assign(image_bytes_begin,
                                                image_bytes_end);
+    search_args.image_thumbnail_content_type = "image/png";
   }
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::ENCODE_END, image_original_size, gfx::Size(),
@@ -285,7 +288,10 @@ void CoreTabHelper::SearchByImageImpl(
       lens::features::GetImageSearchEncodingQuality(),
       base::BindOnce(&CoreTabHelper::DoSearchByImage,
                      weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
-                     src_url, additional_query_params, use_side_panel));
+                     src_url, additional_query_params, use_side_panel,
+                     lens::features::IsWebpForImageSearchEnabled()
+                         ? "image/webp"
+                         : "image/jpeg"));
 }
 
 std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
@@ -449,6 +455,7 @@ void CoreTabHelper::DoSearchByImage(
     const GURL& src_url,
     const std::string& additional_query_params,
     bool use_side_panel,
+    const std::string& thumbnail_content_type,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
     const std::string& image_extension,
@@ -472,6 +479,7 @@ void CoreTabHelper::DoSearchByImage(
       TemplateURLRef::SearchTermsArgs(std::u16string());
   search_args.image_thumbnail_content.assign(thumbnail_data.begin(),
                                              thumbnail_data.end());
+  search_args.image_thumbnail_content_type = thumbnail_content_type;
   search_args.image_url = src_url;
   search_args.image_original_size = original_size;
   search_args.additional_query_params = additional_query_params_modified;

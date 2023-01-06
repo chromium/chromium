@@ -47,6 +47,12 @@ class TemplateURLTest : public testing::Test {
       const std::string& value,
       const std::string& content_type = std::string());
 
+  static void ExpectContainsPostParam(
+      const TemplateURLRef::PostParams& params,
+      const std::string& name,
+      const std::string& value,
+      const std::string& content_type = std::string());
+
   TestingSearchTermsData search_terms_data_;
 };
 
@@ -65,6 +71,21 @@ void TemplateURLTest::ExpectPostParamIs(const TemplateURLRef::PostParam& param,
   EXPECT_EQ(name, param.name);
   EXPECT_EQ(value, param.value);
   EXPECT_EQ(content_type, param.content_type);
+}
+
+// static
+void TemplateURLTest::ExpectContainsPostParam(
+    const TemplateURLRef::PostParams& params,
+    const std::string& name,
+    const std::string& value,
+    const std::string& content_type) {
+  for (const auto& param : params) {
+    if (param.name == name && param.value == value &&
+        param.content_type == content_type) {
+      return;
+    }
+  }
+  FAIL() << "Expected post param not found.";
 }
 
 TEST_F(TemplateURLTest, Defaults) {
@@ -273,6 +294,34 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
     else
       ExpectPostParamIs(*i, "constant_param", "constant");
   }
+}
+
+TEST_F(TemplateURLTest, ImageThumbnailContentTypePostParams) {
+  TemplateURLData data;
+  data.image_url = "http://foo.com/sbi";
+  data.image_url_post_params =
+      "image_content={google:imageThumbnail},"
+      "base64_image_content={google:imageThumbnailBase64}";
+  TemplateURL url(data);
+  EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+
+  TemplateURLRef::SearchTermsArgs search_args(u"X");
+  search_args.image_thumbnail_content = "dummy-image-thumbnail";
+  search_args.image_thumbnail_content_type = "image/tiff";
+  TestingSearchTermsData search_terms_data("http://X");
+  GURL result(
+      url.image_url_ref().ReplaceSearchTerms(search_args, search_terms_data));
+  ASSERT_TRUE(result.is_valid());
+
+  const TemplateURLRef::PostParams& post_params =
+      url.image_url_ref().post_params_;
+  ExpectContainsPostParam(post_params, "image_content",
+                          search_args.image_thumbnail_content, "image/tiff");
+  std::string base64_image_content;
+  base::Base64Encode(search_args.image_thumbnail_content,
+                     &base64_image_content);
+  ExpectContainsPostParam(post_params, "base64_image_content",
+                          base64_image_content, "image/tiff");
 }
 
 TEST_F(TemplateURLTest, ImageURLWithGetShouldNotCrash) {
