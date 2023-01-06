@@ -9,7 +9,7 @@
  * things tests need.
  */
 
-export {PageCallbackRouter, PageHandlerInterface, PageRemote, RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
+export {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
 export {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 export {RealboxMatchElement} from 'chrome://resources/cr_components/omnibox/realbox_match.js';
 export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';

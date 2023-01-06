@@ -51,7 +51,6 @@ copy("copy_mojom") {
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
-    "//components/omnibox/browser:mojo_bindings_ts__generator",
   ]
   sources = [
     "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
@@ -60,7 +59,6 @@ copy("copy_mojom") {
     "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",
-    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
   ]
 
   if (!is_official_build) {
@@ -118,8 +116,10 @@ if (optimize_webui) {
       "shared.rollup.js",
     ]
     excludes = [
+                 "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
                  "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
                  "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
+                 "chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js",
                  "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
                  "chrome://resources/js/cr.js",
                  "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",

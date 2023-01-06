@@ -31,5 +31,3 @@ export class RealboxBrowserProxy {
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 }
-
-export {PageCallbackRouter, PageHandlerInterface, PageRemote} from './omnibox.mojom-webui.js';

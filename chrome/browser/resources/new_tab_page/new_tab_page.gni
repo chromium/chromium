@@ -56,7 +56,6 @@ mojo_ts_files = [
   "new_tab_page.mojom-webui.ts",
   "photos.mojom-webui.ts",
   "recipes.mojom-webui.ts",
-  "omnibox.mojom-webui.ts",
 ]
 
 if (!is_official_build) {
