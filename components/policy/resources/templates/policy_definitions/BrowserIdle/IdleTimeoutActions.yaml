@@ -13,6 +13,8 @@ desc: |-
         '<ph name="CLOSE_BROWSERS_ACTION">close_browsers</ph>': close all browser windows and PWAs for this profile.
 
         '<ph name="SHOW_PROFILE_PICKER_ACTION">show_profile_picker</ph>': show the Profile Picker window.
+
+        '<ph name="CLEAR_BROWSING_HISTORY_ACTION">clear_browsing_history</ph>', '<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION">clear_download_history</ph>', '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION">clear_cookies_and_other_site_data</ph>', '<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION">clear_cached_images_and_files</ph>', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION">clear_password_signing</ph>', '<ph name="CLEAR_AUTOFILL_ACTION">clear_autofill</ph>' , '<ph name="CLEAR_SITE_SETTINGS_ACTION">clear_site_settings</ph>' , '<ph name="CLEAR_HOSTED_APP_DATA_ACTION">clear_hosted_app_data</ph>': clear the corresponding browsing data. See the <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME">ClearBrowsingDataOnExitList</ph> policy for more details.
 example_value:
 - close_browsers
 - show_profile_picker
@@ -31,11 +33,43 @@ items:
 - caption: Show Profile Picker
   name: show_profile_picker
   value: show_profile_picker
+- caption: Clear Browsing History
+  name: clear_browsing_history
+  value: clear_browsing_history
+- caption: Clear Download History
+  name: clear_download_history
+  value: clear_download_history
+- caption: Clear Cookies and Other Site Data
+  name: clear_cookies_and_other_site_data
+  value: clear_cookies_and_other_site_data
+- caption: Clear Cached Images and Files
+  name: clear_cached_images_and_files
+  value: clear_cached_images_and_files
+- caption: Clear Password Signin
+  name: clear_password_signin
+  value: clear_password_signin
+- caption: Clear Autofill
+  name: clear_autofill
+  value: clear_autofill
+- caption: Clear Site Settings
+  name: clear_site_settings
+  value: clear_site_settings
+- caption: Clear Hosted App Data
+  name: clear_hosted_app_data
+  value: clear_hosted_app_data
 schema:
   items:
     enum:
     - close_browsers
     - show_profile_picker
+    - clear_browsing_history
+    - clear_download_history
+    - clear_cookies_and_other_site_data
+    - clear_cached_images_and_files
+    - clear_password_signin
+    - clear_autofill
+    - clear_site_settings
+    - clear_hosted_app_data
     type: string
   type: array
 tags: []

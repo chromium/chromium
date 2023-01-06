@@ -103,12 +103,32 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
     if (!action.is_string())
       continue;
     const std::string& name = action.GetString();
-    if (name == "close_browsers")
-      converted_actions.Append(static_cast<int>(ActionType::kCloseBrowsers));
-    else if (name == "show_profile_picker")
-      converted_actions.Append(
-          static_cast<int>(ActionType::kShowProfilePicker));
+    absl::optional<ActionType> action_type = absl::nullopt;
+    if (name == "close_browsers") {
+      action_type = ActionType::kCloseBrowsers;
+    } else if (name == "show_profile_picker") {
+      action_type = ActionType::kShowProfilePicker;
+    } else if (name == "clear_browsing_history") {
+      action_type = ActionType::kClearBrowsingHistory;
+    } else if (name == "clear_download_history") {
+      action_type = ActionType::kClearDownloadHistory;
+    } else if (name == "clear_cookies_and_other_site_data") {
+      action_type = ActionType::kClearCookiesAndOtherSiteData;
+    } else if (name == "clear_cached_images_and_files") {
+      action_type = ActionType::kClearCachedImagesAndFiles;
+    } else if (name == "clear_password_signin") {
+      action_type = ActionType::kClearPasswordSignin;
+    } else if (name == "clear_autofill") {
+      action_type = ActionType::kClearAutofill;
+    } else if (name == "clear_site_settings") {
+      action_type = ActionType::kClearSiteSettings;
+    } else if (name == "clear_hosted_app_data") {
+      action_type = ActionType::kClearHostedAppData;
+    }
     // Silently drop unsupported values.
+    if (action_type.has_value()) {
+      converted_actions.Append(static_cast<int>(action_type.value()));
+    }
   }
   prefs->SetValue(prefs::kIdleTimeoutActions,
                   base::Value(std::move(converted_actions)));

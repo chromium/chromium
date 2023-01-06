@@ -24,4 +24,18 @@ TEST(IdleActionTest, Build) {
   EXPECT_EQ(0u, queue.top()->priority());
 }
 
+TEST(IdleActionTest, ClearBrowsingDataIsSingleAction) {
+  auto* factory = ActionFactory::GetInstance();
+
+  auto queue = factory->Build(
+      {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
+       ActionType::kClearCookiesAndOtherSiteData,
+       ActionType::kClearCachedImagesAndFiles,
+       ActionType::kClearCachedImagesAndFiles, ActionType::kClearPasswordSignin,
+       ActionType::kClearAutofill, ActionType::kClearSiteSettings,
+       ActionType::kClearHostedAppData});
+  EXPECT_EQ(1u, queue.size());
+  EXPECT_EQ(2u, queue.top()->priority());
+}
+
 }  // namespace enterprise_idle
