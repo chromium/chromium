@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL reshape float32 tensor to a new shape (reorder all dimensions) / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (reduce dimensions) / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (extend dimensions) / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (one dimension being the special value -1) / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to 1D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to 1D tensor newShape=[-1] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (reorder all dimensions) / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (reduce dimensions) / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (extend dimensions) / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to a new shape (one dimension being the special value -1) / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to 1D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL reshape float32 tensor to 1D tensor newShape=[-1] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

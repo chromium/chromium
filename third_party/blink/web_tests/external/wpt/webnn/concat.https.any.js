@@ -7,14 +7,15 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-concat
 
-const buildConcat = (builder, resources) => {
+const buildConcat = (operationName, builder, resources) => {
   // MLOperand concat(sequence<MLOperand> inputs, long axis);
   const namedOutputOperand = {};
   const inputOperands = [];
   for (let input of resources.inputs) {
     inputOperands.push(builder.input(input.name, {type: input.type, dimensions: input.shape}));
   }
-  namedOutputOperand[resources.expected.name] = builder.concat(inputOperands, resources.axis);
+  // invoke builder.concat()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperands, resources.axis);
   return namedOutputOperand;
 };
 

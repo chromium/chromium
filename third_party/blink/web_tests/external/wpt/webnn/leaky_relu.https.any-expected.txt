@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+FAIL leakyRelu float32 1D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 2D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 3D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 5D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 1D tensor negative options.alpha / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 2D tensor positive options.alpha / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 5D tensor options.alpha=0.0 / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 1D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 2D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 3D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 5D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 1D tensor negative options.alpha / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 2D tensor positive options.alpha / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL leakyRelu float32 5D tensor options.alpha=0.0 / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+Harness: the test ran to completion.
+

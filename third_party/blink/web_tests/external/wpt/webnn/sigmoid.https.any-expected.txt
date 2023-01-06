@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL sigmoid float32 1D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 2D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 3D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 4D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 5D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 1D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 2D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 3D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 4D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+FAIL sigmoid float32 5D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

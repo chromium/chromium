@@ -60,9 +60,29 @@ const getExpectedData = (resources, outputName) => {
   return data;
 };
 
+/**
+ * Get ULP tolerance of softmax operation.
+ * @param {Object} resources - Resources used for building a graph
+ * @returns {Number} A tolerance number
+ */
+const getSoftmaxPrecisionTolerance = (resources) => {
+  // Compute the softmax values of the 2-D input tensor along axis 1.
+  const inputShape = resources.inputs[Object.keys(resources.inputs)[0]].shape;
+  const tolerance = inputShape[1] * 3 + 3;
+  return tolerance;
+};
+
 // Refer to precision metrics on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
 const PrecisionMetrics = {
+  clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
+  leakyRelu: {ULP: {float32: 1, float16: 1}},
+  relu: {ULP: {float32: 0, float16: 0}},
+  reshape: {ULP: {float32: 0, float16: 0}},
+  sigmoid: {ULP: {float32: 32+2, float16: 3}}, // float32 (leaving a few ULP for roundoff)
+  slice: {ULP: {float32: 0, float16: 0}},
+  softmax: {ULP: {float32: getSoftmaxPrecisionTolerance, float16: getSoftmaxPrecisionTolerance}},
+  transpose: {ULP: {float32: 0, float16: 0}},
 };
 
 /**
@@ -78,7 +98,7 @@ const getPrecisonTolerance = (operationName, metricType, resources) => {
   let tolerance = PrecisionMetrics[operationName][metricType][precisionType];
   // If the tolerance is dynamic, then evaluate the function to get the value.
   if (tolerance instanceof Function) {
-    tolerance = tolerance(resources, operationName);
+    tolerance = tolerance(resources);
   }
   return tolerance;
 };
@@ -188,14 +208,44 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
 };
 
 /**
+ * Create single input operands for a graph.
+ * @param {MLGraphBuilder} builder - A ML graph builder
+ * @param {Object} resources - Resources used for building a graph
+ * @param {String} [inputOperandName] - An inputOperand name
+ * @returns {MLOperand} An input operand
+ */
+const createSingleInputOperand = (builder, resources, inputOperandName) => {
+  inputOperandName = inputOperandName ? inputOperandName : Object.keys(resources.inputs)[0];
+  const inputResources = resources.inputs[inputOperandName];
+  return builder.input(inputOperandName, {type: inputResources.type, dimensions: inputResources.shape});
+};
+
+/**
+ * Build an operation which has a single input.
+ * @param {String} operationName - An operation name
+ * @param {MLGraphBuilder} builder - A ML graph builder
+ * @param {Object} resources - Resources used for building a graph
+ * @returns {MLNamedOperands}
+ */
+const buildOperationWithSingleInput = (operationName, builder, resources) => {
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  const outputOperand = resources.options ?
+      builder[operationName](inputOperand, resources.options) : builder[operationName](inputOperand);
+  namedOutputOperand[resources.expected.name] = outputOperand;
+  return namedOutputOperand;
+};
+
+/**
  * Build a graph.
+ * @param {String} operationName - An operation name
  * @param {MLGraphBuilder} builder - A ML graph builder
  * @param {Object} resources - Resources used for building a graph
  * @param {Function} buildFunc - A build function for an operation
  * @returns [namedOperands, inputs, outputs]
  */
-const buildGraph = (builder, resources, buildFunc) => {
-  const namedOperands = buildFunc(builder, resources);
+const buildGraph = (operationName, builder, resources, buildFunc) => {
+  const namedOperands = buildFunc(operationName, builder, resources);
   let inputs = {};
   if (Array.isArray(resources.inputs)) {
     // the inputs of concat() is a sequence
@@ -233,7 +283,7 @@ const buildGraph = (builder, resources, buildFunc) => {
  */
 const runSync = (operationName, context, builder, resources, buildFunc) => {
   // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraph(builder, resources, buildFunc);
+  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
   // synchronously compile the graph up to the output operand
   const graph = builder.buildSync(namedOutputOperands);
   // synchronously execute the compiled graph.
@@ -251,7 +301,7 @@ const runSync = (operationName, context, builder, resources, buildFunc) => {
  */
 const run = async (operationName, context, builder, resources, buildFunc) => {
   // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraph(builder, resources, buildFunc);
+  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
   // asynchronously compile the graph up to the output operand
   const graph = await builder.build(namedOutputOperands);
   // asynchronously execute the compiled graph
