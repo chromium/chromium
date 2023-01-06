@@ -1,3 +1,4 @@
+per-file apn_migrator*=file://chromeos/services/network_config/OWNERS
 per-file client_cert*=file://net/ssl/OWNERS
 per-file onc_utils*=emaxx@chromium.org
 per-file proxy_config_handler*=emaxx@chromium.org
