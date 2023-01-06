@@ -68,6 +68,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kHttpNotFoundError,
     kNoResponseError,
     kInvalidResponseError,
+    // ParseStatus::kEmptyListError only applies to well known and account list
+    // responses. It is used to classify a successful response where the list in
+    // the response is empty.
+    kEmptyListError,
   };
   struct FetchStatus {
     ParseStatus parse_status;

@@ -347,6 +347,12 @@ void OnWellKnownParsed(
     return;
   }
 
+  if (list->empty()) {
+    std::move(callback).Run(
+        {ParseStatus::kEmptyListError, fetch_status.response_code}, urls);
+    return;
+  }
+
   for (const auto& value : *list) {
     const std::string* url_str = value.GetIfString();
     if (!url_str) {
@@ -447,10 +453,18 @@ void OnAccountsRequestParsed(
   AccountList account_list;
   const base::Value::Dict& response = result->GetDict();
   const base::Value::List* accounts = response.FindList(kAccountsKey);
-  bool accounts_present =
+
+  if (accounts && accounts->empty()) {
+    std::move(callback).Run(
+        {ParseStatus::kEmptyListError, fetch_status.response_code},
+        AccountList());
+    return;
+  }
+
+  bool accounts_valid =
       accounts && ParseAccounts(*accounts, account_list, client_id);
 
-  if (!accounts_present) {
+  if (!accounts_valid) {
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
         AccountList());

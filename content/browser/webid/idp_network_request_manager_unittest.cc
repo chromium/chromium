@@ -254,7 +254,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_empty_account_json);
 
-  EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
+  EXPECT_EQ(ParseStatus::kEmptyListError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_TRUE(accounts.empty());
 }
@@ -588,6 +588,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseWellKnown) {
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/.well-known/fedcm.json")},
             urls);
+
+  // Empty well known list
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
+  "provider_urls": []
+  })");
+  EXPECT_EQ(ParseStatus::kEmptyListError, fetch_status.parse_status);
 }
 
 // Test that the "alpha" value in the "branding" JSON is ignored.

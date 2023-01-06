@@ -843,6 +843,7 @@ experimental domain Audits
       WellKnownHttpNotFound
       WellKnownNoResponse
       WellKnownInvalidResponse
+      WellKnownListEmpty
       ConfigNotInWellKnown
       WellKnownTooBig
       ConfigHttpNotFound
@@ -857,6 +858,7 @@ experimental domain Audits
       AccountsHttpNotFound
       AccountsNoResponse
       AccountsInvalidResponse
+      AccountsListEmpty
       IdTokenHttpNotFound
       IdTokenNoResponse
       IdTokenInvalidResponse

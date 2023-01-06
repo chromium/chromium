@@ -41963,6 +41963,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="30" label="RpPageNotVisible"/>
   <int value="31" label="ShouldEmbargo"/>
   <int value="32" label="NotSignedInWithIdp"/>
+  <int value="33" label="AccountsListEmpty"/>
+  <int value="34" label="WellKnownListEmpty"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">

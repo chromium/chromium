@@ -111,6 +111,13 @@ void FederatedProviderFetcher::OnWellKnownFetched(
             additional_console_error_message);
         return;
       }
+      case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
+        OnError(fetch_result,
+                FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty,
+                TokenStatus::kWellKnownListEmpty,
+                additional_console_error_message);
+        return;
+      }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
         NOTREACHED();
       }
@@ -187,6 +194,10 @@ void FederatedProviderFetcher::OnConfigFetched(
                 FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
                 TokenStatus::kConfigInvalidResponse,
                 additional_console_error_message);
+        return;
+      }
+      case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
+        NOTREACHED() << "kEmptyListError is undefined for OnConfigFetched";
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {

@@ -178,6 +178,9 @@ void FedCmMetrics::RecordIdpSigninMatchStatus(
       case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError:
         match_status = FedCmIdpSigninMatchStatus::kMismatchWithInvalidResponse;
         break;
+      case IdpNetworkRequestManager::ParseStatus::kEmptyListError:
+        match_status = FedCmIdpSigninMatchStatus::kMismatchWithNoContent;
+        break;
       case IdpNetworkRequestManager::ParseStatus::kSuccess:
         match_status = FedCmIdpSigninMatchStatus::kMatchWithAccounts;
         break;

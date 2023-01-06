@@ -111,6 +111,9 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
     case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse: {
       return "Provider's FedCM well-known file is invalid.";
     }
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty: {
+      return "Provider's FedCM well-known file has no config URLs.";
+    }
     case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
       return "Provider's FedCM config file not listed in its well-known file.";
     }
@@ -149,6 +152,9 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
       return "Provider's accounts list is invalid. Should have received an "
              "\"accounts\" list, where each account must have at least \"id\", "
              "\"name\", and \"email\".";
+    }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
+      return "Provider's accounts list is empty.";
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
       return "The provider's id token endpoint cannot be found.";
@@ -195,6 +201,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty:
     case FederatedAuthRequestResult::kErrorConfigNotInWellKnown:
     case FederatedAuthRequestResult::kErrorWellKnownTooBig:
     case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound:
@@ -207,6 +214,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
@@ -228,7 +236,8 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kErrorCanceled: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kAccountsEndpointInvalidResponse;
     }
@@ -258,6 +267,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kManifestError;
     }
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty:
     case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
     case FederatedAuthRequestResult::
@@ -931,6 +941,14 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           TokenStatus::kAccountsInvalidResponse);
       return;
     }
+    case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
+      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
+      HandleAccountsFetchFailure(
+          std::move(idp_info),
+          FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+          TokenStatus::kAccountsListEmpty);
+      return;
+    }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       if (IsFedCmLoginHintEnabled()) {
         FilterAccountsWithLoginHint(idp_info->provider.login_hint, accounts);
@@ -1165,6 +1183,10 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
           TokenStatus::kIdTokenInvalidResponse,
           /*should_delay_callback=*/true);
+      return;
+    }
+    case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
+      NOTREACHED() << "kEmptyListError is undefined for CompleteTokenRequest";
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
