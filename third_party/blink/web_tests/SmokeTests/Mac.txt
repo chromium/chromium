@@ -10,8 +10,6 @@ compositing/layer-creation/overflow-scroll-overlap.html
 compositing/layer-creation/scroll-partial-update.html
 compositing/overflow/nested-render-surfaces-with-rotation.html
 compositing/overflow/overflow-auto-with-touch-toggle.html
-compositing/overflow/overflow-auto-with-touch.html
-compositing/overflow/overflow-overlay-with-touch.html
 compositing/overflow/overflow-scroll.html
 compositing/reflections/reflection-in-composited.html
 compositing/reflections/reflection-ordering.html
@@ -1589,7 +1587,6 @@ virtual/portals/http/tests/devtools/portals/portals-console.js
 virtual/portals/wpt_internal/portals/create-many-portals.html
 virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html
 virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-auto-with-touch-toggle.html
-virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-auto-with-touch.html
 virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-scroll.html
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-with-incomplete-style.html

@@ -484,7 +484,6 @@ compositing/overflow/content-loses-scrollbars.html
 compositing/overflow/fixed-element-in-isolated-composited-ancestor.html
 compositing/overflow/fixed-pos-escape-clip-having-non-stacking-context-clipping-container.html
 compositing/overflow/mask-with-small-content-rect.html
-compositing/overflow/overflow-overlay-with-touch.html
 compositing/overflow/scrolling-content-layer-should-not-be-clipped.html
 compositing/overflow/textarea-scroll-touch.html
 compositing/perspective-origin-with-scrollbars.html
