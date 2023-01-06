@@ -157,24 +157,22 @@ void UpdateSpellingPanelWithMisspelledWord(const std::u16string& word) {
 }
 
 void RecordChromeLocalesStats(PlatformSpellChecker* spell_checker_instance,
-                              const std::vector<std::string> chrome_locales,
-                              SpellCheckHostMetrics* metrics) {
+                              const std::vector<std::string> chrome_locales) {
   if (!spell_checker_instance) {
     return;
   }
   static_cast<WindowsSpellChecker*>(spell_checker_instance)
-      ->RecordChromeLocalesStats(std::move(chrome_locales), metrics);
+      ->RecordChromeLocalesStats(std::move(chrome_locales));
 }
 
 void RecordSpellcheckLocalesStats(
     PlatformSpellChecker* spell_checker_instance,
-    const std::vector<std::string> spellcheck_locales,
-    SpellCheckHostMetrics* metrics) {
+    const std::vector<std::string> spellcheck_locales) {
   if (!spell_checker_instance) {
     return;
   }
   static_cast<WindowsSpellChecker*>(spell_checker_instance)
-      ->RecordSpellcheckLocalesStats(std::move(spellcheck_locales), metrics);
+      ->RecordSpellcheckLocalesStats(std::move(spellcheck_locales));
 }
 
 }  // namespace spellcheck_platform

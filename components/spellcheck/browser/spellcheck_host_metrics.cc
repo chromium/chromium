@@ -149,6 +149,7 @@ void SpellCheckHostMetrics::RecordSpellingServiceStats(bool enabled) {
 }
 
 #if BUILDFLAG(IS_WIN)
+// static
 void SpellCheckHostMetrics::RecordAcceptLanguageStats(
     const LocalesSupportInfo& locales_info) {
   base::UmaHistogramExactLinear(
@@ -170,6 +171,7 @@ void SpellCheckHostMetrics::RecordAcceptLanguageStats(
       base::saturated_cast<int>(locales_info.unsupported_locales), 20);
 }
 
+// static
 void SpellCheckHostMetrics::RecordSpellcheckLanguageStats(
     const LocalesSupportInfo& locales_info) {
   base::UmaHistogramExactLinear(

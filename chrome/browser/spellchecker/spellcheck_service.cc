@@ -913,7 +913,7 @@ void SpellcheckService::RecordSpellcheckLocalesStats() {
       hunspell_locales.push_back(dict->GetLanguage());
     }
     spellcheck_platform::RecordSpellcheckLocalesStats(
-        platform_spell_checker(), std::move(hunspell_locales), metrics_.get());
+        platform_spell_checker(), std::move(hunspell_locales));
   }
 }
 
@@ -921,8 +921,8 @@ void SpellcheckService::RecordChromeLocalesStats() {
   const auto& accept_languages =
       GetNormalizedAcceptLanguages(/* normalize_for_spellcheck */ false);
   if (metrics_ && platform_spell_checker() && !accept_languages.empty()) {
-    spellcheck_platform::RecordChromeLocalesStats(
-        platform_spell_checker(), std::move(accept_languages), metrics_.get());
+    spellcheck_platform::RecordChromeLocalesStats(platform_spell_checker(),
+                                                  std::move(accept_languages));
   }
 }
 
