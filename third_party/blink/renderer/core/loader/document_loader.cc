@@ -2107,6 +2107,10 @@ void DocumentLoader::CommitNavigation() {
 
   WillCommitNavigation();
 
+  if (Url().ProtocolIsInHTTPFamily()) {
+    recordreplay::OnNavigationEvent(nullptr, Url().GetString().Utf8().c_str());
+  }
+
   Document* document = frame_->DomWindow()->InstallNewDocument(
       DocumentInit::Create()
           .WithWindow(frame_->DomWindow(), owner_document)
