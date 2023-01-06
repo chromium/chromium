@@ -150,8 +150,10 @@ class DataPipe : public Object<DataPipe> {
       base::span<PlatformHandle> handles);
 
   // Returns Mojo signals to reflect the effective state of this DataPipe and
-  // its control portal.
-  MojoHandleSignalsState GetSignals();
+  // its control portal within `signals_state`. Returns true on success or false
+  // if the DataPipe's signal state is unspecified due to impending closure. In
+  // the latter case `signals_state` is zeroed out.
+  bool GetSignals(MojoHandleSignalsState& signals_state);
 
  private:
   ~DataPipe() override;

@@ -86,7 +86,10 @@ bool GetEventResultForSignalsState(const MojoHandleSignalsState& state,
 bool PopulateEventForDataPipe(DataPipe& pipe,
                               MojoHandleSignals trigger_signals,
                               MojoTrapEvent& event) {
-  event.signals_state = pipe.GetSignals();
+  if (!pipe.GetSignals(event.signals_state)) {
+    return false;
+  }
+
   return GetEventResultForSignalsState(event.signals_state, trigger_signals,
                                        event.result);
 }
@@ -419,7 +422,13 @@ void MojoTrap::HandleEvent(const IpczTrapEvent& event) {
       .trigger_context = trigger->trigger_context,
   };
   if (trigger->data_pipe) {
-    PopulateEventForDataPipe(*trigger->data_pipe, trigger->signals, mojo_event);
+    if (!PopulateEventForDataPipe(*trigger->data_pipe, trigger->signals,
+                                  mojo_event)) {
+      // This event may be spurious if the DataPipe itself is closing but its
+      // its control portal is not yet closed. In that case it's safe to drop
+      // without firing.
+      return;
+    }
   } else {
     PopulateEventForMessagePipe(trigger->signals, *event.status, mojo_event);
   }
