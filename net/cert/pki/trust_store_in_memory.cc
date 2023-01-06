@@ -54,7 +54,7 @@ void TrustStoreInMemory::SyncGetIssuersOf(const ParsedCertificate* cert,
 
 CertificateTrust TrustStoreInMemory::GetTrust(
     const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+    base::SupportsUserData* debug_data) {
   const Entry* entry = GetEntry(cert);
   return entry ? entry->trust : CertificateTrust::ForUnspecified();
 }

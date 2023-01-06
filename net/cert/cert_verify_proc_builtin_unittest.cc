@@ -141,7 +141,7 @@ class MockSystemTrustStore : public SystemTrustStore {
 class BlockingTrustStore : public TrustStore {
  public:
   CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) const override {
+                            base::SupportsUserData* debug_data) override {
     return backing_trust_store_.GetTrust(cert, debug_data);
   }
 

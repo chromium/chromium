@@ -68,9 +68,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   CERT_DestroyCertList(found_certs);
 }
 
-CertificateTrust TrustStoreNSS::GetTrust(
-    const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
+                                         base::SupportsUserData* debug_data) {
   crypto::EnsureNSSInit();
 
   // TODO(eroman): Inefficient -- path building will convert between

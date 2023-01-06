@@ -20,7 +20,7 @@ void TrustStoreAndroid::SyncGetIssuersOf(const ParsedCertificate* cert,
 
 CertificateTrust TrustStoreAndroid::GetTrust(
     const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+    base::SupportsUserData* debug_data) {
   // TODO(crbug.com/1365571): Implement looking at user added trust
   // anchors/intermediates/distrusted anchors.
   return CertificateTrust::ForUnspecified();

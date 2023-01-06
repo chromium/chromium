@@ -267,9 +267,8 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // If a certificate is found multiple times in the ROOT store, it is trusted
 // for TLS server auth if any instance of the certificate found
 // is usable for TLS server auth.
-CertificateTrust TrustStoreWin::GetTrust(
-    const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+CertificateTrust TrustStoreWin::GetTrust(const ParsedCertificate* cert,
+                                         base::SupportsUserData* debug_data) {
   if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
       !all_certs_store_.get() || !disallowed_cert_store_.get()) {
     return CertificateTrust::ForUnspecified();

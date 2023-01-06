@@ -159,7 +159,7 @@ class CertIssuersIter {
   // and |*debug_data| must be valid for the lifetime of the CertIssuersIter.
   CertIssuersIter(std::shared_ptr<const ParsedCertificate> cert,
                   CertIssuerSources* cert_issuer_sources,
-                  const TrustStore* trust_store,
+                  TrustStore* trust_store,
                   base::SupportsUserData* debug_data);
 
   CertIssuersIter(const CertIssuersIter&) = delete;
@@ -195,7 +195,7 @@ class CertIssuersIter {
 
   std::shared_ptr<const ParsedCertificate> cert_;
   CertIssuerSources* cert_issuer_sources_;
-  const TrustStore* trust_store_;
+  TrustStore* trust_store_;
 
   // The list of issuers for |cert_|. This is added to incrementally (first
   // synchronous results, then possibly multiple times as asynchronous results
@@ -235,7 +235,7 @@ class CertIssuersIter {
 CertIssuersIter::CertIssuersIter(
     std::shared_ptr<const ParsedCertificate> in_cert,
     CertIssuerSources* cert_issuer_sources,
-    const TrustStore* trust_store,
+    TrustStore* trust_store,
     base::SupportsUserData* debug_data)
     : cert_(in_cert),
       cert_issuer_sources_(cert_issuer_sources),
@@ -458,7 +458,7 @@ const ParsedCertificate* CertPathBuilderResultPath::GetTrustedCert() const {
 class CertPathIter {
  public:
   CertPathIter(std::shared_ptr<const ParsedCertificate> cert,
-               const TrustStore* trust_store,
+               TrustStore* trust_store,
                base::SupportsUserData* debug_data);
 
   CertPathIter(const CertPathIter&) = delete;
@@ -497,13 +497,13 @@ class CertPathIter {
   // The CertIssuerSources for retrieving candidate issuers.
   CertIssuerSources cert_issuer_sources_;
   // The TrustStore for checking if a path ends in a trust anchor.
-  const TrustStore* trust_store_;
+  TrustStore* trust_store_;
 
   base::SupportsUserData* debug_data_;
 };
 
 CertPathIter::CertPathIter(std::shared_ptr<const ParsedCertificate> cert,
-                           const TrustStore* trust_store,
+                           TrustStore* trust_store,
                            base::SupportsUserData* debug_data)
     : trust_store_(trust_store), debug_data_(debug_data) {
   // Initialize |next_issuer_| to the target certificate.

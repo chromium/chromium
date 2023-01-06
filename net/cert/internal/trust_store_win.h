@@ -41,7 +41,7 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
                         ParsedCertificateList* issuers) override;
 
   CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) const override;
+                            base::SupportsUserData* debug_data) override;
 
  private:
   TrustStoreWin(crypto::ScopedHCERTSTORE root_cert_store,

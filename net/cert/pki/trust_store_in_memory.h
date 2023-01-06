@@ -62,7 +62,7 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
   CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) const override;
+                            base::SupportsUserData* debug_data) override;
 
   // Returns true if the trust store contains the given ParsedCertificate
   // (matches by DER).

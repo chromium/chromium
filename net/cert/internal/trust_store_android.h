@@ -24,7 +24,7 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore {
                         ParsedCertificateList* issuers) override;
 
   CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) const override;
+                            base::SupportsUserData* debug_data) override;
 };
 
 }  // namespace net

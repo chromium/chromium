@@ -23,7 +23,7 @@ void TrustStoreCollection::SyncGetIssuersOf(const ParsedCertificate* cert,
 
 CertificateTrust TrustStoreCollection::GetTrust(
     const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+    base::SupportsUserData* debug_data) {
   // The current aggregate result.
   CertificateTrust result = CertificateTrust::ForUnspecified();
 

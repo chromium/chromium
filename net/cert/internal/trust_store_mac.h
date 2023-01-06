@@ -127,7 +127,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
   CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) const override;
+                            base::SupportsUserData* debug_data) override;
 
  private:
   class TrustImpl;
