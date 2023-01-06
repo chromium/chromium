@@ -231,7 +231,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   void PostIOTask(const base::Location& from_here, base::OnceClosure task);
 
   // Writes the entire table to disk. It will leave the table file open and
-  // the handle to it will be stored in file_.
+  // the handle to it will be stored in |scoped_file_holder_|.
   void WriteFullTable();
 
   // Tries to load asynchronously the table from the database file.
@@ -442,7 +442,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // already scheduled in a background thread and any writing to the file can
   // also be scheduled to the background thread as it's guaranteed to be
   // executed after the opening.
-  std::unique_ptr<base::ScopedFILE> file_;
+  std::unique_ptr<base::ScopedFILE> scoped_file_holder_;
 
   // If true, will try to persist the hash table to disk. Will rebuild from
   // VisitedLinkDelegate::RebuildTable if there are disk corruptions.

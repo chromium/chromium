@@ -247,8 +247,8 @@ VisitedLinkWriter::~VisitedLinkWriter() {
     table_builder_->DisownWriter();
   }
   FreeURLTable();
-  // FreeURLTable() will schedule closing of the file and deletion of |file_|.
-  // So nothing should be done here.
+  // FreeURLTable() will schedule closing of the file and deletion of
+  // |scoped_file_holder_|. So nothing should be done here.
 
   if (table_is_loading_from_file_ &&
       (!added_since_load_.empty() || !deleted_since_load_.empty())) {
@@ -260,8 +260,8 @@ VisitedLinkWriter::~VisitedLinkWriter() {
     PostIOTask(FROM_HERE, base::GetDeleteFileCallback(filename));
   }
 
-  DCHECK(!file_);  // Must have been moved to the IO thread for releasing the
-                   // file in the correct sequence.
+  DCHECK(!scoped_file_holder_);  // Must have been moved to the IO thread for
+                                 // releasing the file in the correct sequence.
 }
 
 bool VisitedLinkWriter::Init() {
@@ -572,11 +572,12 @@ void VisitedLinkWriter::WriteFullTable() {
   // regenerate the table.
   DCHECK(persist_to_disk_);
 
-  if (!file_) {
-    file_ = std::make_unique<base::ScopedFILE>();
+  if (!scoped_file_holder_) {
+    scoped_file_holder_ = std::make_unique<base::ScopedFILE>();
     base::FilePath filename;
     GetDatabaseFileName(&filename);
-    PostIOTask(FROM_HERE, base::BindOnce(&AsyncOpen, file_.get(), filename));
+    PostIOTask(FROM_HERE,
+               base::BindOnce(&AsyncOpen, scoped_file_holder_.get(), filename));
   }
 
   // Write the new header.
@@ -585,21 +586,23 @@ void VisitedLinkWriter::WriteFullTable() {
   header[1] = kFileCurrentVersion;
   header[2] = table_length_;
   header[3] = used_items_;
-  WriteToFile(file_.get(), 0, header, sizeof(header));
-  WriteToFile(file_.get(), sizeof(header), salt_, LINK_SALT_LENGTH);
+  WriteToFile(scoped_file_holder_.get(), 0, header, sizeof(header));
+  WriteToFile(scoped_file_holder_.get(), sizeof(header), salt_,
+              LINK_SALT_LENGTH);
 
   // Write the hash data.
-  WriteToFile(file_.get(), kFileHeaderSize, hash_table_,
+  WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, hash_table_,
               table_length_ * sizeof(Fingerprint));
 
   // The hash table may have shrunk, so make sure this is the end.
-  PostIOTask(FROM_HERE, base::BindOnce(&AsyncTruncate, file_.get()));
+  PostIOTask(FROM_HERE,
+             base::BindOnce(&AsyncTruncate, scoped_file_holder_.get()));
 }
 
 bool VisitedLinkWriter::InitFromFile() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DCHECK(!file_);
+  DCHECK(!scoped_file_holder_);
   DCHECK(persist_to_disk_);
 
   base::FilePath filename;
@@ -701,10 +704,10 @@ void VisitedLinkWriter::OnTableLoadComplete(
   mapped_table_memory_ = base::MappedReadOnlyRegion();
 
   // Assign the open file.
-  DCHECK(!file_);
+  DCHECK(!scoped_file_holder_);
   DCHECK(load_from_file_result->file.get());
-  file_ = std::make_unique<base::ScopedFILE>();
-  *file_ = std::move(load_from_file_result->file);
+  scoped_file_holder_ = std::make_unique<base::ScopedFILE>();
+  *scoped_file_holder_ = std::move(load_from_file_result->file);
 
   // Assign the loaded table.
   DCHECK(load_from_file_result->hash_table_memory.region.IsValid() &&
@@ -899,11 +902,12 @@ bool VisitedLinkWriter::BeginReplaceURLTable(int32_t num_entries) {
 
 void VisitedLinkWriter::FreeURLTable() {
   mapped_table_memory_ = base::MappedReadOnlyRegion();
-  if (file_) {
+  if (scoped_file_holder_) {
     DCHECK(persist_to_disk_);
 
     // Release the file on the IO thread:
-    PostIOTask(FROM_HERE, base::DoNothingWithBoundArgs(std::move(file_)));
+    PostIOTask(FROM_HERE,
+               base::DoNothingWithBoundArgs(std::move(scoped_file_holder_)));
   }
 }
 
@@ -1080,29 +1084,35 @@ void VisitedLinkWriter::WriteToFile(base::ScopedFILE* file,
 
 void VisitedLinkWriter::WriteUsedItemCountToFile() {
   DCHECK(persist_to_disk_);
-  if (!file_)
-    return;  // See comment on the file_ variable for why this might happen.
-  WriteToFile(file_.get(), kFileHeaderUsedOffset, &used_items_,
+  if (!scoped_file_holder_) {
+    return;  // See comment on the scoped_file_holder_ variable for why this
+             // might happen.
+  }
+  WriteToFile(scoped_file_holder_.get(), kFileHeaderUsedOffset, &used_items_,
               sizeof(used_items_));
 }
 
 void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
   DCHECK(persist_to_disk_);
 
-  if (!file_)
-    return;  // See comment on the file_ variable for why this might happen.
+  if (!scoped_file_holder_) {
+    return;  // See comment on the scoped_file_holder_ variable for why this
+             // might happen.
+  }
   if (last_hash < first_hash) {
     // Handle wraparound at 0. This first write is first_hash->EOF
-    WriteToFile(file_.get(), first_hash * sizeof(Fingerprint) + kFileHeaderSize,
+    WriteToFile(scoped_file_holder_.get(),
+                first_hash * sizeof(Fingerprint) + kFileHeaderSize,
                 &hash_table_[first_hash],
                 (table_length_ - first_hash + 1) * sizeof(Fingerprint));
 
     // Now do 0->last_lash.
-    WriteToFile(file_.get(), kFileHeaderSize, hash_table_,
+    WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, hash_table_,
                 (last_hash + 1) * sizeof(Fingerprint));
   } else {
     // Normal case, just write the range.
-    WriteToFile(file_.get(), first_hash * sizeof(Fingerprint) + kFileHeaderSize,
+    WriteToFile(scoped_file_holder_.get(),
+                first_hash * sizeof(Fingerprint) + kFileHeaderSize,
                 &hash_table_[first_hash],
                 (last_hash - first_hash + 1) * sizeof(Fingerprint));
   }
