@@ -29,24 +29,23 @@ class RealDelegate : public XuCameraService::Delegate {
   RealDelegate(const RealDelegate&) = delete;
   RealDelegate& operator=(const RealDelegate&) = delete;
 
-  int Ioctl(int fd, unsigned int request, void* query) override {
-    return HANDLE_EINTR(ioctl(fd, request, query));
+  int Ioctl(const base::ScopedFD& fd,
+            unsigned int request,
+            void* query) override {
+    VLOG(4) << __func__ << " with request: " << request;
+    if (!fd.is_valid()) {
+      LOG(ERROR) << "File Descriptor No longer valid";
+      return EBADF;
+    }
+    return HANDLE_EINTR(ioctl(fd.get(), request, query));
   }
 
-  int OpenFile(std::string path) override {
-    int fd = open(path.c_str(), O_RDWR | O_NONBLOCK, 0);
-    if (fd == -1) {
-      LOG(ERROR) << "Failed to open device. Open file failed. " << path;
-    }
-    VLOG(4) << "File path: " << path;
-    return fd;
-  }
-
-  void CloseFile(int file_descriptor) override {
-    if (file_descriptor >= 0) {
-      VLOG(4) << "Close file path: " << file_descriptor;
-      close(file_descriptor);
-    }
+  bool OpenFile(base::ScopedFD& fd, const std::string& path) override {
+    fd.reset(open(path.c_str(), O_RDWR | O_NONBLOCK, 0));
+    VLOG(4) << __func__ << "File path: " << path;
+    LOG_IF(ERROR, !fd.is_valid())
+        << "Failed to open device. Open file failed. " << path;
+    return fd.is_valid();
   }
 };
 
@@ -136,6 +135,7 @@ void XuCameraService::SetDelegate(Delegate* delegate) {
 void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
                                 const std::vector<uint8_t>& guid,
                                 GetUnitIdCallback callback) {
+  VLOG(4) << __func__;
   NOTIMPLEMENTED();
   guid_ = guid;
   std::move(callback).Run(ENOSYS, '0');
@@ -147,10 +147,12 @@ void XuCameraService::MapCtrl(const mojom::WebcamIdPtr id,
   uint8_t error_code = 0;
   std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
                                             : id->get_dev_path();
-  int file_descriptor = delegate_->OpenFile(dev_path);
-  if (file_descriptor < 0) {
+  VLOG(4) << __func__ << ": dev_path - " << dev_path;
+  base::ScopedFD file_descriptor;
+  if (!delegate_->OpenFile(file_descriptor, dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT);
+    return;
   }
 
   struct uvc_menu_info uvc_menus[mapping_ctrl->menu_entries->menu_info.size()];
@@ -195,8 +197,9 @@ void XuCameraService::GetCtrl(const mojom::WebcamIdPtr id,
   std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
                                             : id->get_dev_path();
 
-  int file_descriptor = delegate_->OpenFile(dev_path);
-  if (file_descriptor < 0) {
+  VLOG(4) << __func__ << ": dev_path - " << dev_path;
+  base::ScopedFD file_descriptor;
+  if (!delegate_->OpenFile(file_descriptor, dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT, data);
     return;
@@ -217,7 +220,6 @@ void XuCameraService::GetCtrl(const mojom::WebcamIdPtr id,
       LOG(ERROR) << __func__ << ": Invalid CtrlType::Tag";
       error_code = EINVAL;
   }
-  delegate_->CloseFile(file_descriptor);
   std::move(callback).Run(error_code, data);
 }
 
@@ -228,8 +230,9 @@ void XuCameraService::SetCtrl(const mojom::WebcamIdPtr id,
   uint8_t error_code = 0;
   std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
                                             : id->get_dev_path();
-  int file_descriptor = delegate_->OpenFile(dev_path);
-  if (file_descriptor < 0) {
+  VLOG(4) << __func__ << ": dev_path - " << dev_path;
+  base::ScopedFD file_descriptor;
+  if (!delegate_->OpenFile(file_descriptor, dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT);
     return;
@@ -256,11 +259,10 @@ void XuCameraService::SetCtrl(const mojom::WebcamIdPtr id,
       error_code = EINVAL;
   }
 
-  delegate_->CloseFile(file_descriptor);
   std::move(callback).Run(error_code);
 }
 
-uint8_t XuCameraService::QueryXuControl(int file_descriptor,
+uint8_t XuCameraService::QueryXuControl(const base::ScopedFD& file_descriptor,
                                         uint8_t unit_id,
                                         uint8_t selector,
                                         uint8_t* data,
@@ -272,11 +274,14 @@ uint8_t XuCameraService::QueryXuControl(int file_descriptor,
   control_query.query = query_request;
   control_query.size = size;
   control_query.data = data;
+
+  VLOG(4) << __func__ << ": unit_id -" << static_cast<unsigned int>(unit_id)
+          << " selector - " << static_cast<unsigned int>(selector);
   int error =
       delegate_->Ioctl(file_descriptor, UVCIOC_CTRL_QUERY, &control_query);
 
   if (error < 0) {
-    LOG(ERROR) << "ioctl call failed. error: " << error;
+    LOG(ERROR) << "ioctl call failed. error: " << errno;
     return errno;
   }
   return error;
@@ -288,10 +293,11 @@ std::string XuCameraService::GetDevicePath(const std::string& device_id) {
   return "";
 }
 
-uint8_t XuCameraService::CtrlThroughQuery(int file_descriptor,
+uint8_t XuCameraService::CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                                           const mojom::ControlQueryPtr& query,
                                           std::vector<uint8_t>& data,
                                           const uint8_t& request) {
+  VLOG(4) << __func__ << " request - " << static_cast<unsigned int>(request);
   if (UVC_SET_CUR == request) {
     uint8_t error_code =
         QueryXuControl(file_descriptor, query->unit_id, query->selector,
@@ -305,6 +311,8 @@ uint8_t XuCameraService::CtrlThroughQuery(int file_descriptor,
       QueryXuControl(file_descriptor, query->unit_id, query->selector,
                      data.data(), UVC_GET_LEN, sizeof(uint16_t));
 
+  VLOG(4) << __func__ << "query length error_code: "
+          << static_cast<unsigned int>(error_code);
   if (error_code != 0 || UVC_GET_LEN == request) {
     return error_code;
   }
@@ -318,17 +326,20 @@ uint8_t XuCameraService::CtrlThroughQuery(int file_descriptor,
 
   error_code = QueryXuControl(file_descriptor, query->unit_id, query->selector,
                               data.data(), request, data_len);
+  VLOG(4) << __func__
+          << "query data error_code: " << static_cast<unsigned int>(error_code);
 
   return error_code;
 }
 
 uint8_t XuCameraService::CtrlThroughMapping(
-    int file_descriptor,
+    const base::ScopedFD& file_descriptor,
     const mojom::ControlMappingPtr& mapping,
     std::vector<uint8_t>& data,
     const mojom::GetFn& fn) {
   uint8_t error_code = 0;
 
+  VLOG(4) << __func__ << " GetFn - " << fn;
   // Early return for kCur/kLen  vs other info that requires VIDIOC_QUERYCTRL
   if (mojom::GetFn::kLen == fn) {
     // User set up the map so they should know that the size returned will be
@@ -349,6 +360,7 @@ uint8_t XuCameraService::CtrlThroughMapping(
   error_code = delegate_->Ioctl(file_descriptor, VIDIOC_QUERYCTRL, &query);
 
   if (error_code != 0) {
+    LOG(ERROR) << __func__ << " VIDIOC_QUERYCTRL error_code - " << error_code;
     return error_code;
   }
 
@@ -379,6 +391,7 @@ uint8_t XuCameraService::CtrlThroughMapping(
       LOG(ERROR) << __func__ << ": Invalid GetFn. ";
       return EINVAL;
   }
+  VLOG(4) << __func__ << ": Success query";
   return error_code;
 }
 
@@ -386,6 +399,7 @@ template <typename T>
 void XuCameraService::CopyToData(T* value,
                                  std::vector<uint8_t>& data,
                                  size_t size) {
+  VLOG(4) << __func__ << " of size " << size;
   data.reserve(size);
   uint8_t* valueAsUint8 = reinterpret_cast<uint8_t*>(value);
   for (size_t i = 0; i < size; ++i) {
