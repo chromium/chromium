@@ -313,7 +313,7 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForType(
           "JOIN saves ON blobs.id=saves.id "
           "WHERE saves.power_type=? "
           "GROUP BY saves.url "
-          "ORDER BY COUNT(saves.url) DESC";
+          "ORDER BY COUNT(saves.url) DESC, MAX(saves.time_modified)";
   // clang-format on
   DCHECK(db_.IsSQLValid(kGetPowerOverviewsForTypeSql));
 

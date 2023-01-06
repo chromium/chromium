@@ -68,7 +68,9 @@ class PowerBookmarkService : public KeyedService,
       PowersCallback callback);
 
   // Returns a vector of PowerOverviews for the given `power_type` through the
-  // given `callback`.
+  // given `callback`. The PowerOverviews will be sorted based on count, with
+  // the highest count overviews coming first. The sample power in each overview
+  // will be the most recently modified power.
   void GetPowerOverviewsForType(
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
       PowerOverviewsCallback callback);
