@@ -194,7 +194,7 @@ class VideoRendererImplTest : public testing::Test {
     // Test hook for to specify a custom buffer duration.
     decoder_buffer->set_duration(buffer_duration_);
 
-    std::move(read_cb).Run(DemuxerStream::kOk, decoder_buffer);
+    std::move(read_cb).Run(DemuxerStream::kOk, {std::move(decoder_buffer)});
   }
 
   bool IsDemuxerStalled() { return !!stalled_demixer_read_cb_; }
@@ -307,9 +307,10 @@ class VideoRendererImplTest : public testing::Test {
     DCHECK(decode_cb_);
 
     // Return EOS buffer to trigger EOS frame.
+    DemuxerStream::DecoderBufferVector buffers;
+    buffers.emplace_back(DecoderBuffer::CreateEOSBuffer());
     EXPECT_CALL(demuxer_stream_, OnRead(_))
-        .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk,
-                                     DecoderBuffer::CreateEOSBuffer()));
+        .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, buffers));
 
     // Satify pending |decode_cb_| to trigger a new DemuxerStream::Read().
     task_environment_.GetMainThreadTaskRunner()->PostTask(
@@ -996,8 +997,9 @@ TEST_F(VideoRendererImplTest, VideoConfigChange) {
       .WillRepeatedly(Return(true));
 
   // Signal a config change at the next DemuxerStream::Read().
+  DemuxerStream::DecoderBufferVector buffers;
   EXPECT_CALL(demuxer_stream_, OnRead(_))
-      .WillOnce(RunOnceCallback<0>(DemuxerStream::kConfigChanged, nullptr));
+      .WillOnce(RunOnceCallback<0>(DemuxerStream::kConfigChanged, buffers));
 
   // Use LargeEncrypted config (non-default) to ensure its plumbed through to
   // callback.

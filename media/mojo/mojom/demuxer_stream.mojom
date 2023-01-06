@@ -28,24 +28,26 @@ interface DemuxerStream {
                    AudioDecoderConfig? audio_config,
                    VideoDecoderConfig? video_config);
 
-  // Requests a DecoderBuffer from this stream for decoding and rendering.
+  // Requests multi DecoderBuffer from this stream for decoding and rendering.
   // See media::DemuxerStream::ReadCB for a general explanation of the fields.
   //
   // Notes on the callback:
-  // - If |status| is OK, |buffer| should be non-null and clients must fill out
-  //   the data section of the returned media::DecoderBuffer by reading from
-  //   the |pipe| provided during Initialize().
-  // - If |status| is ABORTED, all other fields should be null.
+  // - If |status| is OK, the size of |batch_buffers| should be 1<=n<=count
+  //   and clients must fill out the data section of the returned
+  //   array<DecoderBuffer> by reading from the |pipe| provided during
+  //   Initialize().
+  // - If |status| is ABORTED, |audio_config| and |video_config| should be null
+  //   and size of |batch_buffers| is zero.
   // - If |status| is CONFIG_CHANGED, the config for the stream type should be
-  //   non-null.
+  //   non-null and size of |batch_buffers| is zero.
   //
   // TODO(dalecurtis): Remove this method in favor of serializing everything
   // into the DataPipe given to Initialize() once DataPipe supports framed data
   // in a nicer fashion.
-  Read() => (Status status,
-             DecoderBuffer? buffer,
-             AudioDecoderConfig? audio_config,
-             VideoDecoderConfig? video_config);
+  Read(uint32 count) => (Status status,
+                        array<DecoderBuffer> batch_buffers,
+                        AudioDecoderConfig? audio_config,
+                        VideoDecoderConfig? video_config);
 
   // Enables converting bitstream to a format that is expected by the decoder.
   // For example, H.264/AAC bitstream based packets into H.264 Annex B format.

@@ -22,7 +22,8 @@ FakeTextTrackStream::~FakeTextTrackStream() {
   DCHECK(!read_cb_);
 }
 
-void FakeTextTrackStream::Read(ReadCB read_cb) {
+// Only return one buffer at a time so we ignore the count.
+void FakeTextTrackStream::Read(uint32_t /*count*/, ReadCB read_cb) {
   DCHECK(read_cb);
   DCHECK(!read_cb_);
   OnRead();
@@ -70,17 +71,17 @@ void FakeTextTrackStream::SatisfyPendingRead(
   // Assume all fake text buffers are keyframes.
   buffer->set_is_key_frame(true);
 
-  std::move(read_cb_).Run(kOk, buffer);
+  std::move(read_cb_).Run(kOk, {std::move(buffer)});
 }
 
 void FakeTextTrackStream::AbortPendingRead() {
   DCHECK(read_cb_);
-  std::move(read_cb_).Run(kAborted, nullptr);
+  std::move(read_cb_).Run(kAborted, {});
 }
 
 void FakeTextTrackStream::SendEosNotification() {
   DCHECK(read_cb_);
-  std::move(read_cb_).Run(kOk, DecoderBuffer::CreateEOSBuffer());
+  std::move(read_cb_).Run(kOk, {DecoderBuffer::CreateEOSBuffer()});
 }
 
 void FakeTextTrackStream::Stop() {

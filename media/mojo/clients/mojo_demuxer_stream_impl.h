@@ -38,7 +38,7 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   // InitializeCallback and ReadCallback are defined in
   // mojom::DemuxerStream.
   void Initialize(InitializeCallback callback) override;
-  void Read(ReadCallback callback) override;
+  void Read(uint32_t count, ReadCallback callback) override;
   void EnableBitstreamConverter() override;
 
   // Sets an error handler that will be called if a connection error occurs on
@@ -53,7 +53,7 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
 
   void OnBufferReady(ReadCallback callback,
                      Status status,
-                     scoped_refptr<DecoderBuffer> buffer);
+                     media::DemuxerStream::DecoderBufferVector buffers);
 
   mojo::Receiver<mojom::DemuxerStream> receiver_;
 

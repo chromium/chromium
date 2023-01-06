@@ -129,6 +129,14 @@ bool TextRenderer::HasTracks() const {
   return !text_track_state_map_.empty();
 }
 
+void TextRenderer::OnBuffersRead(DemuxerStream* text_stream,
+                                 DemuxerStream::Status status,
+                                 DemuxerStream::DecoderBufferVector buffers) {
+  DCHECK_LE(buffers.size(), 1u) << "TextRenderer only reads a single-buffer.";
+  BufferReady(text_stream, status,
+              buffers.empty() ? nullptr : std::move(buffers[0]));
+}
+
 void TextRenderer::BufferReady(DemuxerStream* stream,
                                DemuxerStream::Status status,
                                scoped_refptr<DecoderBuffer> input) {
@@ -311,8 +319,8 @@ void TextRenderer::Read(
   state->read_state = TextTrackState::kReadPending;
   ++pending_read_count_;
 
-  text_stream->Read(base::BindOnce(&TextRenderer::BufferReady,
-                                   weak_factory_.GetWeakPtr(), text_stream));
+  text_stream->Read(1, base::BindOnce(&TextRenderer::OnBuffersRead,
+                                      weak_factory_.GetWeakPtr(), text_stream));
 }
 
 TextRenderer::TextTrackState::TextTrackState(std::unique_ptr<TextTrack> tt)

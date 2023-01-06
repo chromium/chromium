@@ -169,7 +169,7 @@ class AudioRendererImplTest : public ::testing::Test,
       return;
     }
     scoped_refptr<DecoderBuffer> decoder_buffer(new DecoderBuffer(0));
-    std::move(read_cb).Run(DemuxerStream::kOk, decoder_buffer);
+    std::move(read_cb).Run(DemuxerStream::kOk, {std::move(decoder_buffer)});
   }
 
   bool IsDemuxerStalled() { return !!stalled_demixer_read_cb_; }
@@ -406,9 +406,10 @@ class AudioRendererImplTest : public ::testing::Test,
     DCHECK(decode_cb_);
 
     // Return EOS buffer to trigger EOS frame.
+    DemuxerStream::DecoderBufferVector buffers;
+    buffers.emplace_back(DecoderBuffer::CreateEOSBuffer());
     EXPECT_CALL(demuxer_stream_, OnRead(_))
-        .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk,
-                                     DecoderBuffer::CreateEOSBuffer()));
+        .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, buffers));
 
     // Satify pending |decode_cb_| to trigger a new DemuxerStream::Read().
     main_thread_task_runner_->PostTask(

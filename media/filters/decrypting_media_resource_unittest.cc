@@ -43,7 +43,7 @@ namespace {
 
 ACTION_P(ReturnBuffer, buffer) {
   std::move(arg0).Run(
-      buffer.get() ? DemuxerStream::kOk : DemuxerStream::kAborted, buffer);
+      buffer.get() ? DemuxerStream::kOk : DemuxerStream::kAborted, {buffer});
 }
 
 }  // namespace
@@ -102,7 +102,7 @@ class DecryptingMediaResourceTest : public testing::Test {
   }
 
   MOCK_METHOD2(BufferReady,
-               void(DemuxerStream::Status, scoped_refptr<DecoderBuffer>));
+               void(DemuxerStream::Status, DemuxerStream::DecoderBufferVector));
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -218,8 +218,9 @@ TEST_F(DecryptingMediaResourceTest, WaitingCallback) {
 
   decrypting_media_resource_->Initialize(
       decrypting_media_resource_init_cb_.Get(), waiting_cb_.Get());
-  decrypting_media_resource_->GetAllStreams().front()->Read(base::BindOnce(
-      &DecryptingMediaResourceTest::BufferReady, base::Unretained(this)));
+  decrypting_media_resource_->GetAllStreams().front()->Read(
+      1, base::BindOnce(&DecryptingMediaResourceTest::BufferReady,
+                        base::Unretained(this)));
   task_environment_.RunUntilIdle();
 }
 

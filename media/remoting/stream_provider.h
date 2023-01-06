@@ -103,7 +103,7 @@ class StreamProvider final : public Demuxer {
         const scoped_refptr<base::SequencedTaskRunner>& media_task_runner);
 
     // DemuxerStream implementation.
-    void Read(ReadCB read_cb) override;
+    void Read(uint32_t count, ReadCB read_cb) override;
     AudioDecoderConfig audio_decoder_config() override;
     VideoDecoderConfig video_decoder_config() override;
     DemuxerStream::Type type() const override;

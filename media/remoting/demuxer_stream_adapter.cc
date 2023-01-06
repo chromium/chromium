@@ -275,8 +275,17 @@ void DemuxerStreamAdapter::RequestBuffer() {
     return;
   }
   demuxer_stream_->Read(
-      base::BindOnce(&DemuxerStreamAdapter::OnNewBuffer,
-                     request_buffer_weak_factory_.GetWeakPtr()));
+      1, base::BindOnce(&DemuxerStreamAdapter::OnNewBuffersRead,
+                        request_buffer_weak_factory_.GetWeakPtr()));
+}
+
+void DemuxerStreamAdapter::OnNewBuffersRead(
+    DemuxerStream::Status status,
+    DemuxerStream::DecoderBufferVector buffers_queue) {
+  DCHECK_LE(buffers_queue.size(), 1u)
+      << "DemuxerStreamAdapter only reads a single-buffer.";
+  OnNewBuffer(status,
+              buffers_queue.empty() ? nullptr : std::move(buffers_queue[0]));
 }
 
 void DemuxerStreamAdapter::OnNewBuffer(DemuxerStream::Status status,

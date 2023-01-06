@@ -270,13 +270,19 @@ MATCHER_P(DecoderConfigEq, config, "") {
   return arg.Matches(config);
 }
 
-MATCHER_P(HasTimestamp, timestamp_in_ms, "") {
-  return arg.get() && !arg->end_of_stream() &&
-         arg->timestamp().InMilliseconds() == timestamp_in_ms;
+MATCHER_P(ReadOneAndHasTimestamp, timestamp_in_ms, "") {
+  DCHECK_EQ(arg.size(), 1u);
+  return !arg[0]->end_of_stream() &&
+         arg[0]->timestamp().InMilliseconds() == timestamp_in_ms;
 }
 
-MATCHER(IsEndOfStream, "") {
-  return arg.get() && arg->end_of_stream();
+MATCHER(ReadOneAndIsEndOfStream, "") {
+  DCHECK_EQ(arg.size(), 1u);
+  return arg[0]->end_of_stream();
+}
+
+MATCHER(IsEmpty, "") {
+  return arg.empty();
 }
 
 MATCHER(EosBeforeHaveMetadata, "") {

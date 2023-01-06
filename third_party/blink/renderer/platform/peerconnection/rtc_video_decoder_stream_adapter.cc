@@ -157,8 +157,8 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
 
   ~InternalDemuxerStream() override = default;
 
-  // DemuxerStream
-  void Read(ReadCB read_cb) override {
+  // DemuxerStream, only return one buffer at a time so we ignore the count.
+  void Read(uint32_t /*count*/, ReadCB read_cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!pending_read_);
     pending_read_ = std::move(read_cb);
@@ -214,7 +214,7 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     buffers_.clear();
     if (pending_read_)
-      std::move(pending_read_).Run(DemuxerStream::Status::kAborted, nullptr);
+      std::move(pending_read_).Run(DemuxerStream::Status::kAborted, {});
   }
 
   // If enabled, we'll drop any queued buffers when we're given a keyframe.
@@ -239,8 +239,7 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
     // change first, and keep the buffer for the next call.
     if (buffers_.front()->new_config) {
       config_ = std::move(*(buffers_.front()->new_config));
-      std::move(pending_read_)
-          .Run(DemuxerStream::Status::kConfigChanged, nullptr);
+      std::move(pending_read_).Run(DemuxerStream::Status::kConfigChanged, {});
       return;
     }
 
@@ -248,7 +247,7 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
     buffers_.pop_front();
 
     std::move(pending_read_)
-        .Run(DemuxerStream::Status::kOk, std::move(pending_buffer->buffer));
+        .Run(DemuxerStream::Status::kOk, {std::move(pending_buffer->buffer)});
   }
 
   media::VideoDecoderConfig config_;

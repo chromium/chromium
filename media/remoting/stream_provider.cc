@@ -324,7 +324,8 @@ void StreamProvider::MediaStream::SendReadUntil() {
   read_until_sent_ = true;
 }
 
-void StreamProvider::MediaStream::Read(ReadCB read_cb) {
+// Only return one buffer at a time so we ignore the count.
+void StreamProvider::MediaStream::Read(uint32_t /*count*/, ReadCB read_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(read_complete_callback_.is_null());
   DCHECK(read_cb);
@@ -358,11 +359,11 @@ void StreamProvider::MediaStream::CompleteRead(DemuxerStream::Status status) {
         video_decoder_config_ = next_video_decoder_config_;
         next_video_decoder_config_ = media::VideoDecoderConfig();
       }
-      std::move(read_complete_callback_).Run(status, nullptr);
+      std::move(read_complete_callback_).Run(status, {});
       return;
     case DemuxerStream::kAborted:
     case DemuxerStream::kError:
-      std::move(read_complete_callback_).Run(status, nullptr);
+      std::move(read_complete_callback_).Run(status, {});
       return;
     case DemuxerStream::kOk:
       DCHECK(read_complete_callback_);
@@ -371,7 +372,7 @@ void StreamProvider::MediaStream::CompleteRead(DemuxerStream::Status status) {
       scoped_refptr<DecoderBuffer> frame_data = buffers_.front();
       buffers_.pop_front();
       ++current_frame_count_;
-      std::move(read_complete_callback_).Run(status, frame_data);
+      std::move(read_complete_callback_).Run(status, {frame_data});
       return;
   }
 }

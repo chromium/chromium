@@ -46,7 +46,7 @@ class FakeDemuxerStream : public DemuxerStream {
   ~FakeDemuxerStream() override;
 
   // DemuxerStream implementation.
-  void Read(ReadCB read_cb) override;
+  void Read(uint32_t count, ReadCB read_cb) override;
   AudioDecoderConfig audio_decoder_config() override;
   VideoDecoderConfig video_decoder_config() override;
   Type type() const override;

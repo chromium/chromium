@@ -80,7 +80,7 @@ void ChunkDemuxerStream::AbortReads() {
   base::AutoLock auto_lock(lock_);
   ChangeState_Locked(RETURNING_ABORT_FOR_READS);
   if (read_cb_)
-    std::move(read_cb_).Run(kAborted, nullptr);
+    std::move(read_cb_).Run(kAborted, {});
 }
 
 void ChunkDemuxerStream::CompletePendingReadIfPossible() {
@@ -100,7 +100,7 @@ void ChunkDemuxerStream::Shutdown() {
   // data will be sent.
   if (read_cb_) {
     std::move(read_cb_).Run(DemuxerStream::kOk,
-                            StreamParserBuffer::CreateEOSBuffer());
+                            {StreamParserBuffer::CreateEOSBuffer()});
   }
 }
 
@@ -297,16 +297,18 @@ void ChunkDemuxerStream::UnmarkEndOfStream() {
 }
 
 // DemuxerStream methods.
-void ChunkDemuxerStream::Read(ReadCB read_cb) {
+void ChunkDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   base::AutoLock auto_lock(lock_);
   DCHECK_NE(state_, UNINITIALIZED);
   DCHECK(!read_cb_);
 
   read_cb_ = BindToCurrentLoop(std::move(read_cb));
+  requested_buffer_count_ = count;
 
   if (!is_enabled_) {
     DVLOG(1) << "Read from disabled stream, returning EOS";
-    std::move(read_cb_).Run(kOk, StreamParserBuffer::CreateEOSBuffer());
+    std::move(read_cb_).Run(DemuxerStream::kOk,
+                            {StreamParserBuffer::CreateEOSBuffer()});
     return;
   }
 
@@ -355,7 +357,7 @@ void ChunkDemuxerStream::SetEnabled(bool enabled, base::TimeDelta timestamp) {
     stream_->Seek(timestamp);
   } else if (read_cb_) {
     DVLOG(1) << "Read from disabled stream, returning EOS";
-    std::move(read_cb_).Run(kOk, StreamParserBuffer::CreateEOSBuffer());
+    std::move(read_cb_).Run(kOk, {StreamParserBuffer::CreateEOSBuffer()});
   }
 }
 
@@ -389,57 +391,104 @@ void ChunkDemuxerStream::CompletePendingReadIfPossible_Locked() {
   lock_.AssertAcquired();
   DCHECK(read_cb_);
 
-  DemuxerStream::Status status = DemuxerStream::kAborted;
-  scoped_refptr<StreamParserBuffer> buffer;
-
   switch (state_) {
     case UNINITIALIZED:
+      requested_buffer_count_ = 0;
       NOTREACHED();
       return;
-    case RETURNING_DATA_FOR_READS:
-      switch (stream_->GetNextBuffer(&buffer)) {
-        case SourceBufferStreamStatus::kSuccess:
-          status = DemuxerStream::kOk;
-          DVLOG(2) << __func__ << ": returning kOk, type " << type_ << ", dts "
-                   << buffer->GetDecodeTimestamp().InSecondsF() << ", pts "
-                   << buffer->timestamp().InSecondsF() << ", dur "
-                   << buffer->duration().InSecondsF() << ", key "
-                   << buffer->is_key_frame();
-          break;
-        case SourceBufferStreamStatus::kNeedBuffer:
-          // Return early without calling |read_cb_| since we don't have
-          // any data to return yet.
-          DVLOG(2) << __func__ << ": returning kNeedBuffer, type " << type_;
-          return;
-        case SourceBufferStreamStatus::kEndOfStream:
-          status = DemuxerStream::kOk;
-          buffer = StreamParserBuffer::CreateEOSBuffer();
-          DVLOG(2) << __func__ << ": returning kOk with EOS buffer, type "
-                   << type_;
-          break;
-        case SourceBufferStreamStatus::kConfigChange:
-          status = kConfigChanged;
-          buffer = nullptr;
-          DVLOG(2) << __func__ << ": returning kConfigChange, type " << type_;
-          break;
-      }
-      break;
     case RETURNING_ABORT_FOR_READS:
       // Null buffers should be returned in this state since we are waiting
       // for a seek. Any buffers in the SourceBuffer should NOT be returned
       // because they are associated with the seek.
-      status = DemuxerStream::kAborted;
-      buffer = nullptr;
+      requested_buffer_count_ = 0;
+      std::move(read_cb_).Run(kAborted, {});
       DVLOG(2) << __func__ << ": returning kAborted, type " << type_;
-      break;
+      return;
     case SHUTDOWN:
-      status = DemuxerStream::kOk;
-      buffer = StreamParserBuffer::CreateEOSBuffer();
+      requested_buffer_count_ = 0;
+      std::move(read_cb_).Run(kOk, {StreamParserBuffer::CreateEOSBuffer()});
       DVLOG(2) << __func__ << ": returning kOk with EOS buffer, type " << type_;
+      return;
+    case RETURNING_DATA_FOR_READS:
       break;
   }
+  DCHECK(state_ == RETURNING_DATA_FOR_READS);
 
-  std::move(read_cb_).Run(status, buffer);
+  auto [status, buffers] = GetPendingBuffers_Locked();
+
+  // If the status from |stream_| is kNeedBuffer and there's no buffers,
+  // then after ChunkDemuxerStream::Append, try to read data again,
+  // 'requested_buffer_count_' does not need to be cleared to 0.
+  if (status == SourceBufferStreamStatus::kNeedBuffer && buffers.empty()) {
+    return;
+  }
+  // If the status from |stream_| is kConfigChange, the vector muse be
+  // empty, then need to notify new config by running |read_cb_|.
+  if (status == SourceBufferStreamStatus::kConfigChange) {
+    DCHECK(buffers.empty());
+    requested_buffer_count_ = 0;
+    std::move(read_cb_).Run(kConfigChanged, std::move(buffers));
+    return;
+  }
+  // Other cases are kOk and just return the buffers.
+  DCHECK(!buffers.empty());
+  requested_buffer_count_ = 0;
+  std::move(read_cb_).Run(kOk, std::move(buffers));
+}
+
+std::pair<SourceBufferStreamStatus, DemuxerStream::DecoderBufferVector>
+ChunkDemuxerStream::GetPendingBuffers_Locked() {
+  lock_.AssertAcquired();
+  DemuxerStream::DecoderBufferVector output_buffers;
+  for (uint32_t i = 0; i < requested_buffer_count_; ++i) {
+    // This aims to avoid send out buffers with different config. To
+    // simply the config change handling on renderer(receiver) side, prefer to
+    // send out buffers before config change happens.
+    if (stream_->IsNextBufferConfigChanged() && !output_buffers.empty()) {
+      DVLOG(3) << __func__ << " status=0"
+               << ", type=" << type_ << ", req_size=" << requested_buffer_count_
+               << ", out_size=" << output_buffers.size();
+      return {SourceBufferStreamStatus::kSuccess, std::move(output_buffers)};
+    }
+
+    scoped_refptr<StreamParserBuffer> buffer;
+    SourceBufferStreamStatus status = stream_->GetNextBuffer(&buffer);
+    switch (status) {
+      case SourceBufferStreamStatus::kSuccess:
+        output_buffers.emplace_back(buffer);
+        break;
+      case SourceBufferStreamStatus::kNeedBuffer:
+        // Return early with calling |read_cb_| if output_buffers has buffers
+        // since there is no more readable data.
+        DVLOG(3) << __func__ << " status=" << (int)status << ", type=" << type_
+                 << ", req_size=" << requested_buffer_count_
+                 << ", out_size=" << output_buffers.size();
+        return {status, std::move(output_buffers)};
+      case SourceBufferStreamStatus::kEndOfStream:
+        output_buffers.emplace_back(StreamParserBuffer::CreateEOSBuffer());
+        DVLOG(3) << __func__ << " status=" << (int)status << ", type=" << type_
+                 << ", req_size=" << requested_buffer_count_
+                 << ", out_size=" << output_buffers.size();
+        return {status, std::move(output_buffers)};
+      case SourceBufferStreamStatus::kConfigChange:
+        // Since IsNextBufferConfigChanged has detected config change happen and
+        // send out buffers if |output_buffers| has buffer. When confige
+        // change actually happen it should be the first time run this |for
+        // loop|, i.e. output_buffers should be empty.
+        DCHECK(output_buffers.empty());
+        DVLOG(3) << __func__ << " status=" << (int)status << ", type=" << type_
+                 << ", req_size=" << requested_buffer_count_
+                 << ", out_size=" << output_buffers.size();
+        return {status, std::move(output_buffers)};
+    }
+  }
+
+  DCHECK_EQ(output_buffers.size(),
+            static_cast<size_t>(requested_buffer_count_));
+  DVLOG(3) << __func__ << " status are always kSuccess"
+           << ", type=" << type_ << ", req_size=" << requested_buffer_count_
+           << ", out_size=" << output_buffers.size();
+  return {SourceBufferStreamStatus::kSuccess, std::move(output_buffers)};
 }
 
 ChunkDemuxer::ChunkDemuxer(

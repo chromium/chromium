@@ -44,7 +44,7 @@ class DemuxerStreamForTest : public ::media::DemuxerStream {
   ~DemuxerStreamForTest() override;
 
   // ::media::DemuxerStream implementation.
-  void Read(ReadCB read_cb) override;
+  void Read(uint32_t count, ReadCB read_cb) override;
   ::media::AudioDecoderConfig audio_decoder_config() override;
   ::media::VideoDecoderConfig video_decoder_config() override;
   Type type() const override;

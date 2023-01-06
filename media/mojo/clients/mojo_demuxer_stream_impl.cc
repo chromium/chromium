@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/demuxer_stream.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
@@ -51,24 +52,33 @@ void MojoDemuxerStreamImpl::Initialize(InitializeCallback callback) {
                           audio_config, video_config);
 }
 
-void MojoDemuxerStreamImpl::Read(ReadCallback callback) {
-  stream_->Read(base::BindOnce(&MojoDemuxerStreamImpl::OnBufferReady,
-                               weak_factory_.GetWeakPtr(),
-                               std::move(callback)));
+void MojoDemuxerStreamImpl::Read(uint32_t count, ReadCallback callback) {
+  DVLOG(3) << __func__ << " client receive count:" << count;
+  stream_->Read(
+      count, base::BindOnce(&MojoDemuxerStreamImpl::OnBufferReady,
+                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MojoDemuxerStreamImpl::EnableBitstreamConverter() {
   stream_->EnableBitstreamConverter();
 }
 
-void MojoDemuxerStreamImpl::OnBufferReady(ReadCallback callback,
-                                          Status status,
-                                          scoped_refptr<DecoderBuffer> buffer) {
+void MojoDemuxerStreamImpl::OnBufferReady(
+    ReadCallback callback,
+    Status status,
+    media::DemuxerStream::DecoderBufferVector buffers) {
   absl::optional<AudioDecoderConfig> audio_config;
   absl::optional<VideoDecoderConfig> video_config;
+  DVLOG(3) << __func__ << "status:" << status
+           << " buffers.size:" << buffers.size();
 
   if (status == Status::kConfigChanged) {
-    DVLOG(2) << __func__ << ": ConfigChange!";
+    // To simply the config change handling on renderer(receiver) side, prefer
+    // to send out buffers before config change happens. For FFmpegDemuxer, it
+    // doesn't make config change. For ChunkDemuxer, it send out buffer before
+    // confige change happen. |buffers| is empty at this point.
+    DCHECK(buffers.empty());
+
     // Send the config change so our client can read it once it parses the
     // Status obtained via Run() below.
     if (stream_->type() == Type::AUDIO) {
@@ -79,32 +89,32 @@ void MojoDemuxerStreamImpl::OnBufferReady(ReadCallback callback,
       NOTREACHED() << "Unsupported config change encountered for type: "
                    << stream_->type();
     }
-
-    std::move(callback).Run(Status::kConfigChanged, mojom::DecoderBufferPtr(),
-                            audio_config, video_config);
+    std::move(callback).Run(Status::kConfigChanged, {}, audio_config,
+                            video_config);
     return;
   }
 
   if (status == Status::kAborted) {
-    std::move(callback).Run(Status::kAborted, mojom::DecoderBufferPtr(),
-                            audio_config, video_config);
+    std::move(callback).Run(Status::kAborted, {}, audio_config, video_config);
     return;
   }
 
   DCHECK_EQ(status, Status::kOk);
+  DCHECK_EQ(buffers.size(), 1u);
 
+  std::vector<mojom::DecoderBufferPtr> output_mojo_buffers;
   mojom::DecoderBufferPtr mojo_buffer =
-      mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffer));
+      mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffers[0]));
   if (!mojo_buffer) {
-    std::move(callback).Run(Status::kAborted, mojom::DecoderBufferPtr(),
-                            audio_config, video_config);
+    std::move(callback).Run(Status::kAborted, {}, audio_config, video_config);
     return;
   }
+  output_mojo_buffers.emplace_back(std::move(mojo_buffer));
 
   // TODO(dalecurtis): Once we can write framed data to the DataPipe, fill via
   // the producer handle and then read more to keep the pipe full.  Waiting for
   // space can be accomplished using an AsyncWaiter.
-  std::move(callback).Run(status, std::move(mojo_buffer), audio_config,
+  std::move(callback).Run(status, std::move(output_mojo_buffers), audio_config,
                           video_config);
 }
 

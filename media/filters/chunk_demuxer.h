@@ -130,7 +130,7 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   void UnmarkEndOfStream();
 
   // DemuxerStream methods.
-  void Read(ReadCB read_cb) override;
+  void Read(uint32_t count, ReadCB read_cb) override;
   Type type() const override;
   StreamLiveness liveness() const override;
   AudioDecoderConfig audio_decoder_config() override;
@@ -178,6 +178,9 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
 
   void CompletePendingReadIfPossible_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  std::pair<SourceBufferStreamStatus, DemuxerStream::DecoderBufferVector>
+  GetPendingBuffers_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Specifies the type of the stream.
   const Type type_;
 
@@ -191,6 +194,10 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   // OnStartOfCodedFrameGroup() calls, respectively.
   AppendObserverCB append_observer_cb_;
   GroupStartObserverCB group_start_observer_cb_;
+
+  // Requested buffer count. The actual returned buffer count could be less
+  // according to DemuxerStream::Read() API.
+  uint32_t requested_buffer_count_ = 0;
 
   mutable base::Lock lock_;
   State state_ GUARDED_BY(lock_);

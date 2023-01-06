@@ -140,8 +140,11 @@ TEST_F(AudioDecoderStreamTest, FlushOnConfigChange) {
   ASSERT_NE(first_decoder, nullptr);
 
   // Make a regular DemuxerStream::Read().
+  scoped_refptr<DecoderBuffer> buffer = base::MakeRefCounted<DecoderBuffer>(12);
+  DemuxerStream::DecoderBufferVector buffers;
+  buffers.emplace_back(buffer);
   EXPECT_CALL(*demuxer_stream(), OnRead(_))
-      .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, new DecoderBuffer(12)));
+      .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, buffers));
   EXPECT_CALL(*decoder(), Decode(IsRegularDecoderBuffer(), _))
       .WillOnce(Invoke(this, &AudioDecoderStreamTest::ProduceDecoderOutput));
   base::RunLoop run_loop0;
@@ -152,7 +155,8 @@ TEST_F(AudioDecoderStreamTest, FlushOnConfigChange) {
   // Expect the decoder to be flushed.  Upon flushing, the decoder releases
   // internally buffered output.
   EXPECT_CALL(*demuxer_stream(), OnRead(_))
-      .WillOnce(RunOnceCallback<0>(DemuxerStream::kConfigChanged, nullptr));
+      .WillOnce(RunOnceCallback<0>(DemuxerStream::kConfigChanged,
+                                   DemuxerStream::DecoderBufferVector()));
   EXPECT_CALL(*decoder(), Decode(IsEOSDecoderBuffer(), _))
       .WillOnce(Invoke(this, &AudioDecoderStreamTest::ProduceDecoderOutput));
   base::RunLoop run_loop1;

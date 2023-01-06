@@ -90,6 +90,9 @@ class MediaFoundationStreamWrapper
   void ProcessRequestsIfPossible();
   void OnDemuxerStreamRead(DemuxerStream::Status status,
                            scoped_refptr<DecoderBuffer> buffer);
+  // Receive the data from MojoDemuxerStreamAdapter.
+  void OnDemuxerStreamReadBuffers(DemuxerStream::Status status,
+                                  DemuxerStream::DecoderBufferVector buffers);
 
   // IMFMediaStream implementation - it is in general running in MF threadpool
   // thread.

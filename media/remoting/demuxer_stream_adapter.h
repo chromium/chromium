@@ -121,8 +121,11 @@ class DemuxerStreamAdapter {
   void SendReadAck();
 
   // Callback function when retrieving data from demuxer.
+  void OnNewBuffersRead(DemuxerStream::Status status,
+                        DemuxerStream::DecoderBufferVector buffers_queue);
   void OnNewBuffer(DemuxerStream::Status status,
                    scoped_refptr<DecoderBuffer> input);
+
   // Write the current frame into the mojo data pipe. OnFrameWritten() will be
   // called when the writing has finished.
   void WriteFrame();

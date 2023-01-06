@@ -59,13 +59,14 @@ class TestDemuxerStream : public media::DemuxerStream {
     while (!read_queue_.empty())
       read_queue_.pop();
     if (read_cb_)
-      std::move(read_cb_).Run(kAborted, nullptr);
+      std::move(read_cb_).Run(kAborted, {});
   }
 
   bool is_read_pending() const { return !!read_cb_; }
 
   // DemuxerStream implementation.
-  void Read(ReadCB read_cb) override {
+  void Read(uint32_t count, ReadCB read_cb) override {
+    DCHECK_EQ(count, 1u) << "TestDemuxerStream only reads a single buffer.";
     read_cb_ = std::move(read_cb);
     SatisfyRead();
   }
@@ -96,7 +97,7 @@ class TestDemuxerStream : public media::DemuxerStream {
       status = kOk;
     }
 
-    std::move(read_cb_).Run(status, result.buffer);
+    std::move(read_cb_).Run(status, {result.buffer});
   }
 
   media::AudioDecoderConfig config_;

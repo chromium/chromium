@@ -276,8 +276,10 @@ void OnMediaTracksUpdated(std::unique_ptr<::media::MediaTracks> tracks) {}
 void OnNewBuffer(BufferList* buffer_list,
                  const base::RepeatingClosure& finished_cb,
                  ::media::DemuxerStream::Status status,
-                 scoped_refptr<::media::DecoderBuffer> buffer) {
+                 ::media::DemuxerStream::DecoderBufferVector buffers) {
   CHECK_EQ(status, ::media::DemuxerStream::kOk);
+  EXPECT_EQ(buffers.size(), 1u) << "OnNewBuffer only reads a single buffer.";
+  scoped_refptr<::media::DecoderBuffer> buffer = std::move(buffers[0]);
   CHECK(buffer.get());
   CHECK(buffer_list);
   buffer_list->push_back(new DecoderBufferAdapter(buffer));
@@ -334,9 +336,9 @@ DemuxResult FFmpegDemuxForTest(const base::FilePath& filepath,
   bool end_of_stream = false;
   while (!end_of_stream) {
     base::RunLoop run_loop;
-    stream->Read(base::BindOnce(&OnNewBuffer,
-                                base::Unretained(&demux_result.frames),
-                                run_loop.QuitClosure()));
+    stream->Read(
+        1, base::BindOnce(&OnNewBuffer, base::Unretained(&demux_result.frames),
+                          run_loop.QuitClosure()));
     run_loop.Run();
     CHECK(!demux_result.frames.empty());
     end_of_stream = demux_result.frames.back()->end_of_stream();

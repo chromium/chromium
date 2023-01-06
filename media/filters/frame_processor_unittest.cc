@@ -270,8 +270,8 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
 
     do {
       read_callback_called_ = false;
-      stream->Read(base::BindOnce(&FrameProcessorTest::StoreStatusAndBuffer,
-                                  base::Unretained(this)));
+      stream->Read(1, base::BindOnce(&FrameProcessorTest::StoreStatusAndBuffer,
+                                     base::Unretained(this)));
       base::RunLoop().RunUntilIdle();
     } while (++loop_count < 2 && read_callback_called_ &&
              last_read_status_ == DemuxerStream::kAborted);
@@ -314,7 +314,8 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
 
       do {
         read_callback_called_ = false;
-        stream->Read(base::BindOnce(&FrameProcessorTest::StoreStatusAndBuffer,
+        stream->Read(1,
+                     base::BindOnce(&FrameProcessorTest::StoreStatusAndBuffer,
                                     base::Unretained(this)));
         base::RunLoop().RunUntilIdle();
         EXPECT_TRUE(read_callback_called_);
@@ -398,7 +399,12 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
 
  private:
   void StoreStatusAndBuffer(DemuxerStream::Status status,
-                            scoped_refptr<DecoderBuffer> buffer) {
+                            DemuxerStream::DecoderBufferVector buffers) {
+    DCHECK_LE(buffers.size(), 1u)
+        << "FrameProcessorTest only reads a single-buffer.";
+    scoped_refptr<DecoderBuffer> buffer =
+        (buffers.empty() ? nullptr : std::move(buffers[0]));
+
     if (status == DemuxerStream::kOk && buffer.get()) {
       DVLOG(3) << __func__ << "status: " << status
                << " ts: " << buffer->timestamp().InSecondsF();

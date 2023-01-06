@@ -119,8 +119,9 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   // Helpers to pump data from |demuxer_stream_| to |stream_sink_|.
   void ScheduleReadDemuxerStream();
   void ReadDemuxerStream();
-  void OnDemuxerStreamReadDone(media::DemuxerStream::Status status,
-                               scoped_refptr<media::DecoderBuffer> buffer);
+  void OnDemuxerStreamReadDone(
+      media::DemuxerStream::Status status,
+      media::DemuxerStream::DecoderBufferVector buffers);
 
   // Sends the specified packet to |stream_sink_|.
   void SendInputPacket(media::StreamProcessorHelper::IoPacket packet);

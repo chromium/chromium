@@ -89,7 +89,7 @@ class StreamReader {
                   bool* end_of_stream,
                   base::TimeDelta* timestamp,
                   media::DemuxerStream::Status status,
-                  scoped_refptr<DecoderBuffer> buffer);
+                  DemuxerStream::DecoderBufferVector buffers);
   int GetNextStreamIndexToRead();
 
   Streams streams_;
@@ -119,10 +119,11 @@ void StreamReader::Read() {
   base::TimeDelta timestamp;
 
   base::RunLoop run_loop;
-  streams_[index]->Read(base::BindOnce(
-      &StreamReader::OnReadDone, base::Unretained(this),
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      run_loop.QuitWhenIdleClosure(), &end_of_stream, &timestamp));
+  streams_[index]->Read(
+      1, base::BindOnce(&StreamReader::OnReadDone, base::Unretained(this),
+                        base::SingleThreadTaskRunner::GetCurrentDefault(),
+                        run_loop.QuitWhenIdleClosure(), &end_of_stream,
+                        &timestamp));
   run_loop.Run();
 
   CHECK(end_of_stream || timestamp != media::kNoTimestamp);
@@ -145,9 +146,10 @@ void StreamReader::OnReadDone(
     bool* end_of_stream,
     base::TimeDelta* timestamp,
     media::DemuxerStream::Status status,
-    scoped_refptr<DecoderBuffer> buffer) {
+    DemuxerStream::DecoderBufferVector buffers) {
   CHECK_EQ(status, media::DemuxerStream::kOk);
-  CHECK(buffer);
+  CHECK_EQ(buffers.size(), 1u) << "StreamReader only reads a single-buffer.";
+  scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
   *end_of_stream = buffer->end_of_stream();
   *timestamp = *end_of_stream ? media::kNoTimestamp : buffer->timestamp();
   task_runner->PostTask(FROM_HERE, std::move(quit_when_idle_closure));

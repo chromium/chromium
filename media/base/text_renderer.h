@@ -88,6 +88,10 @@ class MEDIA_EXPORT TextRenderer {
     TextRanges text_ranges_;
   };
 
+  void OnBuffersRead(DemuxerStream* text_stream,
+                     DemuxerStream::Status status,
+                     DemuxerStream::DecoderBufferVector buffers);
+
   // Callback delivered by the demuxer |text_stream| when
   // a read from the stream completes.
   void BufferReady(DemuxerStream* text_stream,

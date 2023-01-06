@@ -36,8 +36,13 @@ class FakeDemuxerStreamTest : public testing::Test {
   ~FakeDemuxerStreamTest() override = default;
 
   void BufferReady(DemuxerStream::Status status,
-                   scoped_refptr<DecoderBuffer> buffer) {
+                   DemuxerStream::DecoderBufferVector buffers) {
     DCHECK(read_pending_);
+    DCHECK_LE(buffers.size(), 1u)
+        << "FakeDemuxerStreamTest only reads a single-buffer.";
+    scoped_refptr<DecoderBuffer> buffer =
+        buffers.empty() ? nullptr : std::move(buffers[0]);
+
     read_pending_ = false;
     status_ = status;
     if (status == DemuxerStream::kOk && !buffer->end_of_stream())
@@ -107,8 +112,8 @@ class FakeDemuxerStreamTest : public testing::Test {
   void ReadAndExpect(ReadResult result) {
     EXPECT_FALSE(read_pending_);
     read_pending_ = true;
-    stream_->Read(base::BindOnce(&FakeDemuxerStreamTest::BufferReady,
-                                 base::Unretained(this)));
+    stream_->Read(1, base::BindOnce(&FakeDemuxerStreamTest::BufferReady,
+                                    base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
     ExpectReadResult(result);
   }
@@ -116,8 +121,8 @@ class FakeDemuxerStreamTest : public testing::Test {
   void ReadUntilPending() {
     while (true) {
       read_pending_ = true;
-      stream_->Read(base::BindOnce(&FakeDemuxerStreamTest::BufferReady,
-                                   base::Unretained(this)));
+      stream_->Read(1, base::BindOnce(&FakeDemuxerStreamTest::BufferReady,
+                                      base::Unretained(this)));
       base::RunLoop().RunUntilIdle();
       if (read_pending_)
         break;

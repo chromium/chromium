@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_DEMUXER_STREAM_H_
 #define MEDIA_BASE_DEMUXER_STREAM_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
@@ -66,13 +68,15 @@ class MEDIA_EXPORT DemuxerStream {
 
   static const char* GetStatusName(Status status);
 
-  // Request a buffer to returned via the provided callback.
-  //
-  // The first parameter indicates the status of the read.
-  // The second parameter is non-NULL and contains media data
-  // or the end of the stream if the first parameter is kOk. NULL otherwise.
-  typedef base::OnceCallback<void(Status, scoped_refptr<DecoderBuffer>)> ReadCB;
-  virtual void Read(ReadCB read_cb) = 0;
+  using DecoderBufferVector = std::vector<scoped_refptr<DecoderBuffer>>;
+  using ReadCB = base::OnceCallback<void(Status, DecoderBufferVector)>;
+
+  // Request buffers to be returned via the provided callback.
+  // The first parameter indicates the status of the read request.
+  // If the status is kAborted, kConfigChanged or kError, the vector must be
+  // empty. If the status is kOk, the size of vector should be 1<=n<=N, where
+  // N is the requested count. The last buffer of the vector could be EOS.
+  virtual void Read(uint32_t count, ReadCB read_cb) = 0;
 
   // Returns the audio/video decoder configuration. It is an error to call the
   // audio method on a video stream and vice versa. After |kConfigChanged| is

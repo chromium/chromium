@@ -72,17 +72,19 @@ void DecryptingDemuxerStream::Initialize(DemuxerStream* stream,
   std::move(init_cb_).Run(PIPELINE_OK);
 }
 
-void DecryptingDemuxerStream::Read(ReadCB read_cb) {
+void DecryptingDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, kIdle) << state_;
   DCHECK(read_cb);
   CHECK(!read_cb_) << "Overlapping reads are not supported.";
+  DCHECK_EQ(count, 1u) << "DecryptingDemuxerStream only reads a single-buffer.";
 
   read_cb_ = BindToCurrentLoop(std::move(read_cb));
   state_ = kPendingDemuxerRead;
   demuxer_stream_->Read(
-      base::BindOnce(&DecryptingDemuxerStream::OnBufferReadFromDemuxerStream,
+      1,
+      base::BindOnce(&DecryptingDemuxerStream::OnBuffersReadFromDemuxerStream,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -109,7 +111,7 @@ void DecryptingDemuxerStream::Reset(base::OnceClosure closure) {
     CompleteWaitingForDecryptionKey();
     DCHECK(read_cb_);
     pending_buffer_to_decrypt_ = nullptr;
-    std::move(read_cb_).Run(kAborted, nullptr);
+    std::move(read_cb_).Run(kAborted, {});
   }
 
   DCHECK(!read_cb_);
@@ -169,10 +171,19 @@ DecryptingDemuxerStream::~DecryptingDemuxerStream() {
   if (init_cb_)
     std::move(init_cb_).Run(PIPELINE_ERROR_ABORT);
   if (read_cb_)
-    std::move(read_cb_).Run(kAborted, nullptr);
+    std::move(read_cb_).Run(kAborted, {});
   if (reset_cb_)
     std::move(reset_cb_).Run();
   pending_buffer_to_decrypt_ = nullptr;
+}
+
+void DecryptingDemuxerStream::OnBuffersReadFromDemuxerStream(
+    DemuxerStream::Status status,
+    DemuxerStream::DecoderBufferVector buffers) {
+  DCHECK_LE(buffers.size(), 1u)
+      << "DecryptingDemuxerStream only reads a single-buffer.";
+  OnBufferReadFromDemuxerStream(
+      status, buffers.empty() ? nullptr : std::move(buffers[0]));
 }
 
 void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
@@ -196,14 +207,14 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
     InitializeDecoderConfig();
 
     state_ = kIdle;
-    std::move(read_cb_).Run(kConfigChanged, nullptr);
+    std::move(read_cb_).Run(kConfigChanged, {});
     if (reset_cb_)
       DoReset();
     return;
   }
 
   if (reset_cb_) {
-    std::move(read_cb_).Run(kAborted, nullptr);
+    std::move(read_cb_).Run(kAborted, {});
     DoReset();
     return;
   }
@@ -214,7 +225,7 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
           << GetDisplayName() << ": demuxer stream read error.";
     }
     state_ = kIdle;
-    std::move(read_cb_).Run(status, nullptr);
+    std::move(read_cb_).Run(status, {});
     return;
   }
 
@@ -223,7 +234,7 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
   if (buffer->end_of_stream()) {
     DVLOG(2) << __func__ << ": EOS buffer";
     state_ = kIdle;
-    std::move(read_cb_).Run(kOk, std::move(buffer));
+    std::move(read_cb_).Run(kOk, {std::move(buffer)});
     return;
   }
 
@@ -235,7 +246,7 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
   if (!buffer->decrypt_config()) {
     DVLOG(2) << __func__ << ": clear buffer";
     state_ = kIdle;
-    std::move(read_cb_).Run(kOk, std::move(buffer));
+    std::move(read_cb_).Run(kOk, {std::move(buffer)});
     return;
   }
 
@@ -273,7 +284,7 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
 
   if (reset_cb_) {
     pending_buffer_to_decrypt_ = nullptr;
-    std::move(read_cb_).Run(kAborted, nullptr);
+    std::move(read_cb_).Run(kAborted, {});
     DoReset();
     return;
   }
@@ -286,7 +297,7 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
         << GetDisplayName() << ": decrypt error " << status;
     pending_buffer_to_decrypt_ = nullptr;
     state_ = kIdle;
-    std::move(read_cb_).Run(kError, nullptr);
+    std::move(read_cb_).Run(kError, {});
     return;
   }
 
@@ -326,7 +337,7 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
 
   pending_buffer_to_decrypt_ = nullptr;
   state_ = kIdle;
-  std::move(read_cb_).Run(kOk, std::move(decrypted_buffer));
+  std::move(read_cb_).Run(kOk, {std::move(decrypted_buffer)});
 }
 
 void DecryptingDemuxerStream::OnCdmContextEvent(CdmContext::Event event) {

@@ -166,7 +166,7 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
 TEST_F(DemuxerStreamAdapterTest, SingleReadUntil) {
   // Read will be called once since it doesn't return frame buffer in the dummy
   // implementation.
-  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+  EXPECT_CALL(*demuxer_stream_, Read(_, _)).Times(1);
 
   demuxer_stream_adapter_->FakeReadUntil(3, 999);
   RunPendingTasks();
@@ -175,7 +175,7 @@ TEST_F(DemuxerStreamAdapterTest, SingleReadUntil) {
 TEST_F(DemuxerStreamAdapterTest, MultiReadUntil) {
   // Read will be called once since it doesn't return frame buffer in the dummy
   // implementation, and 2nd one will not proceed when there is ongoing read.
-  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+  EXPECT_CALL(*demuxer_stream_, Read(_, _)).Times(1);
 
   demuxer_stream_adapter_->FakeReadUntil(1, 100);
   RunPendingTasks();
@@ -185,7 +185,7 @@ TEST_F(DemuxerStreamAdapterTest, MultiReadUntil) {
 }
 
 TEST_F(DemuxerStreamAdapterTest, WriteOneFrameSmallerThanCapacity) {
-  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+  EXPECT_CALL(*demuxer_stream_, Read(_, _)).Times(1);
   // Sends a frame with size 50 bytes, pts = 1 and key frame.
   demuxer_stream_->CreateFakeFrame(50, true, 1 /* pts */);
   demuxer_stream_adapter_->FakeReadUntil(1, 999);
@@ -204,7 +204,7 @@ TEST_F(DemuxerStreamAdapterTest, WriteOneFrameSmallerThanCapacity) {
 }
 
 TEST_F(DemuxerStreamAdapterTest, WriteOneFrameLargerThanCapacity) {
-  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+  EXPECT_CALL(*demuxer_stream_, Read(_, _)).Times(1);
   // Sends a frame with size 800 bytes, pts = 1 and key frame.
   demuxer_stream_->CreateFakeFrame(800, true, 1 /* pts */);
   demuxer_stream_adapter_->FakeReadUntil(1, 999);
@@ -223,7 +223,7 @@ TEST_F(DemuxerStreamAdapterTest, WriteOneFrameLargerThanCapacity) {
 }
 
 TEST_F(DemuxerStreamAdapterTest, SendFrameAndSignalFlushMix) {
-  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(4);
+  EXPECT_CALL(*demuxer_stream_, Read(_, _)).Times(4);
   // Sends a frame with size 50 bytes, pts = 1 and key frame.
   demuxer_stream_->CreateFakeFrame(50, true, 1 /* pts */);
   // Issues ReadUntil request with frame count up to 1 (fetch #0).
@@ -314,7 +314,7 @@ TEST_F(DemuxerStreamAdapterTest, ClosingMessagePipeCausesMojoDisconnected) {
 }
 
 TEST_F(DemuxerStreamAdapterTest, ClosingDataPipeCausesWriteError) {
-  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+  EXPECT_CALL(*demuxer_stream_, Read(_, _)).Times(1);
 
   std::vector<StopTrigger> errors;
   demuxer_stream_adapter_->TakeErrors(&errors);
