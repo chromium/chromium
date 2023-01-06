@@ -53,11 +53,6 @@ export class AcceleratorRowElement extends PolymerElement {
         value: () => [],
       },
 
-      acceleratorText: {
-        type: String,
-        value: '',
-      },
-
       layoutStyle: {
         type: Object,
       },
@@ -82,8 +77,6 @@ export class AcceleratorRowElement extends PolymerElement {
 
   description: string;
   acceleratorInfos: AcceleratorInfo[];
-  /** The text to display when layoutStyle == kText. */
-  acceleratorText?: string;
   layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;

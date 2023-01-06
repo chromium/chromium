@@ -166,11 +166,9 @@ suite('acceleratorRowTest', function() {
         /*keyDisplay=*/ 'c');
 
     const accelerators = [acceleratorInfo1, acceleratorInfo2];
-    const expectedAccelText = 'test accel text';
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.layoutStyle = LayoutStyle.kText;
-    rowElement.acceleratorText = expectedAccelText;
     await flush();
 
     const acceleratorElements =
@@ -186,7 +184,6 @@ suite('acceleratorRowTest', function() {
     const textWrapper = textAccelElement!.shadowRoot!.querySelector(
                             '#text-wrapper') as HTMLDivElement;
     assertTrue(!!textWrapper);
-    assertEquals(expectedAccelText, textWrapper.innerText);
   });
 
   test('LoadBasicRowEvenWhenAccelTextIsPresent', async () => {
@@ -207,7 +204,6 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.acceleratorText = 'this should not be shown';
     rowElement.layoutStyle = LayoutStyle.kDefault;
     await flush();
 
