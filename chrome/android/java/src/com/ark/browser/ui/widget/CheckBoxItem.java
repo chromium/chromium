@@ -155,6 +155,12 @@ public class CheckBoxItem extends FrameLayout {
         iconView.setColorFilter(titleTextColor);
     }
 
+    public void setIcon(Drawable drawable) {
+        iconView.setImageDrawable(drawable);
+        iconView.setVisibility(VISIBLE);
+        iconView.clearColorFilter();
+    }
+
     public boolean isChecked() {
         return checked;
     }

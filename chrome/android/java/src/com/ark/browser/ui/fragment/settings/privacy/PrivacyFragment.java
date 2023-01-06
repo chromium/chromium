@@ -21,8 +21,7 @@ public class PrivacyFragment extends BaseSwipeBackFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().setTitle(R.string.text_settings_privacy);
-        setHasOptionsMenu(true);
+        setToolbarTitle(R.string.text_settings_privacy);
     }
 
     @Override
@@ -106,7 +105,7 @@ public class PrivacyFragment extends BaseSwipeBackFragment
     @Override
     public void onItemClick(CommonSettingItem item) {
         if (item.getId() == R.id.item_clear_browsing_data) {
-//            _mActivity.start(new ClearBrowsingDataFragment());
+            start(new ClearBrowsingDataFragment());
         }
     }
 }

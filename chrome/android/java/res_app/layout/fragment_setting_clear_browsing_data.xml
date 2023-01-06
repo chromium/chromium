@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    >
+
+    <include layout="@layout/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:layout_below="@+id/tool_bar"
+        android:layout_above="@id/btn_clear"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:paddingEnd="8dp"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/title"
+                    android:text="@string/clear_browsing_data_tab_period_title"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:textColor="?attr/textColorNormal"
+                    />
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:textSize="16sp"
+                    android:paddingTop="6dp"
+                    android:layout_weight="1"
+                    />
+
+            </LinearLayout>
+
+            <com.ark.browser.ui.widget.CheckBoxItem
+                android:id="@+id/layout_clear_history_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                app:check_title="@string/clear_history_title"
+                app:title_text_color="?attr/textColorMajor"
+                app:content_text_color="?attr/textColorNormal"
+                />
+
+            <com.ark.browser.ui.widget.CheckBoxItem
+                android:id="@+id/layout_clear_cookies_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                app:check_title="@string/clear_cookies_and_site_data_title"
+                app:check_icon="@drawable/sad_tab"
+                app:title_text_color="?attr/textColorMajor"
+                app:content_text_color="?attr/textColorNormal"
+                />
+
+            <com.ark.browser.ui.widget.CheckBoxItem
+                android:id="@+id/layout_clear_cache_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                app:check_title="@string/clear_cache_title"
+                app:title_text_color="?attr/textColorMajor"
+                app:content_text_color="?attr/textColorNormal"
+                />
+
+            <com.ark.browser.ui.widget.CheckBoxItem
+                android:id="@+id/layout_clear_passwords_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                app:check_title="@string/clear_passwords_title"
+                app:title_text_color="?attr/textColorMajor"
+                app:content_text_color="?attr/textColorNormal"
+                />
+
+            <com.ark.browser.ui.widget.CheckBoxItem
+                android:id="@+id/layout_clear_form_data_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                app:check_title="@string/clear_form_data_title"
+                app:title_text_color="?attr/textColorMajor"
+                app:content_text_color="?attr/textColorNormal"
+                />
+
+            <com.ark.browser.ui.widget.CheckBoxItem
+                android:id="@+id/layout_clear_site_settings_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                app:check_title="@string/prefs_site_settings"
+                app:title_text_color="?attr/textColorMajor"
+                app:content_text_color="?attr/textColorNormal"
+                />
+
+<!--            <com.ark.browser.ui.widget.CheckBoxItem-->
+<!--                android:id="@+id/layout_media_licenses_checkbox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:minHeight="56dp"-->
+<!--                app:check_title="@string/clear_media_licenses_title"-->
+<!--                app:title_text_color="?attr/textColorMajor"-->
+<!--                app:content_text_color="?attr/textColorNormal"-->
+<!--                />-->
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <org.chromium.ui.widget.ButtonCompat
+        xmlns:chrome="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/btn_clear"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:minHeight="40dp"
+        android:focusable="false"
+        android:textColor="@android:color/white"
+        chrome:buttonColor="@color/colorPrimary"
+        android:text="清除数据"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+
+</RelativeLayout>
