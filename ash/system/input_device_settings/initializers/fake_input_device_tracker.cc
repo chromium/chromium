@@ -11,6 +11,8 @@ namespace ash {
 FakeInputDeviceTracker::FakeInputDeviceTracker() = default;
 FakeInputDeviceTracker::~FakeInputDeviceTracker() = default;
 
+void FakeInputDeviceTracker::Init(PrefService* pref_service) {}
+
 void FakeInputDeviceTracker::RecordDeviceConnected(
     InputDeviceCategory category,
     const base::StringPiece& device_key) {

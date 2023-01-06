@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/system/input_device_settings/initializers/input_device_tracker.h"
-#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 
 namespace ash {
 
@@ -34,6 +33,8 @@ class FakeInputDeviceTracker : public InputDeviceTracker {
   FakeInputDeviceTracker& operator=(const FakeInputDeviceTracker&) = delete;
   ~FakeInputDeviceTracker() override;
 
+  // InputDeviceTracker:
+  void Init(PrefService* pref_service) override;
   void RecordDeviceConnected(InputDeviceCategory category,
                              const base::StringPiece& device_key) override;
 
