@@ -1160,6 +1160,14 @@ void UpdateElasticOverscroll(
     return;
   }
 #if BUILDFLAG(IS_ANDROID)
+  if (inner_viewport && property_trees->scroll_tree()
+                            .container_bounds(inner_viewport->id)
+                            .IsEmpty()) {
+    // Avoid divide by 0. Animation should not be visible for an empty viewport
+    // anyway.
+    return;
+  }
+
   // On android, elastic overscroll is implemented by stretching the content
   // from the overscrolled edge by applying a stretch transform
   overscroll_elasticity_transform_node->local.MakeIdentity();

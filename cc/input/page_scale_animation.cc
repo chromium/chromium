@@ -18,6 +18,7 @@ namespace {
 // between 0 and 1, representing the percentage position within the viewport.
 gfx::Vector2dF NormalizeFromViewport(const gfx::Vector2dF& denormalized,
                                      const gfx::SizeF& viewport_size) {
+  DCHECK(!viewport_size.IsEmpty());
   return gfx::ScaleVector2d(denormalized,
                             1.f / viewport_size.width(),
                             1.f / viewport_size.height());
