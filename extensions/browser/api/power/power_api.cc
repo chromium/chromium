@@ -4,10 +4,8 @@
 
 #include "extensions/browser/api/power/power_api.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/power.h"
@@ -28,7 +26,7 @@ device::mojom::WakeLockType LevelToWakeLockType(api::power::Level level) {
     case api::power::LEVEL_NONE:
       return device::mojom::WakeLockType::kPreventDisplaySleep;
   }
-  NOTREACHED() << "Unhandled level " << level;
+  NOTREACHED() << "Unhandled power level: " << level;
   return device::mojom::WakeLockType::kPreventDisplaySleep;
 }
 
@@ -105,8 +103,7 @@ PowerAPI::PowerAPI(content::BrowserContext* context)
   ExtensionRegistry::Get(browser_context_)->AddObserver(this);
 }
 
-PowerAPI::~PowerAPI() {
-}
+PowerAPI::~PowerAPI() = default;
 
 void PowerAPI::UpdateWakeLock() {
   if (extension_levels_.empty()) {

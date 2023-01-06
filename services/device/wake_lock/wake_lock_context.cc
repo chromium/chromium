@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 
@@ -23,7 +23,7 @@ WakeLockContext::WakeLockContext(
       context_id_(context_id),
       native_view_getter_(native_view_getter) {}
 
-WakeLockContext::~WakeLockContext() {}
+WakeLockContext::~WakeLockContext() = default;
 
 void WakeLockContext::GetWakeLock(
     mojom::WakeLockType type,

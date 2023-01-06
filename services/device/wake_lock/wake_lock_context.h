@@ -10,13 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/device/wake_lock/wake_lock.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace device {
 

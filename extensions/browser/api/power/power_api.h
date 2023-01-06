@@ -9,9 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -31,7 +30,7 @@ class PowerRequestKeepAwakeFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("power.requestKeepAwake", POWER_REQUESTKEEPAWAKE)
 
  protected:
-  ~PowerRequestKeepAwakeFunction() override {}
+  ~PowerRequestKeepAwakeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -43,7 +42,7 @@ class PowerReleaseKeepAwakeFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("power.releaseKeepAwake", POWER_RELEASEKEEPAWAKE)
 
  protected:
-  ~PowerReleaseKeepAwakeFunction() override {}
+  ~PowerReleaseKeepAwakeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
