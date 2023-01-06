@@ -33,7 +33,6 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
-#include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(IS_OZONE)
 
 using ::testing::_;
@@ -273,28 +272,20 @@ class DesktopCaptureDeviceTest : public testing::Test {
 };
 
 TEST_F(DesktopCaptureDeviceTest, Capture) {
-#if BUILDFLAG(IS_FUCHSIA)
-  if (ui::OzonePlatform::GetInstance()->GetPlatformNameForTest() !=
-      "flatland") {
-    GTEST_SKIP() << "ScreenCapturer is supported only when using Flatland";
-  }
-#endif
-
   std::unique_ptr<webrtc::DesktopCapturer> capturer(
       webrtc::DesktopCapturer::CreateScreenCapturer(
           webrtc::DesktopCaptureOptions::CreateDefault()));
 
-#if BUILDFLAG(IS_OZONE) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(OZONE_PLATFORM_X11)
   // webrtc::DesktopCapturer is only supported on Ozone X11 by default.
   // TODO(webrtc/13429): Enable for Wayland.
   EXPECT_FALSE(capturer);
-  GTEST_SKIP();
+  // Check return value to avoid compiler warnings.
+  if (!capturer)
+    return;
 #endif  // !BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_OZONE) && (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS))
-
-  EXPECT_TRUE(capturer);
+#endif  // BUILDFLAG(IS_OZONE)
 
   CreateScreenCaptureDevice(std::move(capturer));
 

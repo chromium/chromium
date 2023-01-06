@@ -17478,6 +17478,9 @@
       },
       {
         "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless",
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
@@ -19038,6 +19041,11 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -20364,6 +20372,11 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

@@ -369,6 +369,11 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
         "ci_only": true,
         "merge": {
           "args": [],
@@ -1568,6 +1573,11 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
         "ci_only": true,
         "merge": {
           "args": [],
@@ -2767,6 +2777,11 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
         "ci_only": true,
         "merge": {
           "args": [],
@@ -4299,6 +4314,11 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
