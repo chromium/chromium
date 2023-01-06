@@ -1469,10 +1469,12 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   if (ShouldIncludeBlockVisualOverflowForAnchorOnly(outline_type) &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
     if (container->IsAnonymousBlock()) {
+      const auto* container_box = DynamicTo<LayoutBox>(
+          container->GetLayoutObject()->NonAnonymousAncestor());
+      if (!container_box)
+        return;
       // TODO(crbug.com/1380673): Just picking the first fragment isn't right.
-      container =
-          To<LayoutBox>(container->GetLayoutObject()->NonAnonymousAncestor())
-              ->GetPhysicalFragment(0);
+      container = container_box->GetPhysicalFragment(0);
       DCHECK(container);
     }
 
