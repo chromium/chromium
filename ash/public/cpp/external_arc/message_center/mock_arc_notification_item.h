@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 
 namespace ash {

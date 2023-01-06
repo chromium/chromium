@@ -4,7 +4,7 @@
 
 #include "ash/components/arc/session/arc_dlc_installer.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 

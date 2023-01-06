@@ -7,7 +7,7 @@
 
 #include "ash/quick_pair/repository/http_fetcher.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"

@@ -8,7 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/decode_image.h"

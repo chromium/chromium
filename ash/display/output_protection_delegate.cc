@@ -6,7 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/shell.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_configurator.h"

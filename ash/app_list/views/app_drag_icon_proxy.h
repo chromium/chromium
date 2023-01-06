@@ -6,7 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_DRAG_ICON_PROXY_H_
 
 #include <memory>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/unique_widget_ptr.h"

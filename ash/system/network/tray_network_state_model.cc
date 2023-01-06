@@ -9,9 +9,9 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/system/network/vpn_list.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"

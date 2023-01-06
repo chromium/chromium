@@ -18,7 +18,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/system_toast_style.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"

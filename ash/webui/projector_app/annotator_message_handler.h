@@ -6,7 +6,7 @@
 #define ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_MESSAGE_HANDLER_H_
 
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 

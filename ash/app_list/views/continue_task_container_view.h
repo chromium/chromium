@@ -13,7 +13,7 @@
 
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/models/list_model_observer.h"

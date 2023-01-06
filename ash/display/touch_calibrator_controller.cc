@@ -11,7 +11,7 @@
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/shell.h"
 #include "ash/touch/ash_touch_transform_controller.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_tree_host.h"

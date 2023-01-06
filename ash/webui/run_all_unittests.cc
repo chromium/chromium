@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/ash_webui_test_suite.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/chromeos_buildflags.h"

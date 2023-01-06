@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_COMPAT_MODE_RESIZE_CONFIRMATION_DIALOG_VIEW_H_
 #define ASH_COMPONENTS_ARC_COMPAT_MODE_RESIZE_CONFIRMATION_DIALOG_VIEW_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace aura {

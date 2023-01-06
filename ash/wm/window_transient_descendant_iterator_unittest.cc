@@ -6,7 +6,7 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 

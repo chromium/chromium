@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
 namespace ash {

@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_IMAGE_DOWNLOADER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;

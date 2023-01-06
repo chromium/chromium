@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"

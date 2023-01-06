@@ -8,7 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/system/time/time_of_day.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"

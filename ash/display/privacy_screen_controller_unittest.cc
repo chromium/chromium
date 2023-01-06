@@ -8,7 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/message.h"

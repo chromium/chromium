@@ -12,7 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace aura {
 class Window;

@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/eche_connection_scheduler_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 

@@ -10,8 +10,8 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 
 class AccountId;

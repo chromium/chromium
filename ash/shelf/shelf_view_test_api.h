@@ -6,7 +6,7 @@
 #define ASH_SHELF_SHELF_VIEW_TEST_API_H_
 
 #include "ash/public/cpp/shelf_item.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 

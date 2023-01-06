@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"

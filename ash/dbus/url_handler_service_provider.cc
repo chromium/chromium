@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

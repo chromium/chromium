@@ -7,7 +7,7 @@
 #include "ash/in_session_auth/mock_in_session_auth_dialog_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 
 using ::testing::_;

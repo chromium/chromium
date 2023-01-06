@@ -6,7 +6,7 @@
 #define ASH_QUICK_PAIR_UI_FAST_PAIR_FAST_PAIR_PRESENTER_H_
 
 #include "ash/quick_pair/ui/actions.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace message_center {
 class MessageCenter;

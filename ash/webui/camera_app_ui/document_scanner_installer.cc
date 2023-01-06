@@ -5,7 +5,7 @@
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
 
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 

@@ -23,7 +23,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_language.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/time/time.h"

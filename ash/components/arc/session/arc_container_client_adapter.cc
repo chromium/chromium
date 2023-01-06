@@ -9,7 +9,7 @@
 
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_upgrade_params.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"

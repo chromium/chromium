@@ -5,8 +5,8 @@
 #include <utility>
 
 #include "ash/public/cpp/test/test_image_downloader.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"

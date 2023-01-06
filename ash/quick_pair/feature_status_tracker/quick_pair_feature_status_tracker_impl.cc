@@ -12,7 +12,7 @@
 #include "ash/quick_pair/feature_status_tracker/google_api_key_availability_provider.h"
 #include "ash/quick_pair/feature_status_tracker/logged_in_user_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/screen_state_enabled_provider.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace ash {
 namespace quick_pair {

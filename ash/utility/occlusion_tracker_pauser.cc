@@ -5,7 +5,7 @@
 #include "ash/utility/occlusion_tracker_pauser.h"
 
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 

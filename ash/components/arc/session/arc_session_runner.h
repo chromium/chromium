@@ -13,7 +13,7 @@
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
 #include "ash/components/arc/session/arc_upgrade_params.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"

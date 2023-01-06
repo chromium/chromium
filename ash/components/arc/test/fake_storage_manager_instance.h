@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_ARC_TEST_FAKE_STORAGE_MANAGER_INSTANCE_H_
 
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace arc {
 

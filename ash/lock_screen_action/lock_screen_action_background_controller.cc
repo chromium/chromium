@@ -7,7 +7,7 @@
 #include "ash/lock_screen_action/lock_screen_action_background_controller_impl.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller_stub.h"
 #include "ash/lock_screen_action/lock_screen_action_background_observer.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

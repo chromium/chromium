@@ -5,7 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_UI_ACCESSIBILITY_ANIMATION_ONE_SHOT_H_
 #define ASH_ACCESSIBILITY_UI_ACCESSIBILITY_ANIMATION_ONE_SHOT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_animation_observer.h"

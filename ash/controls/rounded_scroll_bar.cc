@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "ash/public/cpp/style/color_provider.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"

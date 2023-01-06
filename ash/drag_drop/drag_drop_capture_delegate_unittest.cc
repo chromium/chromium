@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/test/test_window_delegate.h"

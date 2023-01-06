@@ -8,7 +8,7 @@
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_impl.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 

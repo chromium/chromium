@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "device/bluetooth/test/mock_bluetooth_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

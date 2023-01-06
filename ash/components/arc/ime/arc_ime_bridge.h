@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/ime.mojom-forward.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 

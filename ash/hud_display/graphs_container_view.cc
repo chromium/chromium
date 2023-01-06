@@ -10,7 +10,7 @@
 #include "ash/hud_display/fps_graph_page_view.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/memory_graph_page_view.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

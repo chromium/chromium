@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_ARC_COMPAT_MODE_ARC_SPLASH_SCREEN_DIALOG_VIEW_H_
 
 #include "ash/style/ash_color_id.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"

@@ -18,7 +18,7 @@
 #include "ash/quick_pair/feature_status_tracker/mock_screen_state_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/screen_state_enabled_provider.h"
 #include "ash/test/ash_test_base.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"

@@ -20,7 +20,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/test/ash_test_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"

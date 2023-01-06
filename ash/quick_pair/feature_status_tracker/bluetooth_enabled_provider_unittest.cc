@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

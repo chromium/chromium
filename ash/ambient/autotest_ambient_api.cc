@@ -9,8 +9,8 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 

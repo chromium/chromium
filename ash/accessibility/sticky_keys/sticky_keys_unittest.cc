@@ -6,8 +6,8 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event_source.h"

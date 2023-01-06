@@ -5,7 +5,7 @@
 #ifndef ASH_LOGIN_UI_HOVER_NOTIFIER_H_
 #define ASH_LOGIN_UI_HOVER_NOTIFIER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/events/event_handler.h"
 
 namespace views {

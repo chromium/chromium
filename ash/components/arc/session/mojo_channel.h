@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/session/connection_holder.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

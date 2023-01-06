@@ -69,8 +69,8 @@
 #include "ash/components/arc/session/mojo_channel.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 

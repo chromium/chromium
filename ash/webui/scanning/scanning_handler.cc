@@ -8,11 +8,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/scanning/scanning_app_delegate.h"
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

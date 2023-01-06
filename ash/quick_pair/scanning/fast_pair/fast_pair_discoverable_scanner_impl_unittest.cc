@@ -13,7 +13,7 @@
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"

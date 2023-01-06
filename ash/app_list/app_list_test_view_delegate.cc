@@ -10,8 +10,8 @@
 
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 

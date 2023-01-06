@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/frame/frame_context_menu_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"

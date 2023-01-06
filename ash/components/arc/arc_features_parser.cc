@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/components/arc/arc_util.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"

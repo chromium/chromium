@@ -14,7 +14,7 @@
 #include "ash/webui/diagnostics_ui/backend/system/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/backend/system/power_manager_client_conversions.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

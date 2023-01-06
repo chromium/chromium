@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

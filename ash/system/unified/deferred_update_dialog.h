@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_DEFERRED_UPDATE_DIALOG_H_
 #define ASH_SYSTEM_UNIFIED_DEFERRED_UPDATE_DIALOG_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace ash {

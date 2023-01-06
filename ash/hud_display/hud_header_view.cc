@@ -9,7 +9,7 @@
 #include "ash/hud_display/hud_properties.h"
 #include "ash/hud_display/solid_source_background.h"
 #include "ash/hud_display/tab_strip.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"

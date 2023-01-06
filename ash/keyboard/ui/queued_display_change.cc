@@ -4,7 +4,7 @@
 
 #include "ash/keyboard/ui/queued_display_change.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/display/display.h"
 
 namespace keyboard {

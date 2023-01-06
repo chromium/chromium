@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/peripheral_battery_listener.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"

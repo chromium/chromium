@@ -10,7 +10,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/compositor/throughput_tracker.h"
 

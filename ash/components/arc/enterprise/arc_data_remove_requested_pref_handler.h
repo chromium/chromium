@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
 #define ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 

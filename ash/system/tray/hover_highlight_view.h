@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/system/tray/actionable_view.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

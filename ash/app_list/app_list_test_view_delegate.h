@@ -18,8 +18,8 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {

@@ -6,7 +6,7 @@
 #define ASH_LOGIN_UI_AUTH_FACTOR_MODEL_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

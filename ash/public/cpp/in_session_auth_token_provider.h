@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_IN_SESSION_AUTH_TOKEN_PROVIDER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"

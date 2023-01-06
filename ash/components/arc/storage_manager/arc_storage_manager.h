@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_ARC_STORAGE_MANAGER_ARC_STORAGE_MANAGER_H_
 
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

@@ -8,7 +8,7 @@
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"

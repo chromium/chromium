@@ -10,7 +10,7 @@
 #include "ash/quick_pair/repository/fast_pair/mock_fast_pair_image_decoder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"

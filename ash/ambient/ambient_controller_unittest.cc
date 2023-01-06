@@ -24,7 +24,7 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"

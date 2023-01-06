@@ -14,7 +14,7 @@
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/util/resource_util.h"
 #include "ash/style/ash_color_id.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"

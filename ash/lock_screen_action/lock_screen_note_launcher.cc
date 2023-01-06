@@ -6,7 +6,7 @@
 
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace ash {
 

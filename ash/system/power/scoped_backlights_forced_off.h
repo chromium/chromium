@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_POWER_SCOPED_BACKLIGHTS_FORCED_OFF_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

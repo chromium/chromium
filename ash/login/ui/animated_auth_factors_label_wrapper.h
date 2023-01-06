@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"
 

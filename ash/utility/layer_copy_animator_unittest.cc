@@ -4,8 +4,8 @@
 
 #include "ash/utility/layer_copy_animator.h"
 
-#include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

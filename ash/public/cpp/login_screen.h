@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

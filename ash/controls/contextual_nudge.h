@@ -6,7 +6,7 @@
 #define ASH_CONTROLS_CONTEXTUAL_NUDGE_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 

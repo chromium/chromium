@@ -17,7 +17,7 @@
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_info.h"
 #include "ash/test/ash_test_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"

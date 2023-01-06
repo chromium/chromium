@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
 
 #include "ash/ash_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/public/cpp/notification.h"
 

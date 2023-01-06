@@ -6,7 +6,7 @@
 #define ASH_AMBIENT_UI_JITTER_CALCULATOR_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace ash {

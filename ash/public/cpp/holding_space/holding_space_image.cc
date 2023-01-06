@@ -10,8 +10,8 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/image_util.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/gfx/image/image_skia_operations.h"

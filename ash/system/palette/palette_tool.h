@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/palette/palette_ids.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace aura {

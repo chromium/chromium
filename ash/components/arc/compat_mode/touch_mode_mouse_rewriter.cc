@@ -8,7 +8,7 @@
 
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"

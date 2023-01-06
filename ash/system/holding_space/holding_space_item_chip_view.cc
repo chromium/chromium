@@ -24,7 +24,7 @@
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

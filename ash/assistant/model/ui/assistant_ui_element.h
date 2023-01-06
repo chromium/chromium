@@ -5,8 +5,8 @@
 #ifndef ASH_ASSISTANT_MODEL_UI_ASSISTANT_UI_ELEMENT_H_
 #define ASH_ASSISTANT_MODEL_UI_ASSISTANT_UI_ELEMENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

@@ -11,7 +11,7 @@
 
 #include "ash/login/ui/login_pin_view.h"
 #include "ash/login/ui/login_test_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/timer/mock_timer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"

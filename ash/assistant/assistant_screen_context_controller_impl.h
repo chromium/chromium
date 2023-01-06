@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {

@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/components/arc/compat_mode/resize_util.h"
-#include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/accelerators.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 
 namespace ash {

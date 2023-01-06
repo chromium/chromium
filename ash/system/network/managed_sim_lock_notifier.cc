@@ -12,7 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "components/onc/onc_constants.h"
 #include "components/session_manager/session_manager_types.h"

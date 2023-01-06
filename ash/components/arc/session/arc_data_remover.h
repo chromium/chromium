@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_SESSION_ARC_DATA_REMOVER_H_
 #define ASH_COMPONENTS_ARC_SESSION_ARC_DATA_REMOVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"

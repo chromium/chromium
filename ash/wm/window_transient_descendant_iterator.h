@@ -6,8 +6,8 @@
 #define ASH_WM_WINDOW_TRANSIENT_DESCENDANT_ITERATOR_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 
 namespace aura {
 class Window;

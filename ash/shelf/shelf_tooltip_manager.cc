@@ -13,7 +13,7 @@
 #include "ash/shelf/shelf_tooltip_preview_bubble.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"

@@ -14,7 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {

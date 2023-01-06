@@ -10,9 +10,9 @@
 
 #include "ash/hud_display/ash_tracing_request.h"
 #include "ash/shell.h"
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

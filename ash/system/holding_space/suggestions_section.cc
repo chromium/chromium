@@ -18,7 +18,7 @@
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/accessibility/ax_enums.mojom.h"

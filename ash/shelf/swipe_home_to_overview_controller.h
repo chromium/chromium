@@ -6,7 +6,7 @@
 #define ASH_SHELF_SWIPE_HOME_TO_OVERVIEW_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"

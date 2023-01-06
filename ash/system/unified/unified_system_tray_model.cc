@@ -10,7 +10,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/status_area_widget.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 
 namespace {

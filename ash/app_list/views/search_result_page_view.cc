@@ -18,7 +18,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

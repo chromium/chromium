@@ -4,7 +4,7 @@
 
 #include "ash/components/arc/test/fake_system_ui_instance.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace arc {
 

@@ -6,8 +6,8 @@
 #define ASH_GLANCEABLES_SIGNOUT_SCREENSHOT_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

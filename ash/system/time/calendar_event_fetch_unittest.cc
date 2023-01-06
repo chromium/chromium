@@ -18,7 +18,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -8,8 +8,8 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/feature_status_tracker/base_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 
 namespace ash {
 namespace quick_pair {

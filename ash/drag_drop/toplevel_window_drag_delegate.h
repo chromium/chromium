@@ -6,7 +6,7 @@
 #define ASH_DRAG_DROP_TOPLEVEL_WINDOW_DRAG_DELEGATE_H_
 
 #include "ash/drag_drop/drag_drop_capture_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace aura {

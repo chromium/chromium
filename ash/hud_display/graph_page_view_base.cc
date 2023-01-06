@@ -9,7 +9,7 @@
 #include "ash/hud_display/legend.h"
 #include "ash/hud_display/reference_lines.h"
 #include "ash/hud_display/solid_source_background.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"

@@ -5,7 +5,7 @@
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 
 #include "ash/quick_pair/feature_status_tracker/fast_pair_support_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

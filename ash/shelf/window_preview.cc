@@ -8,7 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/aura/window.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"

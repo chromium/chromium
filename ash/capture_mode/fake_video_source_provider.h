@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/capture_mode/fake_camera_device.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/webui/projector_app/projector_xhr_sender.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace network::mojom {
 class URLLoaderFactory;

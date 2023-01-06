@@ -14,7 +14,7 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 
 namespace ash {

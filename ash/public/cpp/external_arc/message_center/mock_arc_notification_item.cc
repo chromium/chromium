@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace ash {
 

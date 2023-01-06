@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_SESSION_ADB_SIDELOADING_AVAILABILITY_DELEGATE_H_
 #define ASH_COMPONENTS_ARC_SESSION_ADB_SIDELOADING_AVAILABILITY_DELEGATE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace arc {
 

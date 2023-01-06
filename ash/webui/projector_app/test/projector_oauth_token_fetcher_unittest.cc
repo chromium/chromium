@@ -5,8 +5,8 @@
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 
 #include "ash/webui/projector_app/test/mock_app_client.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

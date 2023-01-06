@@ -10,7 +10,7 @@
 
 #include "ash/components/arc/session/arc_client_adapter.h"
 #include "ash/components/arc/session/file_system_status.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

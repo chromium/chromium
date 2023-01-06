@@ -11,7 +11,7 @@
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter_impl.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {

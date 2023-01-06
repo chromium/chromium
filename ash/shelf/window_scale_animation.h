@@ -10,8 +10,8 @@
 
 #include "ash/ash_export.h"
 #include "base/auto_reset.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 

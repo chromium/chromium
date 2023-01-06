@@ -10,7 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ash {

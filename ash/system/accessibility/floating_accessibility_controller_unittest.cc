@@ -19,8 +19,8 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/barrier_closure.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 

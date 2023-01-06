@@ -5,7 +5,7 @@
 #include "ash/lock_screen_action/lock_screen_action_background_controller_impl.h"
 
 #include "ash/lock_screen_action/lock_screen_action_background_view.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/aura/window.h"
 
 namespace ash {

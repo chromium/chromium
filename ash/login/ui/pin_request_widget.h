@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/pin_request_view.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 namespace views {

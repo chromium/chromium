@@ -10,7 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ui {

@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_ARC_TEST_FAKE_APPS_TRACKER_H_
 
 #include "ash/components/arc/enterprise/arc_apps_tracker.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace arc {
 namespace data_snapshotd {

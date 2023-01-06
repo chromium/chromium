@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 
 namespace network {

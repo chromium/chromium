@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

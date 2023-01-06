@@ -6,7 +6,7 @@
 #define ASH_APP_LIST_APP_LIST_BUBBLE_EVENT_FILTER_H_
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {

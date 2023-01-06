@@ -5,7 +5,7 @@
 #include "ash/fast_ink/laser/laser_pointer_view.h"
 
 #include "ash/fast_ink/laser/laser_segment_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkColor.h"

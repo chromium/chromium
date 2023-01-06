@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/webui/help_app_ui/search/search_metadata.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 

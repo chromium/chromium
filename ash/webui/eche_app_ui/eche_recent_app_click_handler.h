@@ -8,7 +8,7 @@
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_click_handler.h"
 #include "chromeos/ash/components/phonehub/notification_interaction_handler.h"

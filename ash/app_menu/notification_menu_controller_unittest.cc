@@ -6,7 +6,7 @@
 
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/test/ash_test_base.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"

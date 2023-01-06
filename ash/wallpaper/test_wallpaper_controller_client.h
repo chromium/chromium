@@ -10,8 +10,8 @@
 #include <unordered_map>
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

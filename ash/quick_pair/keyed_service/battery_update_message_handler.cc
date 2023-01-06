@@ -5,9 +5,9 @@
 #include "ash/quick_pair/keyed_service/battery_update_message_handler.h"
 
 #include "ash/quick_pair/common/logging.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"

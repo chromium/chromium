@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/session/connection_holder.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 
 namespace arc {

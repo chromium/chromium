@@ -6,7 +6,7 @@
 #define ASH_DRAG_DROP_DRAG_DROP_CAPTURE_DELEGATE_H_
 
 #include "ash/ash_export.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/events/gestures/gesture_types.h"
 
 namespace aura {

@@ -7,7 +7,7 @@
 
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/assistant/util/animation_util.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ui {
 class CallbackLayerAnimationObserver;

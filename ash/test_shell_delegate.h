@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/shell_delegate.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"

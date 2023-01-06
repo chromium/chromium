@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "base/time/tick_clock.h"

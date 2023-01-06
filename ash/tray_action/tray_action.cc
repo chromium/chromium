@@ -8,9 +8,9 @@
 
 #include "ash/lock_screen_action/lock_screen_note_display_state_handler.h"
 #include "ash/tray_action/tray_action_observer.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "ui/events/devices/stylus_state.h"
 
 namespace ash {

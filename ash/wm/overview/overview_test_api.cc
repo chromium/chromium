@@ -10,7 +10,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

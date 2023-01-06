@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 #include "ash/login/ui/login_test_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

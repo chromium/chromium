@@ -5,8 +5,8 @@
 #include <utility>
 
 #include "ash/components/arc/test/fake_bluetooth_instance.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 
 namespace arc {
 

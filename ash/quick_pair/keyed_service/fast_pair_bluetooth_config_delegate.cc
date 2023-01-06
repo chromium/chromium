@@ -5,7 +5,7 @@
 #include "ash/quick_pair/keyed_service/fast_pair_bluetooth_config_delegate.h"
 
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/services/bluetooth_config/device_name_manager.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 

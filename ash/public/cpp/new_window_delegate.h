@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 class GURL;
 

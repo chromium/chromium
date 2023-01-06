@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"

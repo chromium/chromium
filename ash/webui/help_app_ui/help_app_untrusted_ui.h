@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_HELP_APP_UNTRUSTED_UI_H_
 #define ASH_WEBUI_HELP_APP_UI_HELP_APP_UNTRUSTED_UI_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace content {

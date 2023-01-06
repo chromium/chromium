@@ -19,7 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"

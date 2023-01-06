@@ -13,7 +13,7 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/timer/timer.h"
 #include "chromeos/constants/chromeos_features.h"

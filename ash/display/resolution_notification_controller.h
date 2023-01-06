@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"

@@ -5,7 +5,7 @@
 #include "ash/components/arc/net/always_on_vpn_manager.h"
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"

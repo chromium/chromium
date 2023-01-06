@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"

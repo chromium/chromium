@@ -5,7 +5,7 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_support_utils.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash {

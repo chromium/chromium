@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/webui/guest_os_installer/mojom/guest_os_installer.mojom.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

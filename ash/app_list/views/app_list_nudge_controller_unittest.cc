@@ -17,7 +17,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/wm/core/window_util.h"

@@ -12,7 +12,7 @@
 #include "ash/components/arc/session/arc_client_adapter.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
 #include "ash/components/arc/session/arc_upgrade_params.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 
 namespace ash {

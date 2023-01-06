@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 
 namespace base {

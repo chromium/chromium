@@ -10,7 +10,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

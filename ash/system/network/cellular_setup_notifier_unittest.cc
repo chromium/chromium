@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"

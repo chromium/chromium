@@ -5,7 +5,7 @@
 #include "ash/dbus/privacy_screen_service_provider.h"
 
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

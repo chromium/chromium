@@ -19,7 +19,7 @@
 #include "ash/shelf/shelf_component.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_observer.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

@@ -18,7 +18,7 @@
 #include "ash/style/default_colors.h"
 #include "ash/style/dot_indicator.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"

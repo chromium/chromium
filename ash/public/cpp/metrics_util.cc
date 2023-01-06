@@ -4,8 +4,8 @@
 
 #include "ash/public/cpp/metrics_util.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 

@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "ash/components/arc/video_accelerator/protected_buffer_allocator.h"
-#include "base/bind.h"
 #include "base/bits.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"

@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_ASSISTANT_CONTROLLER_ASSISTANT_UI_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

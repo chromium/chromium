@@ -6,7 +6,7 @@
 #define ASH_STYLE_SYSTEM_TOAST_STYLE_H_
 
 #include "ash/ash_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

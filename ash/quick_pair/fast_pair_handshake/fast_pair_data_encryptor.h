@@ -10,7 +10,7 @@
 
 #include <array>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 

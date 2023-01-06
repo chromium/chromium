@@ -6,7 +6,7 @@
 #define ASH_ASSISTANT_TEST_TEST_ASSISTANT_SETUP_H_
 
 #include "ash/public/cpp/assistant/assistant_setup.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

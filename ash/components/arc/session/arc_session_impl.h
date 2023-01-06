@@ -11,8 +11,8 @@
 
 #include "ash/components/arc/session/arc_client_adapter.h"
 #include "ash/components/arc/session/arc_session.h"
-#include "base/callback.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"

@@ -5,7 +5,7 @@
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 
 #include "ash/wm/overview/overview_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace ash {

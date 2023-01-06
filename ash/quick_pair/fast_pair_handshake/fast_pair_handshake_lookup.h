@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/quick_pair/common/pair_failure.h"
-#include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

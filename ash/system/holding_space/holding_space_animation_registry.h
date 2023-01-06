@@ -8,8 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 
 namespace ash {

@@ -4,7 +4,7 @@
 
 #include "ash/bluetooth_devices_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash {

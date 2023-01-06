@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"

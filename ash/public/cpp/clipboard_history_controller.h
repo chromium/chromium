@@ -9,7 +9,7 @@
 #include <set>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"

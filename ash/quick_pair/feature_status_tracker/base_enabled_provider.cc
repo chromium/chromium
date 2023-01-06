@@ -4,7 +4,7 @@
 
 #include "ash/quick_pair/feature_status_tracker/base_enabled_provider.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 namespace quick_pair {

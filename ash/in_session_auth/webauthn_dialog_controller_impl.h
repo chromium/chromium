@@ -9,7 +9,7 @@
 
 #include "ash/in_session_auth/in_session_auth_dialog.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_tracker.h"
 

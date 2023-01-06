@@ -6,7 +6,7 @@
 #define ASH_QUICK_PAIR_REPOSITORY_OAUTH_HTTP_FETCHER_H_
 
 #include "ash/quick_pair/repository/http_fetcher.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

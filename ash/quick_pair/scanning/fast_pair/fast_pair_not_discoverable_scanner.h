@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {

@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_ARC_TEST_FAKE_MEMORY_INSTANCE_H_
 
 #include "ash/components/arc/mojom/memory.mojom.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace arc {
 

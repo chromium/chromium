@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_AUTOTEST_AMBIENT_API_H_
 
 #include "ash/ash_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
 namespace ash {

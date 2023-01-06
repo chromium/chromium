@@ -12,7 +12,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_power_instance.h"
 #include "ash/components/arc/test/fake_wake_lock_instance.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"

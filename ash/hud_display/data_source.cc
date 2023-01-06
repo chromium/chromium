@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "ash/hud_display/memory_status.h"
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 

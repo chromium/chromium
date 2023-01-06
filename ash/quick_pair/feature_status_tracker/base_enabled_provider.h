@@ -5,7 +5,7 @@
 #ifndef ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_BASE_ENABLED_PROVIDER_H_
 #define ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_BASE_ENABLED_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 namespace quick_pair {

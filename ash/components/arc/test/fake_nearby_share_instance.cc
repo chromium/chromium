@@ -5,7 +5,7 @@
 #include "ash/components/arc/test/fake_nearby_share_instance.h"
 
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace arc {
 

@@ -7,7 +7,7 @@
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

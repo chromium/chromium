@@ -5,7 +5,7 @@
 #include "ash/utility/layer_copy_animator.h"
 
 #include "ash/utility/layer_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animation_sequence.h"

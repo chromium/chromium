@@ -7,7 +7,7 @@
 
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
