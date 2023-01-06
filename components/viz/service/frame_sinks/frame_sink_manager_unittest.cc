@@ -10,9 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/viz/common/constants.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -406,46 +404,9 @@ TEST_F(FrameSinkManagerTest, EvictSurfaces) {
 
   // Call EvictSurfaces. Now the garbage collector can destroy the surfaces.
   manager_.EvictSurfaces({surface_id1, surface_id2});
-  // Garbage collection is not synchronous.
-  EXPECT_TRUE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
-
-  ExpireAllTemporaryReferencesAndGarbageCollect();
+  // Garbage collection is synchronous.
   EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
-  EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id2));
-}
-
-// Verifies that the SurfaceIds passed to EvictSurfaces are destroyed
-// synchronously if the feature is enabled..
-TEST_F(FrameSinkManagerTest, EagerSurfacesGarbageCollection) {
-  base::test::ScopedFeatureList feature_list{
-      features::kEagerSurfaceGarbageCollection};
-
-  ParentLocalSurfaceIdAllocator allocator1;
-  ParentLocalSurfaceIdAllocator allocator2;
-  allocator1.GenerateId();
-  LocalSurfaceId local_surface_id1 = allocator1.GetCurrentLocalSurfaceId();
-  allocator2.GenerateId();
-  LocalSurfaceId local_surface_id2 = allocator2.GetCurrentLocalSurfaceId();
-  SurfaceId surface_id1(kFrameSinkIdA, local_surface_id1);
-  SurfaceId surface_id2(kFrameSinkIdB, local_surface_id2);
-
-  // Create two frame sinks. Each create a surface.
-  auto sink1 = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
-  auto sink2 = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
-  sink1->SubmitCompositorFrame(local_surface_id1, MakeDefaultCompositorFrame());
-  sink2->SubmitCompositorFrame(local_surface_id2, MakeDefaultCompositorFrame());
-
-  // |surface_id1| and |surface_id2| should remain alive after garbage
-  // collection because they're not marked for destruction.
-  ExpireAllTemporaryReferencesAndGarbageCollect();
-  EXPECT_TRUE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
-  EXPECT_TRUE(manager_.surface_manager()->GetSurfaceForId(surface_id2));
-
-  // Call EvictSurfaces. Now the garbage collector can destroy the surfaces.
-  manager_.EvictSurfaces({surface_id1, surface_id2});
-  // Garbage collection happened synchronously.
   EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id1));
-  EXPECT_FALSE(manager_.surface_manager()->GetSurfaceForId(surface_id2));
 }
 
 // Verify that setting debug label works and that debug labels are cleared when

@@ -193,13 +193,13 @@ BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
 //   one.
 BASE_FEATURE(kAggressiveFrameCulling,
              "AggressiveFrameCulling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, do not rely on surface garbage collection to happen
 // periodically, but trigger it eagerly, to avoid missing calls.
 BASE_FEATURE(kEagerSurfaceGarbageCollection,
              "EagerSurfaceGarbageCollection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Only applies when a caller has requested a custom BeginFrame rate via the
 // Throttle() API in frame_sink_manager.mojom. If enabled, parameters related
