@@ -46,9 +46,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/244856
     "race:libpulsecommon*.so\n"
 
-    // http://crbug.com/258479
-    "race:g_trace_state\n"
-
     // http://crbug.com/268924
     "race:base::g_power_monitor\n"
     "race:base::PowerMonitor::PowerMonitor\n"
@@ -123,6 +120,11 @@ char kTSanDefaultSuppressions[] =
     // Harmless data race in ipcz block allocation. See comments in
     // ipcz::BlockAllocator::Allocate().
     "race:ipcz::BlockAllocator::Allocate\n"
+
+    // https://crbug.com/1405439
+    "race:perfetto::internal::g_category_state_storage\n"
+    "race:perfetto::DataSource*::static_state_\n"
+    "race:perfetto::Tracing::ResetForTesting\n"
 
     // End of suppressions.
     ;  // Please keep this semicolon.
