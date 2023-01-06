@@ -38,8 +38,6 @@ class ServiceWorkerPageLoadMetricsObserverTest
 
   void AssertNoServiceWorkerHistogramsLogged() {
     tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramServiceWorkerFirstInputDelay, 0);
-    tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramServiceWorkerFirstPaint, 0);
     tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramServiceWorkerFirstContentfulPaint, 0);
@@ -173,12 +171,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
 
   tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerFirstInputDelay, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerFirstInputDelay,
-      timing.interactive_timing->first_input_delay.value().InMilliseconds(), 1);
 
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramServiceWorkerFirstPaint, 1);

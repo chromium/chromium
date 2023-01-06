@@ -33,7 +33,6 @@ extern const char
     kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler[];
 extern const char
     kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler[];
-extern const char kHistogramServiceWorkerFirstInputDelay[];
 extern const char kHistogramServiceWorkerParseStartSearch[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
 extern const char

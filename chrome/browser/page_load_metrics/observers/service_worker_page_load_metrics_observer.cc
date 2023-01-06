@@ -28,8 +28,6 @@ const char kHistogramServiceWorkerParseStartForwardBackNoStore[] =
 const char kBackgroundHistogramServiceWorkerParseStart[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart."
     "Background";
-const char kHistogramServiceWorkerFirstInputDelay[] =
-    "PageLoad.Clients.ServiceWorker2.InteractiveTiming.FirstInputDelay3";
 const char kHistogramServiceWorkerFirstPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstPaint";
 const char kHistogramServiceWorkerFirstContentfulPaint[] =
@@ -307,12 +305,6 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstInputInPage(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     return;
   }
-
-  // Copied from the UmaPageLoadMetricsObserver implementation.
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      internal::kHistogramServiceWorkerFirstInputDelay,
-      timing.interactive_timing->first_input_delay.value(),
-      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
