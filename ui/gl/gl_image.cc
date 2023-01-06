@@ -90,13 +90,6 @@ void GLImage::ReleaseTexImage(unsigned target) {
   NOTREACHED();
 }
 
-bool GLImage::CopyTexSubImage(unsigned target,
-                              const gfx::Point& offset,
-                              const gfx::Rect& rect) {
-  NOTREACHED();
-  return false;
-}
-
 void GLImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                            uint64_t process_tracing_id,
                            const std::string& dump_name) {

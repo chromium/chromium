@@ -18101,20 +18101,6 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
                                        dest_level, true);
   }
 
-  // Try using GLImage::CopyTexSubImage when possible.
-  bool unpack_premultiply_alpha_change =
-      (unpack_premultiply_alpha ^ unpack_unmultiply_alpha) != 0;
-  // TODO(qiankun.miao@intel.com): Support level > 0 for CopyTexSubImage.
-  if (image && dest_internal_format == source_internal_format &&
-      dest_level == 0 && !unpack_flip_y && !unpack_premultiply_alpha_change) {
-    ScopedTextureBinder binder(&state_, error_state_.get(),
-                               dest_texture->service_id(), dest_binding_target);
-    if (image->CopyTexSubImage(dest_target, gfx::Point(xoffset, yoffset),
-                               gfx::Rect(x, y, width, height))) {
-      return;
-    }
-  }
-
   DoBindTexImageIfNeeded(source_texture, source_target, 0);
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(

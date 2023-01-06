@@ -119,13 +119,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   void ReleaseTexImageForTesting(unsigned target) { ReleaseTexImage(target); }
 
  protected:
-  // Copy |rect| of image to |offset| in texture currently bound to |target|.
-  // Returns true on success. It is valid for an implementation to always
-  // return false.
-  virtual bool CopyTexSubImage(unsigned target,
-                               const gfx::Point& offset,
-                               const gfx::Rect& rect);
-
   // Dumps information about the memory backing the GLImage to a dump named
   // |dump_name|.
   virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

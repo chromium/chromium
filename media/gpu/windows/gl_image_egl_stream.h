@@ -21,9 +21,6 @@ class GLImageEGLStream : public gl::GLImage {
 
   // GLImage implementation.
   bool BindTexImage(unsigned target) override;
-  bool CopyTexSubImage(unsigned target,
-                       const gfx::Point& offset,
-                       const gfx::Rect& rect) override;
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
   gfx::Size GetSize() override;

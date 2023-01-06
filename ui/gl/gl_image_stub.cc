@@ -27,10 +27,4 @@ unsigned GLImageStub::GetDataType() {
 
 bool GLImageStub::BindTexImage(unsigned target) { return true; }
 
-bool GLImageStub::CopyTexSubImage(unsigned target,
-                                  const gfx::Point& offset,
-                                  const gfx::Rect& rect) {
-  return false;
-}
-
 }  // namespace gl

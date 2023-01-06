@@ -22,12 +22,6 @@ bool GLImageEGLStream::BindTexImage(unsigned target) {
   return true;
 }
 
-bool GLImageEGLStream::CopyTexSubImage(unsigned target,
-                                       const gfx::Point& offset,
-                                       const gfx::Rect& rect) {
-  return false;
-}
-
 unsigned GLImageEGLStream::GetInternalFormat() {
   return GL_RGBA;
 }

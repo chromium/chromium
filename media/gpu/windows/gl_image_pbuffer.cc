@@ -31,11 +31,6 @@ bool GLImagePbuffer::BindTexImage(unsigned target) {
   return true;
 }
 void ReleaseTexImage(unsigned target) {}
-bool GLImagePbuffer::CopyTexSubImage(unsigned target,
-                                     const gfx::Point& offset,
-                                     const gfx::Rect& rect) {
-  return false;
-}
 void SetColorSpace(const gfx::ColorSpace& color_space) {}
 void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                   uint64_t process_tracing_id,
