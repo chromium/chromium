@@ -41,7 +41,7 @@ class BASE_EXPORT SamplingHeapProfiler
     // Total size attributed to the sample.
     size_t total;
     // Type of the allocator.
-    PoissonAllocationSampler::AllocatorType allocator;
+    base::allocator::dispatcher::AllocationSubsystem allocator;
     // Context as provided by the allocation hook.
     const char* context = nullptr;
     // Name of the thread that made the sampled allocation.
@@ -119,7 +119,7 @@ class BASE_EXPORT SamplingHeapProfiler
   void SampleAdded(void* address,
                    size_t size,
                    size_t total,
-                   PoissonAllocationSampler::AllocatorType type,
+                   base::allocator::dispatcher::AllocationSubsystem type,
                    const char* context) override;
   void SampleRemoved(void* address) override;
 

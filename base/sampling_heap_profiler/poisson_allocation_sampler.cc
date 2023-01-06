@@ -298,10 +298,11 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
 }
 
 // static
-void PoissonAllocationSampler::RecordAlloc(void* address,
-                                           size_t size,
-                                           AllocatorType type,
-                                           const char* context) {
+void PoissonAllocationSampler::RecordAlloc(
+    void* address,
+    size_t size,
+    base::allocator::dispatcher::AllocationSubsystem type,
+    const char* context) {
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
 
   thread_local_data->accumulated_bytes += size;
@@ -321,11 +322,12 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
   instance_->DoRecordAlloc(accumulated_bytes, size, address, type, context);
 }
 
-void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
-                                             size_t size,
-                                             void* address,
-                                             AllocatorType type,
-                                             const char* context) {
+void PoissonAllocationSampler::DoRecordAlloc(
+    intptr_t accumulated_bytes,
+    size_t size,
+    void* address,
+    base::allocator::dispatcher::AllocationSubsystem type,
+    const char* context) {
   // Failed allocation? Skip the sample.
   if (UNLIKELY(!address))
     return;

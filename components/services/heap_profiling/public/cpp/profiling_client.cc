@@ -34,6 +34,8 @@
 #include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #endif
 
+using base::allocator::dispatcher::AllocationSubsystem;
+
 namespace heap_profiling {
 
 ProfilingClient::ProfilingClient() = default;
@@ -139,14 +141,13 @@ void AllocatorHooksHaveBeenInitialized() {
       FROM_HERE, std::move(GetOnInitAllocatorShimCallback()));
 }
 
-mojom::AllocatorType ConvertType(
-    base::PoissonAllocationSampler::AllocatorType type) {
+mojom::AllocatorType ConvertType(AllocationSubsystem type) {
   switch (type) {
-    case base::PoissonAllocationSampler::AllocatorType::kMalloc:
+    case AllocationSubsystem::kAllocatorShim:
       return mojom::AllocatorType::kMalloc;
-    case base::PoissonAllocationSampler::AllocatorType::kPartitionAlloc:
+    case AllocationSubsystem::kPartitionAllocator:
       return mojom::AllocatorType::kPartitionAlloc;
-    case base::PoissonAllocationSampler::AllocatorType::kManualForTesting:
+    case AllocationSubsystem::kManualForTesting:
       NOTREACHED();
       return mojom::AllocatorType::kMalloc;
   }

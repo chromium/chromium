@@ -21,6 +21,7 @@ namespace base {
 
 using ScopedSuppressRandomnessForTesting =
     PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
+using base::allocator::dispatcher::AllocationSubsystem;
 
 class SamplingHeapProfilerTest : public ::testing::Test {
  public:
@@ -60,7 +61,7 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
   void SampleAdded(void* address,
                    size_t size,
                    size_t,
-                   PoissonAllocationSampler::AllocatorType,
+                   AllocationSubsystem,
                    const char*) override {
     if (sample_added || size != watch_size_)
       return;
@@ -251,9 +252,9 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_MANUAL_SamplerMicroBenchmark) {
 
   base::TimeTicks t0 = base::TimeTicks::Now();
   for (int i = 1; i <= kNumAllocations; ++i) {
-    sampler->RecordAlloc(
-        reinterpret_cast<void*>(static_cast<intptr_t>(i)), allocation_size,
-        PoissonAllocationSampler::AllocatorType::kMalloc, nullptr);
+    sampler->RecordAlloc(reinterpret_cast<void*>(static_cast<intptr_t>(i)),
+                         allocation_size, AllocationSubsystem::kAllocatorShim,
+                         nullptr);
   }
   base::TimeTicks t1 = base::TimeTicks::Now();
   for (int i = 1; i <= kNumAllocations; ++i)
@@ -342,7 +343,7 @@ TEST_F(SamplingHeapProfilerTest, HookedAllocatorMuted) {
     sampler->AddSamplesObserver(&collector);
     void* const kAddress = reinterpret_cast<void*>(0x1234);
     sampler->RecordAlloc(kAddress, 10000,
-                         PoissonAllocationSampler::kManualForTesting, nullptr);
+                         AllocationSubsystem::kManualForTesting, nullptr);
     sampler->RecordFree(kAddress);
     sampler->RemoveSamplesObserver(&collector);
     EXPECT_TRUE(collector.sample_added);

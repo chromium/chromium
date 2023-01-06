@@ -14,7 +14,13 @@ enum class AllocationSubsystem {
   // Allocation is handled by PartitionAllocator.
   kPartitionAllocator = 1,
   // Allocation is handled by AllocatorShims.
-  kAllocatorShim = 2
+  kAllocatorShim = 2,
+  // Represents a simulated allocation event during testing and is used to
+  // filter out these allocations from real ones.
+  //
+  // Included for backward compatibility, this value becomes obsolete once the
+  // old allocation hooks are removed from PoissonAllocationSampler.
+  kManualForTesting = 3,
 };
 }  // namespace base::allocator::dispatcher
 

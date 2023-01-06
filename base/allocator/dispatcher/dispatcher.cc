@@ -30,7 +30,7 @@ void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
   void* address = self->next->alloc_function(self->next, size, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -43,7 +43,7 @@ void* AllocUncheckedFn(const AllocatorDispatch* self,
       self->next->alloc_unchecked_function(self->next, size, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -57,7 +57,7 @@ void* AllocZeroInitializedFn(const AllocatorDispatch* self,
       self->next->alloc_zero_initialized_function(self->next, n, size, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, n * size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, n * size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -71,7 +71,7 @@ void* AllocAlignedFn(const AllocatorDispatch* self,
       self->next->alloc_aligned_function(self->next, alignment, size, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -86,7 +86,7 @@ void* ReallocFn(const AllocatorDispatch* self,
   address = self->next->realloc_function(self->next, address, size, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -124,7 +124,7 @@ unsigned BatchMallocFn(const AllocatorDispatch* self,
   if (LIKELY(guard)) {
     for (unsigned i = 0; i < num_allocated; ++i) {
       PoissonAllocationSampler::RecordAlloc(
-          results[i], size, PoissonAllocationSampler::kMalloc, nullptr);
+          results[i], size, AllocationSubsystem::kAllocatorShim, nullptr);
     }
   }
   return num_allocated;
@@ -164,7 +164,7 @@ static void* AlignedMallocFn(const AllocatorDispatch* self,
       self->next->aligned_malloc_function(self->next, size, alignment, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -181,7 +181,7 @@ static void* AlignedReallocFn(const AllocatorDispatch* self,
                                                  alignment, context);
   if (LIKELY(guard)) {
     PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
+        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
   return address;
 }
@@ -220,7 +220,7 @@ namespace {
 
 void PartitionAllocHook(void* address, size_t size, const char* type) {
   PoissonAllocationSampler::RecordAlloc(
-      address, size, PoissonAllocationSampler::kPartitionAlloc, type);
+      address, size, AllocationSubsystem::kPartitionAllocator, type);
 }
 
 void PartitionFreeHook(void* address) {

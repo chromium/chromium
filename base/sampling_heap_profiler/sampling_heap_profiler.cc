@@ -59,6 +59,7 @@ BASE_FEATURE(kAvoidFramePointers,
 #endif
 
 using StackUnwinder = SamplingHeapProfiler::StackUnwinder;
+using base::allocator::dispatcher::AllocationSubsystem;
 
 // If a thread name has been set from ThreadIdNameManager, use that. Otherwise,
 // gets the thread name from kernel if available or returns a string with id.
@@ -247,12 +248,11 @@ void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
   return frames + skip_frames;
 }
 
-void SamplingHeapProfiler::SampleAdded(
-    void* address,
-    size_t size,
-    size_t total,
-    PoissonAllocationSampler::AllocatorType type,
-    const char* context) {
+void SamplingHeapProfiler::SampleAdded(void* address,
+                                       size_t size,
+                                       size_t total,
+                                       AllocationSubsystem type,
+                                       const char* context) {
   // CaptureStack and allocation context tracking may use TLS.
   // Bail out if it has been destroyed.
   if (UNLIKELY(base::ThreadLocalStorage::HasBeenDestroyed()))
@@ -263,7 +263,7 @@ void SamplingHeapProfiler::SampleAdded(
   CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
   if (UNLIKELY(PoissonAllocationSampler::AreHookedSamplesMuted() &&
-               type != PoissonAllocationSampler::kManualForTesting)) {
+               type != AllocationSubsystem::kManualForTesting)) {
     // Throw away any non-test samples that were being collected before
     // ScopedMuteHookedSamplesForTesting was enabled. This is done inside the
     // lock to catch any samples that were being collected while

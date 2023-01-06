@@ -5,6 +5,7 @@
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
 
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"
 #include "base/trace_event/trace_event.h"
@@ -19,6 +20,20 @@
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
 namespace heap_profiling {
+
+std::string GetHeapName(
+    base::allocator::dispatcher::AllocationSubsystem allocator_type) {
+  using base::allocator::dispatcher::AllocationSubsystem;
+  switch (allocator_type) {
+    case AllocationSubsystem::kAllocatorShim:
+      return "malloc";
+    case AllocationSubsystem::kPartitionAllocator:
+      return "partition_alloc";
+    case AllocationSubsystem::kManualForTesting:
+      NOTREACHED();
+      return {};
+  }
+}
 
 HeapProfilingTraceSource::HeapProfilingTraceSource()
     : DataSourceBase(tracing::mojom::kNativeHeapProfilerSourceName) {
@@ -110,10 +125,7 @@ bool HeapProfilingTraceSource::AddToTraceIfEnabled(
     index++;
     auto* process_dump = profile_packet->add_process_dumps();
     process_dump->set_pid(pid);
-    process_dump->set_heap_name(sample.allocator ==
-                                        base::PoissonAllocationSampler::kMalloc
-                                    ? "malloc"
-                                    : "partition_alloc");
+    process_dump->set_heap_name(GetHeapName(sample.allocator));
     process_dump->set_timestamp(timestamp);
 
     auto* sample_proto = process_dump->add_samples();

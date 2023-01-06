@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
@@ -37,19 +38,15 @@ class SamplingHeapProfilerTest;
 //
 class BASE_EXPORT PoissonAllocationSampler {
  public:
-  // The type of hooked allocator that is the source of a sample.
-  // kManualForTesting is for unit tests calling RecordAlloc directly without
-  // going through a hooked allocator.
-  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc, kManualForTesting };
-
   class SamplesObserver {
    public:
     virtual ~SamplesObserver() = default;
-    virtual void SampleAdded(void* address,
-                             size_t size,
-                             size_t total,
-                             AllocatorType type,
-                             const char* context) = 0;
+    virtual void SampleAdded(
+        void* address,
+        size_t size,
+        size_t total,
+        base::allocator::dispatcher::AllocationSubsystem type,
+        const char* context) = 0;
     virtual void SampleRemoved(void* address) = 0;
   };
 
@@ -117,7 +114,7 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   static void RecordAlloc(void* address,
                           size_t,
-                          AllocatorType,
+                          base::allocator::dispatcher::AllocationSubsystem,
                           const char* context);
   ALWAYS_INLINE static void RecordFree(void* address);
 
@@ -175,7 +172,7 @@ class BASE_EXPORT PoissonAllocationSampler {
   void DoRecordAlloc(intptr_t accumulated_bytes,
                      size_t size,
                      void* address,
-                     AllocatorType type,
+                     base::allocator::dispatcher::AllocationSubsystem type,
                      const char* context);
   void DoRecordFree(void* address);
 
