@@ -93,12 +93,11 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
           CreateCellularSIMSlotInfo(kTestCellularServiceIccid),
           false /* notify_changed */);
 
-      base::DictionaryValue home_provider;
-      home_provider.GetDict().Set(shill::kOperatorNameKey,
-                                  kTestCellularDeviceCarrier);
-      device_test->SetDeviceProperty(kTestCellularDevicePath,
-                                     shill::kHomeProviderProperty,
-                                     home_provider, false /* notify_changed */);
+      base::Value::Dict home_provider;
+      home_provider.Set(shill::kOperatorNameKey, kTestCellularDeviceCarrier);
+      device_test->SetDeviceProperty(
+          kTestCellularDevicePath, shill::kHomeProviderProperty,
+          base::Value(std::move(home_provider)), false /* notify_changed */);
       device_test->SetDeviceProperty(
           kTestCellularDevicePath, shill::kMeidProperty,
           base::Value(kTestCellularDeviceMeid), false /* notify_changed */);
@@ -143,16 +142,15 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
             : base::Value(shill::kActivationStateNotActivated));
 
     if (has_valid_payment_info) {
-      base::DictionaryValue payment_portal;
-      payment_portal.GetDict().Set(shill::kPaymentPortalURL,
-                                   kTestCellularServicePaymentUrl);
-      payment_portal.GetDict().Set(shill::kPaymentPortalMethod,
-                                   kPaymentPortalMethodPost);
-      payment_portal.GetDict().Set(shill::kPaymentPortalPostData,
-                                   kTestCellularServicePaymentPostData);
+      base::Value::Dict payment_portal;
+      payment_portal.Set(shill::kPaymentPortalURL,
+                         kTestCellularServicePaymentUrl);
+      payment_portal.Set(shill::kPaymentPortalMethod, kPaymentPortalMethodPost);
+      payment_portal.Set(shill::kPaymentPortalPostData,
+                         kTestCellularServicePaymentPostData);
       service_test->SetServiceProperty(kTestCellularServicePath,
                                        shill::kPaymentPortalProperty,
-                                       payment_portal);
+                                       base::Value(std::move(payment_portal)));
     }
 
     base::RunLoop().RunUntilIdle();
