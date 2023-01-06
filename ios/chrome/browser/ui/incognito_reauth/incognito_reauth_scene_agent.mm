@@ -89,6 +89,12 @@
 
   if (!self.isAuthenticationRequired) {
     [self notifyObservers];
+    // If reauthentication is not required, it should be considered a success
+    // for the caller, but do not update the authenticatedSinceLastForeground
+    // as the authentication did not happen.
+    if (completion) {
+      completion(YES);
+    }
     return;
   }
 
