@@ -164,7 +164,6 @@ void WebApps::SetPermission(const std::string& app_id,
   publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebApps::Uninstall(const std::string& app_id,
                         apps::UninstallSource uninstall_source,
                         bool clear_site_data,
@@ -178,6 +177,7 @@ void WebApps::Uninstall(const std::string& app_id,
                                      report_abuse);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebApps::GetMenuModel(const std::string& app_id,
                            apps::MenuType menu_type,
                            int64_t display_id,

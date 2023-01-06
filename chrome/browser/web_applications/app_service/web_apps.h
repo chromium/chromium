@@ -122,11 +122,11 @@ class WebApps : public apps::PublisherBase,
                       int64_t display_id) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void Uninstall(const std::string& app_id,
                  apps::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void GetMenuModel(
       const std::string& app_id,
       apps::MenuType menu_type,
