@@ -1182,6 +1182,11 @@ void UpdateElasticOverscroll(
     // result of the top controls, see ScrollTree::container_bounds.
     gfx::Size scroller_size =
         property_trees->scroll_tree().container_bounds(inner_viewport->id);
+    if (scroller_size.IsEmpty()) {
+      // Avoid divide by 0. Animation should not be visible for an empty
+      // viewport anyway.
+      return;
+    }
 
     property_trees->effect_tree_mutable().OnFilterAnimated(
         overscroll_elasticity_effect_element_id,

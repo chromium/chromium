@@ -1108,6 +1108,11 @@ void LayerTreeHostImpl::StartPageScaleAnimation(const gfx::Point& target_offset,
   gfx::SizeF viewport_size(
       active_tree_->InnerViewportScrollNode()->container_bounds);
 
+  if (viewport_size.IsEmpty()) {
+    // Avoid divide by zero. Besides nothing should see the animation anyway.
+    return;
+  }
+
   // TODO(miletus) : Pass in ScrollOffset.
   page_scale_animation_ = PageScaleAnimation::Create(
       scroll_total, active_tree_->current_page_scale_factor(), viewport_size,
