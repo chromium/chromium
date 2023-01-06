@@ -517,6 +517,12 @@ wtf_size_t NGGridLayoutTrackCollection::RangeBeginSetIndex(
   return ranges_[range_index].begin_set_index;
 }
 
+TrackSpanProperties NGGridLayoutTrackCollection::RangeProperties(
+    wtf_size_t range_index) const {
+  DCHECK_LT(range_index, ranges_.size());
+  return ranges_[range_index].properties;
+}
+
 bool NGGridLayoutTrackCollection::RangeHasTrackSpanProperty(
     wtf_size_t range_index,
     TrackSpanProperties::PropertyId property_id) const {

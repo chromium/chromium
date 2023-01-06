@@ -116,7 +116,9 @@ NGGridProperties InitializeGridProperties(
 void CacheGridTrackSpanProperties(
     const NGGridLayoutTrackCollection& track_collection,
     GridItems* grid_items,
-    NGGridProperties* grid_properties = nullptr) {
+    NGGridProperties* grid_properties = nullptr,
+    const Vector<GridItemIndices>* range_indices = nullptr,
+    const Vector<GridArea>* resolved_positions = nullptr) {
   DCHECK(grid_items);
 
   const auto track_direction = track_collection.Direction();
@@ -144,16 +146,29 @@ void CacheGridTrackSpanProperties(
     CacheGridProperty(TrackSpanProperties::kIsDependentOnAvailableSize);
   }
 
-  auto CacheTrackSpanProperty =
-      [&](GridItemData& grid_item, const wtf_size_t range_index,
-          const TrackSpanProperties::PropertyId property) {
-        if (track_collection.RangeHasTrackSpanProperty(range_index, property))
-          grid_item.SetTrackSpanProperty(property, track_direction);
-      };
-
   GridItems grid_items_spanning_multiple_ranges;
-  for (auto& grid_item : *grid_items) {
-    const auto& range_indices = grid_item.RangeIndices(track_direction);
+  for (wtf_size_t index = 0; index < grid_items->Size(); ++index) {
+    auto& grid_item = grid_items->At(index);
+
+    // If positions range indices were provided, assign them before querying
+    // `RangeIndices` below.
+    if (resolved_positions && resolved_positions->size())
+      grid_item.resolved_position = resolved_positions->at(index);
+
+    if (range_indices && range_indices->size()) {
+      if (track_direction == kForColumns)
+        grid_item.column_range_indices = range_indices->at(index);
+      else
+        grid_item.row_range_indices = range_indices->at(index);
+    }
+
+    const auto& item_range_indices = grid_item.RangeIndices(track_direction);
+    auto& track_span_properties = (track_direction == kForColumns)
+                                      ? grid_item.column_span_properties
+                                      : grid_item.row_span_properties;
+
+    grid_item.ComputeSetIndices(track_collection);
+    track_span_properties.Reset();
 
     // If a grid item spans only one range, then we can just cache the track
     // span properties directly. On the contrary, if a grid item spans multiple
@@ -161,17 +176,9 @@ void CacheGridTrackSpanProperties(
     // to do more work to cache its track span properties.
     //
     // TODO(layout-dev): Investigate applying this concept to spans > 1.
-    if (range_indices.begin == range_indices.end) {
-      CacheTrackSpanProperty(grid_item, range_indices.begin,
-                             TrackSpanProperties::kHasFlexibleTrack);
-      CacheTrackSpanProperty(grid_item, range_indices.begin,
-                             TrackSpanProperties::kHasIntrinsicTrack);
-      CacheTrackSpanProperty(grid_item, range_indices.begin,
-                             TrackSpanProperties::kHasAutoMinimumTrack);
-      CacheTrackSpanProperty(grid_item, range_indices.begin,
-                             TrackSpanProperties::kHasFixedMinimumTrack);
-      CacheTrackSpanProperty(grid_item, range_indices.begin,
-                             TrackSpanProperties::kHasFixedMaximumTrack);
+    if (item_range_indices.begin == item_range_indices.end) {
+      track_span_properties =
+          track_collection.RangeProperties(item_range_indices.begin);
     } else {
       grid_items_spanning_multiple_ranges.Append(&grid_item);
     }
@@ -287,13 +294,17 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
     intrinsic_block_size = grid_data->intrinsic_block_size;
     layout_data = grid_data->layout_data;
 
-    for (auto& grid_item : grid_items) {
-      grid_item.ComputeSetIndices(*layout_data.Columns());
-      grid_item.ComputeSetIndices(*layout_data.Rows());
-    }
-
-    CacheGridTrackSpanProperties(*layout_data.Columns(), &grid_items);
-    CacheGridTrackSpanProperties(*layout_data.Rows(), &grid_items);
+    // Update `grid_items` with resolved positions and range indices stored
+    // on the break token, as these are dependent on the `layout_data` above.
+    //
+    // TODO(kschmi): If these don't change between fragmentainers, we can store
+    // them (and Columns/Rows) on `NGGridBreakTokenData` and avoid recomputing.
+    CacheGridTrackSpanProperties(
+        *layout_data.Columns(), &grid_items, /* grid_properties */ nullptr,
+        &grid_data->column_range_indices, &grid_data->resolved_positions);
+    CacheGridTrackSpanProperties(*layout_data.Rows(), &grid_items,
+                                 /* grid_properties */ nullptr,
+                                 &grid_data->row_range_indices);
   } else {
     ComputeGridGeometry(node.CachedPlacementData(), &grid_items, &layout_data,
                         &intrinsic_block_size);
@@ -306,6 +317,9 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   LayoutUnit consumed_grid_block_size;
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
+  Vector<GridItemIndices> column_range_indices;
+  Vector<GridItemIndices> row_range_indices;
+  Vector<GridArea> resolved_positions;
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
@@ -319,6 +333,12 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
       row_break_between = grid_data->row_break_between;
       oof_children = grid_data->oof_children;
     } else {
+      for (auto& grid_item : grid_items) {
+        column_range_indices.push_back(grid_item.column_range_indices);
+        row_range_indices.push_back(grid_item.row_range_indices);
+        resolved_positions.push_back(grid_item.resolved_position);
+      }
+
       row_offset_adjustments =
           Vector<LayoutUnit>(layout_data.Rows()->GetSetCount() + 1);
       PlaceGridItems(grid_items, layout_data, &row_break_between,
@@ -399,8 +419,9 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
         MakeGarbageCollected<NGGridBreakTokenData>(
             container_builder_.GetBreakTokenData(), layout_data,
             intrinsic_block_size, consumed_grid_block_size,
-            grid_items_placement_data, row_offset_adjustments,
-            row_break_between, oof_children));
+            std::move(column_range_indices), std::move(row_range_indices),
+            std::move(resolved_positions), grid_items_placement_data,
+            row_offset_adjustments, row_break_between, oof_children));
   }
 
   // Copy grid layout data for use in computed style and devtools.
@@ -441,11 +462,6 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   NGGridLayoutData layout_data(
       LayoutTrackCollection(placement_data, kForColumns, &grid_items),
       LayoutTrackCollection(placement_data, kForRows, &grid_items));
-
-  for (auto& grid_item : grid_items) {
-    grid_item.ComputeSetIndices(*layout_data.Columns());
-    grid_item.ComputeSetIndices(*layout_data.Rows());
-  }
 
   auto grid_properties =
       InitializeGridProperties(grid_items, Style().GetWritingMode());
@@ -802,11 +818,6 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
 
     layout_data->rows = std::make_unique<NGGridSizingTrackCollection>(
         *row_builder_collection, is_block_available_size_indefinite);
-  }
-
-  for (auto& grid_item : *grid_items) {
-    grid_item.ComputeSetIndices(*layout_data->Columns());
-    grid_item.ComputeSetIndices(*layout_data->Rows());
   }
 
   auto grid_properties =
