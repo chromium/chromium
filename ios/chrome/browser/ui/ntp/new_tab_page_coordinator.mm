@@ -1387,7 +1387,7 @@
 // TODO(crbug.com/1331010): The feed top section may include content that is not
 // the signin promo, which may need to be visible when the user is signed in.
 - (BOOL)isFeedTopSectionVisible {
-  return IsDiscoverFeedTopSyncPromoEnabled() && [self shouldFeedBeVisible] &&
+  return IsDiscoverFeedTopSyncPromoEnabled() && [self isFeedVisible] &&
          self.authService &&
          !self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
