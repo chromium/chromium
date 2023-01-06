@@ -112,25 +112,39 @@ using content::RenderViewHost;
 
 - (BOOL)canNavigateInDirection:(history_swiper::NavigationDirection)direction
                       onWindow:(NSWindow*)window {
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (!browser)
+  if (!_renderWidgetHost) {
     return NO;
+  }
+
+  content::WebContents* webContents = content::WebContents::FromRenderViewHost(
+      RenderViewHost::From(_renderWidgetHost));
+  if (!webContents) {
+    return NO;
+  }
 
   if (direction == history_swiper::kForwards) {
-    return chrome::CanGoForward(browser);
+    return chrome::CanGoForward(webContents);
   } else {
-    return chrome::CanGoBack(browser);
+    return chrome::CanGoBack(webContents);
   }
 }
 
 - (void)navigateInDirection:(history_swiper::NavigationDirection)direction
                    onWindow:(NSWindow*)window {
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser) {
-    if (direction == history_swiper::kForwards)
-      chrome::GoForward(browser, WindowOpenDisposition::CURRENT_TAB);
-    else
-      chrome::GoBack(browser, WindowOpenDisposition::CURRENT_TAB);
+  if (!_renderWidgetHost) {
+    return;
+  }
+
+  content::WebContents* webContents = content::WebContents::FromRenderViewHost(
+      RenderViewHost::From(_renderWidgetHost));
+  if (!webContents) {
+    return;
+  }
+
+  if (direction == history_swiper::kForwards) {
+    chrome::GoForward(webContents);
+  } else {
+    chrome::GoBack(webContents);
   }
 }
 

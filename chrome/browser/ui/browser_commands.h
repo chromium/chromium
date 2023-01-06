@@ -73,9 +73,13 @@ void OpenWindowWithRestoredTabs(Profile* profile);
 void OpenURLOffTheRecord(Profile* profile, const GURL& url);
 
 bool CanGoBack(const Browser* browser);
+bool CanGoBack(content::WebContents* web_contents);
 void GoBack(Browser* browser, WindowOpenDisposition disposition);
+void GoBack(content::WebContents* web_contents);
 bool CanGoForward(const Browser* browser);
+bool CanGoForward(content::WebContents* web_contents);
 void GoForward(Browser* browser, WindowOpenDisposition disposition);
+void GoForward(content::WebContents* web_contents);
 void NavigateToIndexWithDisposition(Browser* browser,
                                     int index,
                                     WindowOpenDisposition disposition);
