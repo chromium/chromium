@@ -75,6 +75,7 @@ TEST_F(UIViewWindowObservingTest, WindowObservingSet) {
   __block BOOL callback_called = NO;
   observer_.onChange = ^(id object, id change) {
     callback_called = YES;
+    EXPECT_EQ(object, view_);
     EXPECT_EQ(change[NSKeyValueChangeOldKey], [NSNull null]);
     EXPECT_EQ(change[NSKeyValueChangeNewKey], window_);
   };
@@ -82,6 +83,34 @@ TEST_F(UIViewWindowObservingTest, WindowObservingSet) {
   [window_ addSubview:view_];
 
   EXPECT_TRUE(callback_called);
+}
+
+// Checks that the observer is called with the correct old and new windows when
+// a textfield is added to the window and `cr_supportsWindowObserving` is set.
+TEST_F(UIViewWindowObservingTest, TextField_WindowObservingSet) {
+  UIView.cr_supportsWindowObserving = YES;
+  EXPECT_TRUE(UIView.cr_supportsWindowObserving);
+  UITextField* textField = [[UITextField alloc] init];
+  Observer* observer = [[Observer alloc] init];
+  [textField
+      addObserver:observer
+       forKeyPath:@"window"
+          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+          context:nullptr];
+  __block BOOL callback_called = NO;
+  observer.onChange = ^(id object, id change) {
+    callback_called = YES;
+    EXPECT_EQ(object, textField);
+    EXPECT_EQ(change[NSKeyValueChangeOldKey], [NSNull null]);
+    EXPECT_EQ(change[NSKeyValueChangeNewKey], window_);
+  };
+
+  [window_ addSubview:textField];
+
+  EXPECT_TRUE(callback_called);
+
+  // Clean up.
+  [textField removeObserver:observer forKeyPath:@"window"];
 }
 
 // Checks that the observer is not called when the view is added to the window

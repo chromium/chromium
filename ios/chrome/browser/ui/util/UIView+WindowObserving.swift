@@ -23,13 +23,25 @@ extension UIView {
           let willMove1 = class_getInstanceMethod(UIView.self, #selector(willMove(toWindow:))),
           let willMove2 = class_getInstanceMethod(UIView.self, #selector(cr_willMove(toWindow:))),
           let didMove1 = class_getInstanceMethod(UIView.self, #selector(didMoveToWindow)),
-          let didMove2 = class_getInstanceMethod(UIView.self, #selector(cr_didMoveToWindow))
+          let didMove2 = class_getInstanceMethod(UIView.self, #selector(cr_didMoveToWindow)),
+          // UITextField's original implementations don't call the super class implementations,
+          // which breaks the interposition at the UIView level. Handle UITextField explicitly.
+          let textFieldWillMove1 = class_getInstanceMethod(
+            UITextField.self, #selector(willMove(toWindow:))),
+          let textFieldWillMove2 = class_getInstanceMethod(
+            UITextField.self, #selector(cr_willMove(toWindow:))),
+          let textFieldDidMove1 = class_getInstanceMethod(
+            UITextField.self, #selector(didMoveToWindow)),
+          let textFieldDidMove2 = class_getInstanceMethod(
+            UITextField.self, #selector(cr_didMoveToWindow))
         else {
           // If it failed here, don't change the `swizzled` state.
           return
         }
         method_exchangeImplementations(willMove1, willMove2)
         method_exchangeImplementations(didMove1, didMove2)
+        method_exchangeImplementations(textFieldWillMove1, textFieldWillMove2)
+        method_exchangeImplementations(textFieldDidMove1, textFieldDidMove2)
         // Change the `swizzled` state.
         swizzled = newValue
       }
@@ -46,15 +58,37 @@ extension UIView {
 
   /// Whether the original and alternative implementations have been swapped.
   private static var swizzled = false
+}
 
+extension UIView {
   /// Adds a call to the KVO `willChangeValue(forKey:)` method.
-  @objc private func cr_willMove(toWindow newWindow: UIWindow?) {
+  @objc fileprivate func cr_willMove(toWindow newWindow: UIWindow?) {
     cr_willMove(toWindow: newWindow)
     willChangeValue(forKey: "window")
   }
 
   /// Adds a call to the KVO `didChangeValue(forKey:)` method.
-  @objc private func cr_didMoveToWindow() {
+  @objc fileprivate func cr_didMoveToWindow() {
+    cr_didMoveToWindow()
+    didChangeValue(forKey: "window")
+  }
+}
+
+extension UITextField {
+  /// Adds a call to the KVO `willChangeValue(forKey:)` method.
+  ///
+  /// This version is necessary, as UITextField's original implementation doesn't call its
+  /// superclass implementation, hence escapes the interposition at the UIView level.
+  @objc override fileprivate func cr_willMove(toWindow newWindow: UIWindow?) {
+    cr_willMove(toWindow: newWindow)
+    willChangeValue(forKey: "window")
+  }
+
+  /// Adds a call to the KVO `didChangeValue(forKey:)` method.
+  ///
+  /// This version is necessary, as UITextField's original implementation doesn't call its
+  /// superclass implementation, hence escapes the interposition at the UIView level.
+  @objc override fileprivate func cr_didMoveToWindow() {
     cr_didMoveToWindow()
     didChangeValue(forKey: "window")
   }
