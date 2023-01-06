@@ -54,6 +54,9 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #endif
 
@@ -631,6 +634,36 @@ void AppIconLoader::GetArcAppCompressedIconData(
                      base::WrapRefCounted(this)));
 }
 
+void AppIconLoader::GetGuestOSAppCompressedIconData(
+    Profile* profile,
+    const std::string& app_id,
+    ui::ResourceScaleFactor scale_factor) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(profile);
+
+  profile_ = profile;
+  auto* registry =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
+  if (!registry) {
+    std::move(callback_).Run(std::make_unique<apps::IconValue>());
+    return;
+  }
+
+  icon_scale_ = ui::GetScaleForResourceScaleFactor(scale_factor);
+  icon_size_in_px_ =
+      apps_util::ConvertDipToPxForScale(size_hint_in_dip_, icon_scale_);
+
+  // GuestOS may have the png icon file for the primary scale factor only.
+  base::FilePath png_path = registry->GetIconPath(
+      app_id, apps_util::GetPrimaryDisplayUIScaleFactor());
+  base::FilePath svg_path = registry->GetIconPath(app_id, ui::kScaleFactorNone);
+
+  registry->RequestIcon(
+      app_id, scale_factor,
+      base::BindOnce(&AppIconLoader::OnGetGuestOSAppCompressedIconData,
+                     base::WrapRefCounted(this), png_path, svg_path));
+}
+
 void AppIconLoader::OnGetArcAppCompressedIconData(
     arc::mojom::RawIconPngDataPtr icon) {
   auto iv = std::make_unique<IconValue>();
@@ -653,6 +686,60 @@ void AppIconLoader::OnGetArcAppCompressedIconData(
         std::move(icon->background_icon_png_data.value());
   }
   std::move(callback_).Run(std::move(iv));
+}
+
+void AppIconLoader::OnGetGuestOSAppCompressedIconData(base::FilePath png_path,
+                                                      base::FilePath svg_path,
+                                                      std::string icon_data) {
+  if (!icon_data.empty()) {
+    std::vector<uint8_t> data(icon_data.begin(), icon_data.end());
+    CompressedDataToSkBitmap(
+        std::move(data),
+        base::BindOnce(&AppIconLoader::OnGetCompressedIconDataWithSkBitmap,
+                       base::WrapRefCounted(this), /*is_maskable_icon=*/false));
+    return;
+  }
+
+  // For the migration scenario, when migrate from the GuestOS loading icon to
+  // the AppService unified icon loading, as the GuestOS can't startup after the
+  // user login, fetching the raw icon files from the GuestOS VM could fail.
+  // So try to fetch the raw icon files from the GuestOS on-disk cache to
+  // migrate the icon files from the GuestOS directory to the AppService
+  // directory.
+  if (!png_path.empty()) {
+    // Set `png_path` as null to ensure no infinite loops in
+    // OnGetGuestOSAppCompressedIconData.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&ReadFileAsCompressedString, png_path),
+        base::BindOnce(&AppIconLoader::OnGetGuestOSAppCompressedIconData,
+                       base::WrapRefCounted(this),
+                       /*png_path=*/base::FilePath(), svg_path));
+    return;
+  }
+
+  if (!svg_path.empty()) {
+    TranscodeIconFromSvg(std::move(svg_path), std::move(png_path));
+    return;
+  }
+
+  std::move(callback_).Run(std::make_unique<apps::IconValue>());
+}
+
+void AppIconLoader::TranscodeIconFromSvg(base::FilePath svg_path,
+                                         base::FilePath png_path) {
+  DCHECK(profile_);
+  gfx::Size kPreferredSize = gfx::Size(128, 128);
+  if (!svg_icon_transcoder_) {
+    svg_icon_transcoder_ = std::make_unique<SvgIconTranscoder>(profile_);
+  }
+  // Set `png_path` and `svg_path` as null to ensure no infinite loops in
+  // OnGetGuestOSAppCompressedIconData.
+  svg_icon_transcoder_->Transcode(
+      std::move(svg_path), std::move(png_path), kPreferredSize,
+      base::BindOnce(&AppIconLoader::OnGetGuestOSAppCompressedIconData,
+                     base::WrapRefCounted(this), /*png_path=*/base::FilePath(),
+                     /*svg_path=*/base::FilePath()));
 }
 
 std::unique_ptr<arc::IconDecodeRequest>

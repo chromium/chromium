@@ -266,7 +266,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                   IconValuePtr iv);
 
   // Invoked after writing icon image files to the local disk.
-  void OnIconInstalled(const std::string& app_id,
+  void OnIconInstalled(AppType app_type,
+                       const std::string& app_id,
                        int32_t size_in_dip,
                        IconEffects icon_effects,
                        IconType icon_type,

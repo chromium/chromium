@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -727,22 +728,26 @@ void AppServiceProxyAsh::OnIconRead(AppType app_type,
     icon_writer_.InstallIcon(
         publisher, app_id, size_in_dip,
         base::BindOnce(&AppServiceProxyAsh::OnIconInstalled,
-                       weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
-                       icon_effects, icon_type, std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
+                       size_in_dip, icon_effects, icon_type,
+                       std::move(callback)));
     return;
   }
 
   std::move(callback).Run(std::move(iv));
 }
 
-void AppServiceProxyAsh::OnIconInstalled(const std::string& app_id,
+void AppServiceProxyAsh::OnIconInstalled(AppType app_type,
+                                         const std::string& app_id,
                                          int32_t size_in_dip,
                                          IconEffects icon_effects,
                                          IconType icon_type,
                                          LoadIconCallback callback,
                                          bool install_success) {
   if (!install_success) {
-    LoadIconFromResource(icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
+    int resource_id = app_type == AppType::kCrostini ? IDR_LOGO_CROSTINI_DEFAULT
+                                                     : IDR_APP_DEFAULT_ICON;
+    LoadIconFromResource(icon_type, size_in_dip, resource_id,
                          /*is_placeholder_icon=*/false, icon_effects,
                          std::move(callback));
     return;

@@ -257,6 +257,26 @@ CompressedDataToImageSkiaCallback(
       std::move(callback), icon_scale);
 }
 
+void CompressedDataToSkBitmap(std::vector<uint8_t> compressed_data,
+                              base::OnceCallback<void(SkBitmap)> callback) {
+  if (compressed_data.empty()) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+
+  // DecompressToSkBitmap is a CPU intensive task that must not run on the
+  // UI thread, so post the processing over to the thread pool.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](std::vector<uint8_t> compressed_data) {
+            return DecompressToSkBitmap(compressed_data.data(),
+                                        compressed_data.size());
+          },
+          std::move(compressed_data)),
+      std::move(callback));
+}
+
 std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
                                            float rep_icon_scale) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -581,6 +601,23 @@ void GetArcAppCompressedIconData(content::BrowserContext* context,
           IconEffects::kNone, kInvalidIconResource, std::move(callback));
   icon_loader->GetArcAppCompressedIconData(app_id, prefs, scale_factor);
 }
+
+void GetGuestOSAppCompressedIconData(content::BrowserContext* context,
+                                     const std::string& app_id,
+                                     int size_in_dip,
+                                     ui::ResourceScaleFactor scale_factor,
+                                     LoadIconCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(context);
+
+  scoped_refptr<AppIconLoader> icon_loader =
+      base::MakeRefCounted<AppIconLoader>(
+          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
+          IconEffects::kNone, kInvalidIconResource, std::move(callback));
+  icon_loader->GetGuestOSAppCompressedIconData(
+      Profile::FromBrowserContext(context), app_id, scale_factor);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void LoadIconFromFileWithFallback(

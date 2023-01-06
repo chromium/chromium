@@ -48,6 +48,8 @@ class SkBitmap;
 
 namespace apps {
 
+class SvgIconTranscoder;
+
 // This class is meant to:
 // * Simplify loading icons, as things like effects and type are common
 //   to all loading.
@@ -137,6 +139,12 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   void GetArcAppCompressedIconData(const std::string& app_id,
                                    ArcAppListPrefs* arc_prefs,
                                    ui::ResourceScaleFactor scale_factor);
+
+  // Requests a compressed icon data with `scale_factor` for a Guest OS app
+  // identified by `app_id`.
+  void GetGuestOSAppCompressedIconData(Profile* profile,
+                                       const std::string& app_id,
+                                       ui::ResourceScaleFactor scale_factor);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -146,6 +154,12 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnGetArcAppCompressedIconData(arc::mojom::RawIconPngDataPtr icon);
+
+  void OnGetGuestOSAppCompressedIconData(base::FilePath png_path,
+                                         base::FilePath svg_path,
+                                         std::string icon_data);
+
+  void TranscodeIconFromSvg(base::FilePath svg_path, base::FilePath png_path);
 
   std::unique_ptr<arc::IconDecodeRequest> CreateArcIconDecodeRequest(
       base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,
@@ -231,6 +245,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   std::unique_ptr<arc::IconDecodeRequest> arc_icon_decode_request_;
   std::unique_ptr<arc::IconDecodeRequest> arc_foreground_icon_decode_request_;
   std::unique_ptr<arc::IconDecodeRequest> arc_background_icon_decode_request_;
+  std::unique_ptr<SvgIconTranscoder> svg_icon_transcoder_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

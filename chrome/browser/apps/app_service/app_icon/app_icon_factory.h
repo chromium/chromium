@@ -27,6 +27,8 @@ namespace content {
 class BrowserContext;
 }
 
+class SkBitmap;
+
 namespace apps {
 
 using ScaleToSize = std::map<float, int>;
@@ -47,6 +49,10 @@ base::OnceCallback<void(std::vector<uint8_t> compressed_data)>
 CompressedDataToImageSkiaCallback(
     base::OnceCallback<void(gfx::ImageSkia)> callback,
     float icon_scale);
+
+// Converts compressed data to a SkBitmap.
+void CompressedDataToSkBitmap(std::vector<uint8_t> compressed_data,
+                              base::OnceCallback<void(SkBitmap)> callback);
 
 // Encodes a single SkBitmap representation from the given ImageSkia to the
 // compressed PNG data. |rep_icon_scale| argument denotes, which ImageSkiaRep to
@@ -137,6 +143,13 @@ void GetArcAppCompressedIconData(content::BrowserContext* context,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback);
+
+// Requests a compressed icon data for a Guest OS app identified by `app_id`.
+void GetGuestOSAppCompressedIconData(content::BrowserContext* context,
+                                     const std::string& app_id,
+                                     int size_in_dip,
+                                     ui::ResourceScaleFactor scale_factor,
+                                     LoadIconCallback callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Loads an icon from a FilePath. If that fails, it calls the fallback.
