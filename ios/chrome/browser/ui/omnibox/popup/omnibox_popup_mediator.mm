@@ -7,11 +7,13 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -37,6 +39,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -59,6 +62,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 /// List of suggestions without the pedal group. Used to debouce pedals.
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
+/// Holds the currently displayed pedals group, if any.
+@property(nonatomic, strong) id<AutocompleteSuggestionGroup> currentPedals;
 /// Index of the group containing AutocompleteSuggestion, first group to be
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
@@ -105,6 +110,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)updateMatches:(const AutocompleteResult&)result {
   self.nonPedalSuggestions = nil;
+  self.currentPedals = nil;
 
   self.hasResults = !self.autocompleteResult.empty();
   if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
@@ -177,10 +183,16 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
                              inRow:(NSUInteger)row {
+  [self logPedalShownForCurrentResult];
+
   if ([suggestion isKindOfClass:[PedalSuggestionWrapper class]]) {
     PedalSuggestionWrapper* pedalSuggestionWrapper =
         (PedalSuggestionWrapper*)suggestion;
     if (pedalSuggestionWrapper.innerPedal.action) {
+      base::UmaHistogramEnumeration(
+          "Omnibox.SuggestionUsed.Pedal",
+          (OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type,
+          OmniboxPedalId::TOTAL_COUNT);
       pedalSuggestionWrapper.innerPedal.action();
     }
   } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
@@ -318,12 +330,21 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 /// pedal group is removed.
 - (void)invalidatePedals {
   if (self.nonPedalSuggestions) {
+    self.currentPedals = nil;
     [self.consumer updateMatches:self.nonPedalSuggestions
         preselectedMatchGroupIndex:0];
   }
 }
 
 #pragma mark - Private methods
+
+- (void)logPedalShownForCurrentResult {
+  for (PedalSuggestionWrapper* pedalMatch in self.currentPedals.suggestions) {
+    base::UmaHistogramEnumeration("Omnibox.PedalShown",
+                                  (OmniboxPedalId)pedalMatch.innerPedal.type,
+                                  OmniboxPedalId::TOTAL_COUNT);
+  }
+}
 
 /// Wraps `match` with AutocompleteMatchFormatter.
 - (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
@@ -461,15 +482,14 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   self.nonPedalSuggestions = groups;
 
   // Get pedals, if any. They go at the very top of the list.
-  id<AutocompleteSuggestionGroup> pedalGroup =
-      [self.pedalSectionExtractor extractPedals:allMatches];
-  if (pedalGroup) {
-    [groups insertObject:pedalGroup atIndex:0];
+  self.currentPedals = [self.pedalSectionExtractor extractPedals:allMatches];
+  if (self.currentPedals) {
+    [groups insertObject:self.currentPedals atIndex:0];
   }
 
   // Preselect the verbatim match. It's the top match, unless we inserted pedals
   // and pushed it one section down.
-  self.preselectedGroupIndex = pedalGroup ? MIN(1, groups.count) : 0;
+  self.preselectedGroupIndex = self.currentPedals ? MIN(1, groups.count) : 0;
 
   return groups;
 }

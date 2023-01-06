@@ -102,8 +102,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
-// Coordinator for the omnibox popup.
-@property(nonatomic, strong) OmniboxPopupCoordinator* omniboxPopupCoordinator;
 // Mediator for the badges displayed in the LocationBar.
 @property(nonatomic, strong) BadgeMediator* badgeMediator;
 // ViewController for the badges displayed in the LocationBar.
@@ -180,6 +178,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       [[OmniboxCoordinator alloc] initWithBaseViewController:nil
                                                      browser:self.browser];
   self.omniboxCoordinator.editController = _editController.get();
+  self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];
 
   [self.omniboxCoordinator.managedViewController
@@ -191,10 +190,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.omniboxCoordinator.managedViewController
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
-
-  self.omniboxPopupCoordinator = [self.omniboxCoordinator
-      createPopupCoordinator:self.popupPresenterDelegate];
-  [self.omniboxPopupCoordinator start];
 
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.
@@ -251,7 +246,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     return;
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   // The popup has to be destroyed before the location bar.
-  [self.omniboxPopupCoordinator stop];
   [self.omniboxCoordinator stop];
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
@@ -272,11 +266,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (BOOL)omniboxPopupHasAutocompleteResults {
-  return self.omniboxPopupCoordinator.hasResults;
+  return self.omniboxCoordinator.popupCoordinator.hasResults;
 }
 
 - (BOOL)showingOmniboxPopup {
-  return self.omniboxPopupCoordinator.isOpen;
+  return self.omniboxCoordinator.popupCoordinator.isOpen;
 }
 
 - (BOOL)isOmniboxFirstResponder {
