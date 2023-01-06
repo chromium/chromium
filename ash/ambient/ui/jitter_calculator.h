@@ -53,11 +53,12 @@ class ASH_EXPORT JitterCalculator {
   // Returns the new total translation to apply from the UI's original unshifted
   // position (0, 0).
   gfx::Vector2d Calculate();
+  void SetConfigForTesting(Config config);
 
  private:
   void AssetCurrentTranslationWithinBounds() const;
 
-  const Config config_;
+  Config config_;
   const RandomBinaryGenerator random_binary_generator_;
   // Current total translation from the original unshifted position.
   gfx::Vector2d current_translation_;

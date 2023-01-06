@@ -182,6 +182,10 @@ gfx::ImageSkia PhotoView::GetVisibleImageForTesting() {
   return image_views_.at(image_index_)->GetCurrentImage();
 }
 
+JitterCalculator* PhotoView::GetJitterCalculatorForTesting() {
+  return &glanceable_info_jitter_calculator_;
+}
+
 BEGIN_METADATA(PhotoView, views::View)
 END_METADATA
 

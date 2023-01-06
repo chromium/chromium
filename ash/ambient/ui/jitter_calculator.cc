@@ -69,4 +69,10 @@ void JitterCalculator::AssetCurrentTranslationWithinBounds() const {
   DCHECK_GE(current_translation_.y(), config_.y_min_translation);
 }
 
+void JitterCalculator::SetConfigForTesting(Config config) {
+  // Reset current translation.
+  current_translation_ = gfx::Vector2d();
+  config_ = config;
+}
+
 }  // namespace ash

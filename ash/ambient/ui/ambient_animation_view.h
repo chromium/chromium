@@ -53,6 +53,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
   ~AmbientAnimationView() override;
 
+  JitterCalculator* GetJitterCalculatorForTesting();
+
  private:
   void Init(AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
 

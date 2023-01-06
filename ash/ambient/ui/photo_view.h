@@ -46,6 +46,8 @@ class ASH_EXPORT PhotoView : public views::View,
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  JitterCalculator* GetJitterCalculatorForTesting();
+
  private:
   friend class AmbientAshTestBase;
 

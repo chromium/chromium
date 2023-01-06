@@ -14,9 +14,12 @@
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
+#include "ash/ambient/ui/ambient_info_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -210,6 +213,21 @@ void AmbientAshTestBase::SetAmbientAnimationTheme(AmbientAnimationTheme theme) {
       ambient::prefs::kAmbientAnimationTheme, static_cast<int>(theme));
 }
 
+void AmbientAshTestBase::DisableJitter() {
+  JitterCalculator::Config kZeroJitterConfig = {/*step_size=*/0};
+  auto* photo_view = GetPhotoView();
+  if (photo_view != nullptr) {
+    photo_view->GetJitterCalculatorForTesting()->SetConfigForTesting(
+        kZeroJitterConfig);
+  }
+
+  auto* ambient_animation_view = GetAmbientAnimationView();
+  if (ambient_animation_view != nullptr) {
+    ambient_animation_view->GetJitterCalculatorForTesting()
+        ->SetConfigForTesting(kZeroJitterConfig);
+  }
+}
+
 void AmbientAshTestBase::ShowAmbientScreen() {
   // The widget will be destroyed in |AshTestBase::TearDown()|.
   ambient_controller()->ShowUi();
@@ -374,6 +392,21 @@ std::vector<MediaStringView*> AmbientAshTestBase::GetMediaStringViews() {
 MediaStringView* AmbientAshTestBase::GetMediaStringView() {
   return static_cast<MediaStringView*>(
       GetContainerView()->GetViewByID(kAmbientMediaStringView));
+}
+
+PhotoView* AmbientAshTestBase::GetPhotoView() {
+  return static_cast<PhotoView*>(
+      GetContainerView()->GetViewByID(kAmbientPhotoView));
+}
+
+AmbientInfoView* AmbientAshTestBase::GetAmbientInfoView() {
+  return static_cast<AmbientInfoView*>(
+      GetContainerView()->GetViewByID(kAmbientInfoView));
+}
+
+AmbientAnimationView* AmbientAshTestBase::GetAmbientAnimationView() {
+  return static_cast<AmbientAnimationView*>(
+      GetContainerView()->GetViewByID(kAmbientAnimationView));
 }
 
 void AmbientAshTestBase::FastForwardToLockScreenTimeout() {

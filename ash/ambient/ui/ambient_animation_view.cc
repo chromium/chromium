@@ -432,6 +432,10 @@ void AmbientAnimationView::ApplyJitter() {
   media_string_container_->SetBorder(CreateMediaStringBorder(jitter));
 }
 
+JitterCalculator* AmbientAnimationView::GetJitterCalculatorForTesting() {
+  return &animation_jitter_calculator_;
+}
+
 BEGIN_METADATA(AmbientAnimationView, views::View)
 END_METADATA
 

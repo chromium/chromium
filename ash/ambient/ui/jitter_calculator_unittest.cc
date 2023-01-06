@@ -98,4 +98,15 @@ TEST_F(JitterCalculatorTest, AllowsFor0MinMaxTranslation) {
   EXPECT_THAT(max_y_translation_observed, Eq(0));
 }
 
+TEST_F(JitterCalculatorTest, SetConfigToZero) {
+  constexpr JitterCalculator::Config kZeroJitterConfig = {/*step_size=*/0};
+
+  JitterCalculator::Config config;
+  JitterCalculator jitter_calculator_(config);
+  jitter_calculator_.SetConfigForTesting(kZeroJitterConfig);
+  for (int i = 0; i < 200; ++i) {
+    ASSERT_TRUE(jitter_calculator_.Calculate().IsZero());
+  }
+}
+
 }  // namespace ash

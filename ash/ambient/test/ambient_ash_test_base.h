@@ -12,7 +12,10 @@
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/test/test_ambient_client.h"
+#include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
+#include "ash/ambient/ui/ambient_info_view.h"
+#include "ash/ambient/ui/photo_view.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
@@ -54,6 +57,9 @@ class AmbientAshTestBase : public AshTestBase {
   // case, the ambient screen must be closed, and the new |theme| will take
   // effect with the next call to ShowAmbientScreen().
   void SetAmbientAnimationTheme(AmbientAnimationTheme theme);
+
+  // Sets jitters configs to zero for pixel testing.
+  void DisableJitter();
 
   // Creates ambient screen in its own widget.
   void ShowAmbientScreen();
@@ -158,6 +164,9 @@ class AmbientAshTestBase : public AshTestBase {
   std::vector<MediaStringView*> GetMediaStringViews();
   // Returns the media string view for the default display.
   MediaStringView* GetMediaStringView();
+  PhotoView* GetPhotoView();
+  AmbientAnimationView* GetAmbientAnimationView();
+  AmbientInfoView* GetAmbientInfoView();
 
   const std::map<int, ::ambient::PhotoCacheEntry>& GetCachedFiles();
   const std::map<int, ::ambient::PhotoCacheEntry>& GetBackupCachedFiles();
