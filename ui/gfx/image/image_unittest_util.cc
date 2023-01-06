@@ -19,6 +19,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/test/sk_color_eq.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/mac/scoped_cftyperef.h"
@@ -38,26 +39,6 @@ namespace {
 // converting between NSImage & UIImage to ImageSkia. Determined by trial and
 // error.
 const int kMaxColorSpaceConversionColorShift = 40;
-
-bool ColorComponentsClose(SkColor component1,
-                          SkColor component2,
-                          int max_deviation) {
-  int c1 = static_cast<int>(component1);
-  int c2 = static_cast<int>(component2);
-  return std::abs(c1 - c2) <= max_deviation;
-}
-
-bool ColorsClose(SkColor color1, SkColor color2, int max_deviation) {
-  // Be tolerant of floating point rounding and lossy color space conversions.
-  return ColorComponentsClose(SkColorGetR(color1), SkColorGetR(color2),
-                              max_deviation) &&
-         ColorComponentsClose(SkColorGetG(color1), SkColorGetG(color2),
-                              max_deviation) &&
-         ColorComponentsClose(SkColorGetB(color1), SkColorGetB(color2),
-                              max_deviation) &&
-         ColorComponentsClose(SkColorGetA(color1), SkColorGetA(color2),
-                              max_deviation);
-}
 
 }  // namespace
 
@@ -169,7 +150,8 @@ void CheckImageIndicatesPNGDecodeFailure(const gfx::Image& image) {
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_LE(16, bitmap.width());
   EXPECT_LE(16, bitmap.height());
-  CheckColors(bitmap.getColor(10, 10), SK_ColorRED);
+  EXPECT_SKCOLOR_CLOSE(bitmap.getColor(10, 10), SK_ColorRED,
+                       MaxColorSpaceConversionColorShift());
 }
 
 bool ImageSkiaStructureMatches(
@@ -268,7 +250,8 @@ SkColor GetPlatformImageColor(PlatformImage image, int x, int y) {
 #endif
 
 void CheckColors(SkColor color1, SkColor color2) {
-  EXPECT_TRUE(ColorsClose(color1, color2, MaxColorSpaceConversionColorShift()));
+  // Be tolerant of floating point rounding and lossy color space conversions.
+  EXPECT_SKCOLOR_CLOSE(color1, color2, MaxColorSpaceConversionColorShift());
 }
 
 void CheckIsTransparent(SkColor color) {
