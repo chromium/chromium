@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Ensure framebuffer scaling works as expected. - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL Ensure framebuffer scaling works as expected. - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

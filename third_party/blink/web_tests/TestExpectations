@@ -3230,7 +3230,7 @@ crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.serviceworker.html?wss [ Failure Timeout ]
 crbug.com/1209223 external/wpt/html/syntax/xmldecl/xmldecl-2.html [ Failure ]
 crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Failure Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-deep-same-site.html [ Crash Timeout ]
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-different-site.html [ Timeout ]
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-same-site.html [ Timeout ]

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Test that transferToImageBitmap returns an ImageBitmap with correct width and height in a worker assert_unreached: error Reached unreachable code
+PASS Test that transferToImageBitmap returns an ImageBitmap with correct color in a worker
+PASS Test that call transferToImageBitmap twice returns an ImageBitmap with correct color in a worker
+PASS Test that call transferToImageBitmap twice on a alpha-disabled context returns an ImageBitmap with correct color in a worker
+PASS Test that transferToImageBitmap won't change context's property in a worker
+PASS Test that call transferToImageBitmap preserves transform in a worker
+PASS Test that call transferToImageBitmap on a detached OffscreenCanvas throws an exception in a worker
+PASS Test that call transferToImageBitmap without a context throws an exception in a worker
+Harness: the test ran to completion.
+

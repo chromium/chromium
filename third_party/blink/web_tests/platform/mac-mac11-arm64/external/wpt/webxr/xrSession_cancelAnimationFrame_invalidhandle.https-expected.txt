@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL XRSession cancelAnimationFrame does not have unexpected behavior when given invalid handles on immersive testSession - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL XRSession cancelAnimationFrame does not have unexpected behavior when given invalid handles on immersive testSession - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL XRSession cancelAnimationFrame does not have unexpected behavior when given invalid handles on non-immersive testSession - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+FAIL XRSession cancelAnimationFrame does not have unexpected behavior when given invalid handles on non-immersive testSession - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+
