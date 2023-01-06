@@ -11,7 +11,6 @@ import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.ScaleDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -84,8 +83,7 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
             if (animatable instanceof Animatable2Compat) {
                 ((Animatable2Compat) animatable)
                         .registerAnimationCallback(LazyHolderCompat.INSTANCE);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                    && animatable instanceof Animatable2) {
+            } else if (animatable instanceof Animatable2) {
                 ((Animatable2) animatable).registerAnimationCallback(LazyHolder.INSTANCE);
             }
         });
@@ -108,8 +106,7 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
             AutoAnimatorDrawable.animatedDrawableHelper(drawable.getCurrent(), consumer);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && drawable instanceof android.graphics.drawable.DrawableWrapper) {
+        if (drawable instanceof android.graphics.drawable.DrawableWrapper) {
             // Support all modern versions of drawables that wrap other ones.  This won't cover old
             // versions of Android (see below for other if/else blocks).
             AutoAnimatorDrawable.animatedDrawableHelper(

@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
@@ -34,8 +33,6 @@ public class CoordinatorLayoutForPointer extends CoordinatorLayout {
 
     @Override
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return null;
-
         final int x = (int) event.getX(pointerIndex);
         final int y = (int) event.getY(pointerIndex);
         final int childrenCount = getChildCount();
