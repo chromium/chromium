@@ -273,11 +273,12 @@ PerformanceEntryVector Performance::getEntriesByType(
       PerformanceEntry::ToEntryTypeEnum(entry_type);
   if (!PerformanceEntry::IsValidTimelineEntryType(type)) {
     PerformanceEntryVector empty_entries;
-    String message = "Deprecated API for given entry type.";
-    GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kJavaScript,
-            mojom::ConsoleMessageLevel::kWarning, message));
+    if (ExecutionContext* execution_context = GetExecutionContext()) {
+      String message = "Deprecated API for given entry type.";
+      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kWarning, message));
+    }
     return empty_entries;
   }
   return getEntriesByTypeInternal(type);
