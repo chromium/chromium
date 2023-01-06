@@ -98,11 +98,12 @@ class AppsContainerViewTest : public AshTestBase {
   }
 
   bool HasGradientMask() {
-    return GetAppListTestHelper()
-        ->GetAppsContainerView()
-        ->scrollable_container_for_test()
-        ->layer()
-        ->layer_mask_layer();
+    return !GetAppListTestHelper()
+                ->GetAppsContainerView()
+                ->scrollable_container_for_test()
+                ->layer()
+                ->gradient_mask()
+                .IsEmpty();
   }
 
  private:

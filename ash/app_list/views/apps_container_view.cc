@@ -28,7 +28,6 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
@@ -642,23 +641,18 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
 }
 
 void AppsContainerView::MaybeCreateGradientMask() {
-  if (features::IsBackgroundBlurEnabled()) {
-    if (!layer()->layer_mask_layer() && !gradient_layer_delegate_) {
-      gradient_layer_delegate_ =
-          std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
-      UpdateGradientMaskBounds();
-    }
-    if (gradient_layer_delegate_) {
-      scrollable_container_->layer()->SetMaskLayer(
-          gradient_layer_delegate_->layer());
-    }
-  }
+  if (!features::IsBackgroundBlurEnabled())
+    return;
+
+  if (scrollable_container_->layer()->gradient_mask().IsEmpty())
+    UpdateGradientMaskBounds();
 }
 
 void AppsContainerView::MaybeRemoveGradientMask() {
-  if (scrollable_container_->layer()->layer_mask_layer() &&
+  if (!scrollable_container_->layer()->gradient_mask().IsEmpty() &&
       !keep_gradient_mask_for_cardified_state_) {
-    scrollable_container_->layer()->SetMaskLayer(nullptr);
+    scrollable_container_->layer()->SetGradientMask(
+        gfx::LinearGradient::GetEmpty());
   }
 }
 
@@ -915,7 +909,7 @@ void AppsContainerView::Layout() {
       gfx::Insets::TLBR(-kDefaultFadeoutMaskHeight, 0, 0, 0));
   scrollable_container_->SetBoundsRect(scrollable_bounds);
 
-  if (gradient_layer_delegate_)
+  if (!scrollable_container_->layer()->gradient_mask().IsEmpty())
     UpdateGradientMaskBounds();
 
   bool separator_need_centering = false;
@@ -1427,20 +1421,22 @@ void AppsContainerView::UpdateForActiveAppListModel() {
 }
 
 void AppsContainerView::UpdateGradientMaskBounds() {
-  const gfx::Rect container_bounds = scrollable_container_->bounds();
-  const gfx::Rect top_gradient_bounds(0, 0, container_bounds.width(),
-                                      kDefaultFadeoutMaskHeight);
-  const gfx::Rect bottom_gradient_bounds(
-      0, container_bounds.height() - kDefaultFadeoutMaskHeight,
-      container_bounds.width(), kDefaultFadeoutMaskHeight);
+  if (scrollable_container_->bounds().IsEmpty())
+    return;
 
-  gradient_layer_delegate_->set_start_fade_zone({top_gradient_bounds,
-                                                 /*fade_in=*/true,
-                                                 /*is_horizontal=*/false});
-  gradient_layer_delegate_->set_end_fade_zone({bottom_gradient_bounds,
-                                               /*fade_in=*/false,
-                                               /*is_horizonal=*/false});
-  gradient_layer_delegate_->layer()->SetBounds(container_bounds);
+  // Vertical linear gradient from top to bottom.
+  gfx::LinearGradient gradient_mask(/*angle=*/-90);
+  float fade_in_out_fraction = static_cast<float>(kDefaultFadeoutMaskHeight) /
+                               scrollable_container_->bounds().height();
+  // Fade in section.
+  gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+  gradient_mask.AddStep(fade_in_out_fraction, 255);
+  // Fade out section
+  gradient_mask.AddStep((1 - fade_in_out_fraction), 255);
+  gradient_mask.AddStep(1, 0);
+
+  if (gradient_mask != scrollable_container_->layer()->gradient_mask())
+    scrollable_container_->layer()->SetGradientMask(gradient_mask);
 }
 
 void AppsContainerView::OnAppsGridViewFadeOutAnimationEnded(

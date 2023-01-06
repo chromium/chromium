@@ -715,8 +715,10 @@ void Layer::UpdateMaskFilterInfo(const gfx::RoundedCornersF* corner_radii,
   if (property_trees && effect_tree_index() != kInvalidPropertyNodeId &&
       (node =
            property_trees->effect_tree_mutable().Node(effect_tree_index()))) {
+    gfx::RectF effective_clip_rect = EffectiveClipRect();
+    effective_clip_rect += offset_to_transform_parent();
     node->mask_filter_info = gfx::MaskFilterInfo(
-        EffectiveClipRect(), inputs.corner_radii, inputs.gradient_mask);
+        effective_clip_rect, inputs.corner_radii, inputs.gradient_mask);
     node->effect_changed = true;
     property_trees->effect_tree_mutable().set_needs_update(true);
   } else {
