@@ -25,7 +25,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/creator_all_buttons_toolbar"
-        android:layout_gravity="end" >
+        android:layout_gravity="end"
+        android:visibility="gone" >
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/creator_follow_button_toolbar"
           android:layout_width="wrap_content"
