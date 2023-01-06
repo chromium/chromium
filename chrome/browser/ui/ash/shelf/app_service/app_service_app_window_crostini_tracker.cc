@@ -241,8 +241,6 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
 void AppServiceAppWindowCrostiniTracker::RegisterCrostiniWindowForForceClose(
     aura::Window* window,
     const std::string& app_name) {
-  if (!base::FeatureList::IsEnabled(features::kCrostiniForceClose))
-    return;
   exo::ShellSurfaceBase* surface = exo::GetShellSurfaceBaseForWindow(window);
   if (!surface)
     return;

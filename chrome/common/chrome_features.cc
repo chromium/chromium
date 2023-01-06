@@ -167,11 +167,6 @@ BASE_FEATURE(kCrostiniArcSideload,
              "CrostiniArcSideload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables custom UI for forcibly closing unresponsive windows.
-BASE_FEATURE(kCrostiniForceClose,
-             "CrostiniForceClose",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables distributed model for TPM1.2, i.e., using tpm_managerd and
 // attestationd.
 BASE_FEATURE(kCryptohomeDistributedModel,
