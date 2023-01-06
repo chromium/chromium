@@ -13,8 +13,6 @@
 
 namespace ash {
 
-class SearchResult;
-
 // UMA histograms that record app list sort reorder animation smoothness.
 // Exposed in this header because it is needed in tests.
 ASH_EXPORT extern const char kClamshellReorderAnimationSmoothnessHistogram[];
@@ -221,10 +219,6 @@ void RecordAppListUserJourneyTime(AppListShowSource source,
 
 // Records metrics periodically (see interval in UserMetricsRecorder).
 void RecordPeriodicAppListMetrics();
-
-ASH_EXPORT void RecordSearchResultOpenSource(const SearchResult* result,
-                                             AppListViewState state,
-                                             bool is_tablet_mode);
 
 ASH_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                                          AppListViewState app_list_state,

@@ -467,9 +467,6 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 
   auto* result = view->result();
 
-  RecordSearchResultOpenSource(result, view_delegate_->GetAppListViewState(),
-                               view_delegate_->IsInTabletMode());
-
   AppListLaunchType launch_type =
       IsAppListSearchResultAnApp(result->result_type())
           ? AppListLaunchType::kAppSearchResult

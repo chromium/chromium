@@ -12,7 +12,6 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
-#include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -30,10 +29,6 @@ int g_continue_file_removals_in_session = 0;
 // The UMA histogram that logs smoothness of pagination animation.
 constexpr char kPaginationTransitionAnimationSmoothnessInTablet[] =
     "Apps.PaginationTransition.AnimationSmoothness.TabletMode";
-
-// The UMA histogram that logs which state search results are opened from.
-constexpr char kAppListSearchResultOpenSourceHistogram[] =
-    "Apps.AppListSearchResultOpenedSource";
 
 // The UMA histogram that logs smoothness of cardified animation.
 constexpr char kCardifiedStateAnimationSmoothnessEnter[] =
@@ -118,16 +113,6 @@ constexpr char kAppListOpenTimePrefix[] = "Apps.AppListOpenTime.";
 constexpr char kContinueSectionFilesRemovedInSessionHistogram[] =
     "Apps.AppList.Search.ContinueSectionFilesRemovedPerSession";
 
-// The different sources from which a search result is displayed. These values
-// are written to logs.  New enum values can be added, but existing enums must
-// never be renumbered or deleted and reused.
-enum class ApplistSearchResultOpenedSource {
-  kHalfClamshell = 0,  // DEPRECATED.
-  kFullscreenClamshell = 1,
-  kFullscreenTablet = 2,
-  kMaxApplistSearchResultOpenedSource = 3,
-};
-
 AppLaunchedMetricParams::AppLaunchedMetricParams() = default;
 
 AppLaunchedMetricParams::AppLaunchedMetricParams(
@@ -172,22 +157,6 @@ void AppListRecordPageSwitcherSourceByEventType(ui::EventType type) {
 void RecordPageSwitcherSource(AppListPageSwitcherSource source) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListPageSwitcherSource", source,
                             kMaxAppListPageSwitcherSource);
-}
-
-void RecordSearchResultOpenSource(const SearchResult* result,
-                                  AppListViewState state,
-                                  bool is_tablet_mode) {
-  // Record the search metric if the SearchResult is not a suggested app.
-  if (result->is_recommendation())
-    return;
-
-  ApplistSearchResultOpenedSource source =
-      is_tablet_mode ? ApplistSearchResultOpenedSource::kFullscreenTablet
-                     : ApplistSearchResultOpenedSource::kFullscreenClamshell;
-
-  UMA_HISTOGRAM_ENUMERATION(
-      kAppListSearchResultOpenSourceHistogram, source,
-      ApplistSearchResultOpenedSource::kMaxApplistSearchResultOpenedSource);
 }
 
 void RecordSearchResultRemovalDialogDecision(
