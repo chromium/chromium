@@ -15,6 +15,13 @@ namespace syncer {
 // (introduced later).
 BASE_DECLARE_FEATURE(kCacheBaseEntitySpecificsInMetadata);
 
+// Customizes the delay of a deferred sync startup.
+BASE_DECLARE_FEATURE(kDeferredSyncStartupCustomDelay);
+inline constexpr base::FeatureParam<int>
+    kDeferredSyncStartupCustomDelayInSeconds{
+        &kDeferredSyncStartupCustomDelay,
+        "DeferredSyncStartupCustomDelayInSeconds", 1};
+
 // Causes Sync to ignore updates encrypted with keys that have been missing for
 // too long from this client; Sync will proceed normally as if those updates
 // didn't exist.

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +26,10 @@ namespace {
 constexpr base::TimeDelta kDefaultDeferredInitDelay = base::Seconds(10);
 
 base::TimeDelta GetDeferredInitDelay() {
+  if (base::FeatureList::IsEnabled(kDeferredSyncStartupCustomDelay)) {
+    return base::Seconds(kDeferredSyncStartupCustomDelayInSeconds.Get());
+  }
+
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(kSyncDeferredStartupTimeoutSeconds)) {
     int timeout = 0;
