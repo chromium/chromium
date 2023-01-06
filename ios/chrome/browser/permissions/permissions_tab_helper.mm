@@ -10,18 +10,31 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/permissions/permissions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-const float kTimeoutInMillisecond = 250;
+
+constexpr base::TimeDelta kTimeout = base::Milliseconds(250);
+
+// Completion callback for permissions alert overlay.
+void HandlePermissionDialogResponse(
+    web::WebStatePermissionDecisionHandler handler,
+    OverlayResponse* response) API_AVAILABLE(ios(15.0)) {
+  PermissionsDialogResponse* dialog_response =
+      response ? response->GetInfo<PermissionsDialogResponse>() : nullptr;
+  handler(dialog_response && dialog_response->capture_allow());
+}
+
 }  // namespace
 
 PermissionsTabHelper::PermissionsTabHelper(web::WebState* web_state)
@@ -40,6 +53,20 @@ PermissionsTabHelper::PermissionsTabHelper(web::WebState* web_state)
 }
 
 PermissionsTabHelper::~PermissionsTabHelper() {}
+
+void PermissionsTabHelper::
+    PresentPermissionsDecisionDialogWithCompletionHandler(
+        NSArray<NSNumber*>* permissions,
+        web::WebStatePermissionDecisionHandler handler) {
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<PermissionsDialogRequest>(
+          web_state_->GetVisibleURL(), permissions);
+  request->GetCallbackManager()->AddCompletionCallback(
+      base::BindOnce(&HandlePermissionDialogResponse, handler));
+  OverlayRequestQueue::FromWebState(web_state_,
+                                    OverlayModality::kWebContentArea)
+      ->AddRequest(std::move(request));
+}
 
 void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
                                                   web::Permission permission) {
@@ -76,7 +103,7 @@ void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
     // of showing multiple infobar banners back to back.
     if (!timer_.IsRunning()) {
       recently_accessible_permissions_ = [NSMutableArray array];
-      timer_.Start(FROM_HERE, base::Milliseconds(kTimeoutInMillisecond), this,
+      timer_.Start(FROM_HERE, kTimeout, this,
                    &PermissionsTabHelper::ShowInfoBar);
     }
     [recently_accessible_permissions_ addObject:@(permission)];
@@ -158,7 +185,6 @@ void PermissionsTabHelper::UpdateIsInfoBarAccepted() {
       break;
     }
   }
-  // TODO(crbug.com/1295144): Slightly delay execution for thread safety.
   static_cast<InfoBarIOS*>(infobar_)->set_accepted(accepted);
 }
 

@@ -938,8 +938,8 @@ void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
     PermissionDecisionHandler web_view_decision_handler) {
   bool delegate_can_handle_decision = false;
   if (delegate_) {
-    WebStateDelegate::WebStatePermissionDecisionHandler
-        web_state_decision_handler = ^(BOOL allowed) {
+    WebStatePermissionDecisionHandler web_state_decision_handler =
+        ^(BOOL allowed) {
           allowed ? web_view_decision_handler(WKPermissionDecisionGrant)
                   : web_view_decision_handler(WKPermissionDecisionDeny);
         };

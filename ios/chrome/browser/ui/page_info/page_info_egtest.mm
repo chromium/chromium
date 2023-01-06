@@ -5,7 +5,9 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_chromium_strings.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -27,6 +29,10 @@
 #endif
 
 namespace {
+
+using ::base::test::ios::kWaitForUIElementTimeout;
+using ::base::test::ios::WaitUntilConditionOrTimeout;
+
 // Matcher infobar modal camera permissions switch.
 id<GREYMatcher> CameraPermissionsSwitch(BOOL isOn) {
   return chrome_test_util::TableViewSwitchCell(
@@ -38,6 +44,7 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   return chrome_test_util::TableViewSwitchCell(
       kPageInfoMicrophoneSwitchAccessibilityIdentifier, isOn);
 }
+
 }  // namespace
 
 @interface PageInfoTestCase : ChromeTestCase
@@ -55,7 +62,6 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 
 // Checks that if the alert for site permissions pops up, and allow it.
 - (void)checkAndAllowPermissionAlerts {
-  XCUIApplication* app = [[XCUIApplication alloc] init];
   // Allow system permission if shown.
   NSError* systemAlertFoundError = nil;
   [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
@@ -68,11 +74,24 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
                   acceptAlertError);
   }
   // Allow site permission.
-  XCUIElement* alert =
-      [[app descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
-  XCUIElement* button = alert.buttons[@"Allow"];
-  GREYAssertNotNil(button, @"Cannot find \"Allow\" button in system alert.");
-  [button tap];
+  id<GREYMatcher> dialogMatcher =
+      grey_accessibilityID(kPermissionsDialogAccessibilityIdentifier);
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:dialogMatcher]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return !error;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"Permissions dialog was not shown.");
+  NSString* allowButtonText = l10n_util::GetNSString(
+      IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT);
+  id<GREYMatcher> allowButtonMatcher =
+      grey_allOf(grey_ancestor(dialogMatcher),
+                 grey_accessibilityLabel(allowButtonText), nil);
+  [[[EarlGrey selectElementWithMatcher:allowButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
 }
 
 // Checks `expectedStatesForPermissions` matches the actual states for

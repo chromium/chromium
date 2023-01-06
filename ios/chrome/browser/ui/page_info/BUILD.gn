@@ -143,6 +143,7 @@ source_set("eg2_tests") {
     ":constants",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays/public/web_content_area:constants",
     "//ios/chrome/browser/ui/permissions:constants",
     "//ios/chrome/browser/ui/permissions:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

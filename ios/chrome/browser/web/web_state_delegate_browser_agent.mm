@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/permissions/permissions_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -234,9 +236,15 @@ WebStateDelegateBrowserAgent::GetJavaScriptDialogPresenter(
 bool WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
-    WebStatePermissionDecisionHandler handler) {
-  // TODO(crbug.com/1356768): Show a custom prompt and invoke decision handler
-  // based on user input, and return true.
+    web::WebStatePermissionDecisionHandler handler) {
+  if (@available(iOS 15.0, *)) {
+    if (web::features::IsMediaPermissionsControlEnabled()) {
+      PermissionsTabHelper::FromWebState(source)
+          ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
+                                                                  handler);
+      return true;
+    }
+  }
   return false;
 }
 

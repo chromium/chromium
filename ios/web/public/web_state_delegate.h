@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/callback.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 
 @protocol CRWResponderInputView;
@@ -65,7 +66,6 @@ class WebStateDelegate {
   // If returned `true`, the delegate must use the `handler` function to answer
   // to the permissions access request; otherwise, the delegate must NOT use the
   // handler.
-  typedef void (^WebStatePermissionDecisionHandler)(BOOL allow);
   virtual bool HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,

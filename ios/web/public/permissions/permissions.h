@@ -9,6 +9,10 @@
 
 namespace web {
 
+// Callback that processes user's permission for a web state to asks the user
+// whether it is allowed to access certain permissions on the device.
+using WebStatePermissionDecisionHandler = void (^)(BOOL allow);
+
 // Enum specifying different data or device hardwares that the app/site needs
 // access permissions to.
 typedef NS_ENUM(NSUInteger, Permission) {

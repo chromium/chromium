@@ -7,16 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/scoped_observation.h"
-#include "base/timer/timer.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/scoped_observation.h"
+#import "base/timer/timer.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/web/public/permissions/permissions.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 class InfobarOverlayRequestInserter;
 class OverlayRequestQueue;
-enum class Permission : NSUInteger;
 
 namespace base {
 class OneShotTimer;
@@ -34,6 +34,12 @@ class PermissionsTabHelper
   PermissionsTabHelper(const PermissionsTabHelper&) = delete;
   PermissionsTabHelper& operator=(const PermissionsTabHelper&) = delete;
   ~PermissionsTabHelper() override;
+
+  // Present a dialog that asks the user whether the web state is allowed to
+  // access `permissions` on the device.
+  void PresentPermissionsDecisionDialogWithCompletionHandler(
+      NSArray<NSNumber*>* permissions,
+      web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0));
 
   // web::WebStateObserver implementation.
   void PermissionStateChanged(web::WebState* web_state,
