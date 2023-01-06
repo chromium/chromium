@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -279,6 +280,7 @@ public class VirtualKeyboardResizeTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    @DisabledTest(message = "Flaky - https://crbug.com/1405463")
     public void testVirtualKeyboardResizesVisualViewportFlag() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
