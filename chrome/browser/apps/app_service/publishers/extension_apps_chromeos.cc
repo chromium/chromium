@@ -72,7 +72,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_system.h"
@@ -666,12 +665,6 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
     return;
   }
 
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = mojom_app_type();
-  mojom_app->app_id = app_id;
-  SetShowInFields(mojom_app, extension);
-  PublisherBase::Publish(std::move(mojom_app), subscribers());
-
   auto app = std::make_unique<App>(app_type(), app_id);
   SetShowInFields(extension, *app);
   AppPublisher::Publish(std::move(app));
@@ -774,24 +767,6 @@ void ExtensionAppsChromeOs::SetShowInFields(
   }
 }
 
-void ExtensionAppsChromeOs::SetShowInFields(
-    apps::mojom::AppPtr& app,
-    const extensions::Extension* extension) {
-  ExtensionAppsBase::SetShowInFields(app, extension);
-
-  // Explicitly mark QuickOffice as being able to handle intents even though it
-  // is otherwise hidden from the user.
-  if (extension_misc::IsQuickOfficeExtension(extension->id())) {
-    app->handles_intents = apps::mojom::OptionalBool::kTrue;
-  }
-
-  // Extensions are only published if they have file_browser_handlers, which
-  // means they need to handle intents.
-  if (extension->is_extension()) {
-    app->handles_intents = apps::mojom::OptionalBool::kTrue;
-  }
-}
-
 bool ExtensionAppsChromeOs::ShouldShownInLauncher(
     const extensions::Extension* extension) {
   return app_list::ShouldShowInLauncher(extension, profile());
@@ -828,49 +803,6 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
     app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);
   } else if (extension->is_extension()) {
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);
-  }
-
-  return app;
-}
-
-apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
-    const extensions::Extension* extension,
-    apps::mojom::Readiness readiness) {
-  // When Lacros is enabled, extensions not on the ash keep list should not be
-  // published to the app service at all. Thus this method should not be called.
-  DCHECK(!(extension->is_platform_app() &&
-           crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-           !extensions::ExtensionAppRunsInOS(extension->id())));
-  const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
-
-  apps::mojom::AppPtr app = ConvertImpl(
-      extension,
-      is_app_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
-  bool paused = paused_apps_.IsPaused(extension->id());
-  app->icon_key =
-      icon_key_factory().MakeIconKey(GetIconEffects(extension, paused));
-
-  app->has_badge = app_notifications_.HasNotification(extension->id())
-                       ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
-  app->paused = paused ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
-
-  if (is_app_disabled && is_disabled_apps_mode_hidden_) {
-    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-    app->show_in_search = apps::mojom::OptionalBool::kFalse;
-    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
-    app->handles_intents = apps::mojom::OptionalBool::kFalse;
-  }
-
-  bool is_quickoffice = extension->is_extension() &&
-                        extension_misc::IsQuickOfficeExtension(extension->id());
-  if (extension->is_app() || is_quickoffice) {
-    base::Extend(app->intent_filters,
-                 apps_util::CreateChromeAppIntentFilters(extension));
-  } else if (extension->is_extension()) {
-    base::Extend(app->intent_filters,
-                 apps_util::CreateExtensionIntentFilters(extension));
   }
 
   return app;
@@ -915,13 +847,6 @@ void ExtensionAppsChromeOs::SetIconEffect(const std::string& app_id) {
   if (!extension) {
     return;
   }
-
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = mojom_app_type();
-  mojom_app->app_id = app_id;
-  mojom_app->icon_key = icon_key_factory().MakeIconKey(
-      GetIconEffects(extension, paused_apps_.IsPaused(app_id)));
-  PublisherBase::Publish(std::move(mojom_app), subscribers());
 
   auto app = std::make_unique<App>(app_type(), app_id);
   app->icon_key = std::move(*icon_key_factory().CreateIconKey(
@@ -1029,10 +954,6 @@ void ExtensionAppsChromeOs::UpdateAppDisabledState(
     return;
   }
 
-  PublisherBase::Publish(
-      Convert(extension, is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
-                                     : apps::mojom::Readiness::kReady),
-      subscribers());
   AppPublisher::Publish(CreateApp(extension, is_disabled
                                                  ? Readiness::kDisabledByPolicy
                                                  : Readiness::kReady));

@@ -28,9 +28,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace extensions {
 class AppWindow;
@@ -100,7 +98,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  // apps::mojom::Publisher overrides.
+  // apps::AppPublisher overrides.
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
 
@@ -157,13 +155,9 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   bool Accepts(const extensions::Extension* extension) override;
   void SetShowInFields(const extensions::Extension* extension,
                        App& app) override;
-  void SetShowInFields(apps::mojom::AppPtr& app,
-                       const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
   AppPtr CreateApp(const extensions::Extension* extension,
                    Readiness readiness) override;
-  apps::mojom::AppPtr Convert(const extensions::Extension* extension,
-                              apps::mojom::Readiness readiness) override;
 
   // Calculate the icon effects for the extension.
   IconEffects GetIconEffects(const extensions::Extension* extension,
