@@ -215,7 +215,7 @@ def _should_ignore(jar_path: str) -> bool:
 
 
 def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
-                                    show_ninja: bool,
+                                    j_value: Optional[str], show_ninja: bool,
                                     src_path: pathlib.Path) -> JarTargetDict:
     """Runs list_java_targets.py to find all jars generated in the build.
 
@@ -235,6 +235,8 @@ def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
         '--query',
         'deps_info.unprocessed_jar_path',
     ]
+    if j_value:
+        cmd += ['-j', j_value]
     if not show_ninja:
         cmd.append('-q')
     output = subprocess_utils.run_command(cmd)
@@ -336,7 +338,9 @@ def main():
                             'default the checkout containing this script is '
                             'used.')
     arg_parser.add_argument('-j',
-                            '--jdeps-path',
+                            help='-j value to pass to ninja instead of using '
+                            'autoninja to autoset this value.')
+    arg_parser.add_argument('--jdeps-path',
                             help='Path to the jdeps executable.')
     arg_parser.add_argument('-g',
                             '--gn-path',
@@ -392,25 +396,38 @@ def main():
             gn_desc_output, args.build_output_dir, cr_position)
     else:
         target_jars: JarTargetDict = run_and_parse_list_java_targets(
-            args.build_output_dir, args.show_ninja, src_path)
+            args.build_output_dir, args.j, args.show_ninja, src_path)
 
     if args.skip_rebuild:
         logging.info(f'Skipping rebuilding jars.')
     else:
         # Always re-compile jars to have the most up-to-date jar files. This is
         # especially important when running this script locally and testing out
-        # build changes that affect the dependency graph.
-        rel_jar_paths = [
-            p.relative_to(args.build_output_dir) for p in target_jars.values()
-        ]
+        # build changes that affect the dependency graph. When a specific target
+        # is used via -t, however, we need to specify targets instead of jars
+        # since some targets don't output their corresponding jars.
+        if args.target:
+            # Remove the // prefix and add the __compile_java suffix. This is
+            # guaranteed to exist since the targets were derived by removing the
+            # suffix earlier in parse_original_targets_and_jars.
+            to_recompile = [
+                t[2:] + '__compile_java' for t in target_jars.keys()
+            ]
+        else:
+            to_recompile = [
+                p.relative_to(args.build_output_dir)
+                for p in target_jars.values()
+            ]
         if not args.show_ninja:
             logging.info(
                 f'Re-building {len(rel_jar_paths)} jars for up-to-date deps. '
                 'This may take a while the first time through. Pass '
                 '--show-ninja to see ninja progress.')
-        subprocess.run([
-            subprocess_utils.resolve_autoninja(), '-C', args.build_output_dir
-        ] + rel_jar_paths,
+        if args.j:
+            cmd = [subprocess_utils.resolve_ninja(), '-j', args.j]
+        else:
+            cmd = [subprocess_utils.resolve_autoninja()]
+        subprocess.run(cmd + ['-C', args.build_output_dir] + to_recompile,
                        capture_output=not args.show_ninja,
                        check=True)
 

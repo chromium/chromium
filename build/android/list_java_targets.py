@@ -70,9 +70,12 @@ def _resolve_autoninja():
   return 'autoninja'
 
 
-def _run_ninja(output_dir, args, quiet=False):
-  cmd = [
-      _resolve_autoninja(),
+def _run_ninja(output_dir, args, j_value=None, quiet=False):
+  if j_value:
+    cmd = [_resolve_ninja(), '-j', j_value]
+  else:
+    cmd = [_resolve_autoninja()]
+  cmd += [
       '-C',
       output_dir,
   ]
@@ -228,6 +231,7 @@ def main():
                       '--query deps_info.unprocessed_jar_path to show a list '
                       'of all targets that have a non-empty deps_info dict and '
                       'non-empty "unprocessed_jar_path" value in that dict.')
+  parser.add_argument('-j', help='Use -j with ninja instead of autoninja.')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
@@ -250,6 +254,7 @@ def main():
   if args.build:
     logging.warning('Building %d .build_config.json files...', len(entries))
     _run_ninja(output_dir, [e.ninja_build_config_target for e in entries],
+               j_value=args.j,
                quiet=args.quiet)
 
   if args.type:
