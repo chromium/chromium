@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -11,8 +12,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
@@ -94,6 +97,41 @@ void VideoConferenceAppServiceClient::SetSystemMediaDeviceStatus(
   }
 }
 
+void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
+    const apps::CapabilityAccessUpdate& update) {
+  // For now, we only care about camera/microphone accessing.
+  if (!update.CameraChanged() && !update.MicrophoneChanged()) {
+    return;
+  }
+
+  const bool is_capturing = update.CameraChanged()
+                                ? update.Camera().value_or(false)
+                                : update.Microphone().value_or(false);
+
+  const AppIdString& app_id = update.AppId();
+  // We only want to start tracking a app if it starts to accessing
+  // microphone/camera.
+  if (!is_capturing && !base::Contains(id_to_app_state_, app_id)) {
+    return;
+  }
+
+  AppState& state = GetOrAddAppState(app_id);
+
+  if (update.CameraChanged()) {
+    state.is_capturing_camera = is_capturing;
+  }
+
+  if (update.MicrophoneChanged()) {
+    state.is_capturing_microphone = is_capturing;
+  }
+}
+
+void VideoConferenceAppServiceClient::OnAppCapabilityAccessCacheWillBeDestroyed(
+    apps::AppCapabilityAccessCache* cache) {
+  app_capability_observation_.Reset();
+  capability_cache_ = nullptr;
+}
+
 void VideoConferenceAppServiceClient::ActiveUserChanged(
     user_manager::User* active_user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
@@ -101,6 +139,13 @@ void VideoConferenceAppServiceClient::ActiveUserChanged(
   DCHECK(ash_proxy);
   instance_registry_ = &ash_proxy->InstanceRegistry();
   app_registry_ = &ash_proxy->AppRegistryCache();
+
+  capability_cache_ =
+      apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
+          active_user->GetAccountId());
+  DCHECK(capability_cache_);
+  app_capability_observation_.Reset();
+  app_capability_observation_.Observe(capability_cache_);
 }
 
 std::string VideoConferenceAppServiceClient::GetAppName(
@@ -112,4 +157,12 @@ std::string VideoConferenceAppServiceClient::GetAppName(
   return app_name;
 }
 
+VideoConferenceAppServiceClient::AppState&
+VideoConferenceAppServiceClient::GetOrAddAppState(const std::string& app_id) {
+  if (!base::Contains(id_to_app_state_, app_id)) {
+    id_to_app_state_[app_id] = AppState{base::UnguessableToken::Create(),
+                                        base::Time::Now(), false, false};
+  }
+  return id_to_app_state_[app_id];
+}
 }  // namespace ash

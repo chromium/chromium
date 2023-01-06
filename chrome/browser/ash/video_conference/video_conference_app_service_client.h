@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/user_manager/user_manager.h"
 
 namespace apps {
@@ -26,6 +28,7 @@ namespace ash {
 // from apps through AppService and notifies VideoConferenceManagerAsh.
 class VideoConferenceAppServiceClient
     : public crosapi::mojom::VideoConferenceManagerClient,
+      public apps::AppCapabilityAccessCache::Observer,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   using AppIdString = std::string;
@@ -58,6 +61,12 @@ class VideoConferenceAppServiceClient
       bool disabled,
       SetSystemMediaDeviceStatusCallback callback) override;
 
+  // apps::AppCapabilityAccessCache::Observer overrides.
+  void OnCapabilityAccessUpdate(
+      const apps::CapabilityAccessUpdate& update) override;
+  void OnAppCapabilityAccessCacheWillBeDestroyed(
+      apps::AppCapabilityAccessCache* cache) override;
+
   // user_manager::UserManager::UserSessionStateObserver overrides.
   void ActiveUserChanged(user_manager::User* active_user) override;
 
@@ -67,9 +76,13 @@ class VideoConferenceAppServiceClient
   // Returns the name of the app with `app_id`.
   std::string GetAppName(const AppIdString& app_id);
 
+  // Returns AppState of `app_id`; adds if doesn't exist yet.
+  AppState& GetOrAddAppState(const AppIdString& app_id);
+
   // These registries are used for observing app behaviors.
   base::raw_ptr<apps::InstanceRegistry> instance_registry_;
   base::raw_ptr<apps::AppRegistryCache> app_registry_;
+  base::raw_ptr<apps::AppCapabilityAccessCache> capability_cache_;
 
   // The following two fields are true if the camera/microphone is system-wide
   // software disabled OR disabled via a hardware switch.
@@ -78,6 +91,10 @@ class VideoConferenceAppServiceClient
 
   // This records a list of AppState; each represents a video conference app.
   std::map<AppIdString, AppState> id_to_app_state_;
+
+  base::ScopedObservation<apps::AppCapabilityAccessCache,
+                          apps::AppCapabilityAccessCache::Observer>
+      app_capability_observation_{this};
 };
 
 }  // namespace ash

@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -32,12 +34,18 @@ using AppIdString = std::string;
 constexpr char kAppId1[] = "random_app_id_1";
 constexpr char kAppName1[] = "random_app_name_1";
 constexpr char kAppId2[] = "random_app_id_2";
+constexpr char kAppName2[] = "random_app_name_2";
 
 // Creates an app with given id and name.
-apps::AppPtr MakeApp(const std::string& app_id, const std::string& name) {
+apps::AppPtr MakeApp(const AppIdString& app_id, const std::string& name) {
   apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
   app->name = name;
   return app;
+}
+
+apps::mojom::OptionalBool MojomOptionalBool(bool value) {
+  return value ? apps::mojom::OptionalBool::kTrue
+               : apps::mojom::OptionalBool::kFalse;
 }
 
 class VideoConferenceAppServiceClientTest : public LoginManagerTest {
@@ -49,6 +57,10 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
     login_manager_.AppendRegularUsers(2);
     LoginUser(login_manager_.users()[0].account_id);
     LoginUser(login_manager_.users()[1].account_id);
+
+    capability_cache_.SetAccountId(login_manager_.users()[0].account_id);
+    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
+        login_manager_.users()[0].account_id, &capability_cache_);
 
     client_ = std::make_unique<VideoConferenceAppServiceClient>();
 
@@ -88,6 +100,20 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
     return window;
   }
 
+  // Set the camera/michrophone accessing info for app with `app_id`.
+  void SetAppCapabilityAccess(const AppIdString& app_id,
+                              bool is_capturing_camera,
+                              bool is_capturing_microphone) {
+    auto delta = std::make_unique<apps::CapabilityAccess>(app_id);
+    delta->camera = is_capturing_camera;
+    delta->microphone = is_capturing_microphone;
+
+    std::vector<apps::CapabilityAccessPtr> deltas;
+    deltas.push_back(std::move(delta));
+
+    capability_cache_.OnCapabilityAccesses(std::move(deltas));
+  }
+
   // Adds {id, state} pair to client_->id_to_app_state_.
   void AddAppState(const AppIdString& app_id,
                    const VideoConferenceAppServiceClient::AppState& state) {
@@ -113,6 +139,7 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
   int next_window_id_ = 0;
   LoginManagerMixin login_manager_{&mixin_host_};
   Profile* profile_ = nullptr;
+  apps::AppCapabilityAccessCache capability_cache_;
   std::unique_ptr<VideoConferenceAppServiceClient> client_;
 };
 
@@ -150,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
 
   // GetMediaApps should return kAppId1 since it is installed.
   media_app_info = GetMediaApps();
-  EXPECT_EQ(media_app_info.size(), 1u);
+  ASSERT_EQ(media_app_info.size(), 1u);
 
   crosapi::mojom::VideoConferenceMediaAppInfoPtr expected_media_app_info =
       crosapi::mojom::VideoConferenceMediaAppInfo::New(
@@ -200,6 +227,54 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
   EXPECT_TRUE(reactivated_app);
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
+  // Install two apps so that they will can be tracked inside GetMediaApps.
+  InstallApp(kAppId1, kAppName1);
+  InstallApp(kAppId2, kAppName2);
+
+  // no-camera, no-mic should not start a tracking of the app.
+  SetAppCapabilityAccess(kAppId1, false, false);
+  EXPECT_TRUE(GetMediaApps().empty());
+
+  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info;
+
+  // has-camera, no-mic should start the tracking of the app.
+  SetAppCapabilityAccess(kAppId1, true, false);
+  media_app_info = GetMediaApps();
+  crosapi::mojom::VideoConferenceMediaAppInfoPtr expected_media_app_info =
+      crosapi::mojom::VideoConferenceMediaAppInfo::New(
+          /*id=*/media_app_info[0]->id,
+          /*last_activity_time=*/media_app_info[0]->last_activity_time,
+          /*is_capturing_camera=*/true,
+          /*is_capturing_microphone=*/false,
+          /*is_capturing_screen=*/false,
+          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt);
+  ASSERT_EQ(media_app_info.size(), 1u);
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // has-camera, has-mic should change the value of GetMediaApps.
+  SetAppCapabilityAccess(kAppId1, true, true);
+  media_app_info = GetMediaApps();
+  ASSERT_EQ(media_app_info.size(), 1u);
+  expected_media_app_info->is_capturing_microphone = true;
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // no-camera, has-mic should change the value of GetMediaApps.
+  SetAppCapabilityAccess(kAppId1, false, true);
+  media_app_info = GetMediaApps();
+  ASSERT_EQ(media_app_info.size(), 1u);
+  expected_media_app_info->is_capturing_camera = false;
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // no-camera, no-mic should change the value of GetMediaApps; but not removing
+  // the tracking app.
+  SetAppCapabilityAccess(kAppId1, false, false);
+  media_app_info = GetMediaApps();
+  ASSERT_EQ(media_app_info.size(), 1u);
+  expected_media_app_info->is_capturing_microphone = false;
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
 }
 
 }  // namespace ash
