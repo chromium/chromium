@@ -6,13 +6,13 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "9lGp8nTUCRRWGMnI_96HcKfzjnxEJKUcfvfwmA3wXNkC"  # 31.2.10
+  version: "ZjmabmwvcQ8kZtLsnx6rj40RlCglPwP-PDPEb5fWrEAC"  # 31.3.14
   dest_path: "generic_android33"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-33/google_apis/x86_64"
-  version: "K_IMppJTdHCWfFNy_Yuf4PYAxVFEqDHq9ZcJX78yRM8C"  # beta 3
+  version: "8KxiJ6WNnLxlTmM-HntbcSidjUl31gWt6lnAbngsfx0C"  # r8, TE1A.220922.012
   dest_path: "generic_android33"
 }
 system_image_name: "system-images;android-33;google_apis;x86_64"
