@@ -796,6 +796,24 @@ CSSScrollTimeline* ComputeScrollFunctionTimeline(
   return MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
 }
 
+AnimationTimeline* ComputeViewFunctionTimeline(
+    Element* element,
+    const StyleTimeline::ViewData& view_data,
+    AnimationTimeline* existing_timeline) {
+  TimelineAxis axis = view_data.GetAxis();
+  const TimelineInset& inset = view_data.GetInset();
+  CSSViewTimeline::Options options(element, axis, inset);
+
+  if (auto* view_timeline = DynamicTo<CSSViewTimeline>(existing_timeline);
+      view_timeline && view_timeline->Matches(options)) {
+    return view_timeline;
+  }
+
+  CSSViewTimeline* new_timeline = MakeGarbageCollected<CSSViewTimeline>(
+      &element->GetDocument(), std::move(options));
+  return new_timeline;
+}
+
 }  // namespace
 
 AnimationTimeline* CSSAnimations::ComputeTimeline(
@@ -813,6 +831,10 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
   if (style_timeline.IsName()) {
     return FindPreviousSiblingAncestorTimeline(style_timeline.GetName(),
                                                element, &update);
+  }
+  if (style_timeline.IsView()) {
+    return ComputeViewFunctionTimeline(element, style_timeline.GetView(),
+                                       existing_timeline);
   }
   DCHECK(style_timeline.IsScroll());
   return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll(),

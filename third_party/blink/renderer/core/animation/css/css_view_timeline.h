@@ -44,6 +44,13 @@ class CORE_EXPORT CSSViewTimeline : public ViewTimeline {
 using CSSViewTimelineMap =
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSViewTimeline>>;
 
+template <>
+struct DowncastTraits<CSSViewTimeline> {
+  static bool AllowFrom(const AnimationTimeline& value) {
+    return value.IsViewTimeline();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_VIEW_TIMELINE_H_
