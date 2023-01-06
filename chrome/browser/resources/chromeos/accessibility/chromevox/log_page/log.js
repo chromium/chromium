@@ -5,7 +5,6 @@
 /**
  * @fileoverview ChromeVox log page.
  */
-
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BaseLog, LogType, SerializableLog} from '../common/log_types.js';
 
@@ -13,10 +12,10 @@ import {BaseLog, LogType, SerializableLog} from '../common/log_types.js';
 export class LogPage {
   constructor() {
     /**
-     * Store whether each filter type is enabled.
-     * @private {Object<string, boolean>}
+     * Store whether each log type is enabled.
+     * @private {Object<!LogType, boolean>}
      */
-    this.urlPrefs_ = {};
+    this.isLogEnabled_ = {};
   }
 
   static async init() {
@@ -25,7 +24,7 @@ export class LogPage {
     for (const type of Object.values(LogType)) {
       const label = document.createElement('label');
       const input = document.createElement('input');
-      input.id = type + 'Filter';
+      input.id = checkboxId(type);
       input.type = 'checkbox';
       input.classList.add('log-filter');
       label.appendChild(input);
@@ -45,8 +44,7 @@ export class LogPage {
 
     const params = new URLSearchParams(location.search);
     for (const type of Object.values(LogType)) {
-      const typeFilter = type + 'Filter';
-      LogPage.setFilterTypeEnabled(typeFilter, params.get(typeFilter));
+      LogPage.setFilterTypeEnabled(type, params.get(type));
     }
     const saveLogButton = document.getElementById('saveLog');
     saveLogButton.onclick = LogPage.saveLogEvent;
@@ -54,7 +52,8 @@ export class LogPage {
     const checkboxes = document.getElementsByClassName('log-filter');
     const filterEventListener = function(event) {
       const target = event.target;
-      LogPage.setFilterTypeEnabled(target.id, String(target.checked));
+      LogPage.setFilterTypeEnabled(
+          logTypeFromId(target.id), String(target.checked));
       location.search = LogPage.createUrlParams();
     };
     for (let i = 0; i < checkboxes.length; i++) {
@@ -96,15 +95,11 @@ export class LogPage {
     a.click();
   }
 
-  /**
-   * Update the states of checkboxes and
-   * update logs.
-   */
+  /** Update the states of checkboxes and update logs. */
   static async update() {
     for (const type of Object.values(LogType)) {
-      const typeFilter = type + 'Filter';
-      const element = document.getElementById(typeFilter);
-      element.checked = LogPage.instance.urlPrefs_[typeFilter];
+      const element = document.getElementById(checkboxId(type));
+      element.checked = LogPage.instance.isLogEnabled_[type];
     }
 
     const log = await BackgroundBridge.LogStore.getLogs();
@@ -118,7 +113,7 @@ export class LogPage {
    */
   static updateLog(log, div) {
     for (let i = 0; i < log.length; i++) {
-      if (!LogPage.instance.urlPrefs_[log[i].logType + 'Filter']) {
+      if (!LogPage.instance.isLogEnabled_[log[i].logType]) {
         continue;
       }
 
@@ -159,27 +154,23 @@ export class LogPage {
   }
 
   /**
-   * Update urlPrefs_. Set true if checked is null.
-   * @param {string} typeFilter
+   * Update isLogEnabled_. Set true if checked is null.
+   * @param {!LogType} type
    * @param {?string} checked
    */
-  static setFilterTypeEnabled(typeFilter, checked) {
-    if (checked == null || checked === 'true') {
-      LogPage.instance.urlPrefs_[typeFilter] = true;
-    } else {
-      LogPage.instance.urlPrefs_[typeFilter] = false;
-    }
+  static setFilterTypeEnabled(type, checked) {
+    LogPage.instance.isLogEnabled_[type] =
+        (checked === null || checked === String(true));
   }
 
   /**
-   * Create URL parameter based on LogPage.instance.urlPrefs_.
+   * Create URL parameter based on LogPage.instance.isLogEnabled_.
    * @return {string}
    */
   static createUrlParams() {
     const urlParams = [];
     for (const type of Object.values(LogType)) {
-      const typeFilter = type + 'Filter';
-      urlParams.push(typeFilter + '=' + LogPage.instance.urlPrefs_[typeFilter]);
+      urlParams.push(type + 'Filter=' + LogPage.instance.isLogEnabled_[type]);
     }
     return '?' + urlParams.join('&');
   }
@@ -202,6 +193,26 @@ export class LogPage {
     return timeStr;
   }
 }
+
+/**
+ * @param {!LogType} type
+ * @return {string}
+ */
+function checkboxId(type) {
+  return type + 'Filter';
+}
+/**
+ * @param {string} id
+ * @return {!LogType}
+ */
+function logTypeFromId(id) {
+  const type = id.slice(0, -6);
+  if (!Object.values(LogType).includes(type)) {
+    throw new Error('Log page checkbox IDs must be a LogType + "Filter"');
+  }
+  return /** @type {!LogType} */ (type);
+}
+
 
 document.addEventListener('DOMContentLoaded', async function() {
   await LogPage.init();
