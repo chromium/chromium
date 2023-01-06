@@ -48,10 +48,14 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
   TRACE_EVENT("omnibox", "ChromeOmniboxEditController::OnAutocompleteAccept",
               "text", text, "match", match, "alternative_nav_match",
               alternative_nav_match);
-  OmniboxEditController::OnAutocompleteAccept(
-      destination_url, post_content, disposition, transition, match_type,
-      match_selection_timestamp, destination_url_entered_without_scheme, text,
-      match, alternative_nav_match, deviation_char_in_hostname);
+
+  destination_url_ = destination_url;
+  post_content_ = post_content;
+  disposition_ = disposition;
+  transition_ = transition;
+  match_selection_timestamp_ = match_selection_timestamp;
+  destination_url_entered_without_scheme_ =
+      destination_url_entered_without_scheme;
 
   if (browser_) {
     auto navigation = chrome::OpenCurrentURL(browser_);

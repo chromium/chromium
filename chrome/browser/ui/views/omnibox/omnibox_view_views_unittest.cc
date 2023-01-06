@@ -279,6 +279,9 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
   const LocationBarModel* GetLocationBarModel() const override {
     return location_bar_model_;
   }
+  void OnChanged() override {}
+  void OnPopupVisibilityChanged() override {}
+
   content::WebContents* GetWebContents() override { return nullptr; }
   void UpdateWithoutTabRestore() override {
     // This is a minimal amount of what LocationBarView does. Not all tests

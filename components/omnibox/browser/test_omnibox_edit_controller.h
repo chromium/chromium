@@ -12,7 +12,7 @@
 
 class TestOmniboxEditController : public OmniboxEditController {
  public:
-  TestOmniboxEditController() {}
+  TestOmniboxEditController() = default;
   TestOmniboxEditController(const TestOmniboxEditController&) = delete;
   TestOmniboxEditController& operator=(const TestOmniboxEditController&) =
       delete;
@@ -33,19 +33,17 @@ class TestOmniboxEditController : public OmniboxEditController {
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname =
           IDNA2008DeviationCharacter::kNone) override;
+  void OnInputInProgress(bool in_progress) override {}
+  void OnChanged() override {}
+  void OnPopupVisibilityChanged() override {}
 
   const AutocompleteMatch& alternate_nav_match() const {
     return alternate_nav_match_;
   }
 
-  const WindowOpenDisposition& disposition() const { return disposition_; }
-
-  using OmniboxEditController::destination_url;
-
  private:
   TestLocationBarModel location_bar_model_;
   AutocompleteMatch alternate_nav_match_;
-  WindowOpenDisposition disposition_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_CONTROLLER_H_

@@ -44,7 +44,9 @@ class WebOmniboxEditControllerImpl : public WebOmniboxEditController {
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+  void OnInputInProgress(bool in_progress) override {}
   void OnChanged() override;
+  void OnPopupVisibilityChanged() override {}
   LocationBarModel* GetLocationBarModel() override;
   const LocationBarModel* GetLocationBarModel() const override;
 

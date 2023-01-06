@@ -182,7 +182,6 @@ static_library("browser") {
     "omnibox_client.h",
     "omnibox_controller.cc",
     "omnibox_controller.h",
-    "omnibox_edit_controller.cc",
     "omnibox_edit_controller.h",
     "omnibox_edit_model.cc",
     "omnibox_edit_model.h",
