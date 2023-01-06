@@ -156,7 +156,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
 
 void ClearBrowsingDataHandler::HandleClearBrowsingData(
     const base::Value::List& args_list) {
-  CHECK_EQ(4U, args_list.size());
+  CHECK_EQ(3U, args_list.size());
   std::string webui_callback_id = args_list[0].GetString();
 
   PrefService* prefs = profile_->GetPrefs();
