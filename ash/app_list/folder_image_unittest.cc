@@ -285,25 +285,25 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
         *config, app_list_model_->FindItem("app3"), test_rect);
 
     if (is_rtl())
-      std::swap(item_1_bounds, item_2_bounds);
+      std::swap(item_2_bounds, item_3_bounds);
+
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
-    EXPECT_EQ(
-        test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
-        item_1_bounds.right());
+    EXPECT_EQ(test_rect_center.x(), item_1_bounds.CenterPoint().x());
     EXPECT_EQ(
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_1_bounds.bottom());
-
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
-        test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
-        item_2_bounds.x());
+        test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
+        item_2_bounds.right());
     EXPECT_EQ(
-        test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
-        item_2_bounds.bottom());
+        test_rect_center.y() + config->item_icon_in_folder_icon_margin() / 2,
+        item_2_bounds.y());
 
     EXPECT_EQ(expected_icon_rect_size, item_3_bounds.size());
-    EXPECT_EQ(test_rect_center.x(), item_3_bounds.CenterPoint().x());
+    EXPECT_EQ(
+        test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
+        item_3_bounds.x());
     EXPECT_EQ(
         test_rect_center.y() + config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.y());

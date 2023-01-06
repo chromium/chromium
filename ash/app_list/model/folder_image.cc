@@ -249,26 +249,28 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
     return top_icon_bounds;
   }
 
-  // Top left icon bounds.
-  gfx::Rect top_left_rect = center_rect;
-  top_left_rect.Offset(-origin_offset, -origin_offset);
-
-  // Top right icon bounds.
-  gfx::Rect top_right_rect = center_rect;
-  top_right_rect.Offset(origin_offset, -origin_offset);
-
-  if (base::i18n::IsRTL())
-    std::swap(top_left_rect, top_right_rect);
-
-  top_icon_bounds.emplace_back(scale_and_translate_bounds(top_left_rect));
-  top_icon_bounds.emplace_back(scale_and_translate_bounds(top_right_rect));
-
   if (num_items == 3) {
-    // Bottom icon bounds.
-    gfx::Rect bottom_rect = center_rect;
-    bottom_rect.Offset(0, origin_offset);
-    top_icon_bounds.emplace_back(scale_and_translate_bounds(bottom_rect));
-    return top_icon_bounds;
+    // Top icon bounds.
+    gfx::Rect top_rect = center_rect;
+    top_rect.Offset(0, -origin_offset);
+    top_icon_bounds.emplace_back(scale_and_translate_bounds(top_rect));
+  }
+
+  if (num_items == 4) {
+    // Top left icon bounds.
+    gfx::Rect top_left_rect = center_rect;
+    top_left_rect.Offset(-origin_offset, -origin_offset);
+
+    // Top right icon bounds.
+    gfx::Rect top_right_rect = center_rect;
+    top_right_rect.Offset(origin_offset, -origin_offset);
+
+    if (base::i18n::IsRTL()) {
+      std::swap(top_left_rect, top_right_rect);
+    }
+
+    top_icon_bounds.emplace_back(scale_and_translate_bounds(top_left_rect));
+    top_icon_bounds.emplace_back(scale_and_translate_bounds(top_right_rect));
   }
 
   // Bottom left icon bounds.
