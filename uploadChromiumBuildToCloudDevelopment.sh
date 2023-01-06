@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Copyright 2021 Record Replay Inc. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 # Use the current dir as reference point.
 DIR=$(pwd)
 
@@ -68,12 +72,12 @@ else
   echo
   echo RUNNING copyLinuxBuild.js
   mkdir "${TMP_DIR}/replay-chromium"
-  node copyLinuxBuild.js "${DIST_DIR}" "${TMP_DIR}/replay-chromium"
+  time node copyLinuxBuild.js "${DIST_DIR}" "${TMP_DIR}/replay-chromium"
 
   # Create the archive
   echo
   echo ARCHIVING "${TMP_DIR}/replay-chromium"
-  (cd "${TMP_DIR}" && tar cfJ ./archive.tar.xz replay-chromium)
+  cd "${TMP_DIR}" && time tar cfJ ./archive.tar.xz replay-chromium
 fi
 
 # Copy the build to s3
@@ -81,7 +85,7 @@ if [ -z "${DO_UPLOAD_BUILD}" ]; then
   echo "Skipping UPLOAD_BUILD"
 else
   echo "UPLOADING BUILD to ${S3_BUILD_PREFIX}.xz"
-  aws s3 cp "${TMP_DIR}/archive.tar.xz" "${S3_BUILD_PREFIX}.tar.xz"
+  time aws s3 cp "${TMP_DIR}/archive.tar.xz" "${S3_BUILD_PREFIX}.tar.xz"
 fi
 
 # Build the symbols file
@@ -91,23 +95,23 @@ if [ -z "${DO_SYMBOLICATE}" ]; then
   echo "Skipping SYMBOLICATE"
 else
   echo "SYMBOLICATING ${DIST_DIR}/chrome into ${SYMBOLS_OUT}"
-  nm "${DIST_DIR}/chrome" | grep '^[a-f0-9]\+ [tTw]' >"${TMP_DIR}/symbols"
+  time nm "${DIST_DIR}/chrome" | grep '^[a-f0-9]\+ [tTw]' >"${TMP_DIR}/symbols"
   echo "{ \"chrome\": {" >"${SYMBOLS_OUT}"
-  cat "${TMP_DIR}/symbols" | \
+  time cat "${TMP_DIR}/symbols" | \
     perl -pe '/0+([a-f0-9]+) . (.*)$/; $a = hex $1; $b = $2; $_ = "  \"$a\": \"$b\",\n";' \
     >>"${SYMBOLS_OUT}"
     #sed 's/^0\+\([a-f0-9]\+\) . \(.*\)$/  0x\1: "\2",/' >>"${SYMBOLS_OUT}"
   echo "  \"dummy\": \"dummy-entry-without-comma-at-end-of-line\"" >>"${SYMBOLS_OUT}"
   echo "}}" >>"${SYMBOLS_OUT}"
 
-  (cd "${TMP_DIR}" && tar czf "./${SYMBOLS_ARCHIVE_NAME}" "${BUILD_ID}.symbols.json")
+  (cd "${TMP_DIR}" && time tar czf "./${SYMBOLS_ARCHIVE_NAME}" "${BUILD_ID}.symbols.json")
 fi
 
 if [ -z "${DO_UPLOAD_SYMBOLS}" ]; then
   echo "Skipping UPLOAD_SYMBOLS"
 else
   echo "UPLOADING SYMBOLS to ${S3_SYMBOLS_DIR}/${SYMBOLS_ARCHIVE_NAME}"
-  aws s3 cp "${TMP_DIR}/${SYMBOLS_ARCHIVE_NAME}" "${S3_SYMBOLS_DIR}/${SYMBOLS_ARCHIVE_NAME}"
+  time aws s3 cp "${TMP_DIR}/${SYMBOLS_ARCHIVE_NAME}" "${S3_SYMBOLS_DIR}/${SYMBOLS_ARCHIVE_NAME}"
 fi
 
 # No, I'm not going to rm -rf the tmpdir.  That command should never appear

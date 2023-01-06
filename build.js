@@ -1,5 +1,17 @@
+// Copyright 2021 Record Replay Inc. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 const fs = require("fs");
+const path = require("path");
 const { spawnSync } = require("child_process");
+
+const { REPLAY_LOCAL_DRIVER_DIR } = process.env;
+
+if (REPLAY_LOCAL_DRIVER_DIR && process.env.DRIVER_REVISION) {
+  // local driver should generally be latest
+  throw new Error("Conflicting build settings: environment variables DRIVER_REVISION and REPLAY_LOCAL_DRIVER_DIR cannot coexist.");
+}
 
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
 // fatal: unsafe repository ('/chromium/src' is owned by someone else)
@@ -16,36 +28,51 @@ if (currentPlatform() == "macOS") {
   spawnChecked("touch", [`${__dirname}/chrome/app/chrome_exe_main_mac.cc`]);
 }
 
-// Download the record/replay driver archive, using the latest version unless
-// it was overridden via the environment.
-let driverArchive = `${currentPlatform()}-recordreplay.tgz`;
-let downloadArchive = driverArchive;
-if (process.env.DRIVER_REVISION) {
-  downloadArchive = `${currentPlatform()}-recordreplay-${
-    process.env.DRIVER_REVISION
-  }.tgz`;
+if (!REPLAY_LOCAL_DRIVER_DIR) {
+  // Download the record/replay driver archive, using the latest version unless
+  // it was overridden via the environment.
+  console.log(`Downloading driver...`);
+  let driverArchive = `${currentPlatform()}-recordreplay.tgz`;
+  let downloadArchive = driverArchive;
+  if (process.env.DRIVER_REVISION) {
+    downloadArchive = `${currentPlatform()}-recordreplay-${
+      process.env.DRIVER_REVISION
+    }.tgz`;
+  }
+  spawnChecked(
+    "curl",
+    [
+      `https://static.replay.io/downloads/${downloadArchive}`,
+      "-o",
+      driverArchive,
+    ],
+    { stdio: "inherit" }
+  );
+  spawnChecked("tar", ["xf", driverArchive]);
+  fs.unlinkSync(driverArchive);
 }
-const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
-const driverJSON = `${currentPlatform()}-recordreplay.json`;
-spawnChecked(
-  "curl",
-  [
-    `https://static.replay.io/downloads/${downloadArchive}`,
-    "-o",
-    driverArchive,
-  ],
-  { stdio: "inherit" }
-);
-spawnChecked("tar", ["xf", driverArchive]);
-fs.unlinkSync(driverArchive);
+
+
+let driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
+let driverJSON = `${currentPlatform()}-recordreplay.json`;
+if (REPLAY_LOCAL_DRIVER_DIR) {
+  driverFile = path.resolve(REPLAY_LOCAL_DRIVER_DIR, driverFile);
+  driverJSON = path.resolve(REPLAY_LOCAL_DRIVER_DIR, driverJSON);
+}
 
 // Embed the driver in the source.
+console.log(`Embedding ${REPLAY_LOCAL_DRIVER_DIR ? 'LOCAL' : 'DOWNLOADED'} driver...`);
 const driverContents = fs.readFileSync(driverFile);
 const { revision: driverRevision, date: driverDate } = JSON.parse(
   fs.readFileSync(driverJSON, "utf8")
 );
-fs.unlinkSync(driverFile);
-fs.unlinkSync(driverJSON);
+
+if (!REPLAY_LOCAL_DRIVER_DIR) {
+  // cleanup
+  fs.unlinkSync(driverFile);
+  fs.unlinkSync(driverJSON);
+}
+
 let driverString = "";
 for (let i = 0; i < driverContents.length; i++) {
   driverString += `\\${driverContents[i].toString(8)}`;
@@ -62,7 +89,6 @@ namespace recordreplay {
 );
 
 const useGoma = !process.env.NO_GOMA;
-
 if (useGoma) {
   // ensure goma is started for cloud builds with engflow
   spawnChecked("goma_ctl", ["restart"]);
@@ -71,9 +97,13 @@ if (useGoma) {
 // ensure that build configuration is written with correct paths
 spawnChecked("gn", ["gen", "out/Release"]);
 
+console.log(`Building...`);
 spawnChecked("autoninja", ["-C", "out/Release", "chrome"], {
   stdio: "inherit",
 });
+
+console.log(`Build finished.`);
+
 
 function spawnChecked(cmd, args, options) {
   const prettyCmd = [cmd].concat(args).join(" ");
