@@ -8,9 +8,12 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/layout.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace {
@@ -25,6 +28,20 @@ data_decoder::DataDecoder& GetDataDecoder() {
 namespace apps {
 
 bool g_decode_request_for_testing = false;
+
+AppIconDecoder::ImageSource::ImageSource(int32_t size_in_dip)
+    : size_in_dip_(size_in_dip) {}
+
+AppIconDecoder::ImageSource::~ImageSource() = default;
+
+gfx::ImageSkiaRep AppIconDecoder::ImageSource::GetImageForScale(float scale) {
+  // Host loads icon asynchronously, so use default icon so far.
+
+  // Get the ImageSkia for the resource IDR_APP_DEFAULT_ICON and the size
+  // `size_in_dip_`.
+  return CreateResizedResourceImage(IDR_APP_DEFAULT_ICON, size_in_dip_)
+      .GetRepresentation(scale);
+}
 
 AppIconDecoder::DecodeRequest::DecodeRequest(
     ui::ResourceScaleFactor scale_factor,
@@ -98,6 +115,20 @@ bool AppIconDecoder::SetScaleFactors(
     for (const auto& [scale_factor, iv] : icon_datas) {
       incomplete_scale_factors_.insert(scale_factor);
     }
+  }
+
+  // Initialize the ImageSkia with placeholder bitmaps, and the correct icon
+  // size to generate the adaptive icon using CompositeImagesAndApplyMask, which
+  // checks the ImageSkia's size to chop for paddings and resize the image_reps.
+  gfx::Size image_size(size_in_dip_, size_in_dip_);
+  if (is_adaptive_icon_) {
+    foreground_image_skia_ =
+        gfx::ImageSkia(std::make_unique<ImageSource>(size_in_dip_), image_size);
+    background_image_skia_ =
+        gfx::ImageSkia(std::make_unique<ImageSource>(size_in_dip_), image_size);
+  } else {
+    image_skia_ =
+        gfx::ImageSkia(std::make_unique<ImageSource>(size_in_dip_), image_size);
   }
   return true;
 }

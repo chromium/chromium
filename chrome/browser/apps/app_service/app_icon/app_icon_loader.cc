@@ -58,12 +58,6 @@
 
 namespace {
 
-std::map<std::pair<int, int>, gfx::ImageSkia>& GetResourceIconCache() {
-  static base::NoDestructor<std::map<std::pair<int, int>, gfx::ImageSkia>>
-      cache;
-  return *cache;
-}
-
 std::vector<uint8_t> ReadFileAsCompressedData(const base::FilePath path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -493,29 +487,13 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
       // icons, we load the uncompressed image, apply the icon effects, and
       // then re-encode the image if necessary.
 
-      // Get the ImageSkia for the resource. The ui::ResourceBundle shared
-      // instance already caches ImageSkia's, but caches the unscaled
-      // versions. The |cache| here caches scaled versions, keyed by the
-      // pair (resource_id, size_hint_in_dip).
-      gfx::ImageSkia scaled;
-      std::map<std::pair<int, int>, gfx::ImageSkia>& cache =
-          GetResourceIconCache();
-      const auto cache_key = std::make_pair(icon_resource, size_hint_in_dip_);
-      const auto cache_iter = cache.find(cache_key);
-      if (cache_iter != cache.end()) {
-        scaled = cache_iter->second;
-      } else {
-        gfx::ImageSkia* unscaled =
-            ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                icon_resource);
-        scaled = gfx::ImageSkiaOperations::CreateResizedImage(
-            *unscaled, skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(size_hint_in_dip_, size_hint_in_dip_));
-        cache.insert(std::make_pair(cache_key, scaled));
-      }
+      // Get the ImageSkia for the resource `icon_resource` and the size
+      // `size_in_dip_`.
+      gfx::ImageSkia image_skia =
+          CreateResizedResourceImage(icon_resource, size_hint_in_dip_);
 
       // Apply icon effects, re-encode if necessary and run the callback.
-      MaybeApplyEffectsAndComplete(scaled);
+      MaybeApplyEffectsAndComplete(image_skia);
       return;
     }
     case IconType::kUnknown:
@@ -853,9 +831,11 @@ void AppIconLoader::OnReadWebAppForCompressedIconData(
   SkBitmap bitmap = icon_bitmaps.begin()->second;
 
   // Resize |bitmap| to match |icon_scale|.
-  bitmap = skia::ImageOperations::Resize(bitmap,
-                                         skia::ImageOperations::RESIZE_LANCZOS3,
-                                         icon_size_in_px_, icon_size_in_px_);
+  if (bitmap.width() != icon_size_in_px_) {
+    bitmap = skia::ImageOperations::Resize(
+        bitmap, skia::ImageOperations::RESIZE_LANCZOS3, icon_size_in_px_,
+        icon_size_in_px_);
+  }
 
   gfx::ImageSkia image_skia;
   image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, icon_scale_));

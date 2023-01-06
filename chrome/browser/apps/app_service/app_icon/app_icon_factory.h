@@ -33,6 +33,13 @@ using ScaleToSize = std::map<float, int>;
 
 static const int kInvalidIconResource = 0;
 
+std::map<std::pair<int, int>, gfx::ImageSkia>& GetResourceIconCache();
+
+// Gets the ImageSkia for the resource `icon_resource` and the size
+// `size_in_dip`.
+gfx::ImageSkia CreateResizedResourceImage(int icon_resource,
+                                          int32_t size_in_dip);
+
 apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia);
 
 // Returns a callback that converts compressed data to an ImageSkia.

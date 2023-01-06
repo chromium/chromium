@@ -188,6 +188,35 @@ void CompleteIconWithCompressed(apps::LoadIconCallback callback,
 
 namespace apps {
 
+std::map<std::pair<int, int>, gfx::ImageSkia>& GetResourceIconCache() {
+  static base::NoDestructor<std::map<std::pair<int, int>, gfx::ImageSkia>>
+      cache;
+  return *cache;
+}
+
+gfx::ImageSkia CreateResizedResourceImage(int icon_resource,
+                                          int32_t size_in_dip) {
+  // Get the ImageSkia for the resource `icon_resource`. The
+  // ui::ResourceBundle shared instance already caches ImageSkia's, but caches
+  // the unscaled versions. The `cache` here caches scaled versions, keyed by
+  // the pair (`icon_resource`, `size_in_dip`).
+  std::map<std::pair<int, int>, gfx::ImageSkia>& cache = GetResourceIconCache();
+  const auto cache_key = std::make_pair(icon_resource, size_in_dip);
+  const auto cache_iter = cache.find(cache_key);
+  if (cache_iter != cache.end()) {
+    return cache_iter->second;
+  }
+
+  gfx::ImageSkia* default_image =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_resource);
+  CHECK(default_image);
+  gfx::ImageSkia image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
+      *default_image, skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(size_in_dip, size_in_dip));
+  cache.insert(std::make_pair(cache_key, image_skia));
+  return image_skia;
+}
+
 apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
   apps::ScaleToSize scale_to_size;
   if (image_skia.image_reps().empty()) {
