@@ -106,6 +106,8 @@ class ParameterSet {
     return *(reinterpret_cast<const T*>(address_.get()));
   }
 
+  // Note - we fuzz this via a fake type in sandbox_policy_rule_fuzzer.cc which
+  // should reflect the layout of these members.
   ArgType real_type_;
   raw_ptr<const void> address_;
 };
