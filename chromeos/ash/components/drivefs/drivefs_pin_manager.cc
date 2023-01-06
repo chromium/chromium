@@ -364,6 +364,12 @@ std::vector<std::string> DriveFsPinManager::InProgressSyncingItems::GetPaths() {
   return paths;
 }
 
+void DriveFsPinManager::InProgressSyncingItems::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  in_progress_items_.clear();
+  total_bytes_transferred_ = 0;
+}
+
 bool ManagerState::SetupInProgress() const {
   return progress.stage != SetupStage::kFinished &&
          progress.stage != SetupStage::kError &&
@@ -397,6 +403,7 @@ void DriveFsPinManager::Start(
   VLOG(1) << "Calculating free space";
   timer_ = base::ElapsedTimer();
   complete_callback_ = std::move(complete_callback);
+  syncing_items_.Reset();
   state_.progress.Reset();
   state_.progress.stage = SetupStage::kStarted;
   NotifyProgress();

@@ -199,6 +199,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     // Returns the paths of items currently being tracked as in progress.
     std::vector<std::string> GetPaths();
 
+    // Resets this object.
+    void Reset();
+
    private:
     SEQUENCE_CHECKER(sequence_checker_);
 
