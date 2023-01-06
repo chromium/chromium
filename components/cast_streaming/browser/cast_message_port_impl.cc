@@ -31,20 +31,20 @@ const char kValuePlaying[] = "PLAYING";
 const char kValueLive[] = "LIVE";
 const char kValueVideoWebm[] = "video/webm";
 
-base::Value GetMediaCurrentStatusValue() {
-  base::Value media(base::Value::Type::DICTIONARY);
-  media.SetKey(kKeyContentId, base::Value(""));
-  media.SetKey(kKeyStreamType, base::Value(kValueLive));
-  media.SetKey(kKeyContentType, base::Value(kValueVideoWebm));
+base::Value::Dict GetMediaCurrentStatusValue() {
+  base::Value::Dict media;
+  media.Set(kKeyContentId, "");
+  media.Set(kKeyStreamType, kValueLive);
+  media.Set(kKeyContentType, kValueVideoWebm);
 
-  base::Value media_current_status(base::Value::Type::DICTIONARY);
-  media_current_status.SetKey(kKeyMediaSessionId, base::Value(0));
-  media_current_status.SetKey(kKeyPlaybackRate, base::Value(1.0));
-  media_current_status.SetKey(kKeyPlayerState, base::Value(kValuePlaying));
-  media_current_status.SetKey(kKeyCurrentTime, base::Value(0));
-  media_current_status.SetKey(kKeySupportedMediaCommands, base::Value(0));
-  media_current_status.SetKey(kKeyDisableStreamGrouping, base::Value(true));
-  media_current_status.SetKey(kKeyMedia, std::move(media));
+  base::Value::Dict media_current_status;
+  media_current_status.Set(kKeyMediaSessionId, 0);
+  media_current_status.Set(kKeyPlaybackRate, 1.0);
+  media_current_status.Set(kKeyPlayerState, kValuePlaying);
+  media_current_status.Set(kKeyCurrentTime, 0);
+  media_current_status.Set(kKeySupportedMediaCommands, 0);
+  media_current_status.Set(kKeyDisableStreamGrouping, true);
+  media_current_status.Set(kKeyMedia, std::move(media));
 
   return media_current_status;
 }
@@ -105,7 +105,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
     return;
   }
 
-  const std::string* type = value->FindStringKey(kKeyType);
+  const std::string* type = value->GetDict().FindString(kKeyType);
   if (!type) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no message type: " << message;
@@ -117,7 +117,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
     return;
   }
 
-  absl::optional<int> request_id = value->FindIntKey(kKeyRequestId);
+  absl::optional<int> request_id = value->GetDict().FindInt(kKeyRequestId);
   if (!request_id) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no request id: " << message;
@@ -125,11 +125,11 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
   }
 
   // Build the response message.
-  base::Value response_value(base::Value::Type::DICTIONARY);
-  response_value.SetKey(kKeyType, base::Value(kValueError));
-  response_value.SetKey(kKeyRequestId, base::Value(request_id.value()));
-  response_value.SetKey(kKeyData, base::Value(kValueInjectNotSupportedError));
-  response_value.SetKey(kKeyCode, base::Value(kValueWrappedError));
+  base::Value::Dict response_value;
+  response_value.Set(kKeyType, kValueError);
+  response_value.Set(kKeyRequestId, request_id.value());
+  response_value.Set(kKeyData, kValueInjectNotSupportedError);
+  response_value.Set(kKeyCode, kValueWrappedError);
 
   std::string json_message;
   CHECK(base::JSONWriter::Write(response_value, &json_message));
@@ -151,7 +151,7 @@ void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
     return;
   }
 
-  const std::string* type = value->FindStringKey(kKeyType);
+  const std::string* type = value->GetDict().FindString(kKeyType);
   if (!type) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no message type: " << message;
@@ -169,20 +169,20 @@ void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
     return;
   }
 
-  absl::optional<int> request_id = value->FindIntKey(kKeyRequestId);
+  absl::optional<int> request_id = value->GetDict().FindInt(kKeyRequestId);
   if (!request_id.has_value()) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": no request id: " << message;
     return;
   }
 
-  base::Value message_status_list(base::Value::Type::LIST);
+  base::Value::List message_status_list;
   message_status_list.Append(GetMediaCurrentStatusValue());
 
-  base::Value response_value(base::Value::Type::DICTIONARY);
-  response_value.SetKey(kKeyRequestId, base::Value(request_id.value()));
-  response_value.SetKey(kKeyType, base::Value(kValueMediaStatus));
-  response_value.SetKey(kKeyStatus, std::move(message_status_list));
+  base::Value::Dict response_value;
+  response_value.Set(kKeyRequestId, request_id.value());
+  response_value.Set(kKeyType, kValueMediaStatus);
+  response_value.Set(kKeyStatus, std::move(message_status_list));
 
   std::string json_message;
   CHECK(base::JSONWriter::Write(response_value, &json_message));

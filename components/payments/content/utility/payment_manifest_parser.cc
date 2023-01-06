@@ -200,40 +200,35 @@ void ParseIcons(const base::Value::Dict& dict,
     }
 
     PaymentManifestParser::WebAppIcon web_app_icon;
-    const base::Value* icon_src =
-        icon.FindKeyOfType(kWebAppIconSrc, base::Value::Type::STRING);
-    if (!icon_src || icon_src->GetString().empty() ||
-        !base::IsStringUTF8(icon_src->GetString())) {
+    const std::string* icon_src = icon.GetDict().FindString(kWebAppIconSrc);
+    if (!icon_src || icon_src->empty() || !base::IsStringUTF8(*icon_src)) {
       log.Warn(
           base::StringPrintf("Each dictionary in the list \"%s\" should "
                              "contain a non-empty UTF8 string field \"%s\".",
                              kWebAppIcons, kWebAppIconSrc));
       continue;
     }
-    web_app_icon.src = icon_src->GetString();
+    web_app_icon.src = *icon_src;
 
-    const base::Value* icon_sizes =
-        icon.FindKeyOfType(kWebAppIconSizes, base::Value::Type::STRING);
-    if (!icon_sizes || icon_sizes->GetString().empty() ||
-        !base::IsStringUTF8(icon_sizes->GetString())) {
+    const std::string* icon_sizes = icon.GetDict().FindString(kWebAppIconSizes);
+    if (!icon_sizes || icon_sizes->empty() ||
+        !base::IsStringUTF8(*icon_sizes)) {
       log.Warn(
           base::StringPrintf("Each dictionary in the list \"%s\" should "
                              "contain a non-empty UTF8 string field \"%s\".",
                              kWebAppIcons, kWebAppIconSizes));
     } else {
-      web_app_icon.sizes = icon_sizes->GetString();
+      web_app_icon.sizes = *icon_sizes;
     }
 
-    const base::Value* icon_type =
-        icon.FindKeyOfType(kWebAppIconType, base::Value::Type::STRING);
-    if (!icon_type || icon_type->GetString().empty() ||
-        !base::IsStringUTF8(icon_type->GetString())) {
+    const std::string* icon_type = icon.GetDict().FindString(kWebAppIconType);
+    if (!icon_type || icon_type->empty() || !base::IsStringUTF8(*icon_type)) {
       log.Warn(
           base::StringPrintf("Each dictionary in the list \"%s\" should "
                              "contain a non-empty UTF8 string field \"%s\".",
                              kWebAppIcons, kWebAppIconType));
     } else {
-      web_app_icon.type = icon_type->GetString();
+      web_app_icon.type = *icon_type;
     }
 
     icons->emplace_back(web_app_icon);
