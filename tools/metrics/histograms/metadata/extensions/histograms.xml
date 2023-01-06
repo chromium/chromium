@@ -145,6 +145,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.AlarmManager.AlarmsLoadedCount" units="alarms"
+    expires_after="2023-12-01">
+  <owner>dbertoni@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of alarms loaded from storage when an extension is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ApiTabUpdateJavascript" enum="Boolean"
     expires_after="M78">
   <owner>dbertoni@chromium.org</owner>

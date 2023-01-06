@@ -1,0 +1,13 @@
+{
+  "background": {
+   "scripts": ["background.js"],
+   "persistent": false
+  },
+  "description": "An extension installs alarms to test a histogram.",
+  "manifest_version": 2,
+  "name": "Alarm Count Test Extension",
+  "version": "0.1.1",
+  "permissions": [
+    "alarms"
+  ]
+}

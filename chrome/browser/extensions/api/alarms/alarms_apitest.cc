@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
@@ -25,13 +26,23 @@ class AlarmsApiTest : public ExtensionApiTest,
   AlarmsApiTest& operator=(const AlarmsApiTest&) = delete;
   AlarmsApiTest(const AlarmsApiTest&) = delete;
 
+  void SetUp() override {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    ExtensionApiTest::SetUp();
+  }
+
+  void TearDown() override {
+    histogram_tester_.release();
+    ExtensionApiTest::TearDown();
+  }
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
-  static base::Value::List BuildEventArguments(const bool last_message) {
+  static base::Value::List BuildEventArguments(bool last_message) {
     api::test::OnMessage::Info info;
     info.data = "";
     info.last_message = last_message;
@@ -42,6 +53,9 @@ class AlarmsApiTest : public ExtensionApiTest,
     return LoadExtension(test_data_dir_.AppendASCII("alarms").AppendASCII(path),
                          {.allow_in_incognito = true});
   }
+
+ protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
@@ -96,6 +110,21 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSpanning) {
   OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Test that the histogram for counting the number of alarms for an extension
+// is working properly. The PRE step installs the alarms and we'll check the
+// histogram in the main part of the test.
+IN_PROC_BROWSER_TEST_P(AlarmsApiTest, PRE_Count) {
+  EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AlarmsApiTest, Count) {
+  // The histogram will be updated when the extension is loaded during
+  // startup. This will happen before we enter the test, so just check
+  // that the update is present.
+  histogram_tester_->ExpectUniqueSample(
+      "Extensions.AlarmManager.AlarmsLoadedCount", 100, 1);
 }
 
 }  // namespace extensions
