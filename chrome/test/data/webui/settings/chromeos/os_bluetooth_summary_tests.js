@@ -317,4 +317,14 @@ suite('OsBluetoothSummaryTest', function() {
             'bluetoothPrimaryUserControlled', primaryUserEmail),
         bluetoothSummarySecondaryText.textContent.trim());
   });
+
+  test('Route to summary page', function() {
+    init();
+    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
+    Router.getInstance().navigateTo(routes.BLUETOOTH);
+    assertEquals(
+        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to increase');
+  });
+
 });

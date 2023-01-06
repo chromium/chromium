@@ -121,6 +121,16 @@ class SettingsBluetoothSummaryElement extends
     this.addFocusConfig(routes.BLUETOOTH_DEVICES, '.subpage-arrow');
   }
 
+  /**
+   * RouteOriginMixinInterface override
+   */
+  override currentRouteChanged(route: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(route, oldRoute);
+    if (route === routes.BLUETOOTH) {
+      this.browserProxy_.showBluetoothRevampHatsSurvey();
+    }
+  }
+
   private onSystemPropertiesChanged_(): void {
     this.isBluetoothToggleOn_ =
         this.systemProperties.systemState === BluetoothSystemState.kEnabled ||
