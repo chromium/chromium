@@ -996,12 +996,25 @@ void DesksBarView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesksBarView::OnDeskAdded(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
-  const bool is_expanding_bar_view = zero_state_new_desk_button_->GetVisible();
-  UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
-  MaybeUpdateCombineDesksTooltips();
 
-  if (!DesksController::Get()->CanCreateDesks())
-    expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
+  if (features::IsJellyrollEnabled()) {
+    const bool is_expanding_bar_view =
+        new_desk_button_->state() == CrOSNextDeskIconButton::State::kZero;
+    UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
+    MaybeUpdateCombineDesksTooltips();
+    if (!DesksController::Get()->CanCreateDesks()) {
+      new_desk_button_->SetEnabled(/*enabled=*/false);
+    }
+  } else {
+    const bool is_expanding_bar_view =
+        zero_state_new_desk_button_->GetVisible();
+    UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
+    MaybeUpdateCombineDesksTooltips();
+
+    if (!DesksController::Get()->CanCreateDesks()) {
+      expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
+    }
+  }
 }
 
 void DesksBarView::OnDeskRemoved(const Desk* desk) {
@@ -1027,7 +1040,11 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
   highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_preview());
 
-  expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
+  if (features::IsJellyrollEnabled()) {
+    new_desk_button_->SetEnabled(/*enabled=*/true);
+  } else {
+    expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
+  }
 
   for (auto* mini_view : mini_views_)
     mini_view->UpdateDeskButtonVisibility();
@@ -1121,7 +1138,11 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
 
   if (expanding_bar_view) {
     UpdateDeskButtonsVisibility();
-    PerformZeroStateToExpandedStateMiniViewAnimation(this);
+    if (features::IsJellyrollEnabled()) {
+      PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(this);
+    } else {
+      PerformZeroStateToExpandedStateMiniViewAnimation(this);
+    }
     return;
   }
 
@@ -1318,7 +1339,12 @@ void DesksBarView::SwitchToZeroState() {
   // Keep current layout until the animation is completed since the animation
   // for going back to zero state is based on the expanded bar's current
   // layout.
-  PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
+  if (features::IsJellyrollEnabled()) {
+    PerformExpandedStateToZeroStateMiniViewAnimationCrOSNext(
+        this, removed_mini_views);
+  } else {
+    PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
+  }
 }
 
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {

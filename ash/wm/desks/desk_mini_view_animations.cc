@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/cros_next_desk_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -34,6 +36,10 @@ constexpr base::TimeDelta kRemovedMiniViewsFadeOutDuration =
 
 constexpr base::TimeDelta kZeroStateAnimationDuration = base::Milliseconds(200);
 
+// Animation duration when feature flag `Jellyroll` is enabled.
+constexpr base::TimeDelta kZeroStateAnimationDurationCrOSNext =
+    base::Milliseconds(150);
+
 // Scale for entering/exiting zero state.
 constexpr float kEnterOrExitZeroStateScale = 0.6f;
 
@@ -42,7 +48,10 @@ constexpr float kEnterOrExitZeroStateScale = 0.6f;
 void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
                                  base::TimeDelta duration) {
   settings->SetTransitionDuration(duration);
-  settings->SetTweenType(gfx::Tween::ACCEL_20_DECEL_60);
+  const gfx::Tween::Type tween_type = features::IsJellyrollEnabled()
+                                          ? gfx::Tween::ACCEL_20_DECEL_100
+                                          : gfx::Tween::ACCEL_20_DECEL_60;
+  settings->SetTweenType(tween_type);
   settings->SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
@@ -95,7 +104,10 @@ void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
   layer->SetOpacity(0.f);
 
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-  InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
+  const base::TimeDelta animation_duration =
+      features::IsJellyEnabled() ? kZeroStateAnimationDurationCrOSNext
+                                 : kZeroStateAnimationDuration;
+  InitScopedAnimationSettings(&settings, animation_duration);
   layer->SetTransform(kEndTransform);
   layer->SetOpacity(1.f);
 }
@@ -177,12 +189,26 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
     const gfx::Rect current_widget_bounds =
         desks_widget->GetWindowBoundsInScreen();
     gfx::Rect target_widget_bounds = current_widget_bounds;
-
     // When `to_zero_state` is false, desks bar is switching from zero to
     // expanded state.
     if (to_zero_state) {
       target_widget_bounds.set_height(DesksBarView::kZeroStateBarHeight);
-      bar_view_->set_is_bounds_animation_on_going(true);
+
+      if (features::IsJellyrollEnabled()) {
+        // When `Jellyroll` is enabled, setting desks bar's bounds to its bounds
+        // at zero state directly to layout its contents at the correct position
+        // first before the animation. When `Jellyroll` is enabled, we use the
+        // same buttons (default desk button and library) for both expanded
+        // state and zero state, the scale up and fade in animation is applied
+        // to the buttona during the desks bar states transition, thus the
+        // buttons need to be layout and put at the correct positions before the
+        // animation starts.
+        desks_widget->SetBounds(target_widget_bounds);
+        bar_view_->set_is_bounds_animation_on_going(true);
+        desks_widget->SetBounds(current_widget_bounds);
+      } else {
+        bar_view_->set_is_bounds_animation_on_going(true);
+      }
     } else {
       // While switching desks bar from zero state to expanded state, setting
       // its bounds to its bounds at expanded state directly without animation,
@@ -202,7 +228,10 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
 
     ui::ScopedLayerAnimationSettings settings{
         desks_widget->GetLayer()->GetAnimator()};
-    InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
+    const base::TimeDelta animation_duration =
+        features::IsJellyEnabled() ? kZeroStateAnimationDurationCrOSNext
+                                   : kZeroStateAnimationDuration;
+    InitScopedAnimationSettings(&settings, animation_duration);
     settings.AddObserver(this);
     desks_widget->SetBounds(target_widget_bounds);
   }
@@ -316,6 +345,27 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
   PositionWindowsInOverview();
 }
 
+void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
+    DesksBarView* bar_view) {
+  bar_view->new_desk_button()->UpdateState(
+      CrOSNextDeskIconButton::State::kExpanded);
+  bar_view->library_button()->UpdateState(
+      CrOSNextDeskIconButton::State::kExpanded);
+
+  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
+
+  const int bar_x_center = bar_view->bounds().CenterPoint().x();
+  for (auto* mini_view : bar_view->mini_views()) {
+    ScaleUpAndFadeInView(mini_view, bar_x_center);
+  }
+
+  ScaleUpAndFadeInView(bar_view->new_desk_button(), bar_x_center);
+  if (auto* library_button = bar_view->library_button()) {
+    ScaleUpAndFadeInView(library_button, bar_x_center);
+  }
+  PositionWindowsInOverview();
+}
+
 void PerformExpandedStateToZeroStateMiniViewAnimation(
     DesksBarView* bar_view,
     std::vector<DeskMiniView*> removed_mini_views) {
@@ -329,6 +379,31 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
           bar_view->expanded_state_library_button()) {
     ScaleDownAndFadeOutView(expanded_state_library_button,
                             bounds.CenterPoint().x());
+  }
+
+  PositionWindowsInOverview();
+}
+
+void PerformExpandedStateToZeroStateMiniViewAnimationCrOSNext(
+    DesksBarView* bar_view,
+    std::vector<DeskMiniView*> removed_mini_views) {
+  bar_view->new_desk_button()->UpdateState(
+      CrOSNextDeskIconButton::State::kZero);
+  bar_view->library_button()->UpdateState(CrOSNextDeskIconButton::State::kZero);
+
+  for (auto* mini_view : removed_mini_views) {
+    DCHECK(mini_view->parent());
+    mini_view->parent()->RemoveChildViewT(mini_view);
+  }
+
+  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
+
+  ScaleUpAndFadeInView(bar_view->new_desk_button(),
+                       bar_view->bounds().CenterPoint().x());
+  ScaleUpAndFadeInView(bar_view->default_desk_button(),
+                       bar_view->bounds().CenterPoint().x());
+  if (auto* library_button = bar_view->library_button()) {
+    ScaleUpAndFadeInView(library_button, bar_view->bounds().CenterPoint().x());
   }
 
   PositionWindowsInOverview();

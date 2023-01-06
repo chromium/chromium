@@ -69,6 +69,9 @@ void PerformRemoveDeskMiniViewAnimation(
 // bar's height to the expanded bar's height.
 void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view);
 
+void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
+    DesksBarView* bar_view);
+
 // Performs the animation of switching from expanded state desks bar to zero
 // state desks bar. This happens when a desk is removed such that a single desk
 // is remaining. It scales down and fades out the |removed_mini_views| and the
@@ -82,6 +85,10 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view);
 //   laid out at their previous positions before the bar state transition.
 // - Layout will be done once the animation is completed.
 void PerformExpandedStateToZeroStateMiniViewAnimation(
+    DesksBarView* bar_view,
+    std::vector<DeskMiniView*> removed_mini_views);
+
+void PerformExpandedStateToZeroStateMiniViewAnimationCrOSNext(
     DesksBarView* bar_view,
     std::vector<DeskMiniView*> removed_mini_views);
 

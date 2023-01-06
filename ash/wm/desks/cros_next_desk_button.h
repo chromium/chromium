@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_H_
 #define ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_H_
 
+#include "ash/ash_export.h"
 #include "ash/wm/desks/cros_next_desk_button_base.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -48,7 +49,7 @@ class CrOSNextDefaultDeskButton : public CrOSNextDeskButtonBase {
 // TODO(conniekxu): Remove `ZeroStateIconButton` and `ExpandedDesksBarButton`,
 // replace them with this class, and rename this class by removing the prefix
 // CrOSNext.
-class CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
+class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
  public:
   METADATA_HEADER(CrOSNextDeskIconButton);
 
@@ -75,6 +76,9 @@ class CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   CrOSNextDeskIconButton(const CrOSNextDeskIconButton&) = delete;
   CrOSNextDeskIconButton& operator=(const CrOSNextDeskIconButton&) = delete;
   ~CrOSNextDeskIconButton() override;
+
+  State state() const { return state_; }
+  void UpdateState(State state);
 
   bool IsPointOnButton(const gfx::Point& screen_location) const;
 

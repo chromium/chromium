@@ -8,7 +8,9 @@
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/cros_next_desk_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -33,6 +35,76 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
+namespace {
+
+void AddDesksBarTraversableViews(
+    OverviewGrid* grid,
+    std::vector<OverviewHighlightableView*>& out_traversable_views) {
+  auto* bar_view = grid->desks_bar_view();
+  if (!bar_view) {
+    return;
+  }
+
+  const bool is_zero_state = bar_view->IsZeroState();
+
+  // The desk items are always traversable from left to right, even in RTL
+  // languages.
+  if (features::IsJellyrollEnabled()) {
+    if (is_zero_state) {
+      out_traversable_views.push_back(bar_view->default_desk_button());
+    } else {
+      for (auto* mini_view : bar_view->mini_views()) {
+        out_traversable_views.push_back(mini_view->desk_preview());
+        out_traversable_views.push_back(mini_view->desk_name_view());
+      }
+    }
+    auto* new_desk_button = bar_view->new_desk_button();
+    if (new_desk_button->GetEnabled()) {
+      out_traversable_views.push_back(new_desk_button);
+    }
+
+    if (auto* library_button = bar_view->library_button()) {
+      if (library_button->GetVisible()) {
+        out_traversable_views.push_back(library_button);
+      }
+    }
+    return;
+  }
+
+  if (is_zero_state) {
+    out_traversable_views.push_back(bar_view->zero_state_default_desk_button());
+    out_traversable_views.push_back(bar_view->zero_state_new_desk_button());
+    // Library button is only present if the desk templates feature or the
+    // save and recall feature is enabled.
+    if (auto* library_button = bar_view->zero_state_library_button()) {
+      if (library_button->GetVisible()) {
+        out_traversable_views.push_back(library_button);
+      }
+    }
+    return;
+  }
+
+  for (auto* mini_view : bar_view->mini_views()) {
+    out_traversable_views.push_back(mini_view->desk_preview());
+    out_traversable_views.push_back(mini_view->desk_name_view());
+  }
+
+  auto* new_desk_button =
+      bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  if (new_desk_button->GetEnabled()) {
+    out_traversable_views.push_back(new_desk_button);
+  }
+
+  if (auto* library_button = bar_view->expanded_state_library_button()) {
+    auto* inner_library_button = library_button->GetInnerButton();
+    if (library_button->GetVisible() && inner_library_button->GetEnabled()) {
+      out_traversable_views.push_back(inner_library_button);
+    }
+  }
+}
+
+}  // namespace
 
 OverviewHighlightController::OverviewHighlightController(
     OverviewSession* overview_session)
@@ -250,40 +322,7 @@ OverviewHighlightController::GetTraversableViews() const {
         traversable_views.push_back(item->overview_item_view());
     }
 
-    if (auto* bar_view = grid->desks_bar_view()) {
-      const bool is_zero_state = bar_view->IsZeroState();
-      // The desk items are always traversable from left to right, even in RTL
-      // languages.
-      if (is_zero_state) {
-        traversable_views.push_back(bar_view->zero_state_default_desk_button());
-        traversable_views.push_back(bar_view->zero_state_new_desk_button());
-        // Library button is only present if the desk templates feature or the
-        // save and recall feature is enabled.
-        if (auto* library_button = bar_view->zero_state_library_button()) {
-          if (library_button->GetVisible()) {
-            traversable_views.push_back(library_button);
-          }
-        }
-      } else {
-        for (auto* mini_view : bar_view->mini_views()) {
-          traversable_views.push_back(mini_view->desk_preview());
-          traversable_views.push_back(mini_view->desk_name_view());
-        }
-
-        auto* new_desk_button =
-            bar_view->expanded_state_new_desk_button()->GetInnerButton();
-        if (new_desk_button->GetEnabled())
-          traversable_views.push_back(new_desk_button);
-
-        if (auto* library_button = bar_view->expanded_state_library_button()) {
-          auto* inner_library_button = library_button->GetInnerButton();
-          if (library_button->GetVisible() &&
-              inner_library_button->GetEnabled()) {
-            traversable_views.push_back(inner_library_button);
-          }
-        }
-      }
-    }
+    AddDesksBarTraversableViews(grid.get(), traversable_views);
 
     if (grid->IsSaveDeskAsTemplateButtonVisible())
       traversable_views.push_back(grid->GetSaveDeskAsTemplateButton());

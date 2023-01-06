@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/check_op.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,9 +27,18 @@ namespace ash {
 
 namespace {
 
+constexpr int kDefaultButtonCornerRadius = 14;
+
+constexpr int kDefaultButtonHorizontalPadding = 16;
+
+constexpr int kDefaultDeskButtonMinWidth = 56;
+
 constexpr int kIconButtonCornerRadius = 18;
 
-constexpr int kDefaultButtonCornerRadius = 14;
+// Focus rings' corner radius of the desk icon button at different states.
+constexpr int kZeroStateFocusRingRadius = 16;
+constexpr int kExpandedStateFocusRingRadius = 24;
+constexpr int kDragToDropStateFocusRingRadius = 10;
 
 constexpr int kZeroStateButtonHeight = 28;
 
@@ -36,9 +46,16 @@ constexpr int kZeroStateButtonWidth = 28;
 
 constexpr int kExpandedStateButtonWidth = 36;
 
-constexpr int kDefaultButtonHorizontalPadding = 16;
-
-constexpr int kDefaultDeskButtonMinWidth = 56;
+int GetFocusRingRadiusForState(CrOSNextDeskIconButton::State state) {
+  switch (state) {
+    case CrOSNextDeskIconButton::State::kZero:
+      return kZeroStateFocusRingRadius;
+    case CrOSNextDeskIconButton::State::kExpanded:
+      return kExpandedStateFocusRingRadius;
+    case CrOSNextDeskIconButton::State::kDragAndDrop:
+      return kDragToDropStateFocusRingRadius;
+  }
+}
 
 }  // namespace
 
@@ -52,14 +69,12 @@ CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DesksBarView* bar_view)
           base::BindRepeating(&CrOSNextDefaultDeskButton::OnButtonPressed,
                               base::Unretained(this))),
       bar_view_(bar_view) {
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kDefaultButtonCornerRadius));
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
                                  DesksController::Get()->desks()[0]->name()));
 
-  SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kDefaultButtonCornerRadius));
 }
 
 gfx::Size CrOSNextDefaultDeskButton::CalculatePreferredSize() const {
@@ -110,14 +125,14 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
     : CrOSNextDeskButtonBase(text, /*set_text=*/false, callback),
       bar_view_(bar_view),
       state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded) {
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kIconButtonCornerRadius));
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*button_icon, icon_color_id));
-  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id, kIconButtonCornerRadius));
 
   views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset), kIconButtonCornerRadius);
+      this, gfx::Insets(kFocusRingHaloInset),
+      GetFocusRingRadiusForState(state_));
   views::FocusRing::Get(this)->SetHasFocusPredicate([&](views::View* view) {
     return IsViewHighlighted() ||
            ((bar_view_->dragged_item_over_bar() &&
@@ -127,6 +142,17 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
 }
 
 CrOSNextDeskIconButton::~CrOSNextDeskIconButton() = default;
+
+void CrOSNextDeskIconButton::UpdateState(State state) {
+  if (state_ == state) {
+    return;
+  }
+
+  state_ = state;
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kFocusRingHaloInset),
+      GetFocusRingRadiusForState(state_));
+}
 
 bool CrOSNextDeskIconButton::IsPointOnButton(
     const gfx::Point& screen_location) const {

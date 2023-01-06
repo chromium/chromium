@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/cros_next_desk_button_base.h"
 
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -15,7 +16,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kFocusRingRadius = 8;
+constexpr int kFocusRingRadius = 16;
 
 }  // namespace
 
@@ -43,8 +44,8 @@ CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
   // non-empty insets will be created.
   SetBorder(views::CreateEmptyBorder(gfx::Insets()));
 
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kFocusRingRadius);
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kFocusRingHaloInset), kFocusRingRadius);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHasFocusPredicate(
