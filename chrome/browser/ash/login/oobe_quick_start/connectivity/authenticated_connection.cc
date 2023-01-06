@@ -52,6 +52,9 @@ const char kRelyingPartyId[] = "google.com";
 const char kOrigin[] = "https://accounts.google.com";
 const char kCtapRequestType[] = "webauthn.get";
 
+// Maps to CBOR byte labelling FIDO request as GetInfo.
+const uint8_t kAuthenticatorGetInfoCommand = 0x04;
+
 // Maps to CBOR byte labelling FIDO request as GetAssertion.
 const uint8_t kAuthenticatorGetAssertionCommand = 0x02;
 const char kUserPresenceMapKey[] = "up";
@@ -82,6 +85,20 @@ void AuthenticatedConnection::SendBootstrapOptions() {
   SendPayload(message_payload);
   nearby_connection_->Read(
       base::BindOnce(&AuthenticatedConnection::OnBootstrapOptionsResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AuthenticatedConnection::GetInfo() {
+  std::vector<uint8_t> ctap_request_command({kAuthenticatorGetInfoCommand});
+  base::Value::Dict second_device_auth_payload;
+  second_device_auth_payload.Set(kFidoMessageKey,
+                                 base::Base64Encode(ctap_request_command));
+  base::Value::Dict message_payload;
+  message_payload.Set(kSecondDeviceAuthPayloadKey,
+                      std::move(second_device_auth_payload));
+  SendPayload(message_payload);
+  nearby_connection_->Read(
+      base::BindOnce(&AuthenticatedConnection::OnFidoGetInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -148,6 +165,11 @@ std::string AuthenticatedConnection::CreateFidoClientDataJson(
 }
 
 void AuthenticatedConnection::OnBootstrapOptionsResponse(
+    absl::optional<std::vector<uint8_t>>) {
+  GetInfo();
+}
+
+void AuthenticatedConnection::OnFidoGetInfoResponse(
     absl::optional<std::vector<uint8_t>>) {
   RequestAssertion();
 }

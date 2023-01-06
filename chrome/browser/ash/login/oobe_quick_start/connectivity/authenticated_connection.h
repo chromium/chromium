@@ -35,6 +35,9 @@ class AuthenticatedConnection : public Connection {
   // Packages a BootstrapOptions request and sends it to the Android device.
   void SendBootstrapOptions();
 
+  // Packages a FIDO GetInfo request and sends it to the Android device.
+  void GetInfo();
+
   // Packages a SecondDeviceAuthPayload request with FIDO GetAssertion and sends
   // it to the Android device.
   void RequestAssertion();
@@ -42,6 +45,10 @@ class AuthenticatedConnection : public Connection {
   // Handle response received from SendBootstrapOptions. This is passed in as a
   // callback to NearbyConnection::Read().
   void OnBootstrapOptionsResponse(absl::optional<std::vector<uint8_t>> data);
+
+  // Handle response received from GetInfo. This is passed in as a callback to
+  // NearbyConnection::Read().
+  void OnFidoGetInfoResponse(absl::optional<std::vector<uint8_t>> data);
 
   // Handle response received from RequestAssertion. This is passed in as a
   // callback to NearbyConnection::Read().
