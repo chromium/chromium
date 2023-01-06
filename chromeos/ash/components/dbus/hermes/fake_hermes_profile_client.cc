@@ -181,14 +181,14 @@ void FakeHermesProfileClient::UpdateCellularDevice(
 
   // Update the cellular device properties so that they match the carrier
   // profile that was just enabled.
-  base::DictionaryValue home_provider;
-  home_provider.SetKey(shill::kNameProperty,
-                       base::Value(properties->service_provider().value()));
-  home_provider.SetKey(shill::kCountryProperty, base::Value(kDefaultCountry));
-  home_provider.SetKey(shill::kNetworkIdProperty,
-                       base::Value(properties->mcc_mnc().value()));
-  device_test->SetDeviceProperty(
-      kCellularDevicePath, shill::kHomeProviderProperty, home_provider, true);
+  base::Value::Dict home_provider;
+  home_provider.Set(shill::kNameProperty,
+                    properties->service_provider().value());
+  home_provider.Set(shill::kCountryProperty, kDefaultCountry);
+  home_provider.Set(shill::kNetworkIdProperty, properties->mcc_mnc().value());
+  device_test->SetDeviceProperty(kCellularDevicePath,
+                                 shill::kHomeProviderProperty,
+                                 base::Value(std::move(home_provider)), true);
 }
 
 void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,

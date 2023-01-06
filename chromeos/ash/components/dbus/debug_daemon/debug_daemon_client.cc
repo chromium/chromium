@@ -90,19 +90,19 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
     }
 
     JSONStringValueDeserializer json_reader(result.value());
-    std::unique_ptr<base::DictionaryValue> logs =
-        base::DictionaryValue::From(json_reader.Deserialize(nullptr, nullptr));
-    if (!logs.get()) {
+    std::unique_ptr<base::Value> logs(
+        json_reader.Deserialize(nullptr, nullptr));
+    if (!logs.get() || !logs->is_dict()) {
       VLOG(1) << "Failed to deserialize the JSON logs.";
       RecordGetFeedbackLogsV2DbusResult(
           GetFeedbackLogsV2DbusResult::kErrorDeserializingJSonLogs);
       RunCallbackAndDestroy(absl::nullopt);
       return;
     }
-
     std::map<std::string, std::string> data;
-    for (const auto entry : logs->DictItems())
-      data[entry.first] = entry.second.GetString();
+    for (const auto [dict_key, dict_value] : logs->GetDict()) {
+      data[dict_key] = dict_value.GetString();
+    }
     RunCallbackAndDestroy(std::move(data));
   }
 

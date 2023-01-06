@@ -169,16 +169,14 @@ class FwupdClientImpl : public FwupdClient {
 
  private:
   // Pops a string-to-variant-string dictionary from the reader.
-  std::unique_ptr<base::DictionaryValue> PopStringToStringDictionary(
-      dbus::MessageReader* reader) {
+  base::Value::Dict PopStringToStringDictionary(dbus::MessageReader* reader) {
     dbus::MessageReader array_reader(nullptr);
 
     if (!reader->PopArray(&array_reader)) {
       LOG(ERROR) << "Failed to pop array into the array reader.";
-      return nullptr;
+      return base::Value::Dict();
     }
-
-    auto result = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict result;
 
     while (array_reader.HasMoreData()) {
       dbus::MessageReader entry_reader(nullptr);
@@ -193,7 +191,7 @@ class FwupdClientImpl : public FwupdClient {
 
       if (!success) {
         LOG(ERROR) << "Failed to get a dictionary entry. ";
-        return nullptr;
+        return base::Value::Dict();
       }
 
       // Values in the response can have different types. The fields we are
@@ -205,17 +203,17 @@ class FwupdClientImpl : public FwupdClient {
         variant_reader.PopUint32(&value_uint);
         // Value doesn't support unsigned numbers, so this has to be converted
         // to int.
-        result->SetKey(key, base::Value((int)value_uint));
+        result.Set(key, (int)value_uint);
       } else if (variant_reader.GetDataSignature() == "s") {
         variant_reader.PopString(&value_string);
-        result->SetKey(key, base::Value(value_string));
+        result.Set(key, value_string);
       } else if (variant_reader.GetDataSignature() == "t") {
         if (key == "Flags") {
           uint64_t value_uint64 = 0;
           variant_reader.PopUint64(&value_uint64);
           const bool is_internal =
               (value_uint64 & kInternalDeviceFlag) == kInternalDeviceFlag;
-          result->SetKey(key, base::Value(is_internal));
+          result.Set(key, is_internal);
         }
       }
     }
@@ -244,57 +242,54 @@ class FwupdClientImpl : public FwupdClient {
     FwupdUpdateList updates;
     while (can_parse && array_reader.HasMoreData()) {
       // Parse update description.
-      std::unique_ptr<base::DictionaryValue> dict =
-          PopStringToStringDictionary(&array_reader);
-      if (!dict) {
+      base::Value::Dict dict = PopStringToStringDictionary(&array_reader);
+      if (dict.empty()) {
         LOG(ERROR) << "Failed to parse the update description.";
         // Ran into an error, exit early.
         break;
       }
 
-      const auto* version = dict->FindKey("Version");
-      const auto* description = dict->FindKey("Description");
-      const auto* priority = dict->FindKey("Urgency");
-      const auto* uri = dict->FindKey("Uri");
-      const auto* checksum = dict->FindKey("Checksum");
+      const std::string* version = dict.FindString("Version");
+      const std::string* description = dict.FindString("Description");
+      absl::optional<int> priority = dict.FindInt("Urgency");
+      const std::string* uri = dict.FindString("Uri");
+      const std::string* checksum = dict.FindString("Checksum");
 
       base::FilePath filepath;
       if (uri) {
-        filepath = GetFilePathFromUri(GURL(uri->GetString()));
+        filepath = GetFilePathFromUri(GURL(*uri));
       }
 
       std::string sha_checksum;
       if (checksum) {
-        sha_checksum = ParseCheckSum(checksum->GetString());
+        sha_checksum = ParseCheckSum(*checksum);
       }
 
       std::string description_value = "";
 
       if (description) {
-        description_value = description->GetString();
+        description_value = *description;
       } else {
         VLOG(1) << "Device: " << device_id
                 << " is missing its description text.";
       }
 
-      // If priority isn't specified we use default of low priority
-      int priority_value = UpdatePriority::kLow;
-      if (priority) {
-        priority_value = priority->GetInt();
-      } else {
+      // If priority isn't specified we use default of low priority.
+      if (!priority) {
         LOG(WARNING)
             << "Device: " << device_id
             << " is missing its priority field, using default of low priority.";
       }
+      int priority_value = priority.value_or(UpdatePriority::kLow);
 
       const bool success =
           version && !filepath.empty() && !sha_checksum.empty();
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
         VLOG(1) << "fwupd: Found update version for device: " << device_id
-                << " with version: " << version->GetString();
-        updates.emplace_back(version->GetString(), description_value,
-                             priority_value, filepath, sha_checksum);
+                << " with version: " << *version;
+        updates.emplace_back(*version, description_value, priority_value,
+                             filepath, sha_checksum);
       } else {
         if (!version) {
           LOG(ERROR) << "Device: " << device_id
@@ -333,21 +328,24 @@ class FwupdClientImpl : public FwupdClient {
     FwupdDeviceList devices;
     while (array_reader.HasMoreData()) {
       // Parse device description.
-      std::unique_ptr<base::DictionaryValue> dict =
-          PopStringToStringDictionary(&array_reader);
-      if (!dict) {
+      base::Value::Dict dict = PopStringToStringDictionary(&array_reader);
+      if (dict.empty()) {
         LOG(ERROR) << "Failed to parse the device description.";
         return;
       }
 
-      const auto* flags = dict->FindKey("Flags");
-      const auto* name = dict->FindKey("Name");
-      if (flags && flags->GetBool()) {
-        VLOG(1) << "Ignoring internal device: " << name;
+      absl::optional<bool> flags = dict.FindBool("Flags");
+      const std::string* name = dict.FindString("Name");
+      if (flags.has_value() && flags.value()) {
+        if (name) {
+          VLOG(1) << "Ignoring internal device: " << *name;
+        } else {
+          VLOG(1) << "Ignoring unnamed internal device.";
+        }
         continue;
       }
 
-      const auto* id = dict->FindKey("DeviceId");
+      const std::string* id = dict.FindString("DeviceId");
 
       // The keys "DeviceId" and "Name" must exist in the dictionary.
       const bool success = id && name;
@@ -356,9 +354,8 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
-      VLOG(1) << "fwupd: Device found: " << id->GetString() << " "
-              << name->GetString();
-      devices.emplace_back(id->GetString(), name->GetString());
+      VLOG(1) << "fwupd: Device found: " << *id << " " << *name;
+      devices.emplace_back(*id, *name);
     }
 
     for (auto& observer : observers_)
