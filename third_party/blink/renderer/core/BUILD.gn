@@ -1173,6 +1173,7 @@ targets_generating_sources = [
   ":make_core_generated_event_names",
   ":make_core_generated_event_target_names",
   ":make_core_generated_event_type_names",
+  ":make_core_generated_html_attribute_name_lookup_trie",
   ":make_core_generated_html_element_factory",
   ":make_core_generated_html_element_lookup_trie",
   ":make_core_generated_html_element_type_helpers",
@@ -1200,11 +1201,6 @@ targets_generating_sources = [
   ":make_core_generated_xml_names",
   ":make_core_generated_xml_ns_names",
 ]
-
-if (!is_android) {
-  targets_generating_sources +=
-      [ ":make_core_generated_html_attribute_name_lookup_trie" ]
-}
 
 group("all_generators") {
   public_deps = targets_generating_sources

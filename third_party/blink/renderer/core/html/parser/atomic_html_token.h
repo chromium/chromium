@@ -35,16 +35,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
+#include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
-
-// TODO(https://crbug.com/1338583): enable on android.
-#if !BUILDFLAG(IS_ANDROID)
-#include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"  // nogncheck
-#endif
 
 namespace blink {
 
@@ -333,13 +329,8 @@ void AtomicHTMLToken::InitializeAttributes(
     if (attribute.NameIsEmpty())
       continue;
 
-// TODO(https://crbug.com/1338583): enable on android.
-#if !BUILDFLAG(IS_ANDROID)
     QualifiedName name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
                                                  attribute.NameBuffer().size());
-#else
-    QualifiedName name = g_null_name;
-#endif
     if (name == g_null_name) {
       name = QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
     }
