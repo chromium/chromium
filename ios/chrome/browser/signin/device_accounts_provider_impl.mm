@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -98,6 +99,17 @@ void DeviceAccountsProviderImpl::GetAccessToken(
   DCHECK(!callback.is_null());
   id<SystemIdentity> identity =
       account_manager_service_->GetIdentityWithGaiaID(gaia_id);
+
+  // If the identity is unknown, there is no need to try to fetch the access
+  // token as it will fail immediately. Post the callback with a failure.
+  if (!identity) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       base::unexpected(
+                           kAuthenticationErrorCategoryUnknownIdentityErrors)));
+    return;
+  }
 
   // AccessTokenCallback is non-copyable. Using __block allocates the memory
   // directly in the block object at compilation time (instead of doing a
