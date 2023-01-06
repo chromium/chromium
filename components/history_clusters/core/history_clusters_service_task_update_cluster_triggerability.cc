@@ -46,15 +46,21 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::Start() {
       GetConfig().max_persisted_cluster_visits_to_fetch_soft_cap,
       base::BindOnce(&HistoryClustersServiceTaskUpdateClusterTriggerability::
                          OnGotPersistedClusters,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       /*include_keywords_and_duplicates=*/false, &task_tracker_);
 }
 
 void HistoryClustersServiceTaskUpdateClusterTriggerability::
-    OnGotPersistedClusters(std::vector<history::Cluster> clusters) {
+    OnGotPersistedClusters(base::TimeTicks start_time,
+                           std::vector<history::Cluster> clusters) {
   if (!weak_history_clusters_service_) {
     return;
   }
+
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.UpdateClusterTriggerability."
+      "GetMostRecentPersistedClustersLatency",
+      base::TimeTicks::Now() - start_time);
 
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
@@ -63,8 +69,6 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
     weak_history_clusters_service_->NotifyDebugMessage(
         GetDebugJSONForClusters(clusters));
   }
-
-  // TODO(b/259466296): Record metrics.
 
   if (clusters.empty()) {
     // TODO(manukh): If the most recent cluster is invalid (due to DB
@@ -93,17 +97,21 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
   backend_->GetClusterTriggerability(
       base::BindOnce(&HistoryClustersServiceTaskUpdateClusterTriggerability::
                          OnGotModelClusters,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       std::move(filtered_clusters));
 }
 
 void HistoryClustersServiceTaskUpdateClusterTriggerability::OnGotModelClusters(
+    base::TimeTicks start_time,
     std::vector<history::Cluster> clusters) {
   if (!weak_history_clusters_service_) {
     return;
   }
 
-  // TODO(b/259466296): Record metrics.
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.UpdateClusterTriggerability."
+      "ComputeClusterTriggerabilityLatency",
+      base::TimeTicks::Now() - start_time);
 
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
@@ -128,13 +136,16 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::OnGotModelClusters(
       clusters,
       base::BindOnce(&HistoryClustersServiceTaskUpdateClusterTriggerability::
                          OnPersistedClusterTriggerability,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       &task_tracker_);
 }
 
 void HistoryClustersServiceTaskUpdateClusterTriggerability::
-    OnPersistedClusterTriggerability() {
-  // TODO(b/259466296): Record metrics.
+    OnPersistedClusterTriggerability(base::TimeTicks start_time) {
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.UpdateClusterTriggerability."
+      "PersistClusterTriggerabilityLatency",
+      base::TimeTicks::Now() - start_time);
 
   Start();
 }

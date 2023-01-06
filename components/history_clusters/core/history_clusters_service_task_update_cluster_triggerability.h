@@ -62,14 +62,16 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // will filter for clusters that do not have their triggerability calculated
   // yet so that triggerability metadata can be calculated. Otherwise, it
   // invokes `Start()` to fetch more clusters.
-  void OnGotPersistedClusters(std::vector<history::Cluster> clusters);
+  void OnGotPersistedClusters(base::TimeTicks start_time,
+                              std::vector<history::Cluster> clusters);
 
   // Invoked after `OnGotPersistedClusters()` asyncly obtains clusters.
-  void OnGotModelClusters(std::vector<history::Cluster> clusters);
+  void OnGotModelClusters(base::TimeTicks start_time,
+                          std::vector<history::Cluster> clusters);
 
   // Invoked after `OnGotModelClusters()` asyncly persists clusters. Will syncly
   // invoke `Start()` to initiate the next iteration.
-  void OnPersistedClusterTriggerability();
+  void OnPersistedClusterTriggerability(base::TimeTicks start_time);
 
   // Never nullptr.
   base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;
