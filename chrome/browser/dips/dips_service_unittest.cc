@@ -32,7 +32,14 @@ class ScopedInitFeature {
 class ScopedInitDIPSFeature {
  public:
   explicit ScopedInitDIPSFeature(bool enable)
-      : init_feature_(dips::kFeature, enable),
+      // DIPSServiceFactory is a singleton, and we want to create it *before*
+      // constructing `init_feature_`, so that DIPSServiceFactory is initialized
+      // using the default value of dips::kFeature. We only want `init_feature_`
+      // to affect CreateProfileSelections(). We do this concisely by using the
+      // comma operator in the arguments to `init_feature_` to call
+      // DIPSServiceFactory::GetInstance() while ignoring its return value.
+      : init_feature_((DIPSServiceFactory::GetInstance(), dips::kFeature),
+                      enable),
         override_profile_selections_(
             DIPSServiceFactory::GetInstance(),
             DIPSServiceFactory::CreateProfileSelections()) {}
