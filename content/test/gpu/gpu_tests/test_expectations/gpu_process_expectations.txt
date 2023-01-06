@@ -107,7 +107,7 @@ crbug.com/1084794 [ chromeos ] GpuProcess_swiftshader_for_webgl [ Skip ]
 crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ Skip ]
 
 # SwiftShader is disabled on Mac M1
-crbug.com/1378476 [ mac mac-arm64 angle-swiftshader ] GpuProcess_swiftshader_for_webgl [ Skip ]
+crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
 ###################
 # Failures/Flakes #
