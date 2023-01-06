@@ -25,11 +25,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/profiles/profile.h"
-// This file gets pulled in in Chromecast builds, which causes "gn check" to
-// complain as Chromecast doesn't use (or depend on) //components/dbus.
-// TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
-// on Chromecast and remove the nogncheck below.
-#include "components/dbus/thread_linux/dbus_thread_linux.h"  // nogncheck
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
