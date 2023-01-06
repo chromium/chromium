@@ -311,6 +311,29 @@ TEST_P(KAnonymityServiceStorageTest, SaveAndLoadKeyCommitment) {
   }
 }
 
+TEST_P(KAnonymityServiceStorageTest, HandlesDestructionBeforeReady) {
+  std::unique_ptr<KAnonymityServiceStorage> storage;
+  if (StorageIsPersistent()) {
+    storage = CreateKAnonymitySqlStorageForPath(db_path());
+  } else {
+    storage = std::make_unique<KAnonymityServiceMemoryStorage>();
+  }
+  storage->WaitUntilReady(base::BindLambdaForTesting(
+      [&](KAnonymityServiceStorage::InitStatus status) {
+        if (StorageIsPersistent()) {
+          // Persistent storage doesn't return synchronously, so it should have
+          // already been released.
+          EXPECT_FALSE(storage);
+        } else {
+          // Memory storage calls synchronously so we haven't released the
+          // storage.
+          EXPECT_TRUE(storage);
+        }
+      }));
+  storage.reset();
+  task_environment().RunUntilIdle();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     KAnonymityServiceStorageTest,

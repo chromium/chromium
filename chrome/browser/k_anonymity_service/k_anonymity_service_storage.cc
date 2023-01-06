@@ -82,7 +82,11 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
     // Shutdown `table_manager_`, delete database on db
     // sequence, then delete the KeyValueTable/KeyValueData on main sequence.
     // This ensures that the flush occurs before we delete the
-    // KeyValueTable/KeyValueData.
+    // KeyValueTable/KeyValueData. We need to delay the destruction of the
+    // tables until after the task on the `db_task_runner_` completes so that
+    // tasks on the `db_task_runner_` don't use them after they are destroyed.
+    // Note that the tables hold strong references to the `table_manager_` so it
+    // will actually be destroyed during the "reply" closure.
     db_task_runner_->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(
@@ -104,23 +108,40 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
       return;
     }
     ready_ = true;
+    // This is safe because tasks are serialized on the db_task_runner sequence
+    // and the `table_manager_`, `ohttp_key_data_`, and
+    // `trust_token_key_commitment_data_` are only freed after a response from a
+    // task (triggered by the destructor) run on the `db_task_runner_`.
+    // Similarly, the `db_` is not actually destroyed until until the task
+    // triggered by the destructor runs on the `db_task_runner_`.
     db_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&KAnonymityServiceSqlStorage::InitializeOnDbSequence,
-                       base::Unretained(this)),
+        base::BindOnce(
+            &KAnonymityServiceSqlStorage::InitializeOnDbSequence,
+            base::Unretained(db_.get()), db_storage_path_,
+            base::Unretained(table_manager_.get()),
+            base::Unretained(ohttp_key_data_.get()),
+            base::Unretained(trust_token_key_commitment_data_.get())),
         std::move(on_ready));
   }
 
-  InitStatus InitializeOnDbSequence() {
-    if (db_->Open(db_storage_path_) == false) {
+  static InitStatus InitializeOnDbSequence(
+      sql::Database* db,
+      base::FilePath db_storage_path,
+      sqlite_proto::ProtoTableManager* table_manager,
+      sqlite_proto::KeyValueData<proto::OHTTPKeyAndExpiration,
+                                 OhttpKeyExpirationComparator>* ohttp_key_data,
+      sqlite_proto::KeyValueData<proto::TrustTokenKeyCommitmentWithExpiration>*
+          trust_token_key_commitment_data) {
+    if (db->Open(db_storage_path) == false) {
       return InitStatus::kInitError;
     }
-    table_manager_->InitializeOnDbSequence(
-        db_.get(),
+    table_manager->InitializeOnDbSequence(
+        db,
         std::vector<std::string>{kOhttpKeyTable, kTrustTokenKeyCommitmentTable},
         kCurrentSchemaVersion);
-    ohttp_key_data_->InitializeOnDBSequence();
-    trust_token_key_commitment_data_->InitializeOnDBSequence();
+    ohttp_key_data->InitializeOnDBSequence();
+    trust_token_key_commitment_data->InitializeOnDBSequence();
     return InitStatus::kInitOk;
   }
 
