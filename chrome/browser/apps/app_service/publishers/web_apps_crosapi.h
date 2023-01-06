@@ -22,13 +22,8 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace apps {
 struct MenuItems;
@@ -49,12 +44,7 @@ struct AppLaunchParams;
 // publisher will also handle reconnection when the crosapi connection drops.
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
 class WebAppsCrosapi : public KeyedService,
-                       public apps::PublisherBase,
                        public apps::AppPublisher,
                        public crosapi::mojom::AppPublisher {
  public:
@@ -124,10 +114,6 @@ class WebAppsCrosapi : public KeyedService,
                     base::OnceCallback<void(MenuItems)> callback) override;
   void SetWindowMode(const std::string& app_id,
                      WindowMode window_mode) override;
-
-  // apps::PublisherBase overrides.
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
@@ -183,7 +169,6 @@ class WebAppsCrosapi : public KeyedService,
   // |delta_app_cache_| to initialize the web app AppType even it is empty.
   bool on_initial_apps_received_ = false;
 
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
   mojo::Remote<crosapi::mojom::AppController> controller_;
   AppServiceProxy* const proxy_;

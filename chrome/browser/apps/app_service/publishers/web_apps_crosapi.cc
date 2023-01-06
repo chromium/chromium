@@ -25,24 +25,12 @@
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
 namespace apps {
 
 WebAppsCrosapi::WebAppsCrosapi(AppServiceProxy* proxy)
-    : apps::AppPublisher(proxy), proxy_(proxy) {
-  // This object may be created when the flag is on or off, but only register
-  // the publisher if the flag is on.
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
-    if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
-        !app_service.is_bound()) {
-      return;
-    }
-    PublisherBase::Initialize(app_service, apps::mojom::AppType::kWeb);
-  }
-}
+    : apps::AppPublisher(proxy), proxy_(proxy) {}
 
 WebAppsCrosapi::~WebAppsCrosapi() = default;
 
@@ -258,14 +246,6 @@ void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
   controller_->SetWindowMode(app_id, window_mode);
 }
 
-void WebAppsCrosapi::Connect(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-    apps::mojom::ConnectOptionsPtr opts) {
-  mojo::Remote<apps::mojom::Subscriber> subscriber(
-      std::move(subscriber_remote));
-  subscribers_.Add(std::move(subscriber));
-}
-
 void WebAppsCrosapi::OnGetMenuModelFromCrosapi(
     const std::string& app_id,
     MenuType menu_type,
@@ -454,17 +434,8 @@ void WebAppsCrosapi::OnApplyIconEffects(IconType icon_type,
 }
 
 void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
-  std::vector<apps::mojom::AppPtr> mojom_apps;
-  for (const auto& delta : deltas) {
-    mojom_apps.push_back(ConvertAppToMojomApp(delta));
-  }
   apps::AppPublisher::Publish(std::move(deltas), AppType::kWeb,
                               should_notify_initialized_);
-
-  for (auto& subscriber : subscribers_) {
-    subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),
-                       apps::mojom::AppType::kWeb, should_notify_initialized_);
-  }
   should_notify_initialized_ = false;
 }
 
