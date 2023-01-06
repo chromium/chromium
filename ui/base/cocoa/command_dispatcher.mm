@@ -175,14 +175,17 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
       return YES;
   }
 
-  // Note this may validate an action bubbled up from a child window. However,
-  // if the child window also -respondsToSelector: (but validated it `NO`), the
-  // action will be dispatched to the child only, which may NSBeep().
-  // TODO(tapted): Fix this. E.g. bubble up validation via the bubbleParent's
-  // CommandDispatcher rather than the NSUserInterfaceValidations protocol, so
-  // that this step can be skipped.
-  if ([_owner defaultValidateUserInterfaceItem:item])
-    return YES;
+  // -defaultValidateUserInterfaceItem: in most cases will return YES. If
+  // there is a bubble parent give it a chance to validate the item.
+  if (![self bubbleParent]) {
+    // Note this may validate an action bubbled up from a child window. However,
+    // if the child window also -respondsToSelector: (but validated it `NO`),
+    // the action will be dispatched to the child only, which may NSBeep().
+    // TODO(tapted): Fix this. E.g. bubble up validation via the bubbleParent's
+    // CommandDispatcher rather than the NSUserInterfaceValidations protocol, so
+    // that this step can be skipped.
+    return [_owner defaultValidateUserInterfaceItem:item];
+  }
 
   return [[self bubbleParent] validateUserInterfaceItem:item];
 }
