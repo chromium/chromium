@@ -282,6 +282,9 @@ component("platform") {
       if (use_glib) {
         configs += [ "//build/config/linux:glib" ]
       }
+      if (use_gio) {
+        configs += [ "//build/linux:gio_config" ]
+      }
     }
   }
 }

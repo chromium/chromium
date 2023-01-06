@@ -9,6 +9,10 @@
 #include <string>
 #include <utility>
 
+#if defined(USE_GIO)
+#include <gio/gio.h>
+#endif
+
 #include "base/environment.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
@@ -110,13 +114,56 @@ AtkUtilAuraLinux* AtkUtilAuraLinux::GetInstance() {
 }
 
 bool AtkUtilAuraLinux::ShouldEnableAccessibility() {
+  // Check enabled/disabled accessibility based on env variable
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   for (const auto* variable : kAccessibilityEnabledVariables) {
     std::string enable_accessibility;
     env->GetVar(variable, &enable_accessibility);
     if (enable_accessibility == "1")
       return true;
+    if (enable_accessibility == "0") {
+      return false;
+    }
   }
+
+#if defined(USE_GIO)
+  // Check enabled accessibility based on a11y DBus interface
+  GDBusConnection* connection =
+      g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, nullptr);
+
+  if (connection) {
+    GVariant* result = g_dbus_connection_call_sync(
+        connection, "org.a11y.Bus", "/org/a11y/bus",
+        "org.freedesktop.DBus.Properties", "Get",
+        g_variant_new("(ss)", "org.a11y.Status", "IsEnabled"), nullptr,
+        G_DBUS_CALL_FLAGS_NONE, -1, nullptr, nullptr);
+    g_object_unref(connection);
+
+    if (result) {
+      GVariant* property;
+      g_variant_get(result, "(v)", &property);
+      const bool accessibilityEnabled = g_variant_get_boolean(property);
+      g_variant_unref(result);
+      g_variant_unref(property);
+      return accessibilityEnabled;
+    }
+  }
+
+  // Check enabled accessibility based on GSettings
+  GSettingsSchemaSource* source = g_settings_schema_source_get_default();
+  GSettingsSchema* gschema = nullptr;
+
+  gschema = g_settings_schema_source_lookup(
+      source, "org.gnome.desktop.interface", TRUE);
+  if (gschema) {
+    GSettings* settings = g_settings_new("org.gnome.desktop.interface");
+    const bool accessibilityEnabled =
+        g_settings_get_boolean(settings, "toolkit-accessibility");
+    g_settings_schema_unref(gschema);
+    g_object_unref(settings);
+    return accessibilityEnabled;
+  }
+#endif
 
   return false;
 }
