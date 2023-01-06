@@ -619,18 +619,6 @@ chromium-metrics-reviews@google.com.
   <token key="OOBEScreenName_ExitReason" variants="OOBEScreenName_ExitReason"/>
 </histogram>
 
-<histogram name="OOBE.StepShownStatus.Multidevice-setup-screen.Skipped"
-    enum="OobeMultideviceScreenSkippedReason" expires_after="2023-11-01">
-  <owner>bhartmire@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The reason why the Multidevice setup screen is skipped in OOBE. Recorded
-    when determining that the screen should be skipped. This metric breaks down
-    the &quot;Not shown&quot; bucket of
-    &quot;OOBE.StepShownStatus.Multidevice-setup-screen&quot;.
-  </summary>
-</histogram>
-
 <histogram name="OOBE.StepShownStatus.{OOBELegacyScreenName}"
     enum="BooleanShown" expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
