@@ -15,5 +15,9 @@ FAIL Rollback of sRD(reoffer) with a single rid results in all previous encoding
 FAIL sRD(recv simulcast answer) can narrow the simulcast envelope specified by addTransceiver by removing the first encoding assert_array_equals: expected property 0 to be 1 but got undefined (expected array [1] got [undefined])
 FAIL sRD(recv simulcast answer) can narrow the simulcast envelope from a previous negotiation by removing the first encoding assert_array_equals: expected property 0 to be 1 but got undefined (expected array [1] got [undefined])
 FAIL sRD(simulcast offer) can narrow the simulcast envelope from a previous negotiation by removing the first encoding assert_array_equals: [[SendEncodings]] is not updated in have-remote-offer for reoffers lengths differ, expected array ["foo", "bar"] length 2, got ["bar"] length 1
+PASS sender renegotiation to inactive does not disable simulcast
+PASS sender renegotiation to recvonly does not disable simulcast
+PASS receiver renegotiation to inactive does not disable simulcast
+PASS receiver renegotiation to sendonly does not disable simulcast
 Harness: the test ran to completion.
 
