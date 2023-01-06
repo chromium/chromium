@@ -15,6 +15,7 @@
 
 namespace {
 const CGFloat kTrackButtonSidePadding = 16;
+const CGFloat kTrackButtonTopPadding = 4;
 }  // namespace
 
 @implementation PriceNotificationsTrackButton
@@ -32,8 +33,9 @@ const CGFloat kTrackButtonSidePadding = 16;
                        IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)
           forState:UIControlStateNormal];
 
-    self.contentEdgeInsets = UIEdgeInsetsMake(0, kTrackButtonSidePadding, 0,
-                                              kTrackButtonSidePadding);
+    self.contentEdgeInsets =
+        UIEdgeInsetsMake(kTrackButtonTopPadding, kTrackButtonSidePadding,
+                         kTrackButtonTopPadding, kTrackButtonSidePadding);
   }
   return self;
 }
