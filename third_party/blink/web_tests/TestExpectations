@@ -4259,10 +4259,6 @@ crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 crbug.com/1288027 external/wpt/largest-contentful-paint/mouseover-heuristics-element.tentative.html [ Skip Timeout ]
 crbug.com/1288027 external/wpt/largest-contentful-paint/mouseover-heuristics-background.tentative.html [ Skip Timeout ]
 
-# Disable until further investigation.
-crbug.com/1404826 [ Linux ] virtual/scalefactor200/external/wpt/largest-contentful-paint/larger-text.html [ Failure Pass ]
-crbug.com/1404826 [ Mac ] virtual/scalefactor200/external/wpt/largest-contentful-paint/larger-text.html [ Failure Pass ]
-
 # Sheriff 2019-09-04
 crbug.com/1000396 [ Win ] media/video-remove-insert-repaints.html [ Failure Pass ]
 
