@@ -152,19 +152,6 @@ class InputMethodPrivateFinishComposingTextFunction : public ExtensionFunction {
                              INPUTMETHODPRIVATE_FINISHCOMPOSINGTEXT)
 };
 
-class InputMethodPrivateGetCompositionBoundsFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.getCompositionBounds",
-                             INPUTMETHODPRIVATE_GETCOMPOSITIONBOUNDS)
-
- protected:
-  ~InputMethodPrivateGetCompositionBoundsFunction() override = default;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
-
 class InputImeEventRouter {
  public:
   explicit InputImeEventRouter(Profile* profile);

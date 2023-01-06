@@ -1290,27 +1290,6 @@ InputMethodPrivateFinishComposingTextFunction::Run() {
                     : Error(InformativeError(error, static_function_name())));
 }
 
-ExtensionFunction::ResponseAction
-InputMethodPrivateGetCompositionBoundsFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine = GetEngineIfActive(
-      Profile::FromBrowserContext(browser_context()), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  base::Value::List bounds_list;
-  for (const auto& bounds : engine->composition_bounds()) {
-    base::Value::Dict bounds_value;
-    bounds_value.Set("x", bounds.x());
-    bounds_value.Set("y", bounds.y());
-    bounds_value.Set("w", bounds.width());
-    bounds_value.Set("h", bounds.height());
-    bounds_list.Append(std::move(bounds_value));
-  }
-
-  return RespondNow(WithArguments(std::move(bounds_list)));
-}
-
 void InputImeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
                                     const Extension* extension) {
   const std::vector<InputComponentInfo>* input_components =
