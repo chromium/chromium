@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -99,28 +100,6 @@ CreateTestBluetoothDevice(std::string address) {
 namespace ash {
 namespace quick_pair {
 
-class RetroactivePairingDetectorFakeBluetoothAdapter
-    : public testing::NiceMock<device::MockBluetoothAdapter> {
- public:
-  device::BluetoothDevice* GetDevice(const std::string& address) override {
-    for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address)
-        return it.get();
-    }
-
-    return nullptr;
-  }
-
-  void NotifyDevicePairedChanged(device::BluetoothDevice* device,
-                                 bool new_paired_status) {
-    device::BluetoothAdapter::NotifyDevicePairedChanged(device,
-                                                        new_paired_status);
-  }
-
- private:
-  ~RetroactivePairingDetectorFakeBluetoothAdapter() = default;
-};
-
 class RetroactivePairingDetectorTest
     : public AshTestBase,
       public RetroactivePairingDetector::Observer {
@@ -130,8 +109,7 @@ class RetroactivePairingDetectorTest
 
   void SetUp() override {
     AshTestBase::SetUp();
-    adapter_ =
-        base::MakeRefCounted<RetroactivePairingDetectorFakeBluetoothAdapter>();
+    adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
     pairer_broker_ = std::make_unique<MockPairerBroker>();
@@ -222,7 +200,7 @@ class RetroactivePairingDetectorTest
   bool retroactive_pair_found_ = false;
   scoped_refptr<Device> retroactive_device_;
 
-  scoped_refptr<RetroactivePairingDetectorFakeBluetoothAdapter> adapter_;
+  scoped_refptr<FakeBluetoothAdapter> adapter_;
   std::unique_ptr<PairerBroker> pairer_broker_;
   MockPairerBroker* mock_pairer_broker_ = nullptr;
 
