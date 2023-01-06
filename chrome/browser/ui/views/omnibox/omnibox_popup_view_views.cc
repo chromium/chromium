@@ -319,6 +319,11 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     // No matches or the IME is showing a popup window which may overlap
     // the omnibox popup window.  Close any existing popup.
     if (popup_) {
+      // Check whether omnibox should be not closed according to the UI
+      // DevTools settings.
+      if (!popup_->ShouldHandleNativeWidgetActivationChanged(false)) {
+        return;
+      }
       popup_->CloseAnimated();  // This will eventually delete the popup.
       popup_.reset();
       NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
