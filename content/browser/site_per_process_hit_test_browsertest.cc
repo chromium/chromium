@@ -6207,8 +6207,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // Tests that a <select>'s visibility is correctly computed and thus shows the
 // popup when clicked.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
+// TODO(crbug.com/1405317): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ScrolledMainFrameSelectInLongIframe \
+  DISABLED_ScrolledMainFrameSelectInLongIframe
+#else
+#define MAYBE_ScrolledMainFrameSelectInLongIframe \
+  ScrolledMainFrameSelectInLongIframe
+#endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
-                       ScrolledMainFrameSelectInLongIframe) {
+                       MAYBE_ScrolledMainFrameSelectInLongIframe) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_tall_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
