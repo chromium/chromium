@@ -82,7 +82,9 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   copyBookmark(id: string) {
-    return chrome.bookmarkManagerPrivate.copy([id]);
+    return new Promise<void>(resolve => {
+      chrome.bookmarkManagerPrivate.copy([id], resolve);
+    });
   }
 
   createFolder(parentId: string, title: string) {
@@ -90,7 +92,9 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   deleteBookmarks(ids: string[]) {
-    return chrome.bookmarkManagerPrivate.removeTrees(ids);
+    return new Promise<void>(resolve => {
+      chrome.bookmarkManagerPrivate.removeTrees(ids, resolve);
+    });
   }
 
   getActiveUrl() {
@@ -119,7 +123,9 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   pasteToBookmark(parentId: string, destinationId?: string) {
     const destination = destinationId ? [destinationId] : [];
-    return chrome.bookmarkManagerPrivate.paste(parentId, destination);
+    return new Promise<void>(resolve => {
+      chrome.bookmarkManagerPrivate.paste(parentId, destination, resolve);
+    });
   }
 
   renameBookmark(id: string, title: string) {

@@ -18,9 +18,7 @@ suite('<bookmarks-toolbar>', function() {
   let testCommandManager: TestCommandManager;
 
   suiteSetup(function() {
-    chrome.bookmarkManagerPrivate.removeTrees = function() {
-      return Promise.resolve();
-    };
+    chrome.bookmarkManagerPrivate.removeTrees = function() {};
   });
 
   setup(function() {

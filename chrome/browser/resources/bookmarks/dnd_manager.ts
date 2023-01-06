@@ -376,8 +376,9 @@ export class DndManager {
         trackUpdatedItems();
       }
 
-      chrome.bookmarkManagerPrivate.drop(dropInfo.parentId, index)
-          .then(shouldHighlight ? highlightUpdatedItems : undefined);
+      chrome.bookmarkManagerPrivate.drop(
+          dropInfo.parentId, index,
+          shouldHighlight ? highlightUpdatedItems : undefined);
     }
     this.clearDragData_();
   }

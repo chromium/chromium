@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, changeFolderOpen, DragInfo, DropPosition, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {BrowserProxyImpl, changeFolderOpen, DragInfo, DropPosition} from 'chrome://bookmarks/bookmarks.js';
 import {middleOfNode, topLeftOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
 import {TestTimerProxy} from './test_timer_proxy.js';
@@ -415,10 +414,7 @@ suite('drag and drop', function() {
     chrome.bookmarkManagerPrivate.drop = function(parentId, index) {
       dropParentId = parentId;
       dropIndex = index;
-      return Promise.resolve();
     };
-
-    setDebouncerForTesting();
 
     const dragElement = getListItem('13');
     const dragTarget = getListItem('12');
