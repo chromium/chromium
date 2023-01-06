@@ -37,6 +37,9 @@ export class SmartStickyMode {
   }
 
   static init() {
+    if (SmartStickyMode.instance) {
+      throw new Error('SmartStickyMode.init() should only be called once');
+    }
     SmartStickyMode.instance = new SmartStickyMode();
   }
 
@@ -125,8 +128,9 @@ export class SmartStickyMode {
    * we reset our internal state appropriately.
    * @param {!CursorRange} range The range when the sticky mode command was
    *     received.
+   * @private
    */
-  onStickyModeCommand(range) {
+  onStickyModeCommand_(range) {
     if (!this.didTurnOffStickyMode_) {
       return;
     }
@@ -152,6 +156,17 @@ export class SmartStickyMode {
     }
     this.ignoredNodeSubtree_ = editable;
   }
+
+  /** Toggles basic stickyMode on or off. */
+  toggle() {
+    ChromeVoxPrefs.instance.setAndAnnounceStickyPref(
+        !ChromeVoxPrefs.isStickyPrefOn);
+
+    if (ChromeVoxState.instance.currentRange) {
+      this.onStickyModeCommand_(ChromeVoxState.instance.currentRange);
+    }
+  }
+
 
   /**
    * @param {chrome.automation.AutomationNode} node

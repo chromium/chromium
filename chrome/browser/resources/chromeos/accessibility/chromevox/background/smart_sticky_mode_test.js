@@ -88,9 +88,9 @@ AX_TEST_F(
       // Mix in calls to turn on / off sticky mode while moving the range
       // around.
       this.assertDidTurnOffForNode(input);
-      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
+      this.ssm_.onStickyModeCommand_(CursorRange.fromNode(input));
       this.assertDidNotTurnOffForNode(input);
-      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
+      this.ssm_.onStickyModeCommand_(CursorRange.fromNode(input));
       this.assertDidNotTurnOffForNode(input);
       this.assertDidNotTurnOffForNode(input.firstChild);
       this.assertDidNotTurnOffForNode(p);
@@ -102,20 +102,20 @@ AX_TEST_F(
       // Mix in more sticky mode user commands and move to related nodes.
       this.assertDidTurnOffForNode(contenteditable);
       this.assertDidTurnOffForNode(ul2);
-      this.ssm_.onStickyModeCommand(CursorRange.fromNode(ul2));
+      this.ssm_.onStickyModeCommand_(CursorRange.fromNode(ul2));
       this.assertDidNotTurnOffForNode(ul2);
       this.assertDidNotTurnOffForNode(ul2.firstChild);
       this.assertDidNotTurnOffForNode(contenteditable);
-      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
+      this.ssm_.onStickyModeCommand_(CursorRange.fromNode(input));
       this.assertDidNotTurnOffForNode(ul2);
       this.assertDidNotTurnOffForNode(ul2.firstChild);
       this.assertDidNotTurnOffForNode(contenteditable);
 
       // Finally, verify sticky mode isn't impacted on non-editables.
       this.assertDidNotTurnOffForNode(p);
-      this.ssm_.onStickyModeCommand(CursorRange.fromNode(p));
+      this.ssm_.onStickyModeCommand_(CursorRange.fromNode(p));
       this.assertDidNotTurnOffForNode(p);
-      this.ssm_.onStickyModeCommand(CursorRange.fromNode(p));
+      this.ssm_.onStickyModeCommand_(CursorRange.fromNode(p));
       this.assertDidNotTurnOffForNode(p);
     });
 

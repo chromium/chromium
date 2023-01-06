@@ -128,7 +128,7 @@ export class CommandHandler extends CommandHandlerInterface {
         chrome.runtime.openOptionsPage();
         break;
       case Command.TOGGLE_STICKY_MODE:
-        this.toggleStickyMode_();
+        SmartStickyMode.instance.toggle();
         return false;
       case Command.PASS_THROUGH_MODE:
         ChromeVox.passThroughMode = true;
@@ -1831,17 +1831,6 @@ export class CommandHandler extends CommandHandlerInterface {
       return false;
     }
     return true;
-  }
-
-  /** @private */
-  toggleStickyMode_() {
-    ChromeVoxPrefs.instance.setAndAnnounceStickyPref(
-        !ChromeVoxPrefs.isStickyPrefOn);
-
-    if (ChromeVoxState.instance.currentRange) {
-      SmartStickyMode.instance.onStickyModeCommand(
-          ChromeVoxState.instance.currentRange);
-    }
   }
 
   /**
