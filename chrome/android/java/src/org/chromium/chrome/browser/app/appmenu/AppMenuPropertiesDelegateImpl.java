@@ -1074,11 +1074,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected void updateBookmarkMenuItemShortcut(
             MenuItem bookmarkMenuItemShortcut, @Nullable Tab currentTab, boolean fromCCT) {
-        if (!fromCCT && BookmarkFeatures.isBookmarkMenuItemAsDedicatedRowEnabled()) {
-            bookmarkMenuItemShortcut.setVisible(false);
-            return;
-        }
-
         if (!mBookmarkModelSupplier.hasValue() || currentTab == null) {
             // If the BookmarkModel still isn't available, assume the bookmark menu item is not
             // editable.
