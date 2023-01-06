@@ -60,6 +60,31 @@
     width: max-content;
   }
 
+  /* Two Column layout styles */
+  .two-column-layout {
+    display: flex;
+  }
+
+  .two-column-layout .left-column {
+    flex: 50%;
+  }
+
+  .two-column-layout .right-column {
+    align-items: flex-end;
+    display: flex;
+    flex: 50%;
+    flex-direction: column;
+  }
+
+  .two-column-layout .emoji-button {
+    border-radius: 8px;
+    display: block;
+    height: auto;
+    margin-bottom: 8px;
+   /* - 4px is to account for the gap displayed between adjacent visual content */
+    max-width: calc(100% - 4px);
+  }
+
   /* Heading styles */
   #heading {
     color: var(--cros-text-color-secondary);
@@ -226,23 +251,44 @@
   on-click="onEmojiClick"
   on-contextmenu="onEmojiContextMenu">
   <div id="fake-focus-target" tabindex="-1"></div>
-  <template is="dom-repeat" items="[[data]]">
-    <div class="emoji-button-container">
-      <button id="emoji-[[index]]" data-index$="[[index]]"
-        class$="emoji-button [[getEmojiButtonClassName(item)]]"
-        on-mouseenter="showTooltip" on-focus="showTooltip"
-        aria-label="[[getEmojiAriaLabel(item)]]">
-        [[getDisplayEmojiForEmoji(item.base.string)]]
-      </button>
-      <template is="dom-if"
-        if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
-        <emoji-variants
-          id="emoji-variant-[[index]]"
-          variants="[[item.alternates]]"
-          tooltip="[[item.base.name]]">
-        </emoji-variants>
+  <template is="dom-if" if="[[isVisual(category)]]">
+    <div class="left-column">
+      <template is="dom-repeat" items="[[filterColumn(data, 'left')]]">
+        <img class="emoji-button"
+          is="cr-auto-img"
+          auto-src$="[[getUrl(item)]]]"
+          alt$="[[item.base.name]]">
       </template>
     </div>
+    <div class="right-column">
+      <template is="dom-repeat" items="[[filterColumn(data, 'right')]]">
+        <img class="emoji-button"
+          is="cr-auto-img"
+          auto-src$="[[getUrl(item)]]"
+          alt$="[[item.base.name]]">
+      </template>
+    </div>
+  </template>
+  <template is="dom-repeat" items="[[data]]">
+      <template is="dom-if"
+        if="[[!isVisual(category)]]">
+        <div class="emoji-button-container">
+        <button id="emoji-[[index]]" data-index$="[[index]]"
+          class$="emoji-button [[getEmojiButtonClassName(item)]]"
+          on-mouseenter="showTooltip" on-focus="showTooltip"
+          aria-label="[[getEmojiAriaLabel(item)]]">
+          [[getDisplayEmojiForEmoji(item.base.string)]]
+        </button>
+        <template is="dom-if"
+          if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
+          <emoji-variants
+            id="emoji-variant-[[index]]"
+            variants="[[item.alternates]]"
+            tooltip="[[item.base.name]]">
+          </emoji-variants>
+        </template>
+        </div>
+      </template>
   </template>
   <paper-tooltip id='tooltip' fit-to-visible-bounds offset="8">
     [[focusedEmoji.base.name]]

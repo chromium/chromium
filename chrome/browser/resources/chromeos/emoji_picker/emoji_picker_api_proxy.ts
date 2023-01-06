@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
-import {GifSubcategoryData} from './types.js';
+import {GifSubcategoryData, TenorGifResults} from './types.js';
 
 /** @interface */
 export interface EmojiPickerApiProxy {
@@ -16,24 +16,9 @@ export interface EmojiPickerApiProxy {
 
   getCategories(): Promise<{categories: GifSubcategoryData[]}>;
 
-  getFeaturedGifs(pos?: string): Promise<{featured: Results}>;
+  getFeaturedGifs(pos?: string): Promise<{featured: TenorGifResults}>;
 
-  searchGifs(query: string, pos?: string): Promise<{gifs: Results}>;
-}
-
-interface Gif {
-  url: {gif: string, gifpreview: string};
-  previewDims: {
-    // dimensions of the gif preview for the height balancing algorithm
-    width: number,
-    height: number,
-  };
-  contentDescription: string;  // for user accessibility features
-}
-
-export interface Results {
-  next: string;
-  results: Gif[];
+  searchGifs(query: string, pos?: string): Promise<{gifs: TenorGifResults}>;
 }
 
 // https://developers.google.com/tenor/guides/response-objects-and-errors#category-object
@@ -99,7 +84,7 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     };
   }
 
-  private formatGifResults = (res: string): Results => {
+  private formatGifResults = (res: string): TenorGifResults => {
     const gifs = JSON.parse(res);
     return {
       next: gifs.next,
@@ -107,16 +92,16 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
         const {gif, mediumgif} = response.media_formats;
         const [width, height] = mediumgif.dims;
         return {
-          url: {gif: gif.url, gifpreview: mediumgif.url},
-          preview_dims: {width, height},
-          content_description: response.content_description,
+          url: {full: gif.url, preview: mediumgif.url},
+          previewDims: {width, height},
+          contentDescription: response.content_description,
         };
       }),
     };
   };
 
   /** @override */
-  async getFeaturedGifs(pos?: string): Promise<{featured: Results}> {
+  async getFeaturedGifs(pos?: string): Promise<{featured: TenorGifResults}> {
     const {featured} = await this.handler.getFeaturedGifs(pos || null);
     return {
       featured: this.formatGifResults(featured),
@@ -124,7 +109,8 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   }
 
   /** @override */
-  async searchGifs(query: string, pos?: string): Promise<{gifs: Results}> {
+  async searchGifs(query: string, pos?: string):
+      Promise<{gifs: TenorGifResults}> {
     const {gifs} = await this.handler.searchGifs(query, pos || null);
     return {
       gifs: this.formatGifResults(gifs),

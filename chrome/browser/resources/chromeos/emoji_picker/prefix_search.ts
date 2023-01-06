@@ -22,6 +22,9 @@ export class EmojiPrefixSearch {
   setCollection(collection: EmojiVariants[]) {
     this.clear();
     for (const record of collection) {
+      if (!record.base.string) {
+        continue;
+      }
       const string = record.base.string;
       const name = record.base.name;
       const terms = this.tokenize(name).map(term => sanitize(term));

@@ -14,18 +14,28 @@ import {getTemplate} from './emoji_group.html.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_VARIANTS_SHOWN, EmojiButtonClickEvent, EmojiClearRecentClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
-// Note - these names are used directly in CSS.
+// Note - grid-layout and flex-layout names are used directly in CSS.
 export enum EmojiGroupLayoutType {
   GRID_LAYOUT = 'grid-layout',
   FLEX_LAYOUT = 'flex-layout',
+  TWO_COLUMN_LAYOUT = 'two-column-layout',
+}
+
+enum SideEnum {
+  LEFT = 'left',
+  RIGHT = 'right',
 }
 
 const DEFAULT_CATEGORY_LAYOUTS = {
   [CategoryEnum.EMOJI]: EmojiGroupLayoutType.GRID_LAYOUT,
   [CategoryEnum.EMOTICON]: EmojiGroupLayoutType.FLEX_LAYOUT,
   [CategoryEnum.SYMBOL]: EmojiGroupLayoutType.GRID_LAYOUT,
-  [CategoryEnum.GIF]: EmojiGroupLayoutType.FLEX_LAYOUT,
+  [CategoryEnum.GIF]: EmojiGroupLayoutType.TWO_COLUMN_LAYOUT,
 };
+
+// TODO(b/264337053) Pass in the calculated value from .two-column-layout
+// .emoji-button max-width instead of hardcoding it as a constant value of 186px
+const DEFAULT_VISUAL_CONTENT_WIDTH = 186;
 
 export interface EmojiGroupComponent {
   $: {
@@ -147,16 +157,18 @@ export class EmojiGroupComponent extends PolymerElement {
       return;
     }
 
-    const text = this.getDisplayEmojiForEmoji(emoji.base.string);
+    if (emoji.base.string) {
+      const text = this.getDisplayEmojiForEmoji(emoji.base.string);
 
-    this.dispatchEvent(createCustomEvent(EMOJI_BUTTON_CLICK, {
-      text: text,
-      isVariant: text !== emoji.base.string,
-      baseEmoji: emoji.base.string,
-      allVariants: emoji.alternates,
-      name: emoji.base.name,
-      category: this.category,
-    }));
+      this.dispatchEvent(createCustomEvent(EMOJI_BUTTON_CLICK, {
+        text: text,
+        isVariant: text !== emoji.base.string,
+        baseEmoji: emoji.base.string,
+        allVariants: emoji.alternates,
+        name: emoji.base.name,
+        category: this.category,
+      }));
+    }
   }
 
   /**
@@ -236,14 +248,17 @@ export class EmojiGroupComponent extends PolymerElement {
   private getEmojiAriaLabel(emoji: EmojiVariants): string {
     // TODO(crbug/1227852): Just use emoji as the tooltip once ChromeVox can
     // announce them properly.
-    const emojiLabel = this.isLangEnglish ?
-        emoji.base.name :
-        this.getDisplayEmojiForEmoji(emoji.base.string);
-    if (emoji.alternates && emoji.alternates.length > 0) {
-      return emojiLabel + ' with variants.';
-    } else {
-      return emojiLabel;
+    if (emoji.base.string) {
+      const emojiLabel = this.isLangEnglish ?
+          emoji.base.name :
+          this.getDisplayEmojiForEmoji(emoji.base.string);
+      if (emoji.alternates && emoji.alternates.length > 0) {
+        return emojiLabel + ' with variants.';
+      } else {
+        return emojiLabel;
+      }
     }
+    return '';
   }
 
   /**
@@ -290,6 +305,54 @@ export class EmojiGroupComponent extends PolymerElement {
   firstEmojiButton(): HTMLElement|null {
     // !. is safe for shadowRoot as it always exists
     return this.shadowRoot!.querySelector<HTMLElement>('.emoji-button');
+  }
+
+  /**
+   * Returns whether the given element group is visual or not.
+   */
+  isVisual(category: CategoryEnum): boolean {
+    return category === CategoryEnum.GIF;
+  }
+
+  /**
+   * Filters visual content to be displayed in the given column based on '
+   * the height of the given column.
+   */
+  // TODO(b/264493836) This function works with displaying one set of GIFs.
+  // It may need to be changed when loading and displaying several sets of
+  // GIFs (i.e. when infinite scrolling is implemented).
+  filterColumn(data: EmojiVariants[], columnSide: SideEnum): EmojiVariants[] {
+    let leftColHeight = 0;
+    let rightColHeight = 0;
+
+    const colData = data.filter((item) => {
+      if (item.base.visualContent) {
+        const contentHeight = item.base.visualContent.previewDims.height *
+            DEFAULT_VISUAL_CONTENT_WIDTH /
+            item.base.visualContent.previewDims.width;
+
+        // Filter visual content to be displayed in the given column if it's
+        // currently the shortest
+        if (leftColHeight <= rightColHeight) {
+          leftColHeight += contentHeight;
+          return columnSide === SideEnum.LEFT;
+        } else {
+          rightColHeight += contentHeight;
+          return columnSide === SideEnum.RIGHT;
+        }
+      }
+
+      return false;
+    });
+
+    return colData;
+  }
+
+  /**
+   * Returns visual content preview url.
+   */
+  getUrl(item: EmojiVariants): string|undefined {
+    return item.base.visualContent?.url.preview;
   }
 }
 

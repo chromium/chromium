@@ -21,9 +21,9 @@ import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
-import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
+import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData, VisualContent} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -43,6 +43,7 @@ export class EmojiPicker extends PolymerElement {
         ],
         [CategoryEnum.EMOTICON]: ['/emoticon_ordering.json'],
         [CategoryEnum.SYMBOL]: ['/symbol_ordering.json'],
+        // GIFs are not preloaded hence the empty data url.
         [CategoryEnum.GIF]: [''],
       },
     };
@@ -66,6 +67,7 @@ export class EmojiPicker extends PolymerElement {
       searchExtensionEnabled: {type: Boolean, value: false},
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
+      gifDataInitialised: {type: Boolean, value: false},
     };
   }
   private category: CategoryEnum;
@@ -89,6 +91,7 @@ export class EmojiPicker extends PolymerElement {
   private autoScrollingToGroup: boolean;
   private highlightBarMoving: boolean;
   private groupTabsMoving: boolean;
+  private gifDataInitialised: boolean;
 
   constructor() {
     super();
@@ -288,6 +291,36 @@ export class EmojiPicker extends PolymerElement {
                   );
         },
     );
+
+    if (this.gifSupport) {
+      // Fetch GIF data
+      prevFetchPromise = prevFetchPromise.then(async () => {
+        const {categories} = await this.apiProxy.getCategories();
+        const categoryTabs = {
+          ...CATEGORY_TABS,
+          gif: [{name: '#TRENDING'}, ...categories],
+        };
+        this.allCategoryTabs = gifCategoryTabs(categoryTabs);
+
+        const {featured} = await this.apiProxy.getFeaturedGifs();
+        const trendingGifs = [{
+          group: '#TRENDING',
+          category: CategoryEnum.GIF,
+          emoji:
+              featured.results.map((visualContent: VisualContent) => ({
+                                     base: {
+                                       visualContent,
+                                       name: visualContent.contentDescription,
+                                     },
+                                     alternates: [],
+                                   })),
+        }];
+
+        this.gifDataInitialised = true;
+
+        this.updateCategoryData(trendingGifs, CategoryEnum.GIF);
+      });
+    }
   }
 
   setActiveFeatures(featureList: Feature[]) {
@@ -331,7 +364,10 @@ export class EmojiPicker extends PolymerElement {
 
     // Create recently used emoji group for the category as its first
     // group element.
-    const startIndex = TABS_CATEGORY_START_INDEX.get(category);
+    const startIndexes = this.gifSupport ?
+        TABS_CATEGORY_START_INDEX_GIF_SUPPORT :
+        TABS_CATEGORY_START_INDEX;
+    const startIndex = startIndexes.get(category);
     if (startIndex === this.categoriesGroupElements.length) {
       const historyGroupElement = this.createEmojiGroupElement(
           this.getHistoryEmojis(category), {}, true, startIndex);
@@ -848,6 +884,7 @@ export class EmojiPicker extends PolymerElement {
       'preferences': preferences,
       'isHistory': isHistory,
     };
+
     return (
         Object.assign({}, baseDetails, this.allCategoryTabs[subcategoryIndex]));
   }
@@ -940,23 +977,12 @@ export class EmojiPicker extends PolymerElement {
     });
   }
 
-  async onCategoryButtonClick(newCategory: CategoryEnum) {
-    // Only run this once when the user first clicks the GIF section in the
-    // emoji picker, to do this check whether the gif categories have been
-    // inserted into allCategoryTabs
-    if (newCategory === CategoryEnum.GIF &&
-        this.allCategoryTabs.every(
-            (subCategoryData) =>
-                subCategoryData.category !== CategoryEnum.GIF)) {
-      const {categories} = await this.apiProxy.getCategories();
-      const categoryTabs = {
-        ...CATEGORY_TABS,
-        gif: categories,
-      };
-      this.allCategoryTabs = gifCategoryTabs(categoryTabs);
-
-      const {featured} = await this.apiProxy.getFeaturedGifs();
-      console.warn(featured);
+  onCategoryButtonClick(newCategory: CategoryEnum) {
+    // TODO(b/264485361): Change the below if statement so that some sort of
+    // indication that GIFs are still loading appears on the Emoji Picker
+    // instead of not allowing the user to change to the GIF section
+    if (newCategory === CategoryEnum.GIF && !this.gifDataInitialised) {
+      return;
     }
 
     this.set('category', newCategory);

@@ -173,6 +173,11 @@ export const SUBCATEGORY_TABS = makeGroupTabs(
     CATEGORY_TABS,
 );
 
+const SUBCATEGORY_TABS_GIF_SUPPORT = makeGroupTabs(
+    GIF_CATEGORY_METADATA.map(item => item.name),
+    CATEGORY_TABS,
+);
+
 export const gifCategoryTabs =
     (categories: Record<string, GifSubcategoryData[]>) => makeGroupTabs(
         GIF_CATEGORY_METADATA.map(item => item.name),
@@ -183,6 +188,11 @@ export const gifCategoryTabs =
 export const TABS_CATEGORY_START_INDEX: Map<CategoryEnum, number> = new Map(
     SUBCATEGORY_TABS.map((item, index) => [item.category, index] as const)
         .reverse());
+
+export const TABS_CATEGORY_START_INDEX_GIF_SUPPORT: Map<CategoryEnum, number> =
+    new Map(SUBCATEGORY_TABS_GIF_SUPPORT
+                .map((item, index) => [item.category, index] as const)
+                .reverse());
 
 export const EMOJI_GROUP_TABS =
     makeGroupTabs([CategoryEnum.EMOJI], CATEGORY_TABS);

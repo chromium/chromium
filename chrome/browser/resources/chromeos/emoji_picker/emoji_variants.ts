@@ -18,7 +18,7 @@ const FAMILY = '👪';               // U+1F46A FAMILY
  * the given codepoint.
  */
 function hasVariation(variants: Emoji[], codepoint: string): boolean {
-  return variants.findIndex(x => x.string.includes(codepoint)) !== -1;
+  return variants.findIndex(x => x.string?.includes(codepoint)) !== -1;
 }
 
 
