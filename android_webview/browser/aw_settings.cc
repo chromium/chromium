@@ -347,7 +347,11 @@ void AwSettings::UpdateMixedContentModeLocked(
       Java_AwSettings_getMixedContentMode(env, obj));
 }
 
-void AwSettings::PrimaryPageChanged(content::Page& page) {
+void AwSettings::RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                        content::RenderFrameHost* new_host) {
+  if (!new_host->IsInPrimaryMainFrame())
+    return;
+
   UpdateEverything();
 }
 
