@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/webauthn_dialog_view_impl.h"
+#include "chrome/browser/ui/views/autofill/payments/webauthn_dialog_view.h"
 
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
@@ -20,9 +20,8 @@
 
 namespace autofill {
 
-WebauthnDialogViewImpl::WebauthnDialogViewImpl(
-    WebauthnDialogController* controller,
-    WebauthnDialogState dialog_state)
+WebauthnDialogView::WebauthnDialogView(WebauthnDialogController* controller,
+                                       WebauthnDialogState dialog_state)
     : controller_(controller) {
   SetShowTitle(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -46,7 +45,7 @@ WebauthnDialogViewImpl::WebauthnDialogViewImpl(
                  : ui::DIALOG_BUTTON_CANCEL);
 }
 
-WebauthnDialogViewImpl::~WebauthnDialogViewImpl() {
+WebauthnDialogView::~WebauthnDialogView() {
   model_->RemoveObserver(this);
   if (controller_) {
     controller_->OnDialogClosed();
@@ -55,21 +54,20 @@ WebauthnDialogViewImpl::~WebauthnDialogViewImpl() {
 }
 
 // static
-WebauthnDialogView* WebauthnDialogView::CreateAndShow(
+WebauthnDialog* WebauthnDialog::CreateAndShow(
     WebauthnDialogController* controller,
     WebauthnDialogState dialog_state) {
-  WebauthnDialogViewImpl* dialog =
-      new WebauthnDialogViewImpl(controller, dialog_state);
+  WebauthnDialogView* dialog = new WebauthnDialogView(controller, dialog_state);
   constrained_window::ShowWebModalDialogViews(dialog,
                                               controller->GetWebContents());
   return dialog;
 }
 
-WebauthnDialogModel* WebauthnDialogViewImpl::GetDialogModel() const {
+WebauthnDialogModel* WebauthnDialogView::GetDialogModel() const {
   return model_;
 }
 
-void WebauthnDialogViewImpl::OnDialogStateChanged() {
+void WebauthnDialogView::OnDialogStateChanged() {
   switch (model_->dialog_state()) {
     case WebauthnDialogState::kInactive:
       Hide();
@@ -85,13 +83,13 @@ void WebauthnDialogViewImpl::OnDialogStateChanged() {
   }
 }
 
-bool WebauthnDialogViewImpl::Accept() {
+bool WebauthnDialogView::Accept() {
   DCHECK_EQ(model_->dialog_state(), WebauthnDialogState::kOffer);
   controller_->OnOkButtonClicked();
   return false;
 }
 
-bool WebauthnDialogViewImpl::Cancel() {
+bool WebauthnDialogView::Cancel() {
   if (model_->dialog_state() == WebauthnDialogState::kOffer ||
       model_->dialog_state() == WebauthnDialogState::kOfferPending ||
       model_->dialog_state() == WebauthnDialogState::kVerifyPending) {
@@ -101,17 +99,16 @@ bool WebauthnDialogViewImpl::Cancel() {
   return true;
 }
 
-bool WebauthnDialogViewImpl::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
+bool WebauthnDialogView::IsDialogButtonEnabled(ui::DialogButton button) const {
   return button == ui::DIALOG_BUTTON_OK ? model_->IsAcceptButtonEnabled()
                                         : true;
 }
 
-std::u16string WebauthnDialogViewImpl::GetWindowTitle() const {
+std::u16string WebauthnDialogView::GetWindowTitle() const {
   return model_->GetStepTitle();
 }
 
-void WebauthnDialogViewImpl::Hide() {
+void WebauthnDialogView::Hide() {
   // Reset controller reference if the controller has been destroyed before the
   // view being destroyed. This happens if browser window is closed when the
   // dialog is visible.
@@ -122,7 +119,7 @@ void WebauthnDialogViewImpl::Hide() {
   GetWidget()->Close();
 }
 
-void WebauthnDialogViewImpl::RefreshContent() {
+void WebauthnDialogView::RefreshContent() {
   sheet_view_->ReInitChildViews();
   sheet_view_->InvalidateLayout();
   SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->GetAcceptButtonLabel());
@@ -145,7 +142,7 @@ void WebauthnDialogViewImpl::RefreshContent() {
   }
 }
 
-BEGIN_METADATA(WebauthnDialogViewImpl, views::DialogDelegateView)
+BEGIN_METADATA(WebauthnDialogView, views::DialogDelegateView)
 END_METADATA
 
 }  // namespace autofill

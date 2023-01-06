@@ -13,11 +13,11 @@
 namespace autofill {
 
 class WebauthnDialogModel;
-class WebauthnDialogView;
+class WebauthnDialog;
 enum class WebauthnDialogState;
 
 // Implementation of the per-outermost primary page controller to control the
-// WebauthnDialogView. Lazily initialized when used.
+// WebauthnDialog. Lazily initialized when used.
 class WebauthnDialogControllerImpl
     : public WebauthnDialogController,
       public content::PageUserData<WebauthnDialogControllerImpl> {
@@ -40,7 +40,7 @@ class WebauthnDialogControllerImpl
   void OnDialogClosed() override;
   content::WebContents* GetWebContents() override;
 
-  WebauthnDialogView* dialog_view() { return dialog_view_; }
+  WebauthnDialog* dialog() { return dialog_; }
 
  protected:
   explicit WebauthnDialogControllerImpl(content::Page& page);
@@ -55,7 +55,7 @@ class WebauthnDialogControllerImpl
   AutofillClient::WebauthnDialogCallback callback_;
 
   raw_ptr<WebauthnDialogModel> dialog_model_ = nullptr;
-  raw_ptr<WebauthnDialogView> dialog_view_ = nullptr;
+  raw_ptr<WebauthnDialog> dialog_ = nullptr;
 
   PAGE_USER_DATA_KEY_DECL();
 };

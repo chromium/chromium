@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_IMPL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model_observer.h"
-#include "chrome/browser/ui/autofill/payments/webauthn_dialog_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -18,18 +18,18 @@ namespace autofill {
 class WebauthnDialogController;
 class WebauthnDialogModel;
 
-class WebauthnDialogViewImpl : public WebauthnDialogView,
-                               public WebauthnDialogModelObserver,
-                               public views::DialogDelegateView {
+class WebauthnDialogView : public WebauthnDialog,
+                           public WebauthnDialogModelObserver,
+                           public views::DialogDelegateView {
  public:
-  METADATA_HEADER(WebauthnDialogViewImpl);
-  WebauthnDialogViewImpl(WebauthnDialogController* controller,
-                         WebauthnDialogState dialog_state);
-  WebauthnDialogViewImpl(const WebauthnDialogViewImpl&) = delete;
-  WebauthnDialogViewImpl& operator=(const WebauthnDialogViewImpl&) = delete;
-  ~WebauthnDialogViewImpl() override;
+  METADATA_HEADER(WebauthnDialogView);
+  WebauthnDialogView(WebauthnDialogController* controller,
+                     WebauthnDialogState dialog_state);
+  WebauthnDialogView(const WebauthnDialogView&) = delete;
+  WebauthnDialogView& operator=(const WebauthnDialogView&) = delete;
+  ~WebauthnDialogView() override;
 
-  // WebauthnDialogView:
+  // WebauthnDialog:
   WebauthnDialogModel* GetDialogModel() const override;
 
   // WebauthnDialogModelObserver:
@@ -59,4 +59,4 @@ class WebauthnDialogViewImpl : public WebauthnDialogView,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_H_
