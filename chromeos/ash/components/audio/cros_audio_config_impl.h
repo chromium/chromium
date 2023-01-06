@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetOutputMuted(bool muted) override;
   void SetOutputVolumePercent(int8_t volume) override;
   void SetActiveDevice(uint64_t device_id) override;
+  void SetInputMuted(bool muted) override;
 
   // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;

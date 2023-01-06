@@ -134,6 +134,11 @@ class CrosAudioConfigImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SimulateSetInputMuted(bool muted) {
+    remote_->SetInputMuted(muted);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetOutputVolumePercent(uint8_t volume_percent) {
     remote_->SetOutputVolumePercent(volume_percent);
     base::RunLoop().RunUntilIdle();
@@ -646,6 +651,38 @@ TEST_F(CrosAudioConfigImplTest, SetOutputMuted) {
       fake_observer->last_audio_system_properties_.value()->output_mute_state);
   EXPECT_FALSE(GetDeviceMuted(kInternalSpeakerId));
   EXPECT_FALSE(GetDeviceMuted(kHDMIOutputId));
+}
+
+TEST_F(CrosAudioConfigImplTest, SetInputMuted) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  SetAudioNodes({kInternalSpeaker, kMicJack});
+  ASSERT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  SimulateSetInputMuted(/*muted=*/true);
+  ASSERT_EQ(
+      mojom::MuteState::kMutedByUser,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  SimulateSetInputMuted(/*muted=*/false);
+  ASSERT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  // Simulate turning physical switch on.
+  SetInputMuteState(mojom::MuteState::kMutedExternally, /*switch_on=*/true);
+
+  // Simulate changing mute state while physical switch on.
+  SimulateSetInputMuted(/*muted=*/true);
+  ASSERT_EQ(
+      mojom::MuteState::kMutedExternally,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  SimulateSetInputMuted(/*muted=*/false);
+  ASSERT_EQ(
+      mojom::MuteState::kMutedExternally,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
 }
 
 }  // namespace ash::audio_config

@@ -155,6 +155,12 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
       CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
 }
 
+void CrosAudioConfigImpl::SetInputMuted(bool muted) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  audio_handler->SetMuteForDevice(audio_handler->GetPrimaryActiveInputNode(),
+                                  muted);
+}
+
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,
                                                     int volume) {
   NotifyObserversAudioSystemPropertiesChanged();

@@ -107,7 +107,6 @@ export function createAudioDevice(
 }
 
 export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
-  setInputMuted(muted: boolean): void;
   setInputVolumePercent(percent: number): void;
   setNoiseCancellationEnabled(enabled: boolean): void;
 }

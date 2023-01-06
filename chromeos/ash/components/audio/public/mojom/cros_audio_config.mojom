@@ -112,4 +112,8 @@ interface CrosAudioConfig {
   // Updates active output or input device based on the audio device ID
   // provided.
   SetActiveDevice(uint64 device);
+
+  // Sets mute state for primary input device if device is not muted by physical
+  // switch.
+  SetInputMuted(bool muted);
 };
