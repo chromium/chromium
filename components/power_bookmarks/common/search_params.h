@@ -6,6 +6,7 @@
 #define COMPONENTS_POWER_BOOKMARKS_COMMON_SEARCH_PARAMS_H_
 
 #include <string>
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
 namespace power_bookmarks {
 
@@ -15,6 +16,10 @@ struct SearchParams {
   // Specifies a plain text query that will be matched against the contents of
   // powers. The exact semantics of matching depend on the power type.
   std::string query;
+
+  // Unless equal to POWER_TYPE_UNSPECIFIED, narrows the search to a single
+  // power type.
+  sync_pb::PowerBookmarkSpecifics::PowerType power_type;
 };
 
 }  // namespace power_bookmarks

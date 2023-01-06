@@ -67,11 +67,12 @@ bool CheckIfPowerWithIdExists(sql::Database* db, const base::GUID& guid) {
   return count > 0;
 }
 
-bool MatchesSearchParams(const sync_pb::PowerBookmarkSpecifics& specifics,
-                         const SearchParams& search_params) {
-  if (search_params.query.empty())
+bool MatchesSearchQuery(const sync_pb::PowerBookmarkSpecifics& specifics,
+                        const std::string& query) {
+  if (query.empty()) {
     return true;
-  std::string pattern = base::StrCat({"*", search_params.query, "*"});
+  }
+  std::string pattern = base::StrCat({"*", query, "*"});
   if (base::MatchPattern(specifics.url(), pattern))
     return true;
 
@@ -89,6 +90,18 @@ bool MatchesSearchParams(const sync_pb::PowerBookmarkSpecifics& specifics,
   return false;
 }
 
+bool MatchesSearchParams(const sync_pb::PowerBookmarkSpecifics& specifics,
+                         const SearchParams& search_params) {
+  if (search_params.power_type !=
+          sync_pb::PowerBookmarkSpecifics_PowerType_POWER_TYPE_UNSPECIFIED &&
+      search_params.power_type != specifics.power_type()) {
+    return false;
+  }
+  if (!MatchesSearchQuery(specifics, search_params.query)) {
+    return false;
+  }
+  return true;
+}
 }  // namespace
 
 PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(

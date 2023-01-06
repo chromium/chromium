@@ -587,6 +587,36 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForSearchParamsMatchNoteText) {
                             GURL("https://example.com/a1.html")));
 }
 
+TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForSearchParamsMatchType) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"),
+                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK)));
+
+  {
+    std::unique_ptr<sync_pb::PowerEntity> note_specifics =
+        std::make_unique<sync_pb::PowerEntity>();
+    note_specifics->mutable_note_entity()->set_plain_text("lorem ipsum");
+    EXPECT_TRUE(pbdb->CreatePower(
+        MakePower(GURL("https://example.com/a2.html"),
+                  sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
+                  std::move(note_specifics))));
+  }
+
+  SearchParams search_params{
+      .power_type = sync_pb::PowerBookmarkSpecifics_PowerType_POWER_TYPE_MOCK};
+  std::vector<std::unique_ptr<Power>> search_results =
+      pbdb->GetPowersForSearchParams(search_params);
+
+  EXPECT_EQ(1u, search_results.size());
+  EXPECT_TRUE(ContainsPower(search_results,
+                            sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK,
+                            GURL("https://example.com/a1.html")));
+}
+
 TEST_F(PowerBookmarkDatabaseImplTest, DeletePower) {
   std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
