@@ -453,6 +453,7 @@
 <translation id="4420409367264901497">編輯書籤</translation>
 <translation id="4442550905108052454">開啟「設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">新增語言</translation>
+<translation id="4461286950227634995">顯示儲存密碼的選項</translation>
 <translation id="4462491365653392320">在分頁上追蹤價格</translation>
 <translation id="4469418912670346607">繼續設定</translation>
 <translation id="4474494258097106883">專為 iPhone 而設</translation>
@@ -468,6 +469,7 @@
 <translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
 <translation id="457386861538956877">更多語言…</translation>
+<translation id="4587589328781138893">網站</translation>
 <translation id="4588014171431912783">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看您可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">鍵盤</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
@@ -875,7 +877,6 @@
 <translation id="7438481509621345350">您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="7454057999980797137">州/縣</translation>
 <translation id="7459628154744868585">已開啟「強化保護功能」</translation>
-<translation id="7464701184726199289">這會清除所有裝置上已同步的資料。系統不會刪除已儲存的網站設定，這可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
@@ -959,7 +960,6 @@
 <translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8073670137947914548">下載完畢</translation>
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
-<translation id="8076014560081431679">系統不會刪除已儲存的網站設定，這可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">呢個設定已經受管理，㩒兩下就可以了解詳情</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>

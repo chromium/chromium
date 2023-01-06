@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">Dispositivi disponibili</translation>
 <translation id="1042174272890264476">Sul computer è integrata anche la libreria RLZ di <ph name="SHORT_PRODUCT_NAME" />. RLZ assegna un tag non univoco che non consente l'identificazione personale per valutare le ricerche e l'utilizzo di <ph name="SHORT_PRODUCT_NAME" /> promosso da una determinata campagna promozionale. Talvolta queste etichette vengono visualizzate in query della Ricerca Google in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Si è verificato un errore. L'upgrade di Linux potrebbe essere stato solo parziale. Per ulteriori informazioni, controlla i log salvati in File &gt; I miei file &gt; <ph name="LOG_FILE" />.</translation>
-<translation id="1043818413152647937">Vuoi cancellare anche i dati di queste app?</translation>
 <translation id="104419033123549300">Stile mappa dei tasti</translation>
 <translation id="104710386808485638">Riavviare Linux?</translation>
 <translation id="1047431265488717055">Copia testo del lin&amp;k</translation>
@@ -2011,7 +2010,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2785267875302712148">Controllo password</translation>
 <translation id="2785873697295365461">Descrittori di file</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">Mantieni dati di navigazione locali (preferiti, password, cronologia e così via)</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>

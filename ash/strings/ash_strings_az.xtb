@@ -239,6 +239,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2224075387478458881">Qorunan məzmun görünəndə ekranın yazılmasına icazə verilmir</translation>
 <translation id="2227179592712503583">Təklifi silin</translation>
 <translation id="225680501294068881">Cihazlar axtarılır...</translation>
+<translation id="225716114209817872">Maksimum</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> faylını endirkən xəta baş verdi</translation>
 <translation id="2258734398699965611">Təklif edilən fayllar</translation>
 <translation id="2268130516524549846">Bluetooth deaktiv edildi</translation>
@@ -507,6 +508,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3713734891607377840">Tamamlandıqda açın</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> və daha <ph name="UNAVAILABLE_APPS_COUNT" /> tətbiq bu cihazda yoxdur.</translation>
 <translation id="3735740477244556633">Çeşidləyin</translation>
+<translation id="3738664582935948253">İndi ekran qeydlərində klikləri və klaviatura qısayollarını göstərə bilərsiniz</translation>
 <translation id="3742055079367172538">Skrinşot çəkildi</translation>
 <translation id="3765841986579723851">Bugün redaktə edilib</translation>
 <translation id="3773700760453577392">Administrator <ph name="USER_EMAIL" /> üçün çoxsaylı girişə icazə verməyib. Bütün istifadəçilər davam etmək üçün çıxış etməlidir.</translation>
@@ -1013,6 +1015,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6537924328260219877">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Telefonun Batareyası <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> endirməsi skanlanır</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ilə paylaşılır</translation>
+<translation id="6548693220024099658">Arxa Fon Bulanıqlığı</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Yeni quraşdırma</translation>
 <translation id="6559976592393364813">Administrator ilə Əlaqə</translation>
@@ -1419,6 +1422,7 @@ Yeni quraşdırma</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Quraşdırılmış Tətbiq, Bloklanıb</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> şəbəkəsinə qoşulun</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Güclü</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> qovluğu</translation>
 <translation id="880709030178078220">"Yardım"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

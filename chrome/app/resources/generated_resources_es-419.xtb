@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">Dispositivos disponibles</translation>
 <translation id="1042174272890264476">Tu computadora también tiene la biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" /> incorporada. RLZ asigna una etiqueta identificable, no exclusiva y no personal para medir las búsquedas y el uso de <ph name="SHORT_PRODUCT_NAME" /> impulsados por una determinada campaña de promoción. Estas etiquetas aparecen a veces en las consultas de la Búsqueda de Google en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Se produjo un error. Solo se puede actualizar Linux de manera parcial. Consulta los registros para obtener más información. Los registros se guardaron en Archivos &gt; Mis archivos &gt; <ph name="LOG_FILE" /></translation>
-<translation id="1043818413152647937">¿También quieres borrar los datos de estas apps?</translation>
 <translation id="104419033123549300">Estilo de mapa de teclas</translation>
 <translation id="104710386808485638">¿Quieres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar texto del vínculo</translation>
@@ -2008,7 +2007,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
 <translation id="2785873697295365461">Descriptores de archivo</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">Conservar los datos de navegación locales (favoritos, contraseñas, historial, etc.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Aceptar</translation>

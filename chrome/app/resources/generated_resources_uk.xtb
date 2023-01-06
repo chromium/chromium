@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">Доступні пристрої</translation>
 <translation id="1042174272890264476">Ваш комп’ютер також має вбудовану бібліотеку RLZ у <ph name="SHORT_PRODUCT_NAME" />. Параметр RLZ призначає неунікальний тег, який не містить особисті дані, проте дозволяє вимірювати пошуки й користування <ph name="SHORT_PRODUCT_NAME" /> у рамках певної рекламної кампанії. Ці мітки інколи з’являються в пошукових запитах Google у <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Сталася помилка. Можливо, Linux оновлено лише частково. Щоб дізнатися більше, перегляньте журнали в папці "Файли" &gt; "Мої файли" &gt; <ph name="LOG_FILE" /></translation>
-<translation id="1043818413152647937">Видалити дані з цих додатків?</translation>
 <translation id="104419033123549300">Стиль карти клавіш</translation>
 <translation id="104710386808485638">Перезапустити Linux?</translation>
 <translation id="1047431265488717055">Копіювати те&amp;кст посилання</translation>
@@ -1253,6 +1252,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> сховано</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="2110941575868943054">Дозволено шукати пристрої з Bluetooth</translation>
+<translation id="2111158890826137380">Сталася помилка. Надішліть відгук і додайте в його опис хештег #bruschetta. Код помилки: <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">Очистити типи</translation>
 <translation id="2111670510994270194">Нова вкладка праворуч</translation>
 <translation id="2112554630428445878">Вітаємо, <ph name="USERNAME" /></translation>
@@ -1797,6 +1797,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{Цей пристрій буде збережено на 1 рік. Наступного разу ви зможете підключитися без коду. Цей параметр налаштовує ваш адміністратор.}one{Цей пристрій буде збережено на {YEARS} рік. Наступного разу ви зможете підключитися без коду. Цей параметр налаштовує ваш адміністратор.}few{Цей пристрій буде збережено на {YEARS} роки. Наступного разу ви зможете підключитися без коду. Цей параметр налаштовує ваш адміністратор.}many{Цей пристрій буде збережено на {YEARS} років. Наступного разу ви зможете підключитися без коду. Цей параметр налаштовує ваш адміністратор.}other{Цей пристрій буде збережено на {YEARS} року. Наступного разу ви зможете підключитися без коду. Цей параметр налаштовує ваш адміністратор.}}</translation>
 <translation id="257779572837908839">Налаштувати як Chromebox для відеоконференцій</translation>
 <translation id="2579309488038515659">Увімкнути точку доступу</translation>
+<translation id="2579596474754516455">Скануйте зображення у форматі PDF, щоб за потреби конвертувати текст для програми зчитування з екрана</translation>
 <translation id="2580889980133367162">Завжди дозволяти <ph name="HOST" /> завантажувати декілька файлів</translation>
 <translation id="258095186877893873">Довго</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2029,7 +2030,6 @@
 <translation id="2785267875302712148">Перевірка паролів</translation>
 <translation id="2785873697295365461">Опис файлу</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">Зберігати локальні дані веб-перегляду (закладки, паролі, історію тощо)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
@@ -2898,6 +2898,7 @@
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3616741288025931835">&amp;Очистити дані веб-перегляду...</translation>
 <translation id="3617891479562106823">Фони недоступні. Повторіть спробу пізніше.</translation>
+<translation id="3618286417582819036">На жаль, сталася помилка</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокація</translation>
 <translation id="362023940451053340">У вашому обліковому записі Google (<ph name="ACCOUNT" />)</translation>
@@ -6692,6 +6693,7 @@
 <translation id="7149839598364933473">Установити на пристрої <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Останні 24 години</translation>
 <translation id="7152478047064750137">Для цього розширення не потрібні спеціальні дозволи</translation>
+<translation id="7153309176431047193">Перетворювати зображення на текст</translation>
 <translation id="7154130902455071009">Зробити <ph name="START_PAGE" /> домашньою сторінкою</translation>
 <translation id="7156231244155528270">Конвертувати зображення в текст</translation>
 <translation id="7159953856712257647">Установлено за умовчанням</translation>

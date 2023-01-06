@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 month}other{# months}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 hour and }other{# hours and }}</translation>
+<translation id="185013357618350178">&amp;Select</translation>
 <translation id="1859234291848436338">Writing Direction</translation>
 <translation id="1860796786778352021">Notification close</translation>
 <translation id="186476001994626254">Web smart paste content</translation>

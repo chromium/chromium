@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">사용 가능한 기기</translation>
 <translation id="1042174272890264476">또한 컴퓨터에는 <ph name="SHORT_PRODUCT_NAME" /> RLZ 라이브러리가 내장되어 있습니다. RLZ는 고유하지 않고 개인 식별이 불가능한 태그를 할당하여 특정 홍보 캠페인을 통한 검색 및 <ph name="SHORT_PRODUCT_NAME" /> 사용 실태를 측정합니다. 이러한 라벨은 <ph name="PRODUCT_NAME" />의 Google 검색어에 표시되기도 합니다.</translation>
 <translation id="1043505821207197890">문제가 발생했습니다. Linux 부분 업그레이드만 진행할 수 있습니다. 자세한 정보는 로그를 검토하세요. 로그는 파일 &gt; 내 파일 &gt; <ph name="LOG_FILE" />에 저장되어 있습니다.</translation>
-<translation id="1043818413152647937">아래 앱의 데이터도 삭제하시겠습니까?</translation>
 <translation id="104419033123549300">키맵 스타일</translation>
 <translation id="104710386808485638">Linux를 다시 시작하시겠습니까?</translation>
 <translation id="1047431265488717055">링크 텍스트 복사(&amp;X)</translation>
@@ -1250,6 +1249,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> 숨겨짐</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{전화번호}other{전화번호 #개}}</translation>
 <translation id="2110941575868943054">블루투스 기기 검색 허용됨</translation>
+<translation id="2111158890826137380">죄송합니다. 문제가 발생했습니다. 설명에 의견을 작성하고 #bruschetta라고 표시하여 제출해 주세요. 오류 코드: <ph name="ERROR" /></translation>
 <translation id="211144231511833662">유형 지우기</translation>
 <translation id="2111670510994270194">오른쪽에 새 탭 열기</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />님, 환영합니다</translation>
@@ -1795,6 +1795,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{기기는 1년 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {YEARS}년 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
 <translation id="257779572837908839">Chromebox 화상회의 시스템으로 설정</translation>
 <translation id="2579309488038515659">핫스팟 사용 설정</translation>
+<translation id="2579596474754516455">필요한 경우 PDF 이미지를 스캔하여 스크린 리더에서 사용할 수 있는 텍스트로 변환합니다</translation>
 <translation id="2580889980133367162"><ph name="HOST" />에서 여러 파일을 다운로드할 수 있도록 항상 허용</translation>
 <translation id="258095186877893873">길게</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />(플랫폼 <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2027,7 +2028,6 @@
 <translation id="2785267875302712148">비밀번호 진단</translation>
 <translation id="2785873697295365461">파일 설명자</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">로컬 인터넷 사용 기록(북마크, 비밀번호, 방문 기록 등) 유지</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">확인</translation>
@@ -2896,6 +2896,7 @@
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3616741288025931835">인터넷 사용 기록 삭제(&amp;C)...</translation>
 <translation id="3617891479562106823">배경을 사용할 수 없습니다. 나중에 다시 시도하세요.</translation>
+<translation id="3618286417582819036">죄송합니다. 오류가 발생했습니다</translation>
 <translation id="3619115746895587757">카푸치노</translation>
 <translation id="3620136223548713675">위치정보</translation>
 <translation id="362023940451053340">내 Google 계정(<ph name="ACCOUNT" />)에 업데이트</translation>
@@ -6685,6 +6686,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
+<translation id="7153309176431047193">이미지를 텍스트로 변환</translation>
 <translation id="7154130902455071009">다음으로 시작 페이지 변경: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">이미지를 텍스트로 변환</translation>
 <translation id="7159953856712257647">기본적으로 설치됨</translation>

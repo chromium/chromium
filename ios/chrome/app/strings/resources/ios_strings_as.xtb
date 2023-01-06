@@ -469,6 +469,7 @@
 <translation id="4536418791685807335">পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="4540780316273593836">কিবা ভুল হ’ল</translation>
 <translation id="457386861538956877">অধিক…</translation>
+<translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">আপোনাৰ অন্তিম বেকআপৰ ভিত্তিত আপোনাৰ ছিংকৰ ছেটিং পুনঃস্থাপন কৰা হ’ব। <ph name="BEGIN_LINK" />আপুনি কি কি ছিংক কৰিব পাৰে, সেয়া চাওক<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">কীব’ৰ্ড</translation>
 <translation id="4606247758155004938">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে।</translation>
@@ -878,7 +879,6 @@
 <translation id="7438481509621345350">আপুনি এতিয়া এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="7454057999980797137">ৰাজ্য / দেশ</translation>
 <translation id="7459628154744868585">বৰ্ধিত সুৰক্ষা অন কৰা আছে</translation>
-<translation id="7464701184726199289">এইটোৱে সকলো ডিভাইচৰ পৰা ছিংক কৰি থোৱা ডেটা মচে। ছেভ কৰি থোৱা ছাইটৰ ছেটিংসমূহ মচা নাযায় আৰু আপোনাৰ ব্ৰাউজিঙৰ ধৰণ প্ৰতিফলিত কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">৩) Chrome বাছনি কৰক</translation>
 <translation id="7472734401283673885">কোম্পানীৰ নাম</translation>
 <translation id="7473891865547856676">নালাগে, ধন্যবাদ</translation>
@@ -962,7 +962,6 @@
 <translation id="806745655614357130">মোৰ ডেটা পৃথক কৰি ৰাখক</translation>
 <translation id="8073670137947914548">ডাউনল’ড সম্পূর্ণ হ’ল</translation>
 <translation id="8073872304774253879">সন্ধানসমূহ আৰু ব্ৰাউজিং উন্নত কৰক</translation>
-<translation id="8076014560081431679">ছেভ কৰি ৰখা ছাইটৰ ছেটিংসমূহ মচা নহয় আৰু ই আপোনাৰ ব্ৰাউজিঙৰ আচৰণ প্ৰতিফলন কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">এই ছেটিংটো পৰিচালনা কৰা হয়, অধিক তথ্যৰ বাবে দুবাৰ টিপক</translation>
 <translation id="8080028325999236607">আটাইবোৰ টেব বন্ধ কৰক</translation>
 <translation id="8084285576995584326">আপোনাৰ Google একাউণ্টৰ ডেটা নিয়ন্ত্ৰণ কৰক</translation>

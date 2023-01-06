@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">可用的设备</translation>
 <translation id="1042174272890264476">您的计算机还内置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 库。RLZ 会指定非唯一、非个人身份识别代码来衡量某推广活动所带来的搜索量和 <ph name="SHORT_PRODUCT_NAME" /> 使用量。这些标签有时会显示在 <ph name="PRODUCT_NAME" /> 的 Google 搜索查询中。</translation>
 <translation id="1043505821207197890">出了点问题。Linux 可能只能完成部分升级。请查看日志了解详情。日志已保存在“文件”&gt;“我的文件”&gt;“<ph name="LOG_FILE" />”中</translation>
-<translation id="1043818413152647937">要一并清除以下应用内的数据吗？</translation>
 <translation id="104419033123549300">按键映射样式</translation>
 <translation id="104710386808485638">重启 Linux？</translation>
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
@@ -2003,7 +2002,6 @@
 <translation id="2785267875302712148">密码安全检查</translation>
 <translation id="2785873697295365461">文件描述符数量</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">保留本地浏览数据（书签、密码、历史记录等等）</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">确定</translation>

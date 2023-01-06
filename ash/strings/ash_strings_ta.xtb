@@ -239,6 +239,7 @@
 <translation id="2224075387478458881">பாதுகாக்கப்பட்ட உள்ளடக்கம் காட்டப்படும்போது ஸ்கிரீன் ரெக்கார்டிங் அனுமதிக்கப்படாது</translation>
 <translation id="2227179592712503583">பரிந்துரையை அகற்று</translation>
 <translation id="225680501294068881">சாதனங்களைக் கண்டறிகிறது...</translation>
+<translation id="225716114209817872">அதிகபட்சம்</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்கும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="2258734398699965611">பரிந்துரைக்கப்படும் ஃபைல்கள்</translation>
 <translation id="2268130516524549846">புளூடூத் முடக்கப்பட்டது</translation>
@@ -1013,6 +1014,7 @@
 <translation id="6537924328260219877">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ஸ்கேன் செய்யப்படுகின்ற <ph name="FILENAME" /> ஃபைலைப் பதிவிறக்கும்</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />க்கு அலைபரப்புகிறது</translation>
+<translation id="6548693220024099658">பின்புல மங்கல்தன்மை</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 புதிய நிறுவல்</translation>
 <translation id="6559976592393364813">நிர்வாகியைக் கேட்கவும்</translation>
@@ -1419,6 +1421,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ், தடுக்கப்பட்டுள்ளது</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> உடன் இணைக்கும்</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">அதிகம்</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ஃபோல்டர்</translation>
 <translation id="880709030178078220">"உதவி"</translation>
 <translation id="8814190375133053267">வைஃபை</translation>

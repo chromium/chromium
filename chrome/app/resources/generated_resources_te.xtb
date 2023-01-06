@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">అందుబాటులో ఉన్న పరికరాలు</translation>
 <translation id="1042174272890264476">మీ కంప్యూటర్‌‍లో కూడా <ph name="SHORT_PRODUCT_NAME" /> యొక్క అంతర్గత RLZ లైబ్రరీ ఉంటుంది. RLZ సెర్చ్‌లను మరియు నిర్దిష్ట ప్రమోషనల్ ప్రచారం ద్వారా ఉపయోగించబడిన <ph name="SHORT_PRODUCT_NAME" /> వినియోగాన్ని లెక్కించడానికి, ప్రత్యేకం కానటువంటి, వ్యక్తిగతంగా గుర్తించలేని ట్యాగ్‌ను సమర్పిస్తుంది. ఈ లేబుళ్లు కొన్నిసార్లు <ph name="PRODUCT_NAME" />లోని Google Search ప్రశ్నలలో కనిపిస్తాయి.</translation>
 <translation id="1043505821207197890">ఏదో తప్పు జరిగింది. Linux పాక్షికంగా మాత్రమే అప్‌గ్రేడ్ అయి ఉండవచ్చు. మరింత సమాచారం కోసం లాగ్స్‌ను రివ్యూ చేయండి. Files &gt; నా ఫైల్స్ &gt; <ph name="LOG_FILE" /> అనే సెట్టింగ్‌లో లాగ్స్ సేవ్ చేయబడ్డాయి</translation>
-<translation id="1043818413152647937">అలాగే, ఈ యాప్‌ల నుండి డేటాను క్లియర్ చేయాలా?</translation>
 <translation id="104419033123549300">కీమ్యాప్ స్టయిల్</translation>
 <translation id="104710386808485638">Linuxను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1047431265488717055">లింక్ వచ&amp;నం కాపీ చేయి</translation>
@@ -1249,6 +1248,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> దాచబడ్డాయి</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ఫోన్ నంబర్}other{# ఫోన్ నంబర్‌లు}}</translation>
 <translation id="2110941575868943054">బ్లూటూత్ పరికరాల కోసం వెతకడానికి అనుమతించబడింది</translation>
+<translation id="2111158890826137380">క్షమించండి, ఏదో తప్పు జరిగింది. దయచేసి వివరణలో #bruschetta తో ఫీడ్‌బ్యాక్‌ను ఫైల్ చేయండి. ఎర్రర్ కోడ్ <ph name="ERROR" /></translation>
 <translation id="211144231511833662">రకాలను క్లియర్ చేయండి</translation>
 <translation id="2111670510994270194">కుడివైపున కొత్త ట్యాబ్</translation>
 <translation id="2112554630428445878">స్వాగతం, <ph name="USERNAME" /></translation>
@@ -1793,6 +1793,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ఈ పరికరం 1 సంవత్సరం పాటు సేవ్ చేయబడుతుంది, మీరు తర్వాతి సారి కోడ్ అవసరం లేకుండానే కనెక్ట్ చేయవచ్చు. దీనిని మీ అడ్మినిస్ట్రేటర్ సెట్ చేస్తారు.}other{ఈ పరికరం {YEARS} సంవత్సరాల పాటు సేవ్ చేయబడుతుంది, మీరు తర్వాతి సారి కోడ్ అవసరం లేకుండానే కనెక్ట్ చేయవచ్చు. దీనిని మీ అడ్మినిస్ట్రేటర్ సెట్ చేస్తారు.}}</translation>
 <translation id="257779572837908839">మీటింగ్‌ల కోసం Chromebox లాగా సెటప్ చేయండి</translation>
 <translation id="2579309488038515659">హాట్‌స్పాట్ ఎనేబుల్ చేసే టోగుల్</translation>
+<translation id="2579596474754516455">అవసరమైనప్పుడు, స్క్రీన్ రీడర్ కోసం టెక్స్ట్‌ను మార్చడానికి PDF ఇమేజ్‌లను స్కాన్ చేయండి</translation>
 <translation id="2580889980133367162">బహుళ ఫైళ్లను డౌన్‌లోడ్ చేయడానికి <ph name="HOST" />ను ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="258095186877893873">ఎక్కువ</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (ప్లాట్‌ఫారమ్ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2025,7 +2026,6 @@
 <translation id="2785267875302712148">పాస్‌వర్డ్ చెకప్</translation>
 <translation id="2785873697295365461">ఫైల్ వివరణలు</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">లోకల్ బ్రౌజింగ్ డేటా (బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, హిస్టరీ, మొదలైనవి)ను స్టోర్ చేయండి</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">సరే</translation>
@@ -2894,6 +2894,7 @@
 <translation id="3616113530831147358">ఆడియో</translation>
 <translation id="3616741288025931835">బ్రౌజింగ్ డేటాను &amp;క్లియర్ చేయి...</translation>
 <translation id="3617891479562106823">నేపథ్యాలు అందుబాటులో లేవు. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="3618286417582819036">క్షమించండి, ఒక ఎర్రర్ ఏర్పడింది</translation>
 <translation id="3619115746895587757">కాపుచినో</translation>
 <translation id="3620136223548713675">భౌగోళిక స్థానం</translation>
 <translation id="362023940451053340">మీ Google ఖాతాలో, <ph name="ACCOUNT" /> కోసం అప్‌డేట్ చేయబడుతుంది</translation>
@@ -6685,6 +6686,7 @@
 <translation id="7149839598364933473">ఈ పరికరాన్ని <ph name="DEVICE_OS" /> పరికరంగా మార్చండి.</translation>
 <translation id="7149893636342594995">గత 72 గంటలు</translation>
 <translation id="7152478047064750137">ఈ ఎక్స్‌టెన్షన్‌కు ప్రత్యేక అనుమతులు అవసరం లేదు</translation>
+<translation id="7153309176431047193">ఇమేజ్‌లను టెక్స్ట్‌కు మార్చుతుంది</translation>
 <translation id="7154130902455071009">మీ ప్రారంభ పేజీని దీనికి మార్చండి: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">ఇమేజ్‌ను టెక్స్ట్‌గా మార్చండి</translation>
 <translation id="7159953856712257647">ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేయబడుతుంది</translation>

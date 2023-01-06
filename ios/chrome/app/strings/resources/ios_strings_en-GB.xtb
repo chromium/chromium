@@ -469,6 +469,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Something went wrong</translation>
 <translation id="457386861538956877">More...</translation>
+<translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
@@ -878,7 +879,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="7454057999980797137">State / County</translation>
 <translation id="7459628154744868585">Enhanced protection is on</translation>
-<translation id="7464701184726199289">This clears synced data from all devices. Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Select Chrome</translation>
 <translation id="7472734401283673885">Company Name</translation>
 <translation id="7473891865547856676">No, Thanks</translation>
@@ -962,7 +962,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="806745655614357130">Keep my data separate</translation>
 <translation id="8073670137947914548">Download finished</translation>
 <translation id="8073872304774253879">Make searches and browsing better</translation>
-<translation id="8076014560081431679">Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="8084285576995584326">Control your Google Account data</translation>

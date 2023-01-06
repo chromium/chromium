@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 เดือน}other{# เดือน}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/วินาที</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 ชั่วโมงกับอีก }other{# ชั่วโมงกับอีก }}</translation>
+<translation id="185013357618350178">เลือก</translation>
 <translation id="1859234291848436338">การเขียนเส้นทาง</translation>
 <translation id="1860796786778352021">ปิดการแจ้งเตือน</translation>
 <translation id="186476001994626254">Web Smart Paste Content</translation>

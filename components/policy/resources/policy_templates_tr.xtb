@@ -4371,6 +4371,17 @@ Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılır
 <translation id="519247340330463721">Güvenli Tarama ile ilgili politikaları yapılandırır.</translation>
 <translation id="5194683382395300627">Şifrelerin otomatik olarak değiştirilmesi gibi işlemler için web'de <ph name="ASSISTANT_PRODUCT_NAME" /> kullanımına izin ver</translation>
 <translation id="5196630732055960309">Bu web uygulamalarının üzerinden File Handling API'ye izin ver</translation>
+<translation id="5198660575318473544">Manifest v2 uzantılarının <ph name="PRODUCT_OS_NAME" /> oturum açma ekranında kullanılıp kullanılamayacağını kontrol edin.
+
+Manifest v2 uzantılarının desteği sonlandırılacağı için tüm uzantıların gelecekte v3'e taşınması gerekecektir. Taşımayla ilgili daha fazla bilgiyi ve zaman çizelgesini https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/ adresinde bulabilirsiniz.
+
+Politika, <ph name="DEFAULT" /> (0) değerine ayarlanır veya ayarlanmadan bırakılırsa v2 uzantılarının yüklenmesine, yukarıdaki zaman çizelgesine göre cihaz karar verir.
+Politika, <ph name="DISABLE" /> (1) değerine ayarlanırsa v2 uzantılarının yüklenmesi engellenir ve mevcut uzantılar devre dışı bırakılır. Bu seçenek, v2 desteği varsayılan olarak sonlandırıldıktan sonra politika ayarlanmamış gibi ele alınacaktır.
+Politika, <ph name="ENABLE" /> (2) değerine ayarlanırsa v2 uzantılarına izin verilir. Bu seçenek, v2 desteği varsayılan olarak sonlandırılmadan önce politika ayarlanmamış gibi ele alınacaktır.
+Politika, <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3) değerine ayarlanırsa zorunlu yüklenmiş v2 uzantılarına izin verilir. <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ya da <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> tarafından <ph name="INSTALLATION_MODE" /> "force_installed" veya "normal_installed" olarak listelenen uzantılar da buna dahildir. Diğer tüm v2 uzantıları devre dışı bırakılır. Bu seçenek, v2 desteği varsayılan olarak sonlandırılmadan önce politika ayarlanmamış gibi ele alınacaktır.
+
+
+Uzantıların kullanılabilirliği diğer politikalar tarafından kontrol edilmeye devam eder.</translation>
 <translation id="5206454085187851382"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_ALLOWLIST" /> seçiliyken <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanabileceği belirlenir. Kullanıcı yalnızca kimlikleri bu politikadaki değerlerle eşleşen yazıcıları kullanabilir. Kimliklerin, <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
 <translation id="5207543664699568887">Linux'ta <ph name="PRODUCT_NAME" /> tarafından sistem bildirimlerinin kullanılıp kullanılmayacağını yapılandırır.
 
@@ -4817,6 +4828,7 @@ Politika ayarlanmadan bırakılırsa hiçbir alan, PDF görüntüleyicide file:/
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> yönetim ayarları</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Cihazın depolama alanı durumu raporlamasını etkinleştir</translation>
+<translation id="5608114828230655271">Varsayılan cihaz davranışı</translation>
 <translation id="5614865701790130558">Politika tabanlı eklenti yüklemeleriyle ilgili etkinlikleri günlüğe kaydetme</translation>
 <translation id="5618398258385745432">İlişkili ayar, şifrelerin görüntülenmesinde yeniden kimlik doğrulaması kullanılmaya başlamadan önce kullanılıyordu. O zamandan beri, bu ayarın ve dolayısıyla bu politikanın Chrome davranışı üzerinde herhangi bir etkisi olmadı. Şu anda Chrome'un geçerli davranışı, politikanın, şifre yöneticisi ayarları sayfasında şifreleri açık metin olarak göstermeyi devre dışı bırakacak şekilde ayarlanmasıyla aynıdır. Yani ayarlar sayfası, yalnızca bir yer tutucu içerir ve Chrome, yalnızca kullanıcının "Göster"i tıklamasıyla (ve uygulanıyorsa yeniden kimlik doğrulaması yapmasıyla) şifreyi gösterir. Politikanın asıl açıklaması aşağıda belirtilmiştir.
 

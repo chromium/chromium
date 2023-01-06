@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">Доступни уређаји</translation>
 <translation id="1042174272890264476">Уз рачунар такође добијате уграђену RLZ библиотеку производа <ph name="SHORT_PRODUCT_NAME" />. RLZ додељује нејединствену ознаку помоћу које вас није могуће лично идентификовати да би измерио претраге и коришћење производа <ph name="SHORT_PRODUCT_NAME" /> који су подстакнути одређеном промотивном кампањом. Те ознаке се понекад приказују у упитима Google претраге у производу <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Дошло је до грешке. Linux је можда само делимично надограђен. Прегледајте евиденцију за више информација. Евиденција је сачувана у одељку Фајлови &gt; Моји фајлови &gt; <ph name="LOG_FILE" /></translation>
-<translation id="1043818413152647937">Желите и да обришете податке из ових апликација?</translation>
 <translation id="104419033123549300">Стил мапе тастера</translation>
 <translation id="104710386808485638">Желите ли да рестартујете Linux?</translation>
 <translation id="1047431265488717055">Копирај тек&amp;ст линка</translation>
@@ -1237,6 +1236,7 @@
 <translation id="2105809836724866556">Скривено: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Број телефона}one{# број телефона}few{# броја телефона}other{# бројева телефона}}</translation>
 <translation id="2110941575868943054">Тражење Bluetooth уређаја је дозвољено</translation>
+<translation id="2111158890826137380">Жао нам је, дошло је до грешке. Пошаљите повратне информације и наведите #bruschetta у опису. Кôд грешке је <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Обриши типове</translation>
 <translation id="2111670510994270194">Нова картица на десној страни</translation>
 <translation id="2112554630428445878">Добро дошли, <ph name="USERNAME" /></translation>
@@ -1778,6 +1778,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{Овај уређај ће бити сачуван годину дана и можете да се повежете без кода следећи пут. То је подесио администратор.}one{Овај уређај ће бити сачуван {YEARS} годину и можете да се повежете без кода следећи пут. То је подесио администратор.}few{Овај уређај ће бити сачуван {YEARS} године и можете да се повежете без кода следећи пут. То је подесио администратор.}other{Овај уређај ће бити сачуван {YEARS} година и можете да се повежете без кода следећи пут. То је подесио администратор.}}</translation>
 <translation id="257779572837908839">Подеси као Chromebox за састанке</translation>
 <translation id="2579309488038515659">Омогућите хотспот</translation>
+<translation id="2579596474754516455">Скенирајте PDF слике да бисте конвертовали текст за читач екрана када је то неопходно</translation>
 <translation id="2580889980133367162">Увек дозволи хосту <ph name="HOST" /> да преузима више датотека</translation>
 <translation id="258095186877893873">Дуго</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2010,7 +2011,6 @@
 <translation id="2785267875302712148">Провера лозинки</translation>
 <translation id="2785873697295365461">Дескриптори датотека</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">Задржи локалне податке прегледања (обележиваче, лозинке, историју итд)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Потврди</translation>
@@ -2880,6 +2880,7 @@
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616741288025931835">&amp;Обриши податке прегледања...</translation>
 <translation id="3617891479562106823">Позадине нису доступне. Пробајте поново касније.</translation>
+<translation id="3618286417582819036">Жао нам је, дошло је до грешке</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолоцирање</translation>
 <translation id="362023940451053340">На Google налогу, за <ph name="ACCOUNT" /></translation>
@@ -6676,6 +6677,7 @@
 <translation id="7149839598364933473">Претворите овај уређај у <ph name="DEVICE_OS" /> уређај.</translation>
 <translation id="7149893636342594995">Последња 24 сата</translation>
 <translation id="7152478047064750137">Овај додатак не захтева никакве специјалне дозволе</translation>
+<translation id="7153309176431047193">Конвертујте слике у текст</translation>
 <translation id="7154130902455071009">Промените почетну страницу у: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Конвертуј слику у текст</translation>
 <translation id="7159953856712257647">Подразумевано инсталирано</translation>

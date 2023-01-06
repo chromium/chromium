@@ -453,6 +453,7 @@
 <translation id="4420409367264901497">Редагувати закладку</translation>
 <translation id="4442550905108052454">Відкрийте <ph name="BEGIN_BOLD" />Налаштування<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Додати мову</translation>
+<translation id="4461286950227634995">Пропонувати зберігати паролі</translation>
 <translation id="4462491365653392320">Відстежувати ціни на вкладках</translation>
 <translation id="4469418912670346607">Продовжити налаштування</translation>
 <translation id="4474494258097106883">Створено для iPhone</translation>
@@ -468,6 +469,7 @@
 <translation id="4536418791685807335">Спробуйте ввійти ще раз.</translation>
 <translation id="4540780316273593836">Сталася помилка</translation>
 <translation id="457386861538956877">Інші...</translation>
+<translation id="4587589328781138893">Сайти</translation>
 <translation id="4588014171431912783">Налаштування синхронізації буде відновлено на основі даних останньої резервної копії. <ph name="BEGIN_LINK" />Дізнайтесь, які дані можна синхронізувати.<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавіатура</translation>
 <translation id="4606247758155004938">Веб-переглядачем керує ваша організація.</translation>
@@ -877,7 +879,6 @@
 <translation id="7438481509621345350">Тепер, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7454057999980797137">Область</translation>
 <translation id="7459628154744868585">Покращений захист увімкнено</translation>
-<translation id="7464701184726199289">Синхронізовані дані буде видалено з усіх пристроїв. Збережені налаштування, які можуть стосуватися ваших зацікавлень в Інтернеті, не буде видалено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Виберіть Chrome</translation>
 <translation id="7472734401283673885">Назва компанії</translation>
 <translation id="7473891865547856676">Ні, дякую</translation>
@@ -961,7 +962,6 @@
 <translation id="806745655614357130">Зберігати мої дані окремо</translation>
 <translation id="8073670137947914548">Завантаження завершено</translation>
 <translation id="8073872304774253879">Покращувати пошук і веб-перегляд</translation>
-<translation id="8076014560081431679">Збережені налаштування, які можуть стосуватися ваших зацікавлень в Інтернеті, не буде видалено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Цим налаштуванням керує адміністратор. Двічі торкніться, щоб дізнатися більше.</translation>
 <translation id="8080028325999236607">Закрити всі вкладки</translation>
 <translation id="8084285576995584326">Керуйте даними свого облікового запису Google</translation>

@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">ଉପଲବ୍ଧ ଥିବା ଡିଭାଇସ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="1042174272890264476">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ମଧ୍ୟ ପୂର୍ବରୁ<ph name="SHORT_PRODUCT_NAME" />ର RLZ ଲାଇବ୍ରେରୀ ଥାଏ। ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ପ୍ରଚାର ଅଭିଯାନରେ ବ୍ୟବହାର ହୋ‍ଇଥିବା ସନ୍ଧାନ ଏବଂ <ph name="SHORT_PRODUCT_NAME" />ର ବ୍ୟବହାର ମାପିବାକୁ RLZ ଏକ ସାଧାରଣ, ସାର୍ବଜନିକ ଚିହ୍ନିପାରିବା ପରି ଟାଗ୍‌ ନିରୂପଣ କରେ। Google ସର୍ଚ୍ଚ କ୍ୱେରୀର <ph name="PRODUCT_NAME" />ରେ ଏହି ଲେବଲ୍‌ଗୁଡ଼ିକ ବେଳେବେଳେ ଦେଖାଯାଏ।</translation>
 <translation id="1043505821207197890">କିଛି ତ୍ରୁଟି ହୋଇଛି। Linuxକୁ କେବଳ ଆଂଶିକ ଭାବେ ଅପଗ୍ରେଡ କରାଯାଇପାରେ। ଅଧିକ ସୂଚନା ପାଇଁ ଲଗଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ। ଫାଇଲଗୁଡ଼ିକ &gt; ମୋ ଫାଇଲଗୁଡ଼ିକ &gt; <ph name="LOG_FILE" />ରେ ଲଗଗୁଡ଼ିକୁ ସେଭ କରାଯାଇଛି</translation>
-<translation id="1043818413152647937">ଏହି ଆପ୍ସରୁ ମଧ୍ୟ ଡାଟା ଖାଲି କରିବେ?</translation>
 <translation id="104419033123549300">କୀ'ମେପ ଷ୍ଟାଇଲ</translation>
 <translation id="104710386808485638">Linux ରିଷ୍ଟାର୍ଟ କରିବେ?</translation>
 <translation id="1047431265488717055">ଟେ&amp;କ୍ସଟ୍ ଲିଙ୍କ୍ କପି କରନ୍ତୁ</translation>
@@ -2009,7 +2008,6 @@
 <translation id="2785267875302712148">ପାସୱାର୍ଡ ଚେକଅପ</translation>
 <translation id="2785873697295365461">ଫାଇଲ୍ ଡେସ୍କ୍ରିପ୍ଟର୍</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">ସ୍ଥାନୀୟ ବ୍ରାଉଜିଂ ଡାଟା (ବୁକମାର୍କ, ପାସୱାର୍ଡ, ଇତିହାସ ଇତ୍ୟାଦି) ରଖନ୍ତୁ</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">ଠିକ୍ ଅଛି</translation>

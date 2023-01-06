@@ -453,6 +453,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4420409367264901497">북마크 수정</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Settings(설정)<ph name="END_BOLD" />를 엽니다.</translation>
 <translation id="4454246407045105932">언어 추가</translation>
+<translation id="4461286950227634995">비밀번호 저장 여부 확인</translation>
 <translation id="4462491365653392320">탭에서 가격 추적</translation>
 <translation id="4469418912670346607">설정 계속하기</translation>
 <translation id="4474494258097106883">iPhone을 위한 웹브라우저</translation>
@@ -468,6 +469,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4536418791685807335">다시 로그인해 주세요.</translation>
 <translation id="4540780316273593836">문제 발생</translation>
 <translation id="457386861538956877">더보기...</translation>
+<translation id="4587589328781138893">사이트</translation>
 <translation id="4588014171431912783">마지막 백업에 따라 동기화 설정이 복원됩니다. <ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">키보드</translation>
 <translation id="4606247758155004938">조직에서 관리하는 브라우저입니다.</translation>
@@ -877,7 +879,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7438481509621345350">이제 새 탭을 열 때 <ph name="CHANNEL_NAME" /> 스토리가 표시됩니다</translation>
 <translation id="7454057999980797137">도/군</translation>
 <translation id="7459628154744868585">향상된 보호 모드 사용 중</translation>
-<translation id="7464701184726199289">모든 기기에서 동기화된 데이터가 삭제됩니다. 저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome 선택하기</translation>
 <translation id="7472734401283673885">회사명</translation>
 <translation id="7473891865547856676">건너뛰기</translation>
@@ -961,7 +962,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="806745655614357130">내 데이터 별도로 유지</translation>
 <translation id="8073670137947914548">다운로드가 완료되었습니다</translation>
 <translation id="8073872304774253879">검색 및 탐색 기능 개선</translation>
-<translation id="8076014560081431679">저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">관리자가 관리하는 설정입니다, 자세한 정보를 보려면 두 번 탭하세요</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
 <translation id="8084285576995584326">Google 계정 데이터 관리</translation>

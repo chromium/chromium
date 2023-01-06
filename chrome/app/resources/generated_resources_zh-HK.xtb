@@ -47,7 +47,6 @@
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1042174272890264476">您的電腦也內置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 資料庫。RLZ 可指定非重複、非個人的可識別標記，以評估特定宣傳廣告活動所提升的搜尋數量與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
 <translation id="1043505821207197890">發生錯誤，Linux 可能只完成部分升級。詳情請查看記錄。記錄已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
-<translation id="1043818413152647937">要清除這些裝置的資料嗎？</translation>
 <translation id="104419033123549300">按鍵配置樣式</translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
@@ -1250,6 +1249,7 @@
 <translation id="2105809836724866556">「<ph name="MODULE_TITLE" />」已隱藏</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="2110941575868943054">允許尋找藍牙裝置</translation>
+<translation id="2111158890826137380">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" /></translation>
 <translation id="211144231511833662">清除類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />，歡迎使用！</translation>
@@ -1794,6 +1794,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{系統會記住此裝置，在 1 年內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {YEARS} 年內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="257779572837908839">設定為 Chromebox 視像會議</translation>
 <translation id="2579309488038515659">啟用熱點</translation>
+<translation id="2579596474754516455">你可以視需要掃描 PDF 圖片並轉成文字，讓螢幕閱讀器朗讀當中的內容</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2026,7 +2027,6 @@
 <translation id="2785267875302712148">密碼安全檢查</translation>
 <translation id="2785873697295365461">檔案描述符</translation>
 <translation id="2785975315093449168">GTK</translation>
-<translation id="2787022501752539710">保留本機瀏覽資料 (書籤、密碼、記錄等)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">確定</translation>
@@ -2747,7 +2747,7 @@
 <translation id="3469583217479686109">選取工具</translation>
 <translation id="3470392222765168737">追蹤網站</translation>
 <translation id="3471876058939596279">HDMI 和 USB Type-C 連接埠無法同時用於影片。請使用其他影片連接埠。</translation>
-<translation id="3472469028191701821">在新分頁中開啟</translation>
+<translation id="3472469028191701821">喺新分頁度打開</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">放大鏡</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母內</translation>
@@ -2896,6 +2896,7 @@
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3616741288025931835">清除瀏覽數據(&amp;C)…</translation>
 <translation id="3617891479562106823">無法自訂背景，請稍候再試。</translation>
+<translation id="3618286417582819036">很抱歉，發生錯誤</translation>
 <translation id="3619115746895587757">泡沫咖啡</translation>
 <translation id="3620136223548713675">地理位置</translation>
 <translation id="362023940451053340">更新 Google 帳戶 (<ph name="ACCOUNT" />) 的密碼</translation>
@@ -4054,7 +4055,7 @@
 <translation id="4675828034887792601">建立捷徑以搜尋網站及管理搜尋引擎</translation>
 <translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
 <translation id="4677772697204437347">GPU 記憶體使用量</translation>
-<translation id="4678848110205818817">信用卡/簽帳金融卡</translation>
+<translation id="4678848110205818817">信用卡/扣帳卡</translation>
 <translation id="4680105648806843642">此網頁已設為靜音</translation>
 <translation id="4680112532510845139">將圖片拖放到這裡</translation>
 <translation id="4681453295291708042">停用「咫尺共享」功能</translation>
@@ -6687,6 +6688,7 @@
 <translation id="7149839598364933473">在此裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
+<translation id="7153309176431047193">將圖片轉成文字</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">將圖片轉換成文字</translation>
 <translation id="7159953856712257647">預設已安裝</translation>
