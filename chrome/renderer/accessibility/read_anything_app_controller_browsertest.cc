@@ -366,3 +366,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_FALSE(DisplayNodeIdsContains(3));
   EXPECT_FALSE(DisplayNodeIdsContains(4));
 }
+
+TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
+  OnAXTreeDistilled(basic_snapshot_, {6});
+}

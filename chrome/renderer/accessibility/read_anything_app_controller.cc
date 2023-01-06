@@ -380,11 +380,12 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
   // descendants of each content node.
   for (auto content_node_id : content_node_ids_) {
     ui::AXNode* content_node = GetAXNode(content_node_id);
-    DCHECK(content_node);
+    // TODO(crbug.com/1266555): Figure out why content_node might be nullptr,
+    // fix that, and DCHECK that content_node is not nullptr.
     // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
     // not be the correct approach. Do we need a version of
     // GetDeepestLastUnignoredChild() that works on ignored nodes?
-    if (content_node->IsIgnored()) {
+    if (!content_node || content_node->IsIgnored()) {
       continue;
     }
 
