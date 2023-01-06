@@ -171,7 +171,12 @@ SharedImageFormat GetEquivalentMultiplanarFormat(
 
 // Ensure that SharedImageFormat is suitable for passing around by value.
 static_assert(sizeof(SharedImageFormat) <= 8);
-static_assert(std::is_trivially_destructible<SharedImageFormat>::value);
+static_assert(std::is_trivially_destructible_v<SharedImageFormat>);
+static_assert(std::is_trivially_copyable_v<SharedImageFormat>);
+
+// TODO(kylechar): Ideally SharedImageFormat would be "trivially comparable" so
+// that operator==() is just memcmp(). That would probably require something
+// like manually packing bits into a single uint64_t for storage.
 
 bool SharedImageFormat::IsBitmapFormatSupported() const {
   return is_single_plane() && resource_format() == RGBA_8888;
