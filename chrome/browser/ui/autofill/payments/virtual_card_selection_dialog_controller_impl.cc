@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
 
-#include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_view.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,7 +41,7 @@ void VirtualCardSelectionDialogControllerImpl::ShowDialog(
 
   callback_ = std::move(callback);
   dialog_view_ =
-      VirtualCardSelectionDialogView::CreateAndShow(this, &GetWebContents());
+      VirtualCardSelectionDialog::CreateAndShow(this, &GetWebContents());
 }
 
 bool VirtualCardSelectionDialogControllerImpl::IsOkButtonEnabled() {

@@ -4,8 +4,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -52,7 +52,7 @@ class VirtualCardSelectionDialogBrowserTest : public DialogBrowserTest {
     if (!controller())
       return nullptr;
 
-    VirtualCardSelectionDialogView* dialog_view = controller()->dialog_view();
+    VirtualCardSelectionDialog* dialog_view = controller()->dialog_view();
     if (!dialog_view)
       return nullptr;
 

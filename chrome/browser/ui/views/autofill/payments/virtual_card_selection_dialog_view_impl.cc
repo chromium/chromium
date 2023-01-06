@@ -53,7 +53,7 @@ VirtualCardSelectionDialogViewImpl::~VirtualCardSelectionDialogViewImpl() {
 }
 
 // static
-VirtualCardSelectionDialogView* VirtualCardSelectionDialogView::CreateAndShow(
+VirtualCardSelectionDialog* VirtualCardSelectionDialog::CreateAndShow(
     VirtualCardSelectionDialogController* controller,
     content::WebContents* web_content) {
   VirtualCardSelectionDialogViewImpl* dialog =

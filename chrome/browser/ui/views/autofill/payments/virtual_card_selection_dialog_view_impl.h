@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_view.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -14,10 +14,9 @@ namespace autofill {
 
 class VirtualCardSelectionDialogController;
 
-// The Views implementation of VirtualCardSelectionDialogView.
-class VirtualCardSelectionDialogViewImpl
-    : public VirtualCardSelectionDialogView,
-      public views::DialogDelegateView {
+// The Views implementation of VirtualCardSelectionDialog.
+class VirtualCardSelectionDialogViewImpl : public VirtualCardSelectionDialog,
+                                           public views::DialogDelegateView {
  public:
   METADATA_HEADER(VirtualCardSelectionDialogViewImpl);
   VirtualCardSelectionDialogViewImpl(
@@ -28,7 +27,7 @@ class VirtualCardSelectionDialogViewImpl
       const VirtualCardSelectionDialogViewImpl&) = delete;
   ~VirtualCardSelectionDialogViewImpl() override;
 
-  // VirtualCardSelectionDialogView:
+  // VirtualCardSelectionDialog:
   void Hide() override;
 
   // views::DialogDelegateView:

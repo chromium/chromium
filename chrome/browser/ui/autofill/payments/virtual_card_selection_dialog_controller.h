@@ -13,7 +13,7 @@ namespace autofill {
 class CreditCard;
 
 // An interface that exposes necessary controller functionality to
-// VirtualCardSelectionDialogView.
+// VirtualCardSelectionDialog.
 class VirtualCardSelectionDialogController {
  public:
   virtual ~VirtualCardSelectionDialogController() = default;
