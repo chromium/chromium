@@ -608,7 +608,6 @@ TEST_P(HistoryClustersServiceTest,
   SetConfigForTesting(new_config);
 
   QueryClustersContinuationParams continuation_params = {};
-  continuation_params.continuation_time = base::Time::Now();
 
   {
     const auto [clusters, visits] =

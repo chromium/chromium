@@ -187,7 +187,7 @@ HistoryClustersService::QueryClusters(
     return std::make_unique<
         HistoryClustersServiceTaskGetMostRecentClustersForUI>(
         weak_ptr_factory_.GetWeakPtr(), backend_.get(), history_service_,
-        begin_time, continuation_params.continuation_time, std::move(callback));
+        begin_time, continuation_params, std::move(callback));
   }
   return std::make_unique<HistoryClustersServiceTaskGetMostRecentClusters>(
       weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,

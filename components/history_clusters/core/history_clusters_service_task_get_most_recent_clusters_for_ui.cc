@@ -24,17 +24,18 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
         ClusteringBackend* const backend,
         history::HistoryService* const history_service,
         base::Time begin_time,
-        base::Time continuation_time,
+        QueryClustersContinuationParams continuation_params,
         QueryClustersCallback callback)
     : weak_history_clusters_service_(std::move(weak_history_clusters_service)),
       backend_(backend),
       history_service_(history_service),
       begin_time_(begin_time),
-      continuation_time_(continuation_time),
+      continuation_params_(continuation_params),
       callback_(std::move(callback)) {
   DCHECK(weak_history_clusters_service_);
   DCHECK(history_service_);
   DCHECK(backend_);
+
   Start();
 }
 
@@ -46,8 +47,12 @@ void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start() {
   //   happen before this experiment starts and were unclustered by previous
   //   path.
 
+  if (!continuation_params_.is_continuation) {
+    continuation_params_.continuation_time = base::Time::Now();
+  }
+
   history_service_->GetMostRecentClusters(
-      begin_time_, continuation_time_,
+      begin_time_, continuation_params_.continuation_time,
       GetConfig().max_persisted_clusters_to_fetch,
       GetConfig().max_persisted_cluster_visits_to_fetch_soft_cap,
       base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClustersForUI::
