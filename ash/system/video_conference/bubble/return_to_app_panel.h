@@ -9,14 +9,23 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
+class ImageButton;
 class Label;
+class View;
 }  // namespace views
 
 namespace ash::video_conference {
+
+class ReturnToAppPanel;
 
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
@@ -25,7 +34,20 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // button will take users to the app.
 class ASH_EXPORT ReturnToAppButton : public views::View {
  public:
-  ReturnToAppButton(bool is_capturing_camera,
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when the expanded state is changed.
+    virtual void OnExpandedStateChanged(bool expanded) = 0;
+  };
+
+  // `is_top_row` specifies if the button is in the top row of `panel`. If the
+  // button is in the top row, it might represent the only media app running or
+  // the summary row if there are multiple media apps.
+  ReturnToAppButton(ReturnToAppPanel* panel,
+                    bool is_top_row,
+                    bool is_capturing_camera,
                     bool is_capturing_microphone,
                     bool is_capturing_screen,
                     const std::u16string& display_text);
@@ -33,31 +55,67 @@ class ASH_EXPORT ReturnToAppButton : public views::View {
   ReturnToAppButton(const ReturnToAppButton&) = delete;
   ReturnToAppButton& operator=(const ReturnToAppButton&) = delete;
 
-  ~ReturnToAppButton() override = default;
+  ~ReturnToAppButton() override;
+
+  // Observer functions.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   bool is_capturing_camera() const { return is_capturing_camera_; }
   bool is_capturing_microphone() const { return is_capturing_microphone_; }
   bool is_capturing_screen() const { return is_capturing_screen_; }
 
+  bool expanded() const { return expanded_; }
+
   views::Label* label() { return label_; }
+  views::View* icons_container() { return icons_container_; }
+  views::ImageButton* expand_button() { return expand_button_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
+
+  // Callback for `expand_button_`.
+  void OnExpandButtonToggled(const ui::Event& event);
+
   // Indicates if the running app is using camera, microphone, or screen
   // sharing.
   const bool is_capturing_camera_;
   const bool is_capturing_microphone_;
   const bool is_capturing_screen_;
 
-  // Label showing the url or name of the running app. Owned by the views
-  // hierarchy.
+  // Registered observers.
+  base::ObserverList<Observer> observer_list_;
+
+  // Indicates if this button (and also the parent panel) is in the expanded
+  // state. Note that `expanded_` is only meaningful in the case that the button
+  // is in the top row.
+  bool expanded_ = false;
+
+  // The pointers below are owned by the views hierarchy.
+
+  // This panel is the parent view of this button.
+  ReturnToAppPanel* const panel_;
+
+  // Label showing the url or name of the running app.
   views::Label* label_ = nullptr;
+
+  // The container of icons showing the state of camera/microphone/screen
+  // capturing of the media app.
+  views::View* icons_container_ = nullptr;
+
+  // The button to toggle expand/collapse the panel. Only available if the
+  // button is in the top row.
+  views::ImageButton* expand_button_ = nullptr;
+
+  base::WeakPtrFactory<ReturnToAppButton> weak_ptr_factory_{this};
 };
 
 // The "return to app" panel that resides in the video conference bubble. The
 // user selects from a list of apps that are actively capturing audio/video
 // and/or sharing the screen, and the selected app is brought to the top and
 // focused.
-class ASH_EXPORT ReturnToAppPanel : public views::View {
+class ASH_EXPORT ReturnToAppPanel : public views::View,
+                                    ReturnToAppButton::Observer {
  public:
   ReturnToAppPanel();
   ReturnToAppPanel(const ReturnToAppPanel&) = delete;
@@ -65,8 +123,16 @@ class ASH_EXPORT ReturnToAppPanel : public views::View {
   ~ReturnToAppPanel() override;
 
  private:
+  // ReturnToAppButton::Observer:
+  void OnExpandedStateChanged(bool expanded) override;
+
   // Used by the ctor to add `ReturnToAppButton`(s) to the panel.
   void AddButtonsToPanel(MediaApps apps);
+
+  // The view at the top of the panel, summarizing the information of all media
+  // apps. This pointer will be null when there's one or fewer media apps. Owned
+  // by the views hierarchy.
+  ReturnToAppButton* summary_row_view_ = nullptr;
 
   base::WeakPtrFactory<ReturnToAppPanel> weak_ptr_factory_{this};
 };

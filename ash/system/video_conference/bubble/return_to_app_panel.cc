@@ -16,8 +16,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -80,18 +84,74 @@ std::u16string GetMediaAppDisplayText(
                                 : media_app->title;
 }
 
+// A customized toggle button for the return to app panel, which rotates
+// depending on the expand state.
+class ReturnToAppExpandButton : public views::ImageButton,
+                                ReturnToAppButton::Observer {
+ public:
+  ReturnToAppExpandButton(PressedCallback callback,
+                          ReturnToAppButton* return_to_app_button)
+      : views::ImageButton(std::move(callback)),
+        return_to_app_button_(return_to_app_button) {
+    return_to_app_button_->AddObserver(this);
+  }
+
+  ReturnToAppExpandButton(const ReturnToAppExpandButton&) = delete;
+  ReturnToAppExpandButton& operator=(const ReturnToAppExpandButton&) = delete;
+
+  ~ReturnToAppExpandButton() override {
+    return_to_app_button_->RemoveObserver(this);
+  }
+
+  // views::ImageButton:
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    // Rotate the canvas to rotate the button depending on the panel's expanded
+    // state.
+    gfx::ScopedCanvas scoped(canvas);
+    canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
+    if (!expanded_) {
+      canvas->sk_canvas()->rotate(180.);
+    }
+    gfx::ImageSkia image = GetImageToPaint();
+    canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
+  }
+
+ private:
+  // ReturnToAppButton::Observer:
+  void OnExpandedStateChanged(bool expanded) override {
+    if (expanded_ == expanded) {
+      return;
+    }
+    expanded_ = expanded;
+
+    // Repaint to rotate the button.
+    SchedulePaint();
+  }
+
+  // Indicates if this button (and also the parent panel) is in the expanded
+  // state.
+  bool expanded_ = false;
+
+  // Owned by the views hierarchy. Will be destroyed after this view since it is
+  // the parent.
+  ReturnToAppButton* const return_to_app_button_;
+};
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
 // ReturnToAppButton:
 
-ReturnToAppButton::ReturnToAppButton(bool is_capturing_camera,
+ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
+                                     bool is_top_row,
+                                     bool is_capturing_camera,
                                      bool is_capturing_microphone,
                                      bool is_capturing_screen,
                                      const std::u16string& display_text)
     : is_capturing_camera_(is_capturing_camera),
       is_capturing_microphone_(is_capturing_microphone),
-      is_capturing_screen_(is_capturing_screen) {
+      is_capturing_screen_(is_capturing_screen),
+      panel_(panel) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -100,10 +160,48 @@ ReturnToAppButton::ReturnToAppButton(bool is_capturing_camera,
                   gfx::Insets::TLBR(0, kReturnToAppButtonSpacing / 2, 0,
                                     kReturnToAppButtonSpacing / 2));
 
-  AddChildView(CreateReturnToAppIconsContainer(
+  icons_container_ = AddChildView(CreateReturnToAppIconsContainer(
       is_capturing_camera, is_capturing_microphone, is_capturing_screen));
 
   label_ = AddChildView(std::make_unique<views::Label>(display_text));
+
+  if (is_top_row) {
+    auto expand_button = std::make_unique<ReturnToAppExpandButton>(
+        base::BindRepeating(&ReturnToAppButton::OnExpandButtonToggled,
+                            weak_ptr_factory_.GetWeakPtr()),
+        this);
+    expand_button->SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kUnifiedMenuExpandIcon,
+                                       cros_tokens::kCrosSysSecondary, 16));
+    expand_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP));
+    expand_button_ = AddChildView(std::move(expand_button));
+  }
+}
+
+ReturnToAppButton::~ReturnToAppButton() = default;
+
+void ReturnToAppButton::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ReturnToAppButton::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void ReturnToAppButton::OnExpandButtonToggled(const ui::Event& event) {
+  expanded_ = !expanded_;
+
+  for (auto& observer : observer_list_) {
+    observer.OnExpandedStateChanged(expanded_);
+  }
+
+  icons_container_->SetVisible(!expanded_);
+  auto tooltip_text_id =
+      expanded_ ? IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP
+                : IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP;
+  expand_button_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
 }
 
 // -----------------------------------------------------------------------------
@@ -128,7 +226,25 @@ ReturnToAppPanel::ReturnToAppPanel() {
       cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
 }
 
-ReturnToAppPanel::~ReturnToAppPanel() = default;
+ReturnToAppPanel::~ReturnToAppPanel() {
+  // We only need to remove observer in case that there's a summary row
+  // (multiple apps).
+  if (summary_row_view_) {
+    summary_row_view_->RemoveObserver(this);
+  }
+}
+
+void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
+  for (auto* child : children()) {
+    // Skip the first child since we always show the summary row. Otherwise,
+    // show the other rows if `expanded` and vice versa.
+    if (child == children().front()) {
+      continue;
+    }
+    child->SetVisible(expanded);
+  }
+  PreferredSizeChanged();
+}
 
 void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
   if (apps.size() < 1) {
@@ -138,9 +254,14 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
 
   if (apps.size() == 1) {
     auto& app = apps.front();
-    AddChildView(std::make_unique<ReturnToAppButton>(
-        app->is_capturing_camera, app->is_capturing_microphone,
-        app->is_capturing_screen, GetMediaAppDisplayText(app)));
+    auto app_button = std::make_unique<ReturnToAppButton>(
+        /*panel=*/this,
+        /*is_top_row=*/true, app->is_capturing_camera,
+        app->is_capturing_microphone, app->is_capturing_screen,
+        GetMediaAppDisplayText(app));
+    app_button->expand_button()->SetVisible(false);
+    AddChildView(std::move(app_button));
+
     return;
   }
 
@@ -150,8 +271,10 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
 
   for (auto& app : apps) {
     AddChildView(std::make_unique<ReturnToAppButton>(
-        app->is_capturing_camera, app->is_capturing_microphone,
-        app->is_capturing_screen, GetMediaAppDisplayText(app)));
+        /*panel=*/this,
+        /*is_top_row=*/false, app->is_capturing_camera,
+        app->is_capturing_microphone, app->is_capturing_screen,
+        GetMediaAppDisplayText(app)));
 
     any_apps_capturing_camera |= app->is_capturing_camera;
     any_apps_capturing_microphone |= app->is_capturing_microphone;
@@ -162,10 +285,16 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
       IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT,
       static_cast<int>(apps.size()));
 
-  AddChildViewAt(std::make_unique<ReturnToAppButton>(
-                     any_apps_capturing_camera, any_apps_capturing_microphone,
-                     any_apps_capturing_screen, summary_text),
-                 0);
+  summary_row_view_ =
+      AddChildViewAt(std::make_unique<ReturnToAppButton>(
+                         /*panel=*/this,
+                         /*is_top_row=*/true, any_apps_capturing_camera,
+                         any_apps_capturing_microphone,
+                         any_apps_capturing_screen, summary_text),
+                     0);
+  summary_row_view_->AddObserver(this);
+
+  OnExpandedStateChanged(false);
 }
 
 }  // namespace ash::video_conference

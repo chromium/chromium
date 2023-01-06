@@ -1454,6 +1454,12 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT" desc="The summary text in the return to app panel of the video conference panel, specifying how many video conferencing apps are in used.">
         Used by <ph name="APP_COUNT">$1<ex>2</ex></ph> apps
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP" desc="The tooltip text for the expand button (when in collapsed state) of the return to app panel.">
+        Show apps
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP" desc="The tooltip text for the expand button (when in expanded state) of the return to app panel.">
+        Hide apps
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME" desc="Text for name of the background blur effect in the VC bubble.">
         Background Blur
       </message>
