@@ -680,6 +680,8 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<VPNFeaturePodController>(this),
               feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<LocaleFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
 
   // More placeholder tiles.
   while (tiles.size() < 10) {
