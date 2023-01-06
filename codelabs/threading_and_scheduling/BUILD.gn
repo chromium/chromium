@@ -1,0 +1,39 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/dcheck_always_on.gni")
+
+group("codelab_threading_and_scheduling") {
+  testonly = true
+  deps = [
+    ":codelab_threading_and_scheduling_multiple_threads",
+    ":codelab_threading_and_scheduling_single_task_queue",
+    ":codelab_threading_and_scheduling_task_queue_priorities",
+  ]
+  if (is_debug || dcheck_always_on) {
+    deps += [ ":codelab_threading_and_scheduling_randomized_task_queues" ]
+  }
+}
+
+executable("codelab_threading_and_scheduling_single_task_queue") {
+  sources = [ "01-single-task-queue.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_threading_and_scheduling_task_queue_priorities") {
+  sources = [ "02-task-queue-priorities.cc" ]
+  deps = [ "//base" ]
+}
+
+if (is_debug || dcheck_always_on) {
+  executable("codelab_threading_and_scheduling_randomized_task_queues") {
+    sources = [ "03-randomized-task-queues.cc" ]
+    deps = [ "//base" ]
+  }
+}
+
+executable("codelab_threading_and_scheduling_multiple_threads") {
+  sources = [ "04-multiple-threads.cc" ]
+  deps = [ "//base" ]
+}

@@ -1,0 +1,54 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("codelab_cpp101") {
+  testonly = true
+  deps = [
+    ":codelab_cpp101_factor_solution",
+    ":codelab_cpp101_fibonacci_solution",
+    ":codelab_cpp101_hello_world_solution",
+    ":codelab_cpp101_mojo_solution",
+    ":codelab_cpp101_sleep_solution",
+  ]
+}
+
+executable("codelab_cpp101_hello_world_solution") {
+  sources = [ "solutions/hello_world.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_cpp101_fibonacci_solution") {
+  sources = [ "solutions/fibonacci.cc" ]
+  deps = [ "//base" ]
+}
+
+executable("codelab_cpp101_sleep_solution") {
+  testonly = true
+  sources = [ "solutions/sleep.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
+executable("codelab_cpp101_factor_solution") {
+  testonly = true
+  sources = [ "solutions/factor.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
+executable("codelab_cpp101_mojo_solution") {
+  testonly = true
+  sources = [ "solutions/mojo.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//codelabs/cpp101/solutions/services/math/",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/base",
+  ]
+}

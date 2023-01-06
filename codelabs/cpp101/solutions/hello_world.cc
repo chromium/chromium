@@ -16,12 +16,14 @@ int main(int argc, char* argv[]) {
       *base::CommandLine::ForCurrentProcess();
 
   std::string greeting = command_line.GetSwitchValueASCII("greeting");
-  if (greeting.empty())
+  if (greeting.empty()) {
     greeting = "Hello";
+  }
 
   std::string name = command_line.GetSwitchValueASCII("name");
-  if (name.empty())
+  if (name.empty()) {
     name = "world";
+  }
 
   CHECK_GT(printf("%s, %s!\n", greeting.c_str(), name.c_str()), 0);
   LOG(INFO) << greeting << ", " << name << "!";
