@@ -273,8 +273,13 @@ class BookmarkModel : public BookmarkUndoProvider,
   // combobox of most recently modified folders.
   void ResetDateFolderModified(const BookmarkNode* node);
 
-  // Updates the last used `time` for the given `id` / `url`.
-  void UpdateLastUsedTime(const BookmarkNode* node, const base::Time time);
+  // Updates the last used `time` for the given `id` / `url`. `just_opened`
+  // indicates whether this is being called as a result of the bookmark being
+  // opened.`just_opened` being false means that this update didn't come from
+  // a user such as sync or history updating a node automatically.
+  void UpdateLastUsedTime(const BookmarkNode* node,
+                          const base::Time time,
+                          bool just_opened = false);
 
   // Clears the last used time for the given time range. Called when the user
   // clears their history. Time() and Time::Max() are used for min/max values.

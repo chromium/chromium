@@ -330,14 +330,17 @@ void BookmarkModel::Move(const BookmarkNode* node,
 }
 
 void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
-                                       const base::Time time) {
+                                       const base::Time time,
+                                       bool just_opened) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(node);
 
   base::Time last_used_time = node->date_last_used();
   UpdateLastUsedTimeImpl(node, time);
-  metrics::RecordBookmarkOpened(time, last_used_time, node->date_added());
+  if (just_opened) {
+    metrics::RecordBookmarkOpened(time, last_used_time, node->date_added());
+  }
 }
 
 void BookmarkModel::UpdateLastUsedTimeImpl(const BookmarkNode* node,

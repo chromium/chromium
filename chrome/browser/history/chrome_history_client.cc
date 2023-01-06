@@ -72,7 +72,7 @@ void ChromeHistoryClient::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
   // This call is async so the BookmarkNode could have already been deleted.
   if (!node)
     return;
-  bookmark_model_->UpdateLastUsedTime(node, time);
+  bookmark_model_->UpdateLastUsedTime(node, time, /*just_opened=*/true);
 }
 
 void ChromeHistoryClient::StopObservingBookmarkModel() {

@@ -812,6 +812,9 @@ chromium-metrics-reviews@google.com.
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     This histogram records when a bookmark is added sliced by when it was added.
+
+    Prior to M111 this histogram was overcounting events, and the data shouldn't
+    be used.
   </summary>
 </histogram>
 
@@ -823,6 +826,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This histogram records when a bookmark is added sliced by when it was last
     used.
+
+    Prior to M111 this histogram was overcounting events, and the data shouldn't
+    be used.
   </summary>
 </histogram>
 

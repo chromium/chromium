@@ -853,15 +853,26 @@ TEST_F(BookmarkModelTest, UpdateLastUsedTimeInRange) {
   GURL url("http://foo.com");
   const BookmarkNode* url_node =
       model_->AddURL(bookmark_bar_node, 0, title, url, nullptr, added_time);
-  model_->UpdateLastUsedTime(url_node, used_time_1);
+  model_->UpdateLastUsedTime(url_node, used_time_1, /*just_opened=*/true);
   EXPECT_EQ(used_time_1, url_node->date_last_used());
   histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 0);
   histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 1);
   histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
 
   base::Time used_time_2 = added_time + base::Days(7);
-  model_->UpdateLastUsedTime(url_node, used_time_2);
+  model_->UpdateLastUsedTime(url_node, used_time_2, /*just_opened=*/true);
   EXPECT_EQ(used_time_2, url_node->date_last_used());
+  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5, 1);
+  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
+  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 7, 1);
+
+  // This update isn't a result of an open, but rather a sync event.
+  // The value should update while the histogram count should remain the same.
+  base::Time used_time_3 = added_time + base::Days(7);
+  model_->UpdateLastUsedTime(url_node, used_time_3, /*just_opened=*/false);
+  EXPECT_EQ(used_time_3, url_node->date_last_used());
   histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
   histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5, 1);
   histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
