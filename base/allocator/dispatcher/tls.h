@@ -198,7 +198,7 @@ struct ThreadLocalStorage {
 
   // Get the data item for the current thread. If no data is registered so far,
   // find a free item in the chunks and register it for the current thread.
-  DISABLE_TSAN_INSTRUMENTATION PayloadType* GetThreadLocalData() {
+  PayloadType* GetThreadLocalData() {
     auto& tls_system = dereference(tls_system_);
 
     auto* slot = static_cast<SingleSlot*>(tls_system.GetThreadSpecificData());
@@ -208,7 +208,7 @@ struct ThreadLocalStorage {
       CHECK(tls_system.SetThreadSpecificData(slot));
 
       // Reset the content to wipe out any previous data.
-      slot->item = {};
+      Reset(slot->item);
     }
 
     return &(slot->item);
@@ -390,6 +390,12 @@ struct ThreadLocalStorage {
       chunk = next_chunk;
     }
   }
+
+  // Reset a single item to its default value.
+  // Since items are re-used, they may be accessed from different threads,
+  // causing TSan to trigger. Therefore, the reset is exempt from TSan
+  // instrumentation.
+  DISABLE_TSAN_INSTRUMENTATION void Reset(PayloadType& item) { item = {}; }
 
   AllocatorType allocator_;
   TLSSystemType tls_system_;
