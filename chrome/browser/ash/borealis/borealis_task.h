@@ -96,6 +96,7 @@ class CreateDiskImage : public BorealisTask {
   void RunInternal(BorealisContext* context) override;
 
  private:
+  void OnConciergeAvailable(BorealisContext* context, bool is_available);
   void OnCreateDiskImage(
       BorealisContext* context,
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> response);
