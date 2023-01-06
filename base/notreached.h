@@ -13,9 +13,15 @@
 namespace logging {
 
 // Under these conditions NOTREACHED() will effectively either log or DCHECK.
+#if CHECK_WILL_STREAM()
 #define NOTREACHED()   \
   CHECK_FUNCTION_IMPL( \
       ::logging::NotReachedError::NotReached(__FILE__, __LINE__), false)
+#else
+#define NOTREACHED()                                       \
+  (true) ? ::logging::NotReachedError::TriggerNotReached() \
+         : EAT_CHECK_STREAM_PARAMS()
+#endif
 
 // The NOTIMPLEMENTED() macro annotates codepaths which have not been
 // implemented yet. If output spam is a serious concern,

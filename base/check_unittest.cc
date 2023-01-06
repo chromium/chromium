@@ -412,7 +412,8 @@ TEST(CheckDeathTest, OstreamVsToString) {
                CHECK_EQ(g, h));
 }
 
-#define EXPECT_LOG_ERROR(expected_line, expr, msg)                             \
+#define EXPECT_LOG_ERROR_WITH_FILENAME(expected_file, expected_line, expr,     \
+                                       msg)                                    \
   do {                                                                         \
     static bool got_log_message = false;                                       \
     ASSERT_EQ(logging::GetLogMessageHandler(), nullptr);                       \
@@ -423,7 +424,7 @@ TEST(CheckDeathTest, OstreamVsToString) {
       got_log_message = true;                                                  \
       EXPECT_EQ(severity, logging::LOG_ERROR);                                 \
       EXPECT_EQ(str.substr(message_start), (msg));                             \
-      EXPECT_STREQ(__FILE__, file);                                            \
+      EXPECT_STREQ(expected_file, file);                                       \
       EXPECT_EQ(expected_line, line);                                          \
       return true;                                                             \
     });                                                                        \
@@ -431,6 +432,9 @@ TEST(CheckDeathTest, OstreamVsToString) {
     EXPECT_TRUE(got_log_message);                                              \
     logging::SetLogMessageHandler(nullptr);                                    \
   } while (0)
+
+#define EXPECT_LOG_ERROR(expected_line, expr, msg) \
+  EXPECT_LOG_ERROR_WITH_FILENAME(__FILE__, expected_line, expr, msg)
 
 #define EXPECT_NO_LOG(expr)                                                    \
   do {                                                                         \
@@ -446,13 +450,18 @@ TEST(CheckDeathTest, OstreamVsToString) {
   } while (0)
 
 TEST(CheckDeathTest, NotReached) {
-#if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED) && !DCHECK_IS_ON()
+#if DCHECK_IS_ON()
+  // Expect a DCHECK with streamed params intact.
+  EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
+#elif CHECK_WILL_STREAM()
   // Expect LOG(ERROR) that looks like CHECK(false) with streamed params intact.
   EXPECT_LOG_ERROR(__LINE__, NOTREACHED() << "foo",
                    "Check failed: false. foo\n");
 #else
-  // Expect a DCHECK with streamed params intact.
-  EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
+  // Expect LOG(ERROR) that looks like CHECK(false) without file, line or
+  // streamed params.
+  EXPECT_LOG_ERROR_WITH_FILENAME("", -1, NOTREACHED() << "foo",
+                                 "Check failed: false. \n");
 #endif
 }
 
