@@ -702,6 +702,48 @@ void CertBuilder::SetCertificatePolicies(
   SetExtension(der::Input(kCertificatePoliciesOid), FinishCBB(cbb.get()));
 }
 
+void CertBuilder::SetPolicyMappings(
+    const std::vector<std::pair<std::string, std::string>>& policy_mappings) {
+  // From RFC 5280:
+  //   PolicyMappings ::= SEQUENCE SIZE (1..MAX) OF SEQUENCE {
+  //        issuerDomainPolicy      CertPolicyId,
+  //        subjectDomainPolicy     CertPolicyId }
+  if (policy_mappings.empty()) {
+    EraseExtension(der::Input(kPolicyMappingsOid));
+    return;
+  }
+
+  bssl::ScopedCBB cbb;
+  CBB mappings_sequence;
+  ASSERT_TRUE(CBB_init(cbb.get(), 64));
+  ASSERT_TRUE(CBB_add_asn1(cbb.get(), &mappings_sequence, CBS_ASN1_SEQUENCE));
+  for (const auto& [issuer_domain_policy, subject_domain_policy] :
+       policy_mappings) {
+    CBB mapping_sequence;
+    CBB issuer_policy_object;
+    CBB subject_policy_object;
+    ASSERT_TRUE(
+        CBB_add_asn1(&mappings_sequence, &mapping_sequence, CBS_ASN1_SEQUENCE));
+
+    ASSERT_TRUE(CBB_add_asn1(&mapping_sequence, &issuer_policy_object,
+                             CBS_ASN1_OBJECT));
+    ASSERT_TRUE(CBB_add_asn1_oid_from_text(&issuer_policy_object,
+                                           issuer_domain_policy.data(),
+                                           issuer_domain_policy.size()));
+
+    ASSERT_TRUE(CBB_add_asn1(&mapping_sequence, &subject_policy_object,
+                             CBS_ASN1_OBJECT));
+    ASSERT_TRUE(CBB_add_asn1_oid_from_text(&subject_policy_object,
+                                           subject_domain_policy.data(),
+                                           subject_domain_policy.size()));
+
+    ASSERT_TRUE(CBB_flush(&mappings_sequence));
+  }
+
+  SetExtension(der::Input(kPolicyMappingsOid), FinishCBB(cbb.get()),
+               /*critical=*/true);
+}
+
 void CertBuilder::SetPolicyConstraints(
     absl::optional<uint64_t> require_explicit_policy,
     absl::optional<uint64_t> inhibit_policy_mapping) {

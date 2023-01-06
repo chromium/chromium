@@ -190,6 +190,13 @@ class CertBuilder {
   // If |policy_oids| is empty, the extension will be removed.
   void SetCertificatePolicies(const std::vector<std::string>& policy_oids);
 
+  // Sets the policyMappings extension with the specified mappings, which are
+  // pairs of issuerDomainPolicy -> subjectDomainPolicy mappings in dotted
+  // string notation.
+  // If |policy_mappings| is empty, the extension will be removed.
+  void SetPolicyMappings(
+      const std::vector<std::pair<std::string, std::string>>& policy_mappings);
+
   // Sets the PolicyConstraints extension. If both |require_explicit_policy|
   // and |inhibit_policy_mapping| are nullopt, the PolicyConstraints extension
   // will removed.
