@@ -32,6 +32,8 @@ int32_t NextID(int32_t* counter) {
   return value;
 }
 
+}  // namespace
+
 class PictureBufferManagerImpl : public PictureBufferManager {
  public:
   PictureBufferManagerImpl(bool allocate_gpu_memory_buffers,
@@ -138,7 +140,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
           // Generate a mailbox while we are still on the GPU thread.
           picture_data.mailbox_holders[j] = gpu::MailboxHolder(
-              command_buffer_helper_->CreateMailbox(service_id),
+              command_buffer_helper_->CreateLegacyMailbox(service_id),
               gpu::SyncToken(), texture_target);
         }
       }
@@ -466,8 +468,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   std::map<int32_t, PictureBufferData> picture_buffers_
       GUARDED_BY(picture_buffers_lock_);
 };
-
-}  // namespace
 
 // static
 scoped_refptr<PictureBufferManager> PictureBufferManager::Create(

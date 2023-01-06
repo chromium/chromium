@@ -32,6 +32,8 @@ class GLImage;
 
 namespace media {
 
+class PictureBufferManagerImpl;
+
 // TODO(sandersd): CommandBufferHelper does not inherently need to be ref
 // counted, but some clients want that (VdaVideoDecoder and PictureBufferManager
 // both hold a ref to the same CommandBufferHelper). Consider making an owned
@@ -135,13 +137,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
                                       gl::GLImage* image) = 0;
 #endif
 
-  // Creates a mailbox for a texture.
-  //
-  // TODO(sandersd): Specify the behavior when the stub has been destroyed. The
-  // current implementation returns an empty (zero) mailbox. One solution would
-  // be to add a HasStub() method, and not define behavior when it is false.
-  virtual gpu::Mailbox CreateMailbox(GLuint service_id) = 0;
-
   // Set the callback to be called when our stub is destroyed. This callback
   // may not change the current context.
   virtual void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) = 0;
@@ -163,6 +158,20 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   virtual ~CommandBufferHelper() = default;
 
  private:
+#if !BUILDFLAG(IS_ANDROID)
+  // Creates a legacy mailbox for a texture.
+  // NOTE: We are in the process of eliminating this method. DO NOT ADD ANY NEW
+  // USAGES - instead, reach out to shared-image-team@ with your use case. See
+  // crbug.com/1273084.
+  //
+  // TODO(sandersd): Specify the behavior when the stub has been destroyed. The
+  // current implementation returns an empty (zero) mailbox. One solution would
+  // be to add a HasStub() method, and not define behavior when it is false.
+  virtual gpu::Mailbox CreateLegacyMailbox(GLuint service_id) = 0;
+
+  friend class PictureBufferManagerImpl;
+#endif
+
   friend class base::DeleteHelper<CommandBufferHelper>;
   friend class base::RefCountedDeleteOnSequence<CommandBufferHelper>;
 };

@@ -67,7 +67,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
 #else
   bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override;
 #endif
-  gpu::Mailbox CreateMailbox(GLuint service_id) override;
+  gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override;
   void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) override;
   bool IsPassthrough() const override;
   bool SupportsTextureRectangle() const override;

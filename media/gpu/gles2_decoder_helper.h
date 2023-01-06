@@ -26,6 +26,8 @@ class GLContext;
 
 namespace media {
 
+class CommandBufferHelperImpl;
+
 // Utility methods to simplify working with a gpu::DecoderContext from
 // inside VDAs.
 class MEDIA_GPU_EXPORT GLES2DecoderHelper {
@@ -57,9 +59,15 @@ class MEDIA_GPU_EXPORT GLES2DecoderHelper {
   // Gets the associated GLContext.
   virtual gl::GLContext* GetGLContext() = 0;
 
-  // Creates a mailbox for a texture.
-  virtual gpu::Mailbox CreateMailbox(
+ private:
+  // Creates a legacy mailbox for a texture.
+  // NOTE: We are in the process of eliminating this method. DO NOT ADD ANY NEW
+  // USAGES - instead, reach out to shared-image-team@ with your use case. See
+  // crbug.com/1273084.
+  virtual gpu::Mailbox CreateLegacyMailbox(
       gpu::gles2::AbstractTexture* texture_ref) = 0;
+
+  friend class CommandBufferHelperImpl;
 };
 
 }  // namespace media

@@ -81,14 +81,14 @@ class GLES2DecoderHelperImpl : public GLES2DecoderHelper {
     return decoder_->GetGLContext();
   }
 
-  gpu::Mailbox CreateMailbox(AbstractTexture* texture) override {
+ private:
+  gpu::Mailbox CreateLegacyMailbox(AbstractTexture* texture) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateLegacyMailbox();
     mailbox_manager_->ProduceTexture(mailbox, texture->GetTextureBase());
     return mailbox;
   }
 
- private:
   raw_ptr<gpu::DecoderContext> decoder_;
   raw_ptr<gpu::MailboxManager> mailbox_manager_;
   THREAD_CHECKER(thread_checker_);
