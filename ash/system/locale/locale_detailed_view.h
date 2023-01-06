@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/ash_export.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/containers/flat_map.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -14,7 +15,8 @@
 namespace ash {
 
 // The detailed view to show when the locale feature button is clicked.
-class LocaleDetailedView : public TrayDetailedView {
+// The view shows a list of languages which can be used for demo mode.
+class ASH_EXPORT LocaleDetailedView : public TrayDetailedView {
  public:
   METADATA_HEADER(LocaleDetailedView);
 
@@ -25,6 +27,8 @@ class LocaleDetailedView : public TrayDetailedView {
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
+
+  views::View* GetScrollContentForTest();
 
  private:
   void CreateItems();

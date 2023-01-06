@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/actionable_view.h"
@@ -132,6 +133,12 @@ void LocaleDetailedView::CreateItems() {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_LOCALE_TITLE);
   CreateScrollableList();
 
+  // Setup the container for the locale list views.
+  views::View* container =
+      features::IsQsRevampEnabled()
+          ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
+          : scroll_content();
+
   const std::vector<LocaleInfo>& locales =
       Shell::Get()->system_tray_model()->locale()->locale_list();
   int id = 0;
@@ -141,7 +148,7 @@ void LocaleDetailedView::CreateItems() {
         Shell::Get()->system_tray_model()->locale()->current_locale_iso_code();
     auto* item =
         new LocaleItemView(this, entry.iso_code, entry.display_name, checked);
-    scroll_content()->AddChildView(item);
+    container->AddChildView(item);
     item->SetID(id);
     id_to_locale_[id] = entry.iso_code;
     ++id;
@@ -158,6 +165,11 @@ void LocaleDetailedView::HandleViewClicked(views::View* view) {
     Shell::Get()->system_tray_model()->client()->SetLocaleAndExit(
         locale_iso_code);
   }
+}
+
+views::View* LocaleDetailedView::GetScrollContentForTest() {
+  // Provide access to the protected scroll_content() in the base class.
+  return scroll_content();
 }
 
 BEGIN_METADATA(LocaleDetailedView, TrayDetailedView)

@@ -3078,6 +3078,7 @@ test("ash_unittests") {
     "system/input_device_settings/input_device_settings_controller_unittest.cc",
     "system/keyboard_brightness/keyboard_backlight_color_controller_unittest.cc",
     "system/keyboard_brightness/keyboard_backlight_color_nudge_controller_unittest.cc",
+    "system/locale/locale_detailed_view_unittest.cc",
     "system/locale/locale_feature_pod_controller_unittest.cc",
     "system/machine_learning/user_settings_event_logger_unittest.cc",
     "system/media/media_notification_provider_impl_unittest.cc",
