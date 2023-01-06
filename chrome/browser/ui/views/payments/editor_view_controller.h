@@ -155,6 +155,7 @@ class EditorViewController : public PaymentRequestSheetController,
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;
   void FillContentView(views::View* content_view) override;
+  bool ShouldAccelerateEnterKey() override;
 
   // Combobox callback.
   virtual void OnPerformAction(ValidatingCombobox* combobox);

@@ -44,6 +44,8 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
   bool ShouldShowSecondaryButton() override;
   std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
+  bool GetSheetId(DialogViewID* sheet_id) override;
+  bool ShouldAccelerateEnterKey() override;
 };
 
 }  // namespace payments

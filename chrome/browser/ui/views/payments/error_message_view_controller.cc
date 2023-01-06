@@ -93,4 +93,13 @@ void ErrorMessageViewController::FillContentView(views::View* content_view) {
   content_view->AddChildView(std::make_unique<PaymentsErrorLabel>());
 }
 
+bool ErrorMessageViewController::GetSheetId(DialogViewID* sheet_id) {
+  *sheet_id = DialogViewID::ERROR_SHEET;
+  return true;
+}
+
+bool ErrorMessageViewController::ShouldAccelerateEnterKey() {
+  return true;
+}
+
 }  // namespace payments

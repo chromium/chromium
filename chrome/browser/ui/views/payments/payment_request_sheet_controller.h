@@ -180,6 +180,12 @@ class PaymentRequestSheetController {
   // Returns true to display dynamic top and bottom border for hidden contents.
   virtual bool DisplayDynamicBorderForHiddenContents();
 
+  // Returns true if the subclass wants the 'Enter' key to be accelerated to
+  // always map to performing the primary button action (irregardless of the
+  // currently focused element). If a subclass returns true for this, it must
+  // also return true for ShouldShowPrimaryButton.
+  virtual bool ShouldAccelerateEnterKey();
+
   void CloseButtonPressed();
 
   views::MdTextButton* primary_button() { return primary_button_; }

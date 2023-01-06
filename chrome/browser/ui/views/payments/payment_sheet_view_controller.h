@@ -51,6 +51,7 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
   std::unique_ptr<views::View> CreateExtraFooterView() override;
+  bool GetSheetId(DialogViewID* sheet_id) override;
 
   // These functions create the various sections and rows of the payment sheet.
   // Where applicable, they also populate |accessible_content|, which shouldn't

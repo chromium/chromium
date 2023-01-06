@@ -463,6 +463,11 @@ PaymentSheetViewController::CreateExtraFooterView() {
   return CreateProductLogoFooterView();
 }
 
+bool PaymentSheetViewController::GetSheetId(DialogViewID* sheet_id) {
+  *sheet_id = DialogViewID::PAYMENT_REQUEST_SHEET;
+  return true;
+}
+
 // Creates the Order Summary row, which contains an "Order Summary" label,
 // an inline list of display items, a Total Amount label, and a Chevron. Returns
 // nullptr if WeakPtr<PaymentRequestSpec> has become null.

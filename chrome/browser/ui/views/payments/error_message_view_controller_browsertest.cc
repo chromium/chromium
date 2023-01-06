@@ -42,4 +42,34 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
                            /*wait_for_animation=*/false);
 }
 
+IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
+                       EnterKeyClosesErrorDialog) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &payment_method_name);
+
+  NavigateTo("/payment_request_fail_complete_test.html");
+
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
+
+  // We are ready to pay.
+  ASSERT_TRUE(IsPayButtonEnabled());
+
+  // Once "Pay" is clicked, the page will call complete('fail') and the error
+  // message should be shown.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // Trigger the 'Enter' accelerator, which should be present and mapped to
+  // close the dialog.
+  views::View* error_sheet =
+      dialog_view()->GetViewByID(static_cast<int>(DialogViewID::ERROR_SHEET));
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  EXPECT_TRUE(error_sheet->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
+  WaitForObservedEvent();
+}
+
 }  // namespace payments

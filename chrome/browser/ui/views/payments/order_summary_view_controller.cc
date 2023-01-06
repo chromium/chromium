@@ -209,4 +209,13 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
           .release());
 }
 
+bool OrderSummaryViewController::GetSheetId(DialogViewID* sheet_id) {
+  *sheet_id = DialogViewID::ORDER_SUMMARY_SHEET;
+  return true;
+}
+
+bool OrderSummaryViewController::ShouldAccelerateEnterKey() {
+  return true;
+}
+
 }  // namespace payments

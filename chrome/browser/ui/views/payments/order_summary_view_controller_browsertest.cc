@@ -18,6 +18,56 @@ using PaymentRequestOrderSummaryViewControllerTest =
     PaymentRequestBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
+                       EnterKeyCompletesPayment) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &payment_method_name);
+
+  NavigateTo("/payment_request_dynamic_shipping_test.html");
+  // In MI state, shipping is $5.00.
+  autofill::AutofillProfile michigan = autofill::test::GetFullProfile2();
+  michigan.set_use_count(100U);
+  AddAutofillProfile(michigan);
+  // In CA state, there is free shipping.
+  autofill::AutofillProfile california = autofill::test::GetFullProfile();
+  california.set_use_count(50U);
+  AddAutofillProfile(california);
+
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
+
+  // Select a shipping address in order to enable the Continue button.
+  OpenShippingAddressSectionScreen();
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::SPEC_DONE_UPDATING,
+                               DialogEvent::BACK_NAVIGATION});
+  ClickOnChildInListViewAndWait(
+      /* child_index=*/0, /*total_num_children=*/2,
+      DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW,
+      /*wait_for_animation=*/false);
+  // Wait for the animation here explicitly, otherwise
+  // ClickOnChildInListViewAndWait tries to install an AnimationDelegate before
+  // the animation is kicked off (since that's triggered off of the spec being
+  // updated) and this hits a DCHECK.
+  WaitForAnimation();
+
+  OpenOrderSummaryScreen();
+
+  ASSERT_TRUE(IsPayButtonEnabled());
+
+  // Trigger the 'Enter' accelerator, which should be present and mapped to
+  // close the dialog.
+  views::View* summary_sheet = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::ORDER_SUMMARY_SHEET));
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  EXPECT_TRUE(summary_sheet->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
+  WaitForObservedEvent();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
                        OrderSummaryReflectsShippingOption) {
   std::string payment_method_name;
   InstallPaymentApp("a.com", "/payment_request_success_responder.js",

@@ -281,8 +281,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
       .WillOnce(QuitMessageLoop(&data_loop));
   views::View* editor_sheet = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::SHIPPING_ADDRESS_EDITOR_SHEET));
-  editor_sheet->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
+  EXPECT_TRUE(editor_sheet->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);

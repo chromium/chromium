@@ -162,6 +162,13 @@ void EditorViewController::FillContentView(views::View* content_view) {
   content_view->AddChildView(CreateEditorView().release());
 }
 
+bool EditorViewController::ShouldAccelerateEnterKey() {
+  // We allow the user to confirm their details by pressing 'enter' irregardless
+  // of which edit field is currently focused, for quicker navigation through
+  // the form.
+  return true;
+}
+
 void EditorViewController::UpdateEditorView() {
   UpdateContentView();
   UpdateFocus(GetFirstFocusedView());

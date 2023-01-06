@@ -259,7 +259,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   auto view =
       views::Builder<internal::SheetView>(
           std::make_unique<internal::SheetView>(
-              primary_button_
+              ShouldAccelerateEnterKey()
                   ? base::BindRepeating(&PaymentRequestSheetController::
                                             PerformPrimaryButtonAction,
                                         weak_ptr_factory_.GetWeakPtr())
@@ -546,6 +546,12 @@ bool PaymentRequestSheetController::GetSheetId(DialogViewID* sheet_id) {
 
 bool PaymentRequestSheetController::DisplayDynamicBorderForHiddenContents() {
   return true;
+}
+
+bool PaymentRequestSheetController::ShouldAccelerateEnterKey() {
+  // Subclasses must explicitly opt-into this behavior. Be aware of the risks of
+  // enabling click-jacking of the Enter key; see https://crbug.com/1403539
+  return false;
 }
 
 void PaymentRequestSheetController::CloseButtonPressed() {
