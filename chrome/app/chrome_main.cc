@@ -74,6 +74,7 @@ ChromeMain(int argc, const char** argv);
 #endif
 
 extern "C" void V8SetRecordingOrReplaying(void* handle);
+extern "C" void V8InitializeNotRecordingOrReplaying();
 
 #if BUILDFLAG(IS_LINUX)
 #include "./record_replay_main.cc"
@@ -99,6 +100,8 @@ int ChromeMain(int argc, const char** argv) {
   void* handle = RecordReplayAttach(&argc, &argv);
   if (handle) {
     V8SetRecordingOrReplaying(handle);
+  } else {
+    V8InitializeNotRecordingOrReplaying();
   }
 #elif BUILDFLAG(IS_MAC)
   // Note: On macOS the library handle doesn't need to be specified when using dlsym.
