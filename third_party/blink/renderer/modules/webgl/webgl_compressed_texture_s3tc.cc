@@ -35,6 +35,8 @@ WebGLCompressedTextureS3TC::WebGLCompressedTextureS3TC(
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_texture_compression_s3tc");
   context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_EXT_texture_compression_dxt1");
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_texture_compression_dxt1");
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_texture_compression_dxt3");
@@ -53,10 +55,14 @@ WebGLExtensionName WebGLCompressedTextureS3TC::GetName() const {
 
 bool WebGLCompressedTextureS3TC::Supported(WebGLRenderingContextBase* context) {
   Extensions3DUtil* extensions_util = context->ExtensionsUtil();
+  // Paradoxically, ANGLE exposes GL_EXT_texture_compression_dxt1 and
+  // not GL_ANGLE_texture_compression_dxt1.
   return extensions_util->SupportsExtension(
              "GL_EXT_texture_compression_s3tc") ||
-         (extensions_util->SupportsExtension(
-              "GL_ANGLE_texture_compression_dxt1") &&
+         ((extensions_util->SupportsExtension(
+               "GL_EXT_texture_compression_dxt1") ||
+           extensions_util->SupportsExtension(
+               "GL_ANGLE_texture_compression_dxt1")) &&
           extensions_util->SupportsExtension(
               "GL_ANGLE_texture_compression_dxt3") &&
           extensions_util->SupportsExtension(
