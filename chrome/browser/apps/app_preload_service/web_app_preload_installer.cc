@@ -240,6 +240,29 @@ void WebAppPreloadInstaller::OnManifestParsed(
       GURL(app.GetWebAppManifestId()), app.GetWebAppOriginalManifestUrl(),
       parsing_result->GetDict());
 
+  if (!install_info) {
+    LOG(ERROR)
+        << "Failed to convert parsed manifest into WebAppInstallInfo for app "
+        << app.GetName();
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  std::string local_manifest_id = web_app::GenerateAppIdUnhashed(
+      install_info->manifest_id, install_info->start_url);
+  if (app.GetWebAppManifestId() != local_manifest_id) {
+    // The data parsing has some inconsistencies with the server definition, so
+    // don't install the app.
+    LOG(ERROR) << app.GetName()
+               << " failed to install due to inconsistent manifest ID.";
+    LOG(ERROR) << "Server generated manifest ID: " << app.GetWebAppManifestId();
+    LOG(ERROR) << "Locally generated manifest ID: " << local_manifest_id;
+
+    // TODO(b/264493427): Add logging to record when this happens.
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   SendInstallCommand(std::move(callback), std::move(install_info));
 }
 

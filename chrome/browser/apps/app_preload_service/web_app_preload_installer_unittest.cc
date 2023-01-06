@@ -350,4 +350,100 @@ TEST_F(WebAppPreloadInstallerTest, ManifestToWebAppInstallInfoNoScope) {
   EXPECT_EQ(install_info->scope, install_info->start_url);
 }
 
+// The manifest id in the proto does not match the calculated manifest id.
+TEST_F(WebAppPreloadInstallerTest, InstallMismatchedDataManifestId) {
+  WebAppPreloadInstaller installer(profile());
+
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_name("Example App");
+  app.set_package_id("web:https://www.example.com/manifest_id");
+  app.set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+
+  auto* web_extras = app.mutable_web_extras();
+  web_extras->set_original_manifest_url(
+      "https://www.example.com/manifest.json");
+  web_extras->set_manifest_url(
+      "https://meltingpot.googleusercontent.com/manifest.json");
+
+  url_loader_factory_.AddResponse(
+      "https://meltingpot.googleusercontent.com/manifest.json", R"({
+    "name": "Example App",
+    "start_url": "/index.html",
+    "scope": "/"
+  })");
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  ASSERT_FALSE(result.Get());
+
+  auto app_id = web_app::GenerateAppId(
+      absl::nullopt, GURL("https://www.example.com/index.html"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
+  ASSERT_FALSE(found);
+}
+
+TEST_F(WebAppPreloadInstallerTest, ManifestFileIsNotJSON) {
+  WebAppPreloadInstaller installer(profile());
+
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_name("Example App");
+  app.set_package_id("web:https://www.example.com/manifest_id");
+  app.set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+
+  auto* web_extras = app.mutable_web_extras();
+  web_extras->set_original_manifest_url(
+      "https://www.example.com/manifest.json");
+  web_extras->set_manifest_url(
+      "https://meltingpot.googleusercontent.com/manifest.json");
+
+  url_loader_factory_.AddResponse(
+      "https://meltingpot.googleusercontent.com/manifest.json", R"({
+    INVALID
+  })");
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  ASSERT_FALSE(result.Get());
+
+  auto app_id = web_app::GenerateAppId(
+      absl::nullopt, GURL("https://www.example.com/index.html"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
+  ASSERT_FALSE(found);
+}
+
+TEST_F(WebAppPreloadInstallerTest, ManifestFileIsHasMissingFields) {
+  WebAppPreloadInstaller installer(profile());
+
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_name("Example App");
+  app.set_package_id("web:https://www.example.com/manifest_id");
+  app.set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+
+  auto* web_extras = app.mutable_web_extras();
+  web_extras->set_original_manifest_url(
+      "https://www.example.com/manifest.json");
+  web_extras->set_manifest_url(
+      "https://meltingpot.googleusercontent.com/manifest.json");
+
+  url_loader_factory_.AddResponse(
+      "https://meltingpot.googleusercontent.com/manifest.json", R"({
+    "is_valid": "no."
+  })");
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  ASSERT_FALSE(result.Get());
+
+  auto app_id = web_app::GenerateAppId(
+      absl::nullopt, GURL("https://www.example.com/index.html"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
+  ASSERT_FALSE(found);
+}
+
 }  // namespace apps
