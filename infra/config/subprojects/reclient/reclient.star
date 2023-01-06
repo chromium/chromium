@@ -413,6 +413,7 @@ ci.builder(
     reclient_bootstrap_env = {
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_deps_cache_dir": "",
+        "RBE_enable_deps_cache": "false",
         "RBE_clang_depscan_archive": "true",
     },
     reclient_cache_silo = "Comparison Linux remote links - cache siloed",
@@ -432,6 +433,7 @@ ci.builder(
     reclient_bootstrap_env = {
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_deps_cache_dir": "",
+        "RBE_enable_deps_cache": "false",
         "RBE_clang_depscan_archive": "true",
         "RBE_use_unified_uploads": "false",
     },
