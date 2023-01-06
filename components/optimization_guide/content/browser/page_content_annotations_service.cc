@@ -467,7 +467,6 @@ void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
   }
 
   if (page_url.empty() || !google_util::IsGoogleSearchUrl(GURL(page_url))) {
-    LogRelatedSearchesExtracted(false);
     return;
   }
 
