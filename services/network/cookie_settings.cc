@@ -231,21 +231,24 @@ CookieSettings::GetCookieSettingWithMetadata(
     if (block_third_party_cookies_ && is_third_party_request &&
         !base::Contains(third_party_cookies_allowed_schemes_,
                         first_party_url.scheme())) {
+      cookie_setting = CONTENT_SETTING_BLOCK;
+      third_party_blocking_outcome =
+          GetThirdPartyBlockingScope(first_party_url);
+
       // See if a Storage Access permission grant can unblock.
       if (ShouldConsiderStorageAccessGrants(query_reason) &&
           IsAllowedByStorageAccessGrant(url, first_party_url)) {
+        cookie_setting = CONTENT_SETTING_ALLOW;
         storage_access_result = net::cookie_util::StorageAccessResult::
             ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+        third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
       } else if (overrides.Has(
                      net::CookieSettingOverride::kForceThirdPartyByUser)) {
+        // See if a user bypass can unblock.
         cookie_setting = CONTENT_SETTING_ALLOW;
         third_party_blocking_outcome = ThirdPartyBlockingOutcome::kForceAllowed;
         storage_access_result =
             net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
-      } else {
-        cookie_setting = CONTENT_SETTING_BLOCK;
-        third_party_blocking_outcome =
-            GetThirdPartyBlockingScope(first_party_url);
       }
     }
   }
