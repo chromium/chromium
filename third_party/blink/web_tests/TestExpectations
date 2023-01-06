@@ -6080,7 +6080,6 @@ crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoratio
 # Sheriff 2022-07-28
 # Failure on all platforms was added before, see crbug.com/1306770
 crbug.com/1348118 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass Timeout ]
-crbug.com/1348118 [ Linux ] virtual/first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Pass Timeout ]
 # See crbug.com/1344277 for Crash and Failure
 crbug.com/1348118 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass Timeout ]
 
@@ -6235,7 +6234,6 @@ crbug.com/1367067 [ Linux ] external/wpt/preload/preload-dynamic-csp.html [ Cras
 crbug.com/1369642 [ Mac ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 
 # Temporarily expect timeouts related to post message blocking
-crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-first-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-third-party-to-first-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-third-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
@@ -6855,7 +6853,6 @@ crbug.com/1401318 [ Debug Linux ] external/wpt/dom/events/scrolling/scrollend-ev
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 # Temporarily disable to unblock WebRTC roll. Two of the expectations will go from FAIL to PASS.
-crbug.com/webrtc/14175 external/wpt/webrtc/RTCRtpReceiver-getStats.https.html [ Failure Pass ]
 
 # image-set() failures (sheriff 2022-12-16)
 external/wpt/css/css-images/image-set/image-set-empty-url-rendering.html [ Failure Pass ]

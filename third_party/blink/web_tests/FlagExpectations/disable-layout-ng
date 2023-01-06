@@ -15,7 +15,6 @@
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.https.html [ Timeout ]
 crbug.com/626703 virtual/idna-2008/external/wpt/url/url-setters-a-area.window.html?include=mailto [ Crash Failure ]
-crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.html [ Timeout ]
 crbug.com/626703 virtual/idna-2008/external/wpt/url/a-element-xhtml.xhtml?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-text/bidi/bidi-tab-001.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/response-status-code.html [ Timeout ]
@@ -1629,7 +1628,6 @@ crbug.com/958381 external/wpt/css/css-pseudo/selection-input-011.html [ Failure 
 crbug.com/958381 external/wpt/css/css-pseudo/selection-textarea-011.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-text/white-space/tab-bidi-001.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-text/word-break/break-boundary-2-chars-001.html [ Failure ]
-crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/border-writing-mode-dynamic-001.html [ Failure ]
 crbug.com/958381 tables/mozilla/bugs/bug137388-3.html [ Failure ]
 
