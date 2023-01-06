@@ -3689,7 +3689,7 @@
       },
       'win-fieldtrial-rel': {
         'mixins': [
-            'win10',
+            'win10-20h2',
             'finch-chromium-swarming-pool',
         ],
         'test_suites': {
@@ -3723,7 +3723,7 @@
       'win10-rel-no-external-ip': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
           'isolate_profile_data',
         ],
         'swarming': {
