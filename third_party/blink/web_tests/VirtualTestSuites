@@ -1695,5 +1695,20 @@
     ],
     "args": ["--js-flags=--harmony-rab-gsab"],
     "expires": "Jul 1, 2023"
+  },
+
+  "This individual test must be run separately from others, because it makes a",
+  "huge memory allocation that often causes OOM if other tests have run in the",
+  "same content_shell harness. For this reason this virtual test suite must",
+  "never expire. Virtual test suites require command line args so pick one",
+  "which is effectively a no-op.",
+  {
+    "prefix": "webgl-oversized-printing",
+    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "bases": [
+      "printing/webgl-oversized-printing.html"
+    ],
+    "args": ["--enable-webgl-developer-extensions"],
+    "expires": "never"
   }
 ]

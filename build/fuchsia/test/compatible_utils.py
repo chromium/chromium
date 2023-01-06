@@ -46,7 +46,7 @@ def get_host_arch() -> str:
     # platform.machine() returns AMD64 on 64-bit Windows.
     if host_arch in ['x86_64', 'AMD64']:
         return 'x64'
-    if host_arch == 'aarch64':
+    if host_arch in ['aarch64', 'arm64']:
         return 'arm64'
     raise NotImplementedError('Unsupported host architecture: %s' % host_arch)
 

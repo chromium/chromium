@@ -1857,8 +1857,13 @@ crbug.com/1395499 http/tests/auto-sizes-image-use-counter.html [ Failure Pass ]
 crbug.com/1310079 [ Mac ] virtual/elastic-overscroll/fixed-elements-dont-overscroll.html [ Failure ]
 crbug.com/1310079 [ Linux ] virtual/elastic-overscroll/fixed-elements-dont-overscroll.html [ Failure ]
 
-# For win10, see crbug.com/955109
-crbug.com/538697 [ Win ] printing/webgl-oversized-printing.html [ Crash Failure ]
+# This test is run in its own content_shell invocation via a VirtualTestSuite to
+# isolate it from other tests, because it makes a huge memory allocation that
+# tends to cause OOM if run after other tests. The non-VirtualTestSuite version
+# of the test is skipped in NeverFixTests. The VirtualTestSuite version must
+# explicitly be marked Pass in order to bypass the expected Skip of the default
+# version.
+crbug.com/1393294 virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Pass ]
 
 crbug.com/904592 css3/filters/backdrop-filter-svg.html [ Failure ]
 crbug.com/904592 [ Linux ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]

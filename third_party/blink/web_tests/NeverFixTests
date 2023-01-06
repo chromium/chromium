@@ -1741,3 +1741,11 @@ crbug.com/1373766 external/wpt/credential-management/fedcm-multi-idp/* [ Skip ]
 
 # Feature can only be disabled via base feature flag, not by commandline switch.
 crbug.com/1293679 virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html [ Skip ]
+
+# This test is run in its own content_shell invocation via a VirtualTestSuite to
+# isolate it from other tests, because it makes a huge memory allocation that
+# tends to cause OOM if run after other tests. The non-VirtualTestSuite version
+# of the test is skipped in NeverFixTests. The VirtualTestSuite version must
+# explicitly be marked Pass in order to bypass the expected Skip of the default
+# version.
+crbug.com/1393294 printing/webgl-oversized-printing.html [ Skip ]
