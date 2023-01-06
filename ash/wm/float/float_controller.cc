@@ -272,15 +272,15 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
                             ->user_work_area_bounds();
   wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
 
-  gfx::Rect preferred_bounds =
-      WindowState::Get(window)->HasRestoreBounds()
-          ? WindowState::Get(window)->GetRestoreBoundsInParent()
-          : window->bounds();
-
-  // Float bounds should not be smaller than min bounds.
+  // Default float size is 1/3 width and 70% height of `work_area`.
+  // Float bounds also should not be smaller than min bounds, use min
+  // width/height if it exceeds the limit.
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
-  DCHECK_GE(preferred_bounds.height(), minimum_size.height());
-  DCHECK_GE(preferred_bounds.width(), minimum_size.width());
+  gfx::Rect preferred_bounds =
+      gfx::Rect(std::max(static_cast<int>(work_area.width() * 0.33),
+                         minimum_size.width()),
+                std::max(static_cast<int>(work_area.height() * 0.7),
+                         minimum_size.height()));
 
   const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
   const int preferred_width =
