@@ -78,7 +78,6 @@ source_set("test_support") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
   ]
 }

@@ -214,8 +214,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

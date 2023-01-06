@@ -40,7 +40,6 @@ source_set("unit_tests") {
     "//components/language/core/browser",
     "//components/language/core/language_model",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/public/provider/chrome/browser:test_support",
     "//ios/web",
     "//ios/web/public/test",
     "//testing/gmock:gmock",

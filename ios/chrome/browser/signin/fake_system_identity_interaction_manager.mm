@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -57,7 +58,7 @@
   // Obnovious color, this is a test screen.
   UIView* mainView = self.view;
   mainView.backgroundColor = [UIColor magentaColor];
-  mainView.accessibilityIdentifier = @"FakeAddAccountViewIdentifier";
+  mainView.accessibilityIdentifier = kFakeAuthActivityViewIdentifier;
 
   // TODO(crbug.com/1400696): Since those buttons have no accessibility
   // identitifer, EarlGrey probably can't interact with them. So they

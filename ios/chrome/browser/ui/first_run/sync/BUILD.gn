@@ -99,7 +99,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//testing/gmock",

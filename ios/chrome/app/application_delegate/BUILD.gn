@@ -82,7 +82,6 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/ocmock",
     "//ios/chrome/test/providers/app_distribution",
-    "//ios/public/provider/chrome/browser:test_support",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/testing:block_swizzler",
     "//ios/testing:ocmock_support",

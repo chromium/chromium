@@ -236,6 +236,7 @@ source_set("fake_system_identity_manager") {
     ":fake_system_identity",
     ":system_identity",
     ":system_identity_manager",
+    ":test_constants",
     "//google_apis",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
@@ -308,6 +309,16 @@ source_set("trusted_vault_factory") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("test_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "test_constants.h",
+    "test_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -327,8 +338,6 @@ source_set("test_support") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/sync",
-    "//ios/public/provider/chrome/browser/signin:constants",
-    "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }
 

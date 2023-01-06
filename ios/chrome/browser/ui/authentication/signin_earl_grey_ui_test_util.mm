@@ -23,7 +23,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -41,22 +40,14 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
-// Returns YES if the email is considered as managed.
-BOOL IsEmailManaged(NSString* email) {
-  return [ios::GetManagedEmailSuffixes()
-             indexOfObjectPassingTest:^BOOL(NSString* suffix, NSUInteger idx,
-                                            BOOL* stop) {
-               return [email hasSuffix:suffix];
-             }] != NSNotFound;
-}
-
 // Closes the managed account dialog, if `fakeIdentity` is a managed account.
 void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
-  if (!IsEmailManaged(fakeIdentity.userEmail)) {
-    // Don't expect a managed account dialog when the account isn't considered
-    // managed.
+  // Don't expect a managed account dialog when the account isn't considered
+  // managed.
+  if ([fakeIdentity.userEmail hasSuffix:@"@gmail.com"]) {
     return;
   }
+
   // Synchronization off due to an infinite spinner, in the user consent view,
   // under the managed consent dialog. This spinner is started by the sign-in
   // process.

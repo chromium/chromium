@@ -48,7 +48,6 @@
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
-#import "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
