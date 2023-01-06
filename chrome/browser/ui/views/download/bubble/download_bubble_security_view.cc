@@ -141,15 +141,13 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   // The label defaults to a single line, which would force the dialog wider;
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
-  // The side margin is added twice, once in the bubble, and then for each
-  // row view.
   const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   const int min_label_width =
-      bubble_width - side_margin * 2 - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+      bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
       GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
   styled_label_->SizeToFit(min_label_width);
 

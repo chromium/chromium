@@ -65,8 +65,7 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view,
 
     // As noted in https://crbug.com/1340937#c3, the layout
     // seems to have an issue with multi-line labels. As a workaround, give the
-    // label the fixed size width. The side margin is added twice, once in the
-    // bubble, and then for each row.
+    // label the fixed size width.
     const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
     const int icon_label_spacing =
         ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -74,7 +73,7 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view,
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     const int min_label_width =
-        bubble_width - side_margin * 2 - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+        bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
         GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
     info_label->SizeToFit(min_label_width);
   }

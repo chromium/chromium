@@ -547,8 +547,7 @@ gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
   // the view. This is assuming that the row view is loaded inside a bubble. It
   // will break if the row view is loaded inside a different parent view.
   int fixed_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    GetLayoutInsets(DOWNLOAD_ROW).width();
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   return {fixed_width, GetHeightForWidth(fixed_width)};
 }
 

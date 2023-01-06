@@ -42,6 +42,17 @@ constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 // 7.5 rows * 60 px per row = 450;
 constexpr int kMaxHeightForRowList = 450;
+
+gfx::Insets GetPrimaryViewMargin() {
+  return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                         0);
+}
+
+gfx::Insets GetSecurityViewMargin() {
+  return gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL));
+}
 }  // namespace
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
@@ -226,6 +237,7 @@ void DownloadToolbarButtonView::OpenPrimaryDialog() {
   primary_view_->SetVisible(true);
   security_view_->SetVisible(false);
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate_->set_margins(GetPrimaryViewMargin());
   ResizeDialog();
 }
 
@@ -234,6 +246,7 @@ void DownloadToolbarButtonView::OpenSecurityDialog(
   security_view_->UpdateSecurityView(download_row_view);
   primary_view_->SetVisible(false);
   security_view_->SetVisible(true);
+  bubble_delegate_->set_margins(GetSecurityViewMargin());
   security_view_->UpdateAccessibilityTextAndFocus();
   ResizeDialog();
 }
@@ -257,8 +270,6 @@ void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   security_view_ = nullptr;
 }
 
-// TODO(crbug.com/1350148): Remove the margin around the bubble.
-// Hover button should be visible from end to end of the bubble.
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {
   if (!bubble_contents_view)
@@ -287,9 +298,7 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  bubble_delegate->set_margins(
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  bubble_delegate->set_margins(GetPrimaryViewMargin());
   bubble_delegate_ = bubble_delegate.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   bubble_delegate_->GetWidget()->Show();
