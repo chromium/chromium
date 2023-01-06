@@ -38,6 +38,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/test/aura_test_utils.h"
@@ -116,11 +117,11 @@ class WebContentsVideoCaptureDeviceBrowserTest
             << color_string << ", tolerated color: " << tolerated_color_string;
 
     while (!testing::Test::HasFailure()) {
-      EXPECT_TRUE(capture_stack()->started());
-      EXPECT_FALSE(capture_stack()->error_occurred());
+      EXPECT_TRUE(capture_stack()->Started());
+      EXPECT_FALSE(capture_stack()->ErrorOccurred());
       capture_stack()->ExpectNoLogMessages();
 
-      while (capture_stack()->has_captured_frames() &&
+      while (capture_stack()->HasCapturedFrames() &&
              !testing::Test::HasFailure()) {
         // Pop the next frame from the front of the queue and convert to a RGB
         // bitmap for analysis.
@@ -316,8 +317,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   // been notified of the error.
   device->AllocateAndStartWithReceiver(capture_params,
                                        capture_stack()->CreateFrameReceiver());
-  EXPECT_FALSE(capture_stack()->started());
-  EXPECT_TRUE(capture_stack()->error_occurred());
+  RunUntilIdle();
+
+  EXPECT_FALSE(capture_stack()->Started());
+  EXPECT_TRUE(capture_stack()->ErrorOccurred());
   capture_stack()->ExpectHasLogMessages();
 
   device->StopAndDeAllocate();
@@ -341,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   // permanently lost" error to propagate to the video capture stack.
   shell()->web_contents()->Close();
   RunUntilIdle();
-  EXPECT_TRUE(capture_stack()->error_occurred());
+  EXPECT_TRUE(capture_stack()->ErrorOccurred());
   capture_stack()->ExpectHasLogMessages();
 
   StopAndDeAllocate();
@@ -527,6 +530,24 @@ class WebContentsVideoCaptureDeviceBrowserTestP
     return std::get<3>(GetParam());
   }
 
+#if BUILDFLAG(IS_WIN)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebContentsVideoCaptureDeviceBrowserTest::SetUpCommandLine(command_line);
+
+    if (!IsSoftwareCompositingTest()) {
+      // In order to test the NV12 code-path, we need to use hardware GPU in the
+      // tests as the product code checks whether hardware when deciding whether
+      // NV12 is used.
+      // NOTE: Pre-existing comment in `ContentCaptureDeviceBrowserTestBase`
+      // suggested that this can cause the tests to take 12+ seconds just to
+      // spin up a render process on debug builds. It can also cause test
+      // failures in MSAN builds, or exacerbate OOM situations on highly-loaded
+      // machines.
+      command_line->AppendSwitch(switches::kUseGpuInTests);
+    }
+  }
+#endif
+
   // Returns human-readable description of the test based on test parameters.
   // Currently unused due to CQ treating the tests as new and applying higher
   // flakiness bar for them, which makes it impossible to land them (they
@@ -558,7 +579,7 @@ INSTANTIATE_TEST_SUITE_P(
                         true /* page contains a cross-site iframe */),
         testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)),
     &WebContentsVideoCaptureDeviceBrowserTestP::GetDescription);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // On MacOS, there is a newly added support for NV12-in-GMB. It relies on GPU
 // acceleration, but has a feature detection built-in if the format is
 // specified as media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN.

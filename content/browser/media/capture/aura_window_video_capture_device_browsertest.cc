@@ -74,11 +74,11 @@ class AuraWindowVideoCaptureDeviceBrowserTest
             << ", blue=" << SkColorGetB(color);
 
     while (!testing::Test::HasFailure()) {
-      EXPECT_TRUE(capture_stack()->started());
-      EXPECT_FALSE(capture_stack()->error_occurred());
+      EXPECT_TRUE(capture_stack()->Started());
+      EXPECT_FALSE(capture_stack()->ErrorOccurred());
       capture_stack()->ExpectNoLogMessages();
 
-      while (capture_stack()->has_captured_frames() &&
+      while (capture_stack()->HasCapturedFrames() &&
              !testing::Test::HasFailure()) {
         // Pop the next frame from the front of the queue and convert to a RGB
         // bitmap for analysis.
@@ -202,8 +202,10 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   // been notified of the error.
   device->AllocateAndStartWithReceiver(capture_params,
                                        capture_stack()->CreateFrameReceiver());
-  EXPECT_FALSE(capture_stack()->started());
-  EXPECT_TRUE(capture_stack()->error_occurred());
+  RunUntilIdle();
+
+  EXPECT_FALSE(capture_stack()->Started());
+  EXPECT_TRUE(capture_stack()->ErrorOccurred());
   capture_stack()->ExpectHasLogMessages();
 
   device->StopAndDeAllocate();
@@ -227,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   // permanently lost" error to propagate to the video capture stack.
   shell()->Close();
   RunUntilIdle();
-  EXPECT_TRUE(capture_stack()->error_occurred());
+  EXPECT_TRUE(capture_stack()->ErrorOccurred());
   capture_stack()->ExpectHasLogMessages();
 
   StopAndDeAllocate();

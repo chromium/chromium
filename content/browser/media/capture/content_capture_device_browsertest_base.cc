@@ -147,8 +147,8 @@ void ContentCaptureDeviceBrowserTestBase::
   device_->AllocateAndStartWithReceiver(SnapshotCaptureParams(),
                                         capture_stack()->CreateFrameReceiver());
   RunUntilIdle();
-  EXPECT_TRUE(capture_stack()->started());
-  EXPECT_FALSE(capture_stack()->error_occurred());
+  EXPECT_TRUE(capture_stack()->Started());
+  EXPECT_FALSE(capture_stack()->ErrorOccurred());
   capture_stack()->ExpectNoLogMessages();
 
   WaitForFirstFrame();
@@ -198,11 +198,6 @@ bool ContentCaptureDeviceBrowserTestBase::IsCrossSiteCaptureTest() const {
 }
 
 void ContentCaptureDeviceBrowserTestBase::SetUp() {
-  // IMPORTANT: Do not add the switches::kUseGpuInTests command line flag: It
-  // causes the tests to take 12+ seconds just to spin up a render process on
-  // debug builds. It can also cause test failures in MSAN builds, or exacerbate
-  // OOM situations on highly-loaded machines.
-
   // Screen capture requires readback from compositor output.
   EnablePixelOutput();
 

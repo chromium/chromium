@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -302,6 +303,15 @@ void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync,
+                       weak_ptr_, std::move(buffer_handle),
+                       std::move(memory_region), std::move(callback)));
+    return;
+  }
+
   if (auto* gpu_service = GetGpuService()) {
     gpu_service->CopyGpuMemoryBuffer(std::move(buffer_handle),
                                      std::move(memory_region),
@@ -315,8 +325,21 @@ void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
 bool HostGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region) {
-  NOTIMPLEMENTED();
-  return false;
+  base::WaitableEvent event;
+  bool mapping_result = false;
+
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
+  CopyGpuMemoryBufferAsync(
+      std::move(buffer_handle), std::move(memory_region),
+      base::BindOnce(
+          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
+            *result_ptr = result;
+            event->Signal();
+          },
+          &event, &mapping_result));
+  event.Wait();
+
+  return mapping_result;
 }
 
 bool HostGpuMemoryBufferManager::OnMemoryDump(

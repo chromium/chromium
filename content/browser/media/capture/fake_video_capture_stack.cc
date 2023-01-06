@@ -11,10 +11,19 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
+#include "base/time/time.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -28,30 +37,105 @@
 
 namespace content {
 
+namespace {
+
+gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
+  gpu::GpuChannelEstablishFactory* factory =
+      content::BrowserMainLoop::GetInstance()->gpu_channel_establish_factory();
+  if (!factory) {
+    return nullptr;
+  }
+
+  return factory->GetGpuMemoryBufferManager();
+}
+
+}  // namespace
+
 FakeVideoCaptureStack::FakeVideoCaptureStack() = default;
 
 FakeVideoCaptureStack::~FakeVideoCaptureStack() = default;
 
 void FakeVideoCaptureStack::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   frames_.clear();
   last_frame_timestamp_ = base::TimeDelta::Min();
 }
 
-class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
+// A minimal implementation of VideoFrameReceiver that wraps buffers into
+// VideoFrame instances and forwards all relevant callbacks and data to the
+// parent FakeVideoCaptureStack. The implemented `media::VideoFrameReceiver`
+// methods will be forwarded to a separate thread for processing in order to,
+// unblock the thread on which they arrive, and the results of this processing
+// will then be posted to the `FakeVideoCaptureStack` owning this instance,
+// on the task runner that constructed this instance.
+class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
  public:
-  explicit Receiver(FakeVideoCaptureStack* capture_stack)
-      : capture_stack_(capture_stack) {}
+  // Creates VideoFrameReceiver that notifies `capture_stack` when new frames
+  // arrive (among other things). The `capture_stack` will be called into from
+  // the current sequence.
+  explicit FakeVideoCaptureStackReceiver(
+      base::WeakPtr<FakeVideoCaptureStack> capture_stack)
+      : capture_stack_(std::move(capture_stack)),
+        pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
+        capture_stack_task_runner_(
+            base::SequencedTaskRunner::GetCurrentDefault()) {
+    DETACH_FROM_SEQUENCE(receiver_sequence_checker_);
 
-  Receiver(const Receiver&) = delete;
-  Receiver& operator=(const Receiver&) = delete;
+    // This will DCHECK if we're not currently on UI thread (due to use of
+    // `content::BrowserMainLoop::GetInstance()` in the impl.), but that is
+    // fine since the tests currently call us on UI thread:
+    gmb_manager_ = GetGpuMemoryBufferManager();
 
-  ~Receiver() override = default;
+    receiver_thread_ =
+        std::make_unique<base::Thread>("fake-capture-stack-receiver");
+    receiver_thread_->StartAndWaitForTesting();
+  }
+
+  void WaitForReceiver() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    base::RunLoop runLoop(base::RunLoop::Type::kNestableTasksAllowed);
+
+    receiver_thread_->task_runner()->PostTask(FROM_HERE, runLoop.QuitClosure());
+
+    runLoop.Run();
+  }
+
+  base::WeakPtr<FakeVideoCaptureStackReceiver> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  FakeVideoCaptureStackReceiver(const FakeVideoCaptureStackReceiver&) = delete;
+  FakeVideoCaptureStackReceiver& operator=(
+      const FakeVideoCaptureStackReceiver&) = delete;
+
+  ~FakeVideoCaptureStackReceiver() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    receiver_thread_ = nullptr;
+  }
 
  private:
   using Buffer = media::VideoCaptureDevice::Client::Buffer;
 
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    // Unretained is safe since we own the thread to which we're posting.
+    receiver_thread_->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FakeVideoCaptureStackReceiver::OnNewBufferOnReceiverThread,
+            base::Unretained(this), buffer_id, std::move(buffer_handle)));
+  }
+
+  void OnNewBufferOnReceiverThread(
+      int buffer_id,
+      media::mojom::VideoBufferHandlePtr buffer_handle) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(receiver_sequence_checker_);
+
     buffers_[buffer_id] = std::move(buffer_handle);
   }
 
@@ -94,6 +178,8 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
   scoped_refptr<media::VideoFrame> GetVideoFrameFromGpuMemoryBuffer(
       media::ReadyFrameInBuffer frame,
       const gfx::GpuMemoryBufferHandle& gmb_handle) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(receiver_sequence_checker_);
+
     CHECK(!gmb_handle.is_null());
     CHECK_EQ(frame.frame_info->pixel_format,
              media::VideoPixelFormat::PIXEL_FORMAT_NV12);
@@ -103,7 +189,8 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
         gmb_support.CreateGpuMemoryBufferImplFromHandle(
             gmb_handle.Clone(), frame.frame_info->coded_size,
             gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing());
+            gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
+            gmb_manager_, pool_);
     CHECK(gmb);
 
     gfx::Size size = gmb->GetSize();
@@ -135,6 +222,19 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
   void OnFrameReadyInBuffer(
       media::ReadyFrameInBuffer frame,
       std::vector<media::ReadyFrameInBuffer> scaled_frames) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    // Unretained is safe since we own the thread to which we're posting.
+    // This implementation does not forward scaled frames.
+    receiver_thread_->task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&FakeVideoCaptureStackReceiver::
+                                      OnFrameReadyInBufferOnReceiverThread,
+                                  base::Unretained(this), std::move(frame)));
+  }
+
+  void OnFrameReadyInBufferOnReceiverThread(media::ReadyFrameInBuffer frame) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(receiver_sequence_checker_);
+
     const auto it = buffers_.find(frame.buffer_id);
     CHECK(it != buffers_.end());
 
@@ -151,17 +251,34 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
     }
 
     // This implementation does not forward scaled frames.
-    capture_stack_->OnReceivedFrame(std::move(video_frame));
+    capture_stack_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&FakeVideoCaptureStack::OnReceivedFrame,
+                                  capture_stack_, std::move(video_frame)));
   }
 
   void OnBufferRetired(int buffer_id) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    // Unretained is safe since we own the thread to which we're posting.
+    receiver_thread_->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FakeVideoCaptureStackReceiver::OnBufferRetiredOnReceiverThread,
+            base::Unretained(this), buffer_id));
+  }
+
+  void OnBufferRetiredOnReceiverThread(int buffer_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(receiver_sequence_checker_);
+
     const auto it = buffers_.find(buffer_id);
     CHECK(it != buffers_.end());
     buffers_.erase(it);
   }
 
   void OnError(media::VideoCaptureError) override {
-    capture_stack_->error_occurred_ = true;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    capture_stack_->SetErrorOccurred();
   }
 
   void OnFrameDropped(media::VideoCaptureFrameDropReason) override {}
@@ -171,25 +288,85 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
   void OnFrameWithEmptyRegionCapture() override {}
 
   void OnLog(const std::string& message) override {
-    capture_stack_->log_messages_.push_back(message);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    capture_stack_->OnLog(message);
   }
 
-  void OnStarted() override { capture_stack_->started_ = true; }
+  void OnStarted() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
+
+    capture_stack_->SetStarted();
+  }
 
   void OnStartedUsingGpuDecode() override { NOTREACHED(); }
 
   void OnStopped() override {}
 
-  const raw_ptr<FakeVideoCaptureStack> capture_stack_;
-  base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
+  // WeakPtr is thread-safe to copy/move around, but the deref of
+  // `capture_stack_` needs to happen on `capture_stack_sequence_checker_`.
+  // Since there's one instance where we copy the pointer around that doesn't
+  // happen on the right sequence, we cannot use `GUARDED_BY_CONTEXT()` here.
+  const base::WeakPtr<FakeVideoCaptureStack> capture_stack_;
+
+  base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_
+      GUARDED_BY_CONTEXT(receiver_sequence_checker_);
+
+  // Needed to create `gfx::GpuMemoryBuffers` from
+  // `gfx::GpuMemoryBufferHandle`s. Will be populated at construction time. Must
+  // be obtained on the UI thread.
+  gpu::GpuMemoryBufferManager* gmb_manager_
+      GUARDED_BY_CONTEXT(receiver_sequence_checker_) = nullptr;
+
+  // Needed to create `gfx::GpuMemoryBuffers` from
+  // `gfx::GpuMemoryBufferHandle`s. Will be populated at construction time.
+  scoped_refptr<base::UnsafeSharedMemoryPool> pool_
+      GUARDED_BY_CONTEXT(receiver_sequence_checker_);
+
+  // Task runner on which we should be calling into capture stack:
+  scoped_refptr<base::SequencedTaskRunner> capture_stack_task_runner_;
+
+  // Thread that will be processing the `media::VideoFrameReceiver` methods.
+  // This is needed for Windows if using GpuMemoryBuffers, since mapping GMBs
+  // incurs a mojo call and is supposed to be a synchronous operation, which
+  // means that the mapping thread will be blocked. If it so happens that the
+  // mapping thread is also responsible for processing mojo responses (as is
+  // the case if we don't introduce `receiver_thread_`), we will cause a
+  // deadlock.
+  // As per `base::Thread` documentation, can only be used from a sequence it
+  // was started on (in our case, same as `capture_stack_task_runner_`).
+  std::unique_ptr<base::Thread> receiver_thread_
+      GUARDED_BY_CONTEXT(capture_stack_sequence_checker_);
+
+  // Sequence checker for parts of the class that can be accessed only on
+  // the `receiver_thread_`:
+  SEQUENCE_CHECKER(receiver_sequence_checker_);
+
+  // Sequence checker for the `receiver_thread_` member variable, since
+  // `base::Thread` documents that it can only be accessed from a sequence that
+  // started the thread. The name reflects the fact that we're created by
+  // `FakeVideoCaptureStack` and that's where we start the thread.
+  SEQUENCE_CHECKER(capture_stack_sequence_checker_);
+
+  base::WeakPtrFactory<FakeVideoCaptureStackReceiver> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<media::VideoFrameReceiver>
 FakeVideoCaptureStack::CreateFrameReceiver() {
-  return std::make_unique<Receiver>(this);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!receiver_);
+
+  auto result = std::make_unique<FakeVideoCaptureStackReceiver>(
+      weak_ptr_factory_.GetWeakPtr());
+
+  receiver_ = result->GetWeakPtr();
+
+  return result;
 }
 
 SkBitmap FakeVideoCaptureStack::NextCapturedFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   CHECK(!frames_.empty());
   media::VideoFrame& frame = *(frames_.front());
   SkBitmap bitmap = FrameTestUtil::ConvertToBitmap(frame);
@@ -198,10 +375,14 @@ SkBitmap FakeVideoCaptureStack::NextCapturedFrame() {
 }
 
 void FakeVideoCaptureStack::ClearCapturedFramesQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   frames_.clear();
 }
 
 void FakeVideoCaptureStack::ExpectHasLogMessages() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   EXPECT_FALSE(log_messages_.empty());
   while (!log_messages_.empty()) {
     VLOG(1) << "Next log message: " << log_messages_.front();
@@ -210,6 +391,8 @@ void FakeVideoCaptureStack::ExpectHasLogMessages() {
 }
 
 void FakeVideoCaptureStack::ExpectNoLogMessages() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   while (!log_messages_.empty()) {
     ADD_FAILURE() << "Unexpected log message: " << log_messages_.front();
     log_messages_.pop_front();
@@ -218,6 +401,8 @@ void FakeVideoCaptureStack::ExpectNoLogMessages() {
 
 void FakeVideoCaptureStack::OnReceivedFrame(
     scoped_refptr<media::VideoFrame> frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Frame timestamps should be monotionically increasing.
   EXPECT_LT(last_frame_timestamp_, frame->timestamp());
   last_frame_timestamp_ = frame->timestamp();
@@ -229,6 +414,43 @@ void FakeVideoCaptureStack::OnReceivedFrame(
   }
 
   frames_.emplace_back(std::move(frame));
+}
+
+// Returns true if the device called VideoFrameReceiver::OnStarted().
+bool FakeVideoCaptureStack::Started() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  WaitForReceiver();
+
+  return started_;
+}
+
+// Returns true if the device called VideoFrameReceiver::OnError().
+bool FakeVideoCaptureStack::ErrorOccurred() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  WaitForReceiver();
+
+  return error_occurred_;
+}
+
+// Accessors to capture frame queue.
+bool FakeVideoCaptureStack::HasCapturedFrames() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  WaitForReceiver();
+
+  return !frames_.empty();
+}
+
+void FakeVideoCaptureStack::WaitForReceiver() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!receiver_) {
+    return;
+  }
+
+  receiver_->WaitForReceiver();
 }
 
 }  // namespace content

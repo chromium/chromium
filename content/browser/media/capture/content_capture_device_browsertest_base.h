@@ -81,7 +81,7 @@ class ContentCaptureDeviceBrowserTestBase : public ContentBrowserTest {
   void ClearCapturedFramesQueue() { capture_stack_.ClearCapturedFramesQueue(); }
 
   bool HasCapturedFramesInQueue() const {
-    return capture_stack_.has_captured_frames();
+    return capture_stack_.HasCapturedFrames();
   }
 
   // Navigates to the test document using a different domain (host). This will
