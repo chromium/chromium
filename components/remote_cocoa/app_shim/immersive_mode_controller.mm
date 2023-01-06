@@ -458,6 +458,16 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
   [overlay_view setFrameSize:size];
   PropagateFrameSizeToViewsSubviews(overlay_view);
   UpdateToolbarVisibility(last_used_style_);
+
+  // If the toolbar is always visible, update the fullscreen min height.
+  // Also update the fullscreen min height if the toolbar auto hides, but only
+  // if the toolbar is currently revealed.
+  if (last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways ||
+      (last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide &&
+       reveal_lock_count_ > 0)) {
+    immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
+        immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
+  }
 }
 
 void ImmersiveModeController::UpdateToolbarVisibility(
@@ -592,10 +602,18 @@ void ImmersiveModeController::RevealLock() {
 }
 
 void ImmersiveModeController::RevealUnlock() {
+  // Re-hide the toolbar if appropriate.
   if (--reveal_lock_count_ < 1 &&
       immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight > 0 &&
       last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide) {
     immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
+  }
+
+  // Account for last_used_style_ changing to kAlways while a reveal lock was
+  // active.
+  if (reveal_lock_count_ < 1 &&
+      last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways) {
+    UpdateToolbarVisibility(last_used_style_);
   }
   DCHECK(reveal_lock_count_ >= 0);
 }
