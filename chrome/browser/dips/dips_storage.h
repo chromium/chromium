@@ -41,10 +41,9 @@ class DIPSStorage {
   void RecordStorage(const GURL& url, base::Time time, DIPSCookieMode mode);
   // Record that the user interacted on |url|.
   void RecordInteraction(const GURL& url, base::Time time, DIPSCookieMode mode);
-  // Record that |url| redirected the user while also writing to storage.
-  void RecordStatefulBounce(const GURL& url, base::Time time);
-  // Record that |url| redirected the user without writing to storage.
-  void RecordStatelessBounce(const GURL& url, base::Time time);
+  // Record that |url| redirected the user and whether it was |stateful|,
+  // meaning that |url| wrote to storage while redirecting.
+  void RecordBounce(const GURL& url, base::Time time, bool stateful);
 
   // Utility Methods -----------------------------------------------------------
 

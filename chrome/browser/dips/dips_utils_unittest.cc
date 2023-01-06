@@ -49,6 +49,57 @@ TEST(TimestampRangeTest, Update_Unmodified) {
   EXPECT_EQ(range.last, time3);
 }
 
+TEST(TimestampRangeTest, IsNullOrWithin_BothEmpty) {
+  TimestampRange inner = {};
+  TimestampRange outer = {};
+  EXPECT_TRUE(inner.IsNullOrWithin(outer));
+  EXPECT_TRUE(outer.IsNullOrWithin(inner));
+}
+
+TEST(TimestampRangeTest, IsNullOrWithin_NothingWithinEmptyOuter) {
+  TimestampRange inner = {base::Time::FromDoubleT(1),
+                          base::Time::FromDoubleT(1)};
+  TimestampRange outer = {};
+  EXPECT_FALSE(inner.IsNullOrWithin(outer));
+}
+
+TEST(TimestampRangeTest, IsNullOrWithin_EmptyInnerWithin) {
+  TimestampRange inner = {};
+  TimestampRange outer = {base::Time::FromDoubleT(1),
+                          base::Time::FromDoubleT(1)};
+  EXPECT_TRUE(inner.IsNullOrWithin(outer));
+}
+
+TEST(TimestampRangeTest, IsNullOrWithin_ChecksLowerBound) {
+  TimestampRange outer = {base::Time::FromDoubleT(2),
+                          base::Time::FromDoubleT(5)};
+  TimestampRange starts_on_time = {base::Time::FromDoubleT(3),
+                                   base::Time::FromDoubleT(4)};
+  TimestampRange starts_too_early = {base::Time::FromDoubleT(1),
+                                     base::Time::FromDoubleT(4)};
+
+  EXPECT_FALSE(starts_too_early.IsNullOrWithin(outer));
+  EXPECT_TRUE(starts_on_time.IsNullOrWithin(outer));
+}
+
+TEST(TimestampRangeTest, IsNullOrWithin_ChecksUpperBound) {
+  TimestampRange outer = {base::Time::FromDoubleT(2),
+                          base::Time::FromDoubleT(5)};
+  TimestampRange ends_in_time = {base::Time::FromDoubleT(3),
+                                 base::Time::FromDoubleT(4)};
+  TimestampRange ends_too_late = {base::Time::FromDoubleT(3),
+                                  base::Time::FromDoubleT(10)};
+
+  EXPECT_TRUE(ends_in_time.IsNullOrWithin(outer));
+  EXPECT_FALSE(ends_too_late.IsNullOrWithin(outer));
+}
+
+TEST(TimestampRangeTest, IsNullOrWithin_AllowsEquals) {
+  TimestampRange range = {base::Time::FromDoubleT(1),
+                          base::Time::FromDoubleT(1)};
+  EXPECT_TRUE(range.IsNullOrWithin(range));
+}
+
 TEST(BucketizeBounceDelayTest, BucketizeBounceDelay) {
   // any TimeDelta in (-inf, 1s) should return 0
   EXPECT_EQ(0, BucketizeBounceDelay(base::Days(-1)));

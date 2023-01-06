@@ -106,6 +106,9 @@ struct TimestampRange {
   // Expand the range to include `time` if necessary. Returns true iff the range
   // was modified.
   bool Update(base::Time time);
+
+  // Checks that `this` range is either null or falls within `other`.
+  bool IsNullOrWithin(TimestampRange other) const;
 };
 
 inline bool operator==(const TimestampRange& lhs, const TimestampRange& rhs) {
@@ -117,14 +120,14 @@ struct StateValue {
   TimestampRange site_storage_times;
   TimestampRange user_interaction_times;
   TimestampRange stateful_bounce_times;
-  TimestampRange stateless_bounce_times;
+  TimestampRange bounce_times;
 };
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.site_storage_times, lhs.user_interaction_times,
-                  lhs.stateful_bounce_times, lhs.stateless_bounce_times) ==
+                  lhs.stateful_bounce_times, lhs.bounce_times) ==
          std::tie(rhs.site_storage_times, rhs.user_interaction_times,
-                  rhs.stateful_bounce_times, rhs.stateless_bounce_times);
+                  rhs.stateful_bounce_times, rhs.bounce_times);
 }
 
 enum class DIPSTriggeringAction { kStorage, kBounce, kStatefulBounce };

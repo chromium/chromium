@@ -38,6 +38,6 @@ void DIPSState::update_stateful_bounce_time(base::Time time) {
   dirty_ |= state_.stateful_bounce_times.Update(time);
 }
 
-void DIPSState::update_stateless_bounce_time(base::Time time) {
-  dirty_ |= state_.stateless_bounce_times.Update(time);
+void DIPSState::update_bounce_time(base::Time time) {
+  dirty_ |= state_.bounce_times.Update(time);
 }

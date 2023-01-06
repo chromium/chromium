@@ -16,16 +16,11 @@
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
 
 using content::NavigationHandle;
 
@@ -65,29 +60,20 @@ inline void UmaHistogramTimeToBounce(base::TimeDelta sample) {
 /* static */
 void DIPSWebContentsObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  if (profile->IsSystemProfile())
+  auto* dips_service = DIPSService::Get(web_contents->GetBrowserContext());
+  if (!dips_service) {
     return;
+  }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various irregular profiles (login, lock screen...); they
-  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
-  // used to browse the web and users can't configure. Don't collect metrics
-  // about them.
-  if (!ash::ProfileHelper::IsUserProfile(profile))
-    return;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DIPSWebContentsObserver::CreateForWebContents(web_contents);
+  DIPSWebContentsObserver::CreateForWebContents(web_contents, dips_service);
 }
 
 DIPSWebContentsObserver::DIPSWebContentsObserver(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    DIPSService* dips_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
-      dips_service_(DIPSService::Get(web_contents->GetBrowserContext())),
+      dips_service_(dips_service),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
                 base::DefaultClock::GetInstance()) {}
@@ -267,8 +253,10 @@ void DIPSBounceDetector::DidStartNavigation(
          base::TimeDelta(base::Seconds(kBounceThresholdSeconds)))) {
       // Time between page load and client-side redirect starting is only
       // tracked for stateful bounces.
-      if (client_detection_state_->cookie_access_type > CookieAccessType::kNone)
+      if (client_detection_state_->cookie_access_type >
+          CookieAccessType::kNone) {
         UmaHistogramTimeToBounce(bounce_time);
+      }
 
       client_redirect = std::make_unique<DIPSRedirectInfo>(
           /*url=*/delegate_->GetLastCommittedURL(),
@@ -418,16 +406,18 @@ void DIPSWebContentsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
   // Ignore iframe activations since we only care for its associated main-frame
   // interactions on the top-level site.
-  if (!render_frame_host->IsInPrimaryMainFrame())
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
+  }
 
   detector_.OnUserActivation();
 }
 
 void DIPSBounceDetector::OnUserActivation() {
   GURL url = delegate_->GetLastCommittedURL();
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   base::Time now = clock_->Now();
   if (client_detection_state_.has_value()) {

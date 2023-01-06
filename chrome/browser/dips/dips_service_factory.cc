@@ -6,6 +6,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 
 // static
@@ -19,10 +20,22 @@ DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
   return base::Singleton<DIPSServiceFactory>::get();
 }
 
+/*static*/
+ProfileSelections DIPSServiceFactory::CreateProfileSelections() {
+  if (!base::FeatureList::IsEnabled(dips::kFeature)) {
+    return ProfileSelections::BuildNoProfilesSelected();
+  }
+
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOwnInstance)
+      .WithGuest(ProfileSelection::kOffTheRecordOnly)
+      .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
+      .Build();
+}
+
 DIPSServiceFactory::DIPSServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "DIPSService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+    : ProfileKeyedServiceFactory("DIPSService", CreateProfileSelections()) {
   DependsOn(CookieSettingsFactory::GetInstance());
 }
 

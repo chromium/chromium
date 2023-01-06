@@ -8,19 +8,33 @@ source_set("unit_tests") {
     "cookie_access_filter_unittest.cc",
     "dips_bounce_detector_unittest.cc",
     "dips_database_unittest.cc",
+    "dips_service_unittest.cc",
     "dips_storage_unittest.cc",
     "dips_utils_unittest.cc",
   ]
 
   deps = [
+    ":golden_dbs_bundle_data",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/test:test_support",
     "//components/ukm:test_support",
+    "//content/test:test_support",
     "//sql:test_support",
     "//testing/gtest",
     "//url",
   ]
+
+  data = [ "//chrome/test/data/dips/v1.sql" ]
+}
+
+bundle_data("golden_dbs_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//chrome/test/data/dips/v1.sql" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("browser_tests") {

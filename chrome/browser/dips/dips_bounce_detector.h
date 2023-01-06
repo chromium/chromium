@@ -214,7 +214,8 @@ class DIPSWebContentsObserver
   }
 
  private:
-  explicit DIPSWebContentsObserver(content::WebContents* web_contents);
+  DIPSWebContentsObserver(content::WebContents* web_contents,
+                          DIPSService* dips_service);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class content::WebContentsUserData<DIPSWebContentsObserver>;
 

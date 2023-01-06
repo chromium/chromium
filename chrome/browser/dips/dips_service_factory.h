@@ -19,6 +19,8 @@ class DIPSServiceFactory : public ProfileKeyedServiceFactory {
   static DIPSServiceFactory* GetInstance();
   static DIPSService* GetForBrowserContext(content::BrowserContext* context);
 
+  static ProfileSelections CreateProfileSelections();
+
  private:
   friend struct base::DefaultSingletonTraits<DIPSServiceFactory>;
 
