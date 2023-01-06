@@ -24,6 +24,7 @@ import {routes} from '../os_route.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_summary.html.js';
 
 /**
@@ -99,6 +100,7 @@ class SettingsBluetoothSummaryElement extends
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   LabelType: LabelType;
   systemProperties: BluetoothSystemProperties;
+  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
   private isBluetoothToggleOn_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
@@ -109,6 +111,8 @@ class SettingsBluetoothSummaryElement extends
 
     /** RouteOriginMixin override */
     this.route_ = routes.BASIC;
+    this.browserProxy_ =
+        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -251,10 +255,12 @@ class SettingsBluetoothSummaryElement extends
     }));
   }
 
-  private annouceBluetoothStateChange_(): void {
+  private onBluetoothToggleChange_(): void {
     getAnnouncerInstance().announce(
         this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
                                     this.i18n('bluetoothDisabledA11YLabel'));
+
+    this.browserProxy_.showBluetoothRevampHatsSurvey();
   }
 }
 

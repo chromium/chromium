@@ -4,17 +4,17 @@
 
 import 'chrome://os-settings/strings.m.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {mojoString16ToString} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
 
 suite('OsBluetoothSummaryTest', function() {
   /** @type {!FakeBluetoothConfig} */
@@ -28,12 +28,18 @@ suite('OsBluetoothSummaryTest', function() {
    */
   let propertiesObserver;
 
+  /** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
+  let browserProxy = null;
+
   setup(function() {
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
   });
 
   function init() {
+    browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
+    OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
+        browserProxy);
     bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
     document.body.appendChild(bluetoothSummary);
     flush();
@@ -110,6 +116,8 @@ suite('OsBluetoothSummaryTest', function() {
 
   test('Toggle button states', async function() {
     init();
+    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
+
     const enableBluetoothToggle =
         bluetoothSummary.shadowRoot.querySelector('#enableBluetoothToggle');
     assertTrue(!!enableBluetoothToggle);
@@ -121,6 +129,9 @@ suite('OsBluetoothSummaryTest', function() {
 
     // Toggle should be on since systemState is enabling.
     assertTrue(enableBluetoothToggle.checked);
+    assertEquals(
+        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to increase');
 
     // Mock operation failing.
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ false);
@@ -128,6 +139,9 @@ suite('OsBluetoothSummaryTest', function() {
 
     // Toggle should be off again.
     assertFalse(enableBluetoothToggle.checked);
+    assertEquals(
+        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to remain the same');
 
     // Click again.
     enableBluetoothToggle.click();
@@ -135,6 +149,9 @@ suite('OsBluetoothSummaryTest', function() {
 
     // Toggle should be on since systemState is enabling.
     assertTrue(enableBluetoothToggle.checked);
+    assertEquals(
+        2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to increase');
 
     // Mock operation success.
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
@@ -142,12 +159,18 @@ suite('OsBluetoothSummaryTest', function() {
 
     // Toggle should still be on.
     assertTrue(enableBluetoothToggle.checked);
+    assertEquals(
+        2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to remain the same');
 
     // Mock systemState becoming unavailable.
     bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertTrue(enableBluetoothToggle.disabled);
     assertFalse(enableBluetoothToggle.checked);
+    assertEquals(
+        2, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to remain the same');
   });
 
   test('UI states test', async function() {

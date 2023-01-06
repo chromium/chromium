@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 export interface OsBluetoothDevicesSubpageBrowserProxy {
   /**
    * Requests whether the Fast Pair feature is supported by the device.
@@ -21,6 +23,12 @@ export interface OsBluetoothDevicesSubpageBrowserProxy {
    * |accountKey| from a user's account.
    */
   deleteFastPairSavedDevice(accountKey: string): void;
+
+  /**
+   * Triggers Bluetooth revamp Hats survey. If user is selected Hats survey
+   * would be shown after a 5 minute delay
+   */
+  showBluetoothRevampHatsSurvey(): void;
 }
 
 let instance: OsBluetoothDevicesSubpageBrowserProxy|null = null;
@@ -47,5 +55,11 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl implements
 
   deleteFastPairSavedDevice(accountKey: string): void {
     chrome.send('removeSavedDevice', [accountKey]);
+  }
+
+  showBluetoothRevampHatsSurvey(): void {
+    if (loadTimeData.getBoolean('bluetoothRevampHatsSurveyFlag')) {
+      chrome.send('showBluetoothRevampHatsSurvey');
+    }
   }
 }
