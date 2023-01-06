@@ -304,6 +304,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION,
                     "Enables the experimental View Transitions API."
                             + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
+            Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION_ON_NAVIGATION,
+                    "Enables the experimental View Transitions API for navigations."
+                            + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
             Flag.baseFeature(BlinkFeatures.CSS_OVERFLOW_FOR_REPLACED_ELEMENTS,
                     "Enables respecting the CSS overflow property on replaced elements."
                             + " See https://chromestatus.com/feature/5137515594383360."),
