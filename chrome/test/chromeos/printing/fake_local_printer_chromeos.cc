@@ -84,3 +84,8 @@ void FakeLocalPrinter::GetOAuthAccessToken(
     GetOAuthAccessTokenCallback callback) {
   FAIL();
 }
+
+void FakeLocalPrinter::GetIppClientInfo(const std::string& printer_id,
+                                        GetIppClientInfoCallback callback) {
+  FAIL();
+}

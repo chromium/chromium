@@ -118,6 +118,8 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
                            AddPrintJobObserverCallback callback) override;
   void GetOAuthAccessToken(const std::string& printer_id,
                            GetOAuthAccessTokenCallback callback) override;
+  void GetIppClientInfo(const std::string& printer_id,
+                        GetIppClientInfoCallback callback) override;
 
  private:
   void NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,

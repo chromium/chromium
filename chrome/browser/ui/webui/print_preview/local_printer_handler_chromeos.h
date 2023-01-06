@@ -104,6 +104,9 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   void GetOAuthToken(const std::string& printer_id,
                      AshJobSettingsCallback callback,
                      base::Value::Dict settings) const;
+  void GetIppClientInfo(const std::string& printer_id,
+                        AshJobSettingsCallback callback,
+                        base::Value::Dict settings) const;
 
   // Wrapper for `printing::StartLocalPrint()` to use as a callback bound to the
   // lifetime of `this`.

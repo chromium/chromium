@@ -358,4 +358,10 @@ interface LocalPrinter {
   [MinVersion=4]
   GetOAuthAccessToken@14(string printer_id)
     => (GetOAuthAccessTokenResult oauth_result);
+
+  // Returns an array of IPP 'client-info' values to be sent to the print
+  // destination.
+  [MinVersion=5]
+  GetIppClientInfo@15(string printer_id)
+    => (array<printing.mojom.IppClientInfo> settings);
 };

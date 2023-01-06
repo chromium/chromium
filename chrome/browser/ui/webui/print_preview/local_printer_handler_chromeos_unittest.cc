@@ -33,6 +33,8 @@ namespace {
 using ::crosapi::mojom::GetOAuthAccessTokenResult;
 using ::crosapi::mojom::LocalPrinter;
 using ::crosapi::mojom::OAuthNotNeeded;
+using ::printing::mojom::IppClientInfo;
+using ::printing::mojom::IppClientInfoPtr;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -51,6 +53,11 @@ class TestLocalPrinter : public FakeLocalPrinter {
     std::move(callback).Run(
         GetOAuthAccessTokenResult::NewNone(OAuthNotNeeded::New()));
   }
+
+  void GetIppClientInfo(const std::string& printer_id,
+                        GetIppClientInfoCallback callback) override {
+    std::move(callback).Run({});
+  }
 };
 
 class MockLocalPrinter : public TestLocalPrinter {
@@ -62,6 +69,10 @@ class MockLocalPrinter : public TestLocalPrinter {
               GetOAuthAccessToken,
               (const std::string& printer_id,
                GetOAuthAccessTokenCallback callback));
+  MOCK_METHOD(void,
+              GetIppClientInfo,
+              (const std::string& printer_id,
+               GetIppClientInfoCallback callback));
 
   void DelegateToBase() {
     ON_CALL(*this, GetUsernamePerPolicy)
@@ -73,6 +84,11 @@ class MockLocalPrinter : public TestLocalPrinter {
                               GetOAuthAccessTokenCallback cb) {
           return TestLocalPrinter::GetOAuthAccessToken(printer_id,
                                                        std::move(cb));
+        });
+    ON_CALL(*this, GetIppClientInfo)
+        .WillByDefault([this](const std::string& printer_id,
+                              GetIppClientInfoCallback cb) {
+          return TestLocalPrinter::GetIppClientInfo(printer_id, std::move(cb));
         });
   }
 };
@@ -283,6 +299,64 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsOAuthToken) {
   const base::Value::Dict kExpectedValue = base::test::ParseJsonDict(R"({
     "key": "value",
     "chromeos-access-oauth-token": "token"
+  })");
+  EXPECT_EQ(fetched_settings, kExpectedValue);
+}
+
+TEST_F(LocalPrinterHandlerChromeosWithAshTest,
+       GetAshJobSettingsClientInfoEmptyPrinterId) {
+  local_printer().DelegateToBase();
+  EXPECT_CALL(local_printer(), GetIppClientInfo).Times(0);
+
+  base::Value::Dict fetched_settings;
+  local_printer_handler()->GetAshJobSettingsForTesting(
+      "", base::BindOnce(&RecordAshJobSettings, std::ref(fetched_settings)),
+      kInitialJobSettings.Clone());
+
+  EXPECT_EQ(fetched_settings, kInitialJobSettings);
+}
+
+TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsClientInfo) {
+  local_printer().DelegateToBase();
+  const std::vector<IppClientInfo> expected_client_info{
+      {IppClientInfo::ClientType::kOperatingSystem, "ChromeOS", "patch",
+       "str_version", "version"},
+      {IppClientInfo::ClientType::kOther, "chromebook-42", absl::nullopt, "",
+       absl::nullopt}};
+  auto return_expected_client_info =
+      [client_info =
+           expected_client_info](LocalPrinter::GetIppClientInfoCallback cb) {
+        std::vector<IppClientInfoPtr> client_infos_to_send;
+        client_infos_to_send.push_back(client_info[0].Clone());
+        client_infos_to_send.push_back(client_info[1].Clone());
+        std::move(cb).Run(std::move(client_infos_to_send));
+      };
+  EXPECT_CALL(local_printer(), GetIppClientInfo)
+      .WillOnce(WithArg<1>(Invoke(std::move(return_expected_client_info))));
+
+  base::Value::Dict fetched_settings;
+  local_printer_handler()->GetAshJobSettingsForTesting(
+      "printer1",
+      base::BindOnce(&RecordAshJobSettings, std::ref(fetched_settings)),
+      kInitialJobSettings.Clone());
+
+  // Test that oauth token is in job settings, together with the old settings.
+  const base::Value::Dict kExpectedValue = base::test::ParseJsonDict(R"({
+    "key": "value",
+    "ipp-client-info": [
+      {
+        "ipp-client-type": 4,
+        "ipp-client-name": "ChromeOS",
+        "ipp-client-patches": "patch",
+        "ipp-client-string-version": "str_version",
+        "ipp-client-version": "version"
+      },
+      {
+        "ipp-client-type": 6,
+        "ipp-client-name": "chromebook-42",
+        "ipp-client-string-version": "",
+      },
+    ]
   })");
   EXPECT_EQ(fetched_settings, kExpectedValue);
 }

@@ -27,7 +27,9 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
+#include "printing/print_settings_conversion_chromeos.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -72,6 +74,21 @@ base::Value::Dict AddOAuthTokenToJobSettings(
                  oauth_result->get_token()->token);
   } else if (oauth_result->is_error()) {
     LOG(ERROR) << "Error when obtaining an oauth token for a local printer";
+  }
+  return settings;
+}
+
+base::Value::Dict AddIppClientInfoToJobSettings(
+    base::Value::Dict settings,
+    std::vector<mojom::IppClientInfoPtr> client_infos) {
+  std::vector<printing::mojom::IppClientInfo> client_info_list;
+  client_info_list.reserve(client_infos.size());
+  for (const printing::mojom::IppClientInfoPtr& client_info : client_infos) {
+    client_info_list.emplace_back(std::move(*client_info));
+  }
+  if (!client_info_list.empty()) {
+    settings.Set(kSettingIppClientInfo,
+                 ConvertClientInfoToJobSetting(client_info_list));
   }
   return settings;
 }
@@ -242,10 +259,14 @@ void LocalPrinterHandlerChromeos::GetAshJobSettings(
   }
 
   // Start a chain of async calls, `GetUsernamePerPolicy()` -> `GetOAuthToken()`
-  // -> `callback()`.
-  auto get_oauth_token_callback = base::BindOnce(
-      &LocalPrinterHandlerChromeos::GetOAuthToken,
+  // -> `GetIppClientInfo()` -> `callback()`.
+  auto get_client_info_callback = base::BindOnce(
+      &LocalPrinterHandlerChromeos::GetIppClientInfo,
       weak_ptr_factory_.GetWeakPtr(), printer_id, std::move(callback));
+  auto get_oauth_token_callback =
+      base::BindOnce(&LocalPrinterHandlerChromeos::GetOAuthToken,
+                     weak_ptr_factory_.GetWeakPtr(), printer_id,
+                     std::move(get_client_info_callback));
   GetUsernamePerPolicy(std::move(get_oauth_token_callback),
                        std::move(settings));
 }
@@ -253,8 +274,9 @@ void LocalPrinterHandlerChromeos::GetAshJobSettings(
 void LocalPrinterHandlerChromeos::GetUsernamePerPolicy(
     AshJobSettingsCallback callback,
     base::Value::Dict settings) const {
-  auto cb = base::BindOnce(AddProfileUsernameToJobSettings, std::move(settings))
-                .Then(std::move(callback));
+  auto add_profile_username_callback =
+      base::BindOnce(AddProfileUsernameToJobSettings, std::move(settings))
+          .Then(std::move(callback));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (local_printer_version_ <
@@ -262,20 +284,22 @@ void LocalPrinterHandlerChromeos::GetUsernamePerPolicy(
               kGetUsernamePerPolicyMinVersion}) {
     LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
                  << " does not support GetUsernamePerPolicy().";
-    std::move(cb).Run(absl::nullopt);
+    std::move(add_profile_username_callback).Run(absl::nullopt);
     return;
   }
 #endif
 
-  local_printer_->GetUsernamePerPolicy(std::move(cb));
+  local_printer_->GetUsernamePerPolicy(
+      std::move(add_profile_username_callback));
 }
 
 void LocalPrinterHandlerChromeos::GetOAuthToken(
     const std::string& printer_id,
     AshJobSettingsCallback callback,
     base::Value::Dict settings) const {
-  auto cb = base::BindOnce(AddOAuthTokenToJobSettings, std::move(settings))
-                .Then(std::move(callback));
+  auto add_oauth_token_callback =
+      base::BindOnce(AddOAuthTokenToJobSettings, std::move(settings))
+          .Then(std::move(callback));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (local_printer_version_ <
@@ -283,13 +307,44 @@ void LocalPrinterHandlerChromeos::GetOAuthToken(
               kGetOAuthAccessTokenMinVersion}) {
     LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
                  << " does not support GetOAuthToken().";
-    std::move(cb).Run(crosapi::mojom::GetOAuthAccessTokenResult::NewNone(
-        crosapi::mojom::OAuthNotNeeded::New()));
+    std::move(add_oauth_token_callback)
+        .Run(crosapi::mojom::GetOAuthAccessTokenResult::NewNone(
+            crosapi::mojom::OAuthNotNeeded::New()));
     return;
   }
 #endif
 
-  local_printer_->GetOAuthAccessToken(printer_id, std::move(cb));
+  local_printer_->GetOAuthAccessToken(printer_id,
+                                      std::move(add_oauth_token_callback));
+}
+
+void LocalPrinterHandlerChromeos::GetIppClientInfo(
+    const std::string& printer_id,
+    AshJobSettingsCallback callback,
+    base::Value::Dict settings) const {
+  auto add_ipp_client_info_callback =
+      base::BindOnce(AddIppClientInfoToJobSettings, std::move(settings))
+          .Then(std::move(callback));
+
+  if (printer_id.empty()) {
+    LOG(ERROR) << "Cannot call GetIppClientInfo: empty printer_id";
+    std::move(add_ipp_client_info_callback).Run({});
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (local_printer_version_ <
+      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
+              kGetIppClientInfoMinVersion}) {
+    LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
+                 << " does not support GetIppClientInfo().";
+    std::move(add_ipp_client_info_callback).Run({});
+    return;
+  }
+#endif
+
+  local_printer_->GetIppClientInfo(printer_id,
+                                   std::move(add_ipp_client_info_callback));
 }
 
 void LocalPrinterHandlerChromeos::CallStartLocalPrint(
