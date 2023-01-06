@@ -201,10 +201,6 @@ NotReachedError NotReachedError::NotReached(const char* file, int line) {
   return NotReachedError(log_message);
 }
 
-void NotReachedError::TriggerNotReached() {
-  NotReached("", -1);
-}
-
 NotReachedError::~NotReachedError() = default;
 
 void RawCheck(const char* message) {
