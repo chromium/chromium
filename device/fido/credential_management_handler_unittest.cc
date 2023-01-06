@@ -6,12 +6,11 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -70,7 +69,7 @@ class CredentialManagementHandlerTest : public ::testing::Test {
   test::VirtualFidoDeviceFactory virtual_device_factory_;
 };
 
-TEST_F(CredentialManagementHandlerTest, TestDeleteCredential) {
+TEST_F(CredentialManagementHandlerTest, TestDeleteCredentials) {
   VirtualCtap2Device::Config ctap_config;
   ctap_config.pin_support = true;
   ctap_config.resident_key_support = true;
@@ -107,8 +106,8 @@ TEST_F(CredentialManagementHandlerTest, TestDeleteCredential) {
   ASSERT_TRUE(num_remaining);
   EXPECT_EQ(*num_remaining, 99u);
 
-  handler->DeleteCredential(
-      opt_response->front().credentials.front().credential_id,
+  handler->DeleteCredentials(
+      {opt_response->front().credentials.front().credential_id},
       delete_callback_.callback());
 
   delete_callback_.WaitForCallback();

@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -92,11 +92,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   // ascending order by their RP ID. The |credentials| vector of each response
   // will be sorted in ascending order by user name.
   void GetCredentials(GetCredentialsCallback callback);
-
-  // DeleteCredential attempts to delete the credential with the given
-  // |credential_id|.
-  void DeleteCredential(const PublicKeyCredentialDescriptor& credential_id,
-                        DeleteCredentialCallback callback);
 
   // DeleteCredentials deletes a list of credentials. Each entry in
   // |credential_ids| must be a CBOR-serialized credential_id.

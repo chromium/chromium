@@ -186,29 +186,6 @@ void CredentialManagementHandler::GetCredentials(
                      weak_factory_.GetWeakPtr()));
 }
 
-static void OnDeleteCredential(
-    CredentialManagementHandler::DeleteCredentialCallback callback,
-    CtapDeviceResponseCode status,
-    absl::optional<DeleteCredentialResponse> response) {
-  std::move(callback).Run(status);
-}
-
-void CredentialManagementHandler::DeleteCredential(
-    const PublicKeyCredentialDescriptor& credential_id,
-    DeleteCredentialCallback callback) {
-  DCHECK(state_ == State::kReady && !get_credentials_callback_);
-  if (!authenticator_) {
-    // AuthenticatorRemoved() may have been called, but the observer would have
-    // seen a FidoAuthenticatorRemoved() call.
-    NOTREACHED();
-    return;
-  }
-  DCHECK(pin_token_);
-  authenticator_->DeleteCredential(
-      *pin_token_, credential_id,
-      base::BindOnce(&OnDeleteCredential, std::move(callback)));
-}
-
 void CredentialManagementHandler::OnDeleteCredentials(
     std::vector<device::PublicKeyCredentialDescriptor> remaining_credential_ids,
     CredentialManagementHandler::DeleteCredentialCallback callback,

@@ -7,9 +7,8 @@
 #include <numeric>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,17 +20,14 @@
 #include "device/fido/ctap_authenticator_selection_request.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
 #include "device/fido/u2f_command_constructor.h"
-#include "device/fido/virtual_fido_device.h"
 
 namespace device {
 
@@ -998,7 +994,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
     for (const LargeBlobKey& key : large_blob_keys) {
       absl::optional<LargeBlob> plaintext = blob.Decrypt(key);
       if (plaintext) {
-        result.emplace_back(std::make_pair(key, std::move(*plaintext)));
+        result.emplace_back(key, std::move(*plaintext));
         break;
       }
     }
