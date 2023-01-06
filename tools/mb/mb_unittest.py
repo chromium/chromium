@@ -5,20 +5,13 @@
 
 """Tests for mb.py."""
 
-from __future__ import print_function
-from __future__ import absolute_import
-
+import io
 import json
 import os
 import re
 import sys
 import tempfile
 import unittest
-
-if sys.version_info.major == 2:
-  from StringIO import StringIO
-else:
-  from io import StringIO
 
 sys.path.insert(
     0,
@@ -900,7 +893,7 @@ class UnitTest(unittest.TestCase):
   def test_help(self):
     orig_stdout = sys.stdout
     try:
-      sys.stdout = StringIO()
+      sys.stdout = io.StringIO()
       self.assertRaises(SystemExit, self.check, ['-h'])
       self.assertRaises(SystemExit, self.check, ['help'])
       self.assertRaises(SystemExit, self.check, ['help', 'gen'])

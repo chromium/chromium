@@ -9,9 +9,6 @@ MB is a wrapper script for GN that can be used to generate build files
 for sets of canned configurations and analyze them.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import argparse
 import ast
 import collections
@@ -22,16 +19,13 @@ import pipes
 import platform
 import re
 import shutil
-import sys
 import subprocess
+import sys
 import tempfile
 import traceback
+import urllib.request
 import zipfile
 
-if sys.version_info.major == 2:
-  from urllib2 import urlopen
-else:
-  from urllib.request import urlopen
 
 CHROMIUM_SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))
@@ -2143,7 +2137,7 @@ class MetaBuildWrapper:
 
   def Fetch(self, url):
     # This function largely exists so it can be overridden for testing.
-    f = urlopen(url)
+    f = urllib.request.urlopen(url)
     contents = f.read()
     f.close()
     return contents
