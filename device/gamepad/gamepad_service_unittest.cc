@@ -320,7 +320,8 @@ TEST_F(GamepadServiceTest, ConnectWhileInactiveTest) {
   }
 }
 
-TEST_F(GamepadServiceTest, ConnectAndDisconnectWhileInactiveTest) {
+// https://crbug.com/1405460: Flaky on Android.
+TEST_F(GamepadServiceTest, DISABLED_ConnectAndDisconnectWhileInactiveTest) {
   // Create two active consumers.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
