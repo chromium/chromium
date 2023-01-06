@@ -139,9 +139,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled10Connections",
+                    "name": "Enabled5Connections",
                     "params": {
-                        "max_connections": "10"
+                        "max_connections": "5"
                     },
                     "enable_features": [
                         "BindingManagerConnectionLimit"
