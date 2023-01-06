@@ -6348,6 +6348,110 @@ TEST_F(AuctionRunnerTest,
                   /*expected_sellers=*/3);
 }
 
+// Test to make sure SendPendingSignalsRequests is called on a seller worklet
+// if the worklet becomes available only after everything is queued.
+TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
+  UseMockWorkletService();
+
+  std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
+  // Make kMaxSellerProcesses seller worklet requests for other origins so
+  // seller worklet creation will be blocked by the process limit.
+  for (size_t i = 0; i < AuctionProcessManager::kMaxSellerProcesses; ++i) {
+    sellers.push_back(std::make_unique<AuctionProcessManager::ProcessHandle>());
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
+    EXPECT_TRUE(mock_auction_process_manager_->RequestWorkletService(
+        AuctionProcessManager::WorkletType::kSeller, origin,
+        scoped_refptr<SiteInstance>(), &*sellers.back(), base::BindOnce([]() {
+          ADD_FAILURE() << "This should not be called";
+        })));
+  }
+
+  StartStandardAuction();
+  mock_auction_process_manager_->WaitForWorklets(/*num_bidders=*/2,
+                                                 /*num_sellers=*/0);
+
+  // Let bidder worklets finish all the work while seller worklet is not
+  // available yet.
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/6,
+                                             GURL("https://ad1.com/"));
+  bidder1_worklet.reset();
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/7,
+                                             GURL("https://ad2.com/"));
+  bidder2_worklet.reset();
+
+  mock_auction_process_manager_->Flush();
+
+  // Make seller worklet available and finish the auction.
+  sellers.clear();
+  mock_auction_process_manager_->WaitForWorklets(/*num_bidders=*/0,
+                                                 /*num_sellers=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(6, score_ad_params.bid);
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
+
+  score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(7, score_ad_params.bid);
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/11,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+
+  // Worklet 2 should be reloaded and ReportWin() invoked.
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  bidder2_worklet->WaitForReportWin();
+  bidder2_worklet->InvokeReportWinCallback();
+
+  // Bidder2 won.
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+
+  // ~MockSellerWorklet verifies whether SendPendingSignalsRequests() was
+  // called.
+  seller_worklet->set_expect_send_pending_signals_requests_called(true);
+  seller_worklet.reset();
+}
+
 // Test the case where two interest groups use the same BidderWorklet, with a
 // trusted bidding signals URL. The requests should be batched. This test
 // basically makes sure that SendPendingSignalsRequests() is only invoked on the

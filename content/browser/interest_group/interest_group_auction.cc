@@ -1937,6 +1937,14 @@ void InterestGroupAuction::OnSellerWorkletReceived() {
                                     unscored_bid->TraceId());
     ScoreBidIfReady(std::move(unscored_bid));
   }
+
+  // If no further bids are outstanding, now is the time to send a coalesced
+  // request for all the trusted seller signals (if some still are pending,
+  // OnBidSourceDone() will take care of it).
+  if (outstanding_bid_sources_ == 0) {
+    seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+  }
+
   // No more unscored bids should be added, once the seller worklet has been
   // received.
   DCHECK(unscored_bids_.empty());
