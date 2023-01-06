@@ -941,6 +941,10 @@ BASE_FEATURE(kFederatedServiceScheduleTasks,
              "FederatedServiceScheduleTasks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFederatedTimezoneCodePhh,
+             "FederatedTimezoneCodePhh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables experimental UI features in Files app.
 BASE_FEATURE(kFilesAppExperimental,
              "FilesAppExperimental",

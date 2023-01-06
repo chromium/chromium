@@ -16,17 +16,21 @@ import "chromeos/ash/services/federated/public/mojom/example.mojom";
 
 // Top-level interface between Chromium and the Federated Service daemon.
 // Next ordinal: 2
+// Next MinVersion: 2
 interface FederatedService {
   // Binds another pipe to this instance.
   Clone@0(pending_receiver<FederatedService> receiver);
 
+  // NOTE FOR AUTHORS AND REVIEWERS:
+  // Any use of this API must go through the ChromeOS launch process,
+  // including Privacy review. See ../README.md for more details.
   // Stores `example` in cryptohome-backed storage for use during future
   // scheduled federated analytics or ML model training, identified by
   // `client_name`.
-  // Examples are deleted when they are used for federated analytics/training.
+  // Examples are deleted when they expire.
   ReportExample@1(string client_name, Example example);
 
   // Starts scheduling federated training tasks if they are not scheduled yet,
   // otherwise does nothing.
-  StartScheduling@2();
+  StartScheduling@2([MinVersion=1] map<string, string>? client_launch_stage);
 };
