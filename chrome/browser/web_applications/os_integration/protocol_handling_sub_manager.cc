@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/protocol_handling_sub_manager.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -21,10 +22,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 
 namespace web_app {
 
@@ -60,18 +57,7 @@ void ProtocolHandlingSubManager::Configure(
     const AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
-  // Disable protocol handler unregistration on Win7 due to bad interactions
-  // between preinstalled app scenarios and the need for elevation to unregister
-  // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    std::move(configure_done).Run();
-    return;
-  }
-#endif
-
   DCHECK(!desired_state.has_protocols_handled());
-
   if (!registrar_->IsLocallyInstalled(app_id)) {
     std::move(configure_done).Run();
     return;

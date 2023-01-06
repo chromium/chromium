@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_switches.h"
@@ -107,8 +106,6 @@ TEST_F(WebAppShortcutWinTest, GetShortcutPaths) {
       ShellUtil::SHORTCUT_LOCATION_DESKTOP,
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
       ShellUtil::SHORTCUT_LOCATION_STARTUP};
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    expected_locations.push_back(ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH);
 
   base::FilePath expected_result;
   for (const auto& location : expected_locations) {

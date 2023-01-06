@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -11,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -111,15 +112,11 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
                   "Web Applications\\_crx_app_id\\app_name.ico"))));
 
     // Ensure that the launcher file contains the expected app name.
-    // On Windows 7 the extension is omitted.
-    base::FilePath expected_launcher_filename =
-        base::win::GetVersion() > base::win::Version::WIN7
-            ? base::FilePath(expected_user_visible_app_name.append(L".exe"))
-            : base::FilePath(expected_user_visible_app_name);
     base::FilePath registered_launcher_path =
         ShellUtil::GetApplicationPathForProgId(app_progid);
     ASSERT_TRUE(base::PathExists(registered_launcher_path));
-    EXPECT_EQ(expected_launcher_filename, registered_launcher_path.BaseName());
+    EXPECT_EQ(registered_launcher_path.BaseName(),
+              base::FilePath(expected_user_visible_app_name.append(L".exe")));
   }
 
  private:
@@ -290,54 +287,26 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
   EXPECT_TRUE(launcher_path.has_value());
   EXPECT_TRUE(base::PathExists(launcher_path.value()));
 
-  // On Windows 7 the extension is omitted.
   std::wstring expected_user_visible_app_name(app_name());
   expected_user_visible_app_name.append(app_name_extension);
-  base::FilePath expected_launcher_filename =
-      base::win::GetVersion() > base::win::Version::WIN7
-          ? base::FilePath(expected_user_visible_app_name.append(L".exe"))
-          : base::FilePath(expected_user_visible_app_name);
-  EXPECT_EQ(launcher_path.value().BaseName(), expected_launcher_filename);
+  EXPECT_EQ(launcher_path.value().BaseName(),
+            base::FilePath(expected_user_visible_app_name.append(L".exe")));
 }
 
 // Test that invalid file name characters in app_name are replaced with ' '.
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameWithInvalidChars) {
   // '*' is an invalid char in Windows file names, so it should be replaced
   // with ' '.
-  std::wstring app_name = L"app*name";
-  // On Windows 7 the extension is omitted.
-  base::FilePath expected_launcher_name =
-      base::win::GetVersion() > base::win::Version::WIN7
-          ? base::FilePath(L"app name.exe")
-          : base::FilePath(L"app name");
-  EXPECT_EQ(GetAppSpecificLauncherFilename(app_name), expected_launcher_name);
+  EXPECT_EQ(GetAppSpecificLauncherFilename(L"app*name"),
+            base::FilePath(L"app name.exe"));
 }
 
 // Test that an app name that is a reserved filename on Windows has '_'
 // prepended to it when used as a filename for its launcher.
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameIsReservedFilename) {
   // "con" is a reserved filename on Windows, so it should have '_' prepended.
-  std::wstring app_name = L"con";
-  // On Windows 7 the extension is omitted.
-  base::FilePath expected_launcher_name =
-      base::win::GetVersion() > base::win::Version::WIN7
-          ? base::FilePath(L"_con.exe")
-          : base::FilePath(L"_con");
-  EXPECT_EQ(GetAppSpecificLauncherFilename(app_name), expected_launcher_name);
-}
-
-// Test that an app name containing '.' characters has them replaced with '_' on
-// Windows 7 when used as a filename for its launcher.
-TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameContainsDot) {
-  std::wstring app_name = L"some.app.name";
-
-  // "some.app.name" should become "some_app_name" on Windows 7 and the
-  // extension is also omitted.
-  base::FilePath expected_launcher_name =
-      base::win::GetVersion() > base::win::Version::WIN7
-          ? base::FilePath(L"some.app.name.exe")
-          : base::FilePath(L"some_app_name");
-  EXPECT_EQ(GetAppSpecificLauncherFilename(app_name), expected_launcher_name);
+  EXPECT_EQ(GetAppSpecificLauncherFilename(L"con"),
+            base::FilePath(L"_con.exe"));
 }
 
 }  // namespace web_app

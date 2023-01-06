@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -154,10 +156,10 @@ std::wstring GetProgId(const base::FilePath& profile_path,
     // Provided file extensions must have a leading period. This is enforced
     // to ensure that calls to this function have consistent syntax (and
     // therefore get the same prog_id for a given set of inputs).
-    DCHECK(iter->at(0) == '.');
+    DCHECK_EQ(iter->at(0), '.');
     string_to_hash += *iter;
     while (++iter != file_extensions->end()) {
-      DCHECK(iter->at(0) == '.');
+      DCHECK_EQ(iter->at(0), '.');
       string_to_hash += ";";
       string_to_hash += *iter;
     }
@@ -199,15 +201,6 @@ base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name) {
   base::FilePath::StringType sanitized_app_name =
       internals::GetSanitizedFileName(base::AsString16(app_name)).value();
 
-  // On Windows 7, where the launcher has no file extension, replace any '.'
-  // characters with '_' to prevent a portion of the filename from being
-  // interpreted as its extension.
-  const bool is_win_7 = base::win::GetVersion() == base::win::Version::WIN7;
-  if (is_win_7) {
-    base::ReplaceChars(sanitized_app_name, FILE_PATH_LITERAL("."),
-                       FILE_PATH_LITERAL("_"), &sanitized_app_name);
-  }
-
   // If |sanitized_app_name| is a reserved filename, prepend '_' to allow its
   // use as the launcher filename (e.g. "nul" => "_nul"). Prepending is
   // preferred over appending in order to handle filenames containing '.', as
@@ -217,14 +210,9 @@ base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name) {
   if (net::IsReservedNameOnWindows(sanitized_app_name))
     sanitized_app_name.insert(0, 1, FILE_PATH_LITERAL('_'));
 
-  // On Windows 8+, add .exe extension. On Windows 7, where an app's display
-  // name in the Open With menu can't be set programmatically, omit the
-  // extension to use the launcher filename as the app's display name.
-  if (!is_win_7) {
-    return base::FilePath(sanitized_app_name)
-        .AddExtension(FILE_PATH_LITERAL("exe"));
-  }
-  return base::FilePath(sanitized_app_name);
+  // Add .exe extension.
+  return base::FilePath(sanitized_app_name)
+      .AddExtension(FILE_PATH_LITERAL("exe"));
 }
 
 // See https://docs.microsoft.com/en-us/windows/win32/com/-progid--key for

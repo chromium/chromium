@@ -24,10 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace web_app {
 namespace {
 
@@ -193,12 +189,6 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
 }
 
 TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
-#if BUILDFLAG(IS_WIN)
-  // UpdateProtocolHandlers is a no-op on Win7
-  if (base::win::GetVersion() == base::win::Version::WIN7)
-    return;
-#endif
-
   const AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager(
       std::make_unique<WebAppProtocolHandlerManager>(nullptr));

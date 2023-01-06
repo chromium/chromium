@@ -46,10 +46,6 @@
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace {
 bool g_suppress_os_hooks_for_testing_ = false;
 }  // namespace
@@ -521,16 +517,6 @@ void OsIntegrationManager::RegisterFileHandlers(const AppId& app_id,
 
 void OsIntegrationManager::RegisterProtocolHandlers(const AppId& app_id,
                                                     ResultCallback callback) {
-  // Disable protocol handler unregistration on Win7 due to bad interactions
-  // between preinstalled app scenarios and the need for elevation to unregister
-  // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   if (!protocol_handler_manager_) {
     std::move(callback).Run(Result::kOk);
     return;
@@ -682,16 +668,6 @@ void OsIntegrationManager::UnregisterFileHandlers(const AppId& app_id,
 
 void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id,
                                                       ResultCallback callback) {
-  // Disable protocol handler unregistration on Win7 due to bad interactions
-  // between preinstalled app scenarios and the need for elevation to unregister
-  // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   if (!protocol_handler_manager_) {
     std::move(callback).Run(Result::kOk);
     return;
@@ -836,16 +812,6 @@ void OsIntegrationManager::UpdateProtocolHandlers(
     std::move(callback).Run();
     return;
   }
-
-  // Disable protocol handler unregistration on Win7 due to bad interactions
-  // between preinstalled app scenarios and the need for elevation to unregister
-  // protocol handlers on that platform. See crbug.com/1224327 for context.
-#if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    std::move(callback).Run();
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   auto shortcuts_callback = base::BindOnce(
       &OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers,

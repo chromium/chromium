@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -169,19 +168,12 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        AddAndVerifyProtocolAssociations) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
 }
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        RegisterMultipleHandlersWithSameScheme) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
   AddAndVerifyProtocolAssociations(kApp2Id, kApp2Name, kApp2Url, GetProfile(),
@@ -193,10 +185,6 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 // the profile name, e.g., "app name (Default)" and "app name (Profile 2)".
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        RegisterProtocolHandlersForWebAppIn2Profiles) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
 
@@ -237,10 +225,6 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 // registered app name.
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        UnRegisterProtocolHandlersForWebAppIn2Profiles) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
   base::FilePath app_specific_launcher_path =
@@ -293,10 +277,6 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 // registry settings and the app-specific launcher.
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        UnregisterProtocolHandlersForWebApp) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
   base::FilePath app_specific_launcher_path =
