@@ -143,8 +143,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
 
   // SRGB
   constexpr SkColorType kSrgbColorType = kRGBA_8888_SkColorType;
-  // TODO(tangm): switch to kRGB_888x_SkColorType
-  constexpr SkColorType kSrgbColorTypeOpaque = kRGBA_8888_SkColorType;
+  constexpr SkColorType kSrgbColorTypeOpaque = kRGB_888x_SkColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
       kSrgbColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
