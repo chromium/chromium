@@ -261,6 +261,14 @@ ScriptPromise GPUAdapter::requestAdapterInfo(
           "given."));
       return promise;
     }
+
+    // TODO(crbug.com/1405528): Handling unmask hints is not yet supported.
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Passing unmaskHints to requestAdapterInfo is not yet implemented. In "
+        "the future, doing so may trigger a permissions prompt."));
+
+    return promise;
   }
 
   GPUAdapterInfo* adapter_info;
