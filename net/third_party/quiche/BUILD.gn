@@ -148,7 +148,6 @@ component("quiche") {
     "src/quiche/http2/core/http2_trace_logging.cc",
     "src/quiche/http2/core/http2_trace_logging.h",
     "src/quiche/http2/core/priority_write_scheduler.h",
-    "src/quiche/http2/core/write_scheduler.h",
     "src/quiche/http2/decoder/decode_buffer.cc",
     "src/quiche/http2/decoder/decode_buffer.h",
     "src/quiche/http2/decoder/decode_http2_structures.cc",
@@ -716,6 +715,7 @@ component("quiche") {
     "src/quiche/spdy/core/spdy_simple_arena.cc",
     "src/quiche/spdy/core/spdy_simple_arena.h",
     "src/quiche/spdy/core/zero_copy_output_buffer.h",
+    "src/quiche/web_transport/web_transport.h",
   ]
 
   configs += [ ":quiche_internal_config" ]
@@ -983,7 +983,6 @@ static_library("quiche_test_support") {
     "overrides/quiche_platform_impl/quiche_test_output_impl.h",
     "src/quiche/common/platform/api/quiche_expect_bug.h",
     "src/quiche/common/platform/api/quiche_test.h",
-    "src/quiche/common/platform/api/quiche_test.h",
     "src/quiche/common/platform/api/quiche_test_loopback.cc",
     "src/quiche/common/platform/api/quiche_test_loopback.h",
     "src/quiche/common/platform/api/quiche_test_output.h",
@@ -1173,6 +1172,7 @@ static_library("quiche_test_support") {
     "src/quiche/spdy/test_tools/mock_spdy_framer_visitor.h",
     "src/quiche/spdy/test_tools/spdy_test_utils.cc",
     "src/quiche/spdy/test_tools/spdy_test_utils.h",
+    "src/quiche/web_transport/mock_web_transport.h",
   ]
 
   configs += [ ":quiche_internal_config" ]
