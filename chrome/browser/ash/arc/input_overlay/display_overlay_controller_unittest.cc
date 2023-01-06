@@ -65,9 +65,6 @@ TEST_F(DisplayOverlayControllerTest, TestWindowBoundsChange) {
 
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   arc_test_window_->SetBounds(display, new_bounds);
-  // Trigger the updates for window bounds change.
-  injector_->UpdateForWindowBoundsChanged();
-  controller_->OnWindowBoundsChanged();
   auto updated_bounds = GetInputMappingViewBounds();
   EXPECT_NE(original_bounds, updated_bounds);
   EXPECT_EQ(updated_bounds, new_bounds);

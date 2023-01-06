@@ -36,15 +36,6 @@ constexpr char kRandomGamePackageName[] =
     "org.chromium.arc.testapp.inputoverlay_game";
 constexpr const float kTolerance = 0.999f;
 
-class MockDisplayOverlayController : public DisplayOverlayController {
- public:
-  explicit MockDisplayOverlayController(TouchInjector* touch_injector)
-      : DisplayOverlayController(touch_injector, false) {}
-  ~MockDisplayOverlayController() override = default;
-
-  void OnWindowBoundsChanged() override {}
-};
-
 // Make sure the tasks run synchronously when creating the window.
 std::unique_ptr<views::Widget> CreateArcWindowSyncAndWait(
     base::test::TaskEnvironment* task_environment,
@@ -75,8 +66,8 @@ class TestArcInputOverlayManager : public ArcInputOverlayManager {
     if (!registered_top_level_window_ || !touch_injector)
       return;
     DCHECK(!display_overlay_controller_);
-    display_overlay_controller_ =
-        std::make_unique<MockDisplayOverlayController>(touch_injector);
+    display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
+        touch_injector, /*first_launch=*/false);
   }
 };
 
@@ -131,6 +122,11 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
   }
 
   void EnableBetaFlag() { arc_test_input_overlay_manager_->beta_ = true; }
+
+  void TriggerDisplayOverlayOnWindowBoundsChange() {
+    arc_test_input_overlay_manager_->display_overlay_controller_
+        ->TriggerWidgetBoundsChangedForTesting();
+  }
 
  protected:
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
@@ -401,6 +397,9 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
       ash::Shell::GetPrimaryRootWindow()->GetBoundsInScreen());
   arc_window->GetNativeWindow()->SetBoundsInScreen(gfx::Rect(10, 10, 150, 150),
                                                    display);
+  // No overlay widget attached to |arc_window| in this test, so it needs to
+  // trigger the |OnWidgetBoundsChanged()| call manually.
+  TriggerDisplayOverlayOnWindowBoundsChange();
   EXPECT_EQ(injector->content_bounds(),
             gfx::RectF(10, 10 + caption_height, 150, 150 - caption_height));
   EXPECT_POINTF_NEAR(
