@@ -36,7 +36,6 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
             os.path.join(constants.WEB_TEST_ROOT_DIR, 'FlagExpectations',
                          'README.txt'))
 
-    @unittest.skip('Skipped due to crbug/1305104')
     def testRealFilesCanBeFound(self) -> None:
         """Tests that real files are returned."""
         with fake_filesystem_unittest.Pause(self):
@@ -83,7 +82,6 @@ class GetExpectationFileTagHeaderUnittest(fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
         self.instance = expectations.WebTestExpectations()
 
-    @unittest.skip('Skipped due to crbug/1305104')
     def testRealContentsCanBeLoaded(self) -> None:
         """Tests that some sort of valid content can be read from the file."""
         with fake_filesystem_unittest.Pause(self):
