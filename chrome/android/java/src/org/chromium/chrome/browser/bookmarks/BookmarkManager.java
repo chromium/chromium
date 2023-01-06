@@ -26,8 +26,12 @@ import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.renderer_host.ChromeNavigationUIData;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -39,6 +43,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -522,31 +527,35 @@ public class BookmarkManager
     }
 
     @Override
-    public void openBookmarks(List<BookmarkId> bookmarks, boolean openInNewTab, Boolean incognito) {
-        if (bookmarks == null || bookmarks.size() == 0) return;
-
-        boolean anyOpened = false;
-        for (int i = 0; i < bookmarks.size(); i++) {
-            BookmarkId bookmark = bookmarks.get(i);
-
-            @TabLaunchType
-            Integer tabLaunchType = null;
-            if (bookmark.getType() == BookmarkType.READING_LIST) {
-                tabLaunchType = TabLaunchType.FROM_READING_LIST;
-            } else if (openInNewTab) {
-                // Only new tab opens should have a TabLaunchType.
-                tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
-            }
-
-            boolean success = BookmarkUtils.openBookmark(mContext, mOpenBookmarkComponentName,
-                    mBookmarkModel, bookmark, incognito == null ? mIsIncognito : incognito,
-                    tabLaunchType, openInNewTab);
-            anyOpened = success || anyOpened;
+    public void openBookmark(BookmarkId bookmark) {
+        if (!BookmarkUtils.openBookmark(
+                    mContext, mOpenBookmarkComponentName, mBookmarkModel, bookmark, mIsIncognito)) {
+            return;
         }
 
-        if (anyOpened && bookmarks.get(0) != null
-                && bookmarks.get(0).getType() != BookmarkType.READING_LIST) {
+        // Close bookmark UI. Keep the reading list page open.
+        if (bookmark != null && bookmark.getType() != BookmarkType.READING_LIST) {
             BookmarkUtils.finishActivityOnPhone(mContext);
+        }
+    }
+
+    @Override
+    public void openBookmarksInNewTabs(List<BookmarkId> bookmarks, boolean incognito) {
+        TabDelegate tabDelegate = new TabDelegate(incognito);
+        for (BookmarkId id : bookmarks) {
+            if (id == null) continue;
+            GURL url = mBookmarkModel.getBookmarkById(id).getUrl();
+            LoadUrlParams params = new LoadUrlParams(url);
+            ChromeNavigationUIData navData = new ChromeNavigationUIData();
+            navData.setBookmarkId(id.getType() == BookmarkType.NORMAL ? id.getId() : -1);
+            params.setNavigationUIDataSupplier(navData::createUnownedNativeCopy);
+            AsyncTabCreationParams asyncParams =
+                    new AsyncTabCreationParams(params, mOpenBookmarkComponentName);
+            tabDelegate.createNewTab(
+                    asyncParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, Tab.INVALID_TAB_ID);
+            if (id.getType() == BookmarkType.READING_LIST) {
+                mBookmarkModel.setReadStatusForReadingList(url, true);
+            }
         }
     }
 

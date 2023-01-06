@@ -10,7 +10,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,21 +58,18 @@ public interface BookmarkDelegate {
     void notifyStateChange(BookmarkUIObserver observer);
 
     /**
-     * Closes the Bookmark UI (if on phone) and opens the given bookmark in the current tab.
-     * @param bookmark The bookmark to open.
+     * Closes the Bookmark UI (if on phone) and opens the given bookmark.
+     * @param bookmark Bookmark to open.
      */
-    default void openBookmark(BookmarkId bookmark) {
-        openBookmarks(Arrays.asList(bookmark), /*openInNewTab=*/false, /*incognito=*/null);
-    }
+    void openBookmark(BookmarkId bookmark);
 
     /**
-     * Closes the Bookmark UI (if on phone) and opens the given bookmark in new tabs.
-     * @param bookmarks The bookmarks to open.
-     * @param openInNewTab Whether the boomkarks should be opened in a new tab.
-     * @param incognito Whether the bookmarks should open in an incognito window. If this is null
-     *                  then the current incognito context will be used.
+     * Closes the Bookmark UI (if on phone) and opens the given list of bookmarks in new tabs.
+     * @param bookmarks Bookmarks to open.
+     * @param incognito Whether the bookmarks should be opened in an incognito tab.
      */
-    void openBookmarks(List<BookmarkId> bookmarks, boolean openInNewTab, Boolean incognito);
+    void openBookmarksInNewTabs(List<BookmarkId> bookmark, boolean incognito);
+
     /**
      * Shows the search UI.
      */
