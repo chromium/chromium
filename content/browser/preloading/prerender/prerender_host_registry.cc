@@ -66,13 +66,6 @@ bool DeviceHasEnoughMemoryForPrerender() {
   return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
 }
 
-PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
-  return static_cast<PreloadingFailureReason>(
-      static_cast<int>(status) +
-      static_cast<int>(
-          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
-}
-
 }  // namespace
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {

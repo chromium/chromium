@@ -5,6 +5,12 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_
 
+#include "content/public/browser/preloading.h"
+
+#include "content/common/content_export.h"
+
+namespace content {
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -86,5 +92,11 @@ enum class PrerenderFinalStatus {
   kTabClosedWithoutUserGesture = 55,
   kMaxValue = kTabClosedWithoutUserGesture,
 };
+
+// Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
+PreloadingFailureReason CONTENT_EXPORT
+    ToPreloadingFailureReason(PrerenderFinalStatus);
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_

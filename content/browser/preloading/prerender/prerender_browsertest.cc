@@ -178,13 +178,6 @@ using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
 using ukm::builders::Preloading_Prediction;
 
-PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
-  return static_cast<PreloadingFailureReason>(
-      static_cast<int>(status) +
-      static_cast<int>(
-          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
-}
-
 // Tests the params of WebContentsImpl that contains a prerendered page for a
 // new tab navigation.
 void ExpectWebContentsIsForNewTabPrerendering(WebContentsImpl& web_contents) {
