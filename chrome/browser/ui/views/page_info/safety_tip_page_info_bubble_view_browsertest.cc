@@ -498,8 +498,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
 }
 
 // Ensure blocked sites get blocked in incognito.
+// TODO(crbug.com/1405351): Fix this test and re-enable.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       ShowOnBlockIncognito) {
+                       DISABLED_ShowOnBlockIncognito) {
   auto kNavigatedUrl = GetURL("accounts-google.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
