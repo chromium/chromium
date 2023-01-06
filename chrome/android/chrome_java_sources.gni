@@ -679,7 +679,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/infobar/NearOomInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/PasswordInfoBarUtils.java",
   "java/src/org/chromium/chrome/browser/infobar/PermissionInfoBar.java",
-  "java/src/org/chromium/chrome/browser/infobar/ReaderModeInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/SafetyTipInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/SubPanelListener.java",
   "java/src/org/chromium/chrome/browser/infobar/TranslateCompactInfoBar.java",

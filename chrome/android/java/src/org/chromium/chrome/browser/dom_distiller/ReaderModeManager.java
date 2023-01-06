@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -92,7 +91,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     /**
-     * Conditions under which the Reader Mode message was dismissed in conjunction with the
+     * Conditions under which the Reader Mode prompt was dismissed in conjunction with the
      * accessibility setting.
      *
      * Note: These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -136,7 +135,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     @DistillationStatus
     private int mDistillationStatus;
 
-    /** If the infobar was closed due to the close button. */
+    /** If the prompt was dismissed by the user. */
     private boolean mIsDismissed;
 
     /**
@@ -145,8 +144,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
      */
     private GURL mDistillerUrl;
 
-    /** Used to flag the the infobar was shown and recorded by UMA. */
-    private boolean mShowInfoBarRecorded;
+    /** Used to flag that the prompt was shown and recorded by UMA. */
+    private boolean mShowPromptRecorded;
 
     /** Whether or not the current tab is a Reader Mode page. */
     private boolean mIsViewingReaderModePage;
@@ -257,7 +256,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     @Override
     public void onShown(Tab shownTab, @TabSelectionType int type) {
-        // If the reader infobar was dismissed, stop here.
+        // If the reader mode prompt was dismissed, stop here.
         if (mIsDismissed) return;
 
         mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
@@ -288,9 +287,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public void onDestroyed(Tab tab) {
         if (tab == null) return;
 
-        // If the infobar was not shown for the previous navigation, record it now.
-        if (!mShowInfoBarRecorded) {
-            recordInfoBarVisibilityForNavigation(false);
+        // If the prompt was not shown for the previous navigation, record it now.
+        if (!mShowPromptRecorded) {
+            recordPromptVisibilityForNavigation(false);
         }
         if (mIsViewingReaderModePage) {
             long timeMs = onExitReaderMode();
@@ -313,7 +312,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mIsDismissed = false;
         mMessageRequestedForNavigation = false;
         mDistillerUrl = null;
-        mShowInfoBarRecorded = false;
+        mShowPromptRecorded = false;
         mIsViewingReaderModePage = false;
         mDistillabilityObserver = null;
     }
@@ -355,16 +354,15 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     /**
-     * Record if the infobar became visible on the current page. This can be overridden for testing.
-     * @param visible If the infobar was visible at any time.
+     * Record if the prompt became visible on the current page. This can be overridden for testing.
+     * @param visible If the prompt was visible at any time.
      */
-    private void recordInfoBarVisibilityForNavigation(boolean visible) {
+    private void recordPromptVisibilityForNavigation(boolean visible) {
         RecordHistogram.recordBooleanHistogram("DomDistiller.ReaderShownForPageLoad", visible);
     }
 
-    /** A notification that the infobar was closed without being used. */
+    /** A notification that the prompt was dismissed without being used. */
     public void onClosed() {
-        RecordHistogram.recordBooleanHistogram("DomDistiller.InfoBarUsage", false);
         mIsDismissed = true;
     }
 
@@ -478,11 +476,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 mIsDismissed = false;
                 mMessageRequestedForNavigation = false;
 
-                // If the infobar was not shown for the previous navigation, record it now.
+                // If the prompt was not shown for the previous navigation, record it now.
                 if (mTab != null && !mTab.isNativePage() && !mTab.isBeingRestored()) {
-                    recordInfoBarVisibilityForNavigation(false);
+                    recordPromptVisibilityForNavigation(false);
                 }
-                mShowInfoBarRecorded = false;
+                mShowPromptRecorded = false;
 
                 if (mTab != null && !DomDistillerUrlUtils.isDistilledPage(mTab.getUrl())
                         && mIsViewingReaderModePage) {
@@ -535,8 +533,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 mMessageShown = true;
             }
             mMessageRequestedForNavigation = true;
-        } else {
-            ReaderModeInfoBar.showReaderModeInfoBar(mTab);
         }
     }
 
@@ -596,7 +592,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     public void activateReaderMode() {
-        RecordHistogram.recordBooleanHistogram("DomDistiller.InfoBarUsage", true);
         // Contextual page action buttons can't be dismissed, instead we consider a shown but unused
         // button as "dismissed" and mute the site on setReaderModeUiShown(). When the button gets
         // clicked we un-mute the site to prevent the rate limiting logic from showing the CPA

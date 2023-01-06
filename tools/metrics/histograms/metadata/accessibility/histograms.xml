@@ -1966,6 +1966,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
     expires_after="2023-06-25">
+  <obsolete>
+    Deprecated in January 2023 as part of message post-launch cleanup since the
+    messages system records dismissal reasons using
+    Android.Messages.Dismissed.ReaderMode.
+  </obsolete>
   <owner>mdjones@chromium.org</owner>
   <summary>
     &quot;Used&quot; is recorded when the user clicks the infobar to enter

@@ -36,8 +36,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
-import org.chromium.chrome.browser.infobar.ReaderModeInfoBarJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
@@ -91,9 +89,6 @@ public class ReaderModeManagerTest {
     private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
 
     @Mock
-    private ReaderModeInfoBar.Natives mReaderModeInfobarJniMock;
-
-    @Mock
     private NavigationHandle mNavigationHandle;
 
     @Mock
@@ -120,7 +115,6 @@ public class ReaderModeManagerTest {
         jniMocker.mock(org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni.TEST_HOOKS,
                 mDistillerTabUtilsJniMock);
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
-        jniMocker.mock(ReaderModeInfoBarJni.TEST_HOOKS, mReaderModeInfobarJniMock);
 
         DomDistillerTabUtils.setExcludeMobileFriendlyForTesting(true);
 
@@ -174,7 +168,6 @@ public class ReaderModeManagerTest {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, false, true, false);
         assertEquals("Distillation should not be possible.", DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
         verifyNoMoreInteractions(mMessageDispatcher);
     }
 
@@ -187,7 +180,6 @@ public class ReaderModeManagerTest {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals("Distillation should not be possible.", DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
     @Test
@@ -209,7 +201,6 @@ public class ReaderModeManagerTest {
         assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
                 mManager.getDistillationStatus());
         verify(mMessageDispatcher, never()).enqueueMessage(any(), any(), anyInt(), anyBoolean());
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
     @Test
@@ -222,7 +213,6 @@ public class ReaderModeManagerTest {
         verify(mMessageDispatcher,
                 never().description("Reader mode should be muted in this domain"))
                 .enqueueMessage(any(), any(), anyInt(), anyBoolean());
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
     @Test
@@ -233,7 +223,6 @@ public class ReaderModeManagerTest {
         assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
                 mManager.getDistillationStatus());
         verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
     @Test
@@ -249,7 +238,6 @@ public class ReaderModeManagerTest {
                 never().description("Message should be suppressed as the CPA UI will be shown"))
                 .enqueueMessage(
                         any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
     @Test
