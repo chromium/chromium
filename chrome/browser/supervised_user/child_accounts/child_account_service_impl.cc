@@ -331,8 +331,8 @@ void ChildAccountServiceImpl::StartFetchingFamilyInfo() {
     list_family_members_fetcher_ = FetchListFamilyMembers(
         *identity_manager_, profile_->GetURLLoaderFactory(),
         KidsManagementService::GetEndpointUrl(),
-        BindOnce(&ChildAccountServiceImpl::ConsumeListFamilyMembers,
-                 base::Unretained(this)));
+        base::BindOnce(&ChildAccountServiceImpl::ConsumeListFamilyMembers,
+                       base::Unretained(this)));
   } else {
     family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
         this, identity_manager_,

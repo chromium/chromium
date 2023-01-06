@@ -17,9 +17,12 @@
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<base::internal::UnretainedWrapper<void>>
-    : public CrossThreadCopierPassThrough<
-          base::internal::UnretainedWrapper<void>> {
+struct CrossThreadCopier<
+    base::internal::UnretainedWrapper<void,
+                                      base::unretained_traits::MayNotDangle>>
+    : public CrossThreadCopierPassThrough<base::internal::UnretainedWrapper<
+          void,
+          base::unretained_traits::MayNotDangle>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

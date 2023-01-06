@@ -170,29 +170,29 @@ BindFailedCheckPreviousErrors BindRepeating(...);
 // use-after-free, as `AnotherClass::OnError` might be invoked with a dangling
 // pointer as receiver.
 template <typename T>
-inline internal::UnretainedWrapper<T> Unretained(T* o) {
-  return internal::UnretainedWrapper<T>(o);
+inline auto Unretained(T* o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
 template <typename T, typename RawPtrType>
-inline internal::UnretainedWrapper<T> Unretained(
-    const raw_ptr<T, RawPtrType>& o) {
-  return internal::UnretainedWrapper<T>(o);
+inline auto Unretained(const raw_ptr<T, RawPtrType>& o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
 template <typename T, typename RawPtrType>
-inline internal::UnretainedWrapper<T> Unretained(raw_ptr<T, RawPtrType>&& o) {
-  return internal::UnretainedWrapper<T>(std::move(o));
+inline auto Unretained(raw_ptr<T, RawPtrType>&& o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(
+      std::move(o));
 }
 
 template <typename T, typename RawPtrType>
 inline auto Unretained(const raw_ref<T, RawPtrType>& o) {
-  return internal::UnretainedRefWrapper<T>(o);
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
 template <typename T, typename RawPtrType>
 inline auto Unretained(raw_ref<T, RawPtrType>&& o) {
-  return internal::UnretainedRefWrapper<T>(o);
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle>(o);
 }
 
 // Similar to `Unretained()`, but allows dangling pointers, e.g.:
@@ -229,69 +229,70 @@ inline auto Unretained(raw_ref<T, RawPtrType>&& o) {
 //
 // Strongly prefer `Unretained()`. This is useful in limited situations such as
 // the one above.
+//
+// When using `UnsafeDangling()`, the receiver must be of type MayBeDangling<>.
 template <typename T>
-inline internal::UnretainedWrapper<T, DisableDanglingPtrDetection>
-UnsafeDangling(T* o) {
-  return internal::UnretainedWrapper<T, DisableDanglingPtrDetection>(o);
+inline auto UnsafeDangling(T* o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(o);
 }
 
-template <typename T, typename I>
-internal::UnretainedWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
-    const raw_ptr<T, I>& o) {
-  return internal::UnretainedWrapper<T, DisableDanglingPtrDetection>(o);
+template <typename T, typename RawPtrType>
+auto UnsafeDangling(const raw_ptr<T, RawPtrType>& o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(o);
 }
 
-template <typename T, typename I>
-internal::UnretainedWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
-    raw_ptr<T, I>&& o) {
-  return internal::UnretainedWrapper<T, DisableDanglingPtrDetection>(
+template <typename T, typename RawPtrType>
+auto UnsafeDangling(raw_ptr<T, RawPtrType>&& o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(
       std::move(o));
 }
 
 template <typename T, typename RawPtrType>
-internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
-    const raw_ref<T, RawPtrType>& o) {
-  return internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection>(o);
+auto UnsafeDangling(const raw_ref<T, RawPtrType>& o) {
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle>(o);
 }
 
 template <typename T, typename RawPtrType>
-internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection> UnsafeDangling(
-    raw_ref<T, RawPtrType>&& o) {
-  return internal::UnretainedRefWrapper<T, DisableDanglingPtrDetection>(o);
+auto UnsafeDangling(raw_ref<T, RawPtrType>&& o) {
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle>(o);
 }
 
 // Like `UnsafeDangling()`, but used to annotate places that still need to be
 // triaged and either migrated to `Unretained()` and safer ownership patterns
 // (preferred) or `UnsafeDangling()` if the correct pattern to use is the one
 // in the `UnsafeDangling()` example above for example.
+//
+// Unlike `UnsafeDangling()`, the receiver doesn't have to be MayBeDangling<>.
 template <typename T>
-inline internal::UnretainedWrapper<T, DanglingUntriaged>
-UnsafeDanglingUntriaged(T* o) {
-  return internal::UnretainedWrapper<T, DanglingUntriaged>(o);
-}
-
-template <typename T, typename I>
-internal::UnretainedWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
-    const raw_ptr<T, I>& o) {
-  return internal::UnretainedWrapper<T, DanglingUntriaged>(o);
-}
-
-template <typename T, typename I>
-internal::UnretainedWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
-    raw_ptr<T, I>&& o) {
-  return internal::UnretainedWrapper<T, DanglingUntriaged>(std::move(o));
+inline auto UnsafeDanglingUntriaged(T* o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
+      o);
 }
 
 template <typename T, typename RawPtrType>
-internal::UnretainedRefWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
-    const raw_ref<T, RawPtrType>& o) {
-  return internal::UnretainedRefWrapper<T, DanglingUntriaged>(o);
+auto UnsafeDanglingUntriaged(const raw_ptr<T, RawPtrType>& o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
+      o);
 }
 
 template <typename T, typename RawPtrType>
-internal::UnretainedRefWrapper<T, DanglingUntriaged> UnsafeDanglingUntriaged(
-    raw_ref<T, RawPtrType>&& o) {
-  return internal::UnretainedRefWrapper<T, DanglingUntriaged>(o);
+auto UnsafeDanglingUntriaged(raw_ptr<T, RawPtrType>&& o) {
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
+      std::move(o));
+}
+
+template <typename T, typename RawPtrType>
+auto UnsafeDanglingUntriaged(const raw_ref<T, RawPtrType>& o) {
+  return internal::UnretainedRefWrapper<T,
+                                        unretained_traits::MayDangleUntriaged>(
+      o);
+}
+
+template <typename T, typename RawPtrType>
+auto UnsafeDanglingUntriaged(raw_ref<T, RawPtrType>&& o) {
+  return internal::UnretainedRefWrapper<T,
+                                        unretained_traits::MayDangleUntriaged>(
+      o);
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.

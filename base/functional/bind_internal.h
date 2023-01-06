@@ -85,32 +85,41 @@ struct CallbackCancellationTraits;
 template <typename Signature>
 class FunctionRef;
 
+namespace unretained_traits {
+
+// UnretainedWrapper will check and report if pointer is dangling upon
+// invocation.
+struct MayNotDangle {};
+// UnretainedWrapper won't check if pointer is dangling upon invocation. For
+// extra safety, the receiver must be of type MayBeDangling<>.
+struct MayDangle {};
+// UnretainedWrapper won't check if pointer is dangling upon invocation. The
+// receiver doesn't have to be a raw_ptr<>. This is just a temporary state, to
+// allow dangling pointers that would otherwise crash if MayNotDangle was used.
+// It should be replaced ASAP with MayNotDangle (after fixing the dangling
+// pointers) or with MayDangle if there is really no other way (after making
+// receivers MayBeDangling<>).
+struct MayDangleUntriaged {};
+
+}  // namespace unretained_traits
+
 namespace internal {
 
 template <typename Functor, typename SFINAE = void>
 struct FunctorTraits;
 
-template <typename T, typename RawPtrType = base::RawPtrBanDanglingIfSupported>
+template <typename T, typename Trait>
 class UnretainedWrapper {
-  // `Unretained()` arguments often dangle by design (common design pattern
-  // consists of managing objects' lifetimes inside the callbacks themselves
-  // using stateful information), so in case RawPtrType requests to ban dangling
-  // pointers, use DisableDanglingPtrDetection instead. We will still check for
-  // dangling pointers at invocation for those.
-  // Otherwise, if RawPtrType is either DisableDanglingPtrDetection or
-  // DanglingUntriaged, we keep the flag as is to store the raw pointer. That
-  // way, we can differentiate between the two at invocation time as well.
-  using StoredRawPtrType = std::conditional_t<
-      std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported>,
-      DisableDanglingPtrDetection,
-      RawPtrType>;
-
-  // We want the getter type to be the exact same as both the stored type and
-  // the argument type, to avoid having raw_ptr<T> -> T* -> raw_ptr<T> round
-  // trip, which would trigger the raw_ptr error detector if T* was dangling.
+  // We want the getter type to be the exact same as the receiver parameter that
+  // it's passed into, to avoid having raw_ptr<T> -> T* -> raw_ptr<T> round
+  // trip, which could trigger the raw_ptr error detector if T* was dangling.
+  // This is enforced by static_asserts in base::internal::AssertConstructible.
+  //
+  // Returning raw_ptr<T> would also break if e.g. UnretainedWrapper() is
+  // constructed using char*, but the receiver is of type std::string&.
   using GetPtrType =
-      std::conditional_t<std::is_same_v<RawPtrType, RawPtrMayDangle>,
-                         raw_ptr<T, StoredRawPtrType>,
+      std::conditional_t<std::is_same_v<Trait, unretained_traits::MayDangle>,
+                         MayBeDangling<T>,
                          T*>;
 
  public:
@@ -118,8 +127,6 @@ class UnretainedWrapper {
                 "Callback cannot capture an unprotected C++ pointer since this "
                 "Type is annotated with DISALLOW_UNRETAINED(). Please see "
                 "base/functional/disallow_unretained.h for alternatives.");
-  static_assert(raw_ptr_traits::IsValidRawPtrTypeV<RawPtrType>,
-                "RawPtrType must be a valid raw_ptr type.");
 
   explicit UnretainedWrapper(T* o) : ptr_(o) {}
 
@@ -127,16 +134,13 @@ class UnretainedWrapper {
   // instantiating UnretainedWrapper with a T that is not supported by
   // raw_ptr would trigger raw_ptr<T>'s static_assert.
   template <typename U = T, typename I>
-  // Avoids having a raw_ptr<T> -> T* -> raw_ptr<T> round trip, which
-  // would trigger the raw_ptr error detector if T* was dangling.
   explicit UnretainedWrapper(const raw_ptr<U, I>& o) : ptr_(o) {}
   template <typename U = T, typename I>
   explicit UnretainedWrapper(raw_ptr<U, I>&& o) : ptr_(std::move(o)) {}
 
   template <typename U, typename I>
   static void ReportIfDangling(const raw_ptr<U, I>& ptr) {
-    if constexpr (std::is_same_v<RawPtrType,
-                                 base::RawPtrBanDanglingIfSupported>) {
+    if constexpr (std::is_same_v<Trait, unretained_traits::MayNotDangle>) {
       ptr.ReportIfDangling();
     }
   }
@@ -161,21 +165,32 @@ class UnretainedWrapper {
   //
   // As a compromise, we decay the wrapper to use `T*` only (rather
   // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
-  using ImplType = T*;
+  using StorageType = T*;
 #else   // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  // `Unretained()` arguments often dangle by design (common design patterns
-  // consists of managing objects lifetime inside the callbacks themselves using
-  // stateful information), so disable direct dangling pointer detection of
-  // `ptr_`.
+  // `Unretained()` arguments often dangle by design (a common design pattern
+  // is to manage an object's lifetime inside the callback itself, using
+  // stateful information), so disable direct dangling pointer detection
+  // of `ptr_`.
   //
   // If the callback is invoked, dangling pointer detection will be triggered
-  // before invoking the bound functor (unless stated other wise, see
-  // `UnsafeDangling()`), when retrieving the pointer value via `get()` above.
-  using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
-                                      raw_ptr<T, StoredRawPtrType>,
-                                      T*>;
+  // before invoking the bound functor (unless stated otherwise, see
+  // `UnsafeDangling()` and `UnsafeDanglingUntriaged()`), when retrieving the
+  // pointer value via `get()` above.
+  using StorageType = std::conditional_t<
+      raw_ptr_traits::IsSupportedType<T>::value,
+      raw_ptr<T,
+              std::conditional_t<
+                  std::is_same_v<Trait, unretained_traits::MayDangleUntriaged>,
+                  DanglingUntriaged,
+                  DisableDanglingPtrDetection>>,
+      T*>;
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  ImplType ptr_;
+  // Avoid converting between different `raw_ptr` types when calling `get()`.
+  // See the comment by `GetPtrType` describing why this wouldn't be good.
+  static_assert(std::is_pointer_v<GetPtrType> ||
+                std::is_pointer_v<StorageType> ||
+                std::is_same_v<GetPtrType, StorageType>);
+  StorageType ptr_;
 };
 
 // Storage type for std::reference_wrapper so `BindState` can internally store
@@ -190,7 +205,7 @@ class UnretainedWrapper {
 // raw_ref<T> is not used to differentiate between storing a `raw_ref<T>`
 // explicitly versus storing a `T&` or `std::ref()`.
 template <typename T,
-          typename RawPtrType = base::RawPtrBanDanglingIfSupported,
+          typename Trait,
           bool = raw_ptr_traits::IsSupportedType<T>::value>
 class UnretainedRefWrapper {
  public:
@@ -209,8 +224,8 @@ class UnretainedRefWrapper {
 
 #if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // Implementation of UnretainedRefWrapper for `T` where raw_ref<T> is supported.
-template <typename T, typename RawPtrType>
-class UnretainedRefWrapper<T, RawPtrType, true> {
+template <typename T, typename Trait>
+class UnretainedRefWrapper<T, Trait, true> {
  public:
   static_assert(TypeSupportsUnretainedV<T>,
                 "Callback cannot capture an unprotected C++ pointer since this "
@@ -227,8 +242,7 @@ class UnretainedRefWrapper<T, RawPtrType, true> {
     // dangling pointer. This is checked here. For now, it is configured to
     // either crash, DumpWithoutCrashing or be ignored. This depends on the
     // PartitionAllocUnretainedDanglingPtr feature.
-    if constexpr (std::is_same_v<RawPtrType,
-                                 base::RawPtrBanDanglingIfSupported>) {
+    if constexpr (std::is_same_v<Trait, unretained_traits::MayNotDangle>) {
       ref_.ReportIfDangling();
     }
     // We can't use operator* here, we need to use raw_ptr's GetForExtraction
@@ -254,17 +268,17 @@ class UnretainedRefWrapper<T, RawPtrType, true> {
 // the internal callback mechanism expects the receiver to have the type
 // `MyClass*` and to have `operator*`.
 // This is used as storage.
-template <typename T, typename RawPtrType, bool b>
+template <typename T, typename Trait, bool b>
 class UnretainedRefWrapperReceiver {
  public:
   // NOLINTNEXTLINE(google-explicit-constructor)
-  UnretainedRefWrapperReceiver(UnretainedRefWrapper<T, RawPtrType, b>&& o)
+  UnretainedRefWrapperReceiver(UnretainedRefWrapper<T, Trait, b>&& o)
       : obj_(std::move(o)) {}
   // NOLINTNEXTLINE(google-explicit-constructor)
   T& operator*() const { return obj_.get(); }
 
  private:
-  UnretainedRefWrapper<T, RawPtrType, b> obj_;
+  UnretainedRefWrapper<T, Trait, b> obj_;
 };
 
 // MethodReceiverStorageType converts the current receiver type to its stored
@@ -277,11 +291,11 @@ struct MethodReceiverStorageType {
       std::conditional_t<IsPointerV<T>, scoped_refptr<RemovePointerT<T>>, T>;
 };
 
-template <typename T, typename RawPtrType, bool b>
-struct MethodReceiverStorageType<UnretainedRefWrapper<T, RawPtrType, b>> {
+template <typename T, typename Trait, bool b>
+struct MethodReceiverStorageType<UnretainedRefWrapper<T, Trait, b>> {
   // We can't use UnretainedRefWrapper as a receiver directly (see
   // UnretainedRefWrapperReceiver for why).
-  using Type = UnretainedRefWrapperReceiver<T, RawPtrType, b>;
+  using Type = UnretainedRefWrapperReceiver<T, Trait, b>;
 };
 
 template <typename T>
@@ -860,7 +874,7 @@ struct StorageTraits {
 // raw_ptr<T> (when possible).
 template <typename T>
 struct StorageTraits<T*> {
-  using Type = UnretainedWrapper<T>;
+  using Type = UnretainedWrapper<T, unretained_traits::MayNotDangle>;
 };
 
 // For raw_ptr<T>, store as UnretainedWrapper<T> for safety. This may seem
@@ -868,14 +882,14 @@ struct StorageTraits<T*> {
 // during execution of callbacks with parameters of type raw_ptr<T>.
 template <typename T, typename I>
 struct StorageTraits<raw_ptr<T, I>> {
-  using Type = UnretainedWrapper<T>;
+  using Type = UnretainedWrapper<T, unretained_traits::MayNotDangle>;
 };
 
 // Unwrap std::reference_wrapper and store it in a custom wrapper so that
 // references are also protected with raw_ptr<T>.
 template <typename T>
 struct StorageTraits<std::reference_wrapper<T>> {
-  using Type = UnretainedRefWrapper<T>;
+  using Type = UnretainedRefWrapper<T, unretained_traits::MayNotDangle>;
 };
 
 template <typename T>
@@ -1321,14 +1335,15 @@ struct IsOnceCallback : std::false_type {};
 template <typename Signature>
 struct IsOnceCallback<OnceCallback<Signature>> : std::true_type {};
 
-// IsUnretainedMayDangle is true if |T| is of type UnretainedWrapper<T,
-// base::RawPtrMayDangle>
+// IsUnretainedMayDangle is true if |T| is of type
+// UnretainedWrapper<T, unretained_traits::MayDangle>.
+// Note that it is false for unretained_traits::MayDangleUntriaged.
 template <typename T>
 inline constexpr bool IsUnretainedMayDangle = false;
-
 template <typename T>
 inline constexpr bool
-    IsUnretainedMayDangle<UnretainedWrapper<T, base::RawPtrMayDangle>> = true;
+    IsUnretainedMayDangle<UnretainedWrapper<T, unretained_traits::MayDangle>> =
+        true;
 
 // Helpers to make error messages slightly more readable.
 template <int i>
@@ -1478,7 +1493,7 @@ struct AssertConstructible {
           Unwrapped>::template ToParamWithType<Param>::kNotARawPtr ||
           BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
               Storage>::kMayBeDanglingMustBeUsed,
-      "base::Bind() target functor has a parameter of type raw_ptr<T>."
+      "base::Bind() target functor has a parameter of type raw_ptr<T>. "
       "raw_ptr<T> should not be used for function parameters, please use T* or "
       "T& instead.");
 
@@ -1671,16 +1686,16 @@ struct BindUnwrapTraits {
   }
 };
 
-template <typename T, typename ImplType>
-struct BindUnwrapTraits<internal::UnretainedWrapper<T, ImplType>> {
-  static auto Unwrap(const internal::UnretainedWrapper<T, ImplType>& o) {
+template <typename T, typename Trait>
+struct BindUnwrapTraits<internal::UnretainedWrapper<T, Trait>> {
+  static auto Unwrap(const internal::UnretainedWrapper<T, Trait>& o) {
     return o.get();
   }
 };
 
-template <typename T, typename RawPtrType>
-struct BindUnwrapTraits<internal::UnretainedRefWrapper<T, RawPtrType>> {
-  static T& Unwrap(const internal::UnretainedRefWrapper<T, RawPtrType>& o) {
+template <typename T, typename Trait>
+struct BindUnwrapTraits<internal::UnretainedRefWrapper<T, Trait>> {
+  static T& Unwrap(const internal::UnretainedRefWrapper<T, Trait>& o) {
     return o.get();
   }
 };
