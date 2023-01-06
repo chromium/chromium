@@ -69,6 +69,11 @@ class AppIconDecoder {
 
   void OnIconRead(std::map<ui::ResourceScaleFactor, IconValuePtr> icon_datas);
 
+  void DecodeImage(ui::ResourceScaleFactor scale_factor,
+                   const std::vector<uint8_t>& icon_data,
+                   gfx::ImageSkia& image_skia,
+                   std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
+
   void UpdateImageSkia(
       ui::ResourceScaleFactor scale_factor,
       const SkBitmap& bitmap,
@@ -78,6 +83,12 @@ class AppIconDecoder {
   void DiscardDecodeRequest();
 
   void CompleteWithImageSkia(const gfx::ImageSkia& image_skia);
+
+  void DecodeRequestForTesting(
+      ui::ResourceScaleFactor scale_factor,
+      const std::vector<uint8_t>& icon_data,
+      gfx::ImageSkia& image_skia,
+      std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
 
   const base::FilePath base_path_;
   const std::string app_id_;
