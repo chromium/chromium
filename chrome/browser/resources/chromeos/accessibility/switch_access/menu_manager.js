@@ -178,7 +178,7 @@ export class MenuManager {
     this.menuAutomationNode_ = node;
     this.clickHandler_.setNodes(this.menuAutomationNode_);
     this.clickHandler_.start();
-    Navigator.byItem.jumpToSwitchAccessMenu();
+    Navigator.byItem.jumpTo(this.menuAutomationNode_);
   }
 
   /**

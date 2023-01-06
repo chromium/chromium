@@ -64,8 +64,12 @@ export class ItemNavigatorInterface {
    */
   getTreeForDebugging(wholeTree) {}
 
-  /** Jumps into the Switch Access action menu. @abstract */
-  jumpToSwitchAccessMenu() {}
+  /**
+   * Jumps to a specific automation node. Maintains the history when navigating.
+   * @param {AutomationNode} automationNode
+   * @abstract
+   */
+  jumpTo(automationNode) {}
 
   /**
    * Move to the previous interesting node.

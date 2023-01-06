@@ -157,13 +157,12 @@ export class ItemScanManager extends ItemNavigatorInterface {
   }
 
   /** @override */
-  jumpToSwitchAccessMenu() {
-    const menuNode = MenuManager.menuAutomationNode;
-    if (!menuNode) {
+  jumpTo(automationNode) {
+    if (!automationNode) {
       return;
     }
-    const menu = BasicRootNode.buildTree(menuNode);
-    this.jumpTo_(menu, false /* shouldExitMenu */);
+    const node = BasicRootNode.buildTree(automationNode);
+    this.jumpTo_(node, false /* shouldExitMenu */);
   }
 
   /** @override */
