@@ -808,6 +808,22 @@ suite('SettingsDevicePage', function() {
       inputDevices: [],
     };
 
+    /** @type {!AudioSystemProperties} */
+    const noiseCancellationNotSupportedAudioSystemProperties = {
+      outputVolumePercent: 0,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
+    };
+
     /**
      * Simuates clicking at a given point on cr-slider element.
      * @param {string} crSliderSelector
@@ -826,7 +842,6 @@ suite('SettingsDevicePage', function() {
       }));
       return await flushTasks();
     }
-
 
     setup(async function() {
       loadTimeData.overrideValues({
@@ -1132,6 +1147,30 @@ suite('SettingsDevicePage', function() {
 
       assertEquals(
           audioPage.audioSystemProperties_.inputVolumePercent, maximumValue);
+    });
+
+    test('simulate noise cancellation', async function() {
+      const noiseCancellationSubsection = audioPage.shadowRoot.querySelector(
+          '#audioInputNoiseCancellationSubsection');
+      const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
+          '#audioInputNoiseCancellationToggle');
+
+      assertTrue(isVisible(noiseCancellationSubsection));
+      assertFalse(noiseCancellationToggle.checked);
+
+      await noiseCancellationToggle.click();
+      await flushTasks();
+
+      assertTrue(isVisible(noiseCancellationSubsection));
+      assertTrue(noiseCancellationToggle.checked);
+
+      crosAudioConfig.setAudioSystemProperties(
+          noiseCancellationNotSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertFalse(
+          isVisible(noiseCancellationSubsection),
+      );
     });
   });
 

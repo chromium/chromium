@@ -65,6 +65,10 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         observer:
             SettingsAudioElement.prototype.onNoiseCancellationEnabledChanged,
       },
+
+      isNoiseCancellationSupported_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -75,6 +79,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   private isOutputMuted_: boolean;
   private isInputMuted_: boolean;
   private isNoiseCancellationEnabled_: boolean;
+  private isNoiseCancellationSupported_: boolean;
 
   constructor() {
     super();
@@ -107,6 +112,9 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     this.isNoiseCancellationEnabled_ =
         (activeInputDevice?.noiseCancellationState ===
          AudioEffectState.ENABLED);
+    this.isNoiseCancellationSupported_ =
+        !(activeInputDevice?.noiseCancellationState ===
+          AudioEffectState.NOT_SUPPORTED);
   }
 
   getIsOutputMutedForTest(): boolean {

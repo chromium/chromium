@@ -152,7 +152,8 @@
             </cr-slider>
           </div>
         </div>
-        <div id="audioInputNoiseCancellationSubsection">
+        <div id="audioInputNoiseCancellationSubsection"
+            hidden="[[!isNoiseCancellationSupported_]]">
           <div id="audioInputNoiseCancellationLabel">Noise Cancellation</div>
           <cr-toggle id="audioInputNoiseCancellationToggle"
               checked="{{isNoiseCancellationEnabled_}}">

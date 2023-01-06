@@ -75,6 +75,14 @@ export const fakeBluetoothMic: AudioDevice = {
   noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
 };
 
+export const fakeInternalMicActive: AudioDevice = {
+  id: BigInt(7),
+  displayName: 'Internal Mic',
+  isActive: true,
+  deviceType: AudioDeviceType.kInternalMic,
+  noiseCancellationState: AudioEffectState.NOT_SUPPORTED,
+};
+
 // TODO(b/260277007): Remove type alias and unused types when mojo updated to
 // handle audio input.
 export interface FakeAudioSystemProperties extends AudioSystemPropertiesMojom {
