@@ -594,8 +594,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // current execution context.
   HeapHashMap<int64_t,
               WeakMember<::blink::ServiceWorker>,
-              WTF::IntHash<int64_t>,
-              WTF::UnsignedWithZeroKeyHashTraits<int64_t>>
+              IntHash<int64_t>,
+              IntWithZeroKeyHashTraits<int64_t>>
       service_worker_objects_;
   bool did_evaluate_script_ = false;
   bool is_installing_ = false;

@@ -67,12 +67,6 @@ struct DigestValueHash {
 template <>
 struct DefaultHash<blink::DigestValue> : DigestValueHash {};
 
-template <>
-struct DefaultHash<blink::HashAlgorithm> : IntHash<blink::HashAlgorithm> {};
-template <>
-struct HashTraits<blink::HashAlgorithm>
-    : UnsignedWithZeroKeyHashTraits<blink::HashAlgorithm> {};
-
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_H_

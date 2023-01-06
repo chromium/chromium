@@ -53,7 +53,7 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
 
   HashSet<cc::PaintImage::ContentId,
           DefaultHash<cc::PaintImage::ContentId>,
-          WTF::UnsignedWithZeroKeyHashTraits<cc::PaintImage::ContentId>>
+          IntWithZeroKeyHashTraits<cc::PaintImage::ContentId>>
       cached_image_ids_;
 
   Client* client_;

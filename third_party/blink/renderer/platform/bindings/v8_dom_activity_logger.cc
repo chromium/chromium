@@ -19,8 +19,8 @@ typedef HashMap<String, std::unique_ptr<V8DOMActivityLogger>>
     DOMActivityLoggerMapForMainWorld;
 typedef HashMap<int,
                 std::unique_ptr<V8DOMActivityLogger>,
-                WTF::IntHash<int>,
-                WTF::UnsignedWithZeroKeyHashTraits<int>>
+                IntHash<int>,
+                IntWithZeroKeyHashTraits<int>>
     DOMActivityLoggerMapForIsolatedWorld;
 
 static DOMActivityLoggerMapForMainWorld& DomActivityLoggersForMainWorld() {

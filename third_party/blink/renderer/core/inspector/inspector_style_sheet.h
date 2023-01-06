@@ -270,8 +270,8 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   CSSRuleVector parsed_flat_rules_;
   typedef HashMap<unsigned,
                   unsigned,
-                  WTF::IntHash<unsigned>,
-                  WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
+                  IntHash<unsigned>,
+                  IntWithZeroKeyHashTraits<unsigned>>
       IndexMap;
   IndexMap rule_to_source_data_;
   IndexMap source_data_to_rule_;

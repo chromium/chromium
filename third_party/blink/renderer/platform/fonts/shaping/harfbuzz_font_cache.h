@@ -45,8 +45,8 @@ class HarfBuzzFontCache final {
  private:
   using FontDataMap = HashMap<uint64_t,
                               scoped_refptr<HarfBuzzFontData>,
-                              WTF::IntHash<uint64_t>,
-                              WTF::UnsignedWithZeroKeyHashTraits<uint64_t>>;
+                              IntHash<uint64_t>,
+                              IntWithZeroKeyHashTraits<uint64_t>>;
 
   FontDataMap font_map_;
 };

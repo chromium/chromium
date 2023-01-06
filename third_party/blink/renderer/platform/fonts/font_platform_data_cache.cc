@@ -82,7 +82,7 @@ FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
 
   // Assert that the computed hash map key rounded_size value does not hit
   // the empty (max()) or deleted (max()-1) sentinel values of the hash map,
-  // compare UnsignedWithZeroKeyHashTraits() in hash_traits.h.
+  // compare IntWithZeroKeyHashTraits() in hash_traits.h.
   DCHECK_LT(rounded_size, std::numeric_limits<unsigned>::max() - 1);
 
   // Assert that rounded_size was not reset to 0 due to an integer overflow,

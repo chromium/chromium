@@ -180,10 +180,11 @@ struct HashTraits<float> : FloatHashTraits<float> {};
 template <>
 struct HashTraits<double> : FloatHashTraits<double> {};
 
-// Default unsigned traits disallow both 0 and max as keys -- use these traits
+// Default integral traits disallow both 0 and max as keys -- use these traits
 // to allow zero and disallow max - 1.
 template <typename T>
-struct UnsignedWithZeroKeyHashTraits : GenericHashTraits<T> {
+struct IntWithZeroKeyHashTraits : GenericHashTraits<T> {
+  static_assert(std::is_integral_v<T>);
   static const bool kEmptyValueIsZero = false;
   static T EmptyValue() { return std::numeric_limits<T>::max(); }
   static void ConstructDeletedValue(T& slot, bool) {
@@ -483,8 +484,9 @@ struct NullableHashTraits : public HashTraits<T> {
 }  // namespace WTF
 
 using WTF::HashTraits;
-using WTF::PairHashTraits;
+using WTF::IntWithZeroKeyHashTraits;
 using WTF::NullableHashTraits;
+using WTF::PairHashTraits;
 using WTF::SimpleClassHashTraits;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TRAITS_H_

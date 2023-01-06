@@ -697,8 +697,8 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
 
 typedef HashMap<unsigned,
                 unsigned,
-                WTF::IntHash<unsigned>,
-                WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
+                IntHash<unsigned>,
+                IntWithZeroKeyHashTraits<unsigned>>
     IndexMap;
 
 void Diff(const Vector<String>& list_a,

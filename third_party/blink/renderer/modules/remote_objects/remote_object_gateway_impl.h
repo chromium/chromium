@@ -70,8 +70,8 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
   HashMap<String, int32_t> named_objects_;
   HashMap<int32_t,
           RemoteObject*,
-          WTF::IntHash<int32_t>,
-          WTF::UnsignedWithZeroKeyHashTraits<int32_t>>
+          IntHash<int32_t>,
+          IntWithZeroKeyHashTraits<int32_t>>
       remote_objects_;
 
   HeapMojoReceiver<mojom::blink::RemoteObjectGateway,

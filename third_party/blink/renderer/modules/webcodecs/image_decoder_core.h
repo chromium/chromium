@@ -139,7 +139,7 @@ class MODULES_EXPORT ImageDecoderCore {
   HashMap<uint32_t,
           uint32_t,
           DefaultHash<uint32_t>,
-          WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+          IntWithZeroKeyHashTraits<uint32_t>>
       incomplete_frames_;
 
   // By default, assume in order decoding and purge all decoded frames except

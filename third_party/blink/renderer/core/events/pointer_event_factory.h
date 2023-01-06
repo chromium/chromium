@@ -105,10 +105,8 @@ class CORE_EXPORT PointerEventFactory {
   // We use int64_t to cover the whole range for PointerId with no
   // deleted hash value.
   template <typename T>
-  using PointerIdKeyMap = HashMap<int64_t,
-                                  T,
-                                  WTF::IntHash<int64_t>,
-                                  WTF::UnsignedWithZeroKeyHashTraits<int64_t>>;
+  using PointerIdKeyMap =
+      HashMap<int64_t, T, IntHash<int64_t>, IntWithZeroKeyHashTraits<int64_t>>;
   typedef struct IncomingId : public std::pair<int, int> {
     IncomingId() = default;
     IncomingId(WebPointerProperties::PointerType pointer_type, int raw_id)
@@ -124,8 +122,8 @@ class CORE_EXPORT PointerEventFactory {
       HashMap<IncomingId,
               PointerId,
               WTF::PairHash<int, int>,
-              WTF::PairHashTraits<WTF::UnsignedWithZeroKeyHashTraits<int>,
-                                  WTF::UnsignedWithZeroKeyHashTraits<int>>>;
+              WTF::PairHashTraits<IntWithZeroKeyHashTraits<int>,
+                                  IntWithZeroKeyHashTraits<int>>>;
 
   typedef struct PointerAttributes {
     IncomingId incoming_id;

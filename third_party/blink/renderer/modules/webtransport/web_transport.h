@@ -170,8 +170,8 @@ class MODULES_EXPORT WebTransport final
   // TODO(ricea): Find out if such large stream ids are possible.
   HeapHashMap<uint32_t,
               Member<IncomingStream>,
-              WTF::DefaultHash<uint32_t>,
-              WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+              DefaultHash<uint32_t>,
+              IntWithZeroKeyHashTraits<uint32_t>>
       incoming_stream_map_;
 
   // Map from stream_id to OutgoingStream.
@@ -180,8 +180,8 @@ class MODULES_EXPORT WebTransport final
   // TODO(ricea): Find out if such large stream ids are possible.
   HeapHashMap<uint32_t,
               Member<OutgoingStream>,
-              WTF::DefaultHash<uint32_t>,
-              WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+              DefaultHash<uint32_t>,
+              IntWithZeroKeyHashTraits<uint32_t>>
       outgoing_stream_map_;
 
   // A map from stream id to whether the fin signal was received. When
@@ -189,8 +189,8 @@ class MODULES_EXPORT WebTransport final
   // corresponding incoming stream, the event is recorded here.
   HashMap<uint32_t,
           bool,
-          WTF::DefaultHash<uint32_t>,
-          WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+          DefaultHash<uint32_t>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       closed_potentially_pending_streams_;
 
   HeapMojoRemote<mojom::blink::WebTransportConnector> connector_;

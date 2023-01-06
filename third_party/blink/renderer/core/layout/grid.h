@@ -19,20 +19,8 @@
 
 namespace blink {
 
-struct OrderedTrackIndexSetHashTraits : public HashTraits<wtf_size_t> {
-  static const bool kEmptyValueIsZero = false;
-  static wtf_size_t EmptyValue() { return UINT_MAX; }
-
-  static void ConstructDeletedValue(wtf_size_t& slot, bool) {
-    slot = UINT_MAX - 1;
-  }
-  static bool IsDeletedValue(const wtf_size_t& value) {
-    return value == UINT_MAX - 1;
-  }
-};
-
 typedef HeapVector<Member<LayoutBox>, 1> GridItemList;
-typedef LinkedHashSet<wtf_size_t, OrderedTrackIndexSetHashTraits>
+typedef LinkedHashSet<wtf_size_t, IntWithZeroKeyHashTraits<wtf_size_t>>
     OrderedTrackIndexSet;
 
 class LayoutGrid;

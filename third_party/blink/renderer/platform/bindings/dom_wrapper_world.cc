@@ -52,7 +52,7 @@ static_assert(kMainDOMWorldId == DOMWrapperWorld::kMainWorldId,
 unsigned DOMWrapperWorld::number_of_non_main_worlds_in_main_thread_ = 0;
 
 // This does not contain the main world because the WorldMap needs
-// non-default hashmap traits (WTF::UnsignedWithZeroKeyHashTraits) to contain
+// non-default hashmap traits (WTF::IntWithZeroKeyHashTraits) to contain
 // it for the main world's id (0), and it may change the performance trends.
 // (see https://crbug.com/704778#c6).
 using WorldMap = HashMap<int, DOMWrapperWorld*>;
