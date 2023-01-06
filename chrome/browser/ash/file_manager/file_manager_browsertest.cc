@@ -1213,8 +1213,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeExpandFolder"),
         TestCase(
             "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff"),
-        TestCase(
-            "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn")));
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn"),
+        TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume"),
+        TestCase("directoryTreeExpandFolderOnDelayExpansionVolume")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTreeContextMenu, /* directory_tree_context_menu.js */

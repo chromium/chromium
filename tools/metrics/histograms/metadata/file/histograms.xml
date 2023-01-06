@@ -22,6 +22,50 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- Do not confuse this with FileManagerVolumeType, which is an enum
+     defined in enums.xml, and can be emitted as the value of a given
+     UMA. This is a list of variants that can be used to pattern UMAs
+     that should capture the same data across volume types (eg. how
+     long it takes to list a directory in that volume type).
+
+    This list should be kept in sync with the
+    VolumeManagerCommon.RootType object in
+    ui/file_manager/file_manager/common/js/volume_manager_types.js with
+    the exception of the last entry ("unknown") which only exists here.
+    The order of these variants does not need to match
+    VolumeManagerCommon.RootType.
+  -->
+
+<variants name="VolumeManagerRootType">
+  <variant name="android_files" summary="Android 'Play Files'"/>
+  <variant name="archive" summary="Mounted Archive (eg. ZIP, RAR, etc)"/>
+  <variant name="computer" summary="Root of a specific Computer"/>
+  <variant name="computers_grand_root"
+      summary="Root of Drive's 'Computers' view"/>
+  <variant name="crostini" summary="Crostini Home Directory"/>
+  <variant name="documents_provider" summary="ARC DocumentsProvider"/>
+  <variant name="downloads" summary="Downloads directory"/>
+  <variant name="drive" summary="Google Drive"/>
+  <variant name="drive_fake_root" summary="Fake root of all My Drive etc"/>
+  <variant name="drive_offline" summary="Drive's 'Offline' view"/>
+  <variant name="drive_recent" summary="Recent files on Drive"/>
+  <variant name="drive_shared_with_me" summary="Drive's 'Shared with Me' view"/>
+  <variant name="external_media"
+      summary="Root of an external media folder under Computers grand root"/>
+  <variant name="guest_os" summary="GuestOS"/>
+  <variant name="media_view" summary="ARC MediaView"/>
+  <variant name="mtp" summary="MTP device (eg. phone, camera)"/>
+  <variant name="my_files" summary="My Files"/>
+  <variant name="provided" summary="fileSystemProvider"/>
+  <variant name="recent" summary="Recent view"/>
+  <variant name="removable" summary="Removable storage (eg. USB)"/>
+  <variant name="shared_drives_grand_root" summary="Root of 'Shared Drives'"/>
+  <variant name="smb" summary="Server Message Block"/>
+  <variant name="team_drive" summary="Root of a specific Shared Drive"/>
+  <variant name="trash" summary="Trash folder"/>
+  <variant name="unknown" summary="Unknown root type"/>
+</variants>
+
 <histogram name="DriveCommon.Lifecycle.FirstLaunchTime" units="ms"
     expires_after="M112">
   <owner>simmonsjosh@google.com</owner>
@@ -204,6 +248,18 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: time to scan a directory. Measured on every File
     Browser directory change.
   </summary>
+</histogram>
+
+<histogram name="FileBrowser.DirectoryTree.Expand.{RootType}" units="ms"
+    expires_after="2024-01-04">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long it takes to expand a directory. Measured each time a directory is
+    expanded from the directory tree or file list / grid and patterned for all
+    known volume types.
+  </summary>
+  <token key="RootType" variants="VolumeManagerRootType"/>
 </histogram>
 
 <histogram name="FileBrowser.DownloadDestination.IsGoogleDrive.Changed"

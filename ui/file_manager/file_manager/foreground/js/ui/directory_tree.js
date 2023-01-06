@@ -294,8 +294,8 @@ export class DirectoryItem extends FilesTreeItem {
     this.addEventListener('collapse', this.onCollapse_.bind(this), false);
 
     // Default delayExpansion to false. Volumes will set it to true for
-    // provided and SMB file systems. SubDirectories will inherit from their
-    // parent.
+    // performance sensitive file systems. SubDirectories will inherit from
+    // their parent.
     this.delayExpansion = false;
 
     // Sets hasChildren=false tentatively. This will be overridden after
@@ -320,17 +320,26 @@ export class DirectoryItem extends FilesTreeItem {
   }
 
   /**
-   * Returns true if this.entry is inside any part of Drive 'My Drive'.
-   * @type {!boolean}
+   * Gets the RootType of the Volume this entry belongs to.
+   * @type {VolumeManagerCommon.RootType|null}
    */
-  get insideMyDrive() {
-    let rootType;
+  get rootType() {
+    let rootType = null;
 
     if (this.entry) {
       const root = this.parentTree_.volumeManager.getLocationInfo(this.entry);
       rootType = root ? root.rootType : null;
     }
 
+    return rootType;
+  }
+
+  /**
+   * Returns true if this.entry is inside any part of Drive 'My Drive'.
+   * @type {!boolean}
+   */
+  get insideMyDrive() {
+    const rootType = this.rootType;
     return rootType && (rootType === VolumeManagerCommon.RootType.DRIVE);
   }
 
@@ -339,13 +348,7 @@ export class DirectoryItem extends FilesTreeItem {
    * @type {!boolean}
    */
   get insideComputers() {
-    let rootType;
-
-    if (this.entry) {
-      const root = this.parentTree_.volumeManager.getLocationInfo(this.entry);
-      rootType = root ? root.rootType : null;
-    }
-
+    const rootType = this.rootType;
     return rootType &&
         (rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
          rootType === VolumeManagerCommon.RootType.COMPUTER);
@@ -356,13 +359,7 @@ export class DirectoryItem extends FilesTreeItem {
    * @type {!boolean}
    */
   get insideDrive() {
-    let rootType;
-
-    if (this.entry) {
-      const root = this.parentTree_.volumeManager.getLocationInfo(this.entry);
-      rootType = root ? root.rootType : null;
-    }
-
+    const rootType = this.rootType;
     return rootType &&
         (rootType === VolumeManagerCommon.RootType.DRIVE ||
          rootType === VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT ||
@@ -553,6 +550,11 @@ export class DirectoryItem extends FilesTreeItem {
    * @private
    */
   onExpand_(e) {
+    const rootType = this.rootType;
+    const metricName = rootType ? (`DirectoryTree.Expand.${rootType}`) :
+                                  'DirectoryTree.Expand.unknown';
+    metrics.startInterval(metricName);
+
     if (this.supportDriveSpecificIcons && !this.onMetadataUpdateBound_) {
       this.onMetadataUpdateBound_ = this.onMetadataUpdated_.bind(this);
       this.parentTree_.metadataModel_.addEventListener(
@@ -561,16 +563,18 @@ export class DirectoryItem extends FilesTreeItem {
     this.updateSubDirectories(
         true /* recursive */,
         () => {
-          if (!this.insideDrive) {
-            return;
+          if (this.insideDrive) {
+            this.parentTree_.metadataModel_.get(
+                this.entries_,
+                constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES
+                    .concat(constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
           }
-          this.parentTree_.metadataModel_.get(
-              this.entries_,
-              constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
-                  constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
+
+          metrics.recordInterval(metricName);
         },
         () => {
           this.expanded = false;
+          metrics.recordInterval(metricName);
         });
 
     e.stopPropagation();
@@ -911,8 +915,8 @@ export class SubDirectoryItem extends DirectoryItem {
       this.setContextMenu_(tree.contextMenuForSubitems);
     }
 
-    // Update children now if needed.
-    if (parentDirItem.expanded) {
+    // Update this directory's expansion icon to reflect if it has children.
+    if (!this.delayExpansion && parentDirItem.expanded) {
       this.updateExpandIcon();
     }
   }
@@ -1121,10 +1125,13 @@ class VolumeItem extends DirectoryItem {
     this.volumeInfo_ = modelItem.volumeInfo;
     this.disabled = modelItem.disabled;
 
-    // Network file systems should delay the expansion of child nodes for
-    // performance reasons.
+    // Certain (often network) file systems should delay the expansion of child
+    // nodes for performance reasons.
     this.delayExpansion =
-        this.volumeInfo.source === VolumeManagerCommon.Source.NETWORK;
+        this.volumeInfo.source === VolumeManagerCommon.Source.NETWORK &&
+        (this.volumeInfo.volumeType ===
+             VolumeManagerCommon.VolumeType.PROVIDED ||
+         this.volumeInfo.volumeType === VolumeManagerCommon.VolumeType.SMB);
 
     // Set helper attribute for testing.
     if (window.IN_TEST) {

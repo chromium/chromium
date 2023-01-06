@@ -54,6 +54,10 @@ VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit = {
  *
  * Navigation root are the top-level entries in the navigation tree, in the left
  * hand side.
+ *
+ * This must be kept synchronised with the VolumeManagerRootType variant in
+ * tools/metrics/histograms/metadata/file/histograms.xml.
+ *
  * @enum {string}
  * @const
  */

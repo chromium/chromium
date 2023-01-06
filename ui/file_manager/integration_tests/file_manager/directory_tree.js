@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, recursiveExpand, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -455,4 +455,123 @@ testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn =
   const normalFolder =
       '#directory-tree [entry-label="normal-folder"][has-children="true"]';
   await remoteCall.waitForElement(appId, normalFolder);
+};
+
+/**
+ * Tests that the "expand icon" on directory tree items is correctly
+ * shown for directories on the "My Files" volume. Volumes such as
+ * this, which do not delay expansion, eagerly traverse into children
+ * directories of the current directory to see if the children have
+ * children: if they do, an expand icon is shown, if not, it is hidden.
+ */
+testcase.directoryTreeExpandFolderOnNonDelayExpansionVolume = async () => {
+  // Create a parent folder with a child folder inside it.
+  const entries = [
+    createFolderTestEntry('parent-folder'),
+    createFolderTestEntry('parent-folder/empty-child-folder'),
+    createFolderTestEntry('parent-folder/non-empty-child-folder'),
+    createFolderTestEntry('parent-folder/non-empty-child-folder/child'),
+  ];
+
+  // Opens FilesApp on downloads with the folders above.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Expand the parent folder, which should check if the child folder
+  // itself has children.
+  await recursiveExpand(appId, '/My files/Downloads/parent-folder');
+
+  // Check that the empty child folder has been checked for children, and was
+  // found to have none. This ensures the expand icon is hidden.
+  const emptyChildFolder =
+      '#directory-tree [entry-label="empty-child-folder"][has-children=false]';
+  await remoteCall.waitForElement(appId, emptyChildFolder);
+
+  // Check that the non-empty child folder has been checked for children, and
+  // was found to have some. This ensures the expand icon is shown.
+  const nonEmptyChildFolder =
+      '#directory-tree [entry-label="non-empty-child-folder"][has-children=true]';
+  await remoteCall.waitForElement(appId, nonEmptyChildFolder);
+};
+
+/**
+ * Tests that the "expand icon" on directory tree items is correctly
+ * shown for directories on an SMB volume. Volumes such as this, which
+ * do delay expansion, don't eagerly traverse into children directories
+ * of the current directory to see if the children have children, but
+ * instead give every child directory a 'tentative' expand icon. When
+ * that icon is clicked, the child directory is read and the icon will
+ * only remain if the child really has children.
+ */
+testcase.directoryTreeExpandFolderOnDelayExpansionVolume = async () => {
+  // Create a parent folder with a child folder inside it, and another
+  // where the child also has a child.
+  const entries = [
+    createFolderTestEntry('parent-folder'),
+    createFolderTestEntry('parent-folder/child-folder'),
+    createFolderTestEntry('grandparent-folder'),
+    createFolderTestEntry('grandparent-folder/middle-child-folder'),
+    createFolderTestEntry(
+        'grandparent-folder/middle-child-folder/grandchild-folder'),
+  ];
+
+  const SMBFS_VOLUME_QUERY = '#directory-tree [volume-type-icon="smb"]';
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(null, [], []);
+
+  // Populate Smbfs with the directories.
+  await addEntries(['smbfs'], entries);
+
+  // Mount Smbfs volume.
+  await sendTestMessage({name: 'mountSmbfs'});
+
+  // Wait for the Smbfs volume to mount.
+  await remoteCall.waitForElement(appId, SMBFS_VOLUME_QUERY);
+
+  // Click to open the Smbfs volume.
+  await remoteCall.waitAndClickElement(appId, [SMBFS_VOLUME_QUERY]);
+
+  // Expand the parent folder.
+  await recursiveExpand(appId, '/SMB Share/parent-folder');
+
+  // The child folder should have the 'may-have-children' attribute and
+  // should not have the 'has-children' attribute. In this state, it
+  // will display an expansion icon (until it's expanded and Files app
+  // *knows* it has no children.
+  const childFolder = '#directory-tree [entry-label="child-folder"]';
+  await remoteCall.waitForElement(
+      appId, childFolder + '[may-have-children]:not([has-children])');
+
+  // Expand the child folder, which will discover it has no children and
+  // remove its expansion icon.
+  const childFolderExpandIcon =
+      childFolder + '> .tree-row[may-have-children] .expand-icon';
+  await remoteCall.waitAndClickElement(appId, childFolderExpandIcon);
+
+  // The child folder should now have the 'has-children' attribute and
+  // it should be false.
+  const childFolderExpandedSubtree =
+      childFolder + '> .tree-row[has-children=false]';
+  await remoteCall.waitForElement(appId, childFolderExpandedSubtree);
+
+  // Expand the grandparent that has a middle child with a child.
+  await recursiveExpand(appId, '/SMB Share/grandparent-folder');
+
+  // The middle child should have an (eager) expand icon.
+  const middleChildFolder =
+      '#directory-tree [entry-label="middle-child-folder"]';
+  await remoteCall.waitForElement(
+      appId, middleChildFolder + '[may-have-children]:not([has-children])');
+
+  // Expand the middle child, which will discover it does actually have
+  // children.
+  const middleChildFolderExpandIcon =
+      middleChildFolder + '> .tree-row[may-have-children] .expand-icon';
+  await remoteCall.waitAndClickElement(appId, middleChildFolderExpandIcon);
+
+  // The middle child folder should now have the 'has-children' attribute
+  // and it should be true (eg. it will retain its expand icon).
+  const middleChildFolderExpandedSubtree =
+      middleChildFolder + '> .tree-row[has-children=true]';
+  await remoteCall.waitForElement(appId, middleChildFolderExpandedSubtree);
 };
