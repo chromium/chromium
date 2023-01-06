@@ -150,8 +150,10 @@ fyi_reclient_test_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    enable_crash_dump = "true",
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    reclient_scandeps_server = True,
 )
 
 fyi_reclient_staging_builder(
