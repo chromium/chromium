@@ -22,7 +22,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -91,47 +90,7 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
   return app;
 }
 
-apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp() {
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      apps::mojom::AppType::kStandaloneBrowser, app_constants::kLacrosAppId,
-      apps::mojom::Readiness::kReady, GetStandaloneBrowserName(),
-      apps::mojom::InstallReason::kSystem);
-  app->install_source = apps::mojom::InstallSource::kSystem;
-  // Make Lacros searchable with the term "chrome", too, if the app name
-  // is lacros.
-  if (crosapi::browser_util::IsAshWebBrowserEnabled())
-    app->additional_search_terms.push_back("chrome");
-  app->icon_key = NewIconKey();
-  app->searchable = apps::mojom::OptionalBool::kTrue;
-  app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
-  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
-  app->show_in_search = apps::mojom::OptionalBool::kTrue;
-  app->show_in_management = apps::mojom::OptionalBool::kTrue;
-  app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
-  app->handles_intents = apps::mojom::OptionalBool::kTrue;
-  return app;
-}
-
-apps::mojom::IconKeyPtr StandaloneBrowserApps::NewIconKey() {
-  // Show different icons based on download state.
-  apps::IconEffects icon_effects = is_browser_load_success_
-                                       ? apps::IconEffects::kNone
-                                       : apps::IconEffects::kBlocked;
-  apps::mojom::IconKeyPtr icon_key =
-      icon_key_factory_.MakeIconKey(icon_effects);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Canary icon only exists in branded builds.
-  icon_key->resource_id = IDR_PRODUCT_LOGO_256_CANARY;
-#else
-  icon_key->resource_id = IDR_PRODUCT_LOGO_256;
-#endif
-  return icon_key;
-}
-
 void StandaloneBrowserApps::Initialize() {
-  PublisherBase::Initialize(proxy()->AppService(),
-                            apps::mojom::AppType::kStandaloneBrowser);
-
   auto* browser_manager = crosapi::BrowserManager::Get();
   // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
   if (browser_manager && !observation_.IsObserving())
@@ -151,7 +110,7 @@ void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
                                      int32_t size_hint_in_dip,
                                      bool allow_placeholder_icon,
                                      apps::LoadIconCallback callback) {
-  DCHECK_NE(icon_key.resource_id, apps::mojom::IconKey::kInvalidResourceId);
+  DCHECK_NE(icon_key.resource_id, apps::IconKey::kInvalidResourceId);
   LoadIconFromResource(icon_type, size_hint_in_dip, icon_key.resource_id,
                        /*is_placeholder_icon=*/false,
                        static_cast<IconEffects>(icon_key.icon_effects),
@@ -180,19 +139,6 @@ void StandaloneBrowserApps::GetMenuModel(
     int64_t display_id,
     base::OnceCallback<void(MenuItems)> callback) {
   std::move(callback).Run(CreateBrowserMenuItems(profile_));
-}
-
-void StandaloneBrowserApps::Connect(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-    apps::mojom::ConnectOptionsPtr opts) {
-  std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(GetStandaloneBrowserApp());
-
-  mojo::Remote<apps::mojom::Subscriber> subscriber(
-      std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kStandaloneBrowser,
-                     true /* should_notify_initialized */);
-  subscribers_.Add(std::move(subscriber));
 }
 
 void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
@@ -226,12 +172,6 @@ void StandaloneBrowserApps::StopApp(const std::string& app_id) {
 void StandaloneBrowserApps::OnLoadComplete(bool success,
                                            const base::Version& version) {
   is_browser_load_success_ = success;
-
-  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kStandaloneBrowser;
-  mojom_app->app_id = app_constants::kLacrosAppId;
-  mojom_app->icon_key = NewIconKey();
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
   auto app = std::make_unique<App>(AppType::kStandaloneBrowser,
                                    app_constants::kLacrosAppId);

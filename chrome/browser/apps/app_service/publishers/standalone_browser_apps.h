@@ -15,11 +15,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -34,12 +29,7 @@ struct AppLaunchParams;
 // which launches the lacros-chrome binary.
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
-class StandaloneBrowserApps : public apps::PublisherBase,
-                              public AppPublisher,
+class StandaloneBrowserApps : public AppPublisher,
                               public crosapi::BrowserManagerObserver {
  public:
   explicit StandaloneBrowserApps(AppServiceProxy* proxy);
@@ -53,12 +43,6 @@ class StandaloneBrowserApps : public apps::PublisherBase,
 
   // Returns the single lacros app.
   AppPtr CreateStandaloneBrowserApp();
-
-  // Returns the single lacros app.
-  apps::mojom::AppPtr GetStandaloneBrowserApp();
-
-  // Returns an IconKey with appropriate effects.
-  apps::mojom::IconKeyPtr NewIconKey();
 
   void Initialize();
 
@@ -79,17 +63,12 @@ class StandaloneBrowserApps : public apps::PublisherBase,
                     MenuType menu_type,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
-
-  // apps::PublisherBase:
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
 
   // crosapi::BrowserManagerObserver
   void OnLoadComplete(bool success, const base::Version& version) override;
 
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
   bool is_browser_load_success_ = true;
   BrowserAppInstanceRegistry* const browser_app_instance_registry_;
