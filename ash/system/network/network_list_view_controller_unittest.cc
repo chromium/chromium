@@ -15,7 +15,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/network/fake_cros_network_config.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "components/session_manager/session_manager_types.h"
@@ -53,6 +53,7 @@ namespace {
 
 using bluetooth_config::ScopedBluetoothConfigTestHelper;
 using bluetooth_config::mojom::BluetoothSystemState;
+using ::chromeos::network_config::FakeCrosNetworkConfig;
 using ::chromeos::network_config::NetworkTypeMatchesType;
 using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;

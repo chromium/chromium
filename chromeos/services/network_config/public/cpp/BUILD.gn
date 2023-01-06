@@ -28,6 +28,8 @@ source_set("test_support") {
     "cros_network_config_test_helper.h",
     "cros_network_config_test_observer.cc",
     "cros_network_config_test_observer.h",
+    "fake_cros_network_config.cc",
+    "fake_cros_network_config.h",
   ]
 
   public_deps = [

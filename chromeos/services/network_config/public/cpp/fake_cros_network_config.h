@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_NETWORK_FAKE_CROS_NETWORK_CONFIG_H_
-#define ASH_SYSTEM_NETWORK_FAKE_CROS_NETWORK_CONFIG_H_
+#ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_FAKE_CROS_NETWORK_CONFIG_H_
+#define CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_FAKE_CROS_NETWORK_CONFIG_H_
 
 #include <string>
 #include <vector>
@@ -13,10 +13,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace ash {
+namespace chromeos::network_config {
 
-class FakeCrosNetworkConfig
-    : public chromeos::network_config::mojom::CrosNetworkConfig {
+class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
  public:
   FakeCrosNetworkConfig();
   FakeCrosNetworkConfig(const FakeCrosNetworkConfig&) = delete;
@@ -176,6 +175,6 @@ class FakeCrosNetworkConfig
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfig> receiver_{
       this};
 };
-}  // namespace ash
+}  // namespace chromeos::network_config
 
-#endif  // ASH_SYSTEM_NETWORK_FAKE_CROS_NETWORK_CONFIG_H_
+#endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/fake_cros_network_config.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 
 #include <memory>
 
 #include "base/run_loop.h"
 
-namespace ash {
+namespace chromeos::network_config {
 
 namespace {
 using ::chromeos::network_config::mojom::ConnectionStateType;
@@ -187,4 +187,4 @@ FakeCrosNetworkConfig::GetFilteredNetworkList(NetworkType network_type,
   return result;
 }
 
-}  // namespace ash
+}  // namespace chromeos::network_config
