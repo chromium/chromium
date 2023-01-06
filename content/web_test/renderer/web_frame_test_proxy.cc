@@ -769,9 +769,10 @@ void WebFrameTestProxy::SynchronouslyCompositeAfterTest(
     SynchronouslyCompositeAfterTestCallback callback) {
   // When the TestFinished() occurred, if the browser is capturing pixels, it
   // asks each composited RenderFrame to submit a new frame via here.
-  if (IsLocalRoot())
-    GetLocalRootFrameWidgetTestHelper()->SynchronouslyCompositeAfterTest();
-  std::move(callback).Run();
+  if (IsLocalRoot()) {
+    GetLocalRootFrameWidgetTestHelper()->SynchronouslyCompositeAfterTest(
+        std::move(callback));
+  }
 }
 
 void WebFrameTestProxy::DumpFrameLayout(DumpFrameLayoutCallback callback) {

@@ -94,9 +94,14 @@ void ProxyMain::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {
   layer_tree_host_->BeginMainFrameNotExpectedUntil(time);
 }
 
-void ProxyMain::DidCommitAndDrawFrame() {
+void ProxyMain::DidCommitAndDrawFrame(int source_frame_number) {
   DCHECK(IsMainThread());
   layer_tree_host_->DidCommitAndDrawFrame();
+  if (synchronous_composite_for_test_callback_ &&
+      source_frame_number == synchronous_composite_source_frame_number_) {
+    synchronous_composite_source_frame_number_ = -1;
+    std::move(synchronous_composite_for_test_callback_).Run();
+  }
 }
 
 void ProxyMain::DidLoseLayerTreeFrameSink() {
@@ -353,6 +358,9 @@ void ProxyMain::BeginMainFrame(
   // to corresponding  cc display list. An exception is for painted scrollbars,
   // which paint eagerly during layer update.
   bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
+  if (synchronous_composite_for_test_callback_) {
+    updated = true;
+  }
 
   // If updating the layers resulted in a content update, we need a commit.
   if (updated)
@@ -366,6 +374,7 @@ void ProxyMain::BeginMainFrame(
   auto& unsafe_state = layer_tree_host_->GetUnsafeStateForCommit();
   std::unique_ptr<CommitState> commit_state = layer_tree_host_->WillCommit(
       std::move(completion_event_ptr), has_updates);
+
   DCHECK_EQ(has_updates, (bool)commit_state.get());
   if (commit_state.get()) {
     commit_state->trace_id =
@@ -413,6 +422,12 @@ void ProxyMain::BeginMainFrame(
         begin_main_frame_state->active_sequence_trackers);
     commit_trace_.reset();
     return;
+  }
+
+  if (synchronous_composite_for_test_callback_ &&
+      synchronous_composite_source_frame_number_ == -1) {
+    synchronous_composite_source_frame_number_ =
+        commit_state->source_frame_number;
   }
 
   current_pipeline_stage_ = NO_PIPELINE_STAGE;
@@ -840,6 +855,13 @@ void ProxyMain::SetRenderFrameObserver(
       FROM_HERE,
       base::BindOnce(&ProxyImpl::SetRenderFrameObserver,
                      base::Unretained(proxy_impl_.get()), std::move(observer)));
+}
+
+void ProxyMain::CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
+                                            bool raster,
+                                            base::OnceClosure callback) {
+  synchronous_composite_for_test_callback_ = std::move(callback);
+  SetNeedsCommit();
 }
 
 double ProxyMain::GetPercentDroppedFrames() const {

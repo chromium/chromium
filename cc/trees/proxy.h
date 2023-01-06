@@ -103,6 +103,10 @@ class CC_EXPORT Proxy {
   virtual void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) = 0;
 
+  virtual void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
+                                           bool raster,
+                                           base::OnceClosure callback) = 0;
+
   // Returns a percentage of dropped frames of the last second.
   // Only implemenented for single threaded proxy.
   virtual double GetPercentDroppedFrames() const = 0;

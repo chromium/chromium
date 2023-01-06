@@ -940,12 +940,13 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   bool start_ready_animations = draw_frame;
   host_impl_->UpdateAnimationState(start_ready_animations);
 
-  // Tell the main thread that the newly-commited frame was drawn.
+  // Tell the main thread that the frame was drawn.
   if (next_frame_is_newly_committed_frame_) {
     next_frame_is_newly_committed_frame_ = false;
     MainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&ProxyMain::DidCommitAndDrawFrame,
-                                  proxy_main_weak_ptr_));
+        FROM_HERE,
+        base::BindOnce(&ProxyMain::DidCommitAndDrawFrame, proxy_main_weak_ptr_,
+                       host_impl_->active_tree()->source_frame_number()));
   }
 
   // The tile visibility/priority of the pending tree needs to be updated so

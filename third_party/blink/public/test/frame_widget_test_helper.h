@@ -58,7 +58,7 @@ class FrameWidgetTestHelper {
   // produces up-to-date pixel output. This is a separate path as most
   // compositing paths stop running when the test ends, to avoid tests running
   // forever.
-  virtual void SynchronouslyCompositeAfterTest() = 0;
+  virtual void SynchronouslyCompositeAfterTest(base::OnceClosure callback) = 0;
 
   // Forces a redraw and invokes the callback once the frame's been displayed
   // to the user in the display compositor.

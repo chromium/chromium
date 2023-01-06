@@ -56,6 +56,9 @@ class FakeProxy : public Proxy {
       base::WritableSharedMemoryMapping ukm_smoothness_data) override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
+  void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
+                                   bool raster,
+                                   base::OnceClosure callback) override {}
   double GetPercentDroppedFrames() const override;
   void SetPauseRendering(bool pause_rendering) override {}
 

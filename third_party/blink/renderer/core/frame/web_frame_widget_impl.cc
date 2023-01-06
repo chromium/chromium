@@ -1770,7 +1770,8 @@ void WebFrameWidgetImpl::SetBrowserControlsParams(
 
 void WebFrameWidgetImpl::SynchronouslyCompositeForTesting(
     base::TimeTicks frame_time) {
-  widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false);
+  widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false,
+                                                  base::OnceClosure());
 }
 
 void WebFrameWidgetImpl::SetDeviceColorSpaceForTesting(

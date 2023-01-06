@@ -248,7 +248,8 @@ TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
   frame_test_helpers::LoadHTMLString(frame, html,
                                      url_test_helpers::ToKURL("about:blank"));
 
-  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false);
+  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false,
+                                               base::OnceClosure());
 
   auto CreateEvent = [](WebInputEvent::Type type) {
     return WebGestureEvent(type, WebInputEvent::kNoModifiers,
@@ -274,7 +275,8 @@ TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
   widget->DispatchThroughCcInputHandler(scroll_update);
   widget->DispatchThroughCcInputHandler(scroll_end);
 
-  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false);
+  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false,
+                                               base::OnceClosure());
 
   uint32_t expected_reason =
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;

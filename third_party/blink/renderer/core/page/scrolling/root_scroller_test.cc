@@ -230,7 +230,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
 
   auto* widget = helper_->GetMainFrameWidget();
   auto* layer_tree_host = helper_->GetLayerTreeHost();
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                    base::OnceClosure());
 
   widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
@@ -242,7 +243,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0,
                                   -GetBrowserControls().TopHeight()));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     EXPECT_FLOAT_EQ(0, GetBrowserControls().TopShownRatio());
     EXPECT_FLOAT_EQ(0, GetBrowserControls().BottomShownRatio());
@@ -252,7 +254,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     // Make sure we're actually scrolling the DIV and not the LocalFrameView.
     widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     EXPECT_FLOAT_EQ(100, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
@@ -264,7 +267,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     // overscroll.
     widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -440));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
@@ -280,7 +284,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     // Continue the gesture overscroll.
     widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -20));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
@@ -294,7 +299,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
 
   widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                    base::OnceClosure());
 
   {
     // Make sure a new gesture scroll still won't scroll the frameview and
@@ -304,7 +310,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
 
     widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -30));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
@@ -317,7 +324,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
 
     widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
   }
 
   {
@@ -330,7 +338,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
 
     widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, 30));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     EXPECT_FLOAT_EQ(0.6, GetBrowserControls().TopShownRatio());
     EXPECT_FLOAT_EQ(0.6, GetBrowserControls().BottomShownRatio());
@@ -610,7 +619,8 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
 
   auto* widget = helper_->GetMainFrameWidget();
   auto* layer_tree_host = helper_->GetLayerTreeHost();
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                    base::OnceClosure());
 
   Element* container = MainFrame()->GetDocument()->getElementById("container");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
@@ -632,7 +642,8 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0,
                                 -GetBrowserControls().TopHeight()));
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                    base::OnceClosure());
 
   ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
   ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
@@ -643,7 +654,8 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
 
   widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
       WebInputEvent::Type::kGestureScrollUpdate, 0, -3000));
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                    base::OnceClosure());
 
   // The compositor input handler correctly accounts for both top and bottom bar
   // in the calculation of scroll bounds. This is the true maximum.
@@ -651,7 +663,8 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
 
   widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                    base::OnceClosure());
 
   GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
 
@@ -688,7 +701,8 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
     int scroll_y = 1000 * 4;
 
     GetWebView()->SetPageScaleFactor(2);
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
@@ -696,7 +710,8 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
         WebInputEvent::Type::kGestureScrollUpdate, -scroll_x, -scroll_y));
     widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
-    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
+                                      base::OnceClosure());
 
     // The visual viewport should be 1.5 screens scrolled so that the target
     // occupies the bottom quadrant of the layout viewport.

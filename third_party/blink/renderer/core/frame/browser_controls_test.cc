@@ -170,7 +170,8 @@ class BrowserControlsTest : public testing::Test,
   void CompositeForTest(base::TimeDelta animation_delay = base::TimeDelta()) {
     accumulated_animation_delay_ += animation_delay;
     helper_.GetLayerTreeHost()->CompositeForTest(
-        base::TimeTicks::Now() + accumulated_animation_delay_, false);
+        base::TimeTicks::Now() + accumulated_animation_delay_, false,
+        base::OnceClosure());
   }
 
   void FinishAnimation() {

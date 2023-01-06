@@ -77,6 +77,9 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       base::WritableSharedMemoryMapping ukm_smoothness_data) override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
+  void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
+                                   bool raster,
+                                   base::OnceClosure callback) override;
   double GetPercentDroppedFrames() const override;
 
   void UpdateBrowserControlsState(BrowserControlsState constraints,
@@ -155,11 +158,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
-
-  // Called by the legacy path where RenderWidget does the scheduling.
-  // Rasterization of tiles is only performed when |raster| is true.
-  void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
-                                   bool raster);
 
  protected:
   SingleThreadProxy(LayerTreeHost* layer_tree_host,

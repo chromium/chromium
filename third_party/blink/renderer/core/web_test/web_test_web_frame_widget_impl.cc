@@ -191,14 +191,15 @@ content::EventSender* WebTestWebFrameWidgetImpl::GetEventSender() {
   return event_sender_.get();
 }
 
-void WebTestWebFrameWidgetImpl::SynchronouslyCompositeAfterTest() {
+void WebTestWebFrameWidgetImpl::SynchronouslyCompositeAfterTest(
+    base::OnceClosure callback) {
   // We could DCHECK(!GetTestRunner()->TestIsRunning()) except that frames in
   // other processes than the main frame do not hear when the test ends.
 
   // This would be very weird and prevent us from producing pixels.
   DCHECK(!in_synchronous_composite_);
 
-  SynchronouslyComposite(/*do_raster=*/true);
+  SynchronouslyComposite(std::move(callback), /*do_raster=*/true);
 }
 
 content::TestRunner* WebTestWebFrameWidgetImpl::GetTestRunner() {
@@ -207,27 +208,42 @@ content::TestRunner* WebTestWebFrameWidgetImpl::GetTestRunner() {
 
 // static
 void WebTestWebFrameWidgetImpl::DoComposite(cc::LayerTreeHost* layer_tree_host,
-                                            bool do_raster) {
+                                            bool do_raster,
+                                            base::OnceClosure callback) {
   // Ensure that there is damage so that the compositor submits, and the display
   // compositor draws this frame.
   if (do_raster) {
     layer_tree_host->SetNeedsCommitWithForcedRedraw();
   }
 
-  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), do_raster);
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), do_raster,
+                                    std::move(callback));
 }
 
-void WebTestWebFrameWidgetImpl::SynchronouslyComposite(bool do_raster) {
-  if (!LocalRootImpl()->ViewImpl()->does_composite())
+void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
+    base::OnceClosure callback,
+    bool do_raster) {
+  if (!LocalRootImpl()->ViewImpl()->does_composite()) {
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
+  }
   DCHECK(!LayerTreeHost()->GetSettings().single_thread_proxy_scheduler);
 
-  if (!LayerTreeHost()->IsVisible())
+  if (!LayerTreeHost()->IsVisible()) {
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
+  }
 
   if (base::FeatureList::IsEnabled(
           blink::features::kNoForcedFrameUpdatesForWebTests) &&
       LayerTreeHost()->MainFrameUpdatesAreDeferred()) {
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
   }
 
@@ -236,30 +252,46 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(bool do_raster) {
     // frame, but the compositor does not support this. In this case, we only
     // run blink's lifecycle updates.
     UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    if (callback) {
+      std::move(callback).Run();
+    }
     return;
   }
 
   in_synchronous_composite_ = true;
 
-  // DoComposite() can detach the frame.
-  DoComposite(LayerTreeHost(), do_raster);
-  if (!LocalRoot())
+  auto wrapped_callback = base::BindOnce(
+      [](base::OnceClosure cb, bool* in_synchronous_composite) {
+        *in_synchronous_composite = false;
+        if (cb) {
+          std::move(cb).Run();
+        }
+      },
+      // base::Unretained is safe by construction, because WebFrameWidgetImpl
+      // must always outlive the compositing machinery.
+      std::move(callback), base::Unretained(&in_synchronous_composite_));
+
+  // If there's a visible popup, then we will update its compositing after
+  // updating the host frame.
+  WebPagePopupImpl* popup = LocalRootImpl()->ViewImpl()->GetPagePopup();
+
+  if (!popup) {
+    DoComposite(LayerTreeHost(), do_raster, std::move(wrapped_callback));
     return;
-
-  in_synchronous_composite_ = false;
-
-  // If this widget is for the main frame, we also composite the current
-  // PagePopup afterward.
-  //
-  // TODO(danakj): This means that an OOPIF's popup, which is attached to a
-  // WebView without a main frame, would have no opportunity to execute this
-  // method call.
-  if (ForMainFrame()) {
-    WebViewImpl* view = LocalRootImpl()->ViewImpl();
-    if (WebPagePopupImpl* popup = view->GetPagePopup()) {
-      DoComposite(popup->LayerTreeHostForTesting(), do_raster);
-    }
   }
+
+  DoComposite(LayerTreeHost(), do_raster, base::OnceClosure());
+
+  // DoComposite() can detach the frame, in which case we don't update the
+  // popup. Because DoComposite was called with a no-op callback, we need to run
+  // the actual callback here.
+  if (!LocalRoot()) {
+    std::move(wrapped_callback).Run();
+    return;
+  }
+
+  DoComposite(popup->LayerTreeHostForTesting(), do_raster,
+              std::move(wrapped_callback));
 }
 
 void WebTestWebFrameWidgetImpl::AnimateNow() {
@@ -271,7 +303,7 @@ void WebTestWebFrameWidgetImpl::AnimateNow() {
   animation_scheduled_ = false;
   composite_requested_ = false;
   // Composite may destroy |this|, so don't use it afterward.
-  SynchronouslyComposite(do_raster);
+  SynchronouslyComposite(base::OnceClosure(), do_raster);
 }
 
 void WebTestWebFrameWidgetImpl::RequestDecode(

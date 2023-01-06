@@ -50,7 +50,8 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   SimCanvas::Commands commands;
   paint_commands_ = &commands;
 
-  LayerTreeHost()->CompositeForTest(last_frame_time_, raster);
+  LayerTreeHost()->CompositeForTest(last_frame_time_, raster,
+                                    base::OnceClosure());
 
   paint_commands_ = nullptr;
   return commands;

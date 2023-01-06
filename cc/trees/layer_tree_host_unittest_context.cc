@@ -466,8 +466,10 @@ class MultipleCompositeDoesNotCreateLayerTreeFrameSink
   }
 
   void BeginTest() override {
-    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
-    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false,
+                                        base::OnceClosure());
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false,
+                                        base::OnceClosure());
   }
 
   void DidInitializeLayerTreeFrameSink() override { EXPECT_TRUE(false); }
@@ -508,12 +510,14 @@ class FailedCreateDoesNotCreateExtraLayerTreeFrameSink
 
   void BeginTest() override {
     // First composite tries to create a surface.
-    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false,
+                                        base::OnceClosure());
     EXPECT_EQ(num_requests_, 2);
     EXPECT_TRUE(has_failed_);
 
     // Second composite should not request or fail.
-    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false,
+                                        base::OnceClosure());
     EXPECT_EQ(num_requests_, 2);
     EndTest();
   }

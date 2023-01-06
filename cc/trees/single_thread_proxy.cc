@@ -735,7 +735,8 @@ void SingleThreadProxy::RequestBeginMainFrameNotExpected(bool new_state) {
 
 void SingleThreadProxy::CompositeImmediatelyForTest(
     base::TimeTicks frame_begin_time,
-    bool raster) {
+    bool raster,
+    base::OnceClosure callback) {
   TRACE_EVENT0("cc,benchmark",
                "SingleThreadProxy::CompositeImmediatelyForTest");
   DCHECK(task_runner_provider_->IsMainThread());
@@ -749,8 +750,12 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     RequestNewLayerTreeFrameSink();
     // RequestNewLayerTreeFrameSink could have synchronously created an output
     // surface, so check again before returning.
-    if (layer_tree_frame_sink_lost_)
+    if (layer_tree_frame_sink_lost_) {
+      if (callback) {
+        std::move(callback).Run();
+      }
       return;
+    }
   }
 
   viz::BeginFrameArgs begin_frame_args(viz::BeginFrameArgs::Create(
@@ -815,6 +820,9 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     host_impl_->active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
 
     DidFinishImplFrame(begin_frame_args);
+  }
+  if (callback) {
+    std::move(callback).Run();
   }
 }
 
