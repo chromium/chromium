@@ -44,6 +44,8 @@ namespace web_app {
 class WebAppIconManager;
 }
 
+class SkBitmap;
+
 namespace apps {
 
 // This class is meant to:
@@ -170,6 +172,9 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void OnReadWebAppForCompressedIconData(bool is_maskable_icon,
                                          std::map<int, SkBitmap> icon_bitmaps);
+
+  void OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
+                                           SkBitmap bitmap);
 
   void OnReadChromeAppForCompressedIconData(gfx::ImageSkia image);
 

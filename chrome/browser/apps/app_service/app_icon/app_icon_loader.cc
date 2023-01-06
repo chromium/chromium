@@ -38,6 +38,7 @@
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -58,12 +59,20 @@
 
 namespace {
 
-std::vector<uint8_t> ReadFileAsCompressedData(const base::FilePath path) {
+std::string ReadFileAsCompressedString(const base::FilePath path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::string data;
   base::ReadFileToString(path, &data);
+  return data;
+}
+
+std::vector<uint8_t> ReadFileAsCompressedData(const base::FilePath path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::string data = ReadFileAsCompressedString(std::move(path));
   return std::vector<uint8_t>(data.begin(), data.end());
 }
 
@@ -828,9 +837,13 @@ void AppIconLoader::OnReadWebAppForCompressedIconData(
     return;
   }
 
-  SkBitmap bitmap = icon_bitmaps.begin()->second;
+  OnGetCompressedIconDataWithSkBitmap(is_maskable_icon,
+                                      std::move(icon_bitmaps.begin()->second));
+}
 
-  // Resize |bitmap| to match |icon_scale|.
+void AppIconLoader::OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
+                                                        SkBitmap bitmap) {
+  // Resize `bitmap` to match `icon_scale_`.
   if (bitmap.width() != icon_size_in_px_) {
     bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_LANCZOS3, icon_size_in_px_,
