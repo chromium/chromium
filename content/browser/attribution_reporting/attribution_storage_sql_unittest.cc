@@ -259,8 +259,8 @@ TEST_F(AttributionStorageSqlTest,
     // [rate_limit_reporting_origin_idx], [rate_limit_time_idx],
     // [rate_limit_impression_id_idx], [aggregate_source_id_idx],
     // [aggregate_trigger_time_idx], [aggregate_report_time_idx],
-    // [contribution_aggregation_id_idx] and the meta table index.
-    EXPECT_EQ(15u, sql::test::CountSQLIndices(&raw_db));
+    // and the meta table index.
+    EXPECT_EQ(14u, sql::test::CountSQLIndices(&raw_db));
   }
 }
 

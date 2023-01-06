@@ -12,13 +12,13 @@ CREATE TABLE dedup_keys(source_id INTEGER NOT NULL,report_type INTEGER NOT NULL,
 
 CREATE TABLE aggregatable_report_metadata(aggregation_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_time INTEGER NOT NULL,debug_key INTEGER,external_report_id TEXT NOT NULL,report_time INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,initial_report_time INTEGER NOT NULL,aggregation_coordinator INTEGER NOT NULL);
 
-CREATE TABLE aggregatable_contributions(contribution_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,aggregation_id INTEGER NOT NULL,key_high_bits INTEGER NOT NULL,key_low_bits INTEGER NOT NULL,value INTEGER NOT NULL);
+CREATE TABLE aggregatable_contributions(aggregation_id INTEGER NOT NULL,contribution_id INTEGER NOT NULL,key_high_bits INTEGER NOT NULL,key_low_bits INTEGER NOT NULL,value INTEGER NOT NULL,PRIMARY KEY(aggregation_id,contribution_id))WITHOUT ROWID;
 
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','39');
-INSERT INTO meta VALUES('last_compatible_version','39');
+INSERT INTO meta VALUES('version','40');
+INSERT INTO meta VALUES('last_compatible_version','40');
 
 CREATE INDEX sources_by_active_destination_site_reporting_origin ON sources(event_level_active,aggregatable_active,destination_site,reporting_origin);
 
@@ -45,11 +45,5 @@ CREATE INDEX aggregate_source_id_idx ON aggregatable_report_metadata(source_id);
 CREATE INDEX aggregate_trigger_time_idx ON aggregatable_report_metadata(trigger_time);
 
 CREATE INDEX aggregate_report_time_idx ON aggregatable_report_metadata(report_time);
-
-CREATE INDEX contribution_aggregation_id_idx ON aggregatable_contributions(aggregation_id);
-
-INSERT INTO aggregatable_contributions VALUES
-  (11,21,31,41,51),
-  (12,22,32,42,52);
 
 COMMIT;

@@ -474,4 +474,72 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion38ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion39ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(39), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_TRUE(db.DoesIndexExist("contribution_aggregation_id_idx"));
+
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT * FROM aggregatable_contributions"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(11, s.ColumnInt(0));  // contribution_id
+    ASSERT_EQ(21, s.ColumnInt(1));  // aggregation_id
+    ASSERT_EQ(31, s.ColumnInt(2));  // key_high_bits
+    ASSERT_EQ(41, s.ColumnInt(3));  // key_low_bits
+    ASSERT_EQ(51, s.ColumnInt(4));  // value
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(12, s.ColumnInt(0));  // contribution_id
+    ASSERT_EQ(22, s.ColumnInt(1));  // aggregation_id
+    ASSERT_EQ(32, s.ColumnInt(2));  // key_high_bits
+    ASSERT_EQ(42, s.ColumnInt(3));  // key_low_bits
+    ASSERT_EQ(52, s.ColumnInt(4));  // value
+    ASSERT_FALSE(s.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(db.DoesIndexExist("contribution_aggregation_id_idx"));
+
+    // Check version.
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT * FROM aggregatable_contributions"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(21, s.ColumnInt(0));  // aggregation_id
+    ASSERT_EQ(11, s.ColumnInt(1));  // contribution_id
+    ASSERT_EQ(31, s.ColumnInt(2));  // key_high_bits
+    ASSERT_EQ(41, s.ColumnInt(3));  // key_low_bits
+    ASSERT_EQ(51, s.ColumnInt(4));  // value
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(22, s.ColumnInt(0));  // aggregation_id
+    ASSERT_EQ(12, s.ColumnInt(1));  // contribution_id
+    ASSERT_EQ(32, s.ColumnInt(2));  // key_high_bits
+    ASSERT_EQ(42, s.ColumnInt(3));  // key_low_bits
+    ASSERT_EQ(52, s.ColumnInt(4));  // value
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

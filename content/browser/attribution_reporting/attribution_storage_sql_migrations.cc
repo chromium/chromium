@@ -482,6 +482,55 @@ bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion40(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Create the new aggregatable_contributions table with desired primary-key
+  // structure.
+  static constexpr char kCreateNewTableSql[] =
+      "CREATE TABLE new_aggregatable_contributions("
+      "aggregation_id INTEGER NOT NULL,"
+      "contribution_id INTEGER NOT NULL,"
+      "key_high_bits INTEGER NOT NULL,"
+      "key_low_bits INTEGER NOT NULL,"
+      "value INTEGER NOT NULL,"
+      "PRIMARY KEY(aggregation_id,contribution_id))WITHOUT ROWID";
+  if (!db->Execute(kCreateNewTableSql)) {
+    return false;
+  }
+
+  // Transfer the existing aggregatable_contributions rows to the new table,
+  static constexpr char kPopulateNewTableSql[] =
+      "INSERT INTO new_aggregatable_contributions SELECT "
+      "aggregation_id,contribution_id,key_high_bits,key_low_bits,value "
+      "FROM aggregatable_contributions";
+  if (!db->Execute(kPopulateNewTableSql)) {
+    return false;
+  }
+
+  // This implicitly drops the contribution_aggregation_id_idx index.
+  static constexpr char kDropOldTableSql[] =
+      "DROP TABLE aggregatable_contributions";
+  if (!db->Execute(kDropOldTableSql)) {
+    return false;
+  }
+
+  static constexpr char kRenameTableSql[] =
+      "ALTER TABLE new_aggregatable_contributions "
+      "RENAME TO aggregatable_contributions";
+  if (!db->Execute(kRenameTableSql)) {
+    return false;
+  }
+
+  meta_table->SetVersionNumber(40);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -521,6 +570,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 38) {
     if (!MigrateToVersion39(db, meta_table)) {
+      return false;
+    }
+  }
+  if (meta_table->GetVersionNumber() == 39) {
+    if (!MigrateToVersion40(db, meta_table)) {
       return false;
     }
   }

@@ -67,11 +67,11 @@ namespace content {
 // Version number of the database.
 // TODO: remove the active_unattributed_sources_by_site_reporting_origin index
 // during the next DB migration.
-const int AttributionStorageSql::kCurrentVersionNumber = 39;
+const int AttributionStorageSql::kCurrentVersionNumber = 40;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 39;
+const int AttributionStorageSql::kCompatibleVersionNumber = 40;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -2461,26 +2461,20 @@ bool AttributionStorageSql::CreateSchema() {
   // All columns in this table are const.
   // `aggregation_id` is the primary key of a row in the
   // [aggregatable_report_metadata] table.
+  // `contribution_id` is an arbitrary integer that distinguishes rows with the
+  // same `aggregation_id`.
   // `key_high_bits` and `key_low_bits` represent the histogram bucket key that
   // is a 128-bit unsigned integer.
   // `value` is the histogram value.
   static constexpr char kAggregatableContributionsTableSql[] =
       "CREATE TABLE aggregatable_contributions("
-      "contribution_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "aggregation_id INTEGER NOT NULL,"
+      "contribution_id INTEGER NOT NULL,"
       "key_high_bits INTEGER NOT NULL,"
       "key_low_bits INTEGER NOT NULL,"
-      "value INTEGER NOT NULL)";
+      "value INTEGER NOT NULL,"
+      "PRIMARY KEY(aggregation_id,contribution_id))WITHOUT ROWID";
   if (!db_->Execute(kAggregatableContributionsTableSql)) {
-    return false;
-  }
-
-  // Optimizes contribution look up by aggregation id during calls to
-  // `DeleteAggregatableContributions()`.
-  static constexpr char kContributionAggregationIdIndexSql[] =
-      "CREATE INDEX contribution_aggregation_id_idx "
-      "ON aggregatable_contributions(aggregation_id)";
-  if (!db_->Execute(kContributionAggregationIdIndexSql)) {
     return false;
   }
 
@@ -2651,10 +2645,7 @@ bool AttributionStorageSql::DeleteReportInternal(
 bool AttributionStorageSql::DeleteAggregatableContributions(
     AttributionReport::AggregatableAttributionData::Id aggregation_id) {
   static constexpr char kDeleteContributionsSql[] =
-      // clang-format off
-      "DELETE FROM aggregatable_contributions "
-      DCHECK_SQL_INDEXED_BY("contribution_aggregation_id_idx")
-      "WHERE aggregation_id=?";  // clang-format on
+      "DELETE FROM aggregatable_contributions WHERE aggregation_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteContributionsSql));
   statement.BindInt64(0, *aggregation_id);
@@ -2935,23 +2926,26 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
 
   static constexpr char kInsertContributionsSql[] =
       "INSERT INTO aggregatable_contributions"
-      "(aggregation_id,key_high_bits,key_low_bits,value)"
-      "VALUES(?,?,?,?)";
+      "(aggregation_id,contribution_id,key_high_bits,key_low_bits,value)"
+      "VALUES(?,?,?,?,?)";
   sql::Statement insert_contributions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertContributionsSql));
 
+  int contribution_id = 0;
   for (const auto& contribution : aggregatable_attribution->contributions) {
     insert_contributions_statement.Reset(/*clear_bound_vars=*/true);
     insert_contributions_statement.BindInt64(0, *aggregatable_attribution->id);
+    insert_contributions_statement.BindInt(1, contribution_id);
     insert_contributions_statement.BindInt64(
-        1, SerializeUint64(absl::Uint128High64(contribution.key())));
+        2, SerializeUint64(absl::Uint128High64(contribution.key())));
     insert_contributions_statement.BindInt64(
-        2, SerializeUint64(absl::Uint128Low64(contribution.key())));
+        3, SerializeUint64(absl::Uint128Low64(contribution.key())));
     insert_contributions_statement.BindInt64(
-        3, static_cast<int64_t>(contribution.value()));
+        4, static_cast<int64_t>(contribution.value()));
     if (!insert_contributions_statement.Run()) {
       return false;
     }
+    ++contribution_id;
   }
 
   return transaction.Commit();
