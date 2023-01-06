@@ -7,7 +7,9 @@
 #include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -22,6 +24,9 @@ using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
 
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
+constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
+constexpr char kDeviceDetailsKey[] = "deviceDetails";
+constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr uint8_t kCtapDeviceResponseSuccess = 0x00;
 constexpr int kCborDecoderNoError = 0;
 constexpr int kCborDecoderUnknownError = 14;
@@ -150,6 +155,48 @@ mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
                                           ctap_status, decoded_values.first);
   }
   return ParseGetAssertionResponse(std::move(decoded_values.second.value()));
+}
+
+mojom::BootstrapConfigurationsPtr
+QuickStartDecoder::DoDecodeBootstrapConfigurations(
+    const std::vector<uint8_t>& data) {
+  std::string raw_message_payload(data.begin(), data.end());
+  absl::optional<base::Value> message_payload_json =
+      base::JSONReader::Read(raw_message_payload);
+  if (!message_payload_json.has_value() || !message_payload_json->is_dict()) {
+    LOG(ERROR) << "MessagePayload cannot be parsed as a JSON Dictionary.";
+    return nullptr;
+  }
+  base::Value::Dict& message_payload = message_payload_json.value().GetDict();
+  base::Value::Dict* bootstrap_configurations =
+      message_payload.FindDict(kBootstrapConfigurationsKey);
+  if (!bootstrap_configurations) {
+    LOG(ERROR)
+        << "BootstrapConfigurations cannot be found within MessagePayload.";
+    return nullptr;
+  }
+  base::Value::Dict* device_details =
+      bootstrap_configurations->FindDict(kDeviceDetailsKey);
+  if (!device_details) {
+    LOG(ERROR)
+        << "DeviceDetails cannot be found within BootstrapConfigurations.";
+    return nullptr;
+  }
+  std::string* cryptauth_device_id_ptr =
+      device_details->FindString(kCryptauthDeviceIdKey);
+  if (!cryptauth_device_id_ptr) {
+    LOG(WARNING)
+        << "CryptauthDeviceId for the Android Device could not be found.";
+    return mojom::BootstrapConfigurations::New(/*cryptauth_device_id=*/"");
+  }
+  return mojom::BootstrapConfigurations::New(*cryptauth_device_id_ptr);
+}
+
+void QuickStartDecoder::DecodeBootstrapConfigurations(
+    const std::vector<uint8_t>& data,
+    DecodeBootstrapConfigurationsCallback callback) {
+  DCHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
+  std::move(callback).Run(DoDecodeBootstrapConfigurations(data));
 }
 
 void QuickStartDecoder::DecodeGetAssertionResponse(

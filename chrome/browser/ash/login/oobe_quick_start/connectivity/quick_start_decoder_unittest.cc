@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
 
+#include "base/json/json_writer.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -18,6 +20,10 @@ namespace {
 
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
+constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
+constexpr char kDeviceDetailsKey[] = "deviceDetails";
+constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
+constexpr char kExampleCryptauthDeviceId[] = "helloworld";
 constexpr uint8_t kSuccess = 0x00;
 constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
 constexpr int kCborDecoderErrorInvalidUtf8 = 6;
@@ -63,6 +69,11 @@ class QuickStartDecoderTest : public testing::Test {
   mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
       const std::vector<uint8_t>& data) {
     return decoder_->DoDecodeGetAssertionResponse(data);
+  }
+
+  mojom::BootstrapConfigurationsPtr DoDecodeBootstrapConfigurations(
+      const std::vector<uint8_t>& data) {
+    return decoder_->DoDecodeBootstrapConfigurations(data);
   }
 
   QuickStartDecoder* decoder() const { return decoder_.get(); }
@@ -189,6 +200,103 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
   EXPECT_EQ(response->email, email);
   EXPECT_EQ(response->auth_data, auth_data);
   EXPECT_EQ(response->signature, signature);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeBootstrapConfigurations_EmptyMessagePayload) {
+  base::Value::Dict message_payload;
+  std::string json_bootstrap_configuration;
+  ASSERT_TRUE(
+      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
+  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
+                               json_bootstrap_configuration.end());
+  mojom::BootstrapConfigurationsPtr response =
+      DoDecodeBootstrapConfigurations(std::move(payload));
+  EXPECT_FALSE(response);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeBootstrapConfigurations_EmptyBootstrapConfigurations) {
+  base::Value::Dict bootstrap_configurations;
+  base::Value::Dict message_payload;
+  message_payload.Set(kBootstrapConfigurationsKey,
+                      std::move(bootstrap_configurations));
+
+  std::string json_bootstrap_configuration;
+  ASSERT_TRUE(
+      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
+  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
+                               json_bootstrap_configuration.end());
+  mojom::BootstrapConfigurationsPtr response =
+      DoDecodeBootstrapConfigurations(std::move(payload));
+  EXPECT_FALSE(response);
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeBootstrapConfigurations_EmptyDeviceDetails) {
+  base::Value::Dict device_details;
+  base::Value::Dict bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
+
+  base::Value::Dict message_payload;
+  message_payload.Set(kBootstrapConfigurationsKey,
+                      std::move(bootstrap_configurations));
+
+  std::string json_bootstrap_configuration;
+  ASSERT_TRUE(
+      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
+  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
+                               json_bootstrap_configuration.end());
+  mojom::BootstrapConfigurationsPtr response =
+      DoDecodeBootstrapConfigurations(std::move(payload));
+  EXPECT_TRUE(response);
+  EXPECT_EQ(response->cryptauth_device_id, "");
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeBootstrapConfigurations_EmptyCryptauthDeviceId) {
+  base::Value::Dict device_details;
+  device_details.Set(kCryptauthDeviceIdKey, "");
+
+  base::Value::Dict bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
+
+  base::Value::Dict message_payload;
+  message_payload.Set(kBootstrapConfigurationsKey,
+                      std::move(bootstrap_configurations));
+
+  std::string json_bootstrap_configuration;
+  ASSERT_TRUE(
+      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
+  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
+                               json_bootstrap_configuration.end());
+  mojom::BootstrapConfigurationsPtr response =
+      DoDecodeBootstrapConfigurations(std::move(payload));
+  EXPECT_TRUE(response);
+  EXPECT_EQ(response->cryptauth_device_id, "");
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeBootstrapConfigurations_ValidBootstrapConfigurations) {
+  base::Value::Dict device_details;
+  device_details.Set(kCryptauthDeviceIdKey, kExampleCryptauthDeviceId);
+
+  base::Value::Dict bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
+
+  base::Value::Dict message_payload;
+  message_payload.Set(kBootstrapConfigurationsKey,
+                      std::move(bootstrap_configurations));
+
+  std::string json_bootstrap_configuration;
+  ASSERT_TRUE(
+      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
+  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
+                               json_bootstrap_configuration.end());
+  mojom::BootstrapConfigurationsPtr response =
+      DoDecodeBootstrapConfigurations(std::move(payload));
+  EXPECT_TRUE(response);
+  EXPECT_EQ(response->cryptauth_device_id, kExampleCryptauthDeviceId);
 }
 
 }  // namespace ash::quick_start

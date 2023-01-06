@@ -28,12 +28,19 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   ~QuickStartDecoder() override;
 
   // mojom::QuickStartDecoder;
+  void DecodeBootstrapConfigurations(
+      const std::vector<uint8_t>& data,
+      DecodeBootstrapConfigurationsCallback callback) override;
+
+  // mojom::QuickStartDecoder;
   void DecodeGetAssertionResponse(
       const std::vector<uint8_t>& data,
       DecodeGetAssertionResponseCallback callback) override;
 
  private:
   friend class QuickStartDecoderTest;
+  mojom::BootstrapConfigurationsPtr DoDecodeBootstrapConfigurations(
+      const std::vector<uint8_t>& data);
   mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
       const std::vector<uint8_t>& data);
   mojo::Receiver<mojom::QuickStartDecoder> receiver_;

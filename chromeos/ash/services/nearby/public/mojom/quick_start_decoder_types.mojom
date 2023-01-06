@@ -4,6 +4,11 @@
 
 module ash.quick_start.mojom;
 
+struct BootstrapConfigurations {
+  // Cryptauth Device ID can be empty even with a valid BootstrapConfigurations.
+  string cryptauth_device_id;
+};
+
 struct GetAssertionResponse {
   enum GetAssertionStatus {
     kSuccess = 0,
