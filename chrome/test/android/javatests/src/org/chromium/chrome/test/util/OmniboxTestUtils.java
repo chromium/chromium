@@ -166,6 +166,7 @@ public class OmniboxTestUtils {
         }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
 
         TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.requestFocus());
+        waitAnimationsComplete();
         checkFocus(true);
     }
 
