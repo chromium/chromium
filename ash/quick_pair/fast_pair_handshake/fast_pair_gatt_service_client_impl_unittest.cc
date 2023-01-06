@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "ash/quick_pair/common/constants.h"
+#include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
@@ -86,7 +87,6 @@ const uint8_t kMessageType = 0x00;
 const uint8_t kFlags = 0x00;
 const std::string kProviderAddress = "abcde";
 const std::string kSeekersAddress = "abcde";
-const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
 const uint8_t kSeekerPasskey = 0x02;
 const uint32_t kPasskey = 13;
 const std::array<uint8_t, 16> kAccountKey = {0x04, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -110,42 +110,11 @@ const device::BluetoothRemoteGattCharacteristic::Permissions kPermissions =
     device::BluetoothRemoteGattCharacteristic::PERMISSION_READ_ENCRYPTED |
     device::BluetoothRemoteGattCharacteristic::PERMISSION_WRITE_ENCRYPTED;
 
-class FakeBluetoothAdapter
-    : public testing::NiceMock<device::MockBluetoothAdapter> {
- public:
-  FakeBluetoothAdapter() = default;
-
-  // Move-only class
-  FakeBluetoothAdapter(const FakeBluetoothAdapter&) = delete;
-  FakeBluetoothAdapter& operator=(const FakeBluetoothAdapter&) = delete;
-
-  device::BluetoothDevice* GetDevice(const std::string& address) override {
-    for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address)
-        return it.get();
-    }
-    return nullptr;
-  }
-
-  void NotifyGattDiscoveryCompleteForService(
-      device::BluetoothRemoteGattService* service) {
-    device::BluetoothAdapter::NotifyGattDiscoveryComplete(service);
-  }
-
-  void NotifyGattCharacteristicValueChanged(
-      device::BluetoothRemoteGattCharacteristic* characteristic) {
-    device::BluetoothAdapter::NotifyGattCharacteristicValueChanged(
-        characteristic, kTestWriteResponse);
-  }
-
- protected:
-  ~FakeBluetoothAdapter() override = default;
-};
-
 class FakeBluetoothDevice
     : public testing::NiceMock<device::MockBluetoothDevice> {
  public:
-  FakeBluetoothDevice(FakeBluetoothAdapter* adapter, const std::string& address)
+  FakeBluetoothDevice(ash::quick_pair::FakeBluetoothAdapter* adapter,
+                      const std::string& address)
       : testing::NiceMock<device::MockBluetoothDevice>(adapter,
                                                        /*bluetooth_class=*/0u,
                                                        /*name=*/"Test Device",
@@ -185,7 +154,7 @@ class FakeBluetoothDevice
   std::unique_ptr<testing::NiceMock<device::MockBluetoothGattConnection>>
       gatt_connection_;
   bool has_gatt_connection_error_ = false;
-  FakeBluetoothAdapter* fake_adapter_;
+  ash::quick_pair::FakeBluetoothAdapter* fake_adapter_;
 };
 
 class FakeBluetoothGattCharacteristic
@@ -272,7 +241,7 @@ class FakeBluetoothGattCharacteristic
 };
 
 std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
-    FakeBluetoothAdapter* adapter,
+    ash::quick_pair::FakeBluetoothAdapter* adapter,
     device::BluetoothUUID uuid) {
   auto mock_device = std::make_unique<FakeBluetoothDevice>(
       /*adapter=*/adapter, kTestBleDeviceAddress);

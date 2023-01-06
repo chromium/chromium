@@ -4,6 +4,12 @@
 
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 
+namespace {
+
+const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
+
+}  // namespace
+
 namespace ash::quick_pair {
 
 void FakeBluetoothAdapter::NotifyPoweredChanged(bool powered) {
@@ -37,6 +43,12 @@ void FakeBluetoothAdapter::NotifyDeviceRemoved(
 void FakeBluetoothAdapter::NotifyGattDiscoveryCompleteForService(
     device::BluetoothRemoteGattService* service) {
   device::BluetoothAdapter::NotifyGattDiscoveryComplete(service);
+}
+
+void FakeBluetoothAdapter::NotifyGattCharacteristicValueChanged(
+    device::BluetoothRemoteGattCharacteristic* characteristic) {
+  device::BluetoothAdapter::NotifyGattCharacteristicValueChanged(
+      characteristic, kTestWriteResponse);
 }
 
 void FakeBluetoothAdapter::NotifyConfirmPasskey(

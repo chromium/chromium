@@ -82,6 +82,7 @@ source_set("unit_tests") {
     ":fast_pair_handshake",
     ":test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/repository:test_support",
     "//base",
     "//base/test:test_support",

@@ -39,6 +39,9 @@ class FakeBluetoothAdapter
   void NotifyGattDiscoveryCompleteForService(
       device::BluetoothRemoteGattService* service);
 
+  void NotifyGattCharacteristicValueChanged(
+      device::BluetoothRemoteGattCharacteristic* characteristic);
+
   void NotifyConfirmPasskey(uint32_t passkey, device::BluetoothDevice* device);
 
   void NotifyDevicePairedChanged(device::BluetoothDevice* device,
