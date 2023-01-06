@@ -6,7 +6,7 @@
 #define MOJO_CORE_EMBEDDER_SCOPED_IPC_SUPPORT_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace base {
 class SingleThreadTaskRunner;

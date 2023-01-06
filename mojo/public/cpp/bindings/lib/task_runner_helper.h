@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_TASK_RUNNER_HELPER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_TASK_RUNNER_HELPER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace base {
 class SequencedTaskRunner;

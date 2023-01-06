@@ -8,6 +8,7 @@
 #include "mojo/core/channel.h"
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
