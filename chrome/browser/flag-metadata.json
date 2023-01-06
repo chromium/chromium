@@ -1783,8 +1783,8 @@
   },
   {
     "name": "enable-bluetooth-spp-in-serial-api",
-    "owners": [ "mattreynolds", "cmumford" ],
-    "expiry_milestone": 110
+    "owners": [ "mattreynolds", "//content/browser/serial/OWNERS" ],
+    "expiry_milestone": 120
   },
   {
     "name": "enable-browsing-data-lifetime-manager",
