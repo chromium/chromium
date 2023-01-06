@@ -16,8 +16,9 @@
 namespace blink {
 
 DOMTaskSignal::DOMTaskSignal(ExecutionContext* context,
-                             const AtomicString& priority)
-    : AbortSignal(context), priority_(priority) {}
+                             const AtomicString& priority,
+                             SignalType signal_type)
+    : AbortSignal(context, signal_type), priority_(priority) {}
 
 DOMTaskSignal::~DOMTaskSignal() = default;
 

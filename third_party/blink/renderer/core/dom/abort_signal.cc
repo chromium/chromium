@@ -12,6 +12,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_composition_manager.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -24,6 +26,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -150,7 +154,46 @@ class UnremovableAbortAlgorithmCollection final
 }  // namespace
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
-    : execution_context_(execution_context) {
+    : AbortSignal(execution_context, SignalType::kInternal) {}
+
+AbortSignal::AbortSignal(ExecutionContext* execution_context,
+                         SignalType signal_type) {
+  DCHECK_NE(signal_type, SignalType::kComposite);
+  InitializeCommon(execution_context, signal_type);
+
+  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+    composition_manager_ = MakeGarbageCollected<SourceSignalCompositionManager>(
+        *this, AbortSignalCompositionType::kAbort);
+  }
+}
+
+AbortSignal::AbortSignal(ScriptState* script_state,
+                         HeapVector<Member<AbortSignal>>& source_signals) {
+  DCHECK(RuntimeEnabledFeatures::AbortSignalAnyEnabled());
+  InitializeCommon(ExecutionContext::From(script_state),
+                   SignalType::kComposite);
+
+  // If any of the signals are aborted, skip the linking and just abort this
+  // signal.
+  for (auto& source : source_signals) {
+    if (source->aborted()) {
+      abort_reason_ = source->reason(script_state);
+      source_signals.clear();
+      break;
+    }
+  }
+  composition_manager_ =
+      MakeGarbageCollected<DependentSignalCompositionManager>(
+          *this, AbortSignalCompositionType::kAbort, source_signals);
+}
+
+void AbortSignal::InitializeCommon(ExecutionContext* execution_context,
+                                   SignalType signal_type) {
+  DCHECK(RuntimeEnabledFeatures::AbortSignalAnyEnabled() ||
+         signal_type != SignalType::kComposite);
+  execution_context_ = execution_context;
+  signal_type_ = signal_type;
+
   if (base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
     abort_algorithms_ =
         MakeGarbageCollected<RemovableAbortAlgorithmCollection>();
@@ -175,17 +218,24 @@ AbortSignal* AbortSignal::abort(ScriptState* script_state) {
 // static
 AbortSignal* AbortSignal::abort(ScriptState* script_state, ScriptValue reason) {
   DCHECK(!reason.IsEmpty());
-  AbortSignal* signal =
-      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+  AbortSignal* signal = MakeGarbageCollected<AbortSignal>(
+      ExecutionContext::From(script_state), SignalType::kAborted);
   signal->abort_reason_ = reason;
   return signal;
+}
+
+// static
+AbortSignal* AbortSignal::any(ScriptState* script_state,
+                              HeapVector<Member<AbortSignal>> signals) {
+  return MakeGarbageCollected<AbortSignal>(script_state, signals);
 }
 
 // static
 AbortSignal* AbortSignal::timeout(ScriptState* script_state,
                                   uint64_t milliseconds) {
   ExecutionContext* context = ExecutionContext::From(script_state);
-  AbortSignal* signal = MakeGarbageCollected<AbortSignal>(context);
+  AbortSignal* signal =
+      MakeGarbageCollected<AbortSignal>(context, SignalType::kTimeout);
   // The spec requires us to use the timer task source, but there are a few
   // timer task sources due to our throttling implementation. We match
   // setTimeout for immediate timeouts, but use the high-nesting task type for
@@ -292,6 +342,20 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
   abort_algorithms_->Clear();
   dependent_signal_algorithms_.clear();
   DispatchEvent(*Event::Create(event_type_names::kAbort));
+
+  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+    DCHECK(composition_manager_);
+    // Dependent signals are linked directly to source signals, so the abort
+    // only gets propagated for source signals.
+    if (auto* source_signal_manager = DynamicTo<SourceSignalCompositionManager>(
+            composition_manager_.Get())) {
+      // This is safe against reentrancy because new dependents are not added to
+      // already aborted signals.
+      for (auto& signal : source_signal_manager->GetDependentSignals()) {
+        signal->SignalAbort(script_state, abort_reason_);
+      }
+    }
+  }
 }
 
 void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parent) {
@@ -312,7 +376,17 @@ void AbortSignal::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(abort_algorithms_);
   visitor->Trace(dependent_signal_algorithms_);
+  visitor->Trace(composition_manager_);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+AbortSignalCompositionManager* AbortSignal::GetCompositionManager(
+    AbortSignalCompositionType type) {
+  DCHECK(RuntimeEnabledFeatures::AbortSignalAnyEnabled());
+  if (type == AbortSignalCompositionType::kAbort) {
+    return composition_manager_;
+  }
+  return nullptr;
 }
 
 AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm)

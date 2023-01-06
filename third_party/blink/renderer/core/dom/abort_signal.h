@@ -8,12 +8,14 @@
 #include "base/callback_forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
+class AbortSignalCompositionManager;
 class ExceptionState;
 class ExecutionContext;
 class ScriptState;
@@ -23,6 +25,23 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class SignalType {
+    // Associated with an AbortController.
+    kController,
+    // Created by AbortSignal.abort().
+    kAborted,
+    // Created by AbortSignal.timeout().
+    kTimeout,
+    // Created by AbortSignal.any().
+    kComposite,
+    // An internal signal which either is directly aborted or uses the internal
+    // `Follow` algorithm.
+    //
+    // TODO(crbug.com/1323391): Specs that use the internal `Follow` algorithm
+    // should be modified to create follow-immutable composite signals.
+    kInternal,
+  };
+
   // The base class for "abort algorithm" defined at
   // https://dom.spec.whatwg.org/#abortsignal-abort-algorithms. This is
   // semantically equivalent to base::OnceClosure but is GarbageCollected.
@@ -70,12 +89,24 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
     virtual void Trace(Visitor*) const {}
   };
 
+  // Constructs a SignalType::kInternal signal. This is only for non web-exposed
+  // signals.
   explicit AbortSignal(ExecutionContext*);
+
+  // Constructs a new signal with the given `SignalType`.
+  AbortSignal(ExecutionContext*, SignalType);
+
+  // Constructs a composite signal. The signal will be aborted if any of
+  // `source_signals` are aborted or become aborted.
+  AbortSignal(ScriptState*, HeapVector<Member<AbortSignal>>& source_signals);
+
   ~AbortSignal() override;
 
   // abort_signal.idl
   static AbortSignal* abort(ScriptState*);
   static AbortSignal* abort(ScriptState*, ScriptValue reason);
+  static AbortSignal* any(ScriptState*,
+                          HeapVector<Member<AbortSignal>> signals);
   static AbortSignal* timeout(ScriptState*, uint64_t milliseconds);
   ScriptValue reason(ScriptState*) const;
   bool aborted() const { return !abort_reason_.IsEmpty(); }
@@ -120,7 +151,23 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
 
   void Trace(Visitor*) const override;
 
+  SignalType GetSignalType() const { return signal_type_; }
+
+  bool IsCompositeSignal() const {
+    return signal_type_ == AbortSignal::SignalType::kComposite;
+  }
+
+  // Returns the composition manager for this signal for the given type.
+  // Subclasses are expected to override this to return the composition manager
+  // associated with their type.
+  virtual AbortSignalCompositionManager* GetCompositionManager(
+      AbortSignalCompositionType);
+
  private:
+  // Common constructor initialization separated out to make mutually exclusive
+  // constructors more readable.
+  void InitializeCommon(ExecutionContext*, SignalType);
+
   void AbortTimeoutFired(ScriptState*);
 
   // This ensures abort is propagated to any "following" signals.
@@ -137,6 +184,12 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   ScriptValue abort_reason_;
   Member<AbortAlgorithmCollection> abort_algorithms_;
   Member<ExecutionContext> execution_context_;
+  SignalType signal_type_;
+
+  // This is set to a DependentSignalCompositionManager for composite signals or
+  // a SourceSignalCompositionManager for non-composite signals. Null if
+  // AbortSignalAny isn't enabled.
+  Member<AbortSignalCompositionManager> composition_manager_;
 };
 
 }  // namespace blink

@@ -29,7 +29,7 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
     kMaxValue = kPriorityHasChanged
   };
 
-  DOMTaskSignal(ExecutionContext*, const AtomicString& priority);
+  DOMTaskSignal(ExecutionContext*, const AtomicString& priority, SignalType);
   ~DOMTaskSignal() override;
 
   // task_signal.idl

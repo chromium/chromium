@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/scheduler/dom_task_controller.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_task_controller_init.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 
@@ -18,7 +19,10 @@ DOMTaskController* DOMTaskController::Create(ExecutionContext* context,
 
 DOMTaskController::DOMTaskController(ExecutionContext* context,
                                      const AtomicString& priority)
-    : AbortController(MakeGarbageCollected<DOMTaskSignal>(context, priority)) {
+    : AbortController(MakeGarbageCollected<DOMTaskSignal>(
+          context,
+          priority,
+          AbortSignal::SignalType::kController)) {
   DCHECK(!context->IsContextDestroyed());
 }
 
