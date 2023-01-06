@@ -24,12 +24,15 @@ static FlagNameToExpirationMap* GetFlagExpirationOverrideMap() {
 }
 
 int ExpirationMilestoneForFlag(const char* flag) {
-  if (base::Contains(*GetFlagExpirationOverrideMap(), flag))
+  if (base::Contains(*GetFlagExpirationOverrideMap(), flag)) {
     return GetFlagExpirationOverrideMap()->at(flag);
+  }
+
   for (int i = 0; kExpiredFlags[i].name; ++i) {
     const ExpiredFlag* f = &kExpiredFlags[i];
-    if (strcmp(f->name, flag))
+    if (strcmp(f->name, flag)) {
       continue;
+    }
 
     // To keep the size of the expired flags list down,
     // //tools/flags/generate_expired_flags.py doesn't emit flags with expiry
@@ -55,8 +58,9 @@ std::set<int> UnexpiredMilestonesFromStorage(
   std::set<int> unexpired;
   for (const auto& f : storage->GetFlags()) {
     int mstone;
-    if (sscanf(f.c_str(), "temporary-unexpire-flags-m%d@1", &mstone) == 1)
+    if (sscanf(f.c_str(), "temporary-unexpire-flags-m%d@1", &mstone) == 1) {
       unexpired.insert(mstone);
+    }
   }
   return unexpired;
 }
@@ -66,13 +70,11 @@ std::set<int> UnexpiredMilestonesFromStorage(
 bool IsFlagExpired(const flags_ui::FlagsStorage* storage,
                    const char* internal_name) {
   DCHECK(storage);
-  constexpr int kChromeVersion[] = {CHROME_VERSION};
-  constexpr int kChromeVersionMajor = kChromeVersion[0];
 
   int mstone = ExpirationMilestoneForFlag(internal_name);
-
-  if (mstone == -1)
+  if (mstone == -1) {
     return false;
+  }
 
   // This is extremely horrible:
   //
@@ -102,16 +104,20 @@ bool IsFlagExpired(const flags_ui::FlagsStorage* storage,
   // feature's value won't apply in time here and the bug described will happen.
   // TODO(ellyjones): Figure out how to fix that.
   std::set<int> unexpired_milestones = UnexpiredMilestonesFromStorage(storage);
-  if (base::Contains(unexpired_milestones, mstone))
+  if (base::Contains(unexpired_milestones, mstone)) {
     return false;
-
-  const base::Feature* expiry_feature = GetUnexpireFeatureForMilestone(mstone);
+  }
 
   // If there's an unexpiry feature, and the unexpiry feature is *disabled*,
   // then the flag is expired. The double-negative is very unfortunate.
-  if (expiry_feature)
+  const base::Feature* expiry_feature = GetUnexpireFeatureForMilestone(mstone);
+  if (expiry_feature) {
     return !base::FeatureList::IsEnabled(*expiry_feature);
-  return mstone < kChromeVersionMajor;
+  }
+
+  // Otherwise, the flag is expired if its expiration mstone is less than the
+  // mstone of this copy of Chromium.
+  return mstone < CHROME_VERSION_MAJOR;
 }
 
 namespace testing {
