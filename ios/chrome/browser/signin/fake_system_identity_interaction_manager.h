@@ -35,9 +35,9 @@ class FakeSystemIdentityManager;
 // Returns whether the activity view is presented.
 @property(nonatomic, readonly) BOOL isActivityViewPresented;
 
-// Stores the identity to use when sign-in tap is simulated. Must be non
+// Stores the identity to use when sign-in tap is simulated.Must be non
 // nil before calling `-simulateDidTapAddAccount` method.
-@property(nonatomic, strong) id<SystemIdentity> identity;
+@property(nonatomic, strong, class) id<SystemIdentity> identity;
 
 @end
 

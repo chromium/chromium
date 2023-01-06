@@ -14,6 +14,13 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Global used to store the +identity of FakeSystemIdentityInteractionManager.
+id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
+
+}  // namespace
+
 @interface FakeAuthActivityViewController : UIViewController
 
 - (instancetype)initWithManager:(FakeSystemIdentityInteractionManager*)manager
@@ -135,9 +142,8 @@
 }
 
 - (void)simulateDidTapAddAccount {
-  using std::swap;
-  id<SystemIdentity> identity;
-  swap(_identity, identity);
+  id<SystemIdentity> identity = nil;
+  std::swap(gFakeSystemIdentityInteractionManagerIdentity, identity);
 
   [self dismissAndRunCompletionCallbackWithError:nil
                                         identity:identity
@@ -195,6 +201,14 @@
   return _isActivityViewPresented;
 }
 
++ (id<SystemIdentity>)identity {
+  return gFakeSystemIdentityInteractionManagerIdentity;
+}
+
++ (void)setIdentity:(id<SystemIdentity>)identity {
+  gFakeSystemIdentityInteractionManagerIdentity = identity;
+}
+
 #pragma mark - Private methods
 
 - (void)dismissAndRunCompletionCallbackWithError:(NSError*)error
@@ -205,6 +219,9 @@
   DCHECK(_isActivityViewPresented);
   DCHECK(error || identity)
       << "An identity must be set to close the dialog successfully";
+
+  // Clear the global identity before next interaction.
+  gFakeSystemIdentityInteractionManagerIdentity = nil;
 
   if (identity) {
     FakeSystemIdentityManager* manager = _manager.get();
