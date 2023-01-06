@@ -48,9 +48,6 @@
 
 namespace blink {
 
-// Controls whether attribute name lookup uses LookupHTMLAttributeName().
-CORE_EXPORT extern bool g_use_html_attribute_name_lookup;
-
 class AtomicHTMLToken;
 
 // HTMLTokenName represents a parsed token name (the local name of a
@@ -336,12 +333,12 @@ void AtomicHTMLToken::InitializeAttributes(
     if (attribute.NameIsEmpty())
       continue;
 
-    QualifiedName name = g_null_name;
+// TODO(https://crbug.com/1338583): enable on android.
 #if !BUILDFLAG(IS_ANDROID)
-    if (g_use_html_attribute_name_lookup) {
-      name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
-                                     attribute.NameBuffer().size());
-    }
+    QualifiedName name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
+                                                 attribute.NameBuffer().size());
+#else
+    QualifiedName name = g_null_name;
 #endif
     if (name == g_null_name) {
       name = QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
