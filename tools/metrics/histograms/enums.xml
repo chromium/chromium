@@ -101436,6 +101436,8 @@ Full version information for the fingerprint enum values:
   <int value="15" label="Automatic translation, by user preference"/>
   <int value="16" label="Show UI, from Href"/>
   <int value="17" label="Automatic translation, by Href"/>
+  <int value="18" label="Automatic translation to predefined target"/>
+  <int value="19" label="Show icon in omnibox"/>
 </enum>
 
 <enum name="TranslateUIInteraction">

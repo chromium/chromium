@@ -167,9 +167,9 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   const TranslateTriggerDecision& decision = ComputePossibleOutcomes(
       translate_prefs.get(), page_language_code, target_lang);
 
-  MaybeShowOmniboxIcon(decision);
   bool ui_shown = MaterializeDecision(decision, translate_prefs.get(),
                                       page_language_code, target_lang);
+  MaybeShowOmniboxIcon(decision);
 
   NotifyTranslateInit(page_language_code, target_lang, decision, ui_shown);
 
@@ -1107,6 +1107,8 @@ void TranslateManager::MaybeShowOmniboxIcon(
     language_state_.SetTranslateEnabled(true);
     TranslateBrowserMetrics::ReportInitiationStatus(
         TranslateBrowserMetrics::INITIATION_STATUS_SHOW_ICON);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kShowIcon);
   }
 }
 
