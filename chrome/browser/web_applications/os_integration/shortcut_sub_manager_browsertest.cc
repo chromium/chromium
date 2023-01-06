@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/shortcut_sub_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -44,7 +45,7 @@ class ShortcutSubManagerBrowserTest
     os_hooks_suppress_.reset();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      shortcut_override_ =
+      test_override_ =
           OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -71,7 +72,7 @@ class ShortcutSubManagerBrowserTest
     test::UninstallAllWebApps(profile());
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      shortcut_override_.reset();
+      test_override_.reset();
     }
     WebAppControllerBrowserTest::TearDownOnMainThread();
   }
@@ -102,7 +103,7 @@ class ShortcutSubManagerBrowserTest
 
  private:
   std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
-      shortcut_override_;
+      test_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

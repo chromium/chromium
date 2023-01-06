@@ -68,6 +68,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -848,18 +849,22 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 // TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
 // papering over it here.
 #if BUILDFLAG(IS_WIN)
-  if (override_registration_->shortcut_override->desktop.IsValid())
-    ASSERT_TRUE(override_registration_->shortcut_override->desktop.Delete());
-  if (override_registration_->shortcut_override->application_menu.IsValid())
+  if (override_registration_->test_override->desktop_.IsValid()) {
+    ASSERT_TRUE(override_registration_->test_override->desktop_.Delete());
+  }
+  if (override_registration_->test_override->application_menu_.IsValid()) {
     ASSERT_TRUE(
-        override_registration_->shortcut_override->application_menu.Delete());
+        override_registration_->test_override->application_menu_.Delete());
+  }
 #elif BUILDFLAG(IS_MAC)
-  if (override_registration_->shortcut_override->chrome_apps_folder.IsValid())
+  if (override_registration_->test_override->chrome_apps_folder_.IsValid()) {
     ASSERT_TRUE(
-        override_registration_->shortcut_override->chrome_apps_folder.Delete());
+        override_registration_->test_override->chrome_apps_folder_.Delete());
+  }
 #elif BUILDFLAG(IS_LINUX)
-  if (override_registration_->shortcut_override->desktop.IsValid())
-    ASSERT_TRUE(override_registration_->shortcut_override->desktop.Delete());
+  if (override_registration_->test_override->desktop_.IsValid()) {
+    ASSERT_TRUE(override_registration_->test_override->desktop_.Delete());
+  }
 #endif
 
   LOG(INFO)
@@ -1533,26 +1538,26 @@ void WebAppIntegrationTestDriver::DeletePlatformShortcut(Site site) {
     app_name = GetSiteConfiguration(site).app_name;
   }
 #if BUILDFLAG(IS_WIN)
-  base::FilePath desktop_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->desktop.GetPath(), app_name,
-      app_id);
+  base::FilePath desktop_shortcut_path =
+      GetShortcutPath(override_registration_->test_override->desktop_.GetPath(),
+                      app_name, app_id);
   ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
   base::DeleteFile(desktop_shortcut_path);
   base::FilePath app_menu_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->application_menu.GetPath(),
+      override_registration_->test_override->application_menu_.GetPath(),
       app_name, app_id);
   ASSERT_TRUE(base::PathExists(app_menu_shortcut_path));
   base::DeleteFile(app_menu_shortcut_path);
 #elif BUILDFLAG(IS_MAC)
   base::FilePath app_folder_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      override_registration_->test_override->chrome_apps_folder_.GetPath(),
       app_name, app_id);
   ASSERT_TRUE(base::PathExists(app_folder_shortcut_path));
   base::DeletePathRecursively(app_folder_shortcut_path);
 #elif BUILDFLAG(IS_LINUX)
-  base::FilePath desktop_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->desktop.GetPath(), app_name,
-      app_id);
+  base::FilePath desktop_shortcut_path =
+      GetShortcutPath(override_registration_->test_override->desktop_.GetPath(),
+                      app_name, app_id);
   LOG(INFO) << desktop_shortcut_path;
   ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
   base::DeleteFile(desktop_shortcut_path);
@@ -2061,7 +2066,7 @@ void WebAppIntegrationTestDriver::CorruptAppShim(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   std::string app_name = GetSiteConfiguration(site).app_name;
   base::FilePath app_path = GetShortcutPath(
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      override_registration_->test_override->chrome_apps_folder_.GetPath(),
       app_name, app_id);
   base::FilePath bin_path = app_path.AppendASCII("Contents")
                                 .AppendASCII("MacOS")
@@ -2461,23 +2466,23 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginEnabled(Site site) {
   std::string shortcut_filename = "chrome-" + app_state->id + "-" +
                                   profile()->GetBaseName().value() + ".desktop";
   ASSERT_TRUE(base::PathExists(
-      override_registration_->shortcut_override->startup.GetPath().Append(
+      override_registration_->test_override->startup_.GetPath().Append(
           shortcut_filename)));
 #elif BUILDFLAG(IS_WIN)
   SiteConfig site_config = GetSiteConfigurationFromAppName(app_state->name);
   SkColor color = site_config.icon_color;
-  base::FilePath startup_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->startup.GetPath(),
-      app_state->name, app_state->id);
+  base::FilePath startup_shortcut_path =
+      GetShortcutPath(override_registration_->test_override->startup_.GetPath(),
+                      app_state->name, app_state->id);
   ASSERT_TRUE(base::PathExists(startup_shortcut_path));
   ASSERT_TRUE(GetIconTopLeftColor(startup_shortcut_path) == color);
 #elif BUILDFLAG(IS_MAC)
   std::string shortcut_filename = app_state->name + ".app";
   base::FilePath app_shortcut_path =
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath()
+      override_registration_->test_override->chrome_apps_folder_.GetPath()
           .Append(shortcut_filename);
-  ASSERT_TRUE(override_registration_->shortcut_override
-                  ->startup_enabled[app_shortcut_path]);
+  ASSERT_TRUE(override_registration_->test_override
+                  ->startup_enabled_[app_shortcut_path]);
 #endif
   AfterStateCheckAction();
 }
@@ -2493,20 +2498,20 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(Site site) {
   std::string shortcut_filename = "chrome-" + app_state->id + "-" +
                                   profile()->GetBaseName().value() + ".desktop";
   ASSERT_FALSE(base::PathExists(
-      override_registration_->shortcut_override->startup.GetPath().Append(
+      override_registration_->test_override->startup_.GetPath().Append(
           shortcut_filename)));
 #elif BUILDFLAG(IS_WIN)
-  base::FilePath startup_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->startup.GetPath(),
-      app_state->name, app_state->id);
+  base::FilePath startup_shortcut_path =
+      GetShortcutPath(override_registration_->test_override->startup_.GetPath(),
+                      app_state->name, app_state->id);
   ASSERT_FALSE(base::PathExists(startup_shortcut_path));
 #elif BUILDFLAG(IS_MAC)
   std::string shortcut_filename = app_state->name + ".app";
   base::FilePath app_shortcut_path =
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath()
+      override_registration_->test_override->chrome_apps_folder_.GetPath()
           .Append(shortcut_filename);
-  ASSERT_FALSE(override_registration_->shortcut_override
-                   ->startup_enabled[app_shortcut_path]);
+  ASSERT_FALSE(override_registration_->test_override
+                   ->startup_enabled_[app_shortcut_path]);
 #endif
   AfterStateCheckAction();
 }
@@ -2770,7 +2775,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     std::string app_name =
         provider()->registrar_unsafe().GetAppShortName(app_id);
     base::FilePath app_path = GetShortcutPath(
-        override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+        override_registration_->test_override->chrome_apps_folder_.GetPath(),
         app_name, app_id);
     WaitForShimToQuitForTesting(app_path, app_id);
   }
@@ -3179,10 +3184,10 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
 #endif
 #if BUILDFLAG(IS_WIN)
   base::FilePath desktop_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->desktop.GetPath(), name, id);
+      override_registration_->test_override->desktop_.GetPath(), name, id);
   base::FilePath application_menu_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->application_menu.GetPath(),
-      name, id);
+      override_registration_->test_override->application_menu_.GetPath(), name,
+      id);
   if (base::PathExists(desktop_shortcut_path) &&
       base::PathExists(application_menu_shortcut_path))
     is_shortcut_and_icon_correct =
@@ -3192,7 +3197,7 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
              expected_icon_pixel_color);
 #elif BUILDFLAG(IS_MAC)
   base::FilePath app_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      override_registration_->test_override->chrome_apps_folder_.GetPath(),
       name, id);
   if (base::PathExists(app_shortcut_path)) {
     SkColor icon_pixel_color = GetIconTopLeftColor(app_shortcut_path);
@@ -3201,7 +3206,7 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
   }
 #elif BUILDFLAG(IS_LINUX)
   base::FilePath desktop_shortcut_path = GetShortcutPath(
-      override_registration_->shortcut_override->desktop.GetPath(), name, id);
+      override_registration_->test_override->desktop_.GetPath(), name, id);
   if (base::PathExists(desktop_shortcut_path)) {
     is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
         provider()->icon_manager(), id, {kLauncherIconSize, kInstallIconSize},
@@ -3248,20 +3253,20 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   AppId app_id = GetAppIdBySiteMode(site);
   std::string app_name = GetSiteConfiguration(site).app_name;
   const base::FilePath test_file_path =
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath()
+      override_registration_->test_override->chrome_apps_folder_.GetPath()
           .AppendASCII("test." + file_extension_str);
   const base::File test_file(
       test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   const GURL test_file_url = net::FilePathToFileURL(test_file_path);
   base::FilePath app_path = GetShortcutPath(
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      override_registration_->test_override->chrome_apps_folder_.GetPath(),
       app_name, app_id);
   is_file_handled =
       shell_integration::CanApplicationHandleURL(app_path, test_file_url);
 #elif BUILDFLAG(IS_LINUX)
   AppId app_id = GetAppIdBySiteMode(site);
   for (const LinuxFileRegistration& command :
-       override_registration_->shortcut_override->linux_file_registration) {
+       override_registration_->test_override->linux_file_registration_) {
     if (base::Contains(command.xdg_command, app_id) &&
         base::Contains(command.xdg_command,
                        profile()->GetPath().BaseName().value())) {
@@ -3346,7 +3351,7 @@ void WebAppIntegrationTestDriver::LaunchFromAppShim(
   AppId app_id = GetAppIdBySiteMode(site);
   std::string app_name = GetSiteConfiguration(site).app_name;
   base::FilePath app_path = GetShortcutPath(
-      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      override_registration_->test_override->chrome_apps_folder_.GetPath(),
       app_name, app_id);
   base::RunLoop loop;
   LaunchShimForTesting(

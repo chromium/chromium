@@ -22,8 +22,8 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -55,7 +55,7 @@ void RegisterProtocolHandlersWithOSInBackground(
       protocols_registered.push_back(info.protocol);
     }
     web_app::GetOsIntegrationTestOverride()
-        ->protocol_scheme_registrations.emplace_back(
+        ->protocol_scheme_registrations_.emplace_back(
             app_id, std::move(protocols_registered));
     return;
   }
@@ -142,7 +142,7 @@ void RegisterProtocolHandlersWithOs(
   if (protocol_handlers.empty()) {
     if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
       web_app::GetOsIntegrationTestOverride()
-          ->protocol_scheme_registrations.emplace_back(
+          ->protocol_scheme_registrations_.emplace_back(
               app_id, std::vector<std::string>());
     }
     std::move(callback).Run(Result::kOk);

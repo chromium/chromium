@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -1324,11 +1325,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   std::vector<SkColor> expected_pixel_colors = {SkColorSetRGB(92, 92, 92)};
 #if BUILDFLAG(IS_MAC)
   shortcut_path =
-      registration->shortcut_override->chrome_apps_folder.GetPath().Append(
+      registration->test_override->chrome_apps_folder_.GetPath().Append(
           provider->registrar_unsafe().GetAppShortName(app_id) + ".app");
 #elif BUILDFLAG(IS_WIN)
   shortcut_path =
-      registration->shortcut_override->application_menu.GetPath().AppendASCII(
+      registration->test_override->application_menu_.GetPath().AppendASCII(
           provider->registrar_unsafe().GetAppShortName(app_id) + ".lnk");
   expected_pixel_colors.push_back(SkColorSetRGB(91, 91, 91));
   expected_pixel_colors.push_back(SkColorSetRGB(90, 90, 90));
@@ -1541,10 +1542,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   std::wstring shortcut_filename = converter.from_bytes(
       provider->registrar_unsafe().GetAppShortName(app_id) + ".lnk");
   base::FilePath desktop_shortcut_path =
-      registration->shortcut_override->desktop.GetPath().Append(
-          shortcut_filename);
+      registration->test_override->desktop_.GetPath().Append(shortcut_filename);
   base::FilePath app_menu_shortcut_path =
-      registration->shortcut_override->application_menu.GetPath().Append(
+      registration->test_override->application_menu_.GetPath().Append(
           shortcut_filename);
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
   EXPECT_TRUE(base::PathExists(app_menu_shortcut_path));
@@ -1552,14 +1552,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   std::string shortcut_filename =
       provider->registrar_unsafe().GetAppShortName(app_id) + ".app";
   base::FilePath app_shortcut_path =
-      registration->shortcut_override->chrome_apps_folder.GetPath().Append(
+      registration->test_override->chrome_apps_folder_.GetPath().Append(
           shortcut_filename);
   EXPECT_TRUE(base::PathExists(app_shortcut_path));
 #elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename = "chrome-" + app_id + "-Default.desktop";
   base::FilePath desktop_shortcut_path =
-      registration->shortcut_override->desktop.GetPath().Append(
-          shortcut_filename);
+      registration->test_override->desktop_.GetPath().Append(shortcut_filename);
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
 #endif
 
@@ -1625,7 +1624,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
 #endif
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
-      shortcut_override =
+      test_override =
           OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
 
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
@@ -2244,8 +2243,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
 #elif BUILDFLAG(IS_MAC)
   for (auto extension : expected_extensions) {
     const base::FilePath test_file_path =
-        registration->shortcut_override->chrome_apps_folder.GetPath()
-            .AppendASCII("test." + extension);
+        registration->test_override->chrome_apps_folder_.GetPath().AppendASCII(
+            "test." + extension);
     const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
@@ -2254,7 +2253,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
         << "The default app to open the file is wrong. "
         << "File extension: " + extension;
   }
-  ASSERT_TRUE(registration->shortcut_override->chrome_apps_folder.Delete());
+  ASSERT_TRUE(registration->test_override->chrome_apps_folder_.Delete());
 #endif
 
   // Unistall the web app
@@ -2321,8 +2320,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
 
   for (auto extension : expected_extensions) {
     const base::FilePath test_file_path =
-        registration->shortcut_override->chrome_apps_folder.GetPath()
-            .AppendASCII("test." + extension);
+        registration->test_override->chrome_apps_folder_.GetPath().AppendASCII(
+            "test." + extension);
     const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
@@ -2334,7 +2333,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
       delay_loop.Run();
     }
   }
-  ASSERT_TRUE(registration->shortcut_override->chrome_apps_folder.Delete());
+  ASSERT_TRUE(registration->test_override->chrome_apps_folder_.Delete());
 
   // Unistall the web app
   NavigateToURLAndWait(browser(), GURL(chrome::kChromeUIAppsURL));

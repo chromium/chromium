@@ -17,7 +17,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -81,7 +81,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
 
     override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
     destination_dir_ =
-        override_registration_->shortcut_override->chrome_apps_folder.GetPath();
+        override_registration_->test_override->chrome_apps_folder_.GetPath();
 
     EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
     user_data_dir_ = temp_user_data_dir_.GetPath();
@@ -116,7 +116,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     // this unittest, we manually delete it.
     // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
     EXPECT_TRUE(
-        override_registration_->shortcut_override->chrome_apps_folder.Delete());
+        override_registration_->test_override->chrome_apps_folder_.Delete());
     override_registration_.reset();
     WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();

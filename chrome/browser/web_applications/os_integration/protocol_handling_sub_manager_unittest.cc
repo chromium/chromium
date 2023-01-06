@@ -14,9 +14,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -59,7 +59,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
     WebAppTest::SetUp();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      shortcut_override_ =
+      test_override_ =
           OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
     }
     provider_ = FakeWebAppProvider::Get(profile());
@@ -85,7 +85,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
     // destructor.
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      shortcut_override_.reset();
+      test_override_.reset();
     }
     WebAppTest::TearDown();
   }
@@ -120,7 +120,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
  private:
   raw_ptr<FakeWebAppProvider> provider_;
   std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
-      shortcut_override_;
+      test_override_;
 };
 
 // Synchronize tests only. Tests here should only verify DB updates.
@@ -317,9 +317,10 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, Register) {
 
     if (AreProtocolsRegisteredWithOs()) {
       // Installation registers the protocol handlers.
-      EXPECT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
-                  testing::ElementsAre(std::make_tuple(
-                      app_id, std::vector({protocol_handler.protocol}))));
+      EXPECT_THAT(
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          testing::ElementsAre(std::make_tuple(
+              app_id, std::vector({protocol_handler.protocol}))));
     }
   } else {
     ASSERT_FALSE(os_integration_state.has_protocols_handled());
@@ -348,7 +349,7 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, Unregister) {
     // unregistration as part of update.
     // There should only be a single value for registration, as unregistration
     // is a no-op for GetOsIntegrationTestOverride().
-    ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
+    ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
                 testing::ElementsAre(std::make_tuple(
                     app_id, std::vector({protocol_handler.protocol}))));
   }
@@ -401,7 +402,7 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, UpdateHandlers) {
       // TODO(crbug.com/1404819): Update tests to verify protocol handling
       // unregistration as part of update.
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations,
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
           testing::ElementsAre(
               std::make_tuple(
                   app_id, std::vector({protocol_handler_approved.protocol,
@@ -451,9 +452,10 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, DataEqualNoOp) {
                 testing::ElementsAre(protocol_handler.protocol));
 #endif
     if (AreProtocolsRegisteredWithOs()) {
-      ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
-                  testing::ElementsAre(std::make_tuple(
-                      app_id, std::vector({protocol_handler.protocol}))));
+      ASSERT_THAT(
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          testing::ElementsAre(std::make_tuple(
+              app_id, std::vector({protocol_handler.protocol}))));
     }
   } else {
     ASSERT_FALSE(os_integration_state.has_protocols_handled());
@@ -485,13 +487,15 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest,
       // representation of protocols registered, independent of OSes.
       // These values are set by the ShortcutHandlingSubManager.
 #if BUILDFLAG(IS_WIN)
-      ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
-                  testing::IsEmpty());
+      ASSERT_THAT(
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          testing::IsEmpty());
 #else
-      ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations,
-                  testing::ElementsAre(
-                      std::make_tuple(app_id1, std::vector<std::string>()),
-                      std::make_tuple(app_id1, std::vector<std::string>())));
+      ASSERT_THAT(
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          testing::ElementsAre(
+              std::make_tuple(app_id1, std::vector<std::string>()),
+              std::make_tuple(app_id1, std::vector<std::string>())));
 #endif
     }
   } else {

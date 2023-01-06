@@ -111,6 +111,8 @@ source_set("web_applications") {
     "os_integration/os_integration_manager.cc",
     "os_integration/os_integration_manager.h",
     "os_integration/os_integration_sub_manager.h",
+    "os_integration/os_integration_test_override.cc",
+    "os_integration/os_integration_test_override.h",
     "os_integration/protocol_handling_sub_manager.cc",
     "os_integration/protocol_handling_sub_manager.h",
     "os_integration/run_on_os_login_sub_manager.cc",

@@ -34,6 +34,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -59,17 +60,19 @@ web_app::LaunchXdgUtilityForTesting& GetInstalledLaunchXdgUtilityForTesting() {
 
 base::FilePath GetDesktopPath() {
   base::FilePath desktop_path;
-  auto shortcut_override = web_app::GetOsIntegrationTestOverride();
-  if (shortcut_override)
-    return shortcut_override->desktop.GetPath();
+  auto test_override = web_app::GetOsIntegrationTestOverride();
+  if (test_override) {
+    return test_override->desktop_.GetPath();
+  }
   base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
   return desktop_path;
 }
 
 base::FilePath GetAutostartPath(base::Environment* env) {
-  auto shortcut_override = web_app::GetOsIntegrationTestOverride();
-  if (shortcut_override)
-    return shortcut_override->startup.GetPath();
+  auto test_override = web_app::GetOsIntegrationTestOverride();
+  if (test_override) {
+    return test_override->startup_.GetPath();
+  }
   return AutoStart::GetAutostartDirectory(env);
 }
 
@@ -414,7 +417,7 @@ bool CreateDesktopShortcut(base::Environment* env,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+  scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
 
   bool create_shortcut_in_startup = creation_locations.in_startup;
@@ -424,8 +427,9 @@ bool CreateDesktopShortcut(base::Environment* env,
   // Do not create the shortcuts in startup directory when testing because
   // xdg-utility (which creates this shortcut) doesn't work well with temp
   // directories.
-  if (shortcut_override)
+  if (test_override) {
     applications_menu_location = APP_MENU_LOCATION_NONE;
+  }
 
   base::FilePath shortcut_filename;
   if (!shortcut_info.extension_id.empty()) {
@@ -486,11 +490,11 @@ bool CreateDesktopShortcut(base::Environment* env,
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
 
-  if (shortcut_override) {  // IN-TEST
+  if (test_override) {  // IN-TEST
     std::vector<std::string> protocol_handler(
         shortcut_info.protocol_handlers.begin(),
         shortcut_info.protocol_handlers.end());
-    shortcut_override->protocol_scheme_registrations.emplace_back(
+    test_override->protocol_scheme_registrations_.emplace_back(
         shortcut_info.extension_id, std::move(protocol_handler));
   }
 
@@ -591,7 +595,7 @@ bool DeleteDesktopShortcuts(base::Environment* env,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+  scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
 
   base::FilePath shortcut_filename =
@@ -605,13 +609,15 @@ bool DeleteDesktopShortcuts(base::Environment* env,
   // it isn't in the directory.
 
   bool deleted_from_autostart = true;
-  if (!shortcut_override)
+  if (!test_override) {
     deleted_from_autostart = DeleteShortcutInAutoStart(env, shortcut_filename);
+  }
 
   bool deleted_from_application_menu = true;
-  if (!shortcut_override)
+  if (!test_override) {
     deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
         shortcut_filename, base::FilePath(kDirectoryFilename));
+  }
   return (deleted_from_desktop && deleted_from_autostart &&
           deleted_from_application_menu);
 }
@@ -622,7 +628,7 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+  scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
 
   bool result = true;
@@ -643,8 +649,9 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, autostart_path);
   for (const auto& shortcut : shortcut_filenames_autostart) {
-    if (shortcut_override)
+    if (test_override) {
       continue;
+    }
     if (!DeleteShortcutInAutoStart(env, shortcut))
       result = false;
   }
@@ -657,8 +664,9 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, applications_menu);
   for (const auto& menu : shortcut_filenames_app_menu) {
-    if (shortcut_override)
+    if (test_override) {
       continue;
+    }
     if (!DeleteShortcutInApplicationsMenu(menu,
                                           base::FilePath(kDirectoryFilename))) {
       result = false;
@@ -694,7 +702,7 @@ std::vector<base::FilePath> GetShortcutLocations(
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
-  scoped_refptr<OsIntegrationTestOverride> shortcut_override =
+  scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
 
   std::vector<base::FilePath> shortcut_locations;

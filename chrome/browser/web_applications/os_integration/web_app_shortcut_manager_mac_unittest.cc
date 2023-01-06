@@ -8,6 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -67,9 +68,10 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
     // override DCHECK fails if the directories are not empty. To bypass this in
     // this unittest, we manually delete it.
     // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
-    if (override_registration_->shortcut_override->chrome_apps_folder.IsValid())
-      EXPECT_TRUE(override_registration_->shortcut_override->chrome_apps_folder
-                      .Delete());
+    if (override_registration_->test_override->chrome_apps_folder_.IsValid()) {
+      EXPECT_TRUE(
+          override_registration_->test_override->chrome_apps_folder_.Delete());
+    }
     override_registration_.reset();
 
     WebAppTest::TearDown();
@@ -92,8 +94,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
 
   base::FilePath GetShortcutPath(const std::string& app_name) {
     std::string shortcut_filename = app_name + ".app";
-    return override_registration_->shortcut_override->chrome_apps_folder
-        .GetPath()
+    return override_registration_->test_override->chrome_apps_folder_.GetPath()
         .AppendASCII(shortcut_filename);
   }
 
