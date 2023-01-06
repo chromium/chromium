@@ -173,6 +173,7 @@ export enum I18nString {
   SCAN_BUTTON = 'scan_button',
   SCAN_DOCUMENT_OPTION = 'scan_document_option',
   SCAN_QRCODE_OPTION = 'scan_qrcode_option',
+  SCANNED_PAGE_LIST = 'scanned_page_list',
   SELECT_PAGE_BUTTON = 'select_page_button',
   SETTINGS_BUTTON = 'settings_button',
   SNACKBAR_LINK_COPIED = 'snackbar_link_copied',

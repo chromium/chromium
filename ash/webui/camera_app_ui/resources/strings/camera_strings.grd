@@ -743,6 +743,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Warning message about low storage and possible recording automatic stopping." name="IDS_LOW_STORAGE_NUDGE_WARNING_MSG">
         Recording will stop soon. Go to device storage to free up space.
       </message>
+      <message desc="Label for scanned document page tab list." name="IDS_SCANNED_PAGE_LIST">
+        Scanned page list
+      </message>
     </messages>
   </release>
 </grit>

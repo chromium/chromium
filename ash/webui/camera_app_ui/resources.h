@@ -189,6 +189,7 @@ const struct {
     {"scan_button", IDS_SCAN_BUTTON},
     {"scan_document_option", IDS_SCAN_DOCUMENT_OPTION},
     {"scan_qrcode_option", IDS_SCAN_QRCODE_OPTION},
+    {"scanned_page_list", IDS_SCANNED_PAGE_LIST},
     {"select_page_button", IDS_SELECT_PAGE_BUTTON},
     {"settings_button", IDS_SETTINGS_BUTTON},
     {"snackbar_link_copied", IDS_SNACKBAR_LINK_COPIED},

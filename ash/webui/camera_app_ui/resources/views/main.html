@@ -253,8 +253,7 @@
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>
       </div>
-      <div id="nudge" tabindex="0" role="alert" aria-label="storage low warning"
-           aria-live="polite" hidden>
+      <div id="nudge" tabindex="0" role="alert" hidden>
         <div class="warning-icon"></div>
         <div class="warning-msg"
              i18n-text="low_storage_nudge_warning_msg"></div>
@@ -471,7 +470,7 @@
       </div>
     </div>
     <div id="view-document-review" class="review-views">
-      <div class="document-pages" role="tablist" aria-label="Scanned page list"
+      <div class="document-pages" role="tablist" i18n-aria="scanned_page_list"
         aria-orientation="vertical"></div>
       <div class="document-preview" role="tabpanel"></div>
     </div>
@@ -497,18 +496,16 @@
       </div>
     </div>
     <div id="view-low-storage-dialog" class="dialog">
-      <div class="low-storage-dialog-popup" role="dialog" 
+      <div class="low-storage-dialog-popup" role="dialog"
            aria-labelledby="low-storage-dialog-title"
-           aria-describedby="low-storage-dialog-description"
-           aria-live="polite">
+           aria-describedby="low-storage-dialog-description">
         <div class="dialog-title dialog-msg-holder"
              id="low-storage-dialog-title"></div>
         <div class="dialog-description"
              id="low-storage-dialog-description"></div>
         <div class="low-storage-dialog-buttons">
           <button class="dialog-negative-button text-button pill
-                  system-secondary dark" aria-label="open storage management"
-                  tabindex="0">
+                  system-secondary dark" tabindex="0">
             <div class="external-link-icon"></div>
             <div i18n-text="low_storage_dialog_storage_button"></div>
           </button>
