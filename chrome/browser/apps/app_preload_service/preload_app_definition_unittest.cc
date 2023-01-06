@@ -55,10 +55,17 @@ TEST_F(PreloadAppDefinitionTest, GetPlatformWhenNotSet) {
   ASSERT_EQ(app_def.GetPlatform(), AppType::kUnknown);
 }
 
-TEST_F(PreloadAppDefinitionTest, GetPlatform) {
+TEST_F(PreloadAppDefinitionTest, GetPlatformMalformedPackageId) {
   proto::AppProvisioningListAppsResponse_App app;
+  app.set_package_id(":");
 
-  app.mutable_web_extras()->set_manifest_url("https://example.com");
+  auto app_def = PreloadAppDefinition(app);
+  ASSERT_EQ(app_def.GetPlatform(), AppType::kUnknown);
+}
+
+TEST_F(PreloadAppDefinitionTest, GetPlatformWeb) {
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_package_id("web:https://example.com/");
 
   auto app_def = PreloadAppDefinition(app);
   ASSERT_EQ(app_def.GetPlatform(), AppType::kWeb);
@@ -175,24 +182,6 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
 
   ASSERT_EQ(app_def.GetWebAppManifestId().spec(),
             "https://example.com/path/of/manifest_id");
-}
-
-TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdMalformedPackageId) {
-  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
-  app.set_package_id("web");
-
-  PreloadAppDefinition app_def(app);
-
-  ASSERT_FALSE(app_def.GetWebAppManifestId().is_valid());
-}
-
-TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdEmptyPackageId) {
-  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
-  app.set_package_id("");
-
-  PreloadAppDefinition app_def(app);
-
-  ASSERT_FALSE(app_def.GetWebAppManifestId().is_valid());
 }
 
 }  // namespace apps

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 class GURL;
@@ -20,11 +21,10 @@ namespace apps {
 class PreloadAppDefinition {
  public:
   explicit PreloadAppDefinition(
-      proto::AppProvisioningListAppsResponse_App app_proto)
-      : app_proto_(app_proto) {}
-  PreloadAppDefinition(const PreloadAppDefinition&) = default;
-  PreloadAppDefinition& operator=(const PreloadAppDefinition&) = default;
-  ~PreloadAppDefinition() = default;
+      proto::AppProvisioningListAppsResponse_App app_proto);
+  PreloadAppDefinition(const PreloadAppDefinition&);
+  PreloadAppDefinition& operator=(const PreloadAppDefinition&);
+  ~PreloadAppDefinition();
 
   std::string GetName() const;
   AppType GetPlatform() const;
@@ -48,6 +48,7 @@ class PreloadAppDefinition {
 
  private:
   proto::AppProvisioningListAppsResponse_App app_proto_;
+  absl::optional<apps::PackageId> package_id_;
 };
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app);

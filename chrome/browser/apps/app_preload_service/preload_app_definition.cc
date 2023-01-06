@@ -5,20 +5,30 @@
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 #include "url/gurl.h"
 
 namespace apps {
+
+PreloadAppDefinition::PreloadAppDefinition(
+    proto::AppProvisioningListAppsResponse_App app_proto)
+    : app_proto_(app_proto),
+      package_id_(PackageId::FromString(app_proto_.package_id())) {}
+
+PreloadAppDefinition::PreloadAppDefinition(const PreloadAppDefinition&) =
+    default;
+PreloadAppDefinition& PreloadAppDefinition::operator=(
+    const PreloadAppDefinition&) = default;
+PreloadAppDefinition::~PreloadAppDefinition() = default;
 
 std::string PreloadAppDefinition::GetName() const {
   return app_proto_.name();
 }
 
-// TODO(b/263437253): fix up once supporting libraries are in place.
 AppType PreloadAppDefinition::GetPlatform() const {
-  if (app_proto_.has_web_extras()) {
-    return AppType::kWeb;
+  if (package_id_.has_value()) {
+    return package_id_->app_type();
   }
-
   return AppType::kUnknown;
 }
 
@@ -41,16 +51,9 @@ GURL PreloadAppDefinition::GetWebAppOriginalManifestUrl() const {
 
 GURL PreloadAppDefinition::GetWebAppManifestId() const {
   DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  DCHECK(package_id_.has_value());
 
-  // TODO(b/264199799): Replace this logic with package ID library methods.
-  if (!base::StartsWith(app_proto_.package_id(), "web:")) {
-    return GURL();
-  }
-
-  // The package_id of web apps are prepended with `web:`.
-  std::string manifest_id = app_proto_.package_id().substr(strlen("web:"));
-
-  return GURL(manifest_id);
+  return GURL(package_id_->identifier());
 }
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {

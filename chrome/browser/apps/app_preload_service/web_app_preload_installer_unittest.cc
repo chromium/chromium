@@ -175,8 +175,6 @@ TEST_F(WebAppPreloadInstallerTest, GetAppId) {
 
   proto::AppProvisioningListAppsResponse_App app;
   app.set_package_id("web:https://cursive.apps.chrome/");
-  app.mutable_web_extras()->set_original_manifest_url(
-      "https://cursive.apps.chrome/manifest.json");
 
   ASSERT_EQ(installer.GetAppId(PreloadAppDefinition(app)),
             "apignacaigpffemhdbhmnajajaccbckh");
