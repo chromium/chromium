@@ -1642,6 +1642,22 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
     }
   }
 
+  int NumBidderWorklets() const {
+    int total = 0;
+    for (const auto& svc : auction_worklet_services_) {
+      total += svc->NumBidderWorkletsForTesting();
+    }
+    return total;
+  }
+
+  int NumSellerWorklets() const {
+    int total = 0;
+    for (const auto& svc : auction_worklet_services_) {
+      total += svc->NumSellerWorkletsForTesting();
+    }
+    return total;
+  }
+
  private:
   RenderProcessHost* LaunchProcess(
       mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
@@ -1861,14 +1877,21 @@ class AuctionRunnerTest : public testing::Test,
           component_auction);
     }
 
+    // Need to clear `same_process_auction_process_manager_` since underlying
+    // object may be owned by `interest_group_manager_`.
+    same_process_auction_process_manager_ = nullptr;
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
         base::FilePath(), /*in_memory=*/true,
         InterestGroupManagerImpl::ProcessMode::kDedicated,
         /*url_loader_factory=*/nullptr,
         /*k_anonymity_service=*/nullptr);
     if (!auction_process_manager_) {
-      auction_process_manager_ =
+      auto same_process_auction_process_manager =
           std::make_unique<SameProcessAuctionProcessManager>();
+      same_process_auction_process_manager_ =
+          same_process_auction_process_manager.get();
+      auction_process_manager_ =
+          std::move(same_process_auction_process_manager);
     }
     auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
         auction_process_manager_.get(), top_frame_origin_, frame_origin_, this);
@@ -2152,6 +2175,7 @@ class AuctionRunnerTest : public testing::Test,
   void UseMockWorkletService() {
     auto mock_auction_process_manager =
         std::make_unique<MockAuctionProcessManager>();
+    same_process_auction_process_manager_ = nullptr;
     mock_auction_process_manager_ = mock_auction_process_manager.get();
     auction_process_manager_ = std::move(mock_auction_process_manager);
   }
@@ -2394,6 +2418,12 @@ class AuctionRunnerTest : public testing::Test,
   // AuctionProcessManager that will be / has been passed to the
   // InterestGroupManager.
   raw_ptr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
+
+  // If StartAuction() created a SameProcessAuctionProcessManager for
+  // `auction_process_manager_`, this alises it.
+  // Reset by other things that set `auction_process_manager_`.
+  raw_ptr<SameProcessAuctionProcessManager>
+      same_process_auction_process_manager_ = nullptr;
 
   // The InterestGroupManager is recreated and repopulated for each auction.
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
@@ -3009,12 +3039,6 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
 TEST_F(AuctionRunnerTest, PauseBidder) {
   pause_worklet_url_ = kBidder2Url;
 
-  // Save a pointer to SameProcessAuctionProcessManager since we'll need its help
-  // to resume things.
-  auto process_manager = std::make_unique<SameProcessAuctionProcessManager>();
-  SameProcessAuctionProcessManager* process_manager_impl = process_manager.get();
-  auction_process_manager_ = std::move(process_manager);
-
   // Have a 404 for script 2 until ready to resume.
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(
@@ -3046,12 +3070,12 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
                     kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
 
-  process_manager_impl->ResumeAllPaused();
+  same_process_auction_process_manager_->ResumeAllPaused();
 
   // Need to resume a second time, when the script is re-loaded to run
   // ReportWin().
   task_environment_.RunUntilIdle();
-  process_manager_impl->ResumeAllPaused();
+  same_process_auction_process_manager_->ResumeAllPaused();
 
   auction_run_loop_->Run();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -3093,12 +3117,6 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
 TEST_F(AuctionRunnerTest, PauseSeller) {
   pause_worklet_url_ = kSellerUrl;
 
-  // Save a pointer to SameProcessAuctionProcessManager since we'll need its help
-  // to resume things.
-  auto process_manager = std::make_unique<SameProcessAuctionProcessManager>();
-  SameProcessAuctionProcessManager* process_manager_impl = process_manager.get();
-  auction_process_manager_ = std::move(process_manager);
-
   // Have a 404 for seller until ready to resume.
   url_loader_factory_.AddResponse(kSellerUrl.spec(), "", net::HTTP_NOT_FOUND);
 
@@ -3131,7 +3149,7 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
 
-  process_manager_impl->ResumeAllPaused();
+  same_process_auction_process_manager_->ResumeAllPaused();
 
   auction_run_loop_->Run();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -5331,7 +5349,9 @@ function reportResult(auctionConfig, browserSignals) {
                   /*expected_sellers=*/1);
 }
 
-// An auction that passes auctionSignals via promises.
+// An auction that passes auctionSignals via promises. This makes sure to
+// order worklet process creation before promise delivery (compare to
+// PromiseAuctionSignalsDeliveredBeforeWorklet).
 TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
   use_promise_for_auction_signals_ = true;
 
@@ -5359,8 +5379,77 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
       /*ad_component_urls=*/absl::nullopt));
   StartAuction(kSellerUrl, std::move(bidders));
 
+  // Make sure the worklet processes are created. Since promises haven't
+  // resolved yet, the auction should not complete.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+  EXPECT_EQ(same_process_auction_process_manager_->NumBidderWorklets(), 2);
+
+  // Feed in auctionSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals,
+      MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
+          .json_payload());
+
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// Checks case where auction signals promises resolves before the bidder worklet
+// process is ready.
+TEST_F(AuctionRunnerTest, PromiseAuctionSignalsDeliveredBeforeWorklet) {
+  use_promise_for_auction_signals_ = true;
+
+  // Create AuctionProcessManager in advance of starting the auction so can
+  // create worklets before the auction starts.
+  auction_process_manager_ =
+      std::make_unique<SameProcessAuctionProcessManager>();
+
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
+      busy_processes;
+  for (size_t i = 0; i < AuctionProcessManager::kMaxBidderProcesses; ++i) {
+    busy_processes.push_back(
+        std::make_unique<AuctionProcessManager::ProcessHandle>());
+    url::Origin origin = url::Origin::Create(
+        GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
+        AuctionProcessManager::WorkletType::kBidder, origin,
+        scoped_refptr<SiteInstance>(), &*busy_processes.back(),
+        base::BindOnce(
+            []() { ADD_FAILURE() << "This should not be called"; })));
+  }
+  task_environment_.RunUntilIdle();
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in auctionSignals.
@@ -5369,6 +5458,13 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
       blink::mojom::AuctionAdConfigField::kAuctionSignals,
       MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
           .json_payload());
+
+  // Can't complete yet since there is no process slot.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Free up process space to permit this to proceed.
+  busy_processes.clear();
 
   auction_run_loop_->Run();
 
@@ -5407,7 +5503,7 @@ TEST_F(AuctionRunnerTest, PromiseSignals) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in sellerSignals.
@@ -5415,7 +5511,7 @@ TEST_F(AuctionRunnerTest, PromiseSignals) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
       MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in auctionSignals.
@@ -5463,14 +5559,14 @@ TEST_F(AuctionRunnerTest, PromiseSignals2) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in sellerSignals.
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in auctionSignals.
@@ -5487,6 +5583,69 @@ TEST_F(AuctionRunnerTest, PromiseSignals2) {
                                   "Uncaught Error: wrong auctionSignals.",
                                   "https://anotheradthing.com/bids.js:74 "
                                   "Uncaught Error: wrong auctionSignals."));
+}
+
+// Runs an auction that passes auctionSignals via a promise, and makes sure that
+// URL fetches begin, and worklet processes are launched, before the promise is
+// resolved.
+TEST_F(AuctionRunnerTest, PromiseSignalsParallelism) {
+  use_promise_for_seller_signals_ = true;
+
+  StartStandardAuction();
+
+  // Various scripts and trusted signals should be pending, and worklets should
+  // be created.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(1, same_process_auction_process_manager_->NumSellerWorklets());
+  EXPECT_EQ(2, same_process_auction_process_manager_->NumBidderWorklets());
+  GURL trusted_bidding_signals_url1 = GURL(kBidder1TrustedSignalsUrl.spec() +
+                                           "?hostname=publisher1.com&keys=k1,k2"
+                                           "&interestGroupNames=Ad+Platform");
+  GURL trusted_bidding_signals_url2 =
+      GURL(kBidder2TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&keys=l1,l2"
+           "&interestGroupNames=Another+Ad+Thing");
+  EXPECT_TRUE(url_loader_factory_.IsPending(kBidder1Url.spec()));
+  EXPECT_TRUE(url_loader_factory_.IsPending(kBidder2Url.spec()));
+  EXPECT_TRUE(url_loader_factory_.IsPending(kSellerUrl.spec()));
+  EXPECT_TRUE(
+      url_loader_factory_.IsPending(trusted_bidding_signals_url1.spec()));
+  EXPECT_TRUE(
+      url_loader_factory_.IsPending(trusted_bidding_signals_url2.spec()));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a",
+                    /*report_post_auction_signals=*/true));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b",
+                    /*report_post_auction_signals=*/true));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/true));
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, trusted_bidding_signals_url1, kBidder1SignalsJson);
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_, trusted_bidding_signals_url2, kBidder2SignalsJson);
+  // Feed in the sources.
+  task_environment_.RunUntilIdle();
+
+  // Feed in sellerSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals,
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 TEST_F(AuctionRunnerTest, PromiseSignalsResolveAfterAbort) {
@@ -5518,7 +5677,8 @@ TEST_F(AuctionRunnerTest, PromiseSignalsResolveAfterAbort) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
+  ;
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   abortable_ad_auction_->Abort();
@@ -5531,7 +5691,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsResolveAfterAbort) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
       MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
   EXPECT_TRUE(result_.manually_aborted);
 }
@@ -5558,15 +5718,17 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
-  // Feed in the signals.
+  // Feed in the signals. Updating main before component auctions is significant
+  // because it makes sure main auction is notified of config readiness
+  // triggered by component config updates, too.
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
       MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   abortable_ad_auction_->ResolvedPromiseParam(
@@ -5574,7 +5736,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
       blink::mojom::AuctionAdConfigField::kAuctionSignals,
       MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
           .json_payload());
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   for (int component = 0; component < 2; ++component) {
@@ -5584,7 +5746,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
         blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
         blink::mojom::AuctionAdConfigField::kSellerSignals,
         MakeSellerSignals(/*use_promise=*/false, url).json_payload());
-    auction_run_loop_->RunUntilIdle();
+    task_environment_.RunUntilIdle();
     EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
     abortable_ad_auction_->ResolvedPromiseParam(
         blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
@@ -5592,13 +5754,132 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
         MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(url))
             .json_payload());
     if (component != 1) {
-      auction_run_loop_->RunUntilIdle();
+      task_environment_.RunUntilIdle();
       EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
     }
   }
 
   auction_run_loop_->Run();
 
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// Coverage of what happens when promises come in for a component auction that
+// got dropped at the database load stage, due to not having anything to bid,
+// including that it still gets error-checked.
+TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuctionRejected) {
+  use_promise_for_auction_signals_ = true;
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/false);
+
+  for (bool inject_incorrect_call : {false, true}) {
+    SCOPED_TRACE(inject_incorrect_call);
+    std::vector<StorageInterestGroup> bidders;
+    // Only component 2's bidder added.
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
+        {"l1", "l2"}, GURL("https://ad2.com"),
+        std::vector<GURL>{GURL("https://ad2.com-component1.com"),
+                          GURL("https://ad2.com-component2.com")}));
+    StartAuction(kSellerUrl, std::move(bidders));
+
+    // Can't complete yet.
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+    // Feed in the signals.
+    abortable_ad_auction_->ResolvedPromiseParam(
+        blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+        blink::mojom::AuctionAdConfigField::kAuctionSignals,
+        MakeAuctionSignals(/*use_promise=*/false,
+                           url::Origin::Create(kSellerUrl))
+            .json_payload());
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+    for (int component = 0; component < 2; ++component) {
+      const GURL& url =
+          (component == 0) ? kComponentSeller1Url : kComponentSeller2Url;
+      abortable_ad_auction_->ResolvedPromiseParam(
+          blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(
+              component),
+          blink::mojom::AuctionAdConfigField::kAuctionSignals,
+          MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(url))
+              .json_payload());
+
+      if (component == 0) {
+        if (inject_incorrect_call) {
+          abortable_ad_auction_->ResolvedPromiseParam(
+              blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(
+                  component),
+              blink::mojom::AuctionAdConfigField::kAuctionSignals,
+              MakeAuctionSignals(/*use_promise=*/false,
+                                 url::Origin::Create(url))
+                  .json_payload());
+        }
+        task_environment_.RunUntilIdle();
+        EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+      }
+    }
+
+    if (inject_incorrect_call) {
+      EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
+    }
+
+    // TODO(morlovich): This should eventually abort rather than succeed in the
+    // `inject_incorrect_call` case.
+    auction_run_loop_->Run();
+
+    EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+    EXPECT_THAT(result_.errors, testing::ElementsAre());
+  }
+}
+
+// Make sure the scoring portion of the auction waits to have promises resolved.
+// Checking at bidding time is not enough since a top-level auction can receive
+// bids to score from component auctions, and those complete their configuration
+// independently.
+TEST_F(AuctionRunnerTest, PromiseSignalsSellerDependency) {
+  use_promise_for_seller_signals_ = true;
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/false);
+  // Make sure there is nothing at top-level.
+  interest_group_buyers_->clear();
+
+  StartStandardAuction();
+
+  // Can't complete yet.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in the signals for component auctions (but not top-level auction)
+  for (int component = 0; component < 2; ++component) {
+    const GURL& url =
+        (component == 0) ? kComponentSeller1Url : kComponentSeller2Url;
+    abortable_ad_auction_->ResolvedPromiseParam(
+        blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
+        blink::mojom::AuctionAdConfigField::kSellerSignals,
+        MakeSellerSignals(/*use_promise=*/false, url).json_payload());
+
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+  }
+
+  // Now finally pass in the main auction param, unblocking the seller worklet.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals,
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+
+  auction_run_loop_->Run();
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
@@ -5632,7 +5913,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in sellerSignals with wrong component ID.
@@ -5674,7 +5955,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in auctionSignals, which isn't a promise in the first place.
@@ -5715,7 +5996,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise2) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in auctionSignals twice.
@@ -5725,7 +6006,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise2) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kAuctionSignals, absl::nullopt);
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
 }
 
@@ -5760,13 +6041,13 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise3) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
 }
 
@@ -5800,7 +6081,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise4) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   // Can't complete yet.
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   // Feed in auctionSignals twice.
@@ -5810,7 +6091,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise4) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
-  auction_run_loop_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
 }
 
