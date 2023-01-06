@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -185,8 +186,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
 
-  // TODO(pbos): Add awareness of tab registries here. This probably needs to
-  // know the tab registry it's currently monitoring.
+  base::ScopedMultiSourceObservation<SidePanelRegistry,
+                                     SidePanelRegistryObserver>
+      registry_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
