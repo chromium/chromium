@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/system/input_device_settings/input_device_pref_manager.h"
+#include "base/containers/flat_map.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {
@@ -25,6 +27,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       public ui::InputDeviceEventObserver {
  public:
   InputDeviceSettingsControllerImpl();
+  explicit InputDeviceSettingsControllerImpl(
+      std::unique_ptr<InputDevicePrefManager> pref_manager);
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
       delete;
   InputDeviceSettingsControllerImpl& operator=(
@@ -39,11 +43,20 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RemoveObserver(Observer* observer) override;
 
  private:
+  void Init();
+
   void RefreshDeviceLists();
+  void RefreshKeyboardList();
+
+  void DispatchKeyboardConnected(DeviceId id);
+  void DispatchKeyboardDisconnected(DeviceId id);
 
   // ui::InputDeviceEventObserver
   void OnInputDeviceConfigurationChanged(uint8_t input_device_type) override;
   void OnDeviceListsComplete() override;
+
+  std::unique_ptr<InputDevicePrefManager> pref_manager_;
+  base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
 };
 
 }  // namespace ash
