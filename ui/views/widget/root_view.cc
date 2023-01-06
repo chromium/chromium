@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -55,6 +56,31 @@ class MouseEnterExitEvent : public ui::MouseEvent {
   std::unique_ptr<ui::Event> Clone() const override {
     return std::make_unique<MouseEnterExitEvent>(*this);
   }
+};
+
+// TODO(crbug.com/1295290): This class is for debug purpose only.
+// Remove it after resolving the issue.
+class DanglingMouseMoveHandlerOnViewDestroyingChecker
+    : public views::ViewObserver {
+ public:
+  explicit DanglingMouseMoveHandlerOnViewDestroyingChecker(
+      const raw_ptr<views::View, DanglingUntriaged>& mouse_move_handler)
+      : mouse_move_handler_(mouse_move_handler) {
+    scoped_observation.Observe(mouse_move_handler_);
+  }
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* view) override {
+    // `mouse_move_handler_` should be nulled before `view` dies. Otherwise
+    // `mouse_move_handler_` will become a dangling pointer.
+    CHECK(!mouse_move_handler_);
+    scoped_observation.Reset();
+  }
+
+ private:
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation{
+      this};
+  const raw_ptr<views::View, DanglingUntriaged>& mouse_move_handler_;
 };
 
 }  // namespace
@@ -566,6 +592,10 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
       }
       View* old_handler = mouse_move_handler_;
       mouse_move_handler_ = v;
+      // TODO(crbug.com/1295290): This is for debug purpose only.
+      // Remove it after resolving the issue.
+      DanglingMouseMoveHandlerOnViewDestroyingChecker
+          mouse_move_handler_dangling_checker(mouse_move_handler_);
       if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
           !mouse_move_handler_->Contains(old_handler)) {
         MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
