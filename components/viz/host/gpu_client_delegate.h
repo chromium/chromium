@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_HOST_GPU_CLIENT_DELEGATE_H_
 #define COMPONENTS_VIZ_HOST_GPU_CLIENT_DELEGATE_H_
 
-#include "mojo/public/cpp/system/message_pipe.h"
-
 namespace viz {
 
 class GpuHostImpl;

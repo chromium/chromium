@@ -8,7 +8,6 @@
 #include "base/files/file.h"
 #include "cc/paint/paint_record.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/rect.h"

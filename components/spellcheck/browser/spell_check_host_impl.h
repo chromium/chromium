@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"

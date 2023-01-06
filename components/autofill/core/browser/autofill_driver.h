@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/isolation_info.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"

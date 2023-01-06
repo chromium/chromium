@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/origin.h"
 

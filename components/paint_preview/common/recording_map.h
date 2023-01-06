@@ -12,7 +12,6 @@
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/serialized_recording.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
