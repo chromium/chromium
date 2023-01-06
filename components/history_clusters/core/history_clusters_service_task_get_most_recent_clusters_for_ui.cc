@@ -23,13 +23,13 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
         ClusteringBackend* const backend,
         history::HistoryService* const history_service,
         base::Time begin_time,
-        QueryClustersContinuationParams continuation_params,
+        base::Time continuation_time,
         QueryClustersCallback callback)
     : weak_history_clusters_service_(std::move(weak_history_clusters_service)),
       backend_(backend),
       history_service_(history_service),
       begin_time_(begin_time),
-      continuation_params_(continuation_params),
+      continuation_time_(continuation_time),
       callback_(std::move(callback)) {
   DCHECK(weak_history_clusters_service_);
   DCHECK(history_service_);
@@ -41,15 +41,12 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
     ~HistoryClustersServiceTaskGetMostRecentClustersForUI() = default;
 
 void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start() {
-  // Shouldn't request more clusters if history has been exhausted.
-  DCHECK(!continuation_params_.exhausted_all_visits);
-
   // TODO(b/259466296): Figure out what to do with unclustered visits that
   //   happen before this experiment starts and were unclustered by previous
   //   path.
 
   history_service_->GetMostRecentClusters(
-      begin_time_, continuation_params_.continuation_time,
+      begin_time_, continuation_time_,
       GetConfig().max_persisted_clusters_to_fetch,
       GetConfig().max_persisted_cluster_visits_to_fetch_soft_cap,
       base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClustersForUI::

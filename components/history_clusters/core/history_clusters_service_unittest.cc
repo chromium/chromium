@@ -1069,34 +1069,6 @@ TEST_P(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
   }
 }
 
-class HistoryClustersServiceJourneysDisabledTest
-    : public HistoryClustersServiceTestBase {
- public:
-  HistoryClustersServiceJourneysDisabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            internal::kJourneys,
-            internal::kPersistContextAnnotationsInHistoryDb,
-        });
-  }
-};
-
-TEST_F(HistoryClustersServiceJourneysDisabledTest,
-       CompleteVisitContextAnnotationsIfReadyWhenFeatureDisabled) {
-  // When the feature is disabled, the `IncompleteVisitContextAnnotations`
-  // should be removed but not added to visits.
-  auto& incomplete_visit_context_annotations =
-      history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
-          0);
-  incomplete_visit_context_annotations.url_row.set_id(1);
-  incomplete_visit_context_annotations.visit_row.visit_id = 1;
-  incomplete_visit_context_annotations.status = {true, true, true};
-  history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
-  EXPECT_FALSE(
-      history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
-}
-
 TEST_P(HistoryClustersServiceTest,
        CompleteVisitContextAnnotationsIfReadyWhenFeatureEnabled) {
   // When the feature is enabled, the `IncompleteVisitContextAnnotations`
@@ -1259,6 +1231,50 @@ TEST_P(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
 }
 
+TEST_P(HistoryClustersServiceTest,
+       DoesQueryMatchAnyClusterSecondaryCacheNavigationContextClusters) {
+  Config config;
+  config.persist_clusters_in_history_db = true;
+  config.use_navigation_context_clusters = true;
+  SetConfigForTesting(config);
+
+  // Seed some visits and clusters.
+  const auto today = base::Time::Now() - base::Minutes(30);
+
+  AddCompleteVisit(1, today);
+  AddCompleteVisit(2, today);
+
+  base::CancelableTaskTracker task_tracker;
+  history::Cluster cluster = history::CreateCluster({1, 2});
+  cluster.cluster_id = 1;
+  cluster.keyword_to_data_map = {{u"peach", history::ClusterKeywordData()},
+                                 {u"", history::ClusterKeywordData()}};
+  cluster.should_show_on_prominent_ui_surfaces = true;
+  history_service_->ReplaceClusters({}, {cluster}, base::DoNothing(),
+                                    &task_tracker);
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  auto minutes_ago = [](int minutes) {
+    return base::Time::Now() - base::Minutes(minutes);
+  };
+
+  // Set up the cache timestamps.
+  history_clusters_service_test_api_->SetAllKeywordsCacheTimestamp(
+      minutes_ago(60));
+  history_clusters_service_test_api_->SetShortKeywordCacheTimestamp(
+      minutes_ago(15));
+
+  // Kick off cluster request and verify the correct visits are sent.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+
+  // Wait for clusters to come back and verify the keyword was cached. Call this
+  // twice: once for retrieving initial cluster, once for verifying it's done.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+}
+
 TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
   Config config;
   config.omnibox_action_on_urls = true;
@@ -1396,6 +1412,34 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
   // The keyword cache should be repopulated.
   EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
       ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+}
+
+class HistoryClustersServiceJourneysDisabledTest
+    : public HistoryClustersServiceTestBase {
+ public:
+  HistoryClustersServiceJourneysDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            internal::kJourneys,
+            internal::kPersistContextAnnotationsInHistoryDb,
+        });
+  }
+};
+
+TEST_F(HistoryClustersServiceJourneysDisabledTest,
+       CompleteVisitContextAnnotationsIfReadyWhenFeatureDisabled) {
+  // When the feature is disabled, the `IncompleteVisitContextAnnotations`
+  // should be removed but not added to visits.
+  auto& incomplete_visit_context_annotations =
+      history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
+          0);
+  incomplete_visit_context_annotations.url_row.set_id(1);
+  incomplete_visit_context_annotations.visit_row.visit_id = 1;
+  incomplete_visit_context_annotations.status = {true, true, true};
+  history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
+  EXPECT_FALSE(
+      history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
 }
 
 class HistoryClustersServiceMaxKeywordsTest

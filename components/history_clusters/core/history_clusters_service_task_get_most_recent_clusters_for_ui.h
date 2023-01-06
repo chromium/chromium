@@ -37,7 +37,7 @@ class HistoryClustersServiceTaskGetMostRecentClustersForUI
       ClusteringBackend* const backend,
       history::HistoryService* const history_service,
       base::Time begin_time,
-      QueryClustersContinuationParams continuation_params,
+      base::Time continuation_time,
       QueryClustersCallback callback);
   ~HistoryClustersServiceTaskGetMostRecentClustersForUI() override;
 
@@ -66,7 +66,7 @@ class HistoryClustersServiceTaskGetMostRecentClustersForUI
 
   // Used to make requests to `HistoryService`.
   base::Time begin_time_;
-  QueryClustersContinuationParams continuation_params_;
+  base::Time continuation_time_;
   base::CancelableTaskTracker task_tracker_;
 
   // Invoked after `OnGotModelClusters()`.
