@@ -2429,6 +2429,10 @@ void DocumentLoader::CommitNavigation() {
 
   WillCommitNavigation();
 
+  if (Url().ProtocolIsInHTTPFamily()) {
+    recordreplay::OnNavigationEvent(nullptr, Url().GetString().Utf8().c_str());
+  }
+
   is_prerendering_ = frame_->GetPage()->IsPrerendering();
   Document* document = frame_->DomWindow()->InstallNewDocument(
       DocumentInit::Create()

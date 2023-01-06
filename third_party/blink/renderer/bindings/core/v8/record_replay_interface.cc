@@ -529,6 +529,7 @@ function isInstanceOfNative(x, target) {
   const name = target?.name;
   return name &&
     x?.constructor?.toString()?.includes('() { [native code] }') &&
+    x.constructor === x.__proto__.constructor &&
     hasInProtoChain(x.constructor, name);
 }
 
@@ -615,7 +616,7 @@ function clearPauseDataCallback() {
  * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject
  */
 function makeDebuggeeValue(plainObject) {
-  assert(!plainObject?.objectId);
+  assert(plainObject && !plainObject.objectId);
   const remoteObject = fromJsMakeDebuggeeValue(plainObject);
   assert(remoteObject?.objectId);
   return remoteObject;
@@ -2653,20 +2654,36 @@ const char* gReactDevtoolsScript = R""""(
 
 (() => {
 
-const hook = {
+const stubFiberRoots = {};
+
+const stubHook = {
   supportsFiber: true,
   inject,
   onCommitFiberUnmount,
   onCommitFiberRoot,
   onPostCommitFiberRoot,
-  renderers: [],
+  renderers: new Map(),
 };
 
+
+function stubGetFiberRoots(rendererID) {
+  const roots = stubFiberRoots;
+
+  if (!roots[rendererID]) {
+    roots[rendererID] = new Set();
+  }
+
+  return roots[rendererID];
+}
+
+window.__REACT_DEVTOOLS_SAVED_RENDERERS__ = [];
+window.__REACT_DEVTOOLS_STUB_FIBER_ROOTS = stubFiberRoots;
+
 Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
-  configurable: false,
+  configurable: true,
   enumerable: false,
   get() {
-    return hook;
+    return stubHook;
   }
 });
 
@@ -2675,6 +2692,7 @@ let uidCounter = 0;
 function inject(renderer) {
   const id = ++uidCounter;
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook", "inject");
+  window.__REACT_DEVTOOLS_SAVED_RENDERERS__.push(renderer);
   return id;
 }
 
@@ -2683,6 +2701,17 @@ function onCommitFiberUnmount(rendererID, fiber) {
 }
 
 function onCommitFiberRoot(rendererID, root, priorityLevel) {
+  const mountedRoots = stubGetFiberRoots(rendererID);
+  const current = root.current;
+  const isKnownRoot = mountedRoots.has(root);
+  const isUnmounting = current.memoizedState == null || current.memoizedState.element == null; // Keep track of mounted roots so we can hydrate when DevTools connect.
+
+  if (!isKnownRoot && !isUnmounting) {
+    mountedRoots.add(root);
+  } else if (isKnownRoot && isUnmounting) {
+    mountedRoots.delete(root);
+  }
+  
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook", "commit-fiber-root");
 }
 
@@ -3177,7 +3206,8 @@ static void fromJsMakeDebuggeeValue(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
 
-  CHECK(args.Length() == 1 && "must be called with a single value");
+  CHECK(args.Length() == 1 && args[0]->IsObject() &&
+        "must be called with a single object");
 
   auto context = isolate->GetCurrentContext();
   auto value = args[0];
@@ -3188,35 +3218,16 @@ static void fromJsMakeDebuggeeValue(
 
   // NOTE: `wrapObject` always creates a new `RemoteObject` and binds it
   // to a new id.
-  auto result = gInspectorSession->wrapObject(
+  auto remoteObjSerialized = gInspectorSession->wrapObject(
       context, value, ToV8InspectorStringView(object_group), generatePreview);
 
-  // deserialize + send to JS
-  std::vector<uint8_t> cbor;
-  result->AppendSerialized(&cbor);
+  auto result = convertCborToJS(isolate, (v8_crdtp::Serializable*)remoteObjSerialized.get());
 
-  if (cbor.size() > 1) {
-    /**
-     * This is based on other code that uses `wrapObject` and sends the result
-     * to JS.
-     * @see
-     * https://github.com/replayio/chromium-v8/blob/b38bf5b0b1f149f7af3fd90a2ce12344e7191d03/src/inspector/custom-preview.cc#L123
-     */
-    std::vector<uint8_t> json;
-    v8_crdtp::json::ConvertCBORToJSON(v8_crdtp::SpanFrom(cbor), &json);
-    auto remoteObjectJsonStr =
-        v8::String::NewFromOneByte(isolate, json.data(),
-                                   v8::NewStringType::kNormal, (int)json.size())
-            .ToLocalChecked();
-    auto s = ToCoreString(remoteObjectJsonStr);
-
-    auto remoteObject = v8::JSON::Parse(context, remoteObjectJsonStr);
-    if (!remoteObject.IsEmpty()) {
-      args.GetReturnValue().Set(remoteObject.ToLocalChecked());
-      return;
-    }
+  if (!result.IsEmpty()) {
+    args.GetReturnValue().Set(result.ToLocalChecked());
+  } else {
+    args.GetReturnValue().SetNull();
   }
-  args.GetReturnValue().SetNull();
 }
 
 static void fromJsGetObjectByCdpId(
@@ -3874,9 +3885,7 @@ static void fromJsDomPerformSearch(
           int nodeId = (*nodeIds)[i];
           auto* node = domAgent->NodeForId(nodeId);
           v8::Local<v8::Value> v8Node;
-          recordreplay::Print("DDBG performSearch %d %d", i, !!node);
           if (node && getV8FromBlinkObject(isolate, node, v8Node)) {
-            recordreplay::Print("DDBG performSearch2 %d %d", i, !!node);
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
             result->Set(context, nWritten++, v8Node).Check();
           }
