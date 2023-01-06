@@ -175,18 +175,6 @@
       'ios_runtime_cache_14_5',
     ],
   },
-  'SIM_IPAD_AIR_3RD_GEN_16_1': {
-    'args': [
-      '--platform',
-      'iPad Air (3rd generation)',
-      '--version',
-      '16.1'
-    ],
-    'identifier': 'iPad Air (3rd generation) 16.1',
-    'mixins': [
-      'ios_runtime_cache_16_1',
-    ],
-  },
   'SIM_IPAD_AIR_3RD_GEN_16_2': {
     'args': [
       '--platform',
@@ -211,18 +199,6 @@
     'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.5',
     'mixins': [
       'ios_runtime_cache_14_5',
-    ],
-  },
-  'SIM_IPAD_PRO_3RD_GEN_16_1': {
-    'args': [
-      '--platform',
-      'iPad Pro (12.9-inch) (3rd generation)',
-      '--version',
-      '16.1',
-    ],
-    'identifier': 'iPad Pro (12.9-inch) (3rd generation) 16.1',
-    'mixins': [
-      'ios_runtime_cache_16_1',
     ],
   },
   'SIM_IPAD_PRO_3RD_GEN_16_2': {
@@ -357,18 +333,6 @@
       'ios_runtime_cache_15_5',
     ],
   },
-  'SIM_IPHONE_8_16_1': {
-    'args': [
-      '--platform',
-      'iPhone 8',
-      '--version',
-      '16.1',
-    ],
-    'identifier': 'iPhone 8 16.1',
-    'mixins': [
-      'ios_runtime_cache_16_1',
-    ],
-  },
   'SIM_IPHONE_8_16_2': {
     'args': [
       '--platform',
@@ -379,18 +343,6 @@
     'identifier': 'iPhone 8 16.2',
     'mixins': [
       'ios_runtime_cache_16_2',
-    ],
-  },
-  'SIM_IPHONE_8_PLUS_16_1': {
-    'args': [
-      '--platform',
-      'iPhone 8 Plus',
-      '--version',
-      '16.1',
-    ],
-    'identifier': 'iPhone 8 Plus 16.1',
-    'mixins': [
-      'ios_runtime_cache_16_1',
     ],
   },
   'SIM_IPHONE_8_PLUS_16_2': {
@@ -427,18 +379,6 @@
     'identifier': 'iPhone SE (1st generation) 15.5',
     'mixins': [
       'ios_runtime_cache_15_5',
-    ],
-  },
-  'SIM_IPHONE_SE_3RD_GEN_16_1': {
-    'args': [
-      '--platform',
-      'iPhone SE (3rd generation)',
-      '--version',
-      '16.1',
-    ],
-    'identifier': 'iPhone SE (3rd generation) 16.1',
-    'mixins': [
-      'ios_runtime_cache_16_1',
     ],
   },
   'SIM_IPHONE_SE_3RD_GEN_16_2': {
@@ -499,18 +439,6 @@
     'identifier': 'iPhone X 15.5',
     'mixins': [
       'ios_runtime_cache_15_5',
-    ],
-  },
-  'SIM_IPHONE_X_16_1': {
-    'args': [
-      '--platform',
-      'iPhone X',
-      '--version',
-      '16.1',
-    ],
-    'identifier': 'iPhone X 16.1',
-    'mixins': [
-      'ios_runtime_cache_16_1',
     ],
   },
   'SIM_IPHONE_X_16_2': {

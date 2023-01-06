@@ -55,5 +55,5 @@
   },
   "builder_group": "chromium.goma",
   "recipe": "chromium",
-  "xcode_build_version": "14b47b"
+  "xcode_build_version": "14c18"
 }

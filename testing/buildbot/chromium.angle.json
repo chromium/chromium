@@ -61,7 +61,7 @@
           "--platform",
           "iPhone X",
           "--version",
-          "16.1",
+          "16.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -73,7 +73,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_end2end_tests iPhone X 16.1",
+        "name": "angle_end2end_tests iPhone X 16.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -102,8 +102,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_16_1",
-              "path": "Runtime-ios-16.1"
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -111,7 +111,7 @@
         "test": "angle_end2end_tests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/",
         "use_isolated_scripts_api": true,
-        "variant_id": "iPhone X 16.1"
+        "variant_id": "iPhone X 16.2"
       },
       {
         "args": [
@@ -119,7 +119,7 @@
           "--platform",
           "iPhone X",
           "--version",
-          "16.1",
+          "16.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -131,7 +131,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_white_box_tests iPhone X 16.1",
+        "name": "angle_white_box_tests iPhone X 16.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -160,8 +160,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_16_1",
-              "path": "Runtime-ios-16.1"
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -169,7 +169,7 @@
         "test": "angle_white_box_tests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_white_box_tests/",
         "use_isolated_scripts_api": true,
-        "variant_id": "iPhone X 16.1"
+        "variant_id": "iPhone X 16.2"
       }
     ]
   },
