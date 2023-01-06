@@ -223,13 +223,7 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignString) {
   EXPECT_EQ(counter3, 4);
 }
 
-struct CustomHashTraitsForInt : public HashTraits<int> {
-  static const bool kEmptyValueIsZero = false;
-  static int EmptyValue() { return INT_MAX; }
-
-  static void ConstructDeletedValue(int& slot, bool) { slot = INT_MIN; }
-  static bool IsDeletedValue(const int& value) { return value == INT_MIN; }
-};
+struct CustomHashTraitsForInt : public IntHashTraits<int, INT_MAX, INT_MIN> {};
 
 TEST(LinkedHashSetTest, Iterator) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;

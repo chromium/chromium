@@ -39,14 +39,11 @@
 
 namespace WTF {
 
-template <bool isInteger, typename T>
-struct GenericHashTraitsBase;
-template <bool is_enum, typename T>
-struct EnumOrGenericHashTraits;
 template <typename T>
 struct HashTraits;
 
-namespace {
+namespace internal {
+
 template <typename T, bool = IsTraceable<T>::value>
 struct ClearMemoryAtomicallyIfNeeded {
   static void Clear(T* slot) { memset(static_cast<void*>(slot), 0, sizeof(T)); }
@@ -55,19 +52,45 @@ template <typename T>
 struct ClearMemoryAtomicallyIfNeeded<T, true> {
   static void Clear(T* slot) { AtomicMemzero<sizeof(T), alignof(T)>(slot); }
 };
-}  // namespace
 
 template <typename T>
-struct GenericHashTraitsBase<false, T> {
-  // The emptyValueIsZero flag is used to optimize allocation of empty hash
-  // tables with zeroed memory.
-  static const bool kEmptyValueIsZero = false;
+struct GenericHashTraitsBase {
+  using TraitType = T;
+  using EmptyValueType = T;
 
-  // The kHasIsEmptyValueFunction flag allows the hash table to automatically
-  // generate code to check for the empty value when it can be done with the
-  // equality operator, but allows custom functions for cases like String that
-  // need them.
-  static const bool kHasIsEmptyValueFunction = false;
+  // Type for functions that do not take ownership, such as contains.
+  using PeekInType = const T&;
+
+  // Types for iterators.
+  using IteratorGetType = T*;
+  using IteratorConstGetType = const T*;
+  using IteratorReferenceType = T&;
+  using IteratorConstReferenceType = const T&;
+
+  template <typename IncomingValueType>
+  static void Store(IncomingValueType&& value, T& storage) {
+    storage = std::forward<IncomingValueType>(value);
+  }
+
+  // Type for return value of functions that do not transfer ownership, such
+  // as get.
+  using PeekOutType = T;
+  static const T& Peek(const T& value) { return value; }
+
+  // This flag can be set to true if any of the following conditions is true:
+  // 1. All bytes of EmptyValue() are zero.
+  // 2. kHasEmptyValueFunction is true and IsEmptyValue() returns true for a
+  //    value containing all zero bytes.
+  // When this is true, the hash table can optimize allocation of empty hash
+  // slots with zeroed memory without calling EmptyValue().
+  static constexpr bool kEmptyValueIsZero = false;
+
+  // If this flag is true, the hash table will call function
+  //   static bool IsEmptyValue(const T&);
+  // to check if an entry is an empty value. Otherwise the hash table will
+  // check for the empty value with the equality operator.
+  // See IsHashTraitsEmptyValue().
+  static constexpr bool kHasIsEmptyValueFunction = false;
 
 // The starting table size. Can be overridden when we know beforehand that a
 // hash table will have at least N entries.
@@ -75,9 +98,9 @@ struct GenericHashTraitsBase<false, T> {
   // The allocation pool for nodes is one big chunk that ASAN has no insight
   // into, so it can cloak errors. Make it as small as possible to force nodes
   // to be allocated individually where ASAN can see them.
-  static const unsigned kMinimumTableSize = 1;
+  static constexpr unsigned kMinimumTableSize = 1;
 #else
-  static const unsigned kMinimumTableSize = 8;
+  static constexpr unsigned kMinimumTableSize = 8;
 #endif
 
   // When a hash table backing store is traced, its elements will be
@@ -86,7 +109,7 @@ struct GenericHashTraitsBase<false, T> {
   // phase that follows.
   template <typename U = void>
   struct IsTraceableInCollection {
-    static const bool value = IsTraceable<T>::value && !IsWeak<T>::value;
+    static constexpr bool value = IsTraceable<T>::value && !IsWeak<T>::value;
   };
 
   // The NeedsToForbidGCOnMove flag is used to make the hash table move
@@ -97,7 +120,7 @@ struct GenericHashTraitsBase<false, T> {
   struct NeedsToForbidGCOnMove {
     // TODO(yutak): Consider using of std:::is_trivially_move_constructible
     // when it is accessible.
-    static const bool value = !std::is_pod<T>::value;
+    static constexpr bool value = !std::is_pod<T>::value;
   };
 
   // The kCanTraceConcurrently value is used by Oilpan concurrent marking. Only
@@ -106,63 +129,55 @@ struct GenericHashTraitsBase<false, T> {
   static constexpr bool kCanTraceConcurrently = false;
 };
 
+template <typename T, auto empty_value, auto deleted_value>
+struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
+  static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
+  static constexpr bool kEmptyValueIsZero =
+      static_cast<int64_t>(empty_value) == 0;
+  static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
+  static void ConstructDeletedValue(T& slot, bool) {
+    slot = static_cast<T>(deleted_value);
+  }
+  static constexpr bool IsDeletedValue(T value) {
+    return value == static_cast<T>(deleted_value);
+  }
+};
+
+}  // namespace internal
+
 // Default integer traits disallow both 0 and -1 as keys (max value instead of
 // -1 for unsigned).
-template <typename T>
-struct GenericHashTraitsBase<true, T> : GenericHashTraitsBase<false, T> {
-  static const bool kEmptyValueIsZero = true;
-  static void ConstructDeletedValue(T& slot, bool) {
-    slot = static_cast<T>(-1);
-  }
-  static bool IsDeletedValue(T value) { return value == static_cast<T>(-1); }
+template <typename T, T empty_value = 0, T deleted_value = static_cast<T>(-1)>
+struct IntHashTraits
+    : internal::IntOrEnumHashTraits<T, empty_value, deleted_value> {
+  static_assert(std::is_integral<T>::value);
 };
-
-template <typename T>
-struct GenericHashTraits
-    : GenericHashTraitsBase<std::is_integral<T>::value, T> {
-  typedef T TraitType;
-  typedef T EmptyValueType;
-
-  static T EmptyValue() { return T(); }
-
-  // Type for functions that do not take ownership, such as contains.
-  typedef const T& PeekInType;
-  typedef T* IteratorGetType;
-  typedef const T* IteratorConstGetType;
-  typedef T& IteratorReferenceType;
-  typedef const T& IteratorConstReferenceType;
-
-  template <typename IncomingValueType>
-  static void Store(IncomingValueType&& value, T& storage) {
-    storage = std::forward<IncomingValueType>(value);
-  }
-
-  // Type for return value of functions that do not transfer ownership, such
-  // as get.
-  // FIXME: We could change this type to const T& for better performance if we
-  // figured out a way to handle the return value from emptyValue, which is a
-  // temporary.
-  typedef T PeekOutType;
-  static const T& Peek(const T& value) { return value; }
-};
-
-template <typename T>
-struct EnumOrGenericHashTraits<false, T> : GenericHashTraits<T> {};
 
 // Default traits for an enum type.  0 is very popular, and -1 is also popular.
 // So we use -128 and -127.
-template <typename T>
-struct EnumOrGenericHashTraits<true, T> : GenericHashTraits<T> {
-  static const bool kEmptyValueIsZero = false;
-  static T EmptyValue() { return static_cast<T>(-128); }
-  static void ConstructDeletedValue(T& slot, bool) {
-    slot = static_cast<T>(-127);
-  }
-  static bool IsDeletedValue(T value) { return value == static_cast<T>(-127); }
+template <typename T, auto empty_value = -128, auto deleted_value = -127>
+struct EnumHashTraits
+    : internal::IntOrEnumHashTraits<T, empty_value, deleted_value> {
+  static_assert(std::is_enum<T>::value);
+};
+
+template <typename T, typename Enable = void>
+struct GenericHashTraits : internal::GenericHashTraitsBase<T> {
+  static_assert(!std::is_integral<T>::value);
+  static_assert(!std::is_enum<T>::value);
+  static T EmptyValue() { return T(); }
 };
 
 template <typename T>
-struct HashTraits : EnumOrGenericHashTraits<std::is_enum<T>::value, T> {};
+struct GenericHashTraits<T, std::enable_if_t<std::is_integral<T>::value>>
+    : public IntHashTraits<T> {};
+
+template <typename T>
+struct GenericHashTraits<T, std::enable_if_t<std::is_enum<T>::value>>
+    : public EnumHashTraits<T> {};
+
+template <typename T>
+struct HashTraits : GenericHashTraits<T> {};
 
 template <typename T>
 struct FloatHashTraits : GenericHashTraits<T> {
@@ -183,21 +198,14 @@ struct HashTraits<double> : FloatHashTraits<double> {};
 // Default integral traits disallow both 0 and max as keys -- use these traits
 // to allow zero and disallow max - 1.
 template <typename T>
-struct IntWithZeroKeyHashTraits : GenericHashTraits<T> {
-  static_assert(std::is_integral_v<T>);
-  static const bool kEmptyValueIsZero = false;
-  static T EmptyValue() { return std::numeric_limits<T>::max(); }
-  static void ConstructDeletedValue(T& slot, bool) {
-    slot = std::numeric_limits<T>::max() - 1;
-  }
-  static bool IsDeletedValue(T value) {
-    return value == std::numeric_limits<T>::max() - 1;
-  }
-};
+struct IntWithZeroKeyHashTraits
+    : IntHashTraits<T,
+                    std::numeric_limits<T>::max(),
+                    std::numeric_limits<T>::max() - 1> {};
 
 template <typename P>
 struct HashTraits<P*> : GenericHashTraits<P*> {
-  static const bool kEmptyValueIsZero = true;
+  static constexpr bool kEmptyValueIsZero = true;
   static void ConstructDeletedValue(P*& slot, bool) {
     slot = reinterpret_cast<P*>(-1);
   }
@@ -208,10 +216,10 @@ struct HashTraits<P*> : GenericHashTraits<P*> {
 
 template <typename T>
 struct SimpleClassHashTraits : GenericHashTraits<T> {
-  static const bool kEmptyValueIsZero = true;
+  static constexpr bool kEmptyValueIsZero = true;
   template <typename U = void>
   struct NeedsToForbidGCOnMove {
-    static const bool value = false;
+    static constexpr bool value = false;
   };
   static void ConstructDeletedValue(T& slot, bool) {
     new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
@@ -250,7 +258,7 @@ struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
   typedef std::nullptr_t EmptyValueType;
   static EmptyValueType EmptyValue() { return nullptr; }
 
-  static const bool kHasIsEmptyValueFunction = true;
+  static constexpr bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const scoped_refptr<P>& value) { return !value; }
 
   static bool IsDeletedValue(const scoped_refptr<P>& value) {
@@ -282,7 +290,7 @@ struct HashTraits<std::unique_ptr<T>>
   using EmptyValueType = std::nullptr_t;
   static EmptyValueType EmptyValue() { return nullptr; }
 
-  static const bool kHasIsEmptyValueFunction = true;
+  static constexpr bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const std::unique_ptr<T>& value) { return !value; }
 
   using PeekInType = T*;
@@ -309,7 +317,7 @@ struct HashTraits<std::unique_ptr<T>>
 
 template <>
 struct HashTraits<String> : SimpleClassHashTraits<String> {
-  static const bool kHasIsEmptyValueFunction = true;
+  static constexpr bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const String&);
   static bool IsDeletedValue(const String& value);
   static void ConstructDeletedValue(String& slot, bool zero_value);
@@ -353,14 +361,14 @@ struct PairHashTraits
                     typename SecondTraits::EmptyValueType>
       EmptyValueType;
 
-  static const bool kEmptyValueIsZero =
+  static constexpr bool kEmptyValueIsZero =
       FirstTraits::kEmptyValueIsZero && SecondTraits::kEmptyValueIsZero;
   static EmptyValueType EmptyValue() {
     return std::make_pair(FirstTraits::EmptyValue(),
                           SecondTraits::EmptyValue());
   }
 
-  static const bool kHasIsEmptyValueFunction =
+  static constexpr bool kHasIsEmptyValueFunction =
       FirstTraits::kHasIsEmptyValueFunction ||
       SecondTraits::kHasIsEmptyValueFunction;
   static bool IsEmptyValue(const TraitType& value) {
@@ -368,7 +376,7 @@ struct PairHashTraits
            IsHashTraitsEmptyValue<SecondTraits>(value.second);
   }
 
-  static const unsigned kMinimumTableSize = FirstTraits::kMinimumTableSize;
+  static constexpr unsigned kMinimumTableSize = FirstTraits::kMinimumTableSize;
 
   static void ConstructDeletedValue(TraitType& slot, bool zero_value) {
     FirstTraits::ConstructDeletedValue(slot.first, zero_value);
@@ -380,8 +388,8 @@ struct PairHashTraits
     // hold as they did at the initial allocation.  Therefore we zero the
     // value part of the slot here for GC collections.
     if (zero_value) {
-      ClearMemoryAtomicallyIfNeeded<typename SecondTraits::TraitType>::Clear(
-          &slot.second);
+      internal::ClearMemoryAtomicallyIfNeeded<
+          typename SecondTraits::TraitType>::Clear(&slot.second);
     }
   }
   static bool IsDeletedValue(const TraitType& value) {
@@ -427,7 +435,7 @@ struct KeyValuePairHashTraits
                        typename ValueTraits::EmptyValueType>
       EmptyValueType;
 
-  static const bool kEmptyValueIsZero =
+  static constexpr bool kEmptyValueIsZero =
       KeyTraits::kEmptyValueIsZero && ValueTraits::kEmptyValueIsZero;
   static EmptyValueType EmptyValue() {
     return KeyValuePair<typename KeyTraits::EmptyValueType,
@@ -437,25 +445,26 @@ struct KeyValuePairHashTraits
 
   template <typename U = void>
   struct IsTraceableInCollection {
-    static const bool value = IsTraceableInCollectionTrait<KeyTraits>::value ||
-                              IsTraceableInCollectionTrait<ValueTraits>::value;
+    static constexpr bool value =
+        IsTraceableInCollectionTrait<KeyTraits>::value ||
+        IsTraceableInCollectionTrait<ValueTraits>::value;
   };
 
   template <typename U = void>
   struct NeedsToForbidGCOnMove {
-    static const bool value =
+    static constexpr bool value =
         KeyTraits::template NeedsToForbidGCOnMove<>::value ||
         ValueTraits::template NeedsToForbidGCOnMove<>::value;
   };
 
-  static const unsigned kMinimumTableSize = KeyTraits::kMinimumTableSize;
+  static constexpr unsigned kMinimumTableSize = KeyTraits::kMinimumTableSize;
 
   static void ConstructDeletedValue(TraitType& slot, bool zero_value) {
     KeyTraits::ConstructDeletedValue(slot.key, zero_value);
     // See similar code in this file for why we need to do this.
     if (zero_value) {
-      ClearMemoryAtomicallyIfNeeded<typename ValueTraits::TraitType>::Clear(
-          &slot.value);
+      internal::ClearMemoryAtomicallyIfNeeded<
+          typename ValueTraits::TraitType>::Clear(&slot.value);
     }
   }
   static bool IsDeletedValue(const TraitType& value) {
@@ -477,13 +486,15 @@ struct HashTraits<KeyValuePair<Key, Value>>
 
 template <typename T>
 struct NullableHashTraits : public HashTraits<T> {
-  static const bool kEmptyValueIsZero = false;
+  static constexpr bool kEmptyValueIsZero = false;
   static T EmptyValue() { return reinterpret_cast<T>(1); }
 };
 
 }  // namespace WTF
 
+using WTF::EnumHashTraits;
 using WTF::HashTraits;
+using WTF::IntHashTraits;
 using WTF::IntWithZeroKeyHashTraits;
 using WTF::NullableHashTraits;
 using WTF::PairHashTraits;

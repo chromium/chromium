@@ -446,10 +446,8 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   // Task runners bound with |worker_scheduler_|. These are captured when the
   // worker scheduler is initialized.
-  using TaskRunnerHashMap = HashMap<TaskType,
-                                    scoped_refptr<base::SingleThreadTaskRunner>,
-                                    WTF::IntHash<TaskType>,
-                                    TaskTypeTraits>;
+  using TaskRunnerHashMap =
+      HashMap<TaskType, scoped_refptr<base::SingleThreadTaskRunner>>;
   TaskRunnerHashMap worker_task_runners_;
 
   // This lock protects shared states between the parent thread and the worker

@@ -265,7 +265,6 @@ blink_core_sources_dom = [
   "synchronous_mutation_observer.h",
   "tag_collection.cc",
   "tag_collection.h",
-  "task_type_traits.h",
   "template_content_document_fragment.h",
   "text.cc",
   "text.h",

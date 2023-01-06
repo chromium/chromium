@@ -677,10 +677,8 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
 
 // If the attribute is not present in the map, the map will return the "empty
 // value" - which is kAnimatedUnknown.
-struct AnimatedPropertyTypeHashTraits : HashTraits<AnimatedPropertyType> {
-  static const bool kEmptyValueIsZero = true;
-  static AnimatedPropertyType EmptyValue() { return kAnimatedUnknown; }
-};
+using AnimatedPropertyTypeHashTraits =
+    EnumHashTraits<AnimatedPropertyType, kAnimatedUnknown>;
 
 using AttributeToPropertyTypeMap = HashMap<QualifiedName,
                                            AnimatedPropertyType,

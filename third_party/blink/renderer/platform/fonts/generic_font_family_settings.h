@@ -79,13 +79,7 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
  private:
   // UScriptCode uses -1 and 0 for UScriptInvalidCode and UScriptCommon.
   // We need to use -2 and -3 for empty value and deleted value.
-  struct UScriptCodeHashTraits : WTF::GenericHashTraits<int> {
-    STATIC_ONLY(UScriptCodeHashTraits);
-    static const bool kEmptyValueIsZero = false;
-    static int EmptyValue() { return -2; }
-    static void ConstructDeletedValue(int& slot, bool) { slot = -3; }
-    static bool IsDeletedValue(int value) { return value == -3; }
-  };
+  using UScriptCodeHashTraits = IntHashTraits<int, -1, -3>;
 
   typedef HashMap<int, AtomicString, DefaultHash<int>, UScriptCodeHashTraits>
       ScriptFontFamilyMap;

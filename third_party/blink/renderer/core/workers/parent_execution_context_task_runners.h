@@ -8,8 +8,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/task_type_traits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,10 +42,8 @@ class CORE_EXPORT ParentExecutionContextTaskRunners final
   void Trace(Visitor*) const override;
 
  private:
-  using TaskRunnerHashMap = HashMap<TaskType,
-                                    scoped_refptr<base::SingleThreadTaskRunner>,
-                                    WTF::IntHash<TaskType>,
-                                    TaskTypeTraits>;
+  using TaskRunnerHashMap =
+      HashMap<TaskType, scoped_refptr<base::SingleThreadTaskRunner>>;
 
   void ContextDestroyed() LOCKS_EXCLUDED(lock_) override;
 

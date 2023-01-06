@@ -245,12 +245,8 @@ bool IsValidRole(ax::mojom::blink::Role role) {
 }
 #endif
 
-struct RoleHashTraits : HashTraits<ax::mojom::blink::Role> {
-  static const bool kEmptyValueIsZero = true;
-  static ax::mojom::blink::Role EmptyValue() {
-    return ax::mojom::blink::Role::kUnknown;
-  }
-};
+using RoleHashTraits =
+    EnumHashTraits<ax::mojom::blink::Role, ax::mojom::blink::Role::kUnknown>;
 
 constexpr wtf_size_t kNumRoles =
     static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
