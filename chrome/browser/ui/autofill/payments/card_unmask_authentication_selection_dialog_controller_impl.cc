@@ -131,13 +131,14 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
   dialog_view_ = nullptr;
   confirm_unmasking_method_callback_.Reset();
   cancel_unmasking_closure_.Reset();
-  selected_challenge_option_id_ = std::string();
+  selected_challenge_option_id_ =
+      CardUnmaskChallengeOption::ChallengeOptionId();
   selected_challenge_option_type_ = CardUnmaskChallengeOptionType::kUnknownType;
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::
     OnOkButtonClicked() {
-  DCHECK(!selected_challenge_option_id_.empty());
+  DCHECK(!selected_challenge_option_id_.value().empty());
 
   auto selected_challenge_option = std::find_if(
       challenge_options_.begin(), challenge_options_.end(),
@@ -156,7 +157,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
     CHECK_IS_TEST();
   } else {
     std::move(confirm_unmasking_method_callback_)
-        .Run(selected_challenge_option_id_);
+        .Run(selected_challenge_option_id_.value());
   }
 
   if (dialog_view_) {
@@ -255,7 +256,8 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetProgressLabel()
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::
     SetSelectedChallengeOptionId(
-        const std::string& selected_challenge_option_id) {
+        const CardUnmaskChallengeOption::ChallengeOptionId&
+            selected_challenge_option_id) {
   selected_challenge_option_id_ = selected_challenge_option_id;
 }
 

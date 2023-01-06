@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/types/strong_alias.h"
+
 namespace autofill {
 
 // Indicates the type of challenge option used in card unmasking.
@@ -38,8 +40,23 @@ enum class CvcPosition {
 // option. User must select a challenge option to unmask their credit card.
 // Currently, only CVC and SMS OTP are supported.
 struct CardUnmaskChallengeOption {
-  // The unique identifier for the challenge option.
-  std::string id = std::string();
+  // The challenge option ID is a unique identifier generated in the Payments
+  // server and is used to distinguish challenge options from one another.
+  using ChallengeOptionId =
+      base::StrongAlias<class SelectedChallengeOptionIdTag, std::string>;
+
+  CardUnmaskChallengeOption(ChallengeOptionId id,
+                            CardUnmaskChallengeOptionType type,
+                            const std::u16string& challenge_info,
+                            const size_t& challenge_input_length,
+                            CvcPosition cvc_position = CvcPosition::kUnknown);
+
+  CardUnmaskChallengeOption();
+  CardUnmaskChallengeOption(const CardUnmaskChallengeOption&);
+  CardUnmaskChallengeOption& operator=(const CardUnmaskChallengeOption&);
+  ~CardUnmaskChallengeOption();
+
+  ChallengeOptionId id = ChallengeOptionId();
 
   // The type of the challenge option.
   CardUnmaskChallengeOptionType type =

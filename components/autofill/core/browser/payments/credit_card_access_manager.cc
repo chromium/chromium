@@ -1250,7 +1250,9 @@ CreditCardAccessManager::GetCardUnmaskChallengeOptionForChallengeId(
   std::vector<CardUnmaskChallengeOption>& challenge_options =
       virtual_card_unmask_response_details_.card_unmask_challenge_options;
   auto card_unmask_challenge_options_it = base::ranges::find(
-      challenge_options, challenge_id, &CardUnmaskChallengeOption::id);
+      challenge_options,
+      CardUnmaskChallengeOption::ChallengeOptionId(challenge_id),
+      &CardUnmaskChallengeOption::id);
   return card_unmask_challenge_options_it != challenge_options.end()
              ? &(*card_unmask_challenge_options_it)
              : nullptr;

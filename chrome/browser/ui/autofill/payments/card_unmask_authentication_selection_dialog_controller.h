@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+
 namespace ui {
 class ImageModel;
 }
@@ -68,13 +70,11 @@ class CardUnmaskAuthenticationSelectionDialogController {
   virtual std::u16string GetProgressLabel() const = 0;
 
   // Sets the currently selected challenge option id based on which
-  // challenge option radio button is selected by the user in the view. If there
-  // is only one challenge option presented to the user, the selected challenge
-  // option id is by default set to it. If there are multiple, it is by default
-  // initialized to the first challenge option presented to the user, but may
-  // change based on the user's selection.
+  // challenge option radio button is selected in the Card Authentication
+  // Selection Dialog View.
   virtual void SetSelectedChallengeOptionId(
-      const std::string& selected_challenge_option_id) = 0;
+      const CardUnmaskChallengeOption::ChallengeOptionId&
+          selected_challenge_option_id) = 0;
 };
 
 }  // namespace autofill

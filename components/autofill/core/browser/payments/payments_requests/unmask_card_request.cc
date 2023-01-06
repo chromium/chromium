@@ -46,7 +46,8 @@ void ParseAsSmsOtpChallengeOption(
   const auto* challenge_id =
       defined_challenge_option->FindString("challenge_id");
   DCHECK(challenge_id);
-  parsed_challenge_option->id = *challenge_id;
+  parsed_challenge_option->id =
+      CardUnmaskChallengeOption::ChallengeOptionId(*challenge_id);
 
   // For SMS OTP challenge, masked phone number is the challenge_info for
   // display.
@@ -78,7 +79,8 @@ void ParseAsCvcChallengeOption(
   const auto* challenge_id =
       defined_challenge_option->FindString("challenge_id");
   DCHECK(challenge_id);
-  parsed_challenge_option->id = *challenge_id;
+  parsed_challenge_option->id =
+      CardUnmaskChallengeOption::ChallengeOptionId(*challenge_id);
 
   // Get the length of the CVC on the card. In most cases this is 3 digits,
   // but it is possible for this to be 4 digits, for example in the case of
@@ -224,8 +226,9 @@ std::string UnmaskCardRequest::GetRequestContent() {
     base::Value::Dict challenge_option;
     if (request_details_.selected_challenge_option->type ==
         CardUnmaskChallengeOptionType::kCvc) {
-      challenge_option.Set("challenge_id",
-                           request_details_.selected_challenge_option->id);
+      challenge_option.Set(
+          "challenge_id",
+          request_details_.selected_challenge_option->id.value());
       challenge_option.Set(
           "cvc_length",
           base::NumberToString(request_details_.selected_challenge_option

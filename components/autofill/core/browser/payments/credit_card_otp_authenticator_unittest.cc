@@ -62,7 +62,8 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
     card_.set_record_type(CreditCard::VIRTUAL_CARD);
     selected_otp_challenge_option_.type =
         CardUnmaskChallengeOptionType::kSmsOtp;
-    selected_otp_challenge_option_.id = kTestChallengeId;
+    selected_otp_challenge_option_.id =
+        CardUnmaskChallengeOption::ChallengeOptionId(kTestChallengeId);
     selected_otp_challenge_option_.challenge_info = kMaskedPhoneNumber;
   }
 

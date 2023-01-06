@@ -60,13 +60,15 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   std::u16string GetOkButtonLabel() const override;
   std::u16string GetProgressLabel() const override;
   void SetSelectedChallengeOptionId(
-      const std::string& selected_challenge_option_id) override;
+      const CardUnmaskChallengeOption::ChallengeOptionId&
+          selected_challenge_option_id) override;
 
   CardUnmaskAuthenticationSelectionDialog* GetDialogViewForTesting() {
     return dialog_view_;
   }
 
-  const std::string& GetSelectedChallengeOptionIdForTesting() const {
+  const CardUnmaskChallengeOption::ChallengeOptionId&
+  GetSelectedChallengeOptionIdForTesting() const {
     return selected_challenge_option_id_;
   }
 
@@ -88,6 +90,11 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   friend class content::WebContentsUserData<
       CardUnmaskAuthenticationSelectionDialogControllerImpl>;
 
+  // The currently unique identifier of the challenge option selected in the
+  // Card Authentication Selection Dialog View.
+  CardUnmaskChallengeOption::ChallengeOptionId selected_challenge_option_id_ =
+      CardUnmaskChallengeOption::ChallengeOptionId();
+
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
 
@@ -104,15 +111,8 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // |dialog_view_|.
   bool challenge_option_selected_ = false;
 
-  // Contains the currently selected challenge option ID from the Card Unmask
-  // Authentication Selection Dialog View. Defaults to the first challenge
-  // option, but can change depending on user selection.
-  std::string selected_challenge_option_id_;
-
   // Contains the challenge option type selected by the user. Currently only
   // kCvc and kSmsOtp are supported.
-  // TODO(crbug.com/1381804) Update to use a StrongAlias in
-  // card_unmask_authentication_selection_dialog_controller_impl.h
   CardUnmaskChallengeOptionType selected_challenge_option_type_ =
       CardUnmaskChallengeOptionType::kUnknownType;
 

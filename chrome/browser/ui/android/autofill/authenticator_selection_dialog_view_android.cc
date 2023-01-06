@@ -78,7 +78,9 @@ void AuthenticatorSelectionDialogViewAndroid::OnOptionSelected(
   std::string card_unmask_challenge_option_id =
       base::android::ConvertJavaStringToUTF8(env,
                                              authenticator_option_identifier);
-  controller_->SetSelectedChallengeOptionId(card_unmask_challenge_option_id);
+  controller_->SetSelectedChallengeOptionId(
+      CardUnmaskChallengeOption::ChallengeOptionId(
+          card_unmask_challenge_option_id));
   controller_->OnOkButtonClicked();
 }
 
@@ -136,7 +138,7 @@ void AuthenticatorSelectionDialogViewAndroid::
   std::u16string title = controller_->GetAuthenticationModeLabel(option);
   Java_AuthenticatorSelectionDialogBridge_createAuthenticatorOptionAndAddToList(
       env, jlist, ConvertUTF16ToJavaString(env, title),
-      ConvertUTF8ToJavaString(env, option.id),
+      ConvertUTF8ToJavaString(env, option.id.value()),
       ConvertUTF16ToJavaString(env, option.challenge_info),
       static_cast<int>(option.type));
 }

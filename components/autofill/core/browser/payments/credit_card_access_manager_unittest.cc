@@ -495,7 +495,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     const CardUnmaskChallengeOption& challenge_option =
         response.card_unmask_challenge_options[selected_index];
     credit_card_access_manager_->OnUserAcceptedAuthenticationSelectionDialog(
-        challenge_option.id);
+        challenge_option.id.value());
 
     switch (challenge_option.type) {
       case CardUnmaskChallengeOptionType::kCvc: {
@@ -509,7 +509,8 @@ class CreditCardAccessManagerTest : public testing::Test {
         EXPECT_EQ(request_details->card.number(),
                   base::UTF8ToUTF16(std::string(kTestNumber)));
         EXPECT_EQ(request_details->context_token, "fake_context_token");
-        EXPECT_EQ(request_details->selected_challenge_option->id, "234");
+        EXPECT_EQ(request_details->selected_challenge_option->id.value(),
+                  "234");
         EXPECT_EQ(request_details->selected_challenge_option->type,
                   CardUnmaskChallengeOptionType::kCvc);
         break;
@@ -522,7 +523,8 @@ class CreditCardAccessManagerTest : public testing::Test {
         EXPECT_EQ(otp_authenticator_->card().record_type(),
                   CreditCard::VIRTUAL_CARD);
         EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
-        EXPECT_EQ(otp_authenticator_->selected_challenge_option().id, "123");
+        EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
+                  "123");
         EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
                   CardUnmaskChallengeOptionType::kSmsOtp);
         EXPECT_EQ(
@@ -2395,10 +2397,9 @@ TEST_F(
   // Mock server response with information regarding both FIDO and OTP auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
-  CardUnmaskChallengeOption challenge_option{
-      .id = "123",
-      .type = CardUnmaskChallengeOptionType::kSmsOtp,
-      .challenge_info = u"fake challenge info"};
+  CardUnmaskChallengeOption challenge_option =
+      test::GetCardUnmaskChallengeOptions(
+          {CardUnmaskChallengeOptionType::kSmsOtp})[0];
   response.card_unmask_challenge_options.emplace_back(challenge_option);
   response.fido_request_options = GetTestRequestOptions();
   credit_card_access_manager_->OnVirtualCardUnmaskResponseReceived(

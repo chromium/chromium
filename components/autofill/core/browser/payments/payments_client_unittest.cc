@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -283,11 +284,9 @@ class PaymentsClientTest : public testing::Test {
       request_details.last_committed_primary_main_frame_origin =
           GURL("https://www.example.com");
       if (options.use_cvc) {
-        request_details.selected_challenge_option = CardUnmaskChallengeOption{
-            .id = "123",
-            .type = CardUnmaskChallengeOptionType::kCvc,
-            .challenge_input_length = 3,
-            .cvc_position = CvcPosition::kBackOfCard};
+        request_details.selected_challenge_option =
+            test::GetCardUnmaskChallengeOptions(
+                {CardUnmaskChallengeOptionType::kCvc})[0];
       }
     }
     if (options.set_context_token)
@@ -382,7 +381,8 @@ class PaymentsClientTest : public testing::Test {
 
     CardUnmaskChallengeOption selected_challenge_option;
     selected_challenge_option.type = challenge_type;
-    selected_challenge_option.id = challenge_id;
+    selected_challenge_option.id =
+        CardUnmaskChallengeOption::ChallengeOptionId(challenge_id);
     selected_challenge_option.challenge_info = u"(***)-***-5678";
     request_details.selected_challenge_option = selected_challenge_option;
 
@@ -737,12 +737,12 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOff) {
   const CardUnmaskChallengeOption& challenge_option_1 =
       unmask_response_details_->card_unmask_challenge_options[0];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
-  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id);
+  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id.value());
   EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
   const CardUnmaskChallengeOption& challenge_option_2 =
       unmask_response_details_->card_unmask_challenge_options[1];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
-  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
+  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id.value());
   EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
 }
 
@@ -777,17 +777,17 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOn) {
   const CardUnmaskChallengeOption& challenge_option_1 =
       unmask_response_details_->card_unmask_challenge_options[0];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
-  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id);
+  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id.value());
   EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
   const CardUnmaskChallengeOption& challenge_option_2 =
       unmask_response_details_->card_unmask_challenge_options[1];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
-  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
+  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id.value());
   EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
   const CardUnmaskChallengeOption& challenge_option_3 =
       unmask_response_details_->card_unmask_challenge_options[2];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_3.type);
-  EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id);
+  EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id.value());
   EXPECT_EQ(challenge_option_3.challenge_info,
             u"This is the 3-digit code on the back of your card");
   EXPECT_EQ(3u, challenge_option_3.challenge_input_length);
@@ -834,7 +834,7 @@ TEST_F(PaymentsClientTest,
   const CardUnmaskChallengeOption& sms_challenge_option =
       unmask_response_details_->card_unmask_challenge_options[0];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, sms_challenge_option.type);
-  EXPECT_EQ("fake_challenge_id_1", sms_challenge_option.id);
+  EXPECT_EQ("fake_challenge_id_1", sms_challenge_option.id.value());
   EXPECT_EQ(u"(***)-***-1234", sms_challenge_option.challenge_info);
 }
 

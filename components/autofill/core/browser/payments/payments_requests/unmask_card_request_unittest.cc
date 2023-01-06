@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
@@ -78,10 +79,8 @@ class VirtualCardUnmaskCardRequestTest
     request_details.last_committed_primary_main_frame_origin =
         GURL("https://example.com/");
     request_details.selected_challenge_option =
-        CardUnmaskChallengeOption{.id = "1",
-                                  .type = CardUnmaskChallengeOptionType::kCvc,
-                                  .challenge_input_length = 3,
-                                  .cvc_position = CvcPosition::kBackOfCard};
+        test::GetCardUnmaskChallengeOptions(
+            {CardUnmaskChallengeOptionType::kCvc})[0];
     request_details.context_token = "fake context token";
     request_ = std::make_unique<UnmaskCardRequest>(
         request_details, /*full_sync_enabled=*/true,
@@ -153,20 +152,20 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
     const CardUnmaskChallengeOption& challenge_option_1 =
         response_details.card_unmask_challenge_options[0];
     EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
-    EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id);
+    EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id.value());
     EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
 
     const CardUnmaskChallengeOption& challenge_option_2 =
         response_details.card_unmask_challenge_options[1];
     EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
-    EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
+    EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id.value());
     EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
 
     if (enable_cvc_challenge_option) {
       const CardUnmaskChallengeOption& challenge_option_3 =
           response_details.card_unmask_challenge_options[2];
       EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_3.type);
-      EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id);
+      EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id.value());
       EXPECT_EQ(challenge_option_3.challenge_info,
                 u"This is the 3-digit code on the back of your card");
       EXPECT_EQ(3u, challenge_option_3.challenge_input_length);
@@ -175,7 +174,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
       const CardUnmaskChallengeOption& challenge_option_4 =
           response_details.card_unmask_challenge_options[3];
       EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_4.type);
-      EXPECT_EQ("fake_challenge_id_4", challenge_option_4.id);
+      EXPECT_EQ("fake_challenge_id_4", challenge_option_4.id.value());
       EXPECT_EQ(challenge_option_4.challenge_info,
                 u"This is the 4-digit code on the front of your card");
       EXPECT_EQ(4u, challenge_option_4.challenge_input_length);

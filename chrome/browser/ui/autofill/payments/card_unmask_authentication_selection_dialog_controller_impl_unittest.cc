@@ -66,9 +66,10 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
           {CardUnmaskChallengeOptionType::kSmsOtp,
            CardUnmaskChallengeOptionType::kCvc}));
   controller()->SetSelectedChallengeOptionId(
-      controller()->GetChallengeOptions()[0].id);
-  EXPECT_EQ(controller()->GetChallengeOptions()[0].id,
-            controller()->GetSelectedChallengeOptionIdForTesting());
+      CardUnmaskChallengeOption::ChallengeOptionId(
+          controller()->GetChallengeOptions()[0].id.value()));
+  EXPECT_EQ(controller()->GetChallengeOptions()[0].id.value(),
+            controller()->GetSelectedChallengeOptionIdForTesting().value());
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,
                                /*server_success=*/false);
   histogram_tester.ExpectUniqueSample(
@@ -87,9 +88,10 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
           {CardUnmaskChallengeOptionType::kSmsOtp,
            CardUnmaskChallengeOptionType::kCvc}));
   controller()->SetSelectedChallengeOptionId(
-      controller()->GetChallengeOptions()[0].id);
-  EXPECT_EQ(controller()->GetChallengeOptions()[0].id,
-            controller()->GetSelectedChallengeOptionIdForTesting());
+      CardUnmaskChallengeOption::ChallengeOptionId(
+          controller()->GetChallengeOptions()[0].id.value()));
+  EXPECT_EQ(controller()->GetChallengeOptions()[0].id.value(),
+            controller()->GetSelectedChallengeOptionIdForTesting().value());
 
   controller()->OnOkButtonClicked();
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,
@@ -110,9 +112,10 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
           {CardUnmaskChallengeOptionType::kSmsOtp,
            CardUnmaskChallengeOptionType::kCvc}));
   controller()->SetSelectedChallengeOptionId(
-      controller()->GetChallengeOptions()[0].id);
-  EXPECT_EQ(controller()->GetChallengeOptions()[0].id,
-            controller()->GetSelectedChallengeOptionIdForTesting());
+      CardUnmaskChallengeOption::ChallengeOptionId(
+          controller()->GetChallengeOptions()[0].id.value()));
+  EXPECT_EQ(controller()->GetChallengeOptions()[0].id.value(),
+            controller()->GetSelectedChallengeOptionIdForTesting().value());
 
   controller()->OnOkButtonClicked();
   controller()->OnDialogClosed(/*user_closed_dialog=*/false,
@@ -133,9 +136,10 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
           {CardUnmaskChallengeOptionType::kSmsOtp,
            CardUnmaskChallengeOptionType::kCvc}));
   controller()->SetSelectedChallengeOptionId(
-      controller()->GetChallengeOptions()[0].id);
-  EXPECT_EQ(controller()->GetChallengeOptions()[0].id,
-            controller()->GetSelectedChallengeOptionIdForTesting());
+      CardUnmaskChallengeOption::ChallengeOptionId(
+          controller()->GetChallengeOptions()[0].id.value()));
+  EXPECT_EQ(controller()->GetChallengeOptions()[0].id.value(),
+            controller()->GetSelectedChallengeOptionIdForTesting().value());
 
   controller()->OnOkButtonClicked();
   controller()->OnDialogClosed(/*user_closed_dialog=*/false,
@@ -184,7 +188,9 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
 
   for (CardUnmaskChallengeOption challenge_option :
        controller()->GetChallengeOptions()) {
-    controller()->SetSelectedChallengeOptionId(challenge_option.id);
+    controller()->SetSelectedChallengeOptionId(
+        CardUnmaskChallengeOption::ChallengeOptionId(
+            challenge_option.id.value()));
     controller()->OnOkButtonClicked();
     EXPECT_EQ(challenge_option.type,
               controller()->GetSelectedChallengeOptionTypeForTesting());
