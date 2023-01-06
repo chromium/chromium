@@ -884,11 +884,14 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   DCHECK(!result->IsDetached() || has_been_disposed_)
       << "Detached AXNodeObject in map: "
       << "AXID#" << ax_id << " Node=" << node;
-  DCHECK(!result->IsMissingParent())
-      << "Had AXObject but was missing parent: " << layout_object << " "
-      << result->ToString(true, true) << "\nComputed parent: "
-      << AXObject::ComputeNonARIAParent(*this, layout_object->GetNode())
-             ->ToString(true, true);
+  if (result->IsMissingParent()) {
+    AXObject* computed_parent =
+        AXObject::ComputeNonARIAParent(*this, layout_object->GetNode());
+    NOTREACHED() << "Had AXObject but was missing parent: " << layout_object
+                 << " " << result->ToString(true, true) << "\nComputed parent: "
+                 << (computed_parent ? computed_parent->ToString(true, true)
+                                     : "null");
+  }
 #endif
 
   return result;
