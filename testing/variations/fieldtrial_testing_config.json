@@ -3194,6 +3194,21 @@
             ]
         }
     ],
+    "CrOSBluetoothMicophoneSuperResolution": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221231",
+                    "enable_features": [
+                        "CrOSLateBootAudioHFPMicSR"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSClipboardHistoryReorderExperiment": [
         {
             "platforms": [
