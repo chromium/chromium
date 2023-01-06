@@ -98,31 +98,31 @@ void OnGetSessions(const Status& status,
   ASSERT_EQ(static_cast<size_t>(2), session1.DictSize());
   ASSERT_EQ(static_cast<size_t>(2), session2.DictSize());
 
-  const std::string* session1_id = session1.FindStringKey("id");
-  const std::string* session2_id = session2.FindStringKey("id");
-  const base::Value* session1_capabilities =
-      session1.FindDictKey("capabilities");
-  const base::Value* session2_capabilities =
-      session2.FindDictKey("capabilities");
+  const std::string* session1_id = session1.GetDict().FindString("id");
+  const std::string* session2_id = session2.GetDict().FindString("id");
+  const base::Value::Dict* session1_capabilities =
+      session1.GetDict().FindDict("capabilities");
+  const base::Value::Dict* session2_capabilities =
+      session2.GetDict().FindDict("capabilities");
 
   ASSERT_TRUE(session1_id);
   ASSERT_TRUE(session2_id);
   ASSERT_TRUE(session1_capabilities);
   ASSERT_TRUE(session2_capabilities);
 
-  ASSERT_EQ((size_t)2, session1_capabilities->DictSize());
-  ASSERT_EQ((size_t)2, session2_capabilities->DictSize());
+  ASSERT_EQ((size_t)2, session1_capabilities->size());
+  ASSERT_EQ((size_t)2, session2_capabilities->size());
   ASSERT_EQ("id", *session1_id);
   ASSERT_EQ("id2", *session2_id);
 
   const std::string* session1_capability1 =
-      session1_capabilities->FindStringKey("capability1");
+      session1_capabilities->FindString("capability1");
   const std::string* session1_capability2 =
-      session1_capabilities->FindStringKey("capability2");
+      session1_capabilities->FindString("capability2");
   const std::string* session2_capability1 =
-      session2_capabilities->FindStringKey("capability1");
+      session2_capabilities->FindString("capability1");
   const std::string* session2_capability2 =
-      session2_capabilities->FindStringKey("capability2");
+      session2_capabilities->FindString("capability2");
 
   ASSERT_TRUE(session1_capability1);
   ASSERT_TRUE(session1_capability2);

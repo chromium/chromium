@@ -153,9 +153,9 @@ TEST_F(CastMessagePortImplTest, BasicConnection) {
 // message.
 TEST_F(CastMessagePortImplTest, InjectMessage) {
   const int kRequestId = 42;
-  base::Value inject_value(base::Value::Type::DICTIONARY);
-  inject_value.SetKey(kKeyType, base::Value(kValueWrapped));
-  inject_value.SetKey(kKeyRequestId, base::Value(kRequestId));
+  base::Value::Dict inject_value;
+  inject_value.Set(kKeyType, kValueWrapped);
+  inject_value.Set(kKeyRequestId, kRequestId);
   std::string inject_message;
   ASSERT_TRUE(base::JSONWriter::Write(inject_value, &inject_message));
 
@@ -177,20 +177,20 @@ TEST_F(CastMessagePortImplTest, InjectMessage) {
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 
-  const std::string* type_value = return_value->FindStringKey(kKeyType);
+  const std::string* type_value = return_value->GetDict().FindString(kKeyType);
   ASSERT_TRUE(type_value);
   EXPECT_EQ(*type_value, kValueError);
 
   absl::optional<int> request_id_value =
-      return_value->FindIntKey(kKeyRequestId);
+      return_value->GetDict().FindInt(kKeyRequestId);
   ASSERT_TRUE(request_id_value);
   EXPECT_EQ(request_id_value.value(), kRequestId);
 
-  const std::string* data_value = return_value->FindStringKey(kKeyData);
+  const std::string* data_value = return_value->GetDict().FindString(kKeyData);
   ASSERT_TRUE(data_value);
   EXPECT_EQ(*data_value, kValueInjectNotSupportedError);
 
-  const std::string* code_value = return_value->FindStringKey(kKeyCode);
+  const std::string* code_value = return_value->GetDict().FindString(kKeyCode);
   ASSERT_TRUE(code_value);
   EXPECT_EQ(*code_value, kValueWrappedError);
 }
@@ -214,9 +214,9 @@ TEST_F(CastMessagePortImplTest, CastChannelClosed) {
 // Tests the media status namespace is properly handled.
 TEST_F(CastMessagePortImplTest, MediaStatus) {
   const int kRequestId = 42;
-  base::Value media_value(base::Value::Type::DICTIONARY);
-  media_value.SetKey(kKeyType, base::Value(kValueMediaGetStatus));
-  media_value.SetKey(kKeyRequestId, base::Value(kRequestId));
+  base::Value::Dict media_value;
+  media_value.Set(kKeyType, kValueMediaGetStatus);
+  media_value.Set(kKeyRequestId, kRequestId);
   std::string media_message;
   ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
 
@@ -238,18 +238,19 @@ TEST_F(CastMessagePortImplTest, MediaStatus) {
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 
-  const std::string* type_value = return_value->FindStringKey(kKeyType);
+  const std::string* type_value = return_value->GetDict().FindString(kKeyType);
   ASSERT_TRUE(type_value);
   EXPECT_EQ(*type_value, kValueMediaStatus);
 
   absl::optional<int> request_id_value =
-      return_value->FindIntKey(kKeyRequestId);
+      return_value->GetDict().FindInt(kKeyRequestId);
   ASSERT_TRUE(request_id_value);
   EXPECT_EQ(request_id_value.value(), kRequestId);
 
-  const base::Value* status_value = return_value->FindListKey(kKeyStatus);
+  const base::Value::List* status_value =
+      return_value->GetDict().FindList(kKeyStatus);
   ASSERT_TRUE(status_value);
-  EXPECT_EQ(status_value->GetList().size(), 1u);
+  EXPECT_EQ(status_value->size(), 1u);
 }
 
 // Checks sending invalid media messages results in no response.
@@ -273,8 +274,8 @@ TEST_F(CastMessagePortImplTest, InvalidMediaMessages) {
 
   {
     // Send a message with no type.
-    base::Value media_value(base::Value::Type::DICTIONARY);
-    media_value.SetKey(kKeyRequestId, base::Value(kRequestId));
+    base::Value::Dict media_value;
+    media_value.Set(kKeyRequestId, kRequestId);
     std::string media_message;
     ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
     sender_message_port_->PostMessage(
@@ -283,9 +284,9 @@ TEST_F(CastMessagePortImplTest, InvalidMediaMessages) {
 
   {
     // Send a PLAY message. This is not incorrect but should be ignored.
-    base::Value media_value(base::Value::Type::DICTIONARY);
-    media_value.SetKey(kKeyType, base::Value(kValueMediaPlay));
-    media_value.SetKey(kKeyRequestId, base::Value(kRequestId));
+    base::Value::Dict media_value;
+    media_value.Set(kKeyType, kValueMediaPlay);
+    media_value.Set(kKeyRequestId, kRequestId);
     std::string media_message;
     ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
     sender_message_port_->PostMessage(
@@ -294,9 +295,9 @@ TEST_F(CastMessagePortImplTest, InvalidMediaMessages) {
 
   {
     // Send a PAUSE message. This is not incorrect but should be ignored.
-    base::Value media_value(base::Value::Type::DICTIONARY);
-    media_value.SetKey(kKeyType, base::Value(kValueMediaPause));
-    media_value.SetKey(kKeyRequestId, base::Value(kRequestId));
+    base::Value::Dict media_value;
+    media_value.Set(kKeyType, kValueMediaPause);
+    media_value.Set(kKeyRequestId, kRequestId);
     std::string media_message;
     ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
     sender_message_port_->PostMessage(
@@ -305,9 +306,9 @@ TEST_F(CastMessagePortImplTest, InvalidMediaMessages) {
 
   {
     // Send a message with an invalid type.
-    base::Value media_value(base::Value::Type::DICTIONARY);
-    media_value.SetKey(kKeyType, base::Value("INVALID_TYPE"));
-    media_value.SetKey(kKeyRequestId, base::Value(kRequestId));
+    base::Value::Dict media_value;
+    media_value.Set(kKeyType, "INVALID_TYPE");
+    media_value.Set(kKeyRequestId, kRequestId);
     std::string media_message;
     ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
     sender_message_port_->PostMessage(
@@ -316,8 +317,8 @@ TEST_F(CastMessagePortImplTest, InvalidMediaMessages) {
 
   {
     // Send a GET_STATUS message with no request ID.
-    base::Value media_value(base::Value::Type::DICTIONARY);
-    media_value.SetKey(kKeyType, base::Value(kValueMediaGetStatus));
+    base::Value::Dict media_value;
+    media_value.Set(kKeyType, kValueMediaGetStatus);
     std::string media_message;
     ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
     sender_message_port_->PostMessage(
@@ -326,9 +327,9 @@ TEST_F(CastMessagePortImplTest, InvalidMediaMessages) {
 
   {
     // Send a message with a non-integer request ID.
-    base::Value media_value(base::Value::Type::DICTIONARY);
-    media_value.SetKey(kKeyType, base::Value(kValueMediaGetStatus));
-    media_value.SetKey(kKeyRequestId, base::Value("not an integer"));
+    base::Value::Dict media_value;
+    media_value.Set(kKeyType, kValueMediaGetStatus);
+    media_value.Set(kKeyRequestId, "not an integer");
     std::string media_message;
     ASSERT_TRUE(base::JSONWriter::Write(media_value, &media_message));
     sender_message_port_->PostMessage(

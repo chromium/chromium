@@ -124,19 +124,19 @@ class NetLogCaptureModeWaiter
 };
 
 base::Value NetLogCaptureModeToParams(net::NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   switch (capture_mode) {
     case net::NetLogCaptureMode::kDefault:
-      dict.SetStringKey("capture_mode", "kDefault");
+      dict.Set("capture_mode", "kDefault");
       break;
     case net::NetLogCaptureMode::kIncludeSensitive:
-      dict.SetStringKey("capture_mode", "kIncludeSensitive");
+      dict.Set("capture_mode", "kIncludeSensitive");
       break;
     case net::NetLogCaptureMode::kEverything:
-      dict.SetStringKey("capture_mode", "kEverything");
+      dict.Set("capture_mode", "kEverything");
       break;
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -296,7 +296,8 @@ TEST(NetLogProxySource, ProxiesParamsOfLeastSensitiveCaptureMode) {
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, entries[0].phase);
   ASSERT_TRUE(entries[0].params.is_dict());
   EXPECT_EQ(1U, entries[0].params.DictSize());
-  const std::string* param = entries[0].params.FindStringKey("capture_mode");
+  const std::string* param =
+      entries[0].params.GetDict().FindString("capture_mode");
   ASSERT_TRUE(param);
   EXPECT_EQ("kIncludeSensitive", *param);
 
@@ -308,7 +309,7 @@ TEST(NetLogProxySource, ProxiesParamsOfLeastSensitiveCaptureMode) {
   EXPECT_EQ(net::NetLogEventPhase::NONE, entries[1].phase);
   ASSERT_TRUE(entries[1].params.is_dict());
   EXPECT_EQ(1U, entries[1].params.DictSize());
-  param = entries[1].params.FindStringKey("capture_mode");
+  param = entries[1].params.GetDict().FindString("capture_mode");
   ASSERT_TRUE(param);
   EXPECT_EQ("kDefault", *param);
 
@@ -320,7 +321,7 @@ TEST(NetLogProxySource, ProxiesParamsOfLeastSensitiveCaptureMode) {
   EXPECT_EQ(net::NetLogEventPhase::END, entries[2].phase);
   ASSERT_TRUE(entries[2].params.is_dict());
   EXPECT_EQ(1U, entries[2].params.DictSize());
-  param = entries[2].params.FindStringKey("capture_mode");
+  param = entries[2].params.GetDict().FindString("capture_mode");
   ASSERT_TRUE(param);
   EXPECT_EQ("kDefault", *param);
 }
