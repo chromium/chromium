@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -124,7 +125,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Delayed warnings feature checks if the Suspicious Site Reporter extension
 // is installed. These includes are to fake-install this extension.
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -2132,28 +2132,35 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Installs an extension and returns its ID.
   std::string InstallTestExtension() {
+    using extensions::CrxInstaller;
+    using extensions::CrxInstallError;
+    using extensions::ExtensionService;
+    using extensions::ExtensionSystem;
+
     base::FilePath path = ui_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme.crx"));
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
-    scoped_refptr<extensions::CrxInstaller> installer =
-        extensions::CrxInstaller::CreateSilent(service);
-
-    extensions::ChromeExtensionTestNotificationObserver observer(browser());
-    observer.Watch(extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-                   content::Source<extensions::CrxInstaller>(installer.get()));
+    ExtensionService* service =
+        ExtensionSystem::Get(browser()->profile())->extension_service();
+    scoped_refptr<CrxInstaller> installer = CrxInstaller::CreateSilent(service);
 
     installer->set_install_cause(extension_misc::INSTALL_CAUSE_AUTOMATION);
     installer->set_install_immediately(true);
     installer->set_allow_silent_install(true);
     installer->set_off_store_install_allow_reason(
-        extensions::CrxInstaller::OffStoreInstallAllowedInTest);
+        CrxInstaller::OffStoreInstallAllowedInTest);
     installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
+
+    base::test::TestFuture<absl::optional<CrxInstallError>> done_future;
+    installer->AddInstallerCallback(
+        done_future.GetCallback<const absl::optional<CrxInstallError>&>());
+
     installer->InstallCrx(path);
-    observer.Wait();
-    return observer.last_loaded_extension_id();
+
+    auto optional_error = done_future.Get();
+    EXPECT_FALSE(optional_error.has_value());
+
+    return installer->extension()->id();
   }
 #endif
 
