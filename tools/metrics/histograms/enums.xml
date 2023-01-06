@@ -41742,6 +41742,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4431"
       label="PrivateNetworkAccessIgnoredCrossOriginPreflightError"/>
   <int value="4432" label="PrivateNetworkAccessIgnoredCrossSitePreflightError"/>
+  <int value="4433" label="LinkRelPrerenderSameOrigin"/>
+  <int value="4434" label="LinkRelPrerenderSameSiteCrossOrigin"/>
+  <int value="4435" label="LinkRelPrerenderCrossSite"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

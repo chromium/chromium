@@ -56,6 +56,21 @@ PrerenderHandle* PrerenderHandle::Create(
   Referrer referrer = SecurityPolicy::GenerateReferrer(
       context->GetReferrerPolicy(), url, context->OutgoingReferrer());
 
+  // Record an origin type of the target URL.
+  if (trigger_type == mojom::blink::PrerenderTriggerType::kLinkRelPrerender) {
+    const SecurityOrigin* initiator_origin = context->GetSecurityOrigin();
+    scoped_refptr<SecurityOrigin> prerendering_origin =
+        SecurityOrigin::Create(url);
+    if (prerendering_origin->IsSameOriginWith(initiator_origin)) {
+      UseCounter::Count(context, WebFeature::kLinkRelPrerenderSameOrigin);
+    } else if (prerendering_origin->IsSameSiteWith(initiator_origin)) {
+      UseCounter::Count(context,
+                        WebFeature::kLinkRelPrerenderSameSiteCrossOrigin);
+    } else {
+      UseCounter::Count(context, WebFeature::kLinkRelPrerenderCrossSite);
+    }
+  }
+
   auto attributes = mojom::blink::PrerenderAttributes::New();
   attributes->url = url;
   attributes->trigger_type = trigger_type;

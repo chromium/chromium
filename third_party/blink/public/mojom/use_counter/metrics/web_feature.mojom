@@ -3771,6 +3771,9 @@ enum WebFeature {
   kWindowOpenedAsPopupOnMobile = 4430,
   kPrivateNetworkAccessIgnoredCrossOriginPreflightError = 4431,
   kPrivateNetworkAccessIgnoredCrossSitePreflightError = 4432,
+  kLinkRelPrerenderSameOrigin = 4433,
+  kLinkRelPrerenderSameSiteCrossOrigin = 4434,
+  kLinkRelPrerenderCrossSite = 4435,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -1,0 +1,13 @@
+<html>
+<head></head>
+<body>
+<script>
+function createLinkRelPrerender(url) {
+  const link = document.createElement('link');
+  link.rel = "prerender";
+  link.href = url;
+  document.body.appendChild(link);
+}
+</script>
+</body>
+</html>
