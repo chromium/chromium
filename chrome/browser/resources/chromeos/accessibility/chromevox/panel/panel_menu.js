@@ -42,7 +42,7 @@ export class PanelMenu {
 
     /**
      * The items in the menu.
-     * @type {Array<PanelMenuItem>}
+     * @type {!Array<!PanelMenuItem>}
      * @private
      */
     this.items_ = [];
@@ -289,7 +289,7 @@ export class PanelMenu {
   }
 
   /**
-   * @return {Array<PanelMenuItem>}
+   * @return {!Array<!PanelMenuItem>}
    */
   get items() {
     return this.items_;

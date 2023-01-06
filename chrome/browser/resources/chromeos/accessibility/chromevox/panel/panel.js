@@ -477,17 +477,7 @@ export class Panel extends PanelInterface {
 
       if (this.sessionState_ !== 'IN_SESSION') {
         tabsMenu.disable();
-        // Disable commands that contain the property 'denyOOBE'.
-        for (let i = 0; i < this.menuManager_.menus.length; ++i) {
-          const menu = this.menuManager_.menus[i];
-          for (let j = 0; j < menu.items.length; ++j) {
-            const item = menu.items[j];
-            if (CommandStore.denySignedOut(
-                    /** @type {!Command} */ (item.element.id))) {
-              item.disable();
-            }
-          }
-        }
+        this.menuManager_.denySignedOut();
       }
 
       // Add a menu item that disables / closes ChromeVox.

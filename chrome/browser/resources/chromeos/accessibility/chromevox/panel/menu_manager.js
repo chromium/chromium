@@ -5,6 +5,8 @@
 /**
  * @fileoverview Class to manage the ChromeVox menus.
  */
+import {Command, CommandStore} from '../common/command_store.js';
+
 import {PanelMenu} from './panel_menu.js';
 
 export class MenuManager {
@@ -14,6 +16,18 @@ export class MenuManager {
      * @private {!Array<PanelMenu>}
      */
     this.menus_ = [];
+  }
+
+  /** Disables menu items that are prohibited without a signed-in user. */
+  denySignedOut() {
+    for (const menu of this.menus_) {
+      for (const item of menu.items) {
+        if (CommandStore.denySignedOut(
+                /** @type {!Command} */ (item.element.id))) {
+          item.disable();
+        }
+      }
+    }
   }
 
   /**
