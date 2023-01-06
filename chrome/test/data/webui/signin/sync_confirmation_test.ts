@@ -15,30 +15,16 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
 const isModalDialogDesignEnabled = loadTimeData.getBoolean('isModalDialog');
 const isSigninInterceptFreEnabled =
     loadTimeData.getBoolean('isSigninInterceptFre');
-
-const STANDARD_CONSENT_CONFIRMATION = 'Yes, I\'m in';
-const SIGNIN_INTERCEPT_CONSENT_CONFIRMATION = 'Turn on sync';
-
-const SETTINGS_CONSENT_CONFIRMATION = 'Settings';
-const SYNC_SETTINGS_CONSENT_CONFIRMATION = 'Sync settings';
-
-const CONSENT_DESCRIPTION_TEXTS = [
-  'Turn on sync?',
-  'Sync your bookmarks, passwords, history, and more on all your devices',
-  'Google may use your history to personalize Search and other Google services',
-];
-const CONSENT_DESCRIPTION_SIGNIN_INTERCEPT_TEXTS = [
-  'Welcome, Person 1',
-  'Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you\'re syncing. Google may use your history to personalize Search and other Google services.',
-];
-
-// <if expr="chromeos_lacros">
-CONSENT_DESCRIPTION_TEXTS[0] = 'Turn on Chrome browser sync?';
-// </if>
+const isTangibleSync = loadTimeData.getBoolean('isTangibleSync');
 
 suite(`SigninSyncConfirmationTest`, function() {
   let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
+
+  function getCancelButtonID() {
+    return isTangibleSync || !isModalDialogDesignEnabled ? '#notNowButton' :
+                                                           '#cancelButton';
+  }
 
   function testButtonClick(buttonSelector: string) {
     const allButtons =
@@ -71,9 +57,7 @@ suite(`SigninSyncConfirmationTest`, function() {
   // Tests that no DCHECKS are thrown during initialization of the UI.
   test('LoadPage', function() {
     const cancelButton =
-        app.shadowRoot!.querySelector(
-            isModalDialogDesignEnabled ? '#cancelButton' : '#notNowButton') as
-        HTMLElement;
+        app.shadowRoot!.querySelector<HTMLElement>(getCancelButtonID());
     assertFalse(cancelButton!.hidden);
   });
 
@@ -85,8 +69,7 @@ suite(`SigninSyncConfirmationTest`, function() {
 
   // Tests clicking on cancel button.
   test('CancelClicked', async function() {
-    testButtonClick(
-        isModalDialogDesignEnabled ? '#cancelButton' : '#notNowButton');
+    testButtonClick(getCancelButtonID());
     await browserProxy.whenCalled('undo');
   });
 
@@ -105,13 +88,31 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
   let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
 
-  setup(async function() {
-    // This test suite makes comparisons with strings in their default
-    // locale, which is en-US.
-    assertEquals(
-        'en-US', navigator.language,
-        'Cannot verify strings for the ' + navigator.language + 'locale.');
+  function getConsentDescriptionTexts(i18n: Function) {
+    const consentDescriptionTexts = [
+      i18n('syncConfirmationTitle'),
+      i18n('syncConfirmationSyncInfoTitle'),
+    ];
 
+    if (isTangibleSync) {
+      const syncBenefitsList =
+          JSON.parse(loadTimeData.getString('syncBenefitsList'));
+
+      for (let i = 0; i < syncBenefitsList.length; i++) {
+        consentDescriptionTexts.push(i18n(syncBenefitsList[i].title));
+      }
+      consentDescriptionTexts.push(i18n('syncConfirmationSyncInfoDesc'));
+      return consentDescriptionTexts;
+    }
+
+    if (!isModalDialogDesignEnabled ||
+        (isModalDialogDesignEnabled && !isSigninInterceptFreEnabled)) {
+      consentDescriptionTexts.push(i18n('syncConfirmationSyncInfoDesc'));
+    }
+    return consentDescriptionTexts;
+  }
+
+  setup(async function() {
     browserProxy = new TestSyncConfirmationBrowserProxy();
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
 
@@ -126,39 +127,26 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
   // Tests that the expected strings are recorded when clicking the
   // Confirm button.
   test('recordConsentOnConfirm', async function() {
+    const i18n = app.i18n.bind(app);
+
     app.shadowRoot!.querySelector<HTMLElement>('#confirmButton')!.click();
     const [description, confirmation] =
         await browserProxy.whenCalled('confirm');
-    if (isSigninInterceptFreEnabled) {
-      // Confirmation button is capitalized on MacOS.
-      assertEquals(
-          SIGNIN_INTERCEPT_CONSENT_CONFIRMATION.toLowerCase(),
-          confirmation.toLowerCase());
-    } else {
-      assertEquals(STANDARD_CONSENT_CONFIRMATION, confirmation);
-    }
-    assertArrayEquals(
-        isSigninInterceptFreEnabled ?
-            CONSENT_DESCRIPTION_SIGNIN_INTERCEPT_TEXTS :
-            CONSENT_DESCRIPTION_TEXTS,
-        description);
+
+    assertEquals(i18n('syncConfirmationConfirmLabel'), confirmation);
+    assertArrayEquals(getConsentDescriptionTexts(i18n), description);
   });
 
   // Tests that the expected strings are recorded when clicking the
   // Settings button.
   test('recordConsentOnSettingsLink', async function() {
+    const i18n = app.i18n.bind(app);
+
     app.shadowRoot!.querySelector<HTMLElement>('#settingsButton')!.click();
     const [description, confirmation] =
         await browserProxy.whenCalled('goToSettings');
-    if (isModalDialogDesignEnabled) {
-      assertEquals(SETTINGS_CONSENT_CONFIRMATION, confirmation);
-    } else {
-      assertEquals(SYNC_SETTINGS_CONSENT_CONFIRMATION, confirmation);
-    }
-    assertArrayEquals(
-        isSigninInterceptFreEnabled ?
-            CONSENT_DESCRIPTION_SIGNIN_INTERCEPT_TEXTS :
-            CONSENT_DESCRIPTION_TEXTS,
-        description);
+
+    assertEquals(i18n('syncConfirmationSettingsLabel'), confirmation);
+    assertArrayEquals(getConsentDescriptionTexts(i18n), description);
   });
 });
