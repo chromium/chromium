@@ -57,7 +57,6 @@ source_set("test_support") {
   deps = [
     ":browser",
     "//base",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }

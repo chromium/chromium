@@ -10,9 +10,9 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/resized_avatar_cache.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -20,6 +20,8 @@
 #endif
 
 namespace {
+
+using IteratorResult = SystemIdentityManager::IteratorResult;
 
 // Filter class skipping restricted account.
 class SkipRestricted {
@@ -86,9 +88,9 @@ class FindFirstIdentity {
  public:
   using ResultType = id<SystemIdentity>;
 
-  ios::IdentityIteratorCallbackResult ForEach(id<SystemIdentity> identity) {
+  IteratorResult ForEach(id<SystemIdentity> identity) {
     identity_ = identity;
-    return ios::kIdentityIteratorInterruptIteration;
+    return IteratorResult::kInterruptIteration;
   }
 
   ResultType Result() const { return identity_; }
@@ -103,9 +105,9 @@ class CollectIdentities {
  public:
   using ResultType = NSArray<id<SystemIdentity>>*;
 
-  ios::IdentityIteratorCallbackResult ForEach(id<SystemIdentity> identity) {
+  IteratorResult ForEach(id<SystemIdentity> identity) {
     [identities_ addObject:identity];
-    return ios::kIdentityIteratorContinueIteration;
+    return IteratorResult::kContinueIteration;
   }
 
   ResultType Result() const { return [identities_ copy]; }
@@ -122,9 +124,9 @@ class Iterator {
 
   Iterator(T t, F f) : t_(t), f_(f) {}
 
-  ios::IdentityIteratorCallbackResult Run(id<SystemIdentity> identity) {
+  IteratorResult Run(id<SystemIdentity> identity) {
     if (f_.ShouldFilter(identity))
-      return ios::kIdentityIteratorContinueIteration;
+      return IteratorResult::kContinueIteration;
 
     return t_.ForEach(identity);
   }
@@ -141,10 +143,8 @@ template <typename T, typename F>
 typename T::ResultType IterateOverIdentities(T t, F f) {
   using Iter = Iterator<T, F>;
   Iter iterator(std::move(t), std::move(f));
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->IterateOverIdentities(
-          base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
+  GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
+      base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
   return iterator.Result();
 }
 
@@ -174,9 +174,8 @@ ChromeAccountManagerService::ChromeAccountManagerService(
     UpdateRestriction();
   }
 
-  browser_provider_observation_.Observe(&ios::GetChromeBrowserProvider());
-  identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider().GetChromeIdentityService());
+  system_identity_manager_observation_.Observe(
+      GetApplicationContext()->GetSystemIdentityManager());
 }
 
 ChromeAccountManagerService::~ChromeAccountManagerService() {}
@@ -244,9 +243,9 @@ UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
 }
 
 bool ChromeAccountManagerService::IsServiceSupported() const {
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  return identity_service->IsServiceSupported();
+  return GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->IsSigninSupported();
 }
 
 void ChromeAccountManagerService::Shutdown() {
@@ -264,46 +263,23 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ChromeAccountManagerService::OnAccessTokenRefreshFailed(
-    id<SystemIdentity> identity,
-    NSDictionary* user_info) {
-  for (auto& observer : observer_list_)
-    observer.OnAccessTokenRefreshFailed(identity, user_info);
-}
-
 void ChromeAccountManagerService::OnIdentityListChanged(
     bool need_user_approval) {
   for (auto& observer : observer_list_)
     observer.OnIdentityListChanged(need_user_approval);
 }
 
-void ChromeAccountManagerService::OnProfileUpdate(id<SystemIdentity> identity) {
+void ChromeAccountManagerService::OnIdentityUpdated(
+    id<SystemIdentity> identity) {
   for (auto& observer : observer_list_)
     observer.OnIdentityUpdated(identity);
 }
 
-void ChromeAccountManagerService::OnChromeIdentityServiceWillBeDestroyed() {
-  identity_service_observation_.Reset();
-}
-
-void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
-    ios::ChromeIdentityService* new_service) {
-  identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider().GetChromeIdentityService());
-  // All avatar caches needs to be removed to avoid mixing fake identities and
-  // sso identities.
-  default_table_view_avatar_cache_ = nil;
-  small_size_avatar_cache_ = nil;
-  regular_avatar_cache_ = nil;
-  large_avatar_cache_ = nil;
-  OnIdentityListChanged(false);
+void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
+    id<SystemIdentity> identity,
+    id<RefreshAccessTokenError> error) {
   for (auto& observer : observer_list_)
-    observer.OnServiceSupportedChanged();
-}
-
-void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {
-  DCHECK(!identity_service_observation_.IsObserving());
-  browser_provider_observation_.Reset();
+    observer.OnAccessTokenRefreshFailed(identity, error);
 }
 
 void ChromeAccountManagerService::UpdateRestriction() {

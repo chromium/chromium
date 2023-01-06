@@ -27,14 +27,14 @@ source_set("bookmarks") {
     "//components/prefs",
     "//components/sync_bookmarks",
     "//components/undo",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
+    "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/undo",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/web",
   ]
   public_deps = [ ":bookmarks_utils" ]

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
-@class ChromeIdentityInteractionManager;
+@protocol SystemIdentityInteractionManager;
 class PrefService;
 @protocol SystemIdentity;
 
@@ -43,12 +43,12 @@ class IdentityManager;
 @property(nonatomic, weak) id<AddAccountSigninManagerDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                identityInteractionManager:(ChromeIdentityInteractionManager*)
-                                               identityInteractionManager
-                               prefService:(PrefService*)prefService
-                           identityManager:
-                               (signin::IdentityManager*)identityManager
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)baseViewController
+    identityInteractionManager:
+        (id<SystemIdentityInteractionManager>)identityInteractionManager
+                   prefService:(PrefService*)prefService
+               identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 // Displays the add account sign-in flow.

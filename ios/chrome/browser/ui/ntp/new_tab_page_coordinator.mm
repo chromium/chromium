@@ -22,6 +22,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -1442,8 +1444,6 @@
   DCHECK(self.prefService);
   DCHECK(self.authService);
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (!identity) {
@@ -1451,12 +1451,16 @@
     return;
   }
 
+  using CapabilityResult = SystemIdentityCapabilityResult;
+
   __weak NewTabPageCoordinator* weakSelf = self;
-  identity_service->IsSubjectToParentalControls(
-      identity, ^(SystemIdentityCapabilityResult result) {
-        [weakSelf updateFeedWithIsSupervisedUser:
-                      result == SystemIdentityCapabilityResult::kTrue];
-      });
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->IsSubjectToParentalControls(
+          identity, base::BindOnce(^(CapabilityResult result) {
+            const bool isSupervisedUser = result == CapabilityResult::kTrue;
+            [weakSelf updateFeedWithIsSupervisedUser:isSupervisedUser];
+          }));
 }
 
 // Handles how the NTP reacts when the default search engine is changed.

@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/signin/resized_avatar_cache.h"
 
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/common/ui/util/image_util.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -54,14 +54,14 @@
 }
 
 - (UIImage*)resizedAvatarForIdentity:(id<SystemIdentity>)identity {
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       .GetChromeIdentityService()
-                       ->GetCachedAvatarForIdentity(identity);
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+
+  UIImage* image =
+      system_identity_manager->GetCachedAvatarForIdentity(identity);
   if (!image) {
     // No cached image, trigger a fetch, which will notify all observers.
-    ios::GetChromeBrowserProvider()
-        .GetChromeIdentityService()
-        ->GetAvatarForIdentity(identity);
+    system_identity_manager->FetchAvatarForIdentity(identity);
     return self.defaultResizedAvatar;
   }
 

@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/signin/resized_avatar_cache.h"
 
+#import "base/test/task_environment.h"
 #import "base/values.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -20,19 +22,30 @@ class ResizedAvatarCacheTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    identity_service_ =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     resized_avatar_cache_ = [[ResizedAvatarCache alloc]
         initWithIdentityAvatarSize:IdentityAvatarSize::TableViewIcon];
-    identity1_ = [FakeSystemIdentity identityWithEmail:@"test1@email.com"
-                                                gaiaID:@"gaiaID1"
-                                                  name:@"Test Name1"];
-    identity2_ = [FakeSystemIdentity identityWithEmail:@"test2@email.com"
-                                                gaiaID:@"gaiaID2"
-                                                  name:@"Test Name2"];
+    identity1_ =
+        CreateSystemIdentity(@"Test Name1", @"gaiaID1", @"test1@email.com");
+    identity2_ =
+        CreateSystemIdentity(@"Test Name2", @"gaiaID2", @"test2@email.com");
   }
 
-  ios::FakeChromeIdentityService* identity_service_ = nil;
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
+  }
+
+  id<SystemIdentity> CreateSystemIdentity(NSString* name,
+                                          NSString* gaia_id,
+                                          NSString* email) {
+    id<SystemIdentity> identity = [FakeSystemIdentity identityWithEmail:email
+                                                                 gaiaID:gaia_id
+                                                                   name:name];
+    fake_system_identity_manager()->AddIdentity(identity);
+    return identity;
+  }
+
+  base::test::TaskEnvironment task_environment_;
   ResizedAvatarCache* resized_avatar_cache_ = nil;
   id<SystemIdentity> identity1_ = nil;
   id<SystemIdentity> identity2_ = nil;
@@ -65,7 +78,7 @@ TEST_F(ResizedAvatarCacheTest, FetchAvatar) {
       [resized_avatar_cache_ resizedAvatarForIdentity:identity1_];
   EXPECT_EQ(default_avatar, same_default_avatar);
   // Wait for the end of the fetch.
-  identity_service_->WaitForServiceCallbacksToComplete();
+  fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Asking again, the fecthed avatar is expected (instead of the default
   // avatar)
   UIImage* identity_avatar =

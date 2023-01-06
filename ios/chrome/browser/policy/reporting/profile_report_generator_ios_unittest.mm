@@ -18,6 +18,7 @@
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_mock.h"
@@ -27,10 +28,10 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -99,9 +100,11 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   }
 
   void SignIn() {
-    ios::FakeChromeIdentityService* identity_service =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identity_service->AddIdentities(@[ base::SysUTF8ToNSString(kAccount) ]);
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentities(
+        @[ base::SysUTF8ToNSString(kAccount) ]);
     id<SystemIdentity> identity =
         account_manager_service_->GetDefaultIdentity();
     authentication_service_->SignIn(identity);

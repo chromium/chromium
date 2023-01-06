@@ -4,14 +4,11 @@
 
 #import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 
-#import <Foundation/Foundation.h>
 #import <map>
 
-#import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,37 +18,27 @@
 namespace ios {
 namespace {
 
-// Converts the vector of string to an NSArray of NSString.
-NSArray<NSString*>* ArrayFromVector(const std::vector<std::string>& strings) {
-  NSMutableArray<NSString*>* result = [[NSMutableArray alloc] init];
-  for (const std::string& string : strings) {
-    [result addObject:base::SysUTF8ToNSString(string)];
-  }
-  return result;
+// Converts the vector of string to a set of string.
+std::set<std::string> SetFromVector(const std::vector<std::string>& strings) {
+  return std::set<std::string>(strings.begin(), strings.end());
 }
 
 // Converts the value returned by SystemIdentityManager::FetchCapabilities()
 // to the format expected from CompleteFetchAndMaybeDestroySelf().
-absl::optional<AccountCapabilities> AccountCapabilitiesFromCapabilitiesDict(
-    CapabilitiesDict* capabilities_dict,
-    NSError* error) {
+absl::optional<AccountCapabilities> AccountCapabilitiesFromCapabilitiesMap(
+    std::map<std::string, SystemIdentityCapabilityResult> capabilities_map) {
   base::flat_map<std::string, bool> capabilities;
-  for (NSString* key in capabilities_dict) {
-    const int value = [capabilities_dict[key] intValue];
-    switch (value) {
-      case static_cast<int>(SystemIdentityCapabilityResult::kTrue):
-        capabilities[base::SysNSStringToUTF8(key)] = true;
+  for (const auto& pair : capabilities_map) {
+    switch (pair.second) {
+      case SystemIdentityCapabilityResult::kTrue:
+        capabilities[pair.first] = true;
         break;
 
-      case static_cast<int>(SystemIdentityCapabilityResult::kFalse):
-        capabilities[base::SysNSStringToUTF8(key)] = false;
+      case SystemIdentityCapabilityResult::kFalse:
+        capabilities[pair.first] = false;
         break;
 
-      case static_cast<int>(SystemIdentityCapabilityResult::kUnknown):
-        break;
-
-      default:
-        NOTREACHED() << "unknown capability value: " << value;
+      case SystemIdentityCapabilityResult::kUnknown:
         break;
     }
   }
@@ -70,18 +57,16 @@ AccountCapabilitiesFetcherIOS::AccountCapabilitiesFetcherIOS(
       system_identity_(system_identity) {}
 
 void AccountCapabilitiesFetcherIOS::StartImpl() {
-  __block auto callback = base::BindOnce(
-      &AccountCapabilitiesFetcherIOS::CompleteFetchAndMaybeDestroySelf,
-      weak_ptr_factory_.GetWeakPtr());
+  auto callback =
+      base::BindOnce(&AccountCapabilitiesFromCapabilitiesMap)
+          .Then(base::BindOnce(
+              &AccountCapabilitiesFetcherIOS::CompleteFetchAndMaybeDestroySelf,
+              weak_ptr_factory_.GetWeakPtr()));
 
-  ios::GetChromeBrowserProvider().GetChromeIdentityService()->FetchCapabilities(
+  GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
       system_identity_,
-      ArrayFromVector(
-          AccountCapabilities::GetSupportedAccountCapabilityNames()),
-      ^(CapabilitiesDict* dict, NSError* error) {
-        std::move(callback).Run(
-            AccountCapabilitiesFromCapabilitiesDict(dict, error));
-      });
+      SetFromVector(AccountCapabilities::GetSupportedAccountCapabilityNames()),
+      std::move(callback));
 }
 
 }  // namespace ios

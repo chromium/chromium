@@ -13,8 +13,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
@@ -26,9 +28,9 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -61,9 +63,8 @@ class AuthenticationFlowTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
-    ios::FakeChromeIdentityService* identityService =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identityService->AddIdentities(@[ @"identity1", @"identity2" ]);
+    fake_system_identity_manager()->AddIdentities(
+        @[ @"identity1", @"identity2" ]);
 
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
@@ -75,14 +76,13 @@ class AuthenticationFlowTest : public PlatformTest {
     managed_identity_ = [FakeSystemIdentity identityWithEmail:@"managed@foo.com"
                                                        gaiaID:@"managed"
                                                          name:@"managed"];
-    identityService->AddIdentity(managed_identity_);
+    fake_system_identity_manager()->AddIdentity(managed_identity_);
 
     sign_in_completion_ = ^(BOOL success) {
-      finished_ = true;
-      signed_in_success_ = success;
+      run_loop_.Quit();
+      signin_result_ =
+          success ? signin::Tribool::kTrue : signin::Tribool::kFalse;
     };
-    finished_ = false;
-    signed_in_success_ = false;
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
@@ -118,11 +118,12 @@ class AuthenticationFlowTest : public PlatformTest {
   // Checks if the AuthenticationFlow operation has completed, and whether it
   // was successful.
   void CheckSignInCompletion(bool expected_signed_in) {
-    base::test::ios::WaitUntilCondition(^bool {
-      return finished_;
-    });
-    EXPECT_TRUE(finished_);
-    EXPECT_EQ(expected_signed_in, signed_in_success_);
+    run_loop_.Run();
+
+    const signin::Tribool expected_signin_result =
+        expected_signed_in ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+
+    EXPECT_EQ(expected_signin_result, signin_result_);
     [performer_ verify];
   }
 
@@ -131,6 +132,11 @@ class AuthenticationFlowTest : public PlatformTest {
     [[performer_ expect] signInIdentity:identity
                        withHostedDomain:hosted_domain
                          toBrowserState:browser_state_.get()];
+  }
+
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -147,9 +153,9 @@ class AuthenticationFlowTest : public PlatformTest {
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
 
-  // State of the flow
-  bool finished_;
-  bool signed_in_success_;
+  // Used to wait for sign-in workflow to complete.
+  base::RunLoop run_loop_;
+  signin::Tribool signin_result_ = signin::Tribool::kFalse;
 };
 
 // Tests a Sign In of a normal account on the same profile with Sync

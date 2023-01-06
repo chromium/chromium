@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -35,8 +36,6 @@
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -45,6 +44,7 @@
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
+using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 @interface ManageSyncSettingsCoordinator () <
     ManageSyncSettingsCommandHandler,
@@ -65,9 +65,6 @@ using signin_metrics::PromoAction;
 @property(nonatomic, assign, readonly) syncer::SyncService* syncService;
 // Authentication service.
 @property(nonatomic, assign, readonly) AuthenticationService* authService;
-// Dismiss callback for Web and app setting details view.
-@property(nonatomic, copy) ios::DismissASMViewControllerBlock
-    dismissWebAndAppSettingDetailsControllerBlock;
 // Displays the sign-out options for a syncing user.
 @property(nonatomic, strong)
     SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
@@ -75,7 +72,10 @@ using signin_metrics::PromoAction;
 
 @end
 
-@implementation ManageSyncSettingsCoordinator
+@implementation ManageSyncSettingsCoordinator {
+  // Dismiss callback for Web and app setting details view.
+  DismissViewCallback _dismissWebAndAppSettingDetailsController;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -148,9 +148,9 @@ using signin_metrics::PromoAction;
 // Closes the Manage sync settings view controller.
 - (void)closeManageSyncSettings {
   if (self.viewController.navigationController) {
-    if (self.dismissWebAndAppSettingDetailsControllerBlock) {
-      self.dismissWebAndAppSettingDetailsControllerBlock(NO);
-      self.dismissWebAndAppSettingDetailsControllerBlock = nil;
+    if (!_dismissWebAndAppSettingDetailsController.is_null()) {
+      std::move(_dismissWebAndAppSettingDetailsController)
+          .Run(/*animated*/ false);
     }
     [self.baseNavigationController popToViewController:self.viewController
                                               animated:NO];
@@ -171,13 +171,13 @@ using signin_metrics::PromoAction;
 - (void)openWebAppActivityDialog {
   base::RecordAction(base::UserMetricsAction(
       "Signin_AccountSettings_GoogleActivityControlsClicked"));
-  self.dismissWebAndAppSettingDetailsControllerBlock =
-      ios::GetChromeBrowserProvider()
-          .GetChromeIdentityService()
-          ->PresentWebAndAppSettingDetailsController(
-              self.authService->GetPrimaryIdentity(
-                  signin::ConsentLevel::kSignin),
-              self.viewController, YES);
+  id<SystemIdentity> identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  _dismissWebAndAppSettingDetailsController =
+      GetApplicationContext()
+          ->GetSystemIdentityManager()
+          ->PresentWebAndAppSettingDetailsController(identity,
+                                                     self.viewController, YES);
 }
 
 - (void)openDataFromChromeSyncWebPage {

@@ -13,6 +13,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
@@ -47,8 +49,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -59,6 +59,7 @@
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
+using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 namespace {
 
@@ -112,10 +113,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong)
     AlertCoordinator* removeOrMyGoogleChooserAlertCoordinator;
 
-// Callback to dismiss MyGoogle (Account Detail).
-@property(nonatomic, copy)
-    ios::DismissASMViewControllerBlock dismissAccountDetailsViewControllerBlock;
-
 // Modal alert for confirming account removal.
 @property(nonatomic, strong) AlertCoordinator* removeAccountCoordinator;
 
@@ -134,7 +131,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @end
 
-@implementation AccountsTableViewController
+@implementation AccountsTableViewController {
+  // Callback to dismiss MyGoogle (Account Detail).
+  DismissViewCallback _dismissAccountDetailsViewController;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser
       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount {
@@ -547,9 +547,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // `self.removeOrMyGoogleChooserAlertCoordinator` should not be stopped, since
   // the coordinator has been confirmed.
   self.removeOrMyGoogleChooserAlertCoordinator = nil;
-  self.dismissAccountDetailsViewControllerBlock =
-      ios::GetChromeBrowserProvider()
-          .GetChromeIdentityService()
+  _dismissAccountDetailsViewController =
+      GetApplicationContext()
+          ->GetSystemIdentityManager()
           ->PresentAccountDetailsController(identity, self,
                                             /*animated=*/YES);
 }
@@ -593,10 +593,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(self.removeAccountCoordinator);
   self.removeAccountCoordinator = nil;
   self.uiDisabled = YES;
-  ios::GetChromeBrowserProvider().GetChromeIdentityService()->ForgetIdentity(
-      identity, ^(NSError* error) {
-        self.uiDisabled = NO;
-      });
+  __weak __typeof(self) weakSelf = self;
+  GetApplicationContext()->GetSystemIdentityManager()->ForgetIdentity(
+      identity, base::BindOnce(^(NSError* error) {
+        weakSelf.uiDisabled = NO;
+      }));
 }
 
 // Offer the user to sign-out near itemView
@@ -680,7 +681,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         weakSelf.navigationController)
         popViewControllerOrCloseSettingsAnimated:YES];
   };
-  if (self.dismissAccountDetailsViewControllerBlock) {
+  if (!_dismissAccountDetailsViewController.is_null()) {
     DCHECK(self.presentedViewController);
     DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
     DCHECK(!self.removeAccountCoordinator);
@@ -689,8 +690,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // `dismissAccountDetailsViewControllerBlock` callback, to trigger
     // `popAccountsTableViewController()`.
     // Once we have a completion block, we can set `animated` to YES.
-    self.dismissAccountDetailsViewControllerBlock(/*animated=*/NO);
-    self.dismissAccountDetailsViewControllerBlock = nil;
+    std::move(_dismissAccountDetailsViewController).Run(/*animated*/ false);
     popAccountsTableViewController();
   } else if (self.removeOrMyGoogleChooserAlertCoordinator ||
              self.removeAccountCoordinator || self.signoutCoordinator) {

@@ -14,9 +14,6 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -104,23 +101,7 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
 }
 
 void SetUpTestsIfPresent() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          test_switches::kSignInAtStartup)) {
-    // Record an identity as "known". If the identity isn't added, the
-    // AuthenticationService will log the fake user off.
-    std::unique_ptr<ios::FakeChromeIdentityService> service(
-        new ios::FakeChromeIdentityService());
-    ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
-        std::move(service));
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            test_switches::kAddFakeIdentitiesAtStartup)) {
-      // Add a fake identity by default if no identities were provided from the
-      // commandline switch.
-      ios::FakeChromeIdentityService* identity_service =
-          ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-      identity_service->AddIdentity([FakeSystemIdentity fakeIdentity1]);
-    }
-  }
+  // No-op for Earl Grey.
 }
 
 void RunTestsIfPresent() {

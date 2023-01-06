@@ -5,12 +5,14 @@
 #import "ios/chrome/test/app/signin_test_util.h"
 
 #import "base/check.h"
+#import "base/notreached.h"
 #import "base/test/ios/wait_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_user_settings.h"
 #import "google_apis/gaia/gaia_constants.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -18,13 +20,13 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,32 +41,31 @@ namespace {
 // Note: Forgetting an identity is a asynchronous operation. This function does
 // not wait for the forget identity operation to finish.
 void StartForgetAllIdentities(ChromeBrowserState* browser_state) {
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
   ChromeAccountManagerService* account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+
   NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
   for (id<SystemIdentity> identity in identities_to_remove) {
-    identity_service->ForgetIdentity(identity, ^(NSError* error) {
-      if (error) {
-        NSLog(@"ForgetIdentity failed: [identity = %@, error = %@]",
-              identity.userEmail, [error localizedDescription]);
-      }
-    });
+    system_identity_manager->ForgetIdentity(
+        identity, base::BindOnce(^(NSError* error) {
+          if (error) {
+            NSLog(@"ForgetIdentity failed: [identity = %@, error = %@]",
+                  identity.userEmail, [error localizedDescription]);
+          }
+        }));
   }
 }
 
 }  // namespace
 
 void SetUpMockAuthentication() {
-  std::unique_ptr<ios::FakeChromeIdentityService> service(
-      new ios::FakeChromeIdentityService());
-  ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
-      std::move(service));
+  // Should we do something here?
 }
 
 void TearDownMockAuthentication() {
-  ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(nullptr);
+  // Should we do something here?
 }
 
 void SignOutAndClearIdentities() {
@@ -108,8 +109,7 @@ bool HasIdentities() {
 }
 
 void ResetMockAuthentication() {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->SetFakeMDMError(false);
+  // Should we do something here?
 }
 
 void ResetSigninPromoPreferences() {

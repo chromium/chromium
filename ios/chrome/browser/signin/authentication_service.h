@@ -28,6 +28,7 @@ class AuthenticationServiceObserver;
 class FakeAuthenticationService;
 class PrefService;
 class SyncSetupService;
+@protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
 
 // AuthenticationService is the Chrome interface to the iOS shared
@@ -147,7 +148,7 @@ class AuthenticationService : public KeyedService,
                        ProceduralBlock completion);
 
   // Returns whether there is a cached associated MDM error for `identity`.
-  bool HasCachedMDMErrorForIdentity(id<SystemIdentity> identity) const;
+  bool HasCachedMDMErrorForIdentity(id<SystemIdentity> identity);
 
   // Shows the MDM Error dialog for `identity` if it has an associated MDM
   // error. Returns true if `identity` had an associated error, false otherwise.
@@ -165,20 +166,18 @@ class AuthenticationService : public KeyedService,
   friend class AuthenticationServiceTest;
   friend class FakeAuthenticationService;
 
-  // Clears local data for users under parental controls and runs `completion`.
-  void OnIsSubjectToParentalControlsResult(
-      ios::ChromeIdentityCapabilityResult result,
-      ProceduralBlock completion);
-
-  // Returns the cached MDM infos associated with `identity`. If the cache
+  // Returns the cached MDM errors associated with `identity`. If the cache
   // is stale for `identity`, the entry might be removed.
-  NSDictionary* GetCachedMDMInfo(id<SystemIdentity> identity) const;
+  id<RefreshAccessTokenError> GetCachedMDMError(id<SystemIdentity> identity);
 
-  // Handles an MDM notification `user_info` associated with `identity`.
+  // Handles an MDM error `error` associated with `identity`.
   // Returns whether the notification associated with `user_info` was fully
   // handled.
-  bool HandleMDMNotification(id<SystemIdentity> identity,
-                             NSDictionary* user_info);
+  bool HandleMDMError(id<SystemIdentity> identity,
+                      id<RefreshAccessTokenError> error);
+
+  // Invoked when the MDM error associated with `identity` has been handled.
+  void MDMErrorHandled(id<SystemIdentity> identity, bool is_blocked);
 
   // Verifies that the authenticated user is still associated with a valid
   // SystemIdentity. This method must only be called when the user is
@@ -208,11 +207,10 @@ class AuthenticationService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // ChromeAccountManagerServiceObserver implementation.
-  void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                  NSDictionary* user_info) override;
+  // ChromeAccountManagerService::Observer implementation.
   void OnIdentityListChanged(bool need_user_approval) override;
-  void OnServiceSupportedChanged() override;
+  void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
+                                  id<RefreshAccessTokenError> error) override;
 
   // Fires `OnPrimaryAccountRestricted` on all observers.
   void FirePrimaryAccountRestricted();
@@ -253,7 +251,7 @@ class AuthenticationService : public KeyedService,
   bool primary_account_was_restricted_ = false;
 
   // Map between account IDs and their associated MDM error.
-  mutable std::map<CoreAccountId, NSDictionary*> cached_mdm_infos_;
+  std::map<CoreAccountId, id<RefreshAccessTokenError>> cached_mdm_errors_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

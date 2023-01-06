@@ -9,12 +9,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,9 +38,9 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
     }
   }
 
-  ios::ChromeIdentityService* chrome_identity_service =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  if (chrome_identity_service->IsMDMError(identity, error)) {
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+  if (system_identity_manager->IsMDMError(identity, error)) {
     return kAuthenticationErrorCategoryAuthorizationErrors;
   }
 
@@ -62,20 +62,20 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
 }
 
 // Helper function converting the result of fetching the access token from
-// what ChromeIdentityService pass to the callback to what is expected for
+// what SystemIdentityManager pass to the callback to what is expected for
 // AccessTokenCallback.
-AccessTokenResult AccessTokenResultFrom(id<SystemIdentity> identity,
-                                        NSString* token,
-                                        NSDate* expiration,
-                                        NSError* error) {
+AccessTokenResult AccessTokenResultFrom(
+    id<SystemIdentity> identity,
+    absl::optional<SystemIdentityManager::AccessTokenInfo> access_token,
+    NSError* error) {
   if (error) {
     return base::unexpected(
         AuthenticationErrorCategoryFromError(identity, error));
   } else {
-    DCHECK(token.length);
+    DCHECK(access_token.has_value());
     DeviceAccountsProvider::AccessTokenInfo info = {
-        base::SysNSStringToUTF8(token),
-        base::Time::FromNSDate(expiration),
+        access_token->token,
+        access_token->expiration_time,
     };
     return base::ok(std::move(info));
   }
@@ -111,17 +111,10 @@ void DeviceAccountsProviderImpl::GetAccessToken(
     return;
   }
 
-  // AccessTokenCallback is non-copyable. Using __block allocates the memory
-  // directly in the block object at compilation time (instead of doing a
-  // copy). This is required to have correct interaction between move-only
-  // types and Objective-C blocks.
-  __block AccessTokenCallback scoped_callback = std::move(callback);
-  ios::GetChromeBrowserProvider().GetChromeIdentityService()->GetAccessToken(
+  GetApplicationContext()->GetSystemIdentityManager()->GetAccessToken(
       identity, client_id, scopes,
-      ^(NSString* token, NSDate* expiration, NSError* error) {
-        std::move(scoped_callback)
-            .Run(AccessTokenResultFrom(identity, token, expiration, error));
-      });
+      base::BindOnce(&AccessTokenResultFrom, identity)
+          .Then(std::move(callback)));
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>
@@ -132,8 +125,8 @@ DeviceAccountsProviderImpl::GetAllAccounts() const {
   std::vector<AccountInfo> result;
   result.reserve(identities.count);
 
-  ios::ChromeIdentityService* chrome_identity_service =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
 
   for (id<SystemIdentity> identity : identities) {
     DCHECK(identity);
@@ -146,7 +139,7 @@ DeviceAccountsProviderImpl::GetAllAccounts() const {
     // an empty string. Otherwise, set it to the value of the hostedDomain
     // or kNoHostedDomainFound if the string is empty.
     NSString* hosted_domain =
-        chrome_identity_service->GetCachedHostedDomainForIdentity(identity);
+        system_identity_manager->GetCachedHostedDomainForIdentity(identity);
     if (hosted_domain) {
       account_info.hosted_domain = hosted_domain.length
                                        ? base::SysNSStringToUTF8(hosted_domain)

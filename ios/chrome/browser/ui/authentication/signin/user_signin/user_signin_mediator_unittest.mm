@@ -6,11 +6,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/fake_consent_auditor.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_test_utils.h"
@@ -20,6 +22,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -30,7 +33,6 @@
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -49,7 +51,7 @@ class UserSigninMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     identity_ = [FakeSystemIdentity fakeIdentity1];
-    identity_service()->AddIdentity(identity_);
+    fake_system_identity_manager()->AddIdentity(identity_);
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -243,8 +245,9 @@ class UserSigninMediatorTest : public PlatformTest {
         browser_state_.get());
   }
 
-  ios::FakeChromeIdentityService* identity_service() {
-    return ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
   }
 
   SyncSetupService* sync_setup_service() {
@@ -504,7 +507,7 @@ TEST_F(UserSigninMediatorTest, CancelSyncAndStaySignin) {
 TEST_F(UserSigninMediatorTest, OpenSettingsLinkWithDifferentIdentityAndCancel) {
   // Signs in with identity 2.
   id<SystemIdentity> identity2 = [FakeSystemIdentity fakeIdentity2];
-  identity_service()->AddIdentity(identity2);
+  fake_system_identity_manager()->AddIdentity(identity2);
   authentication_service()->SignIn(identity2);
 
   // Opens the settings link with identity 1.
@@ -556,7 +559,7 @@ TEST_F(UserSigninMediatorTest,
       [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
-  identity_service()->AddIdentity(identity2);
+  fake_system_identity_manager()->AddIdentity(identity2);
   authentication_service()->SignIn(identity2);
 
   // Opens the settings link with identity 1.
@@ -578,7 +581,7 @@ TEST_F(UserSigninMediatorTest,
   base::RunLoop().RunUntilIdle();
 
   // Forgets identity 2.
-  identity_service()->ForgetIdentity(identity2, nil);
+  fake_system_identity_manager()->ForgetIdentity(identity2, base::DoNothing());
 
   // Cancels the sign-in dialog.
   OCMStub([mediator_delegate_mock_ signinStateOnStart])
@@ -602,7 +605,7 @@ TEST_F(UserSigninMediatorTest,
 //   * Forget identity_
 //   * Cancel the user sign-in dialog
 TEST_F(UserSigninMediatorTest, ForgetSignedInIdentityWhileTurnOnSyncIsOpened) {
-  identity_service()->ForgetIdentity(identity_, nil);
+  fake_system_identity_manager()->ForgetIdentity(identity_, base::DoNothing());
 
   // Cancels the sign-in dialog.
   __block bool completion_called = false;

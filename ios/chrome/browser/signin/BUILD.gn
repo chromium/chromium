@@ -57,6 +57,7 @@ source_set("signin") {
   ]
   deps = [
     ":system_identity",
+    ":system_identity_manager",
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
@@ -94,9 +95,8 @@ source_set("signin") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/net",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ios/public/provider/chrome/browser/signin:signin_identity_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/common",
     "//ios/web/common:web_view_creation_util",
@@ -137,12 +137,11 @@ source_set("fetcher") {
   deps = [
     ":capabilities_types",
     ":system_identity",
+    ":system_identity_manager",
     "//base",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/browser_state",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
+    "//ios/chrome/browser/application_context",
     "//third_party/abseil-cpp:absl",
   ]
 }
@@ -374,9 +373,11 @@ source_set("unit_tests") {
   deps = [
     ":capabilities_types",
     ":fake_system_identity",
+    ":fake_system_identity_manager",
     ":fetcher",
     ":signin",
     ":system_identity",
+    ":system_identity_manager",
     ":test_support",
     "//base",
     "//components/pref_registry",
@@ -408,7 +409,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/net",
-    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

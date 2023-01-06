@@ -8,10 +8,11 @@
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/signin/capabilities_dict.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -43,21 +44,20 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
   void TestCapabilityValueFetchedIsReceived(
       absl::optional<SystemIdentityCapabilityResult> capability_fetched,
       signin::Tribool capability_expected) {
-    ios::FakeChromeIdentityService* fake_chrome_identity_service =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
 
-    ios::CapabilitiesDict* capabilities = @{};
+    std::map<std::string, SystemIdentityCapabilityResult> capabilities;
     if (capability_fetched.has_value()) {
-      capabilities = @{
-        @(kCanHaveEmailAddressDisplayedCapabilityName) :
-            @(static_cast<int>(capability_fetched.value()))
-      };
+      capabilities.insert({kCanHaveEmailAddressDisplayedCapabilityName,
+                           capability_fetched.value()});
     }
 
     // Register a fake identity and set the expected capabilities.
     id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
-    fake_chrome_identity_service->AddIdentity(identity);
-    fake_chrome_identity_service->SetCapabilities(identity, capabilities);
+    system_identity_manager->AddIdentity(identity);
+    system_identity_manager->SetCapabilities(identity, capabilities);
 
     // Check that the capabilities are correctly converted.
     base::RunLoop run_loop;

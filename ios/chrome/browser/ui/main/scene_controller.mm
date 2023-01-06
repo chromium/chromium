@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
@@ -143,8 +144,6 @@
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -783,26 +782,27 @@ void InjectNTP(Browser* browser) {
       accountManagerService->GetDefaultIdentity();
   DCHECK(defaultIdentity);
 
-  __weak SceneController* weakSelf = self;
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
+  using CapabilityResult = SystemIdentityManager::CapabilityResult;
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
 
   // Asynchronously checks whether the default identity can display extended
   // sync promos and displays the sign-in promo if possible.
+  __weak SceneController* weakSelf = self;
   base::Time fetch_start = base::Time::Now();
-  identityService->CanOfferExtendedSyncPromos(
-      defaultIdentity, ^(SystemIdentityCapabilityResult result) {
-        base::TimeDelta fetch_delay = (base::Time::Now() - fetch_start);
+  system_identity_manager->CanOfferExtendedSyncPromos(
+      defaultIdentity, base::BindOnce(^(CapabilityResult result) {
+        base::TimeDelta fetch_duration = (base::Time::Now() - fetch_start);
         base::UmaHistogramTimes(
             "Signin.AccountCapabilities.GetFromSystemLibraryDuration."
             "SigninUpgradePromo",
-            fetch_delay);
-        if (fetch_delay > signin::GetWaitThresholdForCapabilities() ||
-            result != SystemIdentityCapabilityResult::kTrue) {
+            fetch_duration);
+        if (fetch_duration > signin::GetWaitThresholdForCapabilities() ||
+            result != CapabilityResult::kTrue) {
           return;
         }
         [weakSelf presentSigninUpgradePromo];
-      });
+      }));
 }
 
 - (void)initializeUI {
@@ -2508,7 +2508,7 @@ void InjectNTP(Browser* browser) {
 
   // ChromeIdentityService is responsible for the dialogs displayed by the
   // services it wraps.
-  ios::GetChromeBrowserProvider().GetChromeIdentityService()->DismissDialogs();
+  GetApplicationContext()->GetSystemIdentityManager()->DismissDialogs();
 
   // MailtoHandlerService is responsible for the dialogs displayed by the
   // services it wraps.
@@ -3159,8 +3159,8 @@ void InjectNTP(Browser* browser) {
     URLOpenerParams* options =
         [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
     NSSet* URLContextSet = [NSSet setWithObject:context];
-    if (!ios::GetChromeBrowserProvider()
-             .GetChromeIdentityService()
+    if (!GetApplicationContext()
+             ->GetSystemIdentityManager()
              ->HandleSessionOpenURLContexts(self.sceneState.scene,
                                             URLContextSet)) {
       [URLsToOpen addObject:options];

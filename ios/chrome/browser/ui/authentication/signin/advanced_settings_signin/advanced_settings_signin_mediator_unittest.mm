@@ -13,16 +13,17 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,7 +50,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
 
     identity_ = [FakeSystemIdentity fakeIdentity1];
-    identity_service()->AddIdentity(identity_);
+    fake_system_identity_manager()->AddIdentity(identity_);
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -93,12 +94,13 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
     return SyncServiceFactory::GetForBrowserState(browser_state_.get());
   }
 
-  ios::FakeChromeIdentityService* identity_service() {
-    return ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  }
-
   signin::IdentityManager* identity_manager() {
     return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+  }
+
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
   }
 
  protected:

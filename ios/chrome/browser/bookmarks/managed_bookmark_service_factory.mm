@@ -8,12 +8,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,18 +27,15 @@ std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
   if (!auth_service)
     return std::string();
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  if (!identity_service)
-    return std::string();
-
   id<SystemIdentity> identity =
       auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (!identity)
     return std::string();
 
   return base::SysNSStringToUTF8(
-      identity_service->GetCachedHostedDomainForIdentity(identity));
+      GetApplicationContext()
+          ->GetSystemIdentityManager()
+          ->GetCachedHostedDomainForIdentity(identity));
 }
 
 }  // namespace

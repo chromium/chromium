@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/test/testing_application_context.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -34,8 +35,8 @@ FakeSystemIdentity* identity3 =
                                      name:@"Fake Foo 3"];
 FakeSystemIdentity* identity4 =
     [FakeSystemIdentity identityWithEmail:@"foo4@chromium.com"
-                                   gaiaID:@"foo3ID"
-                                     name:@"Fake Foo 3"];
+                                   gaiaID:@"foo4ID"
+                                     name:@"Fake Foo 4"];
 }  // namespace
 
 class ChromeAccountManagerServiceTest : public PlatformTest {
@@ -46,16 +47,17 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
 
     account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
         browser_state_.get());
-    identity_service_ =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   }
 
   // Adds identities to the identity service.
   void AddIdentities() {
-    identity_service_->AddIdentity(identity1);
-    identity_service_->AddIdentity(identity2);
-    identity_service_->AddIdentity(identity3);
-    identity_service_->AddIdentity(identity4);
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(identity1);
+    system_identity_manager->AddIdentity(identity2);
+    system_identity_manager->AddIdentity(identity3);
+    system_identity_manager->AddIdentity(identity4);
   }
 
   // Sets a restricted pattern.
@@ -71,7 +73,6 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   ChromeAccountManagerService* account_manager_;
-  ios::FakeChromeIdentityService* identity_service_;
 };
 
 // Tests to get identities when the restricted pattern is not set.

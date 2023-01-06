@@ -18,6 +18,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -29,12 +30,12 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/memory_credential_store.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -218,9 +219,10 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
       auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(credential_store_.credentials.firstObject.validationIdentifier);
 
-  ios::FakeChromeIdentityService* identity_service =
-      ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  identity_service->AddManagedIdentities(@[ @"Name" ]);
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddManagedIdentities(@[ @"Name" ]);
   id<SystemIdentity> identity = account_manager_service_->GetDefaultIdentity();
   auth_service_->SignIn(identity);
 
@@ -308,9 +310,10 @@ TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
 TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
   // Start by signing in and turning sync on.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  ios::FakeChromeIdentityService* identity_service_ =
-      ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  identity_service_->AddIdentity(identity);
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddIdentity(identity);
   auth_service_->SignIn(identity);
   auth_service_->GrantSyncConsent(identity);
   sync_service_.FireStateChanged();

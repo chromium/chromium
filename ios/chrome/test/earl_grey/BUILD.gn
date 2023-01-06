@@ -38,9 +38,6 @@ source_set("hooks") {
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
     "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin:constants",
-    "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }
 

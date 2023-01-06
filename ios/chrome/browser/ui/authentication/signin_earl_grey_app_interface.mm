@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 
+#import <map>
+#import <string>
+
+#import "base/callback_helpers.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/titled_url_match.h"
@@ -11,19 +17,21 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_interaction_manager.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
@@ -35,19 +43,43 @@
 @implementation SigninEarlGreyAppInterface
 
 + (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
-      fakeIdentity);
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  systemIdentityManager->AddIdentity(fakeIdentity);
 }
 
 + (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
             forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->SetCapabilities(fakeIdentity, capabilities);
+  using CapabilityResult = SystemIdentityCapabilityResult;
+  std::map<std::string, CapabilityResult> capabilitiesMap;
+  for (NSString* name in capabilities) {
+    const std::string key = base::SysNSStringToUTF8(name);
+    NSNumber* number = base::mac::ObjCCastStrict<NSNumber>(capabilities[name]);
+    switch (number.intValue) {
+      case static_cast<int>(CapabilityResult::kFalse):
+      case static_cast<int>(CapabilityResult::kTrue):
+      case static_cast<int>(CapabilityResult::kUnknown):
+        capabilitiesMap.insert(
+            {key, static_cast<CapabilityResult>(number.intValue)});
+        break;
+
+      default:
+        NOTREACHED() << "unexpected capability value: " << number.intValue;
+        break;
+    }
+  }
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  systemIdentityManager->SetCapabilities(fakeIdentity, capabilitiesMap);
 }
 
 + (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->ForgetIdentity(fakeIdentity, nil);
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  systemIdentityManager->ForgetIdentity(fakeIdentity, base::DoNothing());
 }
 
 + (NSString*)primaryAccountGaiaID {
@@ -88,7 +120,7 @@
 }
 
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
-  FakeChromeIdentityInteractionManager.identity = identity;
+  FakeSystemIdentityInteractionManager.identity = identity;
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
   PrefService* prefService =
       chrome_test_util::GetOriginalBrowserState()->GetPrefs();

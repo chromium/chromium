@@ -12,6 +12,7 @@
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -19,11 +20,11 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -51,8 +52,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     authentication_flow_ = OCMStrictClassMock([AuthenticationFlow class]);
     identity1_ = [FakeSystemIdentity fakeIdentity1];
     identity2_ = [FakeSystemIdentity fakeIdentity2];
-    GetIdentityService()->AddIdentity(identity1_);
-    GetIdentityService()->AddIdentity(identity2_);
+    GetSystemIdentityManager()->AddIdentity(identity1_);
+    GetSystemIdentityManager()->AddIdentity(identity2_);
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -78,8 +79,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
   }
 
-  ios::FakeChromeIdentityService* GetIdentityService() {
-    return ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+  FakeSystemIdentityManager* GetSystemIdentityManager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
   }
 
   AuthenticationService* GetAuthenticationService() {
@@ -279,7 +281,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
       [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
                                      gaiaID:@"foo1ID3"
                                        name:@"Fake Foo 3"];
-  GetIdentityService()->AddIdentity(identity3);
+  GetSystemIdentityManager()->AddIdentity(identity3);
   ConsistencyPromoSigninMediator* mediator =
       GetConsistencyPromoSigninMediator();
   OCMExpect([mediator_delegate_mock_

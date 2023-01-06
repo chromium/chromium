@@ -4,20 +4,23 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/mac/foundation_util.h"
+#import "base/run_loop.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -77,13 +80,14 @@ class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
     return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
   }
 
-  ios::FakeChromeIdentityService* identity_service() {
-    return ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  }
-
   AuthenticationService* authentication_service() {
     return AuthenticationServiceFactory::GetForBrowserState(
         browser_state_.get());
+  }
+
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
   }
 
  private:
@@ -101,11 +105,11 @@ TEST_F(AccountsTableViewControllerTest, AddChromeIdentity) {
       [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                      gaiaID:@"foo1ID"
                                        name:@"Fake Foo 1"];
-  identity_service()->AddIdentity(identity);
+  fake_system_identity_manager()->AddIdentity(identity);
 
   // Simulates a credential reload.
   authentication_service()->SignIn(identity);
-  identity_service()->FireChromeIdentityReload();
+  fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
   CreateController();
@@ -125,12 +129,12 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
       [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
-  identity_service()->AddIdentity(identity1);
-  identity_service()->AddIdentity(identity2);
+  fake_system_identity_manager()->AddIdentity(identity1);
+  fake_system_identity_manager()->AddIdentity(identity2);
 
   // Simulates a credential reload.
   authentication_service()->SignIn(identity1);
-  identity_service()->FireChromeIdentityReload();
+  fake_system_identity_manager()->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
 
   CreateController();
@@ -139,8 +143,14 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
   EXPECT_EQ(2, NumberOfSections());
   EXPECT_EQ(3, NumberOfItemsInSection(0));
 
-  // Removes identity2 from identity service but not account info storage.
-  identity_service()->ForgetIdentity(identity2, nil);
+  // Removes identity2 from identity service but not account info storage. This
+  // is an asynchronous call, so wait for completion.
+  {
+    base::RunLoop run_loop;
+    fake_system_identity_manager()->ForgetIdentity(
+        identity2, base::IgnoreArgs<NSError*>(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   [controller() loadModel];
 
