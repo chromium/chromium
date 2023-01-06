@@ -277,6 +277,7 @@ clang_tot_linux_builder(
 clang_tot_linux_builder(
     name = "ToTLinuxMSan",
     short_name = "msn",
+    os = os.LINUX_FOCAL,
 )
 
 clang_tot_linux_builder(

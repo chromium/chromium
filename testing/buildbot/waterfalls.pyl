@@ -1741,7 +1741,7 @@
       },
       'ToTLinuxMSan': {
         'mixins': [
-          'linux-bionic',
+          'linux-focal',
         ],
         'additional_compile_targets': [
           'all',

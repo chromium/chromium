@@ -2352,7 +2352,7 @@
     ],
 
     'clang_tot_msan_release': [
-      'clang_tot', 'msan', 'release',
+      'clang_tot', 'msan_focal', 'release',
     ],
 
     'clang_tot_official': [
