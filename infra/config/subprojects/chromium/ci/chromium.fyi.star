@@ -2620,33 +2620,6 @@ fyi_ios_builder(
     schedule = "0 2,6,10,14,18,22 * * *",
 )
 
-ci.builder(
-    # An FYI version of the following builders that runs on Focal:
-    # https://ci.chromium.org/p/chromium/builders/ci/Linux%20ChromiumOS%20MSan%20Builder
-    # https://ci.chromium.org/p/chromium/builders/ci/Linux%20ChromiumOS%20MSan%20Tests
-    # TODO(crbug.com/1260217): Remove this builder when the main MSAN builder
-    # has migrated to focal.
-    name = "Linux ChromiumOS MSan Focal",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_msan",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-        ),
-    ),
-    os = os.LINUX_FOCAL,
-    console_view_entry = consoles.console_view_entry(
-        category = "msan",
-        short_name = "crs",
-    ),
-    execution_timeout = 16 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
 fyi_mac_builder(
     name = "Mac Builder Next",
     builder_spec = builder_config.builder_spec(
