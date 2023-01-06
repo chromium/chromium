@@ -11,9 +11,15 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 
+class AccountId;
+
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -65,6 +71,16 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // could not be extracted from the |browser_context|.
   static std::string GetUserIdHashFromBrowserContext(
       content::BrowserContext* browser_context);
+
+  // Returns BrowserContext instance of the user associated with |account_id|
+  // if it is created and fully initialized. Otherwise, returns nullptr.
+  content::BrowserContext* GetBrowserContextByAccountId(
+      const AccountId& account_id);
+
+  // Returns BrowserContext instance of the |user| if it is created and fully
+  // initialized. Otherwise, returns nullptr.
+  content::BrowserContext* GetBrowserContextByUser(
+      const user_manager::User* user);
 
   // In ash-chrome, we have three special browser context instances
   // (a.k.a. Profile).

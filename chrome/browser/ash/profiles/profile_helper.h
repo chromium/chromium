@@ -134,10 +134,14 @@ class ProfileHelper
   // Should called once after UserManager instance has been created.
   virtual void Initialize() = 0;
 
+  // DEPRECATED: Please use
+  // BrowserContextHelper::GetBrowserContextByAccountId() instead.
   // Returns profile of the user associated with |account_id| if it is created
   // and fully initialized. Otherwise, returns NULL.
   virtual Profile* GetProfileByAccountId(const AccountId& account_id) = 0;
 
+  // DEPRECATED: Please use
+  // BrowserContextHelper::GetBrowserContextByUser() instead.
   // Returns profile of the |user| if it is created and fully initialized.
   // Otherwise, returns NULL.
   virtual Profile* GetProfileByUser(const user_manager::User* user) = 0;

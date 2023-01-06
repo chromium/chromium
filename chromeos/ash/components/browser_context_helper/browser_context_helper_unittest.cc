@@ -5,6 +5,10 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 #include "base/files/file_path.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +112,104 @@ TEST_F(BrowserContextHelperTest, GetUserIdHashFromBrowserContext) {
     EXPECT_EQ(test_case.expect,
               BrowserContextHelper::GetUserIdHashFromBrowserContext(&context));
   }
+}
+
+TEST_F(BrowserContextHelperTest, GetBrowserContextByAccountId) {
+  // Set up BrowserContextHelper instance.
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
+  // Set up UserManager.
+  user_manager::ScopedUserManager scoped_user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
+      user_manager::UserManager::Get());
+
+  // Set up a User and its BrowserContext instance.
+  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  const std::string username_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  fake_user_manager->AddUser(account_id);
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
+      /*is_off_the_record=*/false);
+
+  // BrowserContext instance corresponding to the account_id should be returned.
+  EXPECT_EQ(browser_context, helper.GetBrowserContextByAccountId(account_id));
+
+  // It returns nullptr, if User instance corresponding to account_id is not
+  // found.
+  EXPECT_FALSE(helper.GetBrowserContextByAccountId(
+      AccountId::FromUserEmail("notfound@test")));
+}
+
+TEST_F(BrowserContextHelperTest, GetBrowserContextByUser) {
+  // Set up BrowserContextHelper instance.
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
+  // Set up UserManager.
+  user_manager::ScopedUserManager scoped_user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
+      user_manager::UserManager::Get());
+
+  // Set up a User and its BrowserContext instance.
+  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  const std::string username_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  const user_manager::User* user = fake_user_manager->AddUser(account_id);
+  content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
+      /*is_off_the_record=*/false);
+
+  // Before User is marked that its Profile is created, GetBrowserContextByUser
+  // should return nullptr.
+  EXPECT_FALSE(helper.GetBrowserContextByUser(user));
+
+  // Mark User as if Profile is created.
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  // Then the appropriate BrowserContext instance should be returned.
+  EXPECT_EQ(browser_context, helper.GetBrowserContextByUser(user));
+}
+
+TEST_F(BrowserContextHelperTest, GetBrowserContextByUser_Guest) {
+  // Set up BrowserContextHelper instance.
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
+  // Set up UserManager.
+  user_manager::ScopedUserManager scoped_user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
+      user_manager::UserManager::Get());
+
+  // Set up a User and its BrowserContext instance.
+  const AccountId account_id = AccountId::FromUserEmail("guest@guest");
+  const std::string username_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  const user_manager::User* user = fake_user_manager->AddGuestUser(account_id);
+  delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
+      /*is_off_the_record=*/false);
+  content::BrowserContext* otr_browser_context =
+      delegate_ptr->CreateBrowserContext(
+          delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
+          /*is_off_the_record=*/true);
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+
+  // Off the record instance should be returned.
+  EXPECT_EQ(otr_browser_context, helper.GetBrowserContextByUser(user));
 }
 
 TEST_F(BrowserContextHelperTest, GetUserBrowserContextDirName) {

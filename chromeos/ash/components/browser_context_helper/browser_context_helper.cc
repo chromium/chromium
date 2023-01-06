@@ -5,8 +5,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -68,6 +71,39 @@ std::string BrowserContextHelper::GetUserIdHashFromBrowserContext(
   }
 
   return dir.substr(base::StringPiece(kBrowserContextDirPrefix).length());
+}
+
+content::BrowserContext* BrowserContextHelper::GetBrowserContextByAccountId(
+    const AccountId& account_id) {
+  const auto* user = user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user) {
+    LOG(WARNING) << "Unable to retrieve user for account_id: " << account_id;
+    return nullptr;
+  }
+
+  return GetBrowserContextByUser(user);
+}
+
+content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
+    const user_manager::User* user) {
+  DCHECK(user);
+
+  if (!user->is_profile_created()) {
+    return nullptr;
+  }
+
+  content::BrowserContext* browser_context = delegate_->GetBrowserContextByPath(
+      GetBrowserContextPathByUserIdHash(user->username_hash()));
+
+  // GetBrowserContextByPath() returns a new instance of ProfileImpl,
+  // but actually its off-the-record profile should be used.
+  // TODO(hidehiko): Replace this by user->GetType() == USER_TYPE_GUEST.
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+    browser_context =
+        delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+  }
+
+  return browser_context;
 }
 
 // static

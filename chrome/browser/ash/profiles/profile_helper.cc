@@ -316,40 +316,30 @@ void ProfileHelperImpl::Initialize() {
 }
 
 Profile* ProfileHelperImpl::GetProfileByAccountId(const AccountId& account_id) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-
-  if (!user) {
-    LOG(WARNING) << "Unable to retrieve user for account_id.";
-    return nullptr;
+  // TODO(crbug.com/1325210): Remove test injection from here.
+  if (!user_to_profile_for_testing_.empty()) {
+    const auto* user = user_manager::UserManager::Get()->FindUser(account_id);
+    auto it = user_to_profile_for_testing_.find(user);
+    if (it != user_to_profile_for_testing_.end()) {
+      return it->second;
+    }
   }
 
-  return GetProfileByUser(user);
+  return Profile::FromBrowserContext(
+      browser_context_helper_->GetBrowserContextByAccountId(account_id));
 }
 
 Profile* ProfileHelperImpl::GetProfileByUser(const user_manager::User* user) {
-  // This map is non-empty only in tests.
+  // TODO(crbug.com/1325210): Remove test injection from here.
   if (!user_to_profile_for_testing_.empty()) {
-    std::map<const user_manager::User*, Profile*>::const_iterator it =
-        user_to_profile_for_testing_.find(user);
-    if (it != user_to_profile_for_testing_.end())
+    auto it = user_to_profile_for_testing_.find(user);
+    if (it != user_to_profile_for_testing_.end()) {
       return it->second;
+    }
   }
 
-  if (!user->is_profile_created())
-    return nullptr;
-
-  Profile* profile = Profile::FromBrowserContext(
-      browser_context_helper_->delegate()->GetBrowserContextByPath(
-          browser_context_helper_->GetBrowserContextPathByUserIdHash(
-              user->username_hash())));
-
-  // GetActiveUserProfile() or GetProfileByUserIdHash() returns a new instance
-  // of ProfileImpl(), but actually its off-the-record profile should be used.
-  if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
-    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  return profile;
+  return Profile::FromBrowserContext(
+      browser_context_helper_->GetBrowserContextByUser(user));
 }
 
 const user_manager::User* ProfileHelperImpl::GetUserByProfile(
@@ -433,6 +423,7 @@ void ProfileHelperImpl::SetProfileToUserMappingForTesting(
 void ProfileHelperImpl::SetUserToProfileMappingForTesting(
     const user_manager::User* user,
     Profile* profile) {
+  DCHECK(user);
   user_to_profile_for_testing_[user] = profile;
 }
 

@@ -2,6 +2,8 @@
 # //chromeos/ash/components/browser_context_helper.
 include_rules = [
   "+content/public/browser/browser_context.h",
+  "+components/account_id",
+  "+components/user_manager",
 
   # For testing.
   "+content/public/test",
