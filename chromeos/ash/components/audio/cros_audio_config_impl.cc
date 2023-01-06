@@ -139,6 +139,11 @@ void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
   }
 }
 
+void CrosAudioConfigImpl::SetInputGainPercent(uint8_t gain) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  audio_handler->SetInputGainPercent(gain);
+}
+
 void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   const AudioDevice* next_active_device =

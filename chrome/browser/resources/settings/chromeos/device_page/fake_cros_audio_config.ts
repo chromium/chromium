@@ -87,7 +87,6 @@ export const fakeInternalMicActive: AudioDevice = {
 // handle audio input.
 export interface FakeAudioSystemProperties extends AudioSystemPropertiesMojom {
   inputDevices: AudioDevice[];
-  inputVolumePercent: number;
 }
 
 export type AudioSystemProperties =
@@ -104,7 +103,6 @@ export const defaultFakeAudioSystemProperties: AudioSystemProperties = {
   outputMuteState: MuteState.kNotMuted,
   inputDevices: [fakeInternalFrontMic, fakeBluetoothMic],
   inputMuteState: MuteState.kNotMuted,
-  inputVolumePercent: 57,
 };
 
 /** Creates an audio device based on provided device and isActive override. */
@@ -115,7 +113,7 @@ export function createAudioDevice(
 }
 
 export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
-  setInputVolumePercent(percent: number): void;
+  setInputGainPercent(percent: number): void;
   setNoiseCancellationEnabled(enabled: boolean): void;
 }
 
@@ -203,12 +201,12 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   }
 
   /**
-   * Sets the `inputVolumePercent` to the desired volume and notifies
+   * Sets the `inputGainPercent` to the desired volume and notifies
    * observers.
    */
-  setInputVolumePercent(volume: number): void {
-    assert(volume >= 0 && volume <= 100);
-    this.audioSystemProperties.inputVolumePercent = volume;
+  setInputGainPercent(gain: number): void {
+    assert(gain >= 0 && gain <= 100);
+    this.audioSystemProperties.inputGainPercent = gain;
     this.notifyAudioSystemPropertiesUpdated();
   }
 

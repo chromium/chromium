@@ -29,6 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   mojom::MuteState GetInputMuteState() const override;
   void SetOutputMuted(bool muted) override;
   void SetOutputVolumePercent(int8_t volume) override;
+  void SetInputGainPercent(uint8_t gain) override;
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
 

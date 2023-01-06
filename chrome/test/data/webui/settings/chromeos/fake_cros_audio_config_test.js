@@ -168,15 +168,15 @@ suite('FakeCrosAudioConfig', function() {
         onPropertiesUpdated.calls_[2][0].inputMuteState);
   });
 
-  test('VerifySetInputVolumeTriggersMatchingPropertyUpdate', () => {
-    const expectedVolumePercent = 32;
+  test('VerifySetInputGainTriggersMatchingPropertyUpdate', () => {
+    const expectedGainPercent = 32;
     /** @type {AudioSystemProperties} */
     const updatedProperties = {
       ...defaultProperties,
-      inputVolumePercent: expectedVolumePercent,
+      inputGainPercent: expectedGainPercent,
     };
     onPropertiesUpdated.addExpectation(updatedProperties);
-    crosAudioConfig.setInputVolumePercent(expectedVolumePercent);
+    crosAudioConfig.setInputGainPercent(expectedGainPercent);
 
     mockController.verifyMocks();
   });

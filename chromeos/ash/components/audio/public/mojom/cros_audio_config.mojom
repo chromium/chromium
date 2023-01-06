@@ -109,6 +109,9 @@ interface CrosAudioConfig {
   // threshold and the device is muted, it's unmuted.
   SetOutputVolumePercent(int8 volume);
 
+  // Sets the gain of the active input device.
+  SetInputGainPercent(uint8 gain);
+
   // Updates active output or input device based on the audio device ID
   // provided.
   SetActiveDevice(uint64 device);

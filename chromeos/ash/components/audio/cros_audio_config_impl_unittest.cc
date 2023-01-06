@@ -149,6 +149,12 @@ class CrosAudioConfigImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetInputGainPercentFromFrontEnd(int gain_percent) {
+    // TODO(swifton): Replace RunUntilIdle with Run and QuitClosure.
+    remote_->SetInputGainPercent(gain_percent);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetOutputMuteState(mojom::MuteState mute_state) {
     switch (mute_state) {
       case mojom::MuteState::kMutedByUser:
@@ -285,6 +291,26 @@ TEST_F(CrosAudioConfigImplTest, GetSetOutputVolumePercent) {
   EXPECT_EQ(kTestOutputVolumePercent,
             fake_observer->last_audio_system_properties_.value()
                 ->output_volume_percent);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetInputGainPercent) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  // |fake_observer| count is first incremented in Observe() method.
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  ASSERT_EQ(
+      kDefaultInputGainPercent,
+      fake_observer->last_audio_system_properties_.value()->input_gain_percent);
+
+  SetInputGainPercentFromFrontEnd(kTestInputGainPercent);
+
+  // This check relies on the fact that when CrasAudioHandler receives a call to
+  // change the input gain, it will notify all observers, one of which is
+  // |fake_observer|.
+  ASSERT_EQ(2u, fake_observer->num_properties_updated_calls_);
+  EXPECT_EQ(
+      kTestInputGainPercent,
+      fake_observer->last_audio_system_properties_.value()->input_gain_percent);
 }
 
 TEST_F(CrosAudioConfigImplTest, GetSetOutputVolumePercentMuteThresholdTest) {
