@@ -38,15 +38,6 @@ class NativeContextualSearchContext : public ContextualSearchContext {
       const base::android::JavaParamRef<jstring>& j_home_country,
       jboolean j_may_send_base_page_url);
 
-  // Sets the surrounding text to the given string and the selection to the
-  // given start/end range.
-  void SetSurroundingsAndSelection(
-      JNIEnv* env,
-      jobject obj,
-      const base::android::JavaParamRef<jstring>& j_surrounding_text,
-      jint j_selection_start,
-      jint j_selection_end);
-
   // Adjust the current selection offsets by the given signed amounts.
   void AdjustSelection(JNIEnv* env,
                        jobject obj,

@@ -171,7 +171,6 @@ public class ContextualSearchManager
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private boolean mDidStartLoadingResolvedSearchRequest;
-    private boolean mDidStartDelayedIntelligentResolveRequest;
 
     private long mLoadedSearchUrlTimeMs;
     private boolean mWereSearchResultsSeen;
@@ -740,10 +739,7 @@ public class ContextualSearchManager
 
     @Override
     public void handleSearchTermResolutionResponse(ResolvedSearchTerm resolvedSearchTerm) {
-        if (!mInternalStateController.isStillWorkingOn(InternalState.RESOLVING)
-                && !mDidStartDelayedIntelligentResolveRequest) {
-            return;
-        }
+        if (!mInternalStateController.isStillWorkingOn(InternalState.RESOLVING)) return;
 
         // Show an appropriate message for what to search for.
         String message;
@@ -896,7 +892,6 @@ public class ContextualSearchManager
 
     /** Resets internal state that should be reset whenever a Search ends (panel is closed). */
     void resetStateAfterSearch() {
-        mDidStartDelayedIntelligentResolveRequest = false;
         mResolvedSearchTerm = null;
     }
 
@@ -1105,19 +1100,6 @@ public class ContextualSearchManager
                     // the case where it needed to be.
                     mSearchRequest.setNormalPriority();
                     loadSearchUrl();
-                    // For the Delayed Intelligence Feature start a resolve request on the first
-                    // panel open.
-                    if (!mDidStartDelayedIntelligentResolveRequest
-                            && mPolicy.isDelayedIntelligenceActive()
-                            && !TextUtils.isEmpty(mSelectionController.getSelectedText())) {
-                        mDidStartDelayedIntelligentResolveRequest = true;
-                        String selection = mSelectionController.getSelectedText();
-                        // Make sure no surrounding text is sent to Google servers by setting the
-                        // surroundings range to match the selection itself.
-                        mContext.setSurroundingsAndSelection(selection, 0, selection.length());
-                        prepareContextResolveProperties();
-                        issueResolveRequest();
-                    }
                 }
                 mShouldLoadDelayedSearch = true;
                 mPolicy.updateCountersForOpen();
@@ -1365,11 +1347,6 @@ public class ContextualSearchManager
         if (getSearchPanelWebContents() != null) {
             getSearchPanelWebContents().onShow();
         }
-    }
-
-    @Override
-    public boolean isDelayedIntelligenceActive() {
-        return mPolicy.isDelayedIntelligenceActive();
     }
 
     /** @return The {@link SelectionClient} used by Contextual Search. */

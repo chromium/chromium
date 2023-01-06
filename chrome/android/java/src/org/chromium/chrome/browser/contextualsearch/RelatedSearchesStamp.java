@@ -185,8 +185,7 @@ class RelatedSearchesStamp {
      *         requirement.
      */
     private boolean canSendContentIfNeeded() {
-        return !isRelatedSearchesContentNeeded() || mPolicy.isContextualSearchFullyEnabled()
-                || mPolicy.isDelayedIntelligenceActive();
+        return !isRelatedSearchesContentNeeded() || mPolicy.isContextualSearchFullyEnabled();
     }
 
     /** @return whether the runtime configuration has a URL sending permissions requirement. */

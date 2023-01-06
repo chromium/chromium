@@ -810,7 +810,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getPromoControl().onUpdateFromExpandToMaximize(percentage);
         getRelatedSearchesInBarControl().onUpdateFromExpandToMaximize(percentage);
-        getSearchBarControl().onUpdateFromExpandToMaximize(percentage);
     }
 
     @Override
@@ -1057,18 +1056,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
         if (coordinator != null) result = coordinator;
         return result;
-    }
-
-    // ============================================================================================
-    // The Delayed Intelligence Feature support
-    // ============================================================================================
-
-    /**
-     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
-     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
-     */
-    boolean isDelayedIntelligenceActive() {
-        return mManagementDelegate.isDelayedIntelligenceActive();
     }
 
     // ============================================================================================

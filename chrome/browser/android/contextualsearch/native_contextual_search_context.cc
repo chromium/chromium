@@ -46,21 +46,6 @@ void NativeContextualSearchContext::SetResolveProperties(
                                                 j_may_send_base_page_url);
 }
 
-void NativeContextualSearchContext::SetSurroundingsAndSelection(
-    JNIEnv* env,
-    jobject obj,
-    const base::android::JavaParamRef<jstring>& j_surrounding_text,
-    jint j_selection_start,
-    jint j_selection_end) {
-  std::u16string surrounding_text =
-      base::android::ConvertJavaStringToUTF16(env, j_surrounding_text);
-  DCHECK(j_selection_start >= 0);
-  DCHECK(j_selection_end <= static_cast<int>(surrounding_text.length()));
-  DCHECK(j_selection_start <= j_selection_end);
-  ContextualSearchContext::SetSelectionSurroundings(
-      j_selection_start, j_selection_end, surrounding_text);
-}
-
 void NativeContextualSearchContext::AdjustSelection(JNIEnv* env,
                                                     jobject obj,
                                                     jint j_start_adjust,

@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma.ContextualSearchPreference;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -153,20 +152,6 @@ class ContextualSearchPolicy {
         return isContextualSearchFullyEnabled();
     }
 
-    /** Returns whether the Delayed Intelligence Feature is currently enabled or not. */
-    boolean isDelayedIntelligenceEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE);
-    }
-
-    /**
-     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
-     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
-     */
-    boolean isDelayedIntelligenceActive() {
-        return isDelayedIntelligenceEnabled() && !isContextualSearchFullyEnabled();
-    }
-
     /**
      * Returns whether surrounding context can be accessed by other systems or not.
      * @return Whether surroundings are available.
@@ -265,7 +250,7 @@ class ContextualSearchPolicy {
      * @return {@code true} if the URL should be sent.
      */
     boolean doSendBasePageUrl() {
-        if (!isContextualSearchFullyEnabled() && !isDelayedIntelligenceActive()) return false;
+        if (!isContextualSearchFullyEnabled()) return false;
 
         // Ensure that the default search provider is Google.
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return false;

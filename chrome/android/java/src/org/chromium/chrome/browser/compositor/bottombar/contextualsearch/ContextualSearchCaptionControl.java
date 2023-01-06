@@ -119,25 +119,10 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      */
     @Override
     public void onUpdateFromPeekToExpand(float percentage) {
-        if (!mPanel.isDelayedIntelligenceActive()) {
-            super.onUpdateFromPeekToExpand(percentage);
-            if (mHasPeekingCaption) {
-                if (mTransitionAnimator != null) mTransitionAnimator.cancel();
-                mAnimationPercentage = 1.f - percentage;
-            }
-        }
-    }
-
-    /**
-     * Updates the caption when in transition between expanded and maximized states.
-     * @param percentage The percentage to the more opened state.
-     */
-    public void onUpdateFromExpandToMaximize(float percentage) {
-        if (mPanel.isDelayedIntelligenceActive()) {
-            if (mHasPeekingCaption) {
-                if (mTransitionAnimator != null) mTransitionAnimator.cancel();
-                mAnimationPercentage = 1.f - percentage;
-            }
+        super.onUpdateFromPeekToExpand(percentage);
+        if (mHasPeekingCaption) {
+            if (mTransitionAnimator != null) mTransitionAnimator.cancel();
+            mAnimationPercentage = 1.f - percentage;
         }
     }
 

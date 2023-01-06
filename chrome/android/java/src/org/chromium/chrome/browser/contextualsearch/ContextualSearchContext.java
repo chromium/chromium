@@ -155,24 +155,6 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * Sets the surrounding text and the selection range to the given params, and pushes them
-     * down to the native layer.
-     * @param surroundingText The complete text string to use as the context of the search, which
-     *        surrounds the selection.
-     * @param startOffset The offset from the beginning of the surrounding text to the start of the
-     *        selection (in characters).
-     * @param endOffset The offset from the beginning of the surrounding text to the end of the
-     *        selection (in characters).
-     */
-    void setSurroundingsAndSelection(String surroundingText, int startOffset, int endOffset) {
-        mSurroundingText = surroundingText;
-        mSelectionStartOffset = startOffset;
-        mSelectionEndOffset = endOffset;
-        ContextualSearchContextJni.get().setSurroundingsAndSelection(
-                mNativePointer, this, surroundingText, startOffset, endOffset);
-    }
-
-    /**
      * @return The text that surrounds the selection, or {@code null} if none yet known.
      */
     @Nullable
@@ -480,9 +462,5 @@ public abstract class ContextualSearchContext {
         @NativeClassQualifiedName("NativeContextualSearchContext")
         void prepareToResolve(long nativeContextualSearchContext, ContextualSearchContext caller,
                 boolean isExactSearch, String relatedSearchesStamp);
-        @NativeClassQualifiedName("NativeContextualSearchContext")
-        void setSurroundingsAndSelection(long nativeContextualSearchContext,
-                ContextualSearchContext caller, String surroundings, int startOffset,
-                int endOffset);
     }
 }
