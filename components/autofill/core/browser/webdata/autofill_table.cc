@@ -2162,7 +2162,7 @@ bool AutofillTable::AddServerCardMetadata(
   InsertBuilder(db_, s, kServerCardMetadataTable,
                 {kUseCount, kUseDate, kBillingAddressId, kId});
   s.BindInt64(0, card_metadata.use_count);
-  s.BindInt64(1, card_metadata.use_date.ToInternalValue());
+  s.BindTime(1, card_metadata.use_date);
   s.BindString(2, card_metadata.billing_address_id);
   s.BindString(3, card_metadata.id);
   s.Run();
@@ -2180,7 +2180,7 @@ bool AutofillTable::UpdateServerCardMetadata(const CreditCard& credit_card) {
   InsertBuilder(db_, s, kServerCardMetadataTable,
                 {kUseCount, kUseDate, kBillingAddressId, kId});
   s.BindInt64(0, credit_card.use_count());
-  s.BindInt64(1, credit_card.use_date().ToInternalValue());
+  s.BindTime(1, credit_card.use_date());
   s.BindString(2, credit_card.billing_address_id());
   s.BindString(3, credit_card.server_id());
   s.Run();
@@ -2197,7 +2197,7 @@ bool AutofillTable::UpdateServerCardMetadata(
   InsertBuilder(db_, s, kServerCardMetadataTable,
                 {kUseCount, kUseDate, kBillingAddressId, kId});
   s.BindInt64(0, card_metadata.use_count);
-  s.BindInt64(1, card_metadata.use_date.ToInternalValue());
+  s.BindTime(1, card_metadata.use_date);
   s.BindString(2, card_metadata.billing_address_id);
   s.BindString(3, card_metadata.id);
   s.Run();

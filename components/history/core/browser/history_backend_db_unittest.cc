@@ -252,8 +252,8 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsReasonPathsAndDangerType) {
       // Implicit dependence on value of kDangerTypeNotDangerous from
       // download_database.cc.
       EXPECT_EQ(0, statement.ColumnInt(4));
-      EXPECT_EQ(nowish.ToInternalValue(), statement.ColumnInt64(5));
-      EXPECT_EQ(nowish.ToInternalValue(), statement.ColumnInt64(6));
+      EXPECT_EQ(nowish, statement.ColumnTime(5));
+      EXPECT_EQ(nowish, statement.ColumnTime(6));
 
       EXPECT_TRUE(statement.Step());
       EXPECT_EQ(2, statement.ColumnInt64(0));
@@ -262,8 +262,8 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsReasonPathsAndDangerType) {
       EXPECT_EQ("/path/to/some/file", statement.ColumnString(2));
       EXPECT_EQ("/path/to/some/file", statement.ColumnString(3));
       EXPECT_EQ(0, statement.ColumnInt(4));
-      EXPECT_EQ(nowish.ToInternalValue(), statement.ColumnInt64(5));
-      EXPECT_EQ(nowish.ToInternalValue(), statement.ColumnInt64(6));
+      EXPECT_EQ(nowish, statement.ColumnTime(5));
+      EXPECT_EQ(nowish, statement.ColumnTime(6));
 
       EXPECT_FALSE(statement.Step());
     }
@@ -853,7 +853,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsLastAccessTimeAndTransient) {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT last_access_time, transient from downloads"));
       EXPECT_TRUE(s.Step());
-      EXPECT_EQ(base::Time(), base::Time::FromInternalValue(s.ColumnInt64(0)));
+      EXPECT_EQ(base::Time(), s.ColumnTime(0));
       EXPECT_EQ(0, s.ColumnInt(1));
     }
   }
@@ -1406,7 +1406,7 @@ TEST_F(HistoryBackendDBTest, MigratePresentations) {
       s.BindInt64(0, url_id);
       s.BindString(1, url.spec());
       s.BindString16(2, title);
-      s.BindInt64(3, segment_time.ToInternalValue());
+      s.BindTime(3, segment_time);
       ASSERT_TRUE(s.Run());
     }
 
@@ -1431,7 +1431,7 @@ TEST_F(HistoryBackendDBTest, MigratePresentations) {
                            "(?, ?, ?, ?)"));
       s.BindInt64(0, 4);  // id.
       s.BindInt64(1, segment_id);
-      s.BindInt64(2, segment_time.ToInternalValue());
+      s.BindTime(2, segment_time);
       s.BindInt(3, 5);  // visit count.
       ASSERT_TRUE(s.Run());
     }
@@ -1516,7 +1516,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
       s.BindInt64(0, url_id1);
       s.BindString(1, url1.spec());
       s.BindString16(2, title1);
-      s.BindInt64(3, segment_time.ToInternalValue());
+      s.BindTime(3, segment_time);
       ASSERT_TRUE(s.Run());
     }
 
@@ -1540,7 +1540,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
           "(?, ?, ?, ?)"));
       s.BindInt64(0, 4);  // id.
       s.BindInt64(1, segment_id1);
-      s.BindInt64(2, segment_time.ToInternalValue());
+      s.BindTime(2, segment_time);
       s.BindInt(3, 11);  // visit count.
       ASSERT_TRUE(s.Run());
     }
@@ -1554,7 +1554,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
       s.BindInt64(0, url_id2);
       s.BindString(1, url2.spec());
       s.BindString16(2, title2);
-      s.BindInt64(3, segment_time.ToInternalValue());
+      s.BindTime(3, segment_time);
       ASSERT_TRUE(s.Run());
     }
 
@@ -1578,7 +1578,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
           "(?, ?, ?, ?)"));
       s.BindInt64(0, 5);  // id.
       s.BindInt64(1, segment_id2);
-      s.BindInt64(2, segment_time.ToInternalValue());
+      s.BindTime(2, segment_time);
       s.BindInt(3, 13);  // visit count.
       ASSERT_TRUE(s.Run());
     }

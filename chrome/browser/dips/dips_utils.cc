@@ -27,14 +27,29 @@ bool TimestampRange::Update(base::Time time) {
 }
 
 bool TimestampRange::IsNullOrWithin(TimestampRange other) const {
-  if (!first.has_value()) {
-    return true;
+  if (first.has_value()) {
+    if (!other.first.has_value() || other.first.value() > first.value()) {
+      return false;
+    }
   }
-  if (!other.first.has_value()) {
-    return false;
+  if (last.has_value()) {
+    if (!other.last.has_value() || other.last.value() < last.value()) {
+      return false;
+    }
   }
-  return first.value() >= other.first.value() &&
-         last.value() <= other.last.value();
+
+  return true;
+}
+
+std::ostream& operator<<(std::ostream& os, absl::optional<base::Time> time) {
+  if (time.has_value()) {
+    return os << time.value();
+  }
+  return os << "NULL";
+}
+
+std::ostream& operator<<(std::ostream& os, TimestampRange range) {
+  return os << "[" << range.first << ", " << range.last << "]";
 }
 
 // CookieAccessType:

@@ -100,6 +100,27 @@ TEST(TimestampRangeTest, IsNullOrWithin_AllowsEquals) {
   EXPECT_TRUE(range.IsNullOrWithin(range));
 }
 
+// This tests verifies that open-ended ranges work for this IsNullOrWithin.
+// TODO(kaklilu): remove this test when we update TimestampRange to not support
+// open-ended ranges.
+TEST(TimestampRangeTest, IsNullOrWithin_Regression_OpenEndedRanges) {
+  // Open-end range with lower bound.
+  TimestampRange inner = {base::Time::FromDoubleT(2), absl::nullopt};
+  TimestampRange outer = {base::Time::FromDoubleT(1), absl::nullopt};
+
+  EXPECT_TRUE(inner.IsNullOrWithin(outer));
+  // An open-ended range isn't within an empty range
+  EXPECT_FALSE(inner.IsNullOrWithin(TimestampRange()));
+
+  // Open-end range with upper bound.
+  outer = {absl::nullopt, base::Time::FromDoubleT(2)};
+  inner = {absl::nullopt, base::Time::FromDoubleT(1)};
+
+  EXPECT_TRUE(inner.IsNullOrWithin(outer));
+  // An open-ended range isn't within an empty range
+  EXPECT_FALSE(inner.IsNullOrWithin(TimestampRange()));
+}
+
 TEST(BucketizeBounceDelayTest, BucketizeBounceDelay) {
   // any TimeDelta in (-inf, 1s) should return 0
   EXPECT_EQ(0, BucketizeBounceDelay(base::Days(-1)));

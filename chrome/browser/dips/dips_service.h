@@ -78,6 +78,8 @@ class DIPSService : public KeyedService {
   void InitializeStorageWithEngagedSites();
   void InitializeStorage(base::Time time, std::vector<std::string> sites);
 
+  void OnTimerFired();
+
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // The persisted timer controlling how often incidental state is cleared.
@@ -86,7 +88,6 @@ class DIPSService : public KeyedService {
   // See base/time/time_delta_from_string.h for how that param should be given.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
-
   base::WeakPtrFactory<DIPSService> weak_factory_{this};
 };
 

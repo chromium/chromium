@@ -115,6 +115,8 @@ inline bool operator==(const TimestampRange& lhs, const TimestampRange& rhs) {
   return std::tie(lhs.first, lhs.last) == std::tie(rhs.first, rhs.last);
 }
 
+std::ostream& operator<<(std::ostream& os, TimestampRange type);
+
 // StateValue:
 struct StateValue {
   TimestampRange site_storage_times;
