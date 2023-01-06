@@ -29,6 +29,9 @@ export class ActionManager {
      */
     this.actionNode_;
 
+    /** @private {!MenuManager} */
+    this.menuManager_ = MenuManager.create();
+
     /** @private {!Array<!MenuType>} */
     this.menuStack_ = [];
   }
@@ -48,7 +51,7 @@ export class ActionManager {
   static exitAllMenus() {
     ActionManager.instance.menuStack_ = [];
     ActionManager.instance.actionNode_ = null;
-    MenuManager.close();
+    ActionManager.instance.menuManager_.close();
     if (SwitchAccess.mode === Mode.POINT_SCAN) {
       Navigator.byPoint.start();
     } else {
@@ -276,7 +279,7 @@ export class ActionManager {
     if (actions.length < 2) {
       ActionManager.exitCurrentMenu();
     }
-    MenuManager.open(actions, location);
+    this.menuManager_.open(actions, location);
   }
 
   /**

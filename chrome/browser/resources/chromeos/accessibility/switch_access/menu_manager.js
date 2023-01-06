@@ -10,7 +10,10 @@ import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
 const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+const ScreenRect = chrome.accessibilityPrivate.ScreenRect;
+const SwitchAccessBubble = chrome.accessibilityPrivate.SwitchAccessBubble;
 
 /**
  * Class to handle interactions with the Switch Access action menu, including
@@ -23,7 +26,7 @@ export class MenuManager {
     /** @private {?Array<!MenuAction>} */
     this.displayedActions_ = null;
 
-    /** @private {chrome.accessibilityPrivate.ScreenRect} */
+    /** @private {ScreenRect|undefined} */
     this.displayedLocation_;
 
     /** @private {boolean} */
@@ -34,61 +37,66 @@ export class MenuManager {
 
     /** @private {!EventHandler} */
     this.clickHandler_ = new EventHandler(
-        [], chrome.automation.EventType.CLICKED,
-        event => this.onButtonClicked_(event));
+        [], EventType.CLICKED, event => this.onButtonClicked_(event));
   }
 
-  static get instance() {
-    if (!MenuManager.instance_) {
-      MenuManager.instance_ = new MenuManager();
+  static create() {
+    if (MenuManager.instance) {
+      throw new Error('Cannot instantiate more than one MenuManager');
     }
-    return MenuManager.instance_;
+    MenuManager.instance = new MenuManager();
+    return MenuManager.instance;
   }
 
   // ================= Static Methods ==================
+
+  /** @return {boolean} */
+  static isMenuOpen() {
+    return Boolean(MenuManager.instance) && MenuManager.instance.isMenuOpen_;
+  }
+
+  /** @return {AutomationNode} */
+  static get menuAutomationNode() {
+    if (MenuManager.instance) {
+      return MenuManager.instance.menuAutomationNode_;
+    }
+    return null;
+  }
+
+  // ================ Instance Methods =================
 
   /**
    * If multiple actions are available for the currently highlighted node,
    * opens the menu. Otherwise performs the node's default action.
    * @param {!Array<!MenuAction>} actions
-   * @param {chrome.accessibilityPrivate.ScreenRect|undefined} location
+   * @param {ScreenRect|undefined} location
    */
-  static open(actions, location) {
-    if (!MenuManager.instance.isMenuOpen_) {
+  open(actions, location) {
+    if (!this.isMenuOpen_) {
       if (!location) {
         return;
       }
-      MenuManager.instance.displayedLocation_ = location;
+      this.displayedLocation_ = location;
     }
 
-    if (ArrayUtil.contentsAreEqual(
-            actions, MenuManager.instance.displayedActions_)) {
+    if (ArrayUtil.contentsAreEqual(actions, this.displayedActions_)) {
       return;
     }
-    MenuManager.instance.displayMenuWithActions_(actions);
+    this.displayMenuWithActions_(actions);
   }
 
   /** Exits the menu. */
-  static close() {
-    MenuManager.instance.isMenuOpen_ = false;
-    MenuManager.instance.actionNode_ = null;
-    MenuManager.instance.displayedActions_ = null;
-    MenuManager.instance.displayedLocation_ = null;
-    Navigator.byItem.exitIfInGroup(MenuManager.instance.menuAutomationNode_);
-    MenuManager.instance.menuAutomationNode_ = null;
+  close() {
+    this.isMenuOpen_ = false;
+    this.displayedActions_ = null;
+    // To match the accessibilityPrivate function signature, displayedLocation_
+    // has to be undefined rather than null.
+    this.displayedLocation_ = undefined;
+    Navigator.byItem.exitIfInGroup(this.menuAutomationNode_);
+    this.menuAutomationNode_ = null;
 
     chrome.accessibilityPrivate.updateSwitchAccessBubble(
-        chrome.accessibilityPrivate.SwitchAccessBubble.MENU, false /* show */);
-  }
-
-  /** @return {boolean} */
-  static isMenuOpen() {
-    return MenuManager.instance.isMenuOpen_;
-  }
-
-  /** @return {!AutomationNode} */
-  static get menuAutomationNode() {
-    return MenuManager.instance.menuAutomationNode_;
+        SwitchAccessBubble.MENU, false /* show */);
   }
 
   // ================= Private Methods ==================
@@ -113,11 +121,11 @@ export class MenuManager {
    */
   displayMenuWithActions_(actions) {
     chrome.accessibilityPrivate.updateSwitchAccessBubble(
-        chrome.accessibilityPrivate.SwitchAccessBubble.MENU, true /* show */,
-        this.displayedLocation_, actions);
+        SwitchAccessBubble.MENU, true /* show */, this.displayedLocation_,
+        actions);
 
     this.isMenuOpen_ = true;
-    this.findAndJumpToMenuAutomationNode_();
+    this.findAndJumpToMenu_();
     this.displayedActions_ = actions;
   }
 
@@ -127,9 +135,9 @@ export class MenuManager {
    * node.
    * @private
    */
-  findAndJumpToMenuAutomationNode_() {
-    if (this.hasValidMenuAutomationNode_() && this.menuAutomationNode_) {
-      this.jumpToMenuAutomationNode_(this.menuAutomationNode_);
+  findAndJumpToMenu_() {
+    if (this.hasMenuNode_() && this.menuAutomationNode_) {
+      this.jumpToMenu_(this.menuAutomationNode_);
       return;
     }
     SwitchAccess.findNodeMatching(
@@ -137,11 +145,11 @@ export class MenuManager {
           role: chrome.automation.RoleType.MENU,
           attributes: {className: 'SwitchAccessMenuView'},
         },
-        node => this.jumpToMenuAutomationNode_(node));
+        node => this.jumpToMenu_(node));
   }
 
   /** @private */
-  hasValidMenuAutomationNode_() {
+  hasMenuNode_() {
     return this.menuAutomationNode_ && this.menuAutomationNode_.role &&
         !this.menuAutomationNode_.state[chrome.automation.StateType.OFFSCREEN];
   }
@@ -152,7 +160,7 @@ export class MenuManager {
    * @param {!AutomationNode} node
    * @private
    */
-  jumpToMenuAutomationNode_(node) {
+  jumpToMenu_(node) {
     if (!this.isMenuOpen_) {
       return;
     }
@@ -161,12 +169,8 @@ export class MenuManager {
     if (node.children.length < 1 ||
         node.firstChild.state[chrome.automation.StateType.OFFSCREEN]) {
       new EventHandler(
-          node,
-          [
-            chrome.automation.EventType.CHILDREN_CHANGED,
-            chrome.automation.EventType.LOCATION_CHANGED,
-          ],
-          () => this.jumpToMenuAutomationNode_(node), {listenOnce: true})
+          node, [EventType.CHILDREN_CHANGED, EventType.LOCATION_CHANGED],
+          () => this.jumpToMenu_(node), {listenOnce: true})
           .start();
       return;
     }
@@ -191,3 +195,6 @@ export class MenuManager {
     ActionManager.performAction(selectedAction);
   }
 }
+
+/** @private */
+MenuManager.instance;
