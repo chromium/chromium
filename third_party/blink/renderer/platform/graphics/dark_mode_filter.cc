@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/gfx/color_utils.h"
@@ -51,8 +50,6 @@ sk_sp<SkColorFilter> GetDarkModeFilterForImageOnMainThread(
     DarkModeFilter* filter,
     Image* image,
     const SkIRect& rounded_src) {
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.DarkMode.ApplyToImageOnMainThread");
-
   sk_sp<SkColorFilter> color_filter;
   DarkModeImageCache* cache = image->GetDarkModeImageCache();
   DCHECK(cache);

@@ -778,20 +778,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.DarkMode.ApplyToImageOnMainThread" units="microseconds"
-    expires_after="2023-02-12">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Time spent computing each inverted dark mode image on the main thread. This
-    includes both image decoding and classification.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution.
-  </summary>
-</histogram>
-
 <histogram name="Blink.DecodedImage.AvifDensity.KiBWeighted"
     units="0.01 bits per pixel" expires_after="2022-10-01">
   <owner>jyrki@google.com</owner>
