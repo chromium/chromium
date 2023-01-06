@@ -8981,6 +8981,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"request-desktop-site-per-site-iph",
+     flag_descriptions::kRequestDesktopSitePerSiteIphName,
+     flag_descriptions::kRequestDesktopSitePerSiteIphDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRequestDesktopSitePerSiteIph)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"request-desktop-site-zoom",
      flag_descriptions::kRequestDesktopSiteZoomName,
      flag_descriptions::kRequestDesktopSiteZoomDescription, kOsAndroid,

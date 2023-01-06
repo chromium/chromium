@@ -3879,6 +3879,11 @@ const char kRequestDesktopSiteExceptionsDescription[] =
     "An option in `Site settings` to request the desktop version of websites "
     "based on site level settings.";
 
+const char kRequestDesktopSitePerSiteIphName[] =
+    "Contextual help for request desktop site site-level settings on Android.";
+const char kRequestDesktopSitePerSiteIphDescription[] =
+    "Provide in-product help for desktop site site-level settings.";
+
 const char kRequestDesktopSiteZoomName[] =
     "Default zoom for request desktop site on Android.";
 const char kRequestDesktopSiteZoomDescription[] =

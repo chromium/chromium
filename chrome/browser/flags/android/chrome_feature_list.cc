@@ -260,6 +260,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteOptInControlSynthetic,
     &kRequestDesktopSiteOptInSynthetic,
     &kRequestDesktopSiteDefaultsDowngrade,
+    &kRequestDesktopSitePerSiteIph,
     &kSafeModeForCachedFlags,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
@@ -817,6 +818,10 @@ BASE_FEATURE(kRequestDesktopSiteOptInSynthetic,
 
 BASE_FEATURE(kRequestDesktopSiteDefaultsDowngrade,
              "RequestDesktopSiteDefaultsDowngrade",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRequestDesktopSitePerSiteIph,
+             "RequestDesktopSitePerSiteIph",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafeModeForCachedFlags,
