@@ -18,7 +18,7 @@
 // base::expected.
 namespace base {
 
-template <typename T>
+template <typename T, bool = std::is_void_v<T>>
 class ok;
 
 template <typename E>

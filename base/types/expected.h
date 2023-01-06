@@ -116,7 +116,7 @@ namespace base {
 //     return base::ok(std::move(result));
 //   }
 template <typename T>
-class ok {
+class ok<T, /* is_void_v<T> = */ false> {
  public:
   template <typename U = T, internal::EnableIfOkValueConstruction<T, U> = 0>
   constexpr explicit ok(U&& val) noexcept : value_(std::forward<U>(val)) {}
@@ -147,6 +147,12 @@ class ok {
   T value_;
 };
 
+template <typename T>
+class ok<T, /* is_void_v<T> = */ true> {
+ public:
+  constexpr explicit ok() noexcept = default;
+};
+
 template <typename T, typename U>
 constexpr bool operator==(const ok<T>& lhs, const ok<U>& rhs) noexcept {
   return lhs.value() == rhs.value();
@@ -159,6 +165,8 @@ constexpr bool operator!=(const ok<T>& lhs, const ok<U>& rhs) noexcept {
 
 template <typename T>
 ok(T) -> ok<T>;
+
+ok()->ok<void>;
 
 // [expected.un.object], class template unexpected
 // https://eel.is/c++draft/expected#un.object
@@ -220,7 +228,7 @@ unexpected(E) -> unexpected<E>;
 // [expected.expected], class template expected
 // https://eel.is/c++draft/expected#expected
 template <typename T, typename E>
-class expected<T, E, /* is_void_v<T> = */ false> {
+class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ false> {
   // Note: A partial specialization for void value types follows below.
   static_assert(!std::is_void_v<T>, "Error: T must not be void");
 
@@ -629,7 +637,7 @@ class expected<T, E, /* is_void_v<T> = */ false> {
 
 // [expected.void], partial specialization of expected for void types
 template <typename T, typename E>
-class expected<T, E, /* is_void_v<T> = */ true> {
+class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ true> {
   // Note: A partial specialization for non-void value types can be found above.
   static_assert(std::is_void_v<T>, "Error: T must be void");
 
@@ -676,6 +684,9 @@ class expected<T, E, /* is_void_v<T> = */ true> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr /* implicit */ expected(expected<U, G>&& rhs) noexcept
       : impl_(std::move(rhs.impl_)) {}
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr /* implicit */ expected(base::ok<T>) noexcept {}
 
   template <typename G, internal::EnableIfExplicitConstruction<E, const G&> = 0>
   explicit constexpr expected(const unexpected<G>& e) noexcept

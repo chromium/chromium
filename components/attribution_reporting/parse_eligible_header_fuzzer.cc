@@ -23,7 +23,10 @@ struct Environment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  attribution_reporting::ParseEligibleHeader(
+  // Ignore the result; the input may very well be invalid, and the test is
+  // concerned about the side effects of calling the parse method (buffer
+  // overruns, crashing, et cetera).
+  (void)attribution_reporting::ParseEligibleHeader(
       base::StringPiece(reinterpret_cast<const char*>(data), size));
   return 0;
 }

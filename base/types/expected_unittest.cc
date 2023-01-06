@@ -879,10 +879,10 @@ TEST(ExpectedTest, DeathTests) {
 
   // Accessing moved from objects crashes.
   // NOLINTBEGIN(bugprone-use-after-move)
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedInt{moved_from}, "");
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedInt{std::move(moved_from)}, "");
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedDouble{moved_from}, "");
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedDouble{std::move(moved_from)}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedInt{moved_from}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedInt{std::move(moved_from)}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedDouble{moved_from}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedDouble{std::move(moved_from)}, "");
   EXPECT_DEATH_IF_SUPPORTED(ex = moved_from, "");
   EXPECT_DEATH_IF_SUPPORTED(ex = std::move(moved_from), "");
   EXPECT_DEATH_IF_SUPPORTED(ex.swap(moved_from), "");
@@ -964,6 +964,11 @@ TEST(ExpectedVoid, ImplicitConvertingMoveConstructor) {
   expected<const void, WeakMoveOnly<int>> ex2 = std::move(ex1);
   ASSERT_FALSE(ex2.has_value());
   EXPECT_EQ(ex2.error().value, 42);
+}
+
+TEST(ExpectedVoid, OkConstructor) {
+  constexpr expected<void, int> ex = ok();
+  static_assert(ex.has_value());
 }
 
 TEST(ExpectedVoid, ExplicitErrorConstructor) {
@@ -1322,10 +1327,10 @@ TEST(ExpectedVoidTest, DeathTests) {
 
   // Accessing moved from objects crashes.
   // NOLINTBEGIN(bugprone-use-after-move)
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedInt{moved_from}, "");
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedInt{std::move(moved_from)}, "");
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedDouble{moved_from}, "");
-  EXPECT_DEATH_IF_SUPPORTED(ExpectedDouble{std::move(moved_from)}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedInt{moved_from}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedInt{std::move(moved_from)}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedDouble{moved_from}, "");
+  EXPECT_DEATH_IF_SUPPORTED((void)ExpectedDouble{std::move(moved_from)}, "");
   EXPECT_DEATH_IF_SUPPORTED(ex = moved_from, "");
   EXPECT_DEATH_IF_SUPPORTED(ex = std::move(moved_from), "");
   EXPECT_DEATH_IF_SUPPORTED(ex.swap(moved_from), "");

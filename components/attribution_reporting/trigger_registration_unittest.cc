@@ -302,10 +302,18 @@ TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
 
   base::HistogramTester histograms;
 
-  for (size_t count : std::vector<size_t>{
-           0, 1, 1, 3, kMaxAggregatableTriggerDataPerTrigger + 1}) {
-    ParseWithAggregatableTriggerData(count);
+  for (size_t count : {
+           0,
+           1,
+           1,
+           3,
+       }) {
+    ASSERT_TRUE(ParseWithAggregatableTriggerData(count).has_value());
   }
+
+  ASSERT_FALSE(ParseWithAggregatableTriggerData(
+                   kMaxAggregatableTriggerDataPerTrigger + 1)
+                   .has_value());
 
   EXPECT_THAT(
       histograms.GetAllSamples("Conversions.AggregatableTriggerDataLength"),

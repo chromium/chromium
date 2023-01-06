@@ -271,7 +271,7 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
     cors_result = base::unexpected<CorsErrorStatus>(
         mojom::CorsError::kPreflightInvalidStatus);
   } else {
-    base::expected<void, CorsErrorStatus>();
+    return base::ok();
   }
 
   return cors_result;
