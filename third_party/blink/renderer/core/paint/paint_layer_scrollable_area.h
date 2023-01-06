@@ -676,7 +676,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool SetHasVerticalScrollbar(bool has_scrollbar);
 
   void UpdateScrollCornerStyle();
-  LayoutSize MinimumSizeForResizing(float zoom_factor);
 
   void UpdateResizerStyle(const ComputedStyle* old_style);
 

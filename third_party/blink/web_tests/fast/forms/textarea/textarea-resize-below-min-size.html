@@ -35,30 +35,28 @@ t.step(() => {
   textArea.style.minWidth = '200px';
   textArea.style.minHeight = '200px';
   testDragAndMove(textArea, t.step_func(() => {
-    // The min-width/min-height includes padding and border and width/height
-    // does not include padding and border.
-    // So when we set say min-width = 200px it means actual minimum width of box
-    // to be 194px (as 2px padding and 1px border on all side).
-    // Hence the condition check here for values which are lesser than original
-    // value by 6px.
-    assert_equals(textArea.style.width, '194px');
-    assert_equals(textArea.style.height, '194px');
+    // The min-width/min-height does not include padding and border but the
+    // bounding client rect does. So when we set say min-width = 200px with
+    // 2px padding and 1px border, the actual bounding client width will be:
+    //   (2px + 1px) + 200px + (2px + 1px) = 206px
+    assert_equals(textArea.getBoundingClientRect().width, 200 + 6);
+    assert_equals(textArea.getBoundingClientRect().height, 200 + 6);
 
     textArea.style.width = '400px';
     textArea.style.height = '400px';
     textArea.style.minWidth = '15vw';
     textArea.style.minHeight = '15vh';
     testDragAndMove(textArea, t.step_func(() => {
-      assert_equals(textArea.style.width, '114px');
-      assert_equals(textArea.style.height, '84px');
+      assert_equals(textArea.getBoundingClientRect().width, 120 + 6);
+      assert_equals(textArea.getBoundingClientRect().height, 90 + 6);
 
       textArea.style.width = '400px';
       textArea.style.height = '400px';
       textArea.style.minWidth = '10%';
       textArea.style.minHeight = '10%';
       testDragAndMove(textArea, t.step_func_done(() => {
-        assert_equals(textArea.style.width, '74px');
-        assert_equals(textArea.style.height, '74px');
+        assert_equals(textArea.getBoundingClientRect().width, 80 + 6);
+        assert_equals(textArea.getBoundingClientRect().height, 80 + 6);
       }));
     }));
   }));

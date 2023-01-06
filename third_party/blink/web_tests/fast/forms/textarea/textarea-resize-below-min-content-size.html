@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<style>
+textarea {
+  border: none;
+  min-width: min-content;
+  min-height: 100px;
+  width: 20px;
+  resize: both;
+  overflow: scroll;
+}
+</style>
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<textarea id="textInputID">
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+</textarea>
+
+<script>
+function drag(startX, startY, destX, destY, callback) {
+  chrome.gpuBenchmarking.pointerActionSequence([{source: 'mouse', actions:[
+    {name: 'pointerDown', x: startX, y: startY},
+    {name: 'pointerMove', x: destX, y: destY},
+    {name: 'pointerUp'}]}],
+    callback);
+}
+
+var t = async_test('Test for resizing the TEXTAREA below a minimum width specified with min-content.');
+t.step(() => {
+  assert_own_property(window, 'chrome');
+  assert_own_property(chrome, 'gpuBenchmarking');
+
+  var textArea = document.getElementById('textInputID');
+  var startX = (textArea.getBoundingClientRect().right - 1);
+  var startY = (textArea.getBoundingClientRect().bottom - 1);
+
+  // Try to resize down to zero.
+  drag(startX, startY, 0, 0, t.step_func_done(() => {
+    // The textarea should be constrained by the min-width. The actual width
+    // depends on the font used so we just assert that it is something well
+    // over the specified width of 20px.
+    assert_greater_than(textArea.getBoundingClientRect().width, 40);
+  }));
+});
+</script>
+</body>

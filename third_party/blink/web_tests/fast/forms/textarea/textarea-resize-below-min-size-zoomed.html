@@ -40,8 +40,8 @@ t.step(() => {
   var startX = textArea.offsetLeft + 195;
   var startY = textArea.offsetTop + 195;
   drag(startX, startY, startX - 150, startY - 150, t.step_func_done(() => {
-    assert_equals(textArea.style.width, '100px');
-    assert_equals(textArea.style.height, '100px');
+    assert_equals(textArea.getBoundingClientRect().width, 100);
+    assert_equals(textArea.getBoundingClientRect().height, 100);
   }));
 });
 </script>
