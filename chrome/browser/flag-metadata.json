@@ -3100,8 +3100,8 @@
   },
   {
     "name": "enable-tab-groups-continuation",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 110
+    "owners": [ "ckitagawa", "fredmello", "memex-team@google.com" ],
+    "expiry_milestone": 114
   },
   {
     "name": "enable-tab-groups-for-tablets",
