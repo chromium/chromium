@@ -6645,7 +6645,7 @@ void GLES2Implementation::ProduceTextureDirectCHROMIUM(GLuint texture,
                      << static_cast<const void*>(data) << ")");
   static_assert(std::is_trivially_copyable<Mailbox>::value,
                 "gpu::Mailbox is not trivially copyable");
-  Mailbox result = Mailbox::Generate();
+  Mailbox result = Mailbox::GenerateLegacyMailbox();
   memcpy(data, result.name, sizeof(result.name));
   helper_->ProduceTextureDirectCHROMIUMImmediate(texture, data);
   CheckGLError();

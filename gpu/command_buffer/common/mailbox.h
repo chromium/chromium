@@ -84,7 +84,7 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   // NOTE: We are in the process of eliminating this method. DO NOT ADD ANY NEW
   // USAGES - instead, reach out to shared-image-team@ with your use case. See
   // crbug.com/1273084.
-  static Mailbox Generate();
+  static Mailbox GenerateLegacyMailbox();
 
   friend class content::PPB_Graphics3D_Impl;
   friend class gles2::GLES2Implementation;
@@ -93,7 +93,9 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
  public:
   // Generate a legacy mailbox for usage in tests of production code that
   // still interacts with the legacy mailbox system.
-  static Mailbox GenerateLegacyMailboxForTesting() { return Generate(); }
+  static Mailbox GenerateLegacyMailboxForTesting() {
+    return GenerateLegacyMailbox();
+  }
 };
 
 }  // namespace gpu

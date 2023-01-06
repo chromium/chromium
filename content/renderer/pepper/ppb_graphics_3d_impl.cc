@@ -528,7 +528,7 @@ gpu::Mailbox PPB_Graphics3D_Impl::GenerateMailbox() {
     return mailbox;
   }
 
-  return gpu::Mailbox::Generate();
+  return gpu::Mailbox::GenerateLegacyMailbox();
 }
 
 int32_t PPB_Graphics3D_Impl::DoPresent(const gpu::SyncToken& sync_token,
