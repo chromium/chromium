@@ -80,7 +80,9 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   self.newTargetLanguageIndex = kInvalidLanguageIndex;
   self.sourceLanguageIsUnknown = self.config->unknown_language_name() ==
                                  self.config->source_language_name();
-  self.sourceLanguageIsInitiallyUnknown = self.sourceLanguageIsUnknown;
+  self.sourceLanguageIsInitiallyUnknown =
+      self.config->unknown_language_name() ==
+      self.config->initial_source_language_name();
 
   // The Translate button should be enabled whenever the page is untranslated,
   // which may be before any translation has been triggered or after an error

@@ -61,6 +61,11 @@ class TranslateUIDelegate {
   // Returns the source language index.
   size_t GetSourceLanguageIndex() const { return source_language_index_; }
 
+  // Returns the initial source language index.
+  size_t GetInitialSourceLanguageIndex() const {
+    return initial_source_language_index_;
+  }
+
   // Returns the source language code.
   std::string GetSourceLanguageCode() const;
 

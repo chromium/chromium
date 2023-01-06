@@ -27,6 +27,10 @@ class TranslateModalRequestConfig
   translate::TranslateStep current_step() const { return current_step_; }
   // The source language name.
   std::u16string source_language_name() const { return source_language_name_; }
+  // The initial source language name.
+  std::u16string initial_source_language_name() const {
+    return initial_source_language_name_;
+  }
   // A special language name the is used when the source language could not be
   // detected.
   std::u16string unknown_language_name() const {
@@ -62,6 +66,7 @@ class TranslateModalRequestConfig
   // Configuration data extracted from `infobar_`'s translate delegate.
   translate::TranslateStep current_step_;
   std::u16string source_language_name_;
+  std::u16string initial_source_language_name_;
   std::u16string unknown_language_name_;
   std::u16string target_language_name_;
   std::vector<std::u16string> language_names_;
