@@ -261,14 +261,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PredictionManagerBrowserTest,
                          /*use_install_wide_model_store=*/testing::Bool());
 
-// Flaky on linux-chromeos-dbg, see https://crbug.com/1403389/.
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
-#define MAYBE_ComponentUpdatesPrefDisabled DISABLED_ComponentUpdatesPrefDisabled
-#else
-#define MAYBE_ComponentUpdatesPrefDisabled ComponentUpdatesPrefDisabled
-#endif
 IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
-                       MAYBE_ComponentUpdatesPrefDisabled) {
+                       ComponentUpdatesPrefDisabled) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   g_browser_process->local_state()->SetBoolean(
@@ -288,17 +282,8 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
       0);
 }
 
-// Flaky on linux-chromeos-dbg bot. http://crbug.com/1402697
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_ModelsAndFeaturesStoreInitialized \
-  DISABLED_ModelsAndFeaturesStoreInitialized
-#else
-#define MAYBE_ModelsAndFeaturesStoreInitialized \
-  ModelsAndFeaturesStoreInitialized
-#endif
-
 IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
-                       MAYBE_ModelsAndFeaturesStoreInitialized) {
+                       ModelsAndFeaturesStoreInitialized) {
   ModelFileObserver model_file_observer;
   SetResponseType(
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
@@ -321,14 +306,8 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
       kSuccessfulModelVersion, 1);
 }
 
-// TODO(crbug.com/1402697): Flaky on linux-chromeos-chrome bot.
-#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
-#define MAYBE_PredictionModelFetchFailed DISABLED_PredictionModelFetchFailed
-#else
-#define MAYBE_PredictionModelFetchFailed PredictionModelFetchFailed
-#endif
 IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
-                       MAYBE_PredictionModelFetchFailed) {
+                       PredictionModelFetchFailed) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   base::HistogramTester histogram_tester;
