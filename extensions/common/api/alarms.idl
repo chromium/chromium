@@ -40,6 +40,7 @@ namespace alarms {
     double? periodInMinutes;
   };
 
+  callback VoidCallback = void ();
   callback AlarmCallback = void (optional Alarm alarm);
   callback AlarmListCallback = void (Alarm[] alarms);
   callback ClearCallback = void (boolean wasCleared);
@@ -63,7 +64,6 @@ namespace alarms {
     //
     // |name|: Optional name to identify this alarm. Defaults to the empty
     // string.
-    //
     // |alarmInfo|: Describes when the alarm should fire.  The initial time must
     // be specified by either <var>when</var> or <var>delayInMinutes</var> (but
     // not both).  If <var>periodInMinutes</var> is set, the alarm will repeat
@@ -71,7 +71,11 @@ namespace alarms {
     // neither <var>when</var> or <var>delayInMinutes</var> is set for a
     // repeating alarm, <var>periodInMinutes</var> is used as the default for
     // <var>delayInMinutes</var>.
-    static void create(optional DOMString name, AlarmCreateInfo alarmInfo);
+    // |callback|: Invoked when the alarm has been created.
+    [supportsPromises] static void create(
+        optional DOMString name,
+        AlarmCreateInfo alarmInfo,
+        optional VoidCallback callback);
 
     // Retrieves details about the specified alarm.
     // |name|: The name of the alarm to get. Defaults to the empty string.

@@ -6,15 +6,33 @@ let inIncognito = chrome.extension.inIncognitoContext;
 let alarmName = inIncognito ? 'incognito' : 'normal';
 let createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
 
+var alarmFired = false;
+var succeedOnAlarm = false;
+
 chrome.alarms.onAlarm.addListener(function(alarm) {
+  chrome.test.assertFalse(alarmFired);
+  alarmFired = true;
   chrome.test.assertEq(inIncognito ? 'incognito' : 'normal', alarm.name);
-  chrome.test.succeed();
+  if (succeedOnAlarm) {
+    chrome.test.succeed();
+  }
 });
 
 chrome.test.runTests([
   // Creates an alarm with the name of the context it was created in.
   function createAlarm() {
-    chrome.alarms.create(alarmName, createParams);
+    isWaitingForAlarm = true;
+    chrome.alarms.create(alarmName, createParams, () => {
+      chrome.test.assertNoLastError();
+      // The alarm (which was set for an obscenely short amount of time) could
+      // potentially already have fired. If so, succeed now; else, the test will
+      // succeed when it fires.
+      if (alarmFired) {
+        chrome.test.succed();
+      } else {
+        succeedOnAlarm = true;
+      }
+    });
   },
   function getAlarm() {
     chrome.alarms.get(alarmName, function(alarm) {
