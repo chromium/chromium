@@ -20,7 +20,6 @@
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
-#include "base/win/windows_version.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -120,10 +119,6 @@ class ScopedCopyRegKey {
 }  // namespace
 
 TEST(ShellUtilInteractiveTest, MakeChromeDefaultDirectly) {
-  // Direct default setting is only supported on Win10 or above.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    GTEST_SKIP();
-
   base::win::AssertComInitialized();
 
   base::ScopedTempDir temp_dir;

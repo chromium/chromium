@@ -27,7 +27,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_params.h"
@@ -135,7 +134,6 @@ void ExecuteAndLogShortcutOperation(
   // For Start Menu shortcut creation on versions of Win10 that support
   // pinning, record whether or not the installer pinned Chrome.
   if (location == ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT &&
-      base::win::GetVersion() >= base::win::Version::WIN10 &&
       CanPinShortcutToTaskbar()) {
     SetInstallerPinnedChromeToTaskbar(properties.pin_to_taskbar && pinned);
   }

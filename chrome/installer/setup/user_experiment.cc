@@ -24,7 +24,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
@@ -223,10 +222,6 @@ bool ShouldRunUserExperiment(const InstallerState& installer_state) {
   return false;
 #else
   if (!install_static::SupportsRetentionExperiments())
-    return false;
-
-  // The current experiment only applies to Windows 10 and newer.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
     return false;
 
   // Installs originating from the MSI and domain joined machines are excluded.

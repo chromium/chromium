@@ -300,13 +300,11 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
     entries->back()->set_removal_flag(RegistryEntry::RemovalFlag::VALUE);
   }
 
-  // The following entries are required as of Windows 8, but do not
-  // depend on the DelegateExecute verb handler being set.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    if (!app_info.app_id.empty()) {
-      entries->push_back(std::make_unique<RegistryEntry>(
-          prog_id_path, ShellUtil::kRegAppUserModelId, app_info.app_id));
-    }
+  // The following entries are required but do not depend on the DelegateExecute
+  // verb handler being set.
+  if (!app_info.app_id.empty()) {
+    entries->push_back(std::make_unique<RegistryEntry>(
+        prog_id_path, ShellUtil::kRegAppUserModelId, app_info.app_id));
   }
 
   // Add \Software\Classes\<prog_id>\Application entries
@@ -771,12 +769,11 @@ bool QuickIsChromeRegisteredForMode(
   }
   reg_key += ShellUtil::kRegShellOpen;
 
-  // ProgId registrations are allowed to reside in HKCU for user-level installs
-  // (and values there have priority over values in HKLM). The same is true for
-  // shell integration entries as of Windows 8.
+  // ProgId and shell integration registrations are allowed to reside in HKCU
+  // for user-level installs, and values there have priority over values in
+  // HKLM.
   if (confirmation_level == CONFIRM_PROGID_REGISTRATION ||
-      (confirmation_level == CONFIRM_SHELL_REGISTRATION &&
-       base::win::GetVersion() >= base::win::Version::WIN8)) {
+      confirmation_level == CONFIRM_SHELL_REGISTRATION) {
     const RegKey key_hkcu(HKEY_CURRENT_USER, reg_key.c_str(), KEY_QUERY_VALUE);
     std::wstring hkcu_value;
     // If |reg_key| is present in HKCU, assert that it points to |chrome_exe|.
@@ -894,9 +891,7 @@ bool GetInstallationSpecificSuffix(const base::FilePath& chrome_exe,
 // be placed for this install. As of Windows 8 everything can go in HKCU for
 // per-user installs.
 HKEY DetermineRegistrationRoot(bool is_per_user) {
-  return is_per_user && base::win::GetVersion() >= base::win::Version::WIN8
-             ? HKEY_CURRENT_USER
-             : HKEY_LOCAL_MACHINE;
+  return is_per_user ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
 }
 
 // Associates Chrome with supported protocols and file associations. This should
@@ -1020,19 +1015,16 @@ base::win::ShortcutProperties TranslateShortcutProperties(
 // Cleans up an old verb (run) we used to register in
 // <root>\Software\Classes\Chrome<.suffix>\.exe\shell\run on Windows 8.
 void RemoveRunVerbOnWindows8() {
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    bool is_per_user_install = InstallUtil::IsPerUserInstall();
-    HKEY root_key = DetermineRegistrationRoot(is_per_user_install);
-    // There's no need to rollback, so forgo the usual work item lists and just
-    // remove the key from the registry.
-    std::wstring run_verb_key =
-        base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator,
-                      ShellUtil::GetBrowserModelId(is_per_user_install),
-                      ShellUtil::kRegExePath, ShellUtil::kRegShellPath,
-                      kFilePathSeparator, ShellUtil::kRegVerbRun});
-    installer::DeleteRegistryKey(root_key, run_verb_key,
-                                 WorkItem::kWow64Default);
-  }
+  bool is_per_user_install = InstallUtil::IsPerUserInstall();
+  HKEY root_key = DetermineRegistrationRoot(is_per_user_install);
+  // There's no need to rollback, so forgo the usual work item lists and just
+  // remove the key from the registry.
+  std::wstring run_verb_key =
+      base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator,
+                    ShellUtil::GetBrowserModelId(is_per_user_install),
+                    ShellUtil::kRegExePath, ShellUtil::kRegShellPath,
+                    kFilePathSeparator, ShellUtil::kRegVerbRun});
+  installer::DeleteRegistryKey(root_key, run_verb_key, WorkItem::kWow64Default);
 }
 
 // Probe using IApplicationAssociationRegistration::QueryCurrentDefault
@@ -1184,11 +1176,10 @@ ShellUtil::DefaultState ProbeProtocolHandlers(const base::FilePath& chrome_exe,
   return ProbeAppIsDefaultHandlers(chrome_exe, protocols, num_protocols);
 }
 
-// (Windows 8+) Finds and stores an app shortcuts folder path in *|path|.
+// Finds and stores an app shortcuts folder path in *`path`.
 // Returns true on success.
 bool GetAppShortcutsFolder(ShellUtil::ShellChange level, base::FilePath* path) {
   DCHECK(path);
-  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN8);
 
   base::FilePath folder;
   if (!base::PathService::Get(base::DIR_APP_SHORTCUTS, &folder)) {
@@ -1570,8 +1561,6 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
 bool RegisterApplicationForProtocols(const std::vector<std::wstring>& protocols,
                                      const std::wstring& prog_id,
                                      const base::FilePath& chrome_exe) {
-  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
-
   std::vector<std::unique_ptr<RegistryEntry>> entries;
   ShellUtil::ApplicationInfo app_info =
       ShellUtil::GetApplicationInfoForProgId(prog_id);
@@ -1933,12 +1922,10 @@ bool ShellUtil::ShortcutLocationIsSupported(ShortcutLocation location) {
     case SHORTCUT_LOCATION_START_MENU_ROOT:                   // Falls through.
     case SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED:  // Falls through.
     case SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:        // Falls through.
-    case SHORTCUT_LOCATION_STARTUP:
-      return true;
-    case SHORTCUT_LOCATION_TASKBAR_PINS:
-      return base::win::GetVersion() >= base::win::Version::WIN7;
+    case SHORTCUT_LOCATION_STARTUP:                           // Falls through.
+    case SHORTCUT_LOCATION_TASKBAR_PINS:                      // Falls through.
     case SHORTCUT_LOCATION_APP_SHORTCUTS:
-      return base::win::GetVersion() >= base::win::Version::WIN8;
+      return true;
     default:
       NOTREACHED();
       return false;
@@ -2350,7 +2337,8 @@ bool ShellUtil::CanMakeChromeDefaultUnattended() {
 // static
 ShellUtil::InteractiveSetDefaultMode ShellUtil::GetInteractiveSetDefaultMode() {
   DCHECK(!CanMakeChromeDefaultUnattended());
-
+  // TODO(crbug.com/1385856): Remove all code associated with INTENT_PICKER,
+  // including InteractiveSetDefaultMode and GetInteractiveSetDefaultMode().
   if (base::win::GetVersion() >= base::win::Version::WIN10)
     return InteractiveSetDefaultMode::SYSTEM_SETTINGS;
 
@@ -2424,9 +2412,6 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
                                           bool elevate_if_not_admin) {
   DCHECK(!(shell_change & SYSTEM_LEVEL) || IsUserAnAdmin());
 
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
-
   if (!install_static::SupportsSetAsDefaultBrowser())
     return false;
 
@@ -2497,8 +2482,6 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
 
 // static
 bool ShellUtil::LaunchUninstallAppsSettings() {
-  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN10);
-
   static constexpr wchar_t kControlPanelAppModelId[] =
       L"windows.immersivecontrolpanel_cw5n1h2txyewy"
       L"!microsoft.windows.immersivecontrolpanel";
@@ -2981,8 +2964,6 @@ bool ShellUtil::AddAppProtocolAssociations(
     const std::vector<std::wstring>& protocols,
     const std::wstring& prog_id) {
   base::FilePath chrome_exe;
-  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
-
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
     NOTREACHED();
     return false;
@@ -3005,17 +2986,13 @@ bool ShellUtil::AddAppProtocolAssociations(
     if (!AddRegistryEntries(HKEY_CURRENT_USER, entries))
       success = false;
 
-    // On Windows 10, removing the existing user choice for a given protocol
-    // forces Windows to present a disambiguation dialog the next time this
-    // protocol is invoked from the OS.
-    if (base::win::GetVersion() >= base::win::Version::WIN10) {
-      std::unique_ptr<RegistryEntry> entry =
-          GetProtocolUserChoiceEntry(protocol);
-      if (!installer::DeleteRegistryValue(HKEY_CURRENT_USER, entry->key_path(),
-                                          WorkItem::kWow64Default,
-                                          kRegProgId)) {
-        success = false;
-      }
+    // Removing the existing user choice for a given protocol forces Windows to
+    // present a disambiguation dialog the next time this protocol is invoked
+    // from the OS.
+    std::unique_ptr<RegistryEntry> entry = GetProtocolUserChoiceEntry(protocol);
+    if (!installer::DeleteRegistryValue(HKEY_CURRENT_USER, entry->key_path(),
+                                        WorkItem::kWow64Default, kRegProgId)) {
+      success = false;
     }
   }
 
@@ -3024,8 +3001,6 @@ bool ShellUtil::AddAppProtocolAssociations(
 
 // static
 bool ShellUtil::RemoveAppProtocolAssociations(const std::wstring& prog_id) {
-  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
-
   // Delete the |prog_id| value from HKEY_CURRENT_USER\RegisteredApplications.
   installer::DeleteRegistryValue(HKEY_CURRENT_USER,
                                  ShellUtil::kRegRegisteredApplications,

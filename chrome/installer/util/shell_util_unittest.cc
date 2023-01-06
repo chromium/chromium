@@ -25,7 +25,6 @@
 #include "base/test/test_shortcut_win.h"
 #include "base/win/registry.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -1153,16 +1152,13 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
   EXPECT_EQ(L"\"C:\\test.exe\" --single-argument %1", value);
 
-  // The Application subkey and values are only required by Windows 8 and later.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER,
-                       L"Software\\Classes\\TestApp\\Application", KEY_READ));
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationName", &value));
-    EXPECT_EQ(L"Test Application", value);
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationIcon", &value));
-    EXPECT_EQ(L"D:\\test.ico,0", value);
-  }
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER,
+                     L"Software\\Classes\\TestApp\\Application", KEY_READ));
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationName", &value));
+  EXPECT_EQ(L"Test Application", value);
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationIcon", &value));
+  EXPECT_EQ(L"D:\\test.ico,0", value);
 
   // .test1 should not be default-associated with our test app. Programmatically
   // becoming the default handler can be surprising to users, and risks
@@ -1261,16 +1257,13 @@ TEST_F(ShellUtilRegistryTest, AddApplicationClass) {
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
   EXPECT_EQ(L"\"C:\\test.exe\" --single-argument %1", value);
 
-  // The Application subkey and values are only required by Windows 8 and later.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER,
-                       L"Software\\Classes\\TestApp\\Application", KEY_READ));
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationName", &value));
-    EXPECT_EQ(L"Test Application", value);
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationIcon", &value));
-    EXPECT_EQ(L"D:\\test.ico,0", value);
-  }
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER,
+                     L"Software\\Classes\\TestApp\\Application", KEY_READ));
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationName", &value));
+  EXPECT_EQ(L"Test Application", value);
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationIcon", &value));
+  EXPECT_EQ(L"D:\\test.ico,0", value);
 }
 
 TEST_F(ShellUtilRegistryTest, DeleteApplicationClass) {
@@ -1324,8 +1317,7 @@ TEST_F(ShellUtilRegistryTest, GetApplicationInfoForProgId) {
 
   EXPECT_EQ(L"\"C:\\test.exe\" --single-argument %1", app_info.command_line);
 
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    EXPECT_EQ(L"", app_info.app_id);
+  EXPECT_EQ(L"", app_info.app_id);
 
   EXPECT_EQ(kTestApplicationName, app_info.application_name);
   EXPECT_EQ(kTestApplicationDescription, app_info.application_description);
@@ -1336,10 +1328,6 @@ TEST_F(ShellUtilRegistryTest, GetApplicationInfoForProgId) {
 }
 
 TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   // Create test protocol associations.
   const std::wstring app_progid = L"app_progid1";
   const std::vector<std::wstring> app_protocols = {L"web+test", L"mailto"};
@@ -1415,10 +1403,6 @@ TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
 }
 
 TEST_F(ShellUtilRegistryTest, RemoveAppProtocolAssociations) {
-  // App protocol handlers are not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   // Create test protocol associations.
   const std::wstring app_progid = L"app_progid1";
   const std::vector<std::wstring> app_protocols = {L"web+test"};
@@ -1612,10 +1596,6 @@ TEST(ShellUtilTest, HashComputationTest) {
 }
 
 TEST(ShellUtilTest, UserChoiceHashComputationTest) {
-  // User Choice hashing is only available on Win10 or above.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    GTEST_SKIP();
-
   // If these tests fail, investigate if the salt changed or if the hash
   // function changed.
   EXPECT_EQ(
