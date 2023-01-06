@@ -59,7 +59,7 @@
 #include "absl/crc/internal/crc_memcpy.h"
 #include "absl/strings/string_view.h"
 
-#if defined(__SSE4_2__) || (defined(_MSC_VER) && defined(__AVX__))
+#ifdef ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -431,4 +431,4 @@ std::unique_ptr<CrcMemcpyEngine> CrcMemcpy::GetTestEngine(int vector,
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // defined(__SSE4_2__) || (defined(_MSC_VER) && defined(__AVX__))
+#endif  // ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE

@@ -1819,7 +1819,6 @@ TEST(Table, HeterogeneousLookupOverloads) {
   EXPECT_TRUE((VerifyResultOf<CallCount, TransparentTable>()));
 }
 
-// TODO(alkis): Expand iterator tests.
 TEST(Iterator, IsDefaultConstructible) {
   StringTable::iterator i;
   EXPECT_TRUE(i == StringTable::iterator());
@@ -2249,7 +2248,8 @@ TEST(Table, AlignOne) {
 // Invalid iterator use can trigger heap-use-after-free in asan,
 // use-of-uninitialized-value in msan, or invalidated iterator assertions.
 constexpr const char* kInvalidIteratorDeathMessage =
-    "heap-use-after-free|use-of-uninitialized-value|invalidated iterator";
+    "heap-use-after-free|use-of-uninitialized-value|invalidated "
+    "iterator|Invalid iterator";
 
 #if defined(__clang__) && defined(_MSC_VER)
 constexpr bool kLexan = true;
@@ -2257,7 +2257,7 @@ constexpr bool kLexan = true;
 constexpr bool kLexan = false;
 #endif
 
-TEST(Table, InvalidIteratorUse) {
+TEST(Iterator, InvalidUseCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
   if (kLexan) GTEST_SKIP() << "Lexan doesn't support | in regexp.";
 
@@ -2268,10 +2268,12 @@ TEST(Table, InvalidIteratorUse) {
     auto it = t.begin();
     t.insert(i);
     EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
+    EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()),
+                              kInvalidIteratorDeathMessage);
   }
 }
 
-TEST(Table, InvalidIteratorUseWithReserve) {
+TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
   if (kLexan) GTEST_SKIP() << "Lexan doesn't support | in regexp.";
 
@@ -2290,6 +2292,8 @@ TEST(Table, InvalidIteratorUseWithReserve) {
   // Unreserved growth can rehash.
   t.insert(10);
   EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()),
+                            kInvalidIteratorDeathMessage);
 }
 
 TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {

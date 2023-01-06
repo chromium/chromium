@@ -832,8 +832,8 @@ class HashSetIteratorGenerationInfoEnabled {
   void set_generation_ptr(const GenerationType* ptr) { generation_ptr_ = ptr; }
 
  private:
-  const GenerationType* generation_ptr_ = nullptr;
-  GenerationType generation_ = 0;
+  const GenerationType* generation_ptr_ = EmptyGeneration();
+  GenerationType generation_ = *generation_ptr_;
 };
 
 class HashSetIteratorGenerationInfoDisabled {
@@ -1021,12 +1021,17 @@ size_t SelectBucketCountForIterRange(InputIter first, InputIter last,
   } while (0)
 
 // Note that for comparisons, null/end iterators are valid.
-// TODO(b/254649633): when generations are enabled, detect cases of invalid
-// iterators being compared.
-inline void AssertIsValidForComparison(const ctrl_t* ctrl) {
+inline void AssertIsValidForComparison(const ctrl_t* ctrl,
+                                       GenerationType generation,
+                                       const GenerationType* generation_ptr) {
   ABSL_HARDENING_ASSERT((ctrl == nullptr || IsFull(*ctrl)) &&
                         "Invalid iterator comparison. The element might have "
                         "been erased or the table might have rehashed.");
+  if (SwisstableGenerationsEnabled() && generation != *generation_ptr) {
+    ABSL_INTERNAL_LOG(FATAL,
+                      "Invalid iterator comparison. The table could have "
+                      "rehashed since this iterator was initialized.");
+  }
 }
 
 // If the two iterators come from the same container, then their pointers will
@@ -1426,8 +1431,8 @@ class raw_hash_set {
 
     friend bool operator==(const iterator& a, const iterator& b) {
       AssertSameContainer(a.ctrl_, b.ctrl_, a.slot_, b.slot_);
-      AssertIsValidForComparison(a.ctrl_);
-      AssertIsValidForComparison(b.ctrl_);
+      AssertIsValidForComparison(a.ctrl_, a.generation(), a.generation_ptr());
+      AssertIsValidForComparison(b.ctrl_, b.generation(), b.generation_ptr());
       return a.ctrl_ == b.ctrl_;
     }
     friend bool operator!=(const iterator& a, const iterator& b) {
@@ -1444,6 +1449,9 @@ class raw_hash_set {
       // not equal to any end iterator.
       ABSL_ASSUME(ctrl != nullptr);
     }
+    // For end() iterators.
+    explicit iterator(const GenerationType* generation_ptr)
+        : HashSetIteratorGenerationInfo(generation_ptr) {}
 
     // Fixes up `ctrl_` to point to a full by advancing it and `slot_` until
     // they reach one.
@@ -1700,12 +1708,12 @@ class raw_hash_set {
     it.skip_empty_or_deleted();
     return it;
   }
-  iterator end() { return {}; }
+  iterator end() { return iterator(common().generation_ptr()); }
 
   const_iterator begin() const {
     return const_cast<raw_hash_set*>(this)->begin();
   }
-  const_iterator end() const { return {}; }
+  const_iterator end() const { return iterator(common().generation_ptr()); }
   const_iterator cbegin() const { return begin(); }
   const_iterator cend() const { return end(); }
 

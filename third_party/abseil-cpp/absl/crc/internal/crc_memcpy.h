@@ -21,6 +21,13 @@
 #include "absl/base/config.h"
 #include "absl/crc/crc32c.h"
 
+// Defined if the class AcceleratedCrcMemcpyEngine exists.
+#if defined(__x86_64__) && defined(__SSE4_2__)
+#define ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE 1
+#elif defined(_MSC_VER) && defined(__AVX__)
+#define ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE 1
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace crc_internal {

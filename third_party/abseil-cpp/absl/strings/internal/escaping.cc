@@ -28,19 +28,11 @@ size_t CalculateBase64EscapedLenInternal(size_t input_len, bool do_padding) {
   // Base64 encodes three bytes of input at a time. If the input is not
   // divisible by three, we pad as appropriate.
   //
-  // (from https://tools.ietf.org/html/rfc3548)
-  // Special processing is performed if fewer than 24 bits are available
-  // at the end of the data being encoded.  A full encoding quantum is
-  // always completed at the end of a quantity.  When fewer than 24 input
-  // bits are available in an input group, zero bits are added (on the
-  // right) to form an integral number of 6-bit groups.  Padding at the
-  // end of the data is performed using the '=' character.  Since all base
-  // 64 input is an integral number of octets, only the following cases
-  // can arise:
-
   // Base64 encodes each three bytes of input into four bytes of output.
   size_t len = (input_len / 3) * 4;
 
+  // Since all base 64 input is an integral number of octets, only the following
+  // cases can arise:
   if (input_len % 3 == 0) {
     // (from https://tools.ietf.org/html/rfc3548)
     // (1) the final quantum of encoding input is an integral multiple of 24
@@ -82,6 +74,16 @@ size_t Base64EscapeInternal(const unsigned char* src, size_t szsrc, char* dest,
 
   char* const limit_dest = dest + szdest;
   const unsigned char* const limit_src = src + szsrc;
+
+  // (from https://tools.ietf.org/html/rfc3548)
+  // Special processing is performed if fewer than 24 bits are available
+  // at the end of the data being encoded.  A full encoding quantum is
+  // always completed at the end of a quantity.  When fewer than 24 input
+  // bits are available in an input group, zero bits are added (on the
+  // right) to form an integral number of 6-bit groups.
+  //
+  // If do_padding is true, padding at the end of the data is performed. This
+  // output padding uses the '=' character.
 
   // Three bytes of data encodes to four characters of cyphertext.
   // So we can pump through three-byte chunks atomically.
