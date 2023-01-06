@@ -15,7 +15,6 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -669,10 +668,8 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
   std::unique_ptr<Textfield> textfield(new Textfield);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  // Provide an accessible name so that accessibility paint checks pass.
+  textfield->SetAccessibleName(u"test");
   textfield->SetBounds(0, 0, 200, 20);
   widget->GetRootView()->AddChildView(textfield.get());
   widget->ShowInactive();
