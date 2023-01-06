@@ -1,0 +1,85 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_APP_SERVICE_CLIENT_H_
+#define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_APP_SERVICE_CLIENT_H_
+
+#include <map>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/user_manager/user_manager.h"
+
+namespace apps {
+class AppRegistryCache;
+class InstanceRegistry;
+}  // namespace apps
+
+namespace ash {
+
+// VideoConferenceAppServiceClient is a client class for CrOS
+// videoconferencing. It detects the launching/closing/media-capturing actions
+// from apps through AppService and notifies VideoConferenceManagerAsh.
+class VideoConferenceAppServiceClient
+    : public crosapi::mojom::VideoConferenceManagerClient,
+      public user_manager::UserManager::UserSessionStateObserver {
+ public:
+  using AppIdString = std::string;
+
+  // AppState records information that is required for VideoConferenceManagerAsh
+  // to show correct icons.
+  struct AppState {
+    // Used for uniquely identifying an App in VideoConferenceManagerAsh.
+    base::UnguessableToken token;
+    base::Time last_activity_time;
+    bool is_capturing_microphone = false;
+    bool is_capturing_camera = false;
+  };
+
+  VideoConferenceAppServiceClient();
+
+  VideoConferenceAppServiceClient(const VideoConferenceAppServiceClient&) =
+      delete;
+  VideoConferenceAppServiceClient& operator=(
+      const VideoConferenceAppServiceClient&) = delete;
+
+  ~VideoConferenceAppServiceClient() override;
+
+  // crosapi::mojom::VideoConferenceManagerClient overrides.
+  void GetMediaApps(GetMediaAppsCallback callback) override;
+  void ReturnToApp(const base::UnguessableToken& token,
+                   ReturnToAppCallback callback) override;
+  void SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice device,
+      bool disabled,
+      SetSystemMediaDeviceStatusCallback callback) override;
+
+  // user_manager::UserManager::UserSessionStateObserver overrides.
+  void ActiveUserChanged(user_manager::User* active_user) override;
+
+ private:
+  friend class VideoConferenceAppServiceClientTest;
+
+  // Returns the name of the app with `app_id`.
+  std::string GetAppName(const AppIdString& app_id);
+
+  // These registries are used for observing app behaviors.
+  base::raw_ptr<apps::InstanceRegistry> instance_registry_;
+  base::raw_ptr<apps::AppRegistryCache> app_registry_;
+
+  // The following two fields are true if the camera/microphone is system-wide
+  // software disabled OR disabled via a hardware switch.
+  bool camera_system_disabled_{false};
+  bool microphone_system_disabled_{false};
+
+  // This records a list of AppState; each represents a video conference app.
+  std::map<AppIdString, AppState> id_to_app_state_;
+};
+
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_APP_SERVICE_CLIENT_H_
