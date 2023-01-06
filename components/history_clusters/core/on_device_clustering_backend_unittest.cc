@@ -628,6 +628,9 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, GetClustersForUIWithContent) {
       ElementsAre(ElementsAre(
           testing::VisitResult(4, 1.0, {history::DuplicateClusterVisit{1}}),
           testing::VisitResult(2, 1.0), testing::VisitResult(10, 0.5))));
+  EXPECT_THAT(result_clusters.size(), 1u);
+  EXPECT_THAT(result_clusters[0].GetKeywords(),
+              UnorderedElementsAre(u"alias-github", u"rewritten-github"));
 }
 
 TEST_F(OnDeviceClusteringWithContentBackendTest,
