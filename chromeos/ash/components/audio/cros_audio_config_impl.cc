@@ -142,6 +142,12 @@ void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
 void CrosAudioConfigImpl::SetInputGainPercent(uint8_t gain) {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   audio_handler->SetInputGainPercent(gain);
+
+  // Unmute if muted.
+  if (audio_handler->IsInputMuted()) {
+    audio_handler->SetInputMute(
+        false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  }
 }
 
 void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {

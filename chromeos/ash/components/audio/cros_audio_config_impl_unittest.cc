@@ -359,6 +359,36 @@ TEST_F(CrosAudioConfigImplTest, GetSetOutputVolumePercentMuteThresholdTest) {
                 ->output_volume_percent);
 }
 
+TEST_F(CrosAudioConfigImplTest, SetInputGainPercentWhileMuted) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // |fake_observer| count is first incremented in Observe() method.
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  ASSERT_EQ(
+      kDefaultInputGainPercent,
+      fake_observer->last_audio_system_properties_.value()->input_gain_percent);
+
+  // Test setting gain when muted.
+  SetInputMuteState(mojom::MuteState::kMutedByUser);
+  ASSERT_EQ(2u, fake_observer->num_properties_updated_calls_);
+  EXPECT_EQ(
+      mojom::MuteState::kMutedByUser,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+
+  SetInputGainPercentFromFrontEnd(kDefaultInputGainPercent);
+
+  // |fake_observer| should be notified twice due to mute state changing when
+  // setting gain.
+  ASSERT_EQ(4u, fake_observer->num_properties_updated_calls_);
+  EXPECT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->input_mute_state);
+  EXPECT_EQ(
+      kDefaultInputGainPercent,
+      fake_observer->last_audio_system_properties_.value()->input_gain_percent);
+}
+
 TEST_F(CrosAudioConfigImplTest, GetSetOutputVolumePercentVolumeBoundariesTest) {
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
 
