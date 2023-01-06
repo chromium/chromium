@@ -9,7 +9,7 @@ import {fakeAcceleratorConfig, fakeAmbientConfig, fakeLayoutInfo} from 'chrome:/
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {Accelerator, AcceleratorCategory, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo, StandardAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
   let provider: FakeShortcutProvider|null = null;
@@ -66,71 +66,6 @@ suite('acceleratorLookupManagerTest', function() {
         getManager().getAcceleratorIdFromReverseLookup(
             newAccelInfo.layoutProperties.standardAccelerator.accelerator));
   }
-
-  test('AcceleratorLookupDefaultFake', () => {
-    // TODO(jimmyxgong): Remove this test once real data is ready.
-    getProvider().setFakeAcceleratorConfig(fakeAcceleratorConfig);
-    return getProvider().getAccelerators().then((result) => {
-      assertDeepEquals(fakeAcceleratorConfig, result.config);
-
-      getManager().setAcceleratorLookup(result.config);
-
-      for (const [source, accelMap] of Object.entries(fakeAcceleratorConfig)) {
-        // When calling Object.entries on an object with optional enum keys,
-        // TypeScript considers the values to be possibly undefined.
-        // This guard lets us use this value later as if it were not undefined.
-        if (!accelMap) {
-          continue;
-        }
-        for (const [action, configAccelInfoArr] of Object.entries(accelMap)) {
-          const managerAccelInfoArr =
-              getManager().getStandardAcceleratorInfos(source, action);
-          // The AcceleratorLookupManager processes the MojoAcceleratorConfig
-          // into an AcceleratorConfig. Since the Mojo types (MojoAccelerator,
-          // MojoAcceleratorInfo) have different properties from the non-Mojo
-          // types, we only expect the properties in common to be equal.
-          for (let i = 0; i < configAccelInfoArr.length; i++) {
-            const managerAccel =
-                managerAccelInfoArr[i] as StandardAcceleratorInfo;
-            const configAccel: MojoAcceleratorInfo =
-                configAccelInfoArr[i] as MojoAcceleratorInfo;
-            assertEquals(managerAccel.type, configAccel.type);
-            assertEquals(managerAccel.locked, configAccel.locked);
-            assertEquals(managerAccel.state, configAccel.state);
-            assertNotEquals(
-                managerAccel.layoutProperties.standardAccelerator.keyDisplay,
-                configAccel.layoutProperties?.standardAccelerator?.keyDisplay);
-            assertEquals(
-                managerAccel.layoutProperties.standardAccelerator.accelerator
-                    .keyCode,
-                configAccel?.layoutProperties?.standardAccelerator?.accelerator
-                    .keyCode);
-            assertEquals(
-                managerAccel.layoutProperties.standardAccelerator.accelerator
-                    .modifiers,
-                configAccel?.layoutProperties?.standardAccelerator?.accelerator
-                    .modifiers);
-            assertFalse(Object.hasOwn(
-                (managerAccel.layoutProperties.standardAccelerator
-                     .accelerator as Accelerator),
-                'keyState'));
-            assertTrue(Object.hasOwn(
-                (configAccel.layoutProperties.standardAccelerator!
-                     .accelerator as Accelerator),
-                'keyState'));
-            assertFalse(Object.hasOwn(
-                (managerAccel.layoutProperties.standardAccelerator
-                     .accelerator as Accelerator),
-                'timeStamp'));
-            assertTrue(Object.hasOwn(
-                (configAccel.layoutProperties.standardAccelerator!
-                     .accelerator as Accelerator),
-                'timeStamp'));
-          }
-        }
-      }
-    });
-  });
 
   test('GetLayoutInfoDefaultFakeWithAccelerators', async () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.

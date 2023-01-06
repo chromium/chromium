@@ -32,6 +32,7 @@
     </template>
   </template>
   <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
-    <text-accelerator></text-accelerator>
+    <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]">
+    </text-accelerator>
   </template>
 </div>

@@ -9,11 +9,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
-import {AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
+import {AcceleratorSource, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
+import {createTextAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 export function initAcceleratorRowElement(): AcceleratorRowElement {
   const element = document.createElement('accelerator-row');
@@ -155,17 +156,11 @@ suite('acceleratorRowTest', function() {
   test('ShowTextAccelerator', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     rowElement = initAcceleratorRowElement();
-    const acceleratorInfo1 = createUserAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
 
-    const acceleratorInfo2 = createUserAcceleratorInfo(
-        Modifier.CONTROL,
-        /*key=*/ 67,
-        /*keyDisplay=*/ 'c');
-
-    const accelerators = [acceleratorInfo1, acceleratorInfo2];
+    const accelerators = [createTextAcceleratorInfo([{
+      text: stringToMojoString16('ctrl'),
+      type: TextAcceleratorPartType.kModifier,
+    }])];
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.layoutStyle = LayoutStyle.kText;

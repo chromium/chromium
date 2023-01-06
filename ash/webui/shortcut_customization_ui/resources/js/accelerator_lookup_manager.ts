@@ -106,6 +106,10 @@ export class AcceleratorLookupManager {
     return acceleratorInfos;
   }
 
+  isStandardAccelerator(source: number|string, action: number|string): boolean {
+    return this.standardAcceleratorLookup.has(getAcceleratorId(source, action));
+  }
+
   getAcceleratorLayout(
       category: AcceleratorCategory,
       subCategory: AcceleratorSubcategory): LayoutInfo[] {

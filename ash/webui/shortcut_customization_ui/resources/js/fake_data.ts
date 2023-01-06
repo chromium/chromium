@@ -146,6 +146,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
   [AcceleratorSource.kAmbient]: {
     // New Tab
     [0]: [newTabAccelerator],
+    [1]: [cycleTabsAccelerator],
   },
 };
 
@@ -196,6 +197,14 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAmbient,
     action: 0,
+  },
+  {
+    category: AcceleratorCategory.kTabsAndWindows,
+    subCategory: AcceleratorSubcategory.kSystemApps,
+    description: stringToMojoString16('Go to tabs 1 through 8'),
+    style: LayoutStyle.kText,
+    source: AcceleratorSource.kAmbient,
+    action: 1,
   },
 ];
 
