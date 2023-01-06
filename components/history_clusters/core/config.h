@@ -360,10 +360,6 @@ struct Config {
   // The duration between context clustering clean up passes.
   base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);
 
-  // Whether to persist the context clusters as the visits are coming in at
-  // navigation time.
-  bool persist_context_clusters_at_navigation = false;
-
   // The duration since the most recent visit for which a context cluster is
   // considered to be fully frozen and triggerability can be finalized.
   base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);

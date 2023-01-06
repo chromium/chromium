@@ -68,6 +68,9 @@ void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters);
 // by-score sorting of visits within clusters. Exposed for testing.
 void SortClusters(std::vector<history::Cluster>* clusters);
 
+// Whether to use navigation context clusters from persistence.
+bool ShouldUseNavigationContextClustersFromPersistence();
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_

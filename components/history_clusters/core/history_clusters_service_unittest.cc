@@ -585,7 +585,10 @@ TEST_P(HistoryClustersServiceTest,
 
   Config config;
   config.persist_clusters_in_history_db = true;
-  config.use_navigation_context_clusters = true;
+  // Set use navigation context clusters to false so the synthetic clusters can
+  // be added without testing the history service observer logic that adds its
+  // own clusters.
+  config.use_navigation_context_clusters = false;
   SetConfigForTesting(config);
 
   // 2 persisted clusters on the same day.
@@ -597,6 +600,12 @@ TEST_P(HistoryClustersServiceTest,
   // Another cluster with a gap. Should still be clustered with the others.
   AddCompleteVisit(3, DaysAgo(1));
   AddCluster({3});
+
+  // Update config so that the new context clusters are used.
+  Config new_config;
+  new_config.persist_clusters_in_history_db = true;
+  new_config.use_navigation_context_clusters = true;
+  SetConfigForTesting(new_config);
 
   QueryClustersContinuationParams continuation_params = {};
   continuation_params.continuation_time = base::Time::Now();

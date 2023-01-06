@@ -4058,6 +4058,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "history-journeys-navigation-context-clustering",
+    "owners": [ "sophiechang", "chrome-journeys@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "history-journeys-omnibox-action",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 115
@@ -4065,6 +4070,11 @@
   {
     "name": "history-journeys-omnibox-history-cluster-provider",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
+    "name": "history-journeys-persisted-clusters",
+    "owners": [ "manukh", "chrome-journeys@google.com" ],
     "expiry_milestone": 115
   },
   {

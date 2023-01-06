@@ -153,8 +153,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   visit_id_to_cluster_map_[new_visit.visit_id] = *cluster_id;
   visit_url_to_cluster_map_[normalized_url] = *cluster_id;
 
-  if (GetConfig().persist_clusters_in_history_db &&
-      GetConfig().persist_context_clusters_at_navigation) {
+  if (ShouldUseNavigationContextClustersFromPersistence()) {
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit.visit_row.visit_id = new_visit.visit_id;
     cluster_visit.normalized_url = GURL(normalized_url);

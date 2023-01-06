@@ -37,15 +37,6 @@
 
 namespace history_clusters {
 
-namespace {
-
-bool ShouldUseNavigationContextClustersFromPersistence() {
-  return GetConfig().persist_clusters_in_history_db &&
-         GetConfig().use_navigation_context_clusters;
-}
-
-}  // namespace
-
 VisitDeletionObserver::VisitDeletionObserver(
     HistoryClustersService* history_clusters_service)
     : history_clusters_service_(history_clusters_service) {}

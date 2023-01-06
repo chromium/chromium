@@ -380,11 +380,6 @@ Config::Config() {
             "clean_up_duration_minutes",
             context_clustering_clean_up_duration.InMinutes()));
 
-    persist_context_clusters_at_navigation = GetFieldTrialParamByFeatureAsBool(
-        internal::kHistoryClustersNavigationContextClustering,
-        "persist_context_clusters_at_navigation",
-        persist_context_clusters_at_navigation);
-
     cluster_triggerability_cutoff_duration =
         base::Minutes(GetFieldTrialParamByFeatureAsInt(
             internal::kHistoryClustersNavigationContextClustering,
