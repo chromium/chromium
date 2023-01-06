@@ -250,7 +250,8 @@ void TextControlElement::select() {
   // Avoid SelectionBehaviorOnFocus::Restore, which scrolls containers to show
   // the selection.
   Focus(FocusParams(SelectionBehaviorOnFocus::kNone,
-                    mojom::blink::FocusType::kNone, nullptr));
+                    mojom::blink::FocusType::kScript, nullptr,
+                    FocusOptions::Create(), /*gate_on_user_activation=*/true));
   RestoreCachedSelection();
 }
 

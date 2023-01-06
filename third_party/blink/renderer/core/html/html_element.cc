@@ -1570,7 +1570,10 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
     if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement) {
       FocusOptions* focus_options = FocusOptions::Create();
       focus_options->setPreventScroll(true);
-      previously_focused_element->Focus(focus_options);
+      previously_focused_element->Focus(FocusParams(
+          SelectionBehaviorOnFocus::kRestore, mojom::blink::FocusType::kScript,
+          /*capabilities=*/nullptr, focus_options,
+          /*gate_on_user_activation=*/true));
     }
   }
 }
@@ -1605,7 +1608,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
     return;
 
   // 3. Run the focusing steps for control.
-  control->Focus();
+  control->Focus(FocusParams(/*gate_on_user_activation=*/true));
 
   // 4. Let topDocument be the active document of control's node document's
   // browsing context's top-level browsing context.
