@@ -137,6 +137,10 @@ BASE_FEATURE(kAmbientSubpageUIChange,
 
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppCollectionFolderRefresh,
+             "AppCollectionFolderRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable ARC ADB sideloading support.
 BASE_FEATURE(kArcAdbSideloadingFeature,
              "ArcAdbSideloading",
@@ -2297,6 +2301,10 @@ bool IsApnRevampEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
+}
+
+bool IsAppCollectionFolderRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kAppCollectionFolderRefresh);
 }
 
 bool IsArcFuseBoxFileSharingEnabled() {
