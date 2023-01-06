@@ -4224,9 +4224,10 @@ void RenderFrameImpl::WillSendRequestInternal(
     }
   }
 
-  if (!request.GetURLRequestExtraData())
+  if (!request.GetURLRequestExtraData()) {
     request.SetURLRequestExtraData(
         base::MakeRefCounted<blink::WebURLRequestExtraData>());
+  }
   auto* url_request_extra_data = static_cast<blink::WebURLRequestExtraData*>(
       request.GetURLRequestExtraData().get());
   url_request_extra_data->set_custom_user_agent(custom_user_agent);
@@ -5705,11 +5706,8 @@ void RenderFrameImpl::BeginNavigationInternal(
   bool for_outermost_main_frame = frame_->IsOutermostMainFrame();
   WillSendRequestInternal(info->url_request, for_outermost_main_frame,
                           transition_type, ForRedirect(false));
-
-  if (!info->url_request.GetURLRequestExtraData()) {
-    info->url_request.SetURLRequestExtraData(
-        base::MakeRefCounted<blink::WebURLRequestExtraData>());
-  }
+  // The extra data was created in WillSendRequestInternal if it didn't exist.
+  DCHECK(info->url_request.GetURLRequestExtraData());
 
   // TODO(clamy): Same-document navigations should not be sent back to the
   // browser.
