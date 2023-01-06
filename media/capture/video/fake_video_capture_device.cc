@@ -470,6 +470,13 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
                                        2 * radius, 2 * radius);
   canvas.drawArc(rect, 0, end_angle, true, paint);
 
+  if (fake_device_state_->background_blur) {
+    // Draw a shadow circle to show background blur.
+    SkPaint circle_paint;
+    circle_paint.setARGB(20, 0, 127, 0);
+    canvas.drawCircle(rect.center(), radius * 3 / 2, circle_paint);
+  }
+
   // Draw current time.
   const int milliseconds = elapsed_time.InMilliseconds() % 1000;
   const int seconds = elapsed_time.InSeconds() % 60;
