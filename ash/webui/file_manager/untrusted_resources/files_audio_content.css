@@ -51,3 +51,13 @@ audio::-webkit-media-controls-play-button:focus {
   outline: 1px solid rgba(66, 133, 244, 0.5);
   outline-offset: -1px;
 }
+
+/* TODO(files-app-dark-mode): figure out what background color should be
+ * used here. */
+@media (prefers-color-scheme: dark) {
+  html,
+  body,
+  audio {
+    background-color: black;
+  }
+}
