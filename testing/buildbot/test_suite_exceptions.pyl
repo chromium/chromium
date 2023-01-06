@@ -3128,11 +3128,6 @@
       },
     },
   },
-  'power_measurement_test': {
-    'remove_from': [
-      'Win10 FYI x64 Exp Release (Intel HD 630)',  # https://crbug.com/1376082
-    ],
-  },
   'sandbox_linux_unittests': {
     'modifications': {
       'android-nougat-x86-rel': {

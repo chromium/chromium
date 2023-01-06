@@ -815,7 +815,7 @@
     },
   },
   'WIN10_INTEL_HD_630_STABLE': {
-    'identifier': '8086:5912 or 8086:3e92',
+    'identifier': '8086:9bc5',
     'mixins': [
       'swarming_containment_auto',
       'win10_intel_hd_630_stable',
