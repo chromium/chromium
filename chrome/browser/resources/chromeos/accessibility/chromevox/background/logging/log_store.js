@@ -5,7 +5,6 @@
 /**
  * @fileoverview Store ChromeVox log.
  */
-
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {BaseLog, LogType, TextLog, TreeLog} from '../../common/log_types.js';
@@ -14,13 +13,19 @@ import {TreeDumper} from '../../common/tree_dumper.js';
 const Action = BridgeConstants.LogStore.Action;
 const TARGET = BridgeConstants.LogStore.TARGET;
 
+/**
+ * Exported for testing.
+ * @const {number}
+ */
+export const LOG_LIMIT = 3000;
+
 export class LogStore {
   constructor() {
     /**
      * Ring buffer of size this.LOG_LIMIT
-     * @private {!Array<BaseLog>}
+     * @private {!Array<!BaseLog>}
      */
-    this.logs_ = Array(LogStore.LOG_LIMIT);
+    this.logs_ = Array(LOG_LIMIT);
 
     /** @private {boolean} */
     this.shouldSkipOutput_ = false;
@@ -29,8 +34,7 @@ export class LogStore {
      * this.logs_ is implemented as a ring buffer which starts
      * from this.startIndex_ and ends at this.startIndex_-1
      * In the initial state, this array is filled by undefined.
-     * @type {number}
-     * @private
+     * @private {number}
      */
     this.startIndex_ = 0;
   }
@@ -40,12 +44,12 @@ export class LogStore {
    * This is not the best way to create logs fast but
    * getLogsOfType() is not called often.
    * @param {!LogType} logType
-   * @return {!Array<BaseLog>}
+   * @return {!Array<!BaseLog>}
    */
   getLogsOfType(logType) {
     const returnLogs = [];
-    for (let i = 0; i < LogStore.LOG_LIMIT; i++) {
-      const index = (this.startIndex_ + i) % LogStore.LOG_LIMIT;
+    for (let i = 0; i < LOG_LIMIT; i++) {
+      const index = (this.startIndex_ + i) % LOG_LIMIT;
       if (!this.logs_[index]) {
         continue;
       }
@@ -60,12 +64,12 @@ export class LogStore {
    * Create logs in order.
    * This is not the best way to create logs fast but
    * getLogs() is not called often.
-   * @return {!Array<BaseLog>}
+   * @return {!Array<!BaseLog>}
    */
   getLogs() {
     const returnLogs = [];
-    for (let i = 0; i < LogStore.LOG_LIMIT; i++) {
-      const index = (this.startIndex_ + i) % LogStore.LOG_LIMIT;
+    for (let i = 0; i < LOG_LIMIT; i++) {
+      const index = (this.startIndex_ + i) % LOG_LIMIT;
       if (!this.logs_[index]) {
         continue;
       }
@@ -113,17 +117,14 @@ export class LogStore {
 
     this.logs_[this.startIndex_] = log;
     this.startIndex_ += 1;
-    if (this.startIndex_ === LogStore.LOG_LIMIT) {
+    if (this.startIndex_ === LOG_LIMIT) {
       this.startIndex_ = 0;
     }
   }
 
-  /**
-   * Clear this.logs_.
-   * Set to initial states.
-   */
+  /** Clear this.logs_ and set to initial states. */
   clearLog() {
-    this.logs_ = Array(LogStore.LOG_LIMIT);
+    this.logs_ = Array(LOG_LIMIT);
     this.startIndex_ = 0;
   }
 
@@ -142,12 +143,6 @@ export class LogStore {
         () => LogStore.instance.getLogs().map(log => log.serialize()));
   }
 }
-
-/**
- * @const
- * @private
- */
-LogStore.LOG_LIMIT = 3000;
 
 /** @type {LogStore} */
 LogStore.instance;

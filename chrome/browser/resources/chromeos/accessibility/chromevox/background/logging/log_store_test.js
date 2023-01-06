@@ -15,7 +15,8 @@ ChromeVoxLogStoreTest = class extends ChromeVoxNextE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
-        'LogStore', '/chromevox/background/logging/log_store.js');
+        ['LOG_LIMIT', 'LogStore'],
+        '/chromevox/background/logging/log_store.js');
   }
 };
 
@@ -34,12 +35,12 @@ AX_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
 
 AX_TEST_F('ChromeVoxLogStoreTest', 'LongLogs', function() {
   const logStore = new LogStore();
-  for (let i = 0; i < LogStore.LOG_LIMIT + 500; i++) {
+  for (let i = 0; i < LOG_LIMIT + 500; i++) {
     logStore.writeTextLog('test' + i, 'speech');
   }
 
   const logs = logStore.getLogs();
-  assertEquals(logs.length, LogStore.LOG_LIMIT);
+  assertEquals(logs.length, LOG_LIMIT);
   for (let i = 0; i < logs.length; i++) {
     assertEquals(logs[i].toString(), 'test' + (i + 500));
   }
