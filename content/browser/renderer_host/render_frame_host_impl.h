@@ -35,7 +35,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -3697,9 +3696,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver);
 
   TraceProto::LifecycleState LifecycleStateToProto() const;
-
-  perfetto::protos::pbzero::FrameTreeNodeInfo::FrameType GetFrameTypeProto()
-      const;
 
   void BindCacheStorageInternal(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
