@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   EXPECT_TRUE(push_state_observer.was_renderer_initiated());
 
   // Let the navigation finish. It should commit successfully.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   last_committed = web_contents->GetController().GetLastCommittedEntry();
   EXPECT_TRUE(last_committed);
   EXPECT_EQ(kURL2, last_committed->GetURL());
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     content::TestNavigationManager navigation_manager(popup, kSameDocUrl);
     EXPECT_TRUE(content::ExecJs(
         popup_main_rfh, "document.querySelector('iframe').src = '#foo';"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
 
   // Check that same-document navigation doesn't commit a new navigation entry,
@@ -1061,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     content::TestNavigationManager navigation_manager(popup, kSameDocUrl);
     EXPECT_TRUE(
         content::ExecJs(opener, "w.history.replaceState({}, '', '#foo');"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
 
   // Check that same-document navigation doesn't commit a new navigation entry,
@@ -1132,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(SignInIsolationBrowserTest, NavigateToSignInPage) {
   content::TestNavigationManager manager(web_contents, signin_url);
   EXPECT_TRUE(
       ExecuteScript(web_contents, "location = '" + signin_url.spec() + "';"));
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_NE(web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
             first_instance);
 }
@@ -1951,7 +1951,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   content::TestNavigationManager manager(main_contents, redirected_url);
   EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
       main_contents, "location = '" + redirected_url.spec() + "';"));
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   ASSERT_EQ(redirected_url, main_contents->GetLastCommittedURL());
   ASSERT_EQ(2, main_contents->GetController().GetEntryCount());
 
@@ -1981,7 +1981,7 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   content::TestNavigationManager manager(main_contents, redirected_url);
   EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
       main_contents, "location = '" + redirected_url.spec() + "';"));
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   ASSERT_EQ(redirected_url, main_contents->GetLastCommittedURL());
   ASSERT_EQ(3, main_contents->GetController().GetEntryCount());
 
