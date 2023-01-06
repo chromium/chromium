@@ -264,7 +264,6 @@ linux_memory_builder(
         short_name = "bld",
     ),
     execution_timeout = 4 * time.hour,
-    os = os.LINUX_FOCAL,
 )
 
 linux_memory_builder(
@@ -294,7 +293,6 @@ linux_memory_builder(
     ),
     execution_timeout = 4 * time.hour,
     reclient_instance = None,
-    os = os.LINUX_FOCAL,
 )
 
 linux_memory_builder(
