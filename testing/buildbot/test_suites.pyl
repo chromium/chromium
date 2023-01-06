@@ -4922,6 +4922,12 @@
       },
     },
 
+    # TODO(crbug.com/1381588): remove this test definition once
+    # crbug.com/1394839 is resolved.
+    'updater_gtests_mac_user': {
+      'updater_tests': {},
+    },
+
     'updater_gtests_win': {
       'updater_tests': {},
       'updater_tests_system': {

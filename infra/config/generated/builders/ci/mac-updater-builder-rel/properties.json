@@ -137,6 +137,34 @@
                 "project": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "mac13-x64-updater-tester-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.updater",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "mac-updater-builder-rel",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -166,6 +194,11 @@
         {
           "bucket": "ci",
           "builder": "mac11.0-updater-tester-rel",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "mac13-x64-updater-tester-rel",
           "project": "chromium"
         }
       ],

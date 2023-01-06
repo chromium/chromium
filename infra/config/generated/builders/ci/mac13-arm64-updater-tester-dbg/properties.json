@@ -29,34 +29,6 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11.0-arm64-updater-tester-dbg",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.updater",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Debug",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "mac-updater-builder-arm64-dbg",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "mac13-arm64-updater-tester-dbg",
               "project": "chromium"
             },
@@ -87,28 +59,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac-updater-builder-arm64-dbg",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
-          "builder": "mac11.0-arm64-updater-tester-dbg",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "mac13-arm64-updater-tester-dbg",
           "project": "chromium"
         }
       ]
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
-    "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

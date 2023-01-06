@@ -5801,6 +5801,36 @@
           ]
         },
       },
+      # TODO(crbug.com/1381588): replace `updater_gtests_mac_user` with
+      # `updater_gtests_mac` once crbug.com/1394839 is resolved.
+      'mac13-arm64-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_mac_user',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'arm-64',
+              'os': 'Mac-13',
+            }
+          ]
+        },
+      },
+      # TODO(crbug.com/1381588): replace `updater_gtests_mac_user` with
+      # `updater_gtests_mac` once crbug.com/1394839 is resolved.
+      'mac13-x64-updater-tester-rel': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_mac_user',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Mac-13',
+            }
+          ]
+        },
+      },
       'win10-32-on-64-updater-tester-dbg': {
         'mixins': [
           'win10',

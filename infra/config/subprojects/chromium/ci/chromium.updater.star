@@ -431,6 +431,54 @@ ci.thin_tester(
     ),
 )
 
+ci.thin_tester(
+    name = "mac13-arm64-updater-tester-dbg",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    triggered_by = ["mac-updater-builder-arm64-dbg"],
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "13 arm64",
+    ),
+)
+
+ci.thin_tester(
+    name = "mac13-x64-updater-tester-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    triggered_by = ["mac-updater-builder-rel"],
+    console_view_entry = consoles.console_view_entry(
+        category = "release|mac",
+        short_name = "13",
+    ),
+)
+
 ci.builder(
     name = "win-updater-builder-dbg",
     builder_spec = builder_config.builder_spec(
