@@ -26,40 +26,42 @@ class CONTENT_EXPORT AuthenticatorCommon {
 
   virtual ~AuthenticatorCommon() = default;
 
-  // This is not-quite an implementation of blink::mojom::Authenticator.
-  // Gets the credential info for a new public key credential created by an
-  // authenticator for the given |options|. It takes the |caller_origin|
-  // explicitly be overridden if needed. Invokes |callback| with credentials if
-  // authentication was successful.
+  // MakeCredential attempts to create a new WebAuthn credential on behalf of
+  // `caller_origin` using the supplied `options` and invokes `callback` with
+  // the result.
   virtual void MakeCredential(
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) = 0;
 
-  // This is not-quite an implementation of blink::mojom::Authenticator.
-  // Uses an existing credential to produce an assertion for the given
-  // |options|. It takes the |caller_origin| explicitly be overridden if needed.
-  // It takes the optional |payment| to add to "clientDataJson" after the
-  // browser displays the payment confirmation dialog to the user. Invokes
-  // |callback| with assertion response if authentication was successful.
+  // GetAssertion attempts to generate a WebAuthn assertion on behalf of
+  // `caller_origin` using the supplied `options` and invokes `callback` with
+  // the result.
+  //
+  // The optional `payment` is inserted into the asserted `clientDataJson` after
+  // the browser displays the Secure Payment Confirmation dialog to the user.
   virtual void GetAssertion(
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
       blink::mojom::PaymentOptionsPtr payment,
       blink::mojom::Authenticator::GetAssertionCallback callback) = 0;
 
-  // Returns true if the user platform provides an authenticator. Relying
-  // Parties use this method to determine whether they can create a new
-  // credential using a user-verifying platform authenticator.
+  // Invokes `callback` with a boolean indicating whether a user-verifying
+  // platform authenticator is available for WebAuthn requests on
+  // `caller_origin`.
   virtual void IsUserVerifyingPlatformAuthenticatorAvailable(
+      url::Origin caller_origin,
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) = 0;
 
-  // Returns true if Conditional Mediation is available. Relying Parties can use
-  // this method to determine whether they can pass "conditional" to the
-  // "mediation" parameter of a webauthn get call and have the browser autofill
-  // webauthn credentials on form inputs.
+  // Invokes `callback` with a boolean indicating whether the WebAuthn
+  // "Conditional Mediation" feature is available for WebAuthn requests on
+  // `caller_origin`.
+  //
+  // Conditional mediation lets relying parties make WebAuthn GetAssertion calls
+  // using browser autofill.
   virtual void IsConditionalMediationAvailable(
+      url::Origin caller_origin,
       blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
           callback) = 0;
 
