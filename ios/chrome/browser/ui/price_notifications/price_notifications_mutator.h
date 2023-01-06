@@ -12,8 +12,11 @@
 // Protocol to communicate price tracking actions to the mediator.
 @protocol PriceNotificationsMutator
 
-// Begins price tracking the item at the given `URL`.
+// Begins price tracking the `item`.
 - (void)trackItem:(PriceNotificationsTableViewItem*)item;
+
+// Stops price tracking the `item`.
+- (void)stopTrackingItem:(PriceNotificationsTableViewItem*)item;
 
 @end
 

@@ -28,6 +28,13 @@
 - (void)didStartPriceTrackingForItem:
     (PriceNotificationsTableViewItem*)trackableItem;
 
+// In the event that the tracked item was successfully unsubscribed to, this
+// function removes the tracked item from its current section. If the user is on
+// the website of the product that they stopped price tracking, the item will
+// instead be moved from the tracked section to trackable section.
+- (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
+                   onCurrentSite:(BOOL)isViewingProductSite;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_

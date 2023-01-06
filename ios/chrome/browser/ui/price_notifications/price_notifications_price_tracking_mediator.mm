@@ -102,6 +102,26 @@ using PriceNotificationItems =
       }));
 }
 
+- (void)stopTrackingItem:(PriceNotificationsTableViewItem*)item {
+  // Retrieve the bookmark node for the given URL.
+  const bookmarks::BookmarkNode* bookmark =
+      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.entryURL);
+
+  if (!bookmark) {
+    return;
+  }
+
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  commerce::SetPriceTrackingStateForBookmark(
+      self.shoppingService, self.bookmarkModel, bookmark, false,
+      base::BindOnce(^(bool success) {
+        if (!success) {
+          return;
+        }
+        [weakSelf didStopTrackingItem:item];
+      }));
+}
+
 #pragma mark - Private
 
 // This function fetches the product data for the item on the currently visible
@@ -206,6 +226,14 @@ using PriceNotificationItems =
 
   // TODO(crbug.com/1400738) Implement UX flow in the event an error occurs when
   // a user attempts to track an item.
+}
+
+// This function handles the response from the user attempting to unsubscribe to
+// an item with the ShoppingService.
+- (void)didStopTrackingItem:(PriceNotificationsTableViewItem*)item {
+  [self.consumer
+      didStopPriceTrackingItem:item
+                 onCurrentSite:self.webState->GetVisibleURL() == item.entryURL];
 }
 
 // This function fetches the product data for the items the user has subscribed

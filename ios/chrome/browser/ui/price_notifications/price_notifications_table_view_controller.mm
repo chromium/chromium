@@ -139,6 +139,42 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+- (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
+                   onCurrentSite:(BOOL)isViewingProductSite {
+  [self.tableView
+      performBatchUpdates:^{
+        TableViewModel* model = self.tableViewModel;
+        SectionIdentifier trackedSection = SectionIdentifierTrackedItems;
+
+        NSIndexPath* index = [model indexPathForItem:trackedItem];
+        [model removeItemWithType:ItemTypeListItem
+            fromSectionWithIdentifier:trackedSection
+                              atIndex:index.item];
+        [self.tableView
+            deleteRowsAtIndexPaths:@[ index ]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+        trackedItem.tracking = NO;
+
+        if (![model hasItemForItemType:ItemTypeListItem
+                     sectionIdentifier:trackedSection]) {
+          _hasTrackedItems = NO;
+          [model setHeader:[self createHeaderForSectionIndex:
+                                     SectionIdentifierTrackedItems
+                                                     isEmpty:YES]
+              forSectionWithIdentifier:trackedSection];
+          [self.tableView
+                reloadSections:[NSIndexSet
+                                   indexSetWithIndexesInRange:NSMakeRange(1, 1)]
+              withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+
+        if (isViewingProductSite) {
+          [self setTrackableItem:trackedItem currentlyTracking:NO];
+        }
+      }
+               completion:nil];
+}
+
 - (void)didStartPriceTrackingForItem:
     (PriceNotificationsTableViewItem*)trackableItem {
   TableViewModel* model = self.tableViewModel;
@@ -171,6 +207,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.mutator trackItem:item];
+}
+
+- (void)stopTrackingItemForCell:(PriceNotificationsTableViewCell*)cell {
+  NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+  PriceNotificationsTableViewItem* item =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+  [self.mutator stopTrackingItem:item];
 }
 
 #pragma mark - Item Loading Helpers

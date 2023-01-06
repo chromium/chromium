@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_image_container_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_menu_button.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
@@ -17,6 +18,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,8 +27,38 @@
 #endif
 
 namespace {
+
 const CGFloat kCellContentHeight = 64.0;
 const CGFloat kCellContentSpacing = 14;
+// Notification icon's point size.
+const CGFloat kNotificationIconPointSize = 20;
+// Identifier for the stop price tracking action item.
+NSString* kActionMenuIdentifier = @"priceTrackingActionMenu";
+
+// Creates an action menu for stopping a product's subscription to price
+// tracking events.
+UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kNotificationIconPointSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+
+  UIImage* icon = DefaultSymbolWithConfiguration(kBellSymbol, configuration);
+
+  UIAction* stop_tracking = [UIAction
+      actionWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING)
+                image:icon
+           identifier:kActionMenuIdentifier
+              handler:completion_handler];
+
+  // Create Action Menu
+  NSArray<UIMenuElement*>* menu_elements = @[ stop_tracking ];
+
+  return [UIMenu menuWithChildren:menu_elements];
+}
+
 }  // namespace
 
 @implementation PriceNotificationsTableViewItem
@@ -83,6 +116,11 @@ const CGFloat kCellContentSpacing = 14;
     _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _trackButton = [[PriceNotificationsTrackButton alloc] init];
     _menuButton = [[PriceNotificationsMenuButton alloc] init];
+    __weak PriceNotificationsTableViewCell* weakSelf = self;
+    _menuButton.menu = CreateOptionMenu(^(UIAction* action) {
+      [weakSelf willStopTrackingItem];
+    });
+    _menuButton.showsMenuAsPrimaryAction = YES;
     _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
     _priceNotificationsImageContainerView =
@@ -189,6 +227,11 @@ const CGFloat kCellContentSpacing = 14;
 // Initiates the user's subscription to the product's price tracking events.
 - (void)trackItem {
   [self.delegate trackItemForCell:self];
+}
+
+// Stops the user's subscription to the product's price tracking events.
+- (void)willStopTrackingItem {
+  [self.delegate stopTrackingItemForCell:self];
 }
 
 @end
