@@ -1091,7 +1091,14 @@ bool CanWebAppUpdateIdentity(const WebApp* web_app) {
           features::kWebAppManifestPolicyAppIdentityUpdate)) {
     return true;
   }
-  return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp();
+
+  // WebAppChromeOsData::oem_installed is not included in this statement as
+  // we would like to keep WebAppManagement::kOem and
+  // WebAppChromeOsData::oem_installed separate.
+  // WebAppChromeOsData::oem_installed will be migrated to
+  // WebAppManagement::kOem eventually.
+  return web_app->IsPreinstalledApp() || web_app->IsKioskInstalledApp() ||
+         web_app->GetSources().test(WebAppManagement::kOem);
 }
 
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
