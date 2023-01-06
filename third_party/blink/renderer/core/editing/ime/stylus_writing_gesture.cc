@@ -57,6 +57,21 @@ class StylusWritingGestureRemoveSpaces : public StylusWritingTwoPointGesture {
   bool MaybeApplyGesture(LocalFrame*) override;
 };
 
+class StylusWritingGestureSelect : public StylusWritingTwoPointGesture {
+ public:
+  ~StylusWritingGestureSelect() override = default;
+
+  StylusWritingGestureSelect(
+      const gfx::Point& start_point,
+      const gfx::Point& end_point,
+      const String& text_alternative,
+      const mojom::StylusWritingGestureGranularity granularity);
+  bool MaybeApplyGesture(LocalFrame*) override;
+
+ private:
+  const mojom::StylusWritingGestureGranularity granularity_;
+};
+
 class StylusWritingGestureAddText : public StylusWritingGesture {
  public:
   ~StylusWritingGestureAddText() override = default;
@@ -83,11 +98,17 @@ class StylusWritingGestureSplitOrMerge : public StylusWritingGesture {
 
 std::unique_ptr<StylusWritingGesture> CreateGesture(
     mojom::blink::StylusWritingGestureDataPtr gesture_data) {
+  if (!gesture_data) {
+    return nullptr;
+  }
   gfx::Point start_point = gesture_data->start_point;
   String text_alternative = gesture_data->text_alternative;
 
   switch (gesture_data->action) {
     case mojom::blink::StylusWritingGestureAction::DELETE_TEXT: {
+      if (!gesture_data->end_point.has_value()) {
+        return nullptr;
+      }
       return std::make_unique<blink::StylusWritingGestureDelete>(
           start_point, gesture_data->end_point.value(), text_alternative,
           gesture_data->granularity);
@@ -97,12 +118,23 @@ std::unique_ptr<StylusWritingGesture> CreateGesture(
           start_point, gesture_data->text_to_insert, text_alternative);
     }
     case mojom::blink::StylusWritingGestureAction::REMOVE_SPACES: {
+      if (!gesture_data->end_point.has_value()) {
+        return nullptr;
+      }
       return std::make_unique<blink::StylusWritingGestureRemoveSpaces>(
           start_point, gesture_data->end_point.value(), text_alternative);
     }
     case mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE: {
       return std::make_unique<blink::StylusWritingGestureSplitOrMerge>(
           start_point, text_alternative);
+    }
+    case mojom::blink::StylusWritingGestureAction::SELECT_TEXT: {
+      if (!gesture_data->end_point.has_value()) {
+        return nullptr;
+      }
+      return std::make_unique<blink::StylusWritingGestureSelect>(
+          start_point, gesture_data->end_point.value(), text_alternative,
+          gesture_data->granularity);
     }
     default: {
       NOTREACHED();
@@ -169,7 +201,7 @@ void StylusWritingGesture::ApplyGesture(
   // Create gesture corresponding to gesture data action.
   std::unique_ptr<StylusWritingGesture> gesture =
       CreateGesture(std::move(gesture_data));
-  if (!gesture->MaybeApplyGesture(local_frame)) {
+  if (gesture == nullptr || !gesture->MaybeApplyGesture(local_frame)) {
     // If the Stylus writing gesture could not be applied due the gesture
     // coordinates not being over a valid text position in the current focused
     // input, then insert the alternative text recognized.
@@ -272,6 +304,29 @@ bool StylusWritingGestureRemoveSpaces::MaybeApplyGesture(LocalFrame* frame) {
   input_method_controller.ReplaceText("", space_range.value());
   input_method_controller.SetEditableSelectionOffsets(
       PlainTextRange(space_range->Start(), space_range->Start()));
+  return true;
+}
+
+StylusWritingGestureSelect::StylusWritingGestureSelect(
+    const gfx::Point& start_point,
+    const gfx::Point& end_point,
+    const String& text_alternative,
+    const mojom::StylusWritingGestureGranularity granularity)
+    : StylusWritingTwoPointGesture(start_point, end_point, text_alternative),
+      granularity_(granularity) {}
+
+bool StylusWritingGestureSelect::MaybeApplyGesture(LocalFrame* frame) {
+  absl::optional<PlainTextRange> gesture_range = GestureRange(frame);
+  if (!gesture_range.has_value()) {
+    // Invalid gesture, return false to insert the alternative text.
+    return false;
+  }
+
+  // Select the text between offsets.
+  InputMethodController& input_method_controller =
+      frame->GetInputMethodController();
+  DCHECK_EQ(granularity_, mojom::StylusWritingGestureGranularity::CHARACTER);
+  input_method_controller.SetEditableSelectionOffsets(gesture_range.value());
   return true;
 }
 

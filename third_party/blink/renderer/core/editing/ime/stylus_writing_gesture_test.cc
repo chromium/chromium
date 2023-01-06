@@ -164,6 +164,24 @@ TEST_F(StylusWritingGestureTest, TestGestureRemoveFirstSpace) {
   EXPECT_EQ(2, range.EndOffset());
 }
 
+TEST_F(StylusWritingGestureTest, TestGestureSelect) {
+  auto* input = SetUpSingleInput();
+  input->SetValue("AB CD EF GH");
+
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action = mojom::blink::StylusWritingGestureAction::SELECT_TEXT;
+  gesture_data->start_point = gfx::Point(25, 15);
+  gesture_data->end_point = gfx::Point(100, 15);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  WebRange range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("AB CD EF GH", input->Value());
+  EXPECT_EQ(1, range.StartOffset());
+  EXPECT_EQ(4, range.EndOffset());
+}
+
 TEST_F(StylusWritingGestureTest, TestGestureAddSpaceOrText) {
   auto* input = SetUpSingleInput();
   input->SetValue("ABCDEFGH");
