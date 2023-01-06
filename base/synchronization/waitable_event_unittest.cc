@@ -173,11 +173,13 @@ TEST(WaitableEventTest, WaitAndDelete) {
       new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                         WaitableEvent::InitialState::NOT_SIGNALED);
 
-  WaitableEventSignaler signaler(Milliseconds(10), ev);
   PlatformThreadHandle thread;
-  PlatformThread::Create(0, &signaler, &thread);
-
-  ev->Wait();
+  {
+    // Signaler can't outlive event.
+    WaitableEventSignaler signaler(Milliseconds(10), ev);
+    PlatformThread::Create(0, &signaler, &thread);
+    ev->Wait();
+  }
   delete ev;
 
   PlatformThread::Join(thread);
@@ -192,17 +194,19 @@ TEST(WaitableEventTest, WaitMany) {
                           WaitableEvent::InitialState::NOT_SIGNALED);
   }
 
-  WaitableEventSignaler signaler(Milliseconds(10), ev[2]);
   PlatformThreadHandle thread;
-  PlatformThread::Create(0, &signaler, &thread);
-
-  size_t index = WaitableEvent::WaitMany(ev, 5);
+  {
+    // Signaler can't outlive event.
+    WaitableEventSignaler signaler(Milliseconds(10), ev[2]);
+    PlatformThread::Create(0, &signaler, &thread);
+    size_t index = WaitableEvent::WaitMany(ev, 5);
+    EXPECT_EQ(2u, index);
+  }
 
   for (auto* i : ev)
     delete i;
 
   PlatformThread::Join(thread);
-  EXPECT_EQ(2u, index);
 }
 
 // Tests that using TimeDelta::Max() on TimedWait() is not the same as passing
@@ -212,14 +216,16 @@ TEST(WaitableEventTest, TimedWait) {
       new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                         WaitableEvent::InitialState::NOT_SIGNALED);
 
-  TimeDelta thread_delay = Milliseconds(10);
-  WaitableEventSignaler signaler(thread_delay, ev);
   PlatformThreadHandle thread;
-  TimeTicks start = TimeTicks::Now();
-  PlatformThread::Create(0, &signaler, &thread);
-
-  EXPECT_TRUE(ev->TimedWait(TimeDelta::Max()));
-  EXPECT_GE(TimeTicks::Now() - start, thread_delay);
+  TimeDelta thread_delay = Milliseconds(10);
+  {
+    // Signaler can't outlive event.
+    WaitableEventSignaler signaler(thread_delay, ev);
+    TimeTicks start = TimeTicks::Now();
+    PlatformThread::Create(0, &signaler, &thread);
+    EXPECT_TRUE(ev->TimedWait(TimeDelta::Max()));
+    EXPECT_GE(TimeTicks::Now() - start, thread_delay);
+  }
   delete ev;
 
   PlatformThread::Join(thread);
