@@ -44,6 +44,10 @@ const char* const kKDE3ProxyConfigCommand[] = {"kcmshell", "proxy"};
 const char* const kKDE4ProxyConfigCommand[] = {"kcmshell4", "proxy"};
 const char* const kKDE5ProxyConfigCommand[] = {"kcmshell5", "proxy"};
 
+// In Deepin OS, we might need to run dde-control-center instead.
+const char* const kDeepinProxyConfigCommand[] = {"dde-control-center",
+                                                 "-m", "network"};
+
 // The URL for Linux proxy configuration help when not running under a
 // supported desktop environment.
 constexpr char kLinuxProxyConfigUrl[] = "chrome://linux-proxy-config";
@@ -105,6 +109,8 @@ bool DetectAndStartProxyConfigUtil() {
       launched = StartProxyConfigUtil(kCinnamonProxyConfigCommand);
       break;
     case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
+      launched = StartProxyConfigUtil(kDeepinProxyConfigCommand);
+      break;
     case base::nix::DESKTOP_ENVIRONMENT_GNOME:
     case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
