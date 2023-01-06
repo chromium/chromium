@@ -1279,7 +1279,10 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   if (PA_LIKELY(root->IsMemoryTaggingEnabled())) {
     const size_t slot_size = slot_span->bucket->slot_size;
     if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
-      internal::TagMemoryRangeIncrement(slot_start, slot_size);
+      // slot_span is untagged at this point, so we have to recover its tag
+      // again to increment and provide use-after-free mitigations.
+      internal::TagMemoryRangeIncrement(internal::TagAddr(slot_start),
+                                        slot_size);
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
       object = internal::TagPtr(object);
