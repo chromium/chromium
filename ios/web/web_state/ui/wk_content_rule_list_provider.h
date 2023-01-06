@@ -48,6 +48,7 @@ class WKContentRuleListProvider {
 
   __weak WKUserContentController* user_content_controller_;
   WKContentRuleList* block_local_rule_list_;
+  WKContentRuleList* mixed_content_autoupgrade_rule_list_;
 
   base::OnceCallback<void(bool)> update_callback_;
 

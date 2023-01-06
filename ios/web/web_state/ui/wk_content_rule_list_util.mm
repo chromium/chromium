@@ -63,4 +63,29 @@ NSString* CreateLocalBlockingJsonRuleList() {
   return json_string;
 }
 
+NSString* CreateMixedContentAutoUpgradeJsonRuleList() {
+  NSMutableDictionary* mixed_content_autoupgrade = [@{
+    @"trigger" : [@{
+      @"url-filter" : @"http://.*",
+      @"if-top-url" : [@[ @"https://.*" ] mutableCopy],
+      @"resource-type" : @[
+        // Only upgrade image and media (i.e. audio and video) per
+        // https://www.w3.org/TR/mixed-content/#upgrade-algorithm
+        @"image", @"media"
+      ],
+    } mutableCopy],
+    @"action" : @{
+      @"type" : @"make-https",
+    },
+  } mutableCopy];
+
+  NSData* json_data =
+      [NSJSONSerialization dataWithJSONObject:@[ mixed_content_autoupgrade ]
+                                      options:NSJSONWritingPrettyPrinted
+                                        error:nil];
+  NSString* json_string = [[NSString alloc] initWithData:json_data
+                                                encoding:NSUTF8StringEncoding];
+  return json_string;
+}
+
 }  // namespace web

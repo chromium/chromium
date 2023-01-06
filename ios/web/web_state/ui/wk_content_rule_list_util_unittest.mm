@@ -48,5 +48,28 @@ TEST_F(WKContentRuleListUtilTest, LocalResourceJSONBlock) {
   ASSERT_NSEQ(@"block", block_rule[@"action"][@"type"]);
 }
 
+// Tests that the JSON created for mixed content auto-upgrading contains the
+// correct keys.
+TEST_F(WKContentRuleListUtilTest, AutoUpgradeMixedContent) {
+  ScopedTestingWebClient web_client(std::make_unique<FakeWebClient>());
+  NSString* rules_string = CreateMixedContentAutoUpgradeJsonRuleList();
+  NSData* rules_data = [rules_string dataUsingEncoding:NSUTF8StringEncoding];
+  id json = [NSJSONSerialization JSONObjectWithData:rules_data
+                                            options:0
+                                              error:nil];
+
+  // The Apple API says Content Blocker rules must be an array of rules.
+  ASSERT_TRUE([json isKindOfClass:[NSArray class]]);
+  id block_rule = json[0];
+  ASSERT_TRUE([block_rule isKindOfClass:[NSDictionary class]]);
+  NSArray* filtered_schemes = @[ @"https://.*" ];
+  ASSERT_NSEQ(filtered_schemes, block_rule[@"trigger"][@"if-top-url"]);
+
+  ASSERT_NSEQ(@"http://.*", block_rule[@"trigger"][@"url-filter"]);
+  NSArray* filtered_types = @[ @"image", @"media" ];
+  ASSERT_NSEQ(filtered_types, block_rule[@"trigger"][@"resource-type"]);
+  ASSERT_NSEQ(@"make-https", block_rule[@"action"][@"type"]);
+}
+
 }  // namespace
 }  // namespace web
