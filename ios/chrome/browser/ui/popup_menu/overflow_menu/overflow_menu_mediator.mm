@@ -1844,8 +1844,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Dismisses the menu and opens What's New.
 - (void)openWhatsNew {
   SetWhatsNewOverflowMenuUsed();
-  self.engagementTracker->NotifyEvent(
-      feature_engagement::events::kViewedWhatsNew);
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kViewedWhatsNew);
+  }
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showWhatsNew];
 }
