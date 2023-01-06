@@ -65,11 +65,11 @@ resource_sizes_system_webview_bundle,"agrieve@chromium.org, jbudorick@chromium.o
 resource_sizes_system_webview_google_bundle,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome_google,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-speedometer,hablich@chromium.org,Blink>JavaScript,,all
-speedometer-future,hablich@chromium.org,Blink>JavaScript,,all
-speedometer2,hablich@chromium.org,Blink>JavaScript,,all
-speedometer2-chrome-health,hablich@chromium.org,Blink>JavaScript,,all
-speedometer2-future,hablich@chromium.org,Blink>JavaScript,,all
+speedometer,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
+speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
+speedometer2,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
+speedometer2-chrome-health,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
+speedometer2-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
 speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
