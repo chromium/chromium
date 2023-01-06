@@ -44,6 +44,12 @@ const char kAutofillEnableRankingFormulaDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "data model suggestions such as credit cards or profiles";
 
+const char kAutofillEnableRankingFormulaAddressProfilesName[] =
+    "Enable new Autofill suggestion ranking formula for address profiles";
+const char kAutofillEnableRankingFormulaAddressProfilesDescription[] =
+    "When enabled, Autofill will use a new ranking formula to rank Autofill "
+    "address profile suggestions.";
+
 const char kAutofillEnableRemadeDownstreamMetricsName[] =
     "Enable remade Autofill Downstream metrics logging";
 const char kAutofillEnableRemadeDownstreamMetricsDescription[] =

@@ -57947,6 +57947,8 @@ from previous Chrome versions.
   <int value="-1691668194" label="enable-new-bookmark-apps"/>
   <int value="-1691602043" label="DisableOfficeEditingComponentApp:enabled"/>
   <int value="-1691281364" label="enable-notification-action-icons"/>
+  <int value="-1688631209"
+      label="AutofillEnableRankingFormulaAddressProfiles:enabled"/>
   <int value="-1687407363" label="KaleidoscopeModule:disabled"/>
   <int value="-1687406612" label="UseSkiaRenderer:disabled"/>
   <int value="-1686782572" label="ChromeHomeInactivitySheetExpansion:disabled"/>
@@ -62273,6 +62275,8 @@ from previous Chrome versions.
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
   <int value="803877391" label="NotificationsRefresh:enabled"/>
   <int value="803982925" label="CellularForbidAttachApn:disabled"/>
+  <int value="804119864"
+      label="AutofillEnableRankingAddressFormulaProfiles:enabled"/>
   <int value="804551127" label="ArcKeyboardShortcutHelperIntegration:disabled"/>
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
@@ -64055,6 +64059,8 @@ from previous Chrome versions.
   <int value="1850641630" label="ForceSecurePaymentConfirmationDialog:enabled"/>
   <int value="1851358497" label="enable-ash-sidebar"/>
   <int value="1851746253" label="ReducedReferrerGranularity:disabled"/>
+  <int value="1852285132"
+      label="AutofillEnableRankingFormulaAddressProfiles:disabled"/>
   <int value="1852630189" label="NTPBookmarkSuggestions:disabled"/>
   <int value="1854017276" label="NavigationPredictorRendererWarmup:disabled"/>
   <int value="1854048611" label="OmniboxSuggestionsRecyclerView:disabled"/>

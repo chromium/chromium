@@ -8784,6 +8784,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableRankingFormulaDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableRankingFormula)},
 
+    {"autofill-enable-ranking-formula-address-profiles",
+     flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesName,
+     flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableRankingFormulaAddressProfiles)},
+
     {"autofill-enable-virtual-card-fido-enrollment",
      flag_descriptions::kAutofillEnableVirtualCardFidoEnrollmentName,
      flag_descriptions::kAutofillEnableVirtualCardFidoEnrollmentDescription,

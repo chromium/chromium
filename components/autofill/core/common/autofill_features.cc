@@ -181,6 +181,17 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
     &kAutofillEnableRankingFormula,
     "autofill_ranking_formula_virtual_card_boost_half_life", 15};
 
+// When enabled, autofill will use the new ranking algorithm for address profile
+// autofill suggestions.
+BASE_FEATURE(kAutofillEnableRankingFormulaAddressProfiles,
+             "AutofillEnableRankingFormulaAddressProfiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The half life applied to the use count of profiles in the ranking formula.
+const base::FeatureParam<int>
+    kAutofillRankingFormulaAddressProfilesUsageHalfLife{
+        &kAutofillEnableRankingFormulaAddressProfiles,
+        "autofill_ranking_formula_address_profiles_usage_half_life", 20};
+
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/1165780): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,

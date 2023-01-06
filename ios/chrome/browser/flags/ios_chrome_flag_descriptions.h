@@ -41,6 +41,11 @@ extern const char kAutofillEnableNewCardUnmaskPromptViewDescription[];
 extern const char kAutofillEnableRankingFormulaName[];
 extern const char kAutofillEnableRankingFormulaDescription[];
 
+// Title and description for the flag to control the new autofill suggestion
+// ranking formula for address profiles.
+extern const char kAutofillEnableRankingFormulaAddressProfilesName[];
+extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
+
 // Title and description for the flag that controls whether the remade Autofill
 // Downstream metrics are enabled.
 extern const char kAutofillEnableRemadeDownstreamMetricsName[];

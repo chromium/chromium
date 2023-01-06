@@ -488,6 +488,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "autofill-enable-ranking-formula-address-profiles",
+    "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "autofill-enable-remade-downstream-metrics",
     "owners": [ "siyua" ],
     "expiry_milestone": 120
