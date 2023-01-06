@@ -1448,21 +1448,14 @@ void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
   g_should_download_favicons = true;
 }
 
-void AwContents::RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                                        content::RenderFrameHost* new_host) {
-  DCHECK(new_host);
-  if (!new_host->IsInPrimaryMainFrame())
-    return;
-
+void AwContents::PrimaryPageChanged(content::Page& page) {
   // At this point, the current RenderFrameHost may or may not contain a
   // compositor. So compositor_ may be nullptr, in which case
   // BrowserViewRenderer::DidInitializeCompositor() callback is time when the
   // new compositor is constructed.
   browser_view_renderer_.SetActiveFrameSinkId(
-      new_host->GetRenderWidgetHost()->GetFrameSinkId());
-}
+      page.GetMainDocument().GetRenderWidgetHost()->GetFrameSinkId());
 
-void AwContents::PrimaryPageChanged(content::Page& page) {
   std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
   std::string etld_plus1 =

@@ -138,8 +138,7 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateEverything();
 
   // WebContentsObserver overrides:
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 
   bool renderer_prefs_initialized_{false};
