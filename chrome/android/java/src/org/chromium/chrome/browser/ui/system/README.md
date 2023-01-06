@@ -25,7 +25,8 @@ color when it is present. (Currently only Offline Indicator is used.)
 -- If Chrome’s toolbar is animating a color change due to focus/unfocus/theme change,
 match the color in animation.
 
--- If Chrome is showing the tab switcher, we will use the default color.
+-- If Chrome is showing/hiding the tab switcher, toolbar will match the toolbar color in 
+alpha animation.
 
 -- If no case is matched or the device is in dark mode, use the default color
 ColorUtils.getDefaultThemeColor.
@@ -51,18 +52,24 @@ color darkening factor.
 
 ## Input Signals
 
-- Theme color change: When the toolbar changes color due to the website theme
-color change or omnibox focus/unfocus action, the StatusBarColorController will be
-informed via a call to TopToolbarCoordinator.ToolbarColorObserver.
+- Toolbar color change: The toolbar color change has 3 cases: website theme color
+change, url focus change, and tab switcher show/hide animation.
 
-  -- When the toolbar starts or ends the url focus change animation,
+  --- When the toolbar starts or ends the url focus change animation,
   UrlExpansionObserver will send color-changing signal and UrlFocusChangeListener
   will receive a signal as an observer to inform the StatusBarColorController to change
   color. The StatusBarColorController uses the information provided by these callbacks
   to calculate the correct color.
-  -- When toolbar changes color, it will inform the StatusBarColorController throughout
-  the animation, invoking the color update for status bar in real time, and thus
-  synchronizing the status bar and toolbar color during toolbar animation.
+  --- When toolbar changes color due to website theme changes, ToolbarColorObserverManager
+  will collect the toolbar color update, and inform the StatusBarColorController
+  throughout the animation, invoking the color update for status bar in real time, and
+  thus synchronizing the status bar and toolbar color during toolbar animation.
+  --- When toolbar's alpha value changes as the user shows/hides tab switcher,
+  ToolbarColorObserverManager will calculate the status bar color by applying current
+  toolbar color onto default tab switcher background color with tab switcher animation's
+  alpha value, and inform the StatusBarColorController throughout the animation, invoking
+  the color update for status bar in real time, and thus synchronizing the status bar and
+  toolbar color during tab switcher animation.
 
 - Offline indicator(status indicator): Offline indicator is a persistent bar that appears
 below the status bar to denote the connectivity status. StatusBarColorController
@@ -93,10 +100,6 @@ provided in the Intent, or use default color.
 
 - Incognito mode switch: The status bar should match the dark toolbar color if the
 user enters Incognito mode from regular browsing mode.
-
-- Tab Switcher: The status bar should change to the default color when the user
-invoked tab switcher, and should change back to website theme/default color with
-themeless website theme after exiting tab switcher.
 
 - Scrim: When the user opens an dialog or bottom sheet, a scrim will darken the
 content, allowing the user to focus on the dialog. The status bar color should reflect
