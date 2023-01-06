@@ -8610,8 +8610,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_PICTURE_IN_PICTURE_RESIZE_HANDLE_TEXT" desc="Text label of the resize handle. The button appears when the user hovers over the Picture-in-Picture window.">
         Resize
       </message>
-      <message name="IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button toggles between play and pause controls.">
-        Toggle video to play or pause
+      <message name="IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT" is_accessibility_with_no_ui="true" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button toggles between play and pause controls.">
+        Play or pause video
       </message>
       <message name="IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes next track action.">
         Next track
