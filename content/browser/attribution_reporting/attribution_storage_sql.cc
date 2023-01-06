@@ -157,7 +157,6 @@ constexpr int64_t kUnsetReportId = -1;
   "A.external_report_id,A.failed_send_attempts,A.initial_report_time," \
   "A.aggregation_coordinator "                              \
   "FROM aggregatable_report_metadata A "                               \
-  DCHECK_SQL_INDEXED_BY("aggregate_report_time_idx")                   \
   "JOIN sources I ON A.source_id=I.source_id "
 
 // This query should be reasonably optimized via
@@ -171,7 +170,6 @@ constexpr int64_t kUnsetReportId = -1;
 #define ATTRIBUTION_COUNT_REPORTS_SQL(table) \
   "SELECT COUNT(*)FROM " table " R "         \
   "JOIN sources I "                          \
-  DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin") \
   "ON I.source_id=R.source_id "              \
   "WHERE I.destination_site=? "              \
   "AND(event_level_active BETWEEN 0 AND 1)"  \
@@ -1090,7 +1088,6 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   static constexpr char kGetMatchingSourcesSql[] =
       "SELECT source_id,num_attributions,aggregatable_budget_consumed "
       "FROM sources "
-      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
       "WHERE destination_site=? AND reporting_origin=? "
       "AND(event_level_active=1 OR aggregatable_active=1)"
       "AND expiry_time>? "
@@ -1585,14 +1582,11 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
   static constexpr char kSelectExpiredSourcesSql[] =
       "SELECT source_id FROM sources "
-      DCHECK_SQL_INDEXED_BY("sources_by_expiry_time")
       "WHERE expiry_time<=? AND "
       "source_id NOT IN("
       "SELECT source_id FROM event_level_reports"
-      DCHECK_SQL_INDEXED_BY("event_level_reports_by_source_id")
       ")AND source_id NOT IN("
       "SELECT source_id FROM aggregatable_report_metadata"
-      DCHECK_SQL_INDEXED_BY("aggregate_source_id_idx")
       ")LIMIT ?";
   sql::Statement select_expired_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectExpiredSourcesSql));
@@ -1608,14 +1602,11 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   // Optimized by |kConversionDestinationIndexSql|.
   static constexpr char kSelectInactiveSourcesSql[] =
       "SELECT source_id FROM sources "
-      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
       "WHERE event_level_active=0 AND aggregatable_active=0 AND "
       "source_id NOT IN("
       "SELECT source_id FROM event_level_reports"
-      DCHECK_SQL_INDEXED_BY("event_level_reports_by_source_id")
       ")AND source_id NOT IN("
       "SELECT source_id FROM aggregatable_report_metadata"
-      DCHECK_SQL_INDEXED_BY("aggregate_source_id_idx")
       ")LIMIT ?";
   sql::Statement select_inactive_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectInactiveSourcesSql));
@@ -1950,7 +1941,6 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
   static constexpr char kCountSourcesSql[] =
       // clang-format off
       "SELECT COUNT(*)FROM sources "
-      DCHECK_SQL_INDEXED_BY("active_sources_by_source_origin")
       "WHERE source_origin=? "
       "AND(event_level_active=1 OR aggregatable_active=1)";  // clang-format on
 
@@ -2582,7 +2572,6 @@ int AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
       "SELECT I.source_origin,I.destination_origin,I.reporting_origin,"
       "I.source_id,A.aggregation_id "
       "FROM sources I LEFT JOIN aggregatable_report_metadata A "
-      DCHECK_SQL_INDEXED_BY("aggregate_trigger_time_idx")
       "ON A.source_id=I.source_id WHERE"
       "(I.source_time BETWEEN ?1 AND ?2)OR"
       "(A.trigger_time BETWEEN ?1 AND ?2)";
@@ -2661,7 +2650,6 @@ int AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
 
   static constexpr char kDeleteAggregationsSql[] =
       "DELETE FROM aggregatable_report_metadata "
-      DCHECK_SQL_INDEXED_BY("aggregate_source_id_idx")
       "WHERE source_id=? "
       "RETURNING aggregation_id";
   sql::Statement statement(

@@ -186,7 +186,6 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
   static constexpr char kAttributionAllowedSql[] =
       "SELECT COUNT(*)FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_reporting_origin_idx")
       "WHERE scope=1 "
       "AND destination_site=? "
       "AND source_site=? "
@@ -230,7 +229,6 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   // whose [source_time, expiry_time] intersect with the current source_time.
   static constexpr char kSourceAllowedSql[] =
       "SELECT destination_site FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_source_site_reporting_origin_idx")
       "WHERE scope=0 "
       "AND source_site=? "
       "AND reporting_origin=? "
@@ -309,7 +307,6 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
 
   static constexpr char kSelectSql[] =
       "SELECT reporting_origin FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_reporting_origin_idx")
       "WHERE scope=? "
       "AND source_site=? "
       "AND destination_site=? "
@@ -349,7 +346,6 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
   static constexpr char kDeleteRateLimitRangeSql[] =
       // clang-format off
       "DELETE FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_time_idx")
       "WHERE time BETWEEN ? AND ?";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitRangeSql));
@@ -391,7 +387,6 @@ bool RateLimitTable::ClearDataForOriginsInRange(
       "SELECT id,source_origin,destination_origin,"
       "reporting_origin "
       "FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_time_idx")
       "WHERE time BETWEEN ? AND ?";  // clang-format on
   sql::Statement select_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
@@ -437,7 +432,6 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
   static constexpr char kDeleteExpiredRateLimits[] =
       // clang-format off
       "DELETE FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_time_idx")
       "WHERE time<=? AND(scope=1 OR expiry_time<=?)";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
