@@ -598,7 +598,7 @@ bool SyncTest::SetupClients() {
 
   auto* cl = base::CommandLine::ForCurrentProcess();
   if (!cl->HasSwitch(syncer::kSyncDeferredStartupTimeoutSeconds)) {
-    cl->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds, "1");
+    cl->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds, "0");
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
