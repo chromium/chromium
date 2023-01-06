@@ -5,7 +5,7 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_REGISTRATION_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_REGISTRATION_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace component_updater {
 struct ComponentRegistration;

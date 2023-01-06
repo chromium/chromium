@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #include "android_webview/common/mojom/frame.mojom.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

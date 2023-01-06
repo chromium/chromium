@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 
 namespace base {

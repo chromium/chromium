@@ -9,8 +9,8 @@
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
 #include "base/android/jni_android.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 

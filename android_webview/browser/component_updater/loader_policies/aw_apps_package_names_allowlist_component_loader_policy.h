@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

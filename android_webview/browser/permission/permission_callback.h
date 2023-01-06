@@ -5,7 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_PERMISSION_PERMISSION_CALLBACK_H_
 #define ANDROID_WEBVIEW_BROWSER_PERMISSION_PERMISSION_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace android_webview {
 

@@ -6,7 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PERMISSION_REQUEST_DELEGATE_H_
 
 #include "android_webview/browser/permission/permission_callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "url/gurl.h"
 
 namespace android_webview {

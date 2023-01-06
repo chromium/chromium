@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/tracing/aw_trace_event_args_allowlist.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"

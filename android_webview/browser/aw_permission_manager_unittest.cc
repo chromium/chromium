@@ -9,8 +9,8 @@
 
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
 #include "android_webview/browser/permission/permission_callback.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"

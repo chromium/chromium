@@ -5,7 +5,7 @@
 #include "android_webview/browser/permission/simple_permission_request.h"
 
 #include "android_webview/browser/permission/aw_permission_request.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace android_webview {
 

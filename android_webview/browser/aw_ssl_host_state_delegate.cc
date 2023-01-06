@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/base/hash_value.h"
 
 using content::SSLHostStateDelegate;

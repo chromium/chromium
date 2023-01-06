@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "android_webview/nonembedded/net/network_impl.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"

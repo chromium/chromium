@@ -4,9 +4,9 @@
 
 #include "android_webview/browser/icon_helper.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/notreached.h"
 #include "components/favicon_base/select_favicon_frames.h"

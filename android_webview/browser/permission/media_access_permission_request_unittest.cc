@@ -8,7 +8,7 @@
 
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/common/aw_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
