@@ -348,23 +348,25 @@ inline bool IsHashTraitsEmptyValue(const T& value) {
       Traits, Traits::kHasIsEmptyValueFunction>::IsEmptyValue(value);
 }
 
-template <typename FirstTraitsArg, typename SecondTraitsArg>
-struct PairHashTraits
-    : GenericHashTraits<std::pair<typename FirstTraitsArg::TraitType,
-                                  typename SecondTraitsArg::TraitType>> {
-  typedef FirstTraitsArg FirstTraits;
-  typedef SecondTraitsArg SecondTraits;
-  typedef std::pair<typename FirstTraits::TraitType,
-                    typename SecondTraits::TraitType>
-      TraitType;
-  typedef std::pair<typename FirstTraits::EmptyValueType,
-                    typename SecondTraits::EmptyValueType>
-      EmptyValueType;
+namespace internal {
+
+template <template <typename, typename> typename T,
+          typename FirstTraits,
+          typename SecondTraits,
+          auto first_field,
+          auto second_field>
+struct PairHashTraitsBase
+    : GenericHashTraits<T<typename FirstTraits::TraitType,
+                          typename SecondTraits::TraitType>> {
+  using TraitType =
+      T<typename FirstTraits::TraitType, typename SecondTraits::TraitType>;
+  using EmptyValueType = T<typename FirstTraits::EmptyValueType,
+                           typename SecondTraits::EmptyValueType>;
 
   static constexpr bool kEmptyValueIsZero =
       FirstTraits::kEmptyValueIsZero && SecondTraits::kEmptyValueIsZero;
   static EmptyValueType EmptyValue() {
-    return std::make_pair(FirstTraits::EmptyValue(),
+    return EmptyValueType(FirstTraits::EmptyValue(),
                           SecondTraits::EmptyValue());
   }
 
@@ -372,14 +374,14 @@ struct PairHashTraits
       FirstTraits::kHasIsEmptyValueFunction ||
       SecondTraits::kHasIsEmptyValueFunction;
   static bool IsEmptyValue(const TraitType& value) {
-    return IsHashTraitsEmptyValue<FirstTraits>(value.first) &&
-           IsHashTraitsEmptyValue<SecondTraits>(value.second);
+    return IsHashTraitsEmptyValue<FirstTraits>(value.*first_field) &&
+           IsHashTraitsEmptyValue<SecondTraits>(value.*second_field);
   }
 
   static constexpr unsigned kMinimumTableSize = FirstTraits::kMinimumTableSize;
 
   static void ConstructDeletedValue(TraitType& slot, bool zero_value) {
-    FirstTraits::ConstructDeletedValue(slot.first, zero_value);
+    FirstTraits::ConstructDeletedValue(slot.*first_field, zero_value);
     // For GC collections the memory for the backing is zeroed when it is
     // allocated, and the constructors may take advantage of that,
     // especially if a GC occurs during insertion of an entry into the
@@ -389,12 +391,50 @@ struct PairHashTraits
     // value part of the slot here for GC collections.
     if (zero_value) {
       internal::ClearMemoryAtomicallyIfNeeded<
-          typename SecondTraits::TraitType>::Clear(&slot.second);
+          typename SecondTraits::TraitType>::Clear(&(slot.*second_field));
     }
   }
   static bool IsDeletedValue(const TraitType& value) {
-    return FirstTraits::IsDeletedValue(value.first);
+    return FirstTraits::IsDeletedValue(value.*first_field);
   }
+
+  template <typename U = void>
+  struct IsTraceableInCollection {
+    static const bool value =
+        IsTraceableInCollectionTrait<FirstTraits>::value ||
+        IsTraceableInCollectionTrait<SecondTraits>::value;
+  };
+
+  template <typename U = void>
+  struct NeedsToForbidGCOnMove {
+    static const bool value =
+        FirstTraits::template NeedsToForbidGCOnMove<>::value ||
+        SecondTraits::template NeedsToForbidGCOnMove<>::value;
+  };
+
+  // Even non-traceable keys need to have their trait set. This is because
+  // non-traceable keys still need to be processed concurrently for checking
+  // empty/deleted state.
+  static constexpr bool kCanTraceConcurrently =
+      FirstTraits::kCanTraceConcurrently &&
+      (SecondTraits::kCanTraceConcurrently ||
+       !IsTraceable<typename SecondTraits::TraitType>::value);
+};
+
+}  // namespace internal
+
+template <typename FirstTraitsArg,
+          typename SecondTraitsArg,
+          typename P = std::pair<typename FirstTraitsArg::TraitType,
+                                 typename SecondTraitsArg::TraitType>>
+struct PairHashTraits : internal::PairHashTraitsBase<std::pair,
+                                                     FirstTraitsArg,
+                                                     SecondTraitsArg,
+                                                     &P::first,
+                                                     &P::second> {
+  using TraitType = P;
+  using FirstTraits = FirstTraitsArg;
+  using SecondTraits = SecondTraitsArg;
 };
 
 template <typename First, typename Second>
@@ -422,62 +462,18 @@ template <typename K, typename V>
 struct IsWeak<KeyValuePair<K, V>>
     : std::integral_constant<bool, IsWeak<K>::value || IsWeak<V>::value> {};
 
-template <typename KeyTraitsArg, typename ValueTraitsArg>
-struct KeyValuePairHashTraits
-    : GenericHashTraits<KeyValuePair<typename KeyTraitsArg::TraitType,
-                                     typename ValueTraitsArg::TraitType>> {
-  typedef KeyTraitsArg KeyTraits;
-  typedef ValueTraitsArg ValueTraits;
-  typedef KeyValuePair<typename KeyTraits::TraitType,
-                       typename ValueTraits::TraitType>
-      TraitType;
-  typedef KeyValuePair<typename KeyTraits::EmptyValueType,
-                       typename ValueTraits::EmptyValueType>
-      EmptyValueType;
-
-  static constexpr bool kEmptyValueIsZero =
-      KeyTraits::kEmptyValueIsZero && ValueTraits::kEmptyValueIsZero;
-  static EmptyValueType EmptyValue() {
-    return KeyValuePair<typename KeyTraits::EmptyValueType,
-                        typename ValueTraits::EmptyValueType>(
-        KeyTraits::EmptyValue(), ValueTraits::EmptyValue());
-  }
-
-  template <typename U = void>
-  struct IsTraceableInCollection {
-    static constexpr bool value =
-        IsTraceableInCollectionTrait<KeyTraits>::value ||
-        IsTraceableInCollectionTrait<ValueTraits>::value;
-  };
-
-  template <typename U = void>
-  struct NeedsToForbidGCOnMove {
-    static constexpr bool value =
-        KeyTraits::template NeedsToForbidGCOnMove<>::value ||
-        ValueTraits::template NeedsToForbidGCOnMove<>::value;
-  };
-
-  static constexpr unsigned kMinimumTableSize = KeyTraits::kMinimumTableSize;
-
-  static void ConstructDeletedValue(TraitType& slot, bool zero_value) {
-    KeyTraits::ConstructDeletedValue(slot.key, zero_value);
-    // See similar code in this file for why we need to do this.
-    if (zero_value) {
-      internal::ClearMemoryAtomicallyIfNeeded<
-          typename ValueTraits::TraitType>::Clear(&slot.value);
-    }
-  }
-  static bool IsDeletedValue(const TraitType& value) {
-    return KeyTraits::IsDeletedValue(value.key);
-  }
-
-  // Even non-traceable keys need to have their trait set. This is because
-  // non-traceable keys still need to be processed concurrently for checking
-  // empty/deleted state.
-  static constexpr bool kCanTraceConcurrently =
-      KeyTraitsArg::kCanTraceConcurrently &&
-      (ValueTraitsArg::kCanTraceConcurrently ||
-       !IsTraceable<typename ValueTraitsArg::TraitType>::value);
+template <typename KeyTraitsArg,
+          typename ValueTraitsArg,
+          typename P = KeyValuePair<typename KeyTraitsArg::TraitType,
+                                    typename ValueTraitsArg::TraitType>>
+struct KeyValuePairHashTraits : internal::PairHashTraitsBase<KeyValuePair,
+                                                             KeyTraitsArg,
+                                                             ValueTraitsArg,
+                                                             &P::key,
+                                                             &P::value> {
+  using TraitType = P;
+  using KeyTraits = KeyTraitsArg;
+  using ValueTraits = ValueTraitsArg;
 };
 
 template <typename Key, typename Value>
