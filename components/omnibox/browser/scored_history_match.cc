@@ -23,8 +23,6 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
-#include "components/omnibox/common/omnibox_features.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace {
 
@@ -275,24 +273,24 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     }
   }
 
+  // Calculate the score per `topicality_score`, `frequency_score`, and
+  // `specificity_score`.
   const float topicality_score =
       GetTopicalityScore(terms_vector.size(), gurl, adjustments,
                          terms_to_word_starts_offsets, word_starts);
   const float frequency_score = GetFrequency(now, is_url_bookmarked, visits);
   const float specificity_score =
       GetDocumentSpecificityScore(num_matching_pages);
+  raw_score_before_domain_boosting =
+      base::saturated_cast<int>(GetFinalRelevancyScore(
+          topicality_score, frequency_score, specificity_score, 1));
 
+  // Calculate the score considering `domain_score` as well (if enabled).
   static float domain_suggestions_score_factor =
       OmniboxFieldTrial::kDomainSuggestionsScoreFactor.Get();
   DCHECK_GE(domain_suggestions_score_factor, 1);
   const float domain_score =
       is_highly_visited_host ? domain_suggestions_score_factor : 1;
-
-  raw_score_before_domain_boosting =
-      base::saturated_cast<int>(GetFinalRelevancyScore(
-          topicality_score, frequency_score, specificity_score, 1));
-  // Short-circuit the redundant 2nd computations if domain boosting is
-  // disabled.
   raw_score_after_domain_boosting =
       domain_score > 1 ? base::saturated_cast<int>(GetFinalRelevancyScore(
                              topicality_score, frequency_score,
@@ -303,8 +301,17 @@ ScoredHistoryMatch::ScoredHistoryMatch(
                           : raw_score_before_domain_boosting ==
                                 raw_score_after_domain_boosting);
 
-  // If the feature is cf enabled, use the un-boosted score; If enabled, use the
-  // boosted score; and if disabled, it doesn't matter as the scores are equal.
+  // Calculate the score using an alternative domain scoring (if enabled).
+  static bool domain_suggestions_alternative_scoring =
+      OmniboxFieldTrial::kDomainSuggestionsAlternativeScoring.Get();
+  if (is_highly_visited_host && domain_suggestions_alternative_scoring) {
+    raw_score_after_domain_boosting =
+        std::max(GetDomainRelevancyScore(now), raw_score_after_domain_boosting);
+  }
+
+  // If the domain suggestions feature is CF enabled, use the un-boosted score;
+  // if non-CF enabled, use the boosted score; and if disabled, it doesn't
+  // matter as the scores are equal.
   static const bool domain_suggestions_counterfactual =
       OmniboxFieldTrial::kDomainSuggestionsCounterfactual.Get();
   raw_score = domain_suggestions_counterfactual
@@ -847,4 +854,33 @@ ScoredHistoryMatch::GetHQPBucketsFromString(const std::string& buckets_str) {
     hqp_buckets.push_back(bucket);
   }
   return hqp_buckets;
+}
+
+int ScoredHistoryMatch::GetDomainRelevancyScore(base::Time now) const {
+  // Domain scores consider only the last visit time as they're intended for
+  // pages the user hasn't yet visited many times. The goal is to score them
+  // highly enough to surface but not so high they constantly displace
+  // traditional suggestions. Otherwise, for inputs matching a highly visited
+  // domain, domain suggestions would overwhelm all other suggestions. Besides,
+  // if scored conservatively, they'll still be boosted by traditional scores
+  // after they're selected.
+
+  // For simplicity, score them linearly: 1000 - 80 / day.
+  // 80 because (1000-200) / (10-0) = 80.
+  constexpr int max_score = 1000;
+  constexpr int min_score = 200;
+  constexpr auto demote_start = base::Days(0);
+  constexpr auto demote_end = base::Days(10);
+
+  auto elapsed = now - url_info.last_visit();
+
+  // If visited more recently than `demote_start`, return `max_score`.
+  if (elapsed <= demote_start)
+    return max_score;
+  // If visited less recently than `demote_end`, return 0 (not `min_score`).
+  if (elapsed >= demote_end)
+    return 0;
+  // Otherwise, linearly interpolate `max_score` and `min_score`.
+  return max_score - (elapsed - demote_start) / (demote_end - demote_start) *
+                         (max_score - min_score);
 }

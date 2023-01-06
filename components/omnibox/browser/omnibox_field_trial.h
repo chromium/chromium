@@ -610,6 +610,12 @@ extern const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain;
 // A value of 1 is the control behavior. A value of 2 will boost scores, but not
 // necessarily double them due to how HQP maps the factors to actual scores.
 extern const base::FeatureParam<double> kDomainSuggestionsScoreFactor;
+// Whether to use an alternative scoring algorithm based on last visit time to
+// boost scores (e.g., 1000 - 80 / day). If disabled, domain suggestions use
+// traditional HQP scoring (optionally scaled by
+// `kDomainSuggestionsScoreFactor`). If enabled, they use the max of the
+// traditional and the alternate scoring algorithms.
+extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 
 // ---------------------------------------------------------
 // For logging Omnibox scoring signals for training machine learning models.

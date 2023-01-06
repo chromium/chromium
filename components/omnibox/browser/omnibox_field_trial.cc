@@ -1010,6 +1010,11 @@ const base::FeatureParam<double> kDomainSuggestionsScoreFactor(
     "DomainSuggestionsScoreFactor",
     1);
 
+const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsAlternativeScoring",
+    false);
+
 bool IsLogUrlScoringSignalsEnabled() {
   static bool enabled =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);

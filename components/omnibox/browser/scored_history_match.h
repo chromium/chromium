@@ -175,6 +175,13 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   static ScoreMaxRelevances GetHQPBucketsFromString(
       const std::string& buckets_str);
 
+  // Returns a score based on last visit time intended for suggestions from
+  // highly visited domains. This is an alternative to
+  // `GetFinalRelevancyScore()`; suggestions from highly visited domains will
+  // use the max of the 2 while other suggestions will use just
+  // `GetFinalRelevancyScore()`.
+  int GetDomainRelevancyScore(base::Time now) const;
+
   // If true, assign raw scores to be max(whatever it normally would be, a
   // score that's similar to the score HistoryURL provider would assign).
   static bool also_do_hup_like_scoring_;

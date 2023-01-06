@@ -69,6 +69,7 @@ class ScoredHistoryMatchPublic : public ScoredHistoryMatch {
                            now) {}
   using ScoredHistoryMatch::FilterTermMatchesByWordStarts;
   using ScoredHistoryMatch::GetDocumentSpecificityScore;
+  using ScoredHistoryMatch::GetDomainRelevancyScore;
   using ScoredHistoryMatch::GetFinalRelevancyScore;
   using ScoredHistoryMatch::GetFrequency;
   using ScoredHistoryMatch::GetHQPBuckets;
@@ -886,4 +887,20 @@ TEST_F(ScoredHistoryMatchTest, GetHQPBucketsFromString) {
   buckets_str = "0.0,400,1.5,600";
   hqp_buckets = ScoredHistoryMatchPublic::GetHQPBucketsFromString(buckets_str);
   EXPECT_TRUE(hqp_buckets.empty());
+}
+
+TEST_F(ScoredHistoryMatchTest, GetDomainRelevancyScore) {
+  auto domain_relevancy_score = [&](base::TimeDelta time_since_last_visit) {
+    auto now = base::Time::Now();
+    history::URLRow row;
+    ScoredHistoryMatchPublic match(row, {}, u"", Make1Term("x"), {}, {}, false,
+                                   1, false, {});
+    match.url_info.set_last_visit(now - time_since_last_visit);
+    return match.GetDomainRelevancyScore(now);
+  };
+
+  EXPECT_EQ(domain_relevancy_score(base::Days(0)), 1000);
+  EXPECT_EQ(domain_relevancy_score(base::Days(5)), 600);
+  EXPECT_EQ(domain_relevancy_score(base::Days(10)), 0);
+  EXPECT_EQ(domain_relevancy_score(base::Days(20)), 0);
 }
