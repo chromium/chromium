@@ -72,6 +72,13 @@
         user-select: none;
       }
 
+      :host([has-icon_]) {
+        --iron-icon-height: 16px;
+        --iron-icon-width: 16px;
+        gap: 8px;
+        padding: 8px;
+      }
+
       :host-context(.focus-outline-visible):host(:focus) {
         box-shadow: 0 0 0 2px var(--focus-shadow-color);
       }
@@ -160,4 +167,11 @@
         width: var(--paper-ripple-width);
       }
     </style>
+
+    <slot id="prefixIcon" name="prefix-icon"
+        on-slotchange="onIconSlotChanged_">
+    </slot>
     <slot></slot>
+    <slot id="suffixIcon" name="suffix-icon"
+        on-slotchange="onIconSlotChanged_">
+    </slot>

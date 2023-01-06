@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -123,5 +124,38 @@ suite('cr-button', function() {
     assertFalse(clicked);
     press(' ');
     assertTrue(clicked);
+  });
+
+  test('UpdatesStyleWithIcons', async () => {
+    const buttonStyle = window.getComputedStyle(button);
+    const whenPrefixSlotchange =
+        eventToPromise('slotchange', button.$.prefixIcon);
+    const icon = document.createElement('div');
+    icon.slot = 'prefix-icon';
+    button.appendChild(icon);
+
+    const text = document.createTextNode('Hello world');
+    button.appendChild(text);
+    await whenPrefixSlotchange;
+
+    assertEquals('8px', buttonStyle.gap);
+    assertEquals('8px', buttonStyle.padding);
+
+    const whenPrefixSlotRemoved =
+        eventToPromise('slotchange', button.$.prefixIcon);
+    icon.remove();
+    await whenPrefixSlotRemoved;
+
+    assertEquals('normal', buttonStyle.gap);
+    assertEquals('8px 16px', buttonStyle.padding);
+
+    const whenSuffixSlotchange =
+        eventToPromise('slotchange', button.$.suffixIcon);
+    icon.slot = 'suffix-icon';
+    button.appendChild(icon);
+    await whenSuffixSlotchange;
+
+    assertEquals('8px', buttonStyle.gap);
+    assertEquals('8px', buttonStyle.padding);
   });
 });

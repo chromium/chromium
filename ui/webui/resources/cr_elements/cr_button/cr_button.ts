@@ -19,6 +19,13 @@ import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 
 import {getTemplate} from './cr_button.html.js';
 
+export interface CrButtonElement {
+  $: {
+    prefixIcon: HTMLSlotElement,
+    suffixIcon: HTMLSlotElement,
+  };
+}
+
 const CrButtonElementBase =
     mixinBehaviors([PaperRippleBehavior], PolymerElement) as {
       new (): PolymerElement & PaperRippleBehavior,
@@ -58,12 +65,19 @@ export class CrButtonElement extends CrButtonElementBase {
         type: Boolean,
         value: false,
       },
+
+      hasIcon_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
   disabled: boolean;
   customTabIndex: number;
   circleRipple: boolean;
+  private hasIcon_: boolean;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When
@@ -150,6 +164,11 @@ export class CrButtonElement extends CrButtonElementBase {
     if (this.disabled) {
       e.stopImmediatePropagation();
     }
+  }
+
+  private onIconSlotChanged_() {
+    this.hasIcon_ = this.$.prefixIcon.assignedElements().length > 0 ||
+        this.$.suffixIcon.assignedElements().length > 0;
   }
 
   private onKeyDown_(e: KeyboardEvent) {
