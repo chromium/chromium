@@ -99735,7 +99735,9 @@ would be helpful to identify which type is being sent.
   </summary>
   <int value="0" label="TCSD_ORD_ERROR: tpm: TSS_SUCCESS"/>
   <int value="65536" label="TCSD_ORD_OPENCONTEXT: tpm: TSS_SUCCESS"/>
+  <int value="77841" label="TCSD_ORD_OPENCONTEXT: tsp: TSS_E_COMM_FAILURE"/>
   <int value="131072" label="TCSD_ORD_CLOSECONTEXT: tpm: TSS_SUCCESS"/>
+  <int value="143377" label="TCSD_ORD_CLOSECONTEXT: tsp: TSS_E_COMM_FAILURE"/>
   <int value="196608" label="TCSD_ORD_FREEMEMORY: tpm: TSS_SUCCESS"/>
   <int value="262144" label="TCSD_ORD_TCSGETCAPABILITY: tpm: TSS_SUCCESS"/>
   <int value="327680" label="TCSD_ORD_REGISTERKEY: tpm: TSS_SUCCESS"/>
@@ -99746,10 +99748,16 @@ would be helpful to identify which type is being sent.
   <int value="655360"
       label="TCSD_ORD_GETREGISTEREDKEYBYPUBLICINFO: tpm: TSS_SUCCESS"/>
   <int value="720896" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TSS_SUCCESS"/>
+  <int value="720929" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="725127" label="TCSD_ORD_LOADKEYBYBLOB: tddl: TDDL_E_IOERROR"/>
   <int value="786432" label="TCSD_ORD_LOADKEYBYUUID: tpm: TSS_SUCCESS"/>
   <int value="851968" label="TCSD_ORD_EVICTKEY: tpm: TSS_SUCCESS"/>
   <int value="917504" label="TCSD_ORD_CREATEWRAPKEY: tpm: TSS_SUCCESS"/>
   <int value="983040" label="TCSD_ORD_GETPUBKEY: tpm: TSS_SUCCESS"/>
+  <int value="983041" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_AUTHFAIL"/>
+  <int value="985091"
+      label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="995345" label="TCSD_ORD_GETPUBKEY: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1048576" label="TCSD_ORD_MAKEIDENTITY: tpm: TSS_SUCCESS"/>
   <int value="1114112" label="TCSD_ORD_LOGPCREVENT: tpm: TSS_SUCCESS"/>
   <int value="1179648" label="TCSD_ORD_GETPCREVENT: tpm: TSS_SUCCESS"/>
@@ -99758,7 +99766,11 @@ would be helpful to identify which type is being sent.
   <int value="1376256" label="TCSD_ORD_SETOWNERINSTALL: tpm: TSS_SUCCESS"/>
   <int value="1441792" label="TCSD_ORD_TAKEOWNERSHIP: tpm: TSS_SUCCESS"/>
   <int value="1507328" label="TCSD_ORD_OIAP: tpm: TSS_SUCCESS"/>
+  <int value="1507351" label="TCSD_ORD_OIAP: tpm: TPM_E_SIZE"/>
+  <int value="1511559" label="TCSD_ORD_OIAP: tddl: TDDL_E_IOERROR"/>
+  <int value="1519633" label="TCSD_ORD_OIAP: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1572864" label="TCSD_ORD_OSAP: tpm: TSS_SUCCESS"/>
+  <int value="1577095" label="TCSD_ORD_OSAP: tddl: TDDL_E_IOERROR"/>
   <int value="1638400" label="TCSD_ORD_CHANGEAUTH: tpm: TSS_SUCCESS"/>
   <int value="1703936" label="TCSD_ORD_CHANGEAUTHOWNER: tpm: TSS_SUCCESS"/>
   <int value="1769472" label="TCSD_ORD_CHANGEAUTHASYMSTART: tpm: TSS_SUCCESS"/>
@@ -99772,7 +99784,12 @@ would be helpful to identify which type is being sent.
   <int value="2293760" label="TCSD_ORD_DIRREAD: tpm: TSS_SUCCESS"/>
   <int value="2359296" label="TCSD_ORD_SEAL: tpm: TSS_SUCCESS"/>
   <int value="2424832" label="TCSD_ORD_UNSEAL: tpm: TSS_SUCCESS"/>
+  <int value="2424833" label="TCSD_ORD_UNSEAL: tpm: TPM_E_AUTHFAIL"/>
+  <int value="2424856" label="TCSD_ORD_UNSEAL: tpm: TPM_E_WRONGPCRVAL"/>
+  <int value="2424861" label="TCSD_ORD_UNSEAL: tpm: TPM_E_AUTH2FAIL"/>
   <int value="2490368" label="TCSD_ORD_UNBIND: tpm: TSS_SUCCESS"/>
+  <int value="2490401" label="TCSD_ORD_UNBIND: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="2498762" label="TCSD_ORD_UNBIND: tcs: TCS_E_KM_LOADFAILED"/>
   <int value="2555904" label="TCSD_ORD_CREATEMIGRATIONBLOB: tpm: TSS_SUCCESS"/>
   <int value="2621440" label="TCSD_ORD_CONVERTMIGRATIONBLOB: tpm: TSS_SUCCESS"/>
   <int value="2686976"
@@ -99782,11 +99799,28 @@ would be helpful to identify which type is being sent.
   <int value="2883584" label="TCSD_ORD_GETRANDOM: tpm: TSS_SUCCESS"/>
   <int value="2949120" label="TCSD_ORD_STIRRANDOM: tpm: TSS_SUCCESS"/>
   <int value="3014656" label="TCSD_ORD_GETCAPABILITY: tpm: TSS_SUCCESS"/>
+  <int value="3014658" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BADINDEX"/>
+  <int value="3014659"
+      label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_PARAMETER"/>
+  <int value="3014684"
+      label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_FAILEDSELFTEST"/>
+  <int value="3014700" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_MODE"/>
+  <int value="3018887" label="TCSD_ORD_GETCAPABILITY: tddl: TDDL_E_IOERROR"/>
+  <int value="3026961" label="TCSD_ORD_GETCAPABILITY: tsp: TSS_E_COMM_FAILURE"/>
   <int value="3080192" label="TCSD_ORD_GETCAPABILITYSIGNED: tpm: TSS_SUCCESS"/>
   <int value="3145728" label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TSS_SUCCESS"/>
+  <int value="3145729"
+      label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_AUTHFAIL"/>
+  <int value="3145734"
+      label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_DEACTIVATED"/>
+  <int value="3147779"
+      label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
   <int value="3211264"
       label="TCSD_ORD_CREATEENDORSEMENTKEYPAIR: tpm: TSS_SUCCESS"/>
   <int value="3276800" label="TCSD_ORD_READPUBEK: tpm: TSS_SUCCESS"/>
+  <int value="3276806" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DEACTIVATED"/>
+  <int value="3276807" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DISABLED"/>
+  <int value="3276835" label="TCSD_ORD_READPUBEK: tpm: TPM_E_NO_ENDORSEMENT"/>
   <int value="3342336" label="TCSD_ORD_DISABLEPUBEKREAD: tpm: TSS_SUCCESS"/>
   <int value="3407872" label="TCSD_ORD_OWNERREADPUBEK: tpm: TSS_SUCCESS"/>
   <int value="3473408" label="TCSD_ORD_SELFTESTFULL: tpm: TSS_SUCCESS"/>
@@ -99831,10 +99865,19 @@ would be helpful to identify which type is being sent.
   <int value="5636096" label="TCSD_ORD_GETCREDENTIAL: tpm: TSS_SUCCESS"/>
   <int value="5701632"
       label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TSS_SUCCESS"/>
+  <int value="5701634"
+      label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TPM_E_BADINDEX"/>
   <int value="5767168" label="TCSD_ORD_NVWRITEVALUE: tpm: TSS_SUCCESS"/>
+  <int value="5767192" label="TCSD_ORD_NVWRITEVALUE: tpm: TPM_E_WRONGPCRVAL"/>
   <int value="5832704" label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="5832764"
+      label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TPM_E_AREA_LOCKED"/>
   <int value="5898240" label="TCSD_ORD_NVREADVALUE: tpm: TSS_SUCCESS"/>
+  <int value="5898264" label="TCSD_ORD_NVREADVALUE: tpm: TPM_E_WRONGPCRVAL"/>
+  <int value="5898285" label="TCSD_ORD_NVREADVALUE: tpm: TPM_E_BAD_PRESENCE"/>
   <int value="5963776" label="TCSD_ORD_NVREADVALUEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="5976081"
+      label="TCSD_ORD_NVREADVALUEAUTH: tsp: TSS_E_COMM_FAILURE"/>
   <int value="6029312" label="TCSD_ORD_ESTABLISHTRANSPORT: tpm: TSS_SUCCESS"/>
   <int value="6094848" label="TCSD_ORD_EXECUTETRANSPORT: tpm: TSS_SUCCESS"/>
   <int value="6160384"
@@ -99853,6 +99896,8 @@ would be helpful to identify which type is being sent.
       label="TCSD_ORD_DELEGATE_CREATEKEYDELEGATION: tpm: TSS_SUCCESS"/>
   <int value="6881280"
       label="TCSD_ORD_DELEGATE_CREATEOWNERDELEGATION: tpm: TSS_SUCCESS"/>
+  <int value="6893585"
+      label="TCSD_ORD_DELEGATE_CREATEOWNERDELEGATION: tsp: TSS_E_COMM_FAILURE"/>
   <int value="6946816"
       label="TCSD_ORD_DELEGATE_LOADOWNERDELEGATION: tpm: TSS_SUCCESS"/>
   <int value="7012352" label="TCSD_ORD_DELEGATE_READTABLE: tpm: TSS_SUCCESS"/>
@@ -99875,6 +99920,7 @@ would be helpful to identify which type is being sent.
   <int value="7864320" label="TCSD_ORD_FLUSHSPECIFIC: tpm: TSS_SUCCESS"/>
   <int value="7929856" label="TCSD_ORD_KEYCONTROLOWNER: tpm: TSS_SUCCESS"/>
   <int value="7995392" label="TCSD_ORD_DSAP: tpm: TSS_SUCCESS"/>
+  <int value="7999623" label="TCSD_ORD_DSAP: tddl: TDDL_E_IOERROR"/>
 </enum>
 
 <enum name="TPM2CommandAndResponse">
