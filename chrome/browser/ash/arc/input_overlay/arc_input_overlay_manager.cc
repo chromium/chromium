@@ -443,6 +443,23 @@ void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
   UnRegisterWindow(window);
 }
 
+void ArcInputOverlayManager::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  if (!window || window != registered_top_level_window_)
+    return;
+  if (display_overlay_controller_)
+    display_overlay_controller_->OnWindowBoundsChanged();
+
+  auto it = input_overlay_enabled_windows_.find(window);
+  if (it == input_overlay_enabled_windows_.end())
+    return;
+
+  it->second->UpdateForWindowBoundsChanged();
+}
+
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
   window_observations_.RemoveAllObservations();
@@ -501,7 +518,7 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
   if (it == input_overlay_enabled_windows_.end())
     return;
 
-  it->second->UpdatePositionsForRegister();
+  it->second->UpdateForDisplayMetricsChanged();
 }
 
 void ArcInputOverlayManager::ResetForPendingTouchInjector(

@@ -16,8 +16,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Widget;
@@ -42,14 +40,15 @@ class EducationalView;
 // menu, and educational dialog. It also handles the visibility of the
 // |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
 class DisplayOverlayController : public ui::EventHandler,
-                                 public ash::ColorModeObserver,
-                                 public views::WidgetObserver {
+                                 public ash::ColorModeObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
   DisplayOverlayController& operator=(const DisplayOverlayController&) = delete;
   ~DisplayOverlayController() override;
 
+  // Virtual for test.
+  virtual void OnWindowBoundsChanged();
   void SetDisplayMode(DisplayMode mode);
   // Get the bounds of |menu_entry_| in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
@@ -90,11 +89,6 @@ class DisplayOverlayController : public ui::EventHandler,
 
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
-
-  // views::WidgetObserver:
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
-  void OnWidgetClosing(views::Widget* widget) override;
 
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
@@ -168,12 +162,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void DismissEducationalViewForTesting();
   InputMenuView* GetInputMenuView() { return input_menu_view_; }
   MenuEntryView* GetMenuEntryView() { return menu_entry_; }
-  void TriggerWidgetBoundsChangedForTesting();
 
   const raw_ptr<TouchInjector> touch_injector_;
-
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      overlay_widget_observation_{this};
 
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
