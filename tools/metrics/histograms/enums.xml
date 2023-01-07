@@ -99934,6 +99934,7 @@ would be helpful to identify which type is being sent.
   </summary>
   <int value="18808832" label="TPM_CC_NV_UndefineSpaceSpecial: TPM_RC_SUCCESS"/>
   <int value="18874368" label="TPM_CC_EvictControl: TPM_RC_SUCCESS"/>
+  <int value="18874530" label="TPM_CC_EvictControl: TPM_RC_BAD_AUTH"/>
   <int value="18939904" label="TPM_CC_HierarchyControl: TPM_RC_SUCCESS"/>
   <int value="19005440" label="TPM_CC_NV_UndefineSpace: TPM_RC_SUCCESS"/>
   <int value="19136512" label="TPM_CC_ChangeEPS: TPM_RC_SUCCESS"/>
@@ -99942,7 +99943,10 @@ would be helpful to identify which type is being sent.
   <int value="19333120" label="TPM_CC_ClearControl: TPM_RC_SUCCESS"/>
   <int value="19398656" label="TPM_CC_ClockSet: TPM_RC_SUCCESS"/>
   <int value="19464192" label="TPM_CC_HierarchyChangeAuth: TPM_RC_SUCCESS"/>
+  <int value="19464354" label="TPM_CC_HierarchyChangeAuth: TPM_RC_BAD_AUTH"/>
   <int value="19529728" label="TPM_CC_NV_DefineSpace: TPM_RC_SUCCESS"/>
+  <int value="19529890" label="TPM_CC_NV_DefineSpace: TPM_RC_BAD_AUTH"/>
+  <int value="19566608" label="TPM_CC_NV_DefineSpace: SAPI_RC_NO_CONNECTION"/>
   <int value="19595264" label="TPM_CC_PCR_Allocate: TPM_RC_SUCCESS"/>
   <int value="19660800" label="TPM_CC_PCR_SetAuthPolicy: TPM_RC_SUCCESS"/>
   <int value="19726336" label="TPM_CC_PP_Commands: TPM_RC_SUCCESS"/>
@@ -99950,6 +99954,8 @@ would be helpful to identify which type is being sent.
   <int value="19857408" label="TPM_CC_FieldUpgradeStart: TPM_RC_SUCCESS"/>
   <int value="19922944" label="TPM_CC_ClockRateAdjust: TPM_RC_SUCCESS"/>
   <int value="19988480" label="TPM_CC_CreatePrimary: TPM_RC_SUCCESS"/>
+  <int value="19988612" label="TPM_CC_CreatePrimary: TPM_RC_VALUE"/>
+  <int value="19988642" label="TPM_CC_CreatePrimary: TPM_RC_BAD_AUTH"/>
   <int value="20054016" label="TPM_CC_NV_GlobalWriteLock: TPM_RC_SUCCESS"/>
   <int value="20119552" label="TPM_CC_GetCommandAuditDigest: TPM_RC_SUCCESS"/>
   <int value="20185088" label="TPM_CC_NV_Increment: TPM_RC_SUCCESS"/>
@@ -99959,6 +99965,9 @@ would be helpful to identify which type is being sent.
   <int value="20447232" label="TPM_CC_NV_WriteLock: TPM_RC_SUCCESS"/>
   <int value="20512768"
       label="TPM_CC_DictionaryAttackLockReset: TPM_RC_SUCCESS"/>
+  <int value="20515096"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_REFERENCE_S0"/>
+  <int value="20515106" label="TPM_CC_DictionaryAttackLockReset: TPM_RC_RETRY"/>
   <int value="20541444"
       label="TPM_CC_DictionaryAttackLockReset: TRUNKS_RC_WRITE_ERROR"/>
   <int value="20578304"
@@ -99976,30 +99985,48 @@ would be helpful to identify which type is being sent.
   <int value="21233664" label="TPM_CC_Startup: TPM_RC_SUCCESS"/>
   <int value="21299200" label="TPM_CC_Shutdown: TPM_RC_SUCCESS"/>
   <int value="21364736" label="TPM_CC_StirRandom: TPM_RC_SUCCESS"/>
+  <int value="21401616" label="TPM_CC_StirRandom: SAPI_RC_NO_CONNECTION"/>
   <int value="21430272" label="TPM_CC_ActivateCredential: TPM_RC_SUCCESS"/>
   <int value="21430431" label="TPM_CC_ActivateCredential: TPM_RC_INTEGRITY"/>
+  <int value="21432593" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_H1"/>
+  <int value="21432601" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_S1"/>
+  <int value="21432610" label="TPM_CC_ActivateCredential: TPM_RC_RETRY"/>
   <int value="21495808" label="TPM_CC_Certify: TPM_RC_SUCCESS"/>
+  <int value="21498146" label="TPM_CC_Certify: TPM_RC_RETRY"/>
+  <int value="21532688" label="TPM_CC_Certify: SAPI_RC_NO_CONNECTION"/>
   <int value="21561344" label="TPM_CC_PolicyNV: TPM_RC_SUCCESS"/>
   <int value="21626880" label="TPM_CC_CertifyCreation: TPM_RC_SUCCESS"/>
   <int value="21692416" label="TPM_CC_Duplicate: TPM_RC_SUCCESS"/>
   <int value="21757952" label="TPM_CC_GetTime: TPM_RC_SUCCESS"/>
   <int value="21823488" label="TPM_CC_GetSessionAuditDigest: TPM_RC_SUCCESS"/>
   <int value="21889024" label="TPM_CC_NV_Read: TPM_RC_SUCCESS"/>
+  <int value="21925904" label="TPM_CC_NV_Read: SAPI_RC_NO_CONNECTION"/>
   <int value="21954560" label="TPM_CC_NV_ReadLock: TPM_RC_SUCCESS"/>
   <int value="22020096" label="TPM_CC_ObjectChangeAuth: TPM_RC_SUCCESS"/>
   <int value="22085632" label="TPM_CC_PolicySecret: TPM_RC_SUCCESS"/>
+  <int value="22087960" label="TPM_CC_PolicySecret: TPM_RC_REFERENCE_S0"/>
   <int value="22151168" label="TPM_CC_Rewrap: TPM_RC_SUCCESS"/>
   <int value="22216704" label="TPM_CC_Create: TPM_RC_SUCCESS"/>
   <int value="22216854" label="TPM_CC_Create: TPM_RC_SYMMETRIC"/>
   <int value="22216866" label="TPM_CC_Create: TPM_RC_BAD_AUTH"/>
   <int value="22219032" label="TPM_CC_Create: TPM_RC_REFERENCE_S0"/>
+  <int value="22219042" label="TPM_CC_Create: TPM_RC_RETRY"/>
   <int value="22245380" label="TPM_CC_Create: TRUNKS_RC_WRITE_ERROR"/>
   <int value="22253584" label="TPM_CC_Create: SAPI_RC_NO_CONNECTION"/>
   <int value="22261899" label="TPM_CC_Create: Resource Manager: TPM_RC_HANDLE"/>
   <int value="22282240" label="TPM_CC_ECDH_ZGen: TPM_RC_SUCCESS"/>
+  <int value="22282402" label="TPM_CC_ECDH_ZGen: TPM_RC_BAD_AUTH"/>
+  <int value="22284560" label="TPM_CC_ECDH_ZGen: TPM_RC_REFERENCE_H0"/>
+  <int value="22284568" label="TPM_CC_ECDH_ZGen: TPM_RC_REFERENCE_S0"/>
+  <int value="22284578" label="TPM_CC_ECDH_ZGen: TPM_RC_RETRY"/>
+  <int value="22310916" label="TPM_CC_ECDH_ZGen: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22327435"
+      label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_HANDLE"/>
   <int value="22347776" label="TPM_CC_HMAC: TPM_RC_SUCCESS"/>
   <int value="22413312" label="TPM_CC_Import: TPM_RC_SUCCESS"/>
+  <int value="22450192" label="TPM_CC_Import: SAPI_RC_NO_CONNECTION"/>
   <int value="22478848" label="TPM_CC_Load: TPM_RC_SUCCESS"/>
+  <int value="22478997" label="TPM_CC_Load: TPM_RC_SIZE"/>
   <int value="22479007" label="TPM_CC_Load: TPM_RC_INTEGRITY"/>
   <int value="22479104" label="TPM_CC_Load: TPM_RC_INITIALIZE"/>
   <int value="22481186" label="TPM_CC_Load: TPM_RC_RETRY"/>
@@ -100009,7 +100036,11 @@ would be helpful to identify which type is being sent.
   <int value="22581264" label="TPM_CC_Quote: SAPI_RC_NO_CONNECTION"/>
   <int value="22609920" label="TPM_CC_RSA_Decrypt: TPM_RC_SUCCESS"/>
   <int value="22610052" label="TPM_CC_RSA_Decrypt: TPM_RC_VALUE"/>
+  <int value="22610069" label="TPM_CC_RSA_Decrypt: TPM_RC_SIZE"/>
+  <int value="22610070" label="TPM_CC_RSA_Decrypt: TPM_RC_SYMMETRIC"/>
+  <int value="22610079" label="TPM_CC_RSA_Decrypt: TPM_RC_INTEGRITY"/>
   <int value="22610082" label="TPM_CC_RSA_Decrypt: TPM_RC_BAD_AUTH"/>
+  <int value="22612240" label="TPM_CC_RSA_Decrypt: TPM_RC_REFERENCE_H0"/>
   <int value="22612248" label="TPM_CC_RSA_Decrypt: TPM_RC_REFERENCE_S0"/>
   <int value="22612258" label="TPM_CC_RSA_Decrypt: TPM_RC_RETRY"/>
   <int value="22638596" label="TPM_CC_RSA_Decrypt: TRUNKS_RC_WRITE_ERROR"/>
@@ -100019,19 +100050,25 @@ would be helpful to identify which type is being sent.
   <int value="22806528" label="TPM_CC_SequenceUpdate: TPM_RC_SUCCESS"/>
   <int value="22872064" label="TPM_CC_Sign: TPM_RC_SUCCESS"/>
   <int value="22872195" label="TPM_CC_Sign: TPM_RC_HASH"/>
+  <int value="22872196" label="TPM_CC_Sign: TPM_RC_VALUE"/>
+  <int value="22872214" label="TPM_CC_Sign: TPM_RC_SYMMETRIC"/>
   <int value="22872226" label="TPM_CC_Sign: TPM_RC_BAD_AUTH"/>
   <int value="22874384" label="TPM_CC_Sign: TPM_RC_REFERENCE_H0"/>
   <int value="22874392" label="TPM_CC_Sign: TPM_RC_REFERENCE_S0"/>
   <int value="22874402" label="TPM_CC_Sign: TPM_RC_RETRY"/>
+  <int value="22900740" label="TPM_CC_Sign: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22917259" label="TPM_CC_Sign: Resource Manager: TPM_RC_HANDLE"/>
   <int value="22937600" label="TPM_CC_Unseal: TPM_RC_SUCCESS"/>
   <int value="22937757" label="TPM_CC_Unseal: TPM_RC_POLICY_FAIL"/>
   <int value="22937762" label="TPM_CC_Unseal: TPM_RC_BAD_AUTH"/>
   <int value="22937903" label="TPM_CC_Unseal: TPM_RC_AUTH_UNAVAILABLE"/>
   <int value="22939928" label="TPM_CC_Unseal: TPM_RC_REFERENCE_S0"/>
   <int value="22939938" label="TPM_CC_Unseal: TPM_RC_RETRY"/>
+  <int value="22966276" label="TPM_CC_Unseal: TRUNKS_RC_WRITE_ERROR"/>
   <int value="22974480" label="TPM_CC_Unseal: SAPI_RC_NO_CONNECTION"/>
   <int value="22982795" label="TPM_CC_Unseal: Resource Manager: TPM_RC_HANDLE"/>
   <int value="23068672" label="TPM_CC_PolicySigned: TPM_RC_SUCCESS"/>
+  <int value="23071000" label="TPM_CC_PolicySigned: TPM_RC_REFERENCE_S0"/>
   <int value="23134208" label="TPM_CC_ContextLoad: TPM_RC_SUCCESS"/>
   <int value="23199744" label="TPM_CC_ContextSave: TPM_RC_SUCCESS"/>
   <int value="23265280" label="TPM_CC_ECDH_KeyGen: TPM_RC_SUCCESS"/>
@@ -100040,6 +100077,8 @@ would be helpful to identify which type is being sent.
   <int value="23396491" label="TPM_CC_FlushContext: TPM_RC_HANDLE"/>
   <int value="23396608" label="TPM_CC_FlushContext: TPM_RC_INITIALIZE"/>
   <int value="23425028" label="TPM_CC_FlushContext: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="23433224"
+      label="TPM_CC_FlushContext: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="23433232" label="TPM_CC_FlushContext: SAPI_RC_NO_CONNECTION"/>
   <int value="23441547"
       label="TPM_CC_FlushContext: Resource Manager: TPM_RC_HANDLE"/>
@@ -100052,6 +100091,7 @@ would be helpful to identify which type is being sent.
   <int value="23724032" label="TPM_CC_PolicyAuthorize: TPM_RC_SUCCESS"/>
   <int value="23789568" label="TPM_CC_PolicyAuthValue: TPM_RC_SUCCESS"/>
   <int value="23791906" label="TPM_CC_PolicyAuthValue: TPM_RC_RETRY"/>
+  <int value="23818244" label="TPM_CC_PolicyAuthValue: TRUNKS_RC_WRITE_ERROR"/>
   <int value="23855104" label="TPM_CC_PolicyCommandCode: TPM_RC_SUCCESS"/>
   <int value="23920640" label="TPM_CC_PolicyCounterTimer: TPM_RC_SUCCESS"/>
   <int value="23986176" label="TPM_CC_PolicyCpHash: TPM_RC_SUCCESS"/>
@@ -100060,39 +100100,52 @@ would be helpful to identify which type is being sent.
   <int value="24182784" label="TPM_CC_PolicyOR: TPM_RC_SUCCESS"/>
   <int value="24248320" label="TPM_CC_PolicyTicket: TPM_RC_SUCCESS"/>
   <int value="24313856" label="TPM_CC_ReadPublic: TPM_RC_SUCCESS"/>
+  <int value="24313988" label="TPM_CC_ReadPublic: TPM_RC_VALUE"/>
   <int value="24313995" label="TPM_CC_ReadPublic: TPM_RC_HANDLE"/>
+  <int value="24316176" label="TPM_CC_ReadPublic: TPM_RC_REFERENCE_H0"/>
   <int value="24316194" label="TPM_CC_ReadPublic: TPM_RC_RETRY"/>
   <int value="24342532" label="TPM_CC_ReadPublic: TRUNKS_RC_WRITE_ERROR"/>
   <int value="24350736" label="TPM_CC_ReadPublic: SAPI_RC_NO_CONNECTION"/>
+  <int value="24359051"
+      label="TPM_CC_ReadPublic: Resource Manager: TPM_RC_HANDLE"/>
   <int value="24379392" label="TPM_CC_RSA_Encrypt: TPM_RC_SUCCESS"/>
   <int value="24510464" label="TPM_CC_StartAuthSession: TPM_RC_SUCCESS"/>
   <int value="24510594" label="TPM_CC_StartAuthSession: TPM_RC_ATTRIBUTES"/>
+  <int value="24510596" label="TPM_CC_StartAuthSession: TPM_RC_VALUE"/>
   <int value="24510720" label="TPM_CC_StartAuthSession: TPM_RC_INITIALIZE"/>
   <int value="24512802" label="TPM_CC_StartAuthSession: TPM_RC_RETRY"/>
   <int value="24539140" label="TPM_CC_StartAuthSession: TRUNKS_RC_WRITE_ERROR"/>
   <int value="24547336"
       label="TPM_CC_StartAuthSession: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="24547344" label="TPM_CC_StartAuthSession: SAPI_RC_NO_CONNECTION"/>
+  <int value="24555671"
+      label="TPM_CC_StartAuthSession: Resource Manager: TPM_RC_TAG"/>
   <int value="24576000" label="TPM_CC_VerifySignature: TPM_RC_SUCCESS"/>
   <int value="24641536" label="TPM_CC_ECC_Parameters: TPM_RC_SUCCESS"/>
   <int value="24707072" label="TPM_CC_FirmwareRead: TPM_RC_SUCCESS"/>
   <int value="24772608" label="TPM_CC_GetCapability: TPM_RC_SUCCESS"/>
   <int value="24772864" label="TPM_CC_GetCapability: TPM_RC_INITIALIZE"/>
   <int value="24801284" label="TPM_CC_GetCapability: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24809480"
+      label="TPM_CC_GetCapability: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="24809488" label="TPM_CC_GetCapability: SAPI_RC_NO_CONNECTION"/>
   <int value="24838144" label="TPM_CC_GetRandom: TPM_RC_SUCCESS"/>
+  <int value="24866820" label="TPM_CC_GetRandom: TRUNKS_RC_WRITE_ERROR"/>
   <int value="24903680" label="TPM_CC_GetTestResult: TPM_RC_SUCCESS"/>
   <int value="24969216" label="TPM_CC_Hash: TPM_RC_SUCCESS"/>
   <int value="25034752" label="TPM_CC_PCR_Read: TPM_RC_SUCCESS"/>
+  <int value="25063428" label="TPM_CC_PCR_Read: TRUNKS_RC_WRITE_ERROR"/>
   <int value="25071632" label="TPM_CC_PCR_Read: SAPI_RC_NO_CONNECTION"/>
   <int value="25100288" label="TPM_CC_PolicyPCR: TPM_RC_SUCCESS"/>
   <int value="25102626" label="TPM_CC_PolicyPCR: TPM_RC_RETRY"/>
+  <int value="25128964" label="TPM_CC_PolicyPCR: TRUNKS_RC_WRITE_ERROR"/>
   <int value="25137168" label="TPM_CC_PolicyPCR: SAPI_RC_NO_CONNECTION"/>
   <int value="25165824" label="TPM_CC_PolicyRestart: TPM_RC_SUCCESS"/>
   <int value="25231360" label="TPM_CC_ReadClock: TPM_RC_SUCCESS"/>
   <int value="25296896" label="TPM_CC_PCR_Extend: TPM_RC_SUCCESS"/>
   <int value="25362432" label="TPM_CC_PCR_SetAuthValue: TPM_RC_SUCCESS"/>
   <int value="25427968" label="TPM_CC_NV_Certify: TPM_RC_SUCCESS"/>
+  <int value="25428294" label="TPM_CC_NV_Certify: TPM_RC_NV_RANGE"/>
   <int value="25464848" label="TPM_CC_NV_Certify: SAPI_RC_NO_CONNECTION"/>
   <int value="25493504" label="TPM_CC_EventSequenceComplete: TPM_RC_SUCCESS"/>
   <int value="25559040" label="TPM_CC_HashSequenceStart: TPM_RC_SUCCESS"/>
