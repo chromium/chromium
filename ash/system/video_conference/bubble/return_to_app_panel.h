@@ -122,6 +122,8 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
   ReturnToAppPanel& operator=(const ReturnToAppPanel&) = delete;
   ~ReturnToAppPanel() override;
 
+  int max_capturing_count() { return max_capturing_count_; }
+
  private:
   // ReturnToAppButton::Observer:
   void OnExpandedStateChanged(bool expanded) override;
@@ -133,6 +135,11 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
   // apps. This pointer will be null when there's one or fewer media apps. Owned
   // by the views hierarchy.
   ReturnToAppButton* summary_row_view_ = nullptr;
+
+  // Keep track the maximum number of capturing that an individual media app
+  // has. This number is used to make sure the icons in `ReturnToAppButton` are
+  // right aligned with each other.
+  int max_capturing_count_ = 0;
 
   base::WeakPtrFactory<ReturnToAppPanel> weak_ptr_factory_{this};
 };

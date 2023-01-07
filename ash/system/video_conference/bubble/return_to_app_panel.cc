@@ -32,8 +32,10 @@ namespace {
 
 const int kReturnToAppPanelRadius = 16;
 const int kReturnToAppPanelSpacing = 8;
-const int kReturnToAppButtonSpacing = 12;
+const int kReturnToAppButtonTopRowSpacing = 12;
+const int kReturnToAppButtonSpacing = 16;
 const int kReturnToAppButtonIconsSpacing = 2;
+const int kReturnToAppIconSize = 20;
 
 // Creates a view containing camera, microphone, and screen share icons that
 // shows capturing state of a media app.
@@ -44,7 +46,7 @@ std::unique_ptr<views::View> CreateReturnToAppIconsContainer(
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, kReturnToAppButtonIconsSpacing / 2, 0,
@@ -53,21 +55,24 @@ std::unique_ptr<views::View> CreateReturnToAppIconsContainer(
   if (is_capturing_camera) {
     auto camera_icon = std::make_unique<views::ImageView>();
     camera_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPrivacyIndicatorsCameraIcon, cros_tokens::kCrosSysPositive));
+        kPrivacyIndicatorsCameraIcon, cros_tokens::kCrosSysPositive,
+        kReturnToAppIconSize));
     container->AddChildView(std::move(camera_icon));
   }
 
   if (is_capturing_microphone) {
     auto microphone_icon = std::make_unique<views::ImageView>();
     microphone_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPrivacyIndicatorsMicrophoneIcon, cros_tokens::kCrosSysPositive));
+        kPrivacyIndicatorsMicrophoneIcon, cros_tokens::kCrosSysPositive,
+        kReturnToAppIconSize));
     container->AddChildView(std::move(microphone_icon));
   }
 
   if (is_capturing_screen) {
     auto screen_share_icon = std::make_unique<views::ImageView>();
     screen_share_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPrivacyIndicatorsScreenShareIcon, cros_tokens::kCrosSysPositive));
+        kPrivacyIndicatorsScreenShareIcon, cros_tokens::kCrosSysPositive,
+        kReturnToAppIconSize));
     container->AddChildView(std::move(screen_share_icon));
   }
 
@@ -152,16 +157,23 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
       is_capturing_microphone_(is_capturing_microphone),
       is_capturing_screen_(is_capturing_screen),
       panel_(panel) {
+  auto spacing = is_top_row ? kReturnToAppButtonTopRowSpacing / 2
+                            : kReturnToAppButtonSpacing / 2;
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetMainAxisAlignment(is_top_row ? views::LayoutAlignment::kCenter
+                                       : views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, kReturnToAppButtonSpacing / 2, 0,
-                                    kReturnToAppButtonSpacing / 2));
+                  gfx::Insets::TLBR(0, spacing, 0, spacing));
 
   icons_container_ = AddChildView(CreateReturnToAppIconsContainer(
       is_capturing_camera, is_capturing_microphone, is_capturing_screen));
+  if (!is_top_row) {
+    icons_container_->SetPreferredSize(
+        gfx::Size(/*width=*/kReturnToAppIconSize * panel->max_capturing_count(),
+                  /*height=*/kReturnToAppIconSize));
+  }
 
   label_ = AddChildView(std::make_unique<views::Label>(display_text));
 
@@ -216,7 +228,7 @@ ReturnToAppPanel::ReturnToAppPanel() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, 0, kReturnToAppPanelSpacing, 0))
-      .SetInteriorMargin(gfx::Insets::TLBR(12, 0, 0, 0));
+      .SetInteriorMargin(gfx::Insets::TLBR(12, 16, 8, 16));
 
   // Add running media apps buttons to the panel.
   VideoConferenceTrayController::Get()->GetMediaApps(base::BindOnce(
@@ -270,11 +282,10 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
   bool any_apps_capturing_screen = false;
 
   for (auto& app : apps) {
-    AddChildView(std::make_unique<ReturnToAppButton>(
-        /*panel=*/this,
-        /*is_top_row=*/false, app->is_capturing_camera,
-        app->is_capturing_microphone, app->is_capturing_screen,
-        GetMediaAppDisplayText(app)));
+    max_capturing_count_ =
+        std::max(max_capturing_count_, app->is_capturing_camera +
+                                           app->is_capturing_microphone +
+                                           app->is_capturing_screen);
 
     any_apps_capturing_camera |= app->is_capturing_camera;
     any_apps_capturing_microphone |= app->is_capturing_microphone;
@@ -285,14 +296,19 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
       IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT,
       static_cast<int>(apps.size()));
 
-  summary_row_view_ =
-      AddChildViewAt(std::make_unique<ReturnToAppButton>(
-                         /*panel=*/this,
-                         /*is_top_row=*/true, any_apps_capturing_camera,
-                         any_apps_capturing_microphone,
-                         any_apps_capturing_screen, summary_text),
-                     0);
+  summary_row_view_ = AddChildView(std::make_unique<ReturnToAppButton>(
+      /*panel=*/this,
+      /*is_top_row=*/true, any_apps_capturing_camera,
+      any_apps_capturing_microphone, any_apps_capturing_screen, summary_text));
   summary_row_view_->AddObserver(this);
+
+  for (auto& app : apps) {
+    AddChildView(std::make_unique<ReturnToAppButton>(
+        /*panel=*/this,
+        /*is_top_row=*/false, app->is_capturing_camera,
+        app->is_capturing_microphone, app->is_capturing_screen,
+        GetMediaAppDisplayText(app)));
+  }
 
   OnExpandedStateChanged(false);
 }
