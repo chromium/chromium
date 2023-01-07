@@ -32,27 +32,28 @@ constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
 
 }  // namespace
 
-bool DefinitionResultParser::Parse(const Value* result,
+bool DefinitionResultParser::Parse(const base::Value* result,
                                    QuickAnswer* quick_answer) {
-  const Value* first_entry =
-      GetFirstListElement(*result, kDictionaryEntriesPath);
+  const Value::Dict* first_entry =
+      GetFirstListElement(result->GetDict(), kDictionaryEntriesPath);
   if (!first_entry) {
     LOG(ERROR) << "Can't find a definition entry.";
     return false;
   }
 
   // Get definition and phonetics.
-  const std::string* definition = ExtractDefinition(first_entry);
+  const std::string* definition = ExtractDefinition(*first_entry);
   if (!definition) {
     LOG(ERROR) << "Fail in extracting definition.";
     return false;
   }
-  const std::string* phonetics = ExtractPhoneticsText(first_entry);
+  const std::string* phonetics = ExtractPhoneticsText(*first_entry);
 
   // If query term path not found, fallback to use headword.
-  const std::string* query = result->FindStringPath(kQueryTermPath);
+  const std::string* query =
+      result->GetDict().FindStringByDottedPath(kQueryTermPath);
   if (!query)
-    query = first_entry->FindStringPath(kHeadwordKey);
+    query = first_entry->FindStringByDottedPath(kHeadwordKey);
   if (!query) {
     LOG(ERROR) << "Fail in extracting query.";
     return false;
@@ -66,14 +67,14 @@ bool DefinitionResultParser::Parse(const Value* result,
       std::make_unique<QuickAnswerText>(secondary_answer));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(*definition));
-  ExtractPhoneticsInfo(&quick_answer->phonetics_info, first_entry);
+  ExtractPhoneticsInfo(&quick_answer->phonetics_info, *first_entry);
   return true;
 }
 
-const Value* DefinitionResultParser::ExtractFirstSenseFamily(
-    const base::Value* definition_entry) {
-  const Value* first_sense_family =
-      GetFirstListElement(*definition_entry, kSenseFamiliesKey);
+const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
+    const base::Value::Dict& definition_entry) {
+  const Value::Dict* first_sense_family =
+      GetFirstListElement(definition_entry, kSenseFamiliesKey);
   if (!first_sense_family) {
     LOG(ERROR) << "Can't find a sense family.";
     return nullptr;
@@ -82,16 +83,16 @@ const Value* DefinitionResultParser::ExtractFirstSenseFamily(
   return first_sense_family;
 }
 
-const Value* DefinitionResultParser::ExtractFirstPhonetics(
-    const base::Value* definition_entry) {
-  const Value* first_phonetics =
-      GetFirstListElement(*definition_entry, kPhoneticsKey);
+const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
+    const base::Value::Dict& definition_entry) {
+  const Value::Dict* first_phonetics =
+      GetFirstListElement(definition_entry, kPhoneticsKey);
   if (first_phonetics)
     return first_phonetics;
 
   // It is is possible to have phonetics per sense family in case of heteronyms
   // such as "arithmetic".
-  const Value* sense_family = ExtractFirstSenseFamily(definition_entry);
+  const Value::Dict* sense_family = ExtractFirstSenseFamily(definition_entry);
   if (sense_family)
     return GetFirstListElement(*sense_family, kPhoneticsKey);
 
@@ -100,55 +101,62 @@ const Value* DefinitionResultParser::ExtractFirstPhonetics(
 }
 
 const std::string* DefinitionResultParser::ExtractDefinition(
-    const base::Value* definition_entry) {
-  const Value* first_sense_family = ExtractFirstSenseFamily(definition_entry);
+    const base::Value::Dict& definition_entry) {
+  const Value::Dict* first_sense_family =
+      ExtractFirstSenseFamily(definition_entry);
   if (!first_sense_family)
     return nullptr;
 
-  const Value* first_sense =
+  const Value::Dict* first_sense =
       GetFirstListElement(*first_sense_family, kSensesKey);
   if (!first_sense) {
     LOG(ERROR) << "Can't find a sense.";
     return nullptr;
   }
 
-  return first_sense->FindStringPath(kDefinitionPathUnderSense);
+  return first_sense->FindStringByDottedPath(kDefinitionPathUnderSense);
 }
 
 const std::string* DefinitionResultParser::ExtractPhoneticsText(
-    const base::Value* definition_entry) {
-  const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
+    const base::Value::Dict& definition_entry) {
+  const Value::Dict* first_phonetics = ExtractFirstPhonetics(definition_entry);
   if (!first_phonetics)
     return nullptr;
 
-  return first_phonetics->FindStringPath(kPhoneticsTextKey);
+  return first_phonetics->FindStringByDottedPath(kPhoneticsTextKey);
 }
 
 void DefinitionResultParser::ExtractPhoneticsInfo(
     PhoneticsInfo* phonetics_info,
-    const base::Value* definition_entry) {
+    const base::Value::Dict& definition_entry) {
   // Check for the query text used for tts audio.
-  if (definition_entry->FindStringPath(kHeadwordKey))
+  if (definition_entry.FindStringByDottedPath(kHeadwordKey)) {
     phonetics_info->query_text =
-        *definition_entry->FindStringPath(kHeadwordKey);
+        *definition_entry.FindStringByDottedPath(kHeadwordKey);
+  }
 
   // Check for the locale used for tts audio.
-  if (definition_entry->FindStringPath(kLocaleKey))
-    phonetics_info->locale = *definition_entry->FindStringPath(kLocaleKey);
+  if (definition_entry.FindStringByDottedPath(kLocaleKey)) {
+    phonetics_info->locale =
+        *definition_entry.FindStringByDottedPath(kLocaleKey);
+  }
 
-  const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
+  const Value::Dict* first_phonetics = ExtractFirstPhonetics(definition_entry);
 
   if (!first_phonetics)
     return;
 
   // Check if the phonetics has an audio URL.
-  if (first_phonetics->FindStringPath(kPhoneticsAudioKey))
-    phonetics_info->phonetics_audio = GURL(
-        kHttpsPrefix + *first_phonetics->FindStringPath(kPhoneticsAudioKey));
+  if (first_phonetics->FindStringByDottedPath(kPhoneticsAudioKey)) {
+    phonetics_info->phonetics_audio =
+        GURL(kHttpsPrefix +
+             *first_phonetics->FindStringByDottedPath(kPhoneticsAudioKey));
+  }
 
   // Check if tts audio is enabled for the query.
-  if (first_phonetics->FindBoolPath(kPhoneticsTtsAudioEnabledKey))
+  if (first_phonetics->FindBoolByDottedPath(kPhoneticsTtsAudioEnabledKey)) {
     phonetics_info->tts_audio_enabled = true;
+  }
 }
 
 }  // namespace quick_answers

@@ -8,11 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace quick_answers {
 
@@ -25,9 +22,10 @@ class ResultParser {
   virtual bool Parse(const base::Value* result, QuickAnswer* quick_answer) = 0;
 
  protected:
-  // Helper function to get the first element in a value list.
-  const base::Value* GetFirstListElement(const base::Value& value,
-                                         const std::string& path);
+  // Helper function to get the first element in a value list, which is expected
+  // to be a dictionary.
+  const base::Value::Dict* GetFirstListElement(const base::Value::Dict& dict,
+                                               const std::string& path);
 };
 
 // A factory class for creating ResultParser based on the |one_namespace_type|.

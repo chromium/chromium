@@ -20,13 +20,16 @@ class DefinitionResultParser : public ResultParser {
   bool Parse(const base::Value* result, QuickAnswer* quick_answer) override;
 
  private:
-  const base::Value* ExtractFirstSenseFamily(
-      const base::Value* definition_entry);
-  const base::Value* ExtractFirstPhonetics(const base::Value* definition_entry);
-  const std::string* ExtractDefinition(const base::Value* definition_entry);
-  const std::string* ExtractPhoneticsText(const base::Value* definition_entry);
+  const base::Value::Dict* ExtractFirstSenseFamily(
+      const base::Value::Dict& definition_entry);
+  const base::Value::Dict* ExtractFirstPhonetics(
+      const base::Value::Dict& definition_entry);
+  const std::string* ExtractDefinition(
+      const base::Value::Dict& definition_entry);
+  const std::string* ExtractPhoneticsText(
+      const base::Value::Dict& definition_entry);
   void ExtractPhoneticsInfo(PhoneticsInfo* phonetics_info,
-                            const base::Value* definition_entry);
+                            const base::Value::Dict& definition_entry);
 };
 
 }  // namespace quick_answers
