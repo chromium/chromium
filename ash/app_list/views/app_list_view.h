@@ -146,9 +146,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Initializes this view's widget.
   void InitWidget(gfx::NativeView parent);
 
-  // Initializes the SearchBox's widget.
-  void InitChildWidget();
-
   // Sets the state of all child views to be re-shown, then shows the view.
   // |preferred_state| - The initial app list view state.
   void Show(AppListViewState preferred_state);

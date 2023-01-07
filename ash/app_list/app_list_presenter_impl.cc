@@ -395,7 +395,6 @@ void AppListPresenterImpl::SetViewVisibility(bool visible) {
     return;
   view_->OnAppListVisibilityWillChange(visible);
   view_->SetVisible(visible);
-  view_->search_box_view()->SetVisible(visible);
 }
 
 bool AppListPresenterImpl::HandleCloseOpenFolder() {

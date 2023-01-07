@@ -466,12 +466,9 @@ void SearchBoxView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
     focus_ring_layer_->SetBounds(bounds());
 }
 
-// static
-int SearchBoxView::GetFocusRingSpacing() {
-  return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;
-}
-
-void SearchBoxView::MaybeCreateFocusRing() {
+void SearchBoxView::AddedToWidget() {
+  // Creating the search box focus ring relies on its parent layer which only
+  // exists after widget initialization.
   if (!is_app_list_bubble_) {
     focus_ring_layer_ = std::make_unique<FocusRingLayer>();
     focus_ring_layer_->SetColor(
@@ -480,6 +477,11 @@ void SearchBoxView::MaybeCreateFocusRing() {
     layer()->parent()->StackAtBottom(focus_ring_layer_.get());
     UpdateSearchBoxFocusPaint();
   }
+}
+
+// static
+int SearchBoxView::GetFocusRingSpacing() {
+  return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;
 }
 
 void SearchBoxView::RecordSearchBoxActivationHistogram(

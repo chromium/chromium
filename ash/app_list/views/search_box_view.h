@@ -76,9 +76,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Returns the total focus ring spacing for use in folders.
   static int GetFocusRingSpacing();
 
-  // Creates a focus ring layer if the search box is not in the bubble launcher.
-  void MaybeCreateFocusRing();
-
   // Overridden from SearchBoxViewBase:
   void UpdateSearchTextfieldAccessibleNodeData(
       ui::AXNodeData* node_data) override;
@@ -103,6 +100,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   const char* GetClassName() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void AddedToWidget() override;
 
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.

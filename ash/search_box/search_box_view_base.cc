@@ -732,11 +732,11 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
   if (located_event->type() == ui::ET_MOUSE_PRESSED ||
       located_event->type() == ui::ET_GESTURE_TAP) {
     const bool event_is_in_searchbox_bounds =
-        GetWidget()->GetWindowBoundsInScreen().Contains(
-            located_event->root_location());
-    // Don't handle an event out of the searchbox bounds.
+        GetBoundsInScreen().Contains(located_event->root_location());
     if (!event_is_in_searchbox_bounds)
       return;
+
+    located_event->SetHandled();
 
     // If the event is in an inactive empty search box, enable the search box.
     if (!is_search_box_active_ && search_box_->GetText().empty()) {

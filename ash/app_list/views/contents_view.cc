@@ -354,7 +354,7 @@ void ContentsView::InitializeSearchBoxAnimation(AppListState current_state,
   // to be original bounds. Note that this transform shouldn't be animated
   // through ui::LayerAnimator since intermediate transformed bounds might not
   // match with other animation and that could look janky.
-  search_box->GetWidget()->SetBounds(target_bounds);
+  search_box->SetBoundsRect(target_bounds);
 
   UpdateSearchBoxAnimation(0.0f, current_state, target_state);
 }
@@ -383,7 +383,7 @@ void ContentsView::UpdateSearchBoxAnimation(double progress,
         static_cast<float>(current_bounds.width()) / target_bounds.width(),
         static_cast<float>(current_bounds.height()) / target_bounds.height());
   }
-  search_box->GetWidget()->GetLayer()->SetTransform(transform);
+  search_box->layer()->SetTransform(transform);
 
   // Update search box view layer.
   const float current_radius =
@@ -396,13 +396,10 @@ void ContentsView::UpdateSearchBoxAnimation(double progress,
 }
 
 void ContentsView::UpdateSearchBoxVisibility(AppListState current_state) {
-  auto* search_box_widget = GetSearchBoxView()->GetWidget();
-  if (search_box_widget) {
-    // Hide search box widget in order to click on the embedded Assistant UI.
-    const bool show_search_box =
-        current_state != AppListState::kStateEmbeddedAssistant;
-    show_search_box ? search_box_widget->Show() : search_box_widget->Hide();
-  }
+  // Hide search box widget in order to click on the embedded Assistant UI.
+  const bool show_search_box =
+      current_state != AppListState::kStateEmbeddedAssistant;
+  GetSearchBoxView()->SetVisible(show_search_box);
 }
 
 AppListPage* ContentsView::GetPageView(int index) const {
@@ -515,7 +512,7 @@ void ContentsView::Layout() {
   search_box->UpdateBackground(current_state);
 
   // Reset the transform which can be set through animation
-  search_box->GetWidget()->GetLayer()->SetTransform(gfx::Transform());
+  search_box->layer()->SetTransform(gfx::Transform());
 }
 
 const char* ContentsView::GetClassName() const {
@@ -585,7 +582,7 @@ void ContentsView::UpdateYPositionAndOpacity() {
   const gfx::Rect search_rect =
       search_box->GetViewBoundsForSearchBoxContentsBounds(
           ConvertRectToWidgetWithoutTransform(search_box_bounds));
-  search_box->GetWidget()->SetBounds(search_rect);
+  search_box->SetBoundsRect(search_rect);
 
   float search_box_opacity;
   if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
@@ -673,10 +670,10 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
       GetSearchBoxBoundsForViewState(target_page, target_view_state);
 
   SearchBoxView* search_box = GetSearchBoxView();
-  const gfx::Rect target_search_box_widget_bounds =
+  const gfx::Rect target_search_box_rect =
       search_box->GetViewBoundsForSearchBoxContentsBounds(
           ConvertRectToWidgetWithoutTransform(target_search_box_bounds));
-  search_box->GetWidget()->SetBounds(target_search_box_widget_bounds);
+  search_box->SetBoundsRect(target_search_box_rect);
 
   // Even though the target bounds are calculated for the target page, use the
   // last page for which app list view state was updated - in case page
@@ -697,10 +694,14 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
       current_search_box_bounds.y() -
       GetSearchBoxBoundsForViewState(selected_page, target_view_state).y();
 
-  // For search box, animate the search_box view layer instead of the widget
-  // layer to avoid conflict with pagination model transitions (which update the
-  // search box widget layer transform as the transition progresses).
-  animate_transform(duration, y_offset, search_box->layer());
+  // Only animate the y_offset of the search box layer transform when going
+  // to/from closed state so that tablet <-> clamshell transition looks correct
+  // and to avoid conflicting with pagination model transitions (which update
+  // the same search box layer transform as the transition progresses).
+  if (target_view_state == AppListViewState::kClosed ||
+      last_target_view_state_ == AppListViewState::kClosed) {
+    animate_transform(duration, y_offset, search_box->layer());
+  }
 
   // Update app list page bounds to their target values. This assumes that
   // potential in-progress pagination transition does not directly animate page

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -344,7 +345,6 @@ void AppListView::InitView(gfx::NativeView parent) {
   time_shown_ = base::Time::Now();
   InitContents();
   InitWidget(parent);
-  InitChildWidget();
 }
 
 void AppListView::InitContents() {
@@ -355,14 +355,16 @@ void AppListView::InitContents() {
       AddChildView(std::make_unique<views::View>()));
 
   auto app_list_main_view = std::make_unique<AppListMainView>(delegate_, this);
-  search_box_view_ = new SearchBoxView(app_list_main_view.get(), delegate_,
-                                       /*is_app_list_bubble=*/false);
-  search_box_view_->InitializeForFullscreenLauncher();
+  auto search_box_view =
+      std::make_unique<SearchBoxView>(app_list_main_view.get(), delegate_,
+                                      /*is_app_list_bubble=*/false);
+  search_box_view->InitializeForFullscreenLauncher();
 
-  // Assign |app_list_main_view_| here since it is accessed during Init().
-  app_list_main_view_ = app_list_main_view.get();
-  app_list_main_view->Init(0, search_box_view_);
-  AddChildView(std::move(app_list_main_view));
+  // Assign |app_list_main_view_| and |search_box_view_| here since they are
+  // accessed during Init().
+  app_list_main_view_ = AddChildView(std::move(app_list_main_view));
+  search_box_view_ = AddChildView(std::move(search_box_view));
+  app_list_main_view_->Init(0, search_box_view_);
 }
 
 void AppListView::InitWidget(gfx::NativeView parent) {
@@ -386,67 +388,6 @@ void AppListView::InitWidget(gfx::NativeView parent) {
   SetEnableArrowKeyTraversal(true);
 
   widget->GetNativeView()->AddObserver(this);
-
-  // Directs A11y focus ring from search box view to AppListView's descendants
-  // (like ExpandArrowView) without focusing on the whole app list window when
-  // using search + arrow button.
-  search_box_view_->GetViewAccessibility().OverrideNextFocus(GetWidget());
-  search_box_view_->GetViewAccessibility().OverridePreviousFocus(GetWidget());
-}
-
-void AppListView::InitChildWidget() {
-  // Create a widget for the SearchBoxView to live in. This allows the
-  // SearchBoxView to be on top of the custom launcher page's WebContents
-  // (otherwise the search box events will be captured by the WebContents).
-  views::Widget::InitParams search_box_widget_params(
-      views::Widget::InitParams::TYPE_CONTROL);
-  search_box_widget_params.parent = GetWidget()->GetNativeView();
-  search_box_widget_params.opacity =
-      views::Widget::InitParams::WindowOpacity::kTranslucent;
-  search_box_widget_params.name = "SearchBoxView";
-
-  // Focus should be able to move from search box to items in app list view.
-  auto widget_delegate = std::make_unique<views::WidgetDelegate>();
-  widget_delegate->SetFocusTraversesOut(true);
-
-  // Default role of root view is ax::mojom::Role::kWindow which traps
-  // ChromeVox focus within the root view. Assign ax::mojom::Role::kGroup here
-  // to allow the focus to move from elements in search box to app list view.
-  widget_delegate->SetAccessibleRole(ax::mojom::Role::kGroup);
-
-  // SearchBoxView used to be a WidgetDelegateView, so we follow the legacy
-  // behavior and have the Widget delete the delegate.
-  widget_delegate->SetOwnedByWidget(true);
-  search_box_widget_params.delegate = widget_delegate.release();
-
-  views::Widget* search_box_widget = new views::Widget;
-  search_box_widget->Init(std::move(search_box_widget_params));
-  search_box_widget->SetContentsView(search_box_view_);
-  search_box_view_->MaybeCreateFocusRing();
-  DCHECK_EQ(search_box_widget, search_box_view_->GetWidget());
-
-  // Assign an accessibility role to the native window of |search_box_widget|,
-  // so that hitting search+right could move ChromeVox focus across search box
-  // to other elements in app list view.
-  search_box_widget->GetNativeWindow()->SetProperty(
-      ui::kAXRoleOverride,
-      static_cast<ax::mojom::Role>(ax::mojom::Role::kGroup));
-
-  // The search box will not naturally receive focus by itself (because it is in
-  // a separate widget). Create this SearchBoxFocusHost in the main widget to
-  // forward the focus search into to the search box.
-  SearchBoxFocusHost* search_box_focus_host =
-      new SearchBoxFocusHost(search_box_widget);
-  AddChildView(search_box_focus_host);
-  search_box_widget->SetFocusTraversableParentView(search_box_focus_host);
-  search_box_widget->SetFocusTraversableParent(
-      GetWidget()->GetFocusTraversable());
-
-  // Directs A11y focus ring from AppListView's descendants to search box view
-  // without focusing on the whole app list window when using search + arrow
-  // button.
-  GetViewAccessibility().OverrideNextFocus(search_box_widget);
-  GetViewAccessibility().OverridePreviousFocus(search_box_widget);
 }
 
 void AppListView::Show(AppListViewState preferred_state) {
