@@ -10,6 +10,10 @@ namespace segmentation_platform {
 // The path to the pref storing the segmentation result.
 extern const char kSegmentationResultPref[];
 
+// The path to the prefs storing results for all the clients, supporting multi
+// output models.
+extern const char kSegmentationClientResultPrefs[];
+
 // The path to the pref storing when UKM are allowed recently.
 extern const char kSegmentationUkmMostRecentAllowedTimeKey[];
 

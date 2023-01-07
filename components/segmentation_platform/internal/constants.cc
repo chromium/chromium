@@ -9,6 +9,9 @@ namespace segmentation_platform {
 const char kSegmentationResultPref[] =
     "segmentation_platform.segmentation_result";
 
+const char kSegmentationClientResultPrefs[] =
+    "segmentation_platform.client_result_prefs";
+
 const char kSegmentationUkmMostRecentAllowedTimeKey[] =
     "segmentation_platform.ukm_most_recent_allowed_time_key";
 

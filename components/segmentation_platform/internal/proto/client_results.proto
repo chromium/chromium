@@ -1,0 +1,26 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+import "components/segmentation_platform/public/proto/prediction_result.proto";
+
+// Model result for a single client.
+message ClientResult {
+  // Result from the model evaluation for the client.
+  optional PredictionResult client_result = 1;
+
+  // Timestamp when this result was written to prefs.
+  optional int64 timestamp_us = 2;
+}
+
+// Proto containing model results for all clients. Used for storing in prefs.
+message ClientResults {
+  // Contains results for all clients. Unique key associated with the client is
+  // the key for the map.
+  map<string, ClientResult> client_result_map = 1;
+}
