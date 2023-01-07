@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
 PASS willValidate
 PASS willValidate after upgrade
+PASS willValidate after upgrade (document.createElement)
 PASS willValidate should throw NotSupportedError if the target element is not a form-associated custom element
 PASS validity and setValidity()
 FAIL "anchor" argument of setValidity() assert_throws_js: Not a HTMLElement function "() => {
