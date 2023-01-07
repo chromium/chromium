@@ -53,7 +53,7 @@ typedef std::set<std::string> SchemeSet;
 // The URL history source.
 // Holds portions of the URL database in memory in an indexed form.  Used to
 // quickly look up matching URLs for a given query string.  Used by
-// the HistoryURLProvider for inline autocomplete and to provide URL
+// the HistoryQuickProvider for inline autocomplete and to provide URL
 // matches to the omnibox.
 //
 // Note about multi-byte codepoints and the data structures in the
