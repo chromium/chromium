@@ -330,25 +330,19 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 ####################
 # Fuchsia failures #
 ####################
-# OOM on hardware devices
-crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+
+crbug.com/1371306 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Flaky tests
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
 [ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
-
-# GPU process crash
 
 # Flaky tests
 
 # Anti-aliasing disabled on Fuchsia
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-
-# Sherlock failures
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
-
-# Failing on emulator seemingly due to network issues.
 
 ####################
 # Win failures     #
