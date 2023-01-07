@@ -42,6 +42,8 @@ void GotAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
         base::BindOnce(&DlpCopyOrMoveHookDelegate::GotAccess, hook_delegate,
                        source, destination, std::move(access)));
   }
+  // The `callback` was bound to the calling thread in OnBeginProcessFile and
+  // will be executed on the IO thread.
   if (is_allowed) {
     std::move(callback).Run(base::File::FILE_OK);
   } else {
