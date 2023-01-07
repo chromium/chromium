@@ -190,14 +190,14 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
                 base::Time visit_time,
                 history::VisitID opener_visit = history::kInvalidVisitID,
                 history::VisitID referring_visit = history::kInvalidVisitID,
-                bool is_known_to_sync = false) {
+                bool is_synced_visit = false) {
     history::URLRow url_row(url);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
     new_visit.visit_time = visit_time;
     new_visit.opener_visit = opener_visit;
     new_visit.referring_visit = referring_visit;
-    new_visit.is_known_to_sync = is_known_to_sync;
+    new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
     observer_->OnURLVisited(history_service_.get(), url_row, new_visit);
   }
 
@@ -403,7 +403,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsSyncedVisits) {
 
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
            history::kInvalidVisitID, history::kInvalidVisitID,
-           /*is_known_to_sync=*/true);
+           /*is_synced_visit=*/true);
 
   EXPECT_EQ(0, GetNumClustersCreated());
 }

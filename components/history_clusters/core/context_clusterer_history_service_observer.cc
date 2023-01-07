@@ -66,12 +66,9 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
-  if (new_visit.is_known_to_sync) {
-    // Skip synced visits.
-    //
-    // Although local visits that have been synced can have this bit flipped,
-    // local visits do not automatically get sent to sync when they just get
-    // created.
+  if (!new_visit.originator_cache_guid.empty()) {
+    // Skip remote synced visits. Remote synced visits are context clustered on
+    // the originator machine and persisted via `HistorySyncBridge`.
     return;
   }
 
