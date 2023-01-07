@@ -47,7 +47,7 @@ In this case you will have to recompile these binaries in your laptop:
 ```shell
 # May need to install dependencies on your laptop.
 
-laptop$ sudo ./build/install-build-deps-android.sh
+laptop$ sudo ./build/install-build-deps.sh --android
 
 # Rebuild the needed binaries on your laptop.
 

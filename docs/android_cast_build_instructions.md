@@ -91,7 +91,7 @@ $ gclient sync
 Once you have checked out the code, run
 
 ```shell
-$ build/install-build-deps-android.sh
+$ build/install-build-deps.sh --android
 ```
 
 to get all of the dependencies you need to build on Linux, *plus* all of the

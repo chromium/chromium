@@ -5,13 +5,16 @@
 # found in the LICENSE file.
 
 # Script to install everything needed to build chromium (well, ideally, anyway)
+# including items requiring sudo privileges.
 # See https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md
+# and https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_build_instructions.md
 
 usage() {
   echo "Usage: $0 [--options]"
   echo "Options:"
   echo "--[no-]syms: enable or disable installation of debugging symbols"
   echo "--lib32: enable installation of 32-bit libraries, e.g. for V8 snapshot"
+  echo "--[no-]android: enable or disable installation of android dependencies"
   echo "--[no-]arm: enable or disable installation of arm cross toolchain"
   echo "--[no-]chromeos-fonts: enable or disable installation of Chrome OS"\
        "fonts"
@@ -58,6 +61,7 @@ package_exists() {
 
 do_inst_arm=0
 do_inst_nacl=0
+do_inst_android=0
 
 while [ "$1" != "" ]
 do
@@ -65,6 +69,8 @@ do
   --syms)                    do_inst_syms=1;;
   --no-syms)                 do_inst_syms=0;;
   --lib32)                   do_inst_lib32=1;;
+  --android)                 do_inst_android=1;;
+  --no-android)              do_inst_android=0;;
   --arm)                     do_inst_arm=1;;
   --no-arm)                  do_inst_arm=0;;
   --chromeos-fonts)          do_inst_chromeos_fonts=1;;
@@ -85,6 +91,10 @@ do
 done
 
 if [ "$do_inst_arm" = "1" ]; then
+  do_inst_lib32=1
+fi
+
+if [ "$do_inst_android" = "1" ]; then
   do_inst_lib32=1
 fi
 
@@ -110,6 +120,7 @@ if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
     exit 1
   fi
 
+# Check system architecture
   if ! uname -m | egrep -q "i686|x86_64"; then
     echo "Only x86 architectures are currently supported" >&2
     exit
@@ -189,6 +200,7 @@ dev_list="\
   libxss-dev
   libxt-dev
   libxtst-dev
+  lighttpd
   locales
   openbox
   p7zip
@@ -225,6 +237,7 @@ chromeos_lib_list="libpulse0 libbz2-1.0"
 
 # List of required run-time libraries
 common_lib_list="\
+  lib32z1
   libasound2
   libatk1.0-0
   libatspi2.0-0
@@ -273,6 +286,8 @@ common_lib_list="\
   libxrandr2
   libxrender1
   libxtst6
+  x11-utils
+  xvfb
   zlib1g
 "
 
@@ -294,6 +309,8 @@ lib_list="\
 lib32_list="linux-libc-dev:i386 libpci3:i386"
 
 # 32-bit libraries needed for a 32-bit build
+# includes some 32-bit libraries required by the Android SDK
+# See https://developer.android.com/sdk/installing/index.html?pkg=tools
 lib32_list="$lib32_list
   libasound2:i386
   libatk-bridge2.0-0:i386
@@ -301,14 +318,17 @@ lib32_list="$lib32_list
   libatspi2.0-0:i386
   libdbus-1-3:i386
   libglib2.0-0:i386
+  libncurses5:i386
   libnss3:i386
   libpango-1.0-0:i386
+  libstdc++6:i386
   libx11-xcb1:i386
   libxcomposite1:i386
   libxdamage1:i386
   libxkbcommon0:i386
   libxrandr2:i386
   libxtst6:i386
+  zlib1g:i386
 "
 
 # Packages that have been removed from this script.  Regardless of configuration
@@ -641,6 +661,12 @@ if [ "$do_inst_lib32" = "1" ]; then
 else
   echo "Skipping 32-bit libraries."
   lib32_list=
+fi
+
+if [ "$do_inst_android" = "1" ]; then
+  echo "Including Android dependencies."
+else
+  echo "Skipping Android dependencies."
 fi
 
 if [ "$do_inst_arm" = "1" ]; then
