@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/paint/paint_image_builder.h"

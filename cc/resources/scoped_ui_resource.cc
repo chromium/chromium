@@ -4,7 +4,7 @@
 
 #include "cc/resources/scoped_ui_resource.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "cc/resources/ui_resource_manager.h"
 

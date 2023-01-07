@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/skottie_mru_resource_provider.h"
 #include "cc/paint/skottie_resource_metadata.h"

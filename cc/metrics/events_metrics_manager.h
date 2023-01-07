@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 

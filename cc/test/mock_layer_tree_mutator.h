@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -4,8 +4,8 @@
 
 #include "cc/trees/layer_tree_host.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "cc/layers/solid_color_layer.h"

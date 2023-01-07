@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

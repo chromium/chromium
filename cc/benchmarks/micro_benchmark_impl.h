@@ -5,7 +5,7 @@
 #ifndef CC_BENCHMARKS_MICRO_BENCHMARK_IMPL_H_
 #define CC_BENCHMARKS_MICRO_BENCHMARK_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"
 

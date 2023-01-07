@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_color_map.h"

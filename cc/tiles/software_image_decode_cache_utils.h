@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"

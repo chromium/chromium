@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_tree_impl_test_base.h"

@@ -5,7 +5,7 @@
 #include "cc/raster/playback_image_provider.h"
 
 #include <utility>
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "cc/tiles/image_decode_cache.h"
 #include "gpu/command_buffer/common/mailbox.h"
 

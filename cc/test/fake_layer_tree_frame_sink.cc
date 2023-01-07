@@ -4,9 +4,9 @@
 
 #include "cc/test/fake_layer_tree_frame_sink.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/tiles/image_decode_cache_utils.h"

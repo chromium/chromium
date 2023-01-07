@@ -4,8 +4,8 @@
 
 #include "cc/trees/presentation_time_callback_buffer.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

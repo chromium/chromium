@@ -9,7 +9,7 @@
 #include <limits>
 #include <set>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "cc/base/math_util.h"
 #include "cc/test/fake_output_surface_client.h"

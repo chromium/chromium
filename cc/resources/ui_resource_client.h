@@ -5,7 +5,7 @@
 #ifndef CC_RESOURCES_UI_RESOURCE_CLIENT_H_
 #define CC_RESOURCES_UI_RESOURCE_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cc/cc_export.h"
 
 namespace cc {

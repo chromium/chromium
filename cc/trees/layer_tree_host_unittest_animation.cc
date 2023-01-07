@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <climits>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

@@ -5,7 +5,7 @@
 #ifndef CC_PAINT_PAINT_WORKLET_LAYER_PAINTER_H_
 #define CC_PAINT_PAINT_WORKLET_LAYER_PAINTER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_worklet_job.h"

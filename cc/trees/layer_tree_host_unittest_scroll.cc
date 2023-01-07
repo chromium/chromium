@@ -5,7 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/trees/layer_tree_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
